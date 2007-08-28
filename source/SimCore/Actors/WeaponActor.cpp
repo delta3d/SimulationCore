@@ -1,0 +1,934 @@
+/*
+ * Copyright, 2006, Alion Science and Technology Corporation, all rights reserved.
+ * 
+ * Alion Science and Technology Corporation
+ * 5365 Robin Hood Road
+ * Norfolk, VA 23513
+ * (757) 857-5670, www.alionscience.com
+ * 
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * @author Chris Rodgers, editor Allen Danklefsen
+ */
+#include <prefix/dvteprefix-src.h>
+
+#include <dtAudio/audiomanager.h>
+#include <dtAudio/sound.h>
+
+#include <dtUtil/mathdefines.h>
+
+#include <dtCore/nodecollector.h>
+
+#include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/project.h>
+
+#include <dtGame/basemessages.h>
+
+#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/Actors/WeaponFlashActor.h>
+
+#include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
+#include <SimCore/Components/MunitionsComponent.h>
+
+#include <osg/Geode>
+
+namespace SimCore
+{
+   namespace Actors
+   {
+      //////////////////////////////////////////////////////////////////////////
+      // Actor code
+      //////////////////////////////////////////////////////////////////////////
+      WeaponActor::WeaponActor( WeaponActorProxy &proxy )
+         : Platform(proxy),
+         mUseBulletPhysics(false),
+         mSleeping(false),
+         mJammed(false),
+         mTriggerHeld(false),
+         mFired(false),
+         mTargetChanged(false),
+         mTriggerTime(0.0f),
+         mRecoilDistance(0.0f),
+         mRecoilRestTime(0.0f),
+         mCurRecoilRestTime(0.0f),
+         mAutoSleepTime(0.0f),
+         mCurSleepTime(0.0f),
+         mFireRate(0.0f), // 0 means single fire
+         mJamProbability(0.0f),
+         mFlashProbability(1.0f),
+         mTracerFrequency(0),
+         mAmmoCount(0),
+         mAmmoMax(100000),
+         mShotsFired(0),
+         mFireMessageTime(0.0f),
+         mDetMessageTime(0.0f),
+         mMessageCycleTime(0.5f),
+         mHitCount(0),
+         mMessageCount(0),
+         mFireVelocity(1000.0f)
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      WeaponActor::~WeaponActor()
+      {
+         SoundRelease( mSoundFire );
+         SoundRelease( mSoundDryFire );
+         SoundRelease( mSoundJammed );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::TickLocal( const dtGame::Message& tickMessage )
+      {
+         const dtGame::TickMessage& tickMsg = dynamic_cast<const dtGame::TickMessage&> (tickMessage);
+         float timeDelta = tickMsg.GetDeltaSimTime();
+
+         // Update trigger timer
+         if( mTriggerTime < mFireRate )
+         {
+            mTriggerTime += timeDelta;
+         }
+         
+         if( mTriggerHeld && mTriggerTime >= mFireRate )
+         {
+            Fire();
+         }
+
+         // Update message timer
+         if( mFireMessageTime < mMessageCycleTime )
+         {
+            mFireMessageTime += timeDelta;
+         }
+         if( mDetMessageTime < mMessageCycleTime )
+         {
+            mDetMessageTime += timeDelta;
+         }
+
+         // Update auto-sleep timer
+         if( mAutoSleepTime > 0.0f && mCurSleepTime > 0.0f )
+         {
+            mCurSleepTime -= timeDelta;
+            if( mCurSleepTime <= 0.0f )
+            {
+               if( !mSleeping )
+               {
+                  GetGameActorProxy().UnregisterForMessages(
+                     dtGame::MessageType::TICK_LOCAL,
+                     dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
+                  mSleeping = true;
+                  LOG_DEBUG( "Weapon unregistered from TickLocal (INACTIVE)" );
+               }
+            }
+         }
+
+         // Send a message if a target has changed or the time allows.
+         if( mFired && ( mTargetChanged || mFireMessageTime >= mMessageCycleTime ) )
+         {
+            if( mUseBulletPhysics ) // Indirect Fire (hit by physics)
+            {
+               // Get the weapons direction
+               dtCore::Transform xform;
+               GetTransform(xform);
+               osg::Matrix mtx;
+               xform.GetRotation(mtx);
+               osg::Vec3 initialVelocity( mtx.ptr()[4], mtx.ptr()[5], mtx.ptr()[6] );
+               initialVelocity *= mFireVelocity;
+
+               // Send the fire message
+               SendFireMessage( 
+                  // if no hit reports were received and not using bullet physics, send the shots that were fired
+                  mShotsFired, 
+                  initialVelocity, 
+                  mLastTargetObject.get() );
+            }
+            else // Direct Fire (instant fire & hit)
+            {
+               bool directHit = mLastTargetObject.valid();
+               // Send the fire message
+               SendFireMessage( 
+                  // if no hit reports were received and not using bullet physics, send the shots that were fired
+                  directHit ? mHitCount : mShotsFired, 
+                  mLastVelocity, 
+                  mLastTargetObject.get() );
+
+               // Send a detonation as well
+               SendDetonationMessage( 
+                  directHit ? mHitCount : mShotsFired, 
+                  mLastVelocity, 
+                  mLastHitLocation,
+                  mLastTargetObject.get() );
+            }
+
+            mHitCount = 0;
+            mShotsFired = 0;
+            mFireMessageTime = 0.0f;
+            mTargetChanged = false;
+            mFired = false;
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetFireRate( float rate ) 
+      {
+         // Determine if this is a transition from automatic mode
+         // to single-shot mode.
+         if( rate != mFireRate && rate == 0.0f )
+         {
+            mTriggerHeld = false;
+            mTriggerTime = 0.0f; // prevents another shot on next tick
+         }
+         mFireRate = rate;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetTriggerHeld( bool hold )
+      {
+         if( ! mTriggerHeld && hold && mSleeping )
+         {
+            if( GetGameActorProxy().IsInGM() )
+            {
+               mSleeping = false;
+               GetGameActorProxy().RegisterForMessages(
+                  dtGame::MessageType::TICK_LOCAL,
+                  dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
+               LOG_DEBUG( "Weapon registered from SetTriggerHeld (ACTIVE)" );
+            }
+         }
+
+         // execute instant fire
+         if( ! mTriggerHeld && hold )
+         {
+            // Set time variable to allow an instant fire
+            mTriggerTime = mFireRate;
+            mTriggerHeld = true;
+            Fire();
+         }
+         else
+         {
+            mTriggerHeld = hold;
+         }
+         
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::Fire()
+      {
+         // Avoid firing again if weapon is in the middle of a re-fire cycle
+         if( ! mTriggerHeld || mTriggerTime < mFireRate ) { return; }
+
+         if( mSleeping )
+         {
+            GetGameActorProxy().RegisterForMessages(
+               dtGame::MessageType::TICK_LOCAL,
+               dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
+            mSleeping = false;
+            LOG_DEBUG( "Weapon registered from TickLocal (ACTIVE)" );
+         }
+
+         // Reset re-fire timer
+         mTriggerHeld = mFireRate > 0.0f; // allow re-fire if fire rate does not specify single-shot mode (rate of 0.0)
+         mTriggerTime = mTriggerHeld && mFireRate < mTriggerTime 
+            ? mTriggerTime - ((int)(mTriggerTime/mFireRate)) * mFireRate // float mod; leave the difference over fire rate
+            : 0.0f;
+
+         WeaponEffect effectType = WEAPON_EFFECT_FIRE;
+
+         if( GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED )
+         {
+            effectType = WEAPON_EFFECT_BROKEN;
+         }
+         else if( mAmmoCount == 0 )
+         {
+            effectType = WEAPON_EFFECT_DRY_FIRE;
+         } 
+
+         // Determine if the weapon is jammed or should become jammed.
+         // The jamming probability should only be used with local simulations.
+         if( mJammed || ( ! IsRemote() && mJamProbability >= dtUtil::RandFloat(0.0f,1.0f) ) )
+         {
+            effectType = WEAPON_EFFECT_JAM;
+            mJammed = true;
+         }
+
+         // Execute the shooter before applying weapon effects
+         if( effectType == WEAPON_EFFECT_FIRE )
+         {
+            /*/ --- DEBUG --- START --- //
+            std::cout << "Fired round: " << mAmmoCount << std::endl;
+            std::cout << "DEBUG Weapon/Shooter Orientation:" << std::endl;
+            dtCore::Transform xform;
+            GetTransform(xform);
+            const osg::Matrix& mtx = xform.GetRotation();
+            osg::Vec3 normal( mtx.ptr()[4], mtx.ptr()[5], mtx.ptr()[6] );
+            if( normal.length2() > 0.0 ) { normal.normalize(); }
+            std::cout << "\tWeapon: " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
+            // --- DEBUG --- END --- /*/
+
+#ifdef AGEIA_PHYSICS
+            if( mShooter.valid() )
+            {
+               NxAgeiaMunitionsPSysActor* particleSystem 
+                  = dynamic_cast<NxAgeiaMunitionsPSysActor*>(mShooter->GetActor());
+               particleSystem->Fire();
+            }
+#else
+            mShooter->Fire();
+#endif
+            mAmmoCount--;
+            mShotsFired++;
+         }
+
+
+
+         switch( effectType )
+         {
+            case WEAPON_EFFECT_FIRE:
+            {
+               mFired = true;
+               if( mFlash.valid() && mFlashProbability >= dtUtil::RandFloat(0.0f,1.0f) )
+               {
+                  // Setting visible to TRUE will cause the flash
+                  // to restart its age time. The age time will progress
+                  // and cause the flash to automatically turn invisible when 
+                  // it passes its life time, if life time has been set
+                  // greater than 0.
+                  mFlash->SetVisible( true );
+               }
+               
+               SoundPlay( mSoundFire );
+               break;
+            }
+
+            case WEAPON_EFFECT_DRY_FIRE:
+            {
+               SoundPlay( mSoundDryFire );
+               break;
+            }
+
+            case WEAPON_EFFECT_JAM:
+            {
+               SoundPlay( mSoundJammed );
+               break;
+            }
+
+            case WEAPON_EFFECT_BROKEN:
+            {
+               break;
+            }
+
+            default: // Do nothing
+               break;
+         }
+
+         // Reset current sleep time, the time until this weapon will unregister from TickLocal
+         mCurSleepTime = mAutoSleepTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::OnEnteredWorld()
+      {
+         IGActor::OnEnteredWorld();
+
+         /*/ Try to access the munitions component in order
+         // to obtain the munition types of shooters
+         SimCore::Components::MunitionsComponent* comp = 
+            dynamic_cast<SimCore::Components::MunitionsComponent*>
+            (GetGameActorProxy().GetGameManager()
+            ->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
+
+         if( NULL == comp )
+         { 
+            LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
+            return;
+         }
+
+         SimCore::Components::MunitionTypeTable* table = comp->GetMunitionTypeTable();
+
+         if( NULL == table )
+         {
+            LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+            return;
+         }*/
+
+         if( ! mMunitionType.valid() && ! mMunitionTypeName.empty() )
+         {/*
+            // Get a reference to the weapon's munition type
+            MunitionTypeActor* munitionType = NULL;
+
+            // Get the munition type from the component by the munition type name
+            munitionType = table->GetMunitionType( mMunitionTypeName );
+            if( NULL != munitionType )
+            {
+               // Assign the accessed munition type
+               SetMunitionType( munitionType );
+            }*/
+
+            // Attempt a reload
+            LoadMunitionType( mMunitionTypeName );
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponActor::LoadMunitionType( const std::string& munitionTypeName )
+      { 
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+
+         if( gm != NULL )
+         {
+            // Try to access the munitions component in order
+            // to obtain the munition types of shooters
+            SimCore::Components::MunitionsComponent* comp = 
+               dynamic_cast<SimCore::Components::MunitionsComponent*>
+               (gm->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
+
+            if( NULL == comp )
+            { 
+               LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
+               return false;
+            }
+
+            SimCore::Components::MunitionTypeTable* table = comp->GetMunitionTypeTable();
+
+            if( NULL == table )
+            {
+               LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
+               return false;
+            }
+
+            // Get a reference to the weapon's munition type
+            MunitionTypeActor* munitionType = NULL;
+
+            // Get the munition type from the component by the munition type name
+            munitionType = table->GetMunitionType( munitionTypeName );
+            if( NULL != munitionType )
+            {
+               // Assign the accessed munition type
+               SetMunitionType( munitionType );
+            }
+            return NULL != munitionType && mMunitionType.valid();
+         }
+         return false;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetMunitionType( MunitionTypeActor* munitionType )
+      { 
+         mMunitionType = munitionType;
+
+         if( mMunitionType.valid() )
+         {
+            mMunitionTypeName = mMunitionType->GetName();
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetMunitionTypeProxy( dtDAL::ActorProxy* proxy )
+      { 
+         mMunitionType = proxy != NULL ? 
+            dynamic_cast<MunitionTypeActor*> (proxy->GetActor()) : NULL;
+         GetGameActorProxy().SetLinkedActor("Munition Type", proxy);
+
+         if( mMunitionType.valid() )
+         {
+            mMunitionTypeName = mMunitionType->GetName();
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::DeltaDrawable* WeaponActor::GetMunitionTypeDrawable()
+      { 
+         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Munition Type");
+         return proxy != NULL ? proxy->GetActor() : NULL;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetOwner( dtDAL::ActorProxy* proxy )
+      { 
+         mOwner = proxy;
+         GetGameActorProxy().SetLinkedActor("Owner", proxy);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::DeltaDrawable* WeaponActor::GetOwner()
+      { 
+         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Owner");
+         return proxy != NULL ? proxy->GetActor() : NULL;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetFlashActor( WeaponFlashActor* flashActor )
+      { 
+         mFlash = flashActor;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      WeaponFlashActor* WeaponActor::GetFlashActor()
+      { 
+         return mFlash.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const WeaponFlashActor* WeaponActor::GetFlashActor() const
+      { 
+         return mFlash.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetFlashActorProxy( dtDAL::ActorProxy* flashProxy )
+      { 
+         mFlash = flashProxy != NULL ? 
+            dynamic_cast<WeaponFlashActor*> (flashProxy->GetActor()) : NULL;
+         GetGameActorProxy().SetLinkedActor("FlashActor", flashProxy );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::DeltaDrawable* WeaponActor::GetFlashActorDrawable()
+      { 
+         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("FlashActor");
+         return proxy != NULL ? proxy->GetActor() : NULL;
+      }
+
+#ifdef AGEIA_PHYSICS
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::ReceiveContactReport( dtAgeiaPhysX::ContactReport& report, dtGame::GameActorProxy* target )
+      {
+         ++mHitCount;
+
+         // TODO: change the normal to the force vector (currently the force 
+         //       vector is coming in as 0).
+         const NxVec3& vec = report.nxVec3crContactNormal;
+         mLastVelocity.set( vec[0], vec[1], vec[2] );
+         mLastVelocity *= mFireVelocity; // temporary
+
+         // Get the impact location
+         if( ! report.lsContactPoints.empty() )
+         {
+            const NxVec3& impact = report.lsContactPoints[0];
+            mLastHitLocation.set( impact[0], impact[1], impact[2] );
+         }
+
+         // Get the target ID
+         mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
+         std::string targetID( mLastTargetObject.valid() ? 
+            mLastTargetObject->GetUniqueId().ToString() : "" );
+
+         // Send a message if a target has changed or the time allows.
+         if( mLastTargetID != targetID )
+         {
+            mTargetChanged = true;
+            mLastTargetID = targetID;
+         }
+
+         // Check type to see if it is grenade - Indirect Fire type
+         if( ( mMunitionType.valid() 
+             && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE 
+                || mMunitionType->GetFamily() == MunitionFamily::FAMILY_EXPLOSIVE_ROUND) )
+             || ( mUseBulletPhysics && ( mTargetChanged || mDetMessageTime >= mMessageCycleTime ) ) )
+         {
+            SendDetonationMessage( mHitCount, mLastVelocity, mLastHitLocation, mLastTargetObject.get() );
+            mDetMessageTime = 0.0f;
+         }
+      }
+#endif
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SendFireMessage( unsigned short quantity, 
+         const osg::Vec3& initialVelocity, const dtCore::Transformable* target )
+      {
+         //printf("Sending SHOT FIRED\r\n");
+
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+
+         // Prepare a shot fired message
+         dtCore::RefPtr<SimCore::Components::ShotFiredMessage> msg;
+         gm->GetMessageFactory().CreateMessage( SimCore::Components::MessageType::SHOT_FIRED, msg );
+
+         // Get the location of this weapon
+         dtCore::Transform xform;
+         GetTransform( xform );
+         osg::Vec3 thisPos = xform.GetTranslation();
+
+         // Address the message to the targeted entity
+
+         // Required Parameters:
+         // --- EventIdentifier
+         msg->SetEventIdentifier( mMessageCount++ );
+         // --- FiringLocation
+         msg->SetFiringLocation( thisPos );
+         // --- FiringObjectIdentifier
+         msg->SetSendingActorId( mOwner.valid() ? mOwner->GetId() : GetUniqueId() );
+         // --- FuseType
+         msg->SetFuseType( (unsigned short) mMunitionType->GetFuseType() );
+         // --- WarheadType
+         msg->SetWarheadType( (unsigned short) mMunitionType->GetWarheadType() );
+         // --- MunitionType
+         msg->SetMunitionType( mMunitionType->GetName() );
+         // --- InitialVelocityVector
+         msg->SetInitialVelocityVector( initialVelocity );
+
+         // Optional Parameters:
+         // --- FireControlSolutionRange
+         // ???
+         // --- FireMunitionIndex
+         // ???
+         // --- MunitionObjectIdentifier
+         // ? for Missiles ?
+         // --- QuantityFired
+         msg->SetQuantityFired( quantity < 1 ? 1 : quantity );
+         // --- RateOfFire (rounds per minute)
+         unsigned rate = mFireRate <= 0.0f ? 0 : (unsigned)(60.0f / mFireRate + 0.5f);
+         msg->SetRateOfFire( rate < 1 ? 1 : rate );
+         // --- TargetObjectIdentifier - for Direct Fire
+         if( target != NULL ) { msg->SetAboutActorId( target->GetUniqueId() ); }
+
+         gm->SendMessage( *msg );
+         gm->SendNetworkMessage( *msg );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SendDetonationMessage( unsigned short quantity, 
+         const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
+      {
+         //printf("Sending DETONATION\r\n");
+
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+
+         // Prepare a detonation message
+         dtCore::RefPtr<SimCore::Components::DetonationMessage> msg;
+         gm->GetMessageFactory().CreateMessage( SimCore::Components::MessageType::DETONATION, msg );
+
+         // Required Parameters:
+         // --- EventIdentifier
+         msg->SetEventIdentifier( mMessageCount++ );
+         // --- DetonationLocation
+         msg->SetDetonationLocation( location );
+         // --- DetonationResultCode
+            // 1 == Entity Impact
+            // 3 == Ground Impact
+            // 5 == Detonation
+            msg->SetDetonationResultCode( target != NULL ? 1 : 3 ); // TO BE DYNAMIC
+         // --- MunitionType
+         msg->SetMunitionType( mMunitionType->GetName() );
+         // --- FuseType
+         msg->SetFuseType( (unsigned short) mMunitionType->GetFuseType() );
+         // --- WarheadType
+         msg->SetWarheadType( (unsigned short) mMunitionType->GetWarheadType() );
+         // --- QuantityFired - number of rounds in a burst (ICM munitions)
+         msg->SetQuantityFired( quantity );
+         // FiringObjectIdentifier
+         msg->SetSendingActorId( mOwner.valid() ? mOwner->GetId() : GetUniqueId() );
+
+         // Direct Fire Parameters:
+         if( target != NULL )
+         {
+            // TargetObjectIdentifier
+            msg->SetAboutActorId( target->GetUniqueId() );
+            // RelativeDetonationLocation
+            dtCore::Transform xform;
+            target->GetTransform( xform );
+            msg->SetRelativeDetonationLocation( location - xform.GetTranslation() );
+         }
+
+         // Optional Parameters:
+         // FinalVelocityVector
+         msg->SetFinalVelocityVector( finalVelocity );
+         // MunitionObjectIdentifier
+         // ? for Missiles ?
+         // RateOfFire (rounds per minute)
+         unsigned rate = mFireRate <= 0.0f ? 0 : (unsigned)(60.0f / mFireRate + 0.5f);
+         msg->SetRateOfFire( rate < 1 ? 1 : rate );
+
+         gm->SendMessage( *msg );
+         gm->SendNetworkMessage( *msg );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponActor::AttachObject( dtCore::Transformable& object, const std::string& dofName )
+      {
+         osgSim::DOFTransform* dof = GetNodeCollector()->GetDOFTransform( dofName );
+
+         if( dof == NULL )
+         {
+            return false;
+         }
+
+         AddChild( &object );
+
+         osg::Matrix mtx;
+         GetAbsoluteMatrix( dof, mtx );
+
+         dtCore::Transform xform;
+         object.GetTransform( xform );
+         xform.SetTranslation( mtx.getTrans() );
+         object.SetTransform( xform );
+
+         return true;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::LoadSoundFire( const std::string& filePath )
+      {
+         SoundLoad( filePath, mSoundFire );
+
+         if( ! mSoundFire.valid() ) { return; }
+
+         mSoundFire->ListenerRelative(false);
+         AddChild(mSoundFire.get());
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::LoadSoundDryFire( const std::string& filePath )
+      {
+         SoundLoad( filePath, mSoundDryFire );
+
+         if( ! mSoundDryFire.valid() ) { return; }
+
+         mSoundDryFire->ListenerRelative(true);
+         AddChild( mSoundDryFire.get() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::LoadSoundJammed( const std::string& filePath )
+      {
+         SoundLoad( filePath, mSoundJammed );
+
+         if( ! mSoundJammed.valid() ) { return; }
+
+         mSoundJammed->ListenerRelative(true);
+         AddChild(mSoundJammed.get());
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SoundLoad( const std::string& filePath, dtCore::RefPtr<dtAudio::Sound>& sound )
+      {
+         // Find the specified file
+         std::string resourcePath = dtDAL::Project::GetInstance()
+            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
+
+         if( resourcePath.empty() )
+         {
+            std::stringstream ss;
+            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
+               << resourcePath.c_str() << "\"" << std::endl;
+            LOG_ERROR( ss.str() );
+            return;
+         }
+
+         sound = NULL;
+         sound = dtAudio::AudioManager::GetInstance().NewSound();
+
+         if( ! sound.valid())
+            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            "Failed to create the sound object", __FILE__, __LINE__);
+
+         sound->LoadFile(filePath.c_str());
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SoundPlay( dtCore::RefPtr<dtAudio::Sound>& sound )
+      {
+         if( sound.valid() && ! sound->IsPlaying() ) { sound->Play(); }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SoundRelease( dtCore::RefPtr<dtAudio::Sound>& sound )
+      {
+         if( sound.valid() )
+         {
+            if( sound->IsPlaying() ) { sound->Stop(); }
+
+            RemoveChild( sound.get() );
+            dtAudio::Sound* soundPointer = sound.release();
+            if( soundPointer != NULL )
+            {
+               // Temporarily commented out since there is something wrong with the audio manager.
+//               dtAudio::AudioManager::GetInstance().FreeSound( soundPointer );
+            }
+         }
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Proxy code
+      //////////////////////////////////////////////////////////////////////////
+      WeaponActorProxy::WeaponActorProxy()
+      {
+         SetClassName("SimCore::Actors::WeaponActor");
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      WeaponActorProxy::~WeaponActorProxy()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActorProxy::CreateActor()
+      {
+         WeaponActor& actor = *new WeaponActor(*this);
+         SetActor(actor);
+
+         actor.InitDeadReckoningHelper();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActorProxy::BuildPropertyMap()
+      {
+         PlatformActorProxy::BuildPropertyMap();
+
+         WeaponActor& actor = static_cast<WeaponActor&>(GetGameActor());
+
+         const std::string& groupResources("Resources");
+         const std::string& groupMunitions("Munitions");
+         const std::string& groupBehaviors("Behaviors");
+         const std::string& groupStatus("Status");
+         const std::string& groupActors("Associate Actors");
+
+         // --- RESOURCE PROPERTIES --- //
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "Fire Sound", "Fire Sound", 
+            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundFire),
+            "The sound produced when this weapon fires.",
+            groupResources));
+
+         /*AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "Dry Fire Sound", "Dry Fire Sound", 
+            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundDryFire),
+            "The sound produced when this weapon attempts to fire nothing.",
+            groupResources));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "Jammed Sound", "Jammed Sound", 
+            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundJammed),
+            "The sound produced when this weapon fires unsuccessfully, jamming on its internal ammunition or parts.",
+            groupResources));*/
+
+         // --- PRIMITIVE PROPERTIES --- //
+
+         AddProperty(new dtDAL::BooleanActorProperty("Use Bullet Physics","Use Bullet Physics",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetUsingBulletPhysics),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsUsingBulletPhysics),
+            "Enables the weapon to send detonation messages for rounds when they impact.",
+            groupStatus));
+
+         AddProperty(new dtDAL::BooleanActorProperty("Trigger Held","Trigger Held",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetTriggerHeld),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsTriggerHeld),
+            "Sets the trigger's state to held or not held.",
+            groupStatus));
+
+         AddProperty(new dtDAL::BooleanActorProperty("Jammed","Jammed",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetJammed),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsJammed),
+            "Sets the weapon's state to jammed/unjammed",
+            groupStatus));
+
+         AddProperty(new dtDAL::FloatActorProperty("Recoil Distance","Recoil Distance",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetRecoilDistance),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetRecoilDistance),
+            "The distance in meters that the weapon jumps backward along the line of fire.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Recoil Rest Time","Recoil Rest Time",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetRecoilRestTime),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetRecoilRestTime),
+            "The time in seconds that it take the weapon to return to it resting position from recoil",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Auto Sleep Time","Auto Sleep Time",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetAutoSleepTime),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAutoSleepTime),
+            "The time in seconds from the last fired shot to the instant the weapon will unregister from TickLocal.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Fire Velocity", "Fire Velocity",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFireVelocity ),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFireVelocity ),
+            "The average scalar velocity of munitions leaving this weapon.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Fire Rate","Fire Rate",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFireRate),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFireRate),
+            "Number of rounds that can be fired per second; fractional numbers can be used for odd or slow re-fire cycles.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Jam Probability","Jam Probability",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetJamProbability),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetJamProbability),
+            "Probability from 0.0 to 1.0 that this weapon will jam when firing a round.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Flash Probability","Flash Probability",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashProbability),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashProbability),
+            "Probability from 0.0 to 1.0 that this weapon will produce a flash effect when firing a round.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Time Between Messages","Time Between Messages",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetTimeBetweenMessages),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetTimeBetweenMessages),
+            "The minimum amount of time allowed between fire and detonation messages.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::IntActorProperty( "Tracer Frequency", "Tracer Frequency",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetTracerFrequency),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetTracerFrequency),
+            "The number of rounds that must be fired to reveal one tracer round.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::IntActorProperty( "Ammo Count", "Ammo Count",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetAmmoCount),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoCount),
+            "The current count of ammo this weapon is holding (this clamped by Ammo Max).",
+            groupStatus));
+         
+         AddProperty(new dtDAL::IntActorProperty( "Ammo Max", "Ammo Max",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetAmmoMax),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoMax),
+            "The maximum count of ammo this weapon can hold.",
+            groupStatus));
+
+         AddProperty(new dtDAL::StringActorProperty( "Munition Type Name", "Munition Type Name",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeName),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeName),
+            "Set the munition type name of the MunitionTypeActor to be loaded from the MunitionsComponent.",
+            groupMunitions));
+
+         // --- ACTOR PROPERTIES --- //
+
+         AddProperty(new dtDAL::ActorActorProperty( *this, "Munition Type", "Munition Type",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeProxy ), 
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeDrawable ), 
+            MunitionTypeActorProxy::CLASS_NAME,
+            "A reference to the MunitionTypeActor that will have data related to the munition this weapon will fire.",
+            groupMunitions));
+
+         AddProperty(new dtDAL::ActorActorProperty( *this, "Owner", "Owner",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetOwner ), 
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetOwner ), 
+            "", // anything might be able to own a weapon
+            "A reference to the owning actor that is published on the network and that will need to send its ID in weapon fire messages.",
+            groupActors));
+
+         AddProperty(new dtDAL::ActorActorProperty( *this, "Flash Actor", "Flash Actor",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashActorProxy ), 
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashActorDrawable ), 
+            WeaponFlashActorProxy::CLASS_NAME,
+            "A reference to the flash actor responsible for timing and rendering flash effects.",
+            groupActors));
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActorProxy::OnEnteredWorld()
+      {
+         PlatformActorProxy::OnEnteredWorld();
+      }
+
+   }
+}
