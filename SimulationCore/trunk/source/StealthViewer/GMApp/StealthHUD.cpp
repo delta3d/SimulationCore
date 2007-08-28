@@ -19,7 +19,7 @@
 * @author Curtiss Murphy
 */
 
-#include <StealthGM/StealthHUD.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
 #include <SimCore/Components/StealthHUDElements.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>

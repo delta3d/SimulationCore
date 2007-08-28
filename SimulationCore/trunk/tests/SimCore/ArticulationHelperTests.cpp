@@ -30,14 +30,14 @@
 
 
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
+const std::string projectContext = "ProjectAssets";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
+const std::string projectContext = "ProjectAssets";
 #endif
 
 namespace SimCore

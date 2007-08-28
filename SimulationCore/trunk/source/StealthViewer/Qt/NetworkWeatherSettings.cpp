@@ -4,8 +4,8 @@
 *
 * @author Eddie Johnson
 */
-#include <StealthQt/NetworkWeatherSettings.h>
-#include <StealthQt/ui_NetworkWeatherSettingsUi.h>
+#include <StealthViewer/Qt/NetworkWeatherSettings.h>
+#include <StealthViewer/Qt/ui_NetworkWeatherSettingsUi.h>
 
 namespace StealthQt
 {

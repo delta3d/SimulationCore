@@ -20,8 +20,8 @@
  */
 #include <SimCore/StealthMotionModel.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
-#include <StealthGM/StealthInputComponent.h>
-#include <StealthGM/StealthHUD.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <dtABC/application.h>
 #include <dtDAL/actorproxy.h>
@@ -203,7 +203,7 @@ namespace StealthGM
 
             // Ensure thatthe compass tool has reference to the stealth actor
             SimCore::Tools::Compass* compass
-               = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::Components::MessageType::COMPASS));
+               = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
             if(compass != NULL) 
                compass->SetPlayerActor( mStealthActor.get() );
 
@@ -245,7 +245,7 @@ namespace StealthGM
             // create the fly motion model 
             if(!mStealthMM.valid())
             {
-               mStealthMM = new SimCore::Components::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), false);
+               mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), false);
                mStealthMM->SetCollideWithGround(mCollideWithGround);
             }            
             mStealthMM->SetTarget(mStealthActor.get());
@@ -264,7 +264,7 @@ namespace StealthGM
             // create the attached motion model
             if(!mAttachedMM.valid())
             {
-               mAttachedMM = new SimCore::Components::AttachedMotionModel(app.GetKeyboard(), app.GetMouse());
+               mAttachedMM = new SimCore::AttachedMotionModel(app.GetKeyboard(), app.GetMouse());
                mAttachedMM->SetCenterMouse(false);
             }
             mAttachedMM->SetTarget(mStealthActor.get());

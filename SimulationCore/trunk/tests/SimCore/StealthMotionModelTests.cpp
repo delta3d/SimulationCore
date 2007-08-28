@@ -21,6 +21,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <dtUtil/macros.h>
 #include <dtCore/camera.h>
 #include <dtCore/infiniteterrain.h>
 #include <dtCore/scene.h>
@@ -32,7 +33,7 @@
 #include <osg/io_utils>
 #include <dtABC/application.h>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
 #else
@@ -75,7 +76,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
          mTarget = new dtCore::Transformable();
 
-         mMotionModel = new SimCore::Components::StealthMotionModel();
+         mMotionModel = new SimCore::StealthMotionModel();
          mMotionModel->SetScene(*mScene);
          mMotionModel->SetEnabled(true); 
          mMotionModel->SetTarget( mTarget.get() );
@@ -226,7 +227,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
 
    private:
-      dtCore::RefPtr<SimCore::Components::StealthMotionModel> mMotionModel;
+      dtCore::RefPtr<SimCore::StealthMotionModel> mMotionModel;
       dtCore::RefPtr<dtCore::Scene> mScene;
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrain;
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrainAlternate;

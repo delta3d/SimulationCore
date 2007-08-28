@@ -19,10 +19,10 @@
  * @author Eddie Johnson 
  * @author David Guthrie
  */
-#include <StealthGM/StealthGameEntryPoint.h>
-#include <StealthGM/StealthInputComponent.h>
-#include <StealthGM/StealthMessageProcessor.h>
-#include <StealthGM/ViewerConfigComponent.h>
+#include <StealthViewer/GMApp/StealthGameEntryPoint.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
+#include <StealthViewer/GMApp/StealthMessageProcessor.h>
+#include <StealthViewer/GMApp/ViewerConfigComponent.h>
 
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
@@ -62,8 +62,12 @@
 #include <SimCore/Components/HLAConnectionComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Tools/GPS.h>
+#include <SimCore/Tools/Compass.h>
+#include <SimCore/Tools/Binoculars.h>
+#include <SimCore/MessageType.h>
 
 #include <osg/ApplicationUsage>
+#include <osg/ArgumentParser>
 
 #ifdef AGEIA_PHYSICS
 #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
@@ -157,7 +161,7 @@ namespace StealthGM
          mHasMap = true;
       }
    
-      SimCore::Components::BaseGameEntryPoint::Initialize(app, argc, argv);
+      SimCore::BaseGameEntryPoint::Initialize(app, argc, argv);
    }
    
    ///////////////////////////////////////////////////////////////////////////
@@ -209,13 +213,13 @@ namespace StealthGM
          binos->SetPlayerActor(mStealth.get());
          mHudGUI->AddToolButton("Binoculars","F9");
       }
-      if( mHasMap )
-      {
-         SimCore::Tools::Map* mapTool = new SimCore::Tools::Map(mHudGUI->GetToolsWindow());
-
-         inputComp->AddTool( *mapTool, SimCore::MessageType::MAP );
-         mHudGUI->AddToolButton("Map","F11");
-      }
+//      if( mHasMap )
+//      {
+//         SimCore::Tools::Map* mapTool = new SimCore::Tools::Map(mHudGUI->GetToolsWindow());
+//
+//         inputComp->AddTool( *mapTool, SimCore::MessageType::MAP );
+//         mHudGUI->AddToolButton("Map","F11");
+//      }
    
    }
    
@@ -237,7 +241,7 @@ namespace StealthGM
          hlaCC->AddMap("DVTEActors");
       }
 
-      SimCore::Components::BaseGameEntryPoint::HLAConnectionComponentSetup();
+      SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup();
    }
    
    ///////////////////////////////////////////////////////////////////////////
@@ -262,7 +266,7 @@ namespace StealthGM
       // the connection to the federation.
       StealthInputComponent* inputComp = mInputComponent.get();
    
-      SimCore::Components::BaseGameEntryPoint::OnStartup();
+      SimCore::BaseGameEntryPoint::OnStartup();
 
 #ifdef NDEBUG
       // Added by Eddie. End users for a stealth viewer don't care about 

@@ -37,7 +37,13 @@
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
 
+#include <dtDAL/project.h>
+#include <dtDAL/librarymanager.h>
+
 #include <dtGUI/ceuidrawable.h>
+
+#include <SimCore/BaseGameEntryPoint.h>
+
 
 #include <sstream>
 #include <cmath>
@@ -124,6 +130,10 @@ int main (int argc, char* argv[])
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
+   dtDAL::Project::GetInstance().SetContext(SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
+
+   dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
+   
    CPPUNIT_NS::TestResultCollector collectedResults;
 
    try
@@ -217,6 +227,8 @@ int main (int argc, char* argv[])
    {
       std::cerr << " <<< Exception occurred while running main.cpp for this unit test. No other info available >>> " << std::endl;
    }
+   
+   dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
 
    return collectedResults.wasSuccessful () ? 0 : 1;

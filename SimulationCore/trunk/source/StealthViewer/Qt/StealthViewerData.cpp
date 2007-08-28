@@ -4,16 +4,16 @@
  *
  * @author Eddie Johnson
  */
-#include <StealthQt/StealthViewerData.h>
-#include <StealthQt/StealthViewerSettings.h>
-#include <StealthQt/MainWindow.h>
+#include <StealthViewer/Qt/StealthViewerData.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/MainWindow.h>
 
-#include <StealthGM/PreferencesGeneralConfigObject.h>
-#include <StealthGM/PreferencesToolsConfigObject.h>
-#include <StealthGM/ControlsRecordConfigObject.h>
-#include <StealthGM/ControlsPlaybackConfigObject.h>
-#include <StealthGM/PreferencesEnvironmentConfigObject.h>
-#include <StealthGM/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
+#include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
+#include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 
 namespace StealthQt
 {

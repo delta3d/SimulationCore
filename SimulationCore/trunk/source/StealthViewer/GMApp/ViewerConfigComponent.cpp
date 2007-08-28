@@ -12,8 +12,8 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 
-#include <StealthGM/ViewerConfigComponent.h>
-#include <StealthGM/ConfigurationObjectInterface.h>
+#include <StealthViewer/GMApp/ViewerConfigComponent.h>
+#include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 
 #include <dtGame/messagetype.h>
 #include <dtGame/message.h>

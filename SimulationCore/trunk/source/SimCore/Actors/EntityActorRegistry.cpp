@@ -105,23 +105,26 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::VEHICLE_CONFIG_ACTOR_TYPE(new dtDAL::ActorType("VehicleConfigActorType", "ViSiTToolkit"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE(new dtDAL::ActorType("LM_OpenFlightTerrain", "DVTETerrain"));
 
-      
+      ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
           return new EntityActorRegistry;
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT void DestroyPluginRegistry(dtDAL::ActorPluginRegistry *registry)
       {
           delete registry;
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       EntityActorRegistry::EntityActorRegistry() :
          dtDAL::ActorPluginRegistry("This library will store some entity actors")
       {
          dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/DVTEShaderDefs.xml", false);
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void EntityActorRegistry::RegisterActorTypes()
       {
          mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_ACTOR_TYPE.get());

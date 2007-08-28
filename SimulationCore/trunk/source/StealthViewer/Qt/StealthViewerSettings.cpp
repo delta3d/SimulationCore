@@ -4,17 +4,17 @@
  *
  * @author Eddie Johnson 
  */
-#include <StealthQt/StealthViewerSettings.h>
-#include <StealthQt/StealthViewerData.h>
-#include <StealthQt/MainWindow.h>
-#include <StealthQt/ui_MainWindowUi.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/StealthViewerData.h>
+#include <StealthViewer/Qt/MainWindow.h>
+#include <StealthViewer/Qt/ui_MainWindowUi.h>
 
-#include <StealthGM/PreferencesGeneralConfigObject.h>
-#include <StealthGM/PreferencesEnvironmentConfigObject.h>
-#include <StealthGM/PreferencesToolsConfigObject.h>
-#include <StealthGM/ControlsRecordConfigObject.h>
-#include <StealthGM/ControlsPlaybackConfigObject.h>
-#include <StealthGM/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
+#include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>

@@ -39,17 +39,16 @@
 #include <dtAudio/audiomanager.h>
 
 #include <dtCore/system.h>
+#include <dtUtil/macros.h>
 
 #include <osg/Vec3>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext = "DVTEProject";
 #else
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-   const std::string projectContext = "DVTEProject";
 #endif
 
 using dtCore::RefPtr;
@@ -59,8 +58,6 @@ namespace SimCore
    namespace Components
    {
 
-      const std::string libName = "IG";
-      
       class ViewerMessageProcessorTests : public CPPUNIT_NS::TestFixture
       {
          CPPUNIT_TEST_SUITE(ViewerMessageProcessorTests);
@@ -102,11 +99,9 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
             RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             mGM = new dtGame::GameManager(*scene);
-            mGM->LoadActorRegistry(libName);
       
             mMachineInfo = new dtGame::MachineInfo;
             mVMP = new ViewerMessageProcessor;
@@ -126,7 +121,6 @@ namespace SimCore
          mVMP = NULL;
       
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(libName);
       
          mGM = NULL;
          mMachineInfo = NULL;

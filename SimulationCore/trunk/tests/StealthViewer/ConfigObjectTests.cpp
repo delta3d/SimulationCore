@@ -6,11 +6,11 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <StealthGM/PreferencesGeneralConfigObject.h>
-#include <StealthGM/PreferencesEnvironmentConfigObject.h>
-#include <StealthGM/PreferencesToolsConfigObject.h>
-#include <StealthGM/ControlsRecordConfigObject.h>
-#include <StealthGM/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
+#include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 
 #include <SimCore/Components/WeatherComponent.h>
 

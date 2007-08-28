@@ -4,12 +4,12 @@
  *
  * @author Eddie Johnson
  */
-#include <StealthQt/HLAWindow.h>
-#include <StealthQt/ui_HLAWindowUi.h>
-#include <StealthQt/HLAOptions.h>
-#include <StealthQt/StealthViewerSettings.h>
-#include <StealthQt/StealthViewerData.h>
-#include <StealthGM/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/Qt/HLAWindow.h>
+#include <StealthViewer/Qt/ui_HLAWindowUi.h>
+#include <StealthViewer/Qt/HLAOptions.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/StealthViewerData.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <QtGui/QMessageBox>
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>

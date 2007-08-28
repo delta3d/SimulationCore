@@ -15,8 +15,8 @@
 
 #include <dtUtil/enumeration.h>
 
-#include <StealthGM/ConfigurationObjectInterface.h>
-#include <StealthGM/Export.h>
+#include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
+#include <StealthViewer/GMApp/Export.h>
 
 namespace StealthGM
 {

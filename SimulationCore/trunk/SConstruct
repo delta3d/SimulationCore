@@ -247,7 +247,7 @@ launchDir = env.GetLaunchDir()
 Export('env')
 
 # Build the SConscript files
-modules = ['source']
+modules = ['source', 'tests']
 
 for module in modules :
    SConscript(dirs = [module], duplicate = 0)

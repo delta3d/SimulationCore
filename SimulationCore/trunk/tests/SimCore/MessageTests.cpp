@@ -31,6 +31,7 @@
 #include <dtDAL/project.h>
 
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/macros.h>
 
 #include <dtABC/application.h>
 
@@ -44,18 +45,14 @@
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   const std::string projectContext = "DVTEProject";
+#ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
 #else
-   const std::string projectContext = "DVTEProject";
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
  
-const std::string &igRegistry = "IG";
-
 using dtCore::RefPtr;
  
 class MessageTests : public CPPUNIT_NS::TestFixture 
@@ -78,11 +75,9 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         dtDAL::Project::GetInstance().SetContext(projectContext, true);
          mApp = new dtABC::Application;
          mGM = new dtGame::GameManager(*new dtCore::Scene());
          mGM->SetApplication(*mApp);
-         mGM->LoadActorRegistry(igRegistry);
          RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;
          mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
          
@@ -91,9 +86,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       
       void tearDown()
       {
-         mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(igRegistry);
-         mGM = NULL;
+         if (mGM.valid())
+         {
+            mGM->DeleteAllActors(true);
+            mGM = NULL;
+         }
          mApp = NULL;
          dtCore::System::GetInstance().Stop();
       }

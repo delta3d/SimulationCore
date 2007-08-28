@@ -17,22 +17,22 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QKeyEvent>
 
-#include <StealthQt/MainWindow.h>
-#include <StealthQt/ui_MainWindowUi.h>
-#include <StealthQt/HLAWindow.h>
-#include <StealthQt/StealthViewerData.h>
-#include <StealthQt/StealthViewerSettings.h>
-#include <StealthQt/GLWidgetRenderSurface.h>
-#include <StealthQt/EntitySearch.h>
-#include <StealthQt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/MainWindow.h>
+#include <StealthViewer/Qt/ui_MainWindowUi.h>
+#include <StealthViewer/Qt/HLAWindow.h>
+#include <StealthViewer/Qt/StealthViewerData.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
+#include <StealthViewer/Qt/EntitySearch.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
 
-#include <StealthGM/ViewerConfigComponent.h>
-#include <StealthGM/ControlsCameraConfigObject.h>
-#include <StealthGM/PreferencesEnvironmentConfigObject.h>
-#include <StealthGM/PreferencesGeneralConfigObject.h>
-#include <StealthGM/ControlsRecordConfigObject.h>
-#include <StealthGM/ControlsPlaybackConfigObject.h>
-#include <StealthGM/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/ViewerConfigComponent.h>
+#include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
+#include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
 #include <dtUtil/stringutils.h>
 
@@ -60,7 +60,7 @@
 namespace StealthQt
 {
    ///////////////////////////////////////////////////////////////////////////////
-   MainWindow::MainWindow(dtGame::GameApplication& app) : 
+   MainWindow::MainWindow(dtGame::GameApplication& app):
       mUi(new Ui::MainWindow),
       mFirstShow(true),
       mIsPlaybackMode(false),
@@ -75,7 +75,7 @@ namespace StealthQt
 
       // Instantiate singletons
       StealthViewerData::GetInstance().SetMainWindow(*this);
-      
+
       QWidget* glParent = new QWidget(this);
       GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
       QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
@@ -253,8 +253,8 @@ namespace StealthQt
 
       if(comp == NULL)
       {
-         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
-            "Failed to locate the HLAComponent on the Game Manager. Aborting application.", 
+         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            "Failed to locate the HLAComponent on the Game Manager. Aborting application.",
             __FILE__, __LINE__);
       }
 
@@ -560,7 +560,7 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   // CONTROLS WINDOW
+   // CONTROLS WINDOW ////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnRecordStartButtonClicked(bool checked)

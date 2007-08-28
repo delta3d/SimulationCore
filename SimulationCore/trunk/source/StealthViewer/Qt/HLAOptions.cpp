@@ -4,12 +4,12 @@
  *
  * @author Eddie Johnson
  */
-#include <StealthQt/HLAOptions.h>
-#include <StealthQt/ui_HLAOptionsUi.h>
-#include <StealthQt/MapSelectDialog.h>
-#include <StealthQt/FederationFileResourceBrowser.h>
-#include <StealthQt/StealthViewerData.h>
-#include <StealthQt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/HLAOptions.h>
+#include <StealthViewer/Qt/ui_HLAOptionsUi.h>
+#include <StealthViewer/Qt/MapSelectDialog.h>
+#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
+#include <StealthViewer/Qt/StealthViewerData.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <QtGui/QPushButton>
 #include <QtGui/QMessageBox>
 #include <QtGui/QDialog>
@@ -96,10 +96,13 @@ namespace StealthQt
       if(file.isEmpty())
          return file;
 
-      QString displayName = ConvertFileName(file, tr(dtDAL::Project::GetInstance().GetContext().c_str()));
+      QString qContext = tr(context.c_str());
+               
+      QString displayName = ConvertFileName(file, qContext);
 
       if (displayName.size() == 0)
-         QMessageBox::warning(this, "Invalid selection", "The file selected must be within the DVTEProject context.", QMessageBox::Ok, QMessageBox::Ok);
+         QMessageBox::warning(this, "Invalid selection", tr("The file selected must be within the ") + qContext + tr(" context") , 
+                  QMessageBox::Ok, QMessageBox::Ok);
          
       return displayName;
    }

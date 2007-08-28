@@ -15,9 +15,8 @@
 #include <SimCore/CommandLineObject.h>
 #include <dtDAL/namedparameter.h>
 
-const std::string IG_REGISTRY = "IG";
-using namespace SimCore::entity;
-using namespace SimCore::IG;
+const std::string SIM_CORE_REGISTRY = "SimViewerCore";
+using namespace SimCore::Actors;
 
 // note name wasnt changed but this is commandlineobject now.
 
@@ -40,7 +39,7 @@ public:
       dtCore::System::GetInstance().Start();
 
       mGM = new dtGame::GameManager(*new dtCore::Scene());
-      mGM->LoadActorRegistry(IG_REGISTRY);
+      mGM->LoadActorRegistry(SIM_CORE_REGISTRY);
 
       dtCore::System::GetInstance().Step();
 
@@ -56,7 +55,7 @@ public:
       dtCore::System::GetInstance().Stop();
 
       mGM->DeleteAllActors(true);
-      mGM->UnloadActorRegistry(IG_REGISTRY);
+      mGM->UnloadActorRegistry(SIM_CORE_REGISTRY);
       mGM = NULL;
    }
 

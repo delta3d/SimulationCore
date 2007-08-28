@@ -86,10 +86,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HLATests);
   #else
       const std::string HLATests::mTestGameActorLibrary="testGameActorLibrary";
   #endif
-   const std::string HLATests::mProjectContext = "DVTEProject";
 #else
    const std::string HLATests::mTestGameActorLibrary="testGameActorLibrary";
-   const std::string HLATests::mProjectContext = "DVTEProject";
 #endif
 
 class TestHLAComponent: public dtHLAGM::HLAComponent
@@ -153,7 +151,6 @@ void HLATests::TestHLAConnection()
 
    try
    {
-      dtDAL::Project::GetInstance().SetContext(mProjectContext, true);
       mGameManager->AddComponent(*thisHLAComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
       config.LoadConfiguration(*thisHLAComponent, "Federations/JNTC/JNTCMapping.xml");

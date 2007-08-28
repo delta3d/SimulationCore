@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////
 // TESTABLE SUB-CLASS
 //////////////////////////////////////////////////////////////
-class TestClampedMotionModel : public SimCore::Components::ClampedMotionModel
+class TestClampedMotionModel : public SimCore::ClampedMotionModel
 {
 public:
    TestClampedMotionModel( dtCore::Keyboard* keyboard, dtCore::Mouse* mouse );
@@ -61,7 +61,7 @@ private:
 //////////////////////////////////////////////////////////////
 TestClampedMotionModel::TestClampedMotionModel(
     dtCore::Keyboard* keyboard, dtCore::Mouse* mouse )
-    : ClampedMotionModel( keyboard, mouse )
+    : SimCore::ClampedMotionModel( keyboard, mouse )
 {
 }
 

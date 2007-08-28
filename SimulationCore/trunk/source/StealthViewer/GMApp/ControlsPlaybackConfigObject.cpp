@@ -11,8 +11,8 @@
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
-#include <StealthGM/StealthInputComponent.h>
-#include <StealthGM/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
+#include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <SimCore/Components/HLAConnectionComponent.h>
 
 namespace StealthGM

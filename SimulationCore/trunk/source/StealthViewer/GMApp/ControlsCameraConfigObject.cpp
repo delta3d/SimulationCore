@@ -10,7 +10,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <StealthGM/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 
 namespace StealthGM
 {

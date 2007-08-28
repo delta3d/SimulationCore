@@ -26,16 +26,9 @@
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 
-const std::string &IG_REGISTRY = "IG";
 const std::string &AGEIA_REGISTRY = "dtAgeiaPhysX";
 
 using namespace dtAgeiaPhysX;
-
-#if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
-const std::string &projectContext = "DVTEProject";
-#else
-const std::string &projectContext = "DVTEProject";
-#endif
 
 
 class NxAgeiaTests : public CPPUNIT_NS::TestFixture
@@ -73,10 +66,7 @@ void NxAgeiaTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
 
-   dtDAL::Project::GetInstance().SetContext(projectContext, true);
-
    mGM = new dtGame::GameManager(*new dtCore::Scene());
-   mGM->LoadActorRegistry(IG_REGISTRY);
    mGM->LoadActorRegistry(AGEIA_REGISTRY);
 
    dtCore::System::GetInstance().Step();
@@ -96,7 +86,7 @@ void NxAgeiaTests::tearDown()
    worldcomp = NULL;
 
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(IG_REGISTRY);
+   mGM->UnloadActorRegistry(AGEIA_REGISTRY);
    mGM = NULL;
 }
 

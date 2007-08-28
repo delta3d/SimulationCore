@@ -5,7 +5,7 @@
  * @author Eddie Johnson
  */
 #include <cppunit/extensions/HelperMacros.h>
-#include <StealthQt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
 #include <QtGui/QApplication>
