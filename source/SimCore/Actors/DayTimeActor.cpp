@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>

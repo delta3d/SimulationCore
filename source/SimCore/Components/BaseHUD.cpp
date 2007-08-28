@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/BaseHUD.h>
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>

@@ -18,7 +18,7 @@
 *
 * @author Allen Danklefsen
 */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtDAL/enginepropertytypes.h>

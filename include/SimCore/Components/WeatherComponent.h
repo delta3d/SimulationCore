@@ -145,11 +145,11 @@ namespace SimCore
 
             // The following functions are used for sub-classes
             // and unit tests.
-            entity::DayTimeActorProxy* GetDayTimeActor() { return mDayTime.get(); }
-            const entity::DayTimeActorProxy* GetDayTimeActor() const { return mDayTime.get(); }
+            Actors::DayTimeActorProxy* GetDayTimeActor() { return mDayTime.get(); }
+            const Actors::DayTimeActorProxy* GetDayTimeActor() const { return mDayTime.get(); }
             
-            entity::UniformAtmosphereActorProxy* GetAtmosphereActor() { return mAtmosphere.get(); }
-            const entity::UniformAtmosphereActorProxy* GetAtmosphereActor() const { return mAtmosphere.get(); }
+            Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() { return mAtmosphere.get(); }
+            const Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() const { return mAtmosphere.get(); }
 
             void SetUpdatesEnabled(bool enable) { mUpdatesEnabled = enable; }
             bool GetUpdatesEnabled() const      { return mUpdatesEnabled;   }
@@ -171,9 +171,9 @@ namespace SimCore
             // Destructor
             virtual ~WeatherComponent();
 
-            dtABC::Weather::CloudType ClassifyClouds( const entity::UniformAtmosphereActor& atmos );
-            dtABC::Weather::WindType ClassifyWind( const entity::UniformAtmosphereActor& atmos );
-            dtABC::Weather::VisibilityType ClassifyVisibility( const entity::UniformAtmosphereActor& atmos );
+            dtABC::Weather::CloudType ClassifyClouds( const Actors::UniformAtmosphereActor& atmos );
+            dtABC::Weather::WindType ClassifyWind( const Actors::UniformAtmosphereActor& atmos );
+            dtABC::Weather::VisibilityType ClassifyVisibility( const Actors::UniformAtmosphereActor& atmos );
             dtABC::Weather::TimePeriod ClassifyTimePeriod( unsigned int time_msec );
             dtABC::Weather::Season ClassifySeason( unsigned int time_msec );
             
@@ -214,8 +214,8 @@ namespace SimCore
             dtABC::Weather::TimePeriod mLastTimePeriod;
             dtABC::Weather::Season mLastSeason;
 
-            dtCore::RefPtr<entity::UniformAtmosphereActorProxy> mAtmosphere;
-            dtCore::RefPtr<entity::DayTimeActorProxy> mDayTime;
+            dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmosphere;
+            dtCore::RefPtr<Actors::DayTimeActorProxy> mDayTime;
 
             // The Weather object is being referenced to gain access
             // to clouds. If it were not for this reason, the Environment

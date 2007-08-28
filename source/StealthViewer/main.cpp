@@ -3,7 +3,7 @@
  * Copyright (C) 2006, Alion Science and Technology.
  *
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QtGui/QSplashScreen>

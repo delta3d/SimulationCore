@@ -18,7 +18,7 @@
 *
 * @author Allen Danklefsen
 */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #ifdef AGEIA_PHYSICS
    #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
@@ -28,13 +28,13 @@
 #include <dtCore/scene.h>
 #include <dtDAL/enginepropertytypes.h>
 
-const std::string &NxAgeiaRemoteKinematicActor::DEFAULT_NAME = "Default";
-const std::string &NxAgeiaRemoteKinematicActor::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
 
 namespace SimCore
 {
    namespace Actors
    {
+      const std::string &NxAgeiaRemoteKinematicActor::DEFAULT_NAME = "Default";
+      const std::string &NxAgeiaRemoteKinematicActor::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
       
       /////////////////////////////////////////////////////////////////////////
       NxAgeiaRemoteKinematicActor::NxAgeiaRemoteKinematicActor(PlatformActorProxy &proxy) 

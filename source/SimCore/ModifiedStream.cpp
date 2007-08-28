@@ -4,7 +4,7 @@
 //
 //                Originally Written by Bob Schade, 10-15-05
 // ===============================================================================
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 #include <SimCore/ModifiedStream.h>
 

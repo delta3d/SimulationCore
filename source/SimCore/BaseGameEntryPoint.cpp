@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
 #include <SimCore/Components/BaseInputComponent.h>
@@ -79,8 +79,8 @@ const std::string ApplicationLibraryName = "SimCore";
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
-const float SimCore::Components::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE = 0.1f;
-const float SimCore::Components::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE  = 10000.0f;
+const float SimCore::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE = 0.1f;
+const float SimCore::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE  = 10000.0f;
 
 namespace SimCore
 {
@@ -474,13 +474,13 @@ namespace SimCore
       
       RefPtr<dtHLAGM::HLAComponent>            hft               = CreateAndSetupHLAComponent();
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
-      RefPtr<ViewerNetworkPublishingComponent> rulesComp         = new ViewerNetworkPublishingComponent;
-      RefPtr<TimedDeleterComponent>            mTimedDeleterComp = new TimedDeleterComponent;
-      RefPtr<ParticleManagerComponent>         mParticleComp     = new ParticleManagerComponent;
-      RefPtr<WeatherComponent>                 mWeatherComp      = new WeatherComponent;
-      RefPtr<MunitionsComponent>               mMunitionsComp    = new MunitionsComponent;
-      RefPtr<SimCore::Components::HLAConnectionComponent> hlacc             = new SimCore::Components::HLAConnectionComponent;
-      RefPtr<SimCore::Components::ViewerMaterialComponent> viewerMaterialComponent = new SimCore::Components::ViewerMaterialComponent;
+      RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
+      RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
+      RefPtr<Components::ParticleManagerComponent>         mParticleComp     = new Components::ParticleManagerComponent;
+      RefPtr<Components::WeatherComponent>                 mWeatherComp      = new Components::WeatherComponent;
+      RefPtr<Components::MunitionsComponent>               mMunitionsComp    = new Components::MunitionsComponent;
+      RefPtr<Components::HLAConnectionComponent> hlacc                       = new Components::HLAConnectionComponent;
+      RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
       RefPtr<dtAnim::AnimationComponent>       animationComponent = new dtAnim::AnimationComponent;
       
       gameManager.AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -507,8 +507,8 @@ namespace SimCore
       mMunitionsComp->LoadMunitionTypeTable( "MunitionTypesMap" );
 
       // Create a munition specific parameter translator
-      dtCore::RefPtr<HLACustomParameterTranslator> munitionParamTranslator 
-         = new HLACustomParameterTranslator;
+      dtCore::RefPtr<Components::HLACustomParameterTranslator> munitionParamTranslator 
+         = new Components::HLACustomParameterTranslator;
       // Allow the translator access to the table that maps
       // munition DIS identifiers to the munition names.
       munitionParamTranslator->SetMunitionTypeTable( mMunitionsComp->GetMunitionTypeTable() );

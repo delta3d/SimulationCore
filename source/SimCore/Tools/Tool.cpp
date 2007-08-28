@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Tools/Tool.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <sstream>

@@ -11,7 +11,7 @@
  *
  * @author Chris Rodgers, editor Allen Danklefsen
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
@@ -543,8 +543,8 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          // Prepare a shot fired message
-         dtCore::RefPtr<SimCore::Components::ShotFiredMessage> msg;
-         gm->GetMessageFactory().CreateMessage( SimCore::Components::MessageType::SHOT_FIRED, msg );
+         dtCore::RefPtr<SimCore::ShotFiredMessage> msg;
+         gm->GetMessageFactory().CreateMessage( SimCore::MessageType::SHOT_FIRED, msg );
 
          // Get the location of this weapon
          dtCore::Transform xform;
@@ -597,8 +597,8 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          // Prepare a detonation message
-         dtCore::RefPtr<SimCore::Components::DetonationMessage> msg;
-         gm->GetMessageFactory().CreateMessage( SimCore::Components::MessageType::DETONATION, msg );
+         dtCore::RefPtr<SimCore::DetonationMessage> msg;
+         gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
 
          // Required Parameters:
          // --- EventIdentifier

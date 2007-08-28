@@ -18,7 +18,7 @@
  *
  * @author Chris Rodgers
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <dtCore/scene.h>
 #include <dtCore/keyboard.h>
 #include <dtCore/mouse.h>

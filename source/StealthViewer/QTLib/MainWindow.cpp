@@ -5,7 +5,7 @@
  * @author Eddie Johnson
  * @author David Guthrie
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QVBoxLayout>

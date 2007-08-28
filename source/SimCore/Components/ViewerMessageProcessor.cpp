@@ -18,7 +18,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/MessageType.h>
@@ -188,7 +188,7 @@ namespace SimCore
             }
             else if(msg.GetMessageType() == MessageType::TIME_VALUE)
             {
-               UpdateSyncTime(static_cast<const TimeValueMessage&>(msg));
+               UpdateSyncTime(static_cast<const SimCore::TimeValueMessage&>(msg));
             }
             else
             {
@@ -197,7 +197,7 @@ namespace SimCore
          }
       }
 
-      void ViewerMessageProcessor::UpdateSyncTime(const TimeValueMessage& tvMsg)
+      void ViewerMessageProcessor::UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg)
       {
          const unsigned long MILLISECONDS_TO_USECONDS = 1000UL;
          

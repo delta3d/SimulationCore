@@ -51,15 +51,15 @@ namespace SimCore
             virtual ~TextureProjectorComponent();
 
          public:
-            void AddTextureProjectorActorToComponent(TextureProjectorActor &toAdd);
-            void RemoveTextureProjectorActorFromComponent(TextureProjectorActor &toRemove);
+            void AddTextureProjectorActorToComponent(Actors::TextureProjectorActor &toAdd);
+            void RemoveTextureProjectorActorFromComponent(Actors::TextureProjectorActor &toRemove);
             
             void ProcessTick(const dtGame::TickMessage &msg);
             void ProcessMessage(const dtGame::Message &msg);
 
          private:
             unsigned int mMaxNumberOfProjectedTextures;
-            std::list<dtCore::RefPtr<TextureProjectorActor> > mActorList;
+            std::list<dtCore::RefPtr<Actors::TextureProjectorActor> > mActorList;
       };
    }
 }

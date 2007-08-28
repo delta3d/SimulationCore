@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/particlesystem.h>

@@ -31,71 +31,55 @@ namespace dtGame
 
 namespace SimCore
 {
-   namespace Components
+   /**
+    * @class MessageType
+    * @brief The messages types specific to the image generator and stealth viewer.
+    */
+   class SIMCORE_EXPORT MessageType : public dtGame::MessageType
    {
-      /**
-       * @class MessageType
-       * @brief The messages types specific to the image generator and stealth viewer.
-       */
-      class SIMCORE_EXPORT MessageType : public dtGame::MessageType
-      {
-            DECLARE_ENUM(MessageType);
-         public:
+         DECLARE_ENUM(MessageType);
+      public:
 
-            static const MessageType ATTACH_TO_ACTOR;
-            static const MessageType DETONATION;
-            static const MessageType SHOT_FIRED;
-            
-            ///Marks an update to the Stealth actor field of view.
-            static const MessageType STEALTH_ACTOR_FOV;
-            ///Marks an update to the Stealth actor rotation.
-            static const MessageType STEALTH_ACTOR_ROTATION;
-            ///Marks an update to the Stealth actor translation.
-            static const MessageType STEALTH_ACTOR_TRANSLATION;
+         static const MessageType ATTACH_TO_ACTOR;
+         static const MessageType DETONATION;
+         static const MessageType SHOT_FIRED;
+         
+         ///Marks an update to the Stealth actor field of view.
+         static const MessageType STEALTH_ACTOR_FOV;
+         ///Marks an update to the Stealth actor rotation.
+         static const MessageType STEALTH_ACTOR_ROTATION;
+         ///Marks an update to the Stealth actor translation.
+         static const MessageType STEALTH_ACTOR_TRANSLATION;
 
-            static const MessageType MAGNIFICATION;
+         static const MessageType MAGNIFICATION;
 
-            static const MessageType TIME_QUERY;
-            static const MessageType TIME_VALUE;
+         static const MessageType TIME_QUERY;
+         static const MessageType TIME_VALUE;
 
-            // These are NON-CONST because they are used in an actor property
-            static MessageType BINOCULARS;
-            static MessageType COMPASS;
-            static MessageType NIGHT_VISION;
-            static MessageType LASER_RANGE_FINDER;
-            static MessageType GPS;
-            static MessageType MAP;
-            static MessageType NO_TOOL;
+         // These are NON-CONST because they are used in an actor property
+         static MessageType BINOCULARS;
+         static MessageType COMPASS;
+         static MessageType NIGHT_VISION;
+         static MessageType LASER_RANGE_FINDER;
+         static MessageType GPS;
+         static MessageType MAP;
+         static MessageType NO_TOOL;
 
-            static void RegisterMessageTypes(dtGame::MessageFactory& factory);
+         static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 
-            static bool IsValidToolType(const dtGame::MessageType &type)
-            {
-               return type == SimCore::MessageType::BINOCULARS
-                  || type == SimCore::MessageType::COMPASS
-                  || type == SimCore::MessageType::GPS
-                  || type == SimCore::MessageType::MAP
-                  || type == SimCore::MessageType::NIGHT_VISION
-                  || type == SimCore::MessageType::NO_TOOL
-                  || type == SimCore::MessageType::LASER_RANGE_FINDER;
-            }
-          
-         protected:
-            /// Constructor
-            MessageType(
-               const std::string &name, 
-               const std::string &category, 
-               const std::string &description, 
-               const unsigned short messageId) : 
-               dtGame::MessageType(name, category, description, messageId)
-            {
-               AddInstance(this);
-            }
+         static bool IsValidToolType(const dtGame::MessageType &type);
+       
+      protected:
+         /// Constructor
+         MessageType(
+            const std::string &name, 
+            const std::string &category, 
+            const std::string &description, 
+            const unsigned short messageId);
 
-            /// Destructor
-            virtual ~MessageType() { }
-          
-      };
-   }
+         /// Destructor
+         virtual ~MessageType() { }
+       
+   };
 }
 #endif

@@ -18,7 +18,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <dtGame/messagefactory.h>
@@ -57,7 +57,17 @@ namespace SimCore
       MessageType MessageType::NO_TOOL("No Tool", "Tools", "No Tool", USER_DEFINED_MESSAGE_TYPE + 15);
       MessageType MessageType::MAP("Map", "Tools", "Map", USER_DEFINED_MESSAGE_TYPE + 17);
      
-      void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
+      MessageType::MessageType(
+         const std::string &name, 
+         const std::string &category, 
+         const std::string &description, 
+         const unsigned short messageId) : 
+         dtGame::MessageType(name, category, description, messageId)
+      {
+         AddInstance(this);
+      }
+
+         void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
       { 
          factory.RegisterMessageType<DetonationMessage>(DETONATION);
          factory.RegisterMessageType<AttachToActorMessage>(ATTACH_TO_ACTOR);
@@ -78,6 +88,17 @@ namespace SimCore
          factory.RegisterMessageType<ToolMessage>(GPS);
          factory.RegisterMessageType<ToolMessage>(MAP);
          factory.RegisterMessageType<ToolMessage>(NIGHT_VISION);
+      }
+
+      bool MessageType::IsValidToolType(const dtGame::MessageType &type)
+      {
+         return type == MessageType::BINOCULARS
+            || type == MessageType::COMPASS
+            || type == MessageType::GPS
+            || type == MessageType::MAP
+            || type == MessageType::NIGHT_VISION
+            || type == MessageType::NO_TOOL
+            || type == MessageType::LASER_RANGE_FINDER;
       }
 
    }

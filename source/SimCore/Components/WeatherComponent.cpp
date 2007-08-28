@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -105,7 +105,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::OnAddedToGM()
       {
-         GetGameManager()->CreateActor(*entity::EntityActorRegistry::DAYTIME_ACTOR_TYPE, mDayTime);
+         GetGameManager()->CreateActor(*Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, mDayTime);
          SimCore::Actors::DayTimeActor* dayTimeActor = dynamic_cast<SimCore::Actors::DayTimeActor*>(mDayTime->GetActor());
          if( dayTimeActor != NULL )
          {
@@ -390,8 +390,8 @@ namespace SimCore
          if(!mDayTime.valid())
             return;
 
-         entity::DayTimeActor* timeActor = 
-            static_cast<entity::DayTimeActor*>(mDayTime->GetActor());
+         Actors::DayTimeActor* timeActor = 
+            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
 
          // Change the environment time
          mEphemerisEnvironmentActor->SetTimeAndDate(
@@ -417,8 +417,8 @@ namespace SimCore
          // Update the weather conditions
          if(mAtmosphere.valid())
          {
-            entity::UniformAtmosphereActor* atmosActor = 
-               static_cast<entity::UniformAtmosphereActor*>(mAtmosphere->GetActor());
+            Actors::UniformAtmosphereActor* atmosActor = 
+               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
 
             // Change Clouds
             // TODO
@@ -508,7 +508,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      dtABC::Weather::CloudType WeatherComponent::ClassifyClouds( const entity::UniformAtmosphereActor& atmos )
+      dtABC::Weather::CloudType WeatherComponent::ClassifyClouds( const Actors::UniformAtmosphereActor& atmos )
       {
          SimCore::Actors::CloudType& type  = atmos.GetCloudType();
 
@@ -539,7 +539,7 @@ namespace SimCore
          return dtABC::Weather::CLOUD_FEW;
       }
       //////////////////////////////////////////////////////////
-      dtABC::Weather::WindType WeatherComponent::ClassifyWind( const entity::UniformAtmosphereActor& atmos )
+      dtABC::Weather::WindType WeatherComponent::ClassifyWind( const Actors::UniformAtmosphereActor& atmos )
       {
          double speed = atmos.GetWind().length();
 
@@ -561,7 +561,7 @@ namespace SimCore
          return dtABC::Weather::WIND_NONE;
       }
       //////////////////////////////////////////////////////////
-      dtABC::Weather::VisibilityType WeatherComponent::ClassifyVisibility( const entity::UniformAtmosphereActor& atmos )
+      dtABC::Weather::VisibilityType WeatherComponent::ClassifyVisibility( const Actors::UniformAtmosphereActor& atmos )
       {
          // The following was documented in dtABC::Weather:
          //
@@ -595,8 +595,8 @@ namespace SimCore
 
          if(type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
          {
-            entity::UniformAtmosphereActorProxy* proxy = 
-               static_cast<entity::UniformAtmosphereActorProxy*>(actor);
+            Actors::UniformAtmosphereActorProxy* proxy = 
+               static_cast<Actors::UniformAtmosphereActorProxy*>(actor);
 
             if(mAtmosphere.valid() && mAtmosphere->GetId() != proxy->GetId())
             {
@@ -614,7 +614,7 @@ namespace SimCore
          }
          else if(type == *SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE)
          {
-            entity::DayTimeActorProxy* proxy = static_cast<entity::DayTimeActorProxy*>(actor);
+            Actors::DayTimeActorProxy* proxy = static_cast<Actors::DayTimeActorProxy*>(actor);
             if(mDayTime.valid() && mDayTime->GetId() != proxy->GetId())
             {
                LOG_WARNING("WARNING! WeatherComponent.mDayTime points to another DayTimeActor\

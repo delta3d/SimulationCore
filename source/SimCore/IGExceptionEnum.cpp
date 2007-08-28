@@ -18,7 +18,7 @@
  *
  * @author David Guthrie
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/IGExceptionEnum.h>
 
 namespace SimCore

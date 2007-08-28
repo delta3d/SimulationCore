@@ -4,7 +4,7 @@
 #define STEALTHQT_PREFIX
 
 #define NO_DT_WIN_PCH_HEADER
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>

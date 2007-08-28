@@ -40,7 +40,7 @@ namespace dtCore
    class Transform;
 }
 
-namespace  dvte
+namespace SimCore
 {
    namespace Tools 
    {	

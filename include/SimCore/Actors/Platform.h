@@ -60,10 +60,13 @@ namespace dtHLAGM
 
 namespace SimCore
 {
-   namespace Actors
+   namespace Components
    {
       class ArticulationHelper;
-
+   }
+   
+   namespace Actors
+   {
       /**
        * PlatformActorProxy, a class to define the basic behaviors of a vehicle type of entity
        */
@@ -222,9 +225,9 @@ namespace SimCore
 
             // Set the articulation helper responsible for creating articulation
             // data used in entity update messages.
-            void SetArticulationHelper( ArticulationHelper* articHelper );
-            ArticulationHelper* GetArticulationHelper() { return mArticHelper.get(); }
-            const ArticulationHelper* GetArticulationHelper() const { return mArticHelper.get(); }
+            void SetArticulationHelper( Components::ArticulationHelper* articHelper );
+            Components::ArticulationHelper* GetArticulationHelper() { return mArticHelper.get(); }
+            const Components::ArticulationHelper* GetArticulationHelper() const { return mArticHelper.get(); }
 
             void TickControlState( const dtGame::Message& tickMessage );
 
@@ -280,7 +283,7 @@ namespace SimCore
 
             // The articulation helper used in creating out-going articulation
             // data for entity update messages.
-            dtCore::RefPtr<ArticulationHelper> mArticHelper;
+            dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
       };
 
    }

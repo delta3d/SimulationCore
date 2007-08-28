@@ -18,7 +18,7 @@
 *
 * @author Allen Danklefsen
 */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>

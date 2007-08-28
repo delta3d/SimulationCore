@@ -64,12 +64,12 @@ namespace SimCore
 
             TestWeatherComponent();
 
-            entity::DayTimeActorProxy* GetDayTimeActor() 
+            Actors::DayTimeActorProxy* GetDayTimeActor() 
             {
                return WeatherComponent::GetDayTimeActor();
             }
 
-            entity::UniformAtmosphereActorProxy* GetAtmosphereActor() 
+            Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() 
             {
                return WeatherComponent::GetAtmosphereActor();
             }
@@ -173,9 +173,9 @@ namespace SimCore
             void setUp();
             void tearDown();
 
-            void CreateEnvironmentActor( dtCore::RefPtr<entity::IGEnvironmentActorProxy>& ptr );
-            void CreateAtmosphereActor( dtCore::RefPtr<entity::UniformAtmosphereActorProxy>& ptr );
-            void CreateDayTimeActor( dtCore::RefPtr<entity::DayTimeActorProxy>& ptr );
+            void CreateEnvironmentActor( dtCore::RefPtr<Actors::IGEnvironmentActorProxy>& ptr );
+            void CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr );
+            void CreateDayTimeActor( dtCore::RefPtr<Actors::DayTimeActorProxy>& ptr );
 
             // Returns the total IDs registered to the component
             void AdvanceSimTime( double deltaTime );
@@ -206,9 +206,9 @@ namespace SimCore
             dtCore::RefPtr<dtCore::Camera> mCamera;
             dtCore::RefPtr<dtABC::Application> mApp;
 
-            dtCore::RefPtr<entity::IGEnvironmentActorProxy> mEnv;
-            dtCore::RefPtr<entity::UniformAtmosphereActorProxy> mAtmos;
-            dtCore::RefPtr<entity::DayTimeActorProxy> mDayTime;
+            dtCore::RefPtr<Actors::IGEnvironmentActorProxy> mEnv;
+            dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmos;
+            dtCore::RefPtr<Actors::DayTimeActorProxy> mDayTime;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(WeatherComponentTests);
@@ -270,30 +270,30 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateEnvironmentActor( dtCore::RefPtr<entity::IGEnvironmentActorProxy>& ptr )
+      void WeatherComponentTests::CreateEnvironmentActor( dtCore::RefPtr<Actors::IGEnvironmentActorProxy>& ptr )
       {
-         mGM->CreateActor( *entity::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, ptr );
+         mGM->CreateActor( *Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("IGEnvironmentActor must be obtainable from the EntityActorRegistry", ptr.valid() );
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateAtmosphereActor( dtCore::RefPtr<entity::UniformAtmosphereActorProxy>& ptr )
+      void WeatherComponentTests::CreateAtmosphereActor( dtCore::RefPtr<Actors::UniformAtmosphereActorProxy>& ptr )
       {
-         mGM->CreateActor( *entity::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, ptr );
+         mGM->CreateActor( *Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor must be obtainable from the EntityActorRegistry", ptr.valid() );
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::CreateDayTimeActor( dtCore::RefPtr<entity::DayTimeActorProxy>& ptr )
+      void WeatherComponentTests::CreateDayTimeActor( dtCore::RefPtr<Actors::DayTimeActorProxy>& ptr )
       {
-         mGM->CreateActor( *entity::EntityActorRegistry::DAYTIME_ACTOR_TYPE, ptr );
+         mGM->CreateActor( *Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, ptr );
          CPPUNIT_ASSERT_MESSAGE("DayTimeActor must be obtainable from the EntityActorRegistry", ptr.valid() );
       }
 
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestDayTimeActor()
       {
-         entity::DayTimeActor* actor = static_cast<entity::DayTimeActor*> (mDayTime->GetActor());
+         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetActor());
 
          CPPUNIT_ASSERT_MESSAGE("DayTimeActor should be valid", actor != NULL );
 
@@ -385,7 +385,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestAtmosphereActor()      
       {
-         entity::UniformAtmosphereActor* actor = static_cast<entity::UniformAtmosphereActor*> (mAtmos->GetActor());
+         Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
 
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != NULL );
 
@@ -559,7 +559,7 @@ namespace SimCore
          // --- Test the DayTime create message
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor", 
             mWeatherComp->GetDayTimeActor() == NULL );
-         entity::DayTimeActor* actor = static_cast<entity::DayTimeActor*> (mDayTime->GetActor());
+         Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetActor());
          actor->SetTime(1166207083);
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();

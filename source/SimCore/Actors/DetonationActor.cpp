@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
@@ -141,7 +141,7 @@ namespace SimCore
          dtCore::ParticleSystem* explosionSystem = da.GetExplosionParticleSystem();
          if( explosionSystem != NULL )
          {
-            IG::ParticleInfo::AttributeFlags attrs = { true, false };
+            Components::ParticleInfo::AttributeFlags attrs = { true, false };
             da.RegisterParticleSystem( *explosionSystem, &attrs );
          }
                
