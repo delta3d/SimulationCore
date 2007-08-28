@@ -1,0 +1,869 @@
+/*
+ * Copyright, 2006, Alion Science and Technology Corporation, all rights reserved.
+ * 
+ * Alion Science and Technology Corporation
+ * 5365 Robin Hood Road
+ * Norfolk, VA 23513
+ * (757) 857-5670, www.alionscience.com
+ * 
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
+ *
+ * @author Chris Rodgers
+ */
+
+#include <prefix/dvteprefix-src.h>
+
+#include <SimCore/Components/StealthHUDElements.h>
+
+#include <dtUtil/log.h>
+
+namespace SimCore
+{
+   namespace Components
+   {
+      const std::string StealthToolbar::DEFAULT_TOOLBAR_IMAGE_SET("Toolbar");
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Button Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthButton::StealthButton( const std::string& name, const std::string& imageName,
+         const std::string& keyLabel, const std::string& imageset, const std::string& type )
+                                 : HUDButton( name, type )
+      {
+         std::string buttonStateName = imageName+"_ON";
+         dtCore::RefPtr<HUDImage> image = new HUDImage( buttonStateName );
+         image->SetImage(imageset,buttonStateName);
+         SetActiveElement(image.get());
+
+         buttonStateName = imageName+"_OFF";
+         image = new HUDImage( buttonStateName );
+         image->SetImage(imageset,buttonStateName);
+         SetInactiveElement(image.get());
+
+         buttonStateName = imageName+"_DISABLED";
+         image = new HUDImage( buttonStateName );
+         image->SetImage(imageset,buttonStateName);
+         SetDisabledElement(image.get());
+
+         SetKeyLabel( keyLabel );
+
+         SetSize( 90.0f/1920, 99.0f/1200 );
+
+         SetActive( false );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthButton::~StealthButton()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthButton::SetKeyLabel( const std::string& keyLabel )
+      {
+         // Remove the old label
+         if( mKeyLabel.valid() )
+         {
+            mWindow->removeChildWindow( mKeyLabel->GetCEGUIWindow() );
+         }
+
+         try
+         {
+            // Add the new label
+            mKeyLabel = new HUDImage( GetName()+"_KeyLabel"+keyLabel );
+            mKeyLabel->SetImage("KeyLabels",keyLabel);
+            mKeyLabel->SetSize( 32.0f/90.0f, 16.0f/99.0f );
+            mKeyLabel->SetPosition( 0.0f, -1.0f/99.0f, HUDAlignment::CENTER_BOTTOM );
+            mKeyLabel->GetCEGUIWindow()->setAlwaysOnTop(true);
+            mWindow->addChildWindow( mKeyLabel->GetCEGUIWindow() );
+            return true;
+         }
+         catch( CEGUI::Exception& )
+         {
+            std::stringstream ss;
+            ss << "\nStealthButton \"" << GetName() << "\" was unable to change its key label to \"" 
+               << keyLabel << "\".\n" << std::endl;
+            LOG_ERROR( ss.str() );
+            return false;
+         }
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Toolbar Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthToolbar::StealthToolbar( const std::string& name, const std::string& type )
+      : HUDToolbar( name, type )
+      {
+         dtCore::RefPtr<HUDImage> image = new HUDImage( "LeftBracket" );
+         image->SetImage(DEFAULT_TOOLBAR_IMAGE_SET,"Bracket_Left");
+         SetStartElement( image.get() );
+
+         image = new HUDImage( "RightBracket" );
+         image->SetImage(DEFAULT_TOOLBAR_IMAGE_SET,"Bracket_Right");
+         SetEndElement( image.get() );
+
+         UpdateElementSizes();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthToolbar::~StealthToolbar()
+      {
+         ClearButtons();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthButton* StealthToolbar::GetButton( const std::string& buttonName )
+      {
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+            mNamedButtonMap.find( buttonName );
+
+         return iter != mNamedButtonMap.end() ? iter->second.get() : NULL;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthToolbar::GetButtonNames( std::vector<std::string>& outButtonNames ) const
+      {
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::const_iterator iter = 
+            mNamedButtonMap.begin();
+
+         for( ; iter != mNamedButtonMap.end(); ++iter )
+         {
+            outButtonNames.push_back( iter->second->GetName() );
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::AddButton( const std::string& buttonName, const std::string& key, 
+         bool updateElementSizes )
+      {
+         return AddButton( buttonName, key, DEFAULT_TOOLBAR_IMAGE_SET, updateElementSizes );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::AddButton( const std::string& buttonName, const std::string& key, 
+         const std::string& imageset, bool updateElementSizes )
+      {
+         if( GetButton( buttonName ) != NULL ) { return false; }
+
+         dtCore::RefPtr<StealthButton> button = new StealthButton( buttonName, buttonName, key, imageset );
+         bool success = mNamedButtonMap.insert(std::make_pair(buttonName, button.get() )).second;
+
+         if( success )
+         {
+            success = InsertElement( button.get() );
+            if( updateElementSizes )
+            {
+               UpdateElementSizes();
+            }
+         }
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::AddButton( dtCore::RefPtr<StealthButton>& newButton, bool updateElementSizes )
+      {
+         if( ! newButton.valid() || GetButton( newButton->GetName() ) != NULL ) { return false; }
+
+         bool success = mNamedButtonMap.insert(std::make_pair(newButton->GetName(), newButton.get() )).second;
+
+         if( success )
+         {
+            success = InsertElement( newButton.get() );
+            if( updateElementSizes )
+            {
+               UpdateElementSizes();
+            }
+         }
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::ReplaceButton( const std::string& oldButtonName, 
+         dtCore::RefPtr<StealthButton>& newButton, dtCore::RefPtr<StealthButton>* outOldButton )
+      {
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+            mNamedButtonMap.find( oldButtonName );
+
+         if( iter == mNamedButtonMap.end() || ! newButton.valid() ) { return false; }
+
+         StealthButton* old = iter->second.get();
+         int index = GetElementIndex( *old );
+         RemoveButton( oldButtonName );
+
+         if( outOldButton != NULL ) { *outOldButton = old; }
+
+         bool success = mNamedButtonMap.insert(std::make_pair(newButton->GetName(), newButton.get() )).second;
+         InsertElement(newButton.get(),index);
+         UpdateElementSizes();
+
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::RemoveButton( const std::string& buttonName )
+      {
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+            mNamedButtonMap.find( buttonName );
+
+         if( iter == mNamedButtonMap.end() ) { return false; }
+
+         bool success = RemoveElement( iter->second.get() );
+         UpdateElementSizes();
+         mNamedButtonMap.erase(iter);
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthToolbar::UpdateElementSizes()
+      {
+         unsigned int numButtons = GetTotalElements();
+
+         float totalWidth = 26.0f * 2.0f + 90.0f * numButtons;
+         SetSize( totalWidth/1920.0f, 99.0f/1200.0f );
+
+         float endRatio = 26.0f/totalWidth;
+         float buttonRatio = 90.0f/totalWidth;
+
+         GetStartElement()->SetSize( endRatio, 1.0f );
+         GetEndElement()->SetSize( endRatio, 1.0f );
+
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+            mNamedButtonMap.begin();
+         for( ; iter != mNamedButtonMap.end(); ++iter )
+         {
+            if( iter->second.valid() )
+            {
+               iter->second->SetSize( buttonRatio, 1.0f );
+            }
+         }
+
+         UpdateLayout();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthToolbar::SetButtonsActive( bool active )
+      {
+         std::map< const std::string, dtCore::RefPtr<StealthButton> >::iterator iter = 
+            mNamedButtonMap.begin();
+         for( ; iter != mNamedButtonMap.end(); ++iter )
+         {
+            if( iter->second.valid() )
+            {
+               iter->second->SetActive( active );
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::SetButtonActive( const std::string& buttonName, bool active )
+      {
+         StealthButton* button = GetButton( buttonName );
+
+         if( button == NULL ) { return false; }
+
+         button->SetActive( active );
+         return true;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned int StealthToolbar::GetButtonCount() const
+      {
+         return mNamedButtonMap.size();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthToolbar::ClearElements()
+      {
+         bool success = HUDToolbar::ClearElements();
+         if( ! mNamedButtonMap.empty() ) { mNamedButtonMap.clear(); }
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthToolbar::ClearButtons()
+      {
+         ClearElements();
+      }
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthMeter::StealthMeter( const std::string& name, const std::string& type )
+      : HUDImage( name, type )
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthMeter::~StealthMeter()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthMeter::Initialize()
+      {
+         SetSize( 256.0f/1920.0f, 64.0f/1200.0f );
+
+         // -183, -15, 64, 21 (x,y,w,h)
+         mValueText = new HUDText(GetName()+".Value");
+         mValueText->SetFontAndText("Arial-Bold-16","0",-183.0f/256.0f,-15.0f/64.0f);
+         mValueText->SetAlignment(HUDAlignment::RIGHT_BOTTOM);
+         mValueText->SetColor( 86.0f/256.0f, 0.0f, 0.0f );
+         mValueText->SetSize( 64.0f/256.0f*0.75f, 21.0f/64.0f);
+         mWindow->addChildWindow(mValueText->GetCEGUIWindow());
+
+         // 84, 11, 150, 41 (x,y,w,h)
+         CreateMeterElement( mMeter, GetName()+".MeterBar" );
+         mMeter->SetPosition( 85.0f/256.0f, 11.0/64.0f);
+         mMeter->SetSize( 150.0f/256.0f, 41.0f/64.0f );
+         dtCore::RefPtr<HUDImage> meterImage = new HUDImage(GetName()+".MeterBarImage");
+         mMeter->SetImage( meterImage.get() );
+         mWindow->addChildWindow(mMeter->GetCEGUIWindow());
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthMeter::CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis, const std::string& meterName )
+      {
+         outMeterOfThis = new HUDBarMeter( meterName );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthMeter::SetValue( float current, float max, float min )
+      {
+         std::stringstream text;
+         text << (int)current; // convert number to a string
+
+         mValueText->SetText( text.str() );
+         mMeter->SetValue( current, max, min );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float StealthMeter::GetValue() const
+      {
+         return mMeter->GetValue();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDMeter& StealthMeter::GetMeterElement() const
+      {
+         return *mMeter;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDMeter& StealthMeter::GetMeterElement()
+      {
+         return *mMeter;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthMeter::GetTextElement() const
+      {
+         return *mValueText;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthMeter::GetTextElement()
+      {
+         return *mValueText;
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Health Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthHealthMeter::StealthHealthMeter( const std::string& name, const std::string& type )
+      : StealthMeter( name, type )
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthHealthMeter::~StealthHealthMeter()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthHealthMeter::Initialize()
+      {
+         StealthMeter::Initialize();
+
+         // Set the frame image
+         SetImage( "MeterBars", "MeterFrame_Health" );
+
+         HUDText& text = GetTextElement();
+         text.SetColor( 86.0f/256.0f, 0.0f, 0.0f );
+
+         HUDImage* meterImage = GetMeterElement().GetImage();
+         meterImage->SetImage( "MeterBars", "MeterBar_Health" );
+
+         SetValue( 100.0f, 100.0f, 0.0f );
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Ammo Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthAmmoMeter::StealthAmmoMeter( const std::string& name, const std::string& type )
+      : StealthMeter( name, type )
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthAmmoMeter::~StealthAmmoMeter()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthAmmoMeter::Initialize()
+      {
+         StealthMeter::Initialize();
+
+         // Set the frame image
+         SetImage( "MeterBars", "MeterFrame_Ammo" );
+
+         HUDText& text = GetTextElement();
+         text.SetColor( 86.0f/256.0f, 0.0f, 0.0f );
+
+         HUDImage* meterImage = GetMeterElement().GetImage();
+         meterImage->SetImage( "MeterBars", "MeterBar_Ammo" );
+         GetMeterElement().SetUnitCount( 15.0f );
+
+         SetValue( 100.0f, 100.0f, 0.0f );
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Compass Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthCompassMeter::StealthCompassMeter( const std::string& name, const std::string& type )
+      : StealthMeter( name, type )
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthCompassMeter::~StealthCompassMeter()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCompassMeter::Initialize()
+      {
+         StealthMeter::Initialize();
+
+         // Set the frame image
+         SetImage( "MeterBars", "MeterFrame_Compass" );
+
+         HUDText& text = GetTextElement();
+         text.SetColor( 86.0f/256.0f, 0.0f, 0.0f );
+         osg::Vec2 tmp;
+         text.GetPosition( tmp );
+         text.SetPosition( tmp[0]-4.0f/256.0f, tmp[1] );
+         text.GetSize( tmp );
+         text.SetSize( tmp[0]+4.0f/256.0f, tmp[1] );
+
+
+         HUDSlideBarMeter& meter = static_cast<HUDSlideBarMeter&> (GetMeterElement());
+         // The compass strip repeats the North units so that
+         // the image starts with North at the center and so that
+         // the image does not appear to end at North on both ends.
+         // 150 is the width of the meter element
+         meter.SetImageRangeScale(512.0f/(512.0f-150.0f));
+
+         HUDImage* meterImage = meter.GetImage();
+         meterImage->SetImage( "MeterBars", "MeterBar_Compass" );
+         meterImage->SetPosition( 0.0f, 13.0f/41.0f );
+         meterImage->SetSize( 512.0f/150.0f, 16.0f/41.0f );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCompassMeter::SetValue( float current, float max, float min )
+      {
+         std::stringstream text;
+         float degrees = current+0.5f; // degrees rounded up
+         int mills = (int)((degrees+360.0f)*6400.0f/360.0f);
+         text << (6400-mills%6400); // convert number to a string
+
+         GetTextElement().SetText( text.str() );
+         GetMeterElement().SetValue( ((int)(-degrees+360))%360, max+180.0f, min+180.0f );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCompassMeter::CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis,
+                                                   const std::string& meterName )
+      {
+         outMeterOfThis = new HUDSlideBarMeter( meterName );
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD GPS Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthGPSMeter::StealthGPSMeter( const std::string& name, const std::string& type )
+      : HUDImage( name, type )
+      {
+         SetImage( "MeterBars", "MeterFrame_GPS" );
+         SetSize( 256.0f/1920.0f, 64.0f/1200.0f );
+
+         mLat = new HUDText( name+".Latitude" );
+         mLat->SetSize(100.0f/256.0f,40.0f/64.0f);
+         mLat->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mLat->SetFontAndText("Arial-Bold-16","0.0",30.0f/256.0f,0.0f);
+         mWindow->addChildWindow( mLat->GetCEGUIWindow() );
+
+         mLong = new HUDText( name+".Longitude" );
+         mLong->SetSize(100.0f/256.0f,40.0f/64.0f);
+         mLong->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mLong->SetFontAndText("Arial-Bold-16","0.0",140.0f/256.0f,0.0f);
+         mWindow->addChildWindow( mLong->GetCEGUIWindow() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthGPSMeter::~StealthGPSMeter()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthGPSMeter::SetLatitude( float latitude )
+      {
+         std::stringstream ss;
+         ss << latitude;
+         mLat->SetText( ss.str() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthGPSMeter::SetLongitude( float longitude )
+      {
+         std::stringstream ss;
+         ss << longitude;
+         mLong->SetText( ss.str() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthGPSMeter::SetLatLong( float latitude, float longitude )
+      {
+         SetLatitude( latitude );
+         SetLongitude( longitude );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthGPSMeter::SetText1( const std::string& text )
+      {
+         mLat->SetText( text );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthGPSMeter::SetText2( const std::string& text )
+      {
+         mLong->SetText( text );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthGPSMeter::GetText1()
+      {
+         return *mLat;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthGPSMeter::GetText1() const
+      {
+         return *mLat;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthGPSMeter::GetText2()
+      {
+         return *mLong;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthGPSMeter::GetText2() const
+      {
+         return *mLong;
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD GMRS Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthMGRSMeter::StealthMGRSMeter( const std::string& name, const std::string& type )
+      : HUDImage( name, type )
+      {
+         SetImage( "MeterBars", "MeterFrame_GMRS" );
+         SetSize( 256.0f/1920.0f, 64.0f/1200.0f );
+
+         mText = new HUDText( name+".Text" );
+         mText->SetSize(210.0f/256.0f,40.0f/64.0f);
+         mText->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mText->SetFontAndText("Arial-Bold-16","0.0",30.0f/256.0f,0.0f);
+         mWindow->addChildWindow( mText->GetCEGUIWindow() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthMGRSMeter::~StealthMGRSMeter()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthMGRSMeter::SetText( const std::string& text )
+      {
+         mText->SetText( text );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthMGRSMeter::GetText()
+      {
+         return *mText;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthMGRSMeter::GetText() const
+      {
+         return *mText;
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Cartesian Meter Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthCartesianMeter::StealthCartesianMeter( const std::string& name, const std::string& type )
+      : HUDImage( name, type )
+      {
+         SetImage( "MeterBars", "MeterFrame_Cartesian" );
+         SetSize( 384.0f/1920.0f, 64.0f/1200.0f );
+
+         mX = new HUDText( name+".X" );
+         mX->SetSize(100.0f/384.0f,40.0f/64.0f);
+         mX->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mX->SetFontAndText("Arial-Bold-16","0.0",27.0f/384.0f,0.0f);
+         mWindow->addChildWindow( mX->GetCEGUIWindow() );
+
+         mY = new HUDText( name+".Y" );
+         mY->SetSize(100.0f/384.0f,40.0f/64.0f);
+         mY->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mY->SetFontAndText("Arial-Bold-16","0.0",137.0f/384.0f,0.0f);
+         mWindow->addChildWindow( mY->GetCEGUIWindow() );
+
+         mZ = new HUDText( name+".Z" );
+         mZ->SetSize(95.0f/384.0f,40.0f/64.0f);
+         mZ->SetAlignment(HUDAlignment::LEFT_CENTER);
+         mZ->SetFontAndText("Arial-Bold-16","0.0",252.0f/384.0f,0.0f);
+         mWindow->addChildWindow( mZ->GetCEGUIWindow() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthCartesianMeter::~StealthCartesianMeter()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCartesianMeter::SetX( float x )
+      {
+         std::stringstream ss;
+         ss << x;
+         mX->SetText( ss.str() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthCartesianMeter::GetX()
+      {
+         return *mX;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthCartesianMeter::GetX() const
+      {
+         return *mX;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCartesianMeter::SetY( float y )
+      {
+         std::stringstream ss;
+         ss << y;
+         mY->SetText( ss.str() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthCartesianMeter::GetY()
+      {
+         return *mY;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthCartesianMeter::GetY() const
+      {
+         return *mY;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCartesianMeter::SetZ( float z )
+      {
+         std::stringstream ss;
+         ss << z;
+         mZ->SetText( ss.str() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      HUDText& StealthCartesianMeter::GetZ()
+      {
+         return *mZ;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const HUDText& StealthCartesianMeter::GetZ() const
+      {
+         return *mZ;
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Call Sign Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthCallSign::StealthCallSign( const std::string& name, const std::string& type )
+      : HUDImage( name, type )
+      {
+         SetImage( "CallSign", "CallSign_HummerDriver" );
+         SetSize( 256.0f/1920.0f, 256.0f/1200.0f );
+
+         mCallSign = new HUDText( name+".Text" );
+         mCallSign->SetAlignment( HUDAlignment::LEFT_TOP );
+         mCallSign->SetSize( 212.0f/256.0f, 44.0f/256.0f*0.66f ); // 0.66 scales the box down by 1/3
+         mCallSign->SetFontAndText( "Arial-Bold-16", "", 30.0f/256.0f, 210.0f/256.0f );
+         mWindow->addChildWindow( mCallSign->GetCEGUIWindow() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthCallSign::~StealthCallSign()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCallSign::SetCallSign( const std::string& callSign )
+      {
+         mCallSign->SetText( callSign );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // HUD Speedometer Code
+      //////////////////////////////////////////////////////////////////////////
+      StealthSpeedometer::StealthSpeedometer( const std::string& name, const std::string& type )
+         : HUDImage( name, type ),
+         mPreviousSpeed(0.0f),
+         mLastReadout(0.0f)
+      {
+         SetImage( "Speedometer", "Speedometer" );
+         SetSize( 256.0f/1920.0f, 256.0f/1200.0f );
+
+         mText = new HUDText( name+".Text" );
+         mText->SetAlignment( HUDAlignment::LEFT_TOP );
+         mText->SetSize( 212.0f/256.0f, 44.0f/256.0f*0.66f ); // 0.66 scales the box down by 1/3
+         mText->SetFontAndText( "Arial-Bold-16", "0 mph", 50.0f/256.0f, 210.0f/256.0f );
+         mWindow->addChildWindow( mText->GetCEGUIWindow() );
+
+         mNeedle = new HUDQuadElement(name+".Needle","needle.png");
+         mNeedle->SetSize( 96.0f/1920.0f, 8.0f/1200.0f );
+         mNeedle->SetOffset( -4.0f/1920.0f, -4.0f/1200.0f );
+         mPivot.set(128.0f/1920.0f,67.0f/1200.0f);
+         UpdateNeedlePosition();
+
+         SetValue( 0.0f );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      StealthSpeedometer::~StealthSpeedometer()
+      {
+         UnregisterNeedleWithGUI();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthSpeedometer::RegisterNeedleWithGUI( dtCore::DeltaDrawable* gui )
+      {
+         bool success = false;
+         if( gui != NULL && mNeedle.valid() )
+         {
+            mGUI = gui;
+            gui->AddChild( mNeedle.get() );
+            success = true;
+         }
+         UpdateNeedlePosition();
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthSpeedometer::UnregisterNeedleWithGUI()
+      {
+         if( mGUI.valid() && mNeedle.valid() )
+         {
+            mGUI->RemoveChild( mNeedle.get() );
+            return true;
+         }
+         return false;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthSpeedometer::UpdateNeedlePosition()
+      {
+         osg::Vec2 offset;
+         GetPosition( offset );
+
+         const SimCore::Components::HUDAlignment& align = GetAlignment();
+         if( align == SimCore::Components::HUDAlignment::RIGHT_BOTTOM )
+         {
+            offset[0] += -mPivot[0] + 1.0f;
+            offset[1] += mPivot[1];
+         }
+         else
+         {
+            offset += mPivot; // already left bottom based
+         }
+
+         mNeedle->SetPosition( offset[0], offset[1] );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthSpeedometer::SetValue( float current, float max, float min )
+      {
+         mPreviousSpeed = (current + mPreviousSpeed) * 0.5f;
+
+         if( (int)mLastReadout != (int)mPreviousSpeed 
+            && fabs(mPreviousSpeed-mLastReadout) > 0.5f )
+         {
+            mLastReadout = mPreviousSpeed;
+         }
+
+         std::stringstream ss;
+         ss << (int)(mLastReadout) << " mph";
+         mText->SetText( ss.str() );
+
+         current = current > max ? max : current < min ? min : current;
+         max = fabs(max-min);
+         current = max != 0.0f ? current/max : 0.0f;
+         // This meter uses left handed rotation
+         mNeedle->SetRotation( (1.0f-current)*3.141593f );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthSpeedometer::SetVisible( bool visible )
+      {
+         HUDImage::SetVisible( visible );
+         if( mNeedle.valid() )
+         {
+            mNeedle->SetVisible( visible );
+         }
+      }
+
+   }
+}
