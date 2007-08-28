@@ -1,4 +1,4 @@
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Actors/BaseEntity.h>
 
@@ -526,7 +526,7 @@ namespace SimCore
             mFlamesSystem->SetEnabled(enable);
             AddChild(mFlamesSystem.get());
 
-            IG::ParticleInfo::AttributeFlags attrs = {true,true};
+            Components::ParticleInfo::AttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
          }
          else

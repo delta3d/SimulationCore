@@ -11,7 +11,7 @@
  *
  * @author Chris Rodgers
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <dtActors/particlesystemactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/nodecollector.h>
@@ -272,15 +272,15 @@ namespace SimCore
                   smokeps->SetTransform(xform, dtCore::Transformable::REL_CS);
                }
                // Register the particle systems with the particle manager component
-               IG::ParticleInfo::AttributeFlags attrs = {true,true};
+               Components::ParticleInfo::AttributeFlags attrs = {true,true};
                RegisterParticleSystem(*smokeps, &attrs );
             }
          }
 
-         IG::ParticleManagerComponent* comp =
-            dynamic_cast<IG::ParticleManagerComponent*> 
+         Components::ParticleManagerComponent* comp =
+            dynamic_cast<Components::ParticleManagerComponent*> 
             (GetGameActorProxy().GetGameManager()
-            ->GetComponentByName(IG::ParticleManagerComponent::DEFAULT_NAME) );
+            ->GetComponentByName(Components::ParticleManagerComponent::DEFAULT_NAME) );
 
          if( comp != NULL )
          {
@@ -297,11 +297,11 @@ namespace SimCore
          if( !mSmokeTrail.valid() ) { return; }
 
          dtGame::GMComponent* comp = 
-            GetGameActorProxy().GetGameManager()->GetComponentByName(IG::TimedDeleterComponent::DEFAULT_NAME);
+            GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME);
 
          if( comp != NULL )
          {
-            IG::TimedDeleterComponent* deleterComp = static_cast<IG::TimedDeleterComponent*> (comp);
+            Components::TimedDeleterComponent* deleterComp = static_cast<Components::TimedDeleterComponent*> (comp);
 
             dtCore::ParticleSystem* ps = static_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetActor());
             dtCore::ParticleLayer* smokeLayer = ps->GetSingleLayer("Smoke");

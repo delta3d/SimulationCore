@@ -45,12 +45,9 @@ namespace dtGame
 
 namespace SimCore
 {  
-   namespace Actors
-   {
-      class DetonationMessage;
-      class TimeValueMessage;
-   }
-   
+   class DetonationMessage;
+   class TimeValueMessage;
+
    namespace Components
    {
       class SIMCORE_EXPORT ViewerMessageProcessor : public dtGame::DefaultMessageProcessor
@@ -129,7 +126,7 @@ namespace SimCore
             
          protected:
             /// updates the GM time based on the time 
-            void UpdateSyncTime(const TimeValueMessage& tvMsg);
+            void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);
 
          private:
 

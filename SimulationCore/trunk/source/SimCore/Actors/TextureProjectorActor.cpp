@@ -1,4 +1,4 @@
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Actors/TextureProjectorActor.h>
 #include <SimCore/Components/TextureProjectorComponent.h>
@@ -51,7 +51,10 @@ namespace SimCore
             return;
          }
 
-         TextureProjectorComponent* tpComponent = dynamic_cast<TextureProjectorComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName(TextureProjectorComponent::DEFAULT_NAME));
+         Components::TextureProjectorComponent* tpComponent = 
+            dynamic_cast<Components::TextureProjectorComponent*>(
+                     GetGameActorProxy().GetGameManager()->GetComponentByName(
+                              Components::TextureProjectorComponent::DEFAULT_NAME));
          if(tpComponent == NULL)
          {
             LOG_ERROR("Couldnt find texture projector component bailing out,\

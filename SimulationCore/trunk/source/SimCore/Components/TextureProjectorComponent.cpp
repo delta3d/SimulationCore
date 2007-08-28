@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson 
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/TextureProjectorComponent.h>
 #include <SimCore/Actors/TextureProjectorActor.h>
 
@@ -40,7 +40,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////
       TextureProjectorComponent::TextureProjectorComponent(const std::string &name) :
-   dtGame::GMComponent(name) , mMaxNumberOfProjectedTextures(100)
+         dtGame::GMComponent(name) , mMaxNumberOfProjectedTextures(100)
       {
       }
 
@@ -73,7 +73,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void TextureProjectorComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
-         std::list<dtCore::RefPtr<TextureProjectorActor> >::iterator listIter = mActorList.begin();
+         std::list<dtCore::RefPtr<Actors::TextureProjectorActor> >::iterator listIter = mActorList.begin();
          for(; listIter != mActorList.end(); ++listIter)
          {
             if( (*listIter)->GetCurrentTime() > (*listIter)->GetMaxTime() )
@@ -93,16 +93,19 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void TextureProjectorComponent::AddTextureProjectorActorToComponent(TextureProjectorActor &toAdd)
+      void TextureProjectorComponent::AddTextureProjectorActorToComponent(Actors::TextureProjectorActor &toAdd)
       {
          mActorList.push_back(&toAdd);
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void TextureProjectorComponent::RemoveTextureProjectorActorFromComponent(TextureProjectorActor &toRemove)
+      void TextureProjectorComponent::RemoveTextureProjectorActorFromComponent(Actors::TextureProjectorActor &toRemove)
       {
-         std::list<dtCore::RefPtr<TextureProjectorActor> >::iterator listIter = mActorList.begin();
-         for(; listIter != mActorList.end(); ++listIter)
+         std::list<dtCore::RefPtr<Actors::TextureProjectorActor> >::iterator listIter, listIterEnd; 
+         listIter = mActorList.begin();
+         listIterEnd = mActorList.end();
+         
+         for(; listIter != listIterEnd; ++listIter)
          {
             if((*listIter)->GetUniqueId() == toRemove.GetUniqueId())
             {

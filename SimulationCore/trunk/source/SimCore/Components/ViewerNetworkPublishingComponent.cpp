@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/ViewerNetworkPublishingComponent.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
@@ -81,7 +81,7 @@ namespace SimCore
          if (mp != NULL)
          {
             RefPtr<StealthActorUpdatedMessage> rotMsg;
-            GetGameManager()->GetMessageFactory().CreateMessage(SimCore::Components::MessageType::STEALTH_ACTOR_ROTATION, rotMsg);
+            GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_ROTATION, rotMsg);
 
             rotMsg->SetName(msg.GetName());
             rotMsg->SetAboutActorId(msg.GetAboutActorId());
@@ -95,7 +95,7 @@ namespace SimCore
          if (mp != NULL)
          {
             RefPtr<StealthActorUpdatedMessage> transMsg;
-            GetGameManager()->GetMessageFactory().CreateMessage(SimCore::Components::MessageType::STEALTH_ACTOR_TRANSLATION, transMsg);
+            GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::STEALTH_ACTOR_TRANSLATION, transMsg);
             transMsg->SetName(msg.GetName());
             transMsg->SetAboutActorId(msg.GetAboutActorId());
             transMsg->SetTranslation(static_cast<const dtGame::Vec3MessageParameter*>(mp)->GetValue());

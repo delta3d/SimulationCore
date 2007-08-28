@@ -18,7 +18,7 @@
 *
 * @author Allen Danklefsen, Bradley Anderegg
 */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/MessageType.h>

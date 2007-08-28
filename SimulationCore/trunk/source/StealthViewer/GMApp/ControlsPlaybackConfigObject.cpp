@@ -10,7 +10,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <StealthGM/StealthInputComponent.h>
 #include <StealthGM/ControlsPlaybackConfigObject.h>
 #include <SimCore/Components/HLAConnectionComponent.h>

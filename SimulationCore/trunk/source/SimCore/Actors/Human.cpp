@@ -18,7 +18,7 @@
  *
  * @author David Guthrie 
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/Human.h>
 
 #include <dtAnim/cal3ddatabase.h>

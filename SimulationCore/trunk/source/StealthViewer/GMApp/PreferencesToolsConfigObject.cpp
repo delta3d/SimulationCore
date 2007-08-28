@@ -10,7 +10,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <StealthGM/PreferencesToolsConfigObject.h>
 #include <StealthGM/StealthInputComponent.h>
 #include <StealthGM/StealthHUD.h>

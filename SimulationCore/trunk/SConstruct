@@ -136,8 +136,6 @@ opts.AddOptions(EnumOption('mode','Build as either debug or release','debug',all
 def CommaConverter( value ) :
    return value.split(',')
 
-opts.Add( PackageOption( 'JSAFDir', 'path to jsaf when building the RoadDR plugin', 'no' ))
-
 opts.Add( 'cpppath', 'Additional include directories (comma delimited)', converter=CommaConverter  )
 opts.Add( 'libpath', 'Additional library directories (comma delimited)', converter=CommaConverter  )
 
@@ -186,11 +184,6 @@ env.Append(CPPPATH = ['#include'] + delta_inc)
 env.Append(CPPPATH = ['#ext/include/' + sys.platform])
 env.Append(LIBPATH = ['#lib', '#ext/lib/' + sys.platform] + delta_lib)
 
-if env.get('JSAFDir') not in [0,1] :
-   jsafdir = env['JSAFDir']
-   env.Append(CPPPATH = [ jsafdir, jsafdir + '/include', 
-      jsafdir + '/include/libinc', jsafdir + '/include/global'] )
-
 conf = env.CreateConf(errorLog)
 
 env['additionalLibsOrder'] = [ 'osgGA', 'osgProducer', 'osgEphemeris' ]
@@ -200,10 +193,9 @@ if env.get('ageia') != 0 :
 	
 
 if OS == 'windows' and env['mode'] == 'debug' :
-   env['dtLibs']['IG'] = 'IGd'
+   env['dtLibs']['SimViewerCore'] = 'SimViewerCored'
    env['dtLibs']['StealthGMApp'] = 'StealthGMAppd'
    env['dtLibs']['StealthQt'] = 'StealthQtd'
-   env['dtLibs']['RoadDRFull'] = 'RoadDRFulld'
    env['extLibs']['osgGA'] = 'osgGAd'
    env['extLibs']['osgProducer'] = 'osgProducerd'
    env['extLibs']['osgEphemeris'] = 'osgEphemerisd'
@@ -214,10 +206,9 @@ if OS == 'windows' and env['mode'] == 'debug' :
       env['extLibs']['NxExtensions'] = 'NxExtensions'
       env['extLibs']['PhysXLoader'] = 'PhysXLoader'
 else :
-   env['dtLibs']['IG'] = 'IG'
+   env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
    env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
    env['dtLibs']['StealthQt'] = 'StealthQt'
-   env['dtLibs']['RoadDRFull'] = 'RoadDRFull'
    env['extLibs']['osgGA'] = 'osgGA'
    env['extLibs']['osgProducer'] = 'osgProducer'
    env['extLibs']['osgEphemeris'] = 'osgEphemeris'
@@ -256,7 +247,7 @@ launchDir = env.GetLaunchDir()
 Export('env')
 
 # Build the SConscript files
-modules = ['src', 'apps', 'tests', 'tests/VisualTests']
+modules = ['source']
 
 for module in modules :
    SConscript(dirs = [module], duplicate = 0)

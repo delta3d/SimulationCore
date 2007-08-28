@@ -11,7 +11,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <dtCore/particlesystem.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
@@ -330,10 +330,10 @@ namespace SimCore
                return;
             }
 
-            entity::IGEnvironmentActorProxy* envProxy = 
-               static_cast<entity::IGEnvironmentActorProxy*> (env);
+            Actors::IGEnvironmentActorProxy* envProxy = 
+               static_cast<Actors::IGEnvironmentActorProxy*> (env);
 
-            entity::IGEnvironmentActor* envActor = static_cast<entity::IGEnvironmentActor*>
+            Actors::IGEnvironmentActor* envActor = static_cast<Actors::IGEnvironmentActor*>
                (envProxy->GetActor());
 
             // Capture the wind force that must be applied to new

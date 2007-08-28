@@ -19,7 +19,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <dtCore/base.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/isector.h>

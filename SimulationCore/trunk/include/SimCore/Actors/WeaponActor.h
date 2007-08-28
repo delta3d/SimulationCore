@@ -54,7 +54,7 @@ namespace SimCore
       // Actor Code
       //////////////////////////////////////////////////////////
       class WeaponActorProxy;
-      class SIMCORE_EXPORT WeaponActor : public entity::Platform
+      class SIMCORE_EXPORT WeaponActor : public Actors::Platform
       {
          public:
 

@@ -19,7 +19,7 @@
  * @author David Guthrie
  * @author Eddie Johnson
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <string>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
@@ -224,7 +224,7 @@ namespace SimCore
          // Update the articulation helper with DOFs of the current model.
          if( ! mArticHelper.valid() )
          {
-            mArticHelper = new DefaultArticulationHelper;
+            mArticHelper = new SimCore::Components::DefaultArticulationHelper;
          }
 
          mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
@@ -567,7 +567,7 @@ namespace SimCore
             return mArticHelper->BuildGroupProperty();
          }
 
-         return new dtDAL::NamedGroupParameter(ArticulationHelper::PROPERTY_NAME_ARTICULATED_ARRAY);
+         return new dtDAL::NamedGroupParameter(Components::ArticulationHelper::PROPERTY_NAME_ARTICULATED_ARRAY);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -584,7 +584,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::SetArticulationHelper( ArticulationHelper* articHelper )
+      void Platform::SetArticulationHelper( SimCore::Components::ArticulationHelper* articHelper )
       {
          mArticHelper = articHelper;
          if( mArticHelper.valid() )

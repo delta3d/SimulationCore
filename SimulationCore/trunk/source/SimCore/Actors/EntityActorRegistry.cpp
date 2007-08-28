@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson 
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 #include <SimCore/Actors/Platform.h>
@@ -61,7 +61,7 @@ using dtCore::RefPtr;
 
 namespace SimCore
 {
-   namespace entity
+   namespace Actors
    {
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_ACTOR_TYPE(new dtDAL::ActorType("Platform", "Entity", "Represents a entity in the game world"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_ACTOR_TYPE(new dtDAL::ActorType("Human", "Entity", "Represents a Human"));
@@ -143,7 +143,7 @@ namespace SimCore
          mActorFactory->RegisterType<WeaponActorProxy>(WEAPON_ACTOR_TYPE.get());
          mActorFactory->RegisterType<WeaponFlashActorProxy>(WEAPON_FLASH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<dvte::entity::PortalProxy>(PORTAL_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
 
 #ifdef AGEIA_PHYSICS
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());

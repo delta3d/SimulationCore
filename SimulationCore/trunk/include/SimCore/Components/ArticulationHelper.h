@@ -120,8 +120,8 @@ namespace SimCore
                return mIsDirty;
             }
 
-            virtual void SetControlState( ControlStateActor* controlState ) {}
-            virtual const ControlStateActor* GetControlState() const { return NULL; }
+            virtual void SetControlState( SimCore::Actors::ControlStateActor* controlState ) {}
+            virtual const SimCore::Actors::ControlStateActor* GetControlState() const { return NULL; }
 
             /**
              * Set the name of the articulation array property as found on the

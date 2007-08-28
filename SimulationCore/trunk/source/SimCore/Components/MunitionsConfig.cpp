@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/internal/XMLGrammarPoolImpl.hpp>

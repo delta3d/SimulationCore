@@ -18,7 +18,7 @@
 *
 * @author Allen Danklefsen
 */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/CommandLineObject.h>
 
 #include <dtDAL/enginepropertytypes.h>

@@ -12,7 +12,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <dtCore/shadermanager.h>
 #include <osg/Geode>
 #include <osg/Geometry>

@@ -21,6 +21,7 @@
 #ifndef _BINOCULARS_H_
 #define _BINOCULARS_H_
 
+#include <SimCore/Export.h>
 #include <SimCore/Tools/Tool.h>
 
 namespace dtCore
@@ -39,15 +40,15 @@ namespace dtCore
    class DeltaDrawable;
 }
 
-namespace  dvte
+namespace SimCore
 {
-	namespace Tools 
-	{	
-		class SIMCORE_EXPORT Binoculars : public Tool
-		{
-			public:
+   namespace Tools 
+   {	
+      class SIMCORE_EXPORT Binoculars : public Tool
+      {
+         public:
 
-				/// Constructor
+            /// Constructor
             Binoculars(dtCore::Camera &camera, CEGUI::Window *mainWindow, bool isLRF = false);
 
             /// Enables/Disables the binoculars
@@ -108,12 +109,12 @@ namespace  dvte
              * Updates the intersection text
              */
             void Update(dtCore::DeltaDrawable &terrain);
-				
+
          protected:
 
-				/// Destructor
-				virtual ~Binoculars();
-				
+            /// Destructor
+            virtual ~Binoculars();
+
             /**
              * Zooms the camera in
              * @param zoomFactor The distance to move the camera
@@ -143,7 +144,7 @@ namespace  dvte
              * @return mOriginalHFOV
              */
             const float GetOriginalHFOV() const { return mOriginalHFOV; }
-            
+
             /**
              * Accessor to the original lod scale
              * @return mOriginalLODScale
@@ -154,25 +155,25 @@ namespace  dvte
             CEGUI::Window *mElevationText;
 
          private:
-              
-             // Pointer to the camera so the perspective can be changed
-             dtCore::RefPtr<dtCore::Camera> mCamera;
 
-             // Pointer to the binocular overlay
-             CEGUI::Window *mOverlay;
-             CEGUI::Window *mRecticle;
-             // Farthest distance you can zoom
-             static const unsigned int MAX_ZOOM_DISTANCE = 1000;
-             // The original settings of the perspectives and LOD
-             const float mOriginalHFOV;
-             const float mOriginalVFOV;
-             //This is read each time one zooms in.
-             float mOriginalLODScale;
-             // Static zooming?
-             bool mIsDynamicZooming;
-             float mZoomFactor;
-             dtCore::RefPtr<dtCore::Isector> mIsector;
-		};
-	}
+            // Pointer to the camera so the perspective can be changed
+            dtCore::RefPtr<dtCore::Camera> mCamera;
+
+            // Pointer to the binocular overlay
+            CEGUI::Window *mOverlay;
+            CEGUI::Window *mRecticle;
+            // Farthest distance you can zoom
+            static const unsigned int MAX_ZOOM_DISTANCE = 1000;
+            // The original settings of the perspectives and LOD
+            const float mOriginalHFOV;
+            const float mOriginalVFOV;
+            //This is read each time one zooms in.
+            float mOriginalLODScale;
+            // Static zooming?
+            bool mIsDynamicZooming;
+            float mZoomFactor;
+            dtCore::RefPtr<dtCore::Isector> mIsector;
+      };
+   }
 }
 #endif 

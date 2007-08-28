@@ -18,7 +18,7 @@
  * 
  * @author Allen Danklefsen
  */
-#include <prefix/dvteprefix-src.h>
+#include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <dtDAL/enginepropertytypes.h>
 
