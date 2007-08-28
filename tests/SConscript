@@ -10,10 +10,10 @@ Import ('*')
 #in this list, put your test cpp files in with the names "*tests.cpp"
 #and the files will be added to both allTests and to a test just
 #for the new set of files.
-suites = ['entity', 'IG', 'tools', 'HLA']
+suites = ['SimCore', 'tools', 'HLA']
 
 if 'qt4' in env['TOOLS'] :
-	suites += ['StealthViewer/UI']
+	suites += ['StealthViewer']
 	
 
 sources = {}
@@ -28,8 +28,8 @@ for suite in suites:
    #add the "main" source files.
    sources[suite] += mainSources  
 
-deps = ['cppunit', 'dtCore', 'dtUtil', 'dtDAL', 'dtGame', 'rbody',
-   'rvrutils', 'rcfgscript' ,'dtABC', 'IG', 'dtHLAGM', 'dtGUI', 'CEGUIBase' ]
+deps = ['cppunit', 'dtCore', 'dtAnim', 'dtUtil', 'dtDAL', 'dtGame', 'dtABC',
+   'SimViewerCore', 'dtHLAGM', 'dtGUI', 'CEGUIBase' ]
 
 
 if 'qt4' in env['TOOLS'] :
@@ -46,15 +46,10 @@ if 'qt4' in env['TOOLS'] :
 	# Environment settings for Qt
 	qtdir = envCopy['QTDIR']
 
-	if envCopy['OS'] == 'darwin':
-		envCopy.Append(CPPPATH = ['#/apps/StealthViewer/include'] )
-	else:
-		envCopy.Append(CPPPATH = [qtdir + '/include','#/apps/StealthViewer/include'] )
-
-#for prog in sources.keys():
-   #create the program
-   
-app = envCopy.BuildProgram('allTests', sources['all'], deps, prefixHeader='include/prefix/dvteprefix.h')
+	if envCopy['OS'] != 'darwin':
+            envCopy.Append(CPPPATH = [qtdir + '/include'] )
+  
+app = envCopy.BuildProgram('allTests', sources['all'], deps, prefixHeader='include/prefix/SimCorePrefix.h')
 
 if (app == '[]') :
    result = 'false'

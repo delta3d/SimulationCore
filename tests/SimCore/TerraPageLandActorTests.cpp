@@ -20,7 +20,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
 #include <dtABC/application.h>
-#include <SimCore/Actors/AgeiaTerrainCullVisitor.h>
+#include <SimCore/AgeiaTerrainCullVisitor.h>
 
 const std::string &IG_REGISTRY_TERRAPAGE_CONFIG = "IG";
 
@@ -142,7 +142,7 @@ void TerraPageLandActorTests::TestFunction()
 
 
    // cull visitor
-   dtCore::RefPtr<SimCore::Actors::AgeiaTerrainCullVisitor> mCullVisitor = new SimCore::Actors::AgeiaTerrainCullVisitor();
+   dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor = new SimCore::AgeiaTerrainCullVisitor();
    mCullVisitor->SetLandActor(ourActor);
    CPPUNIT_ASSERT(mCullVisitor->GetLandActor() == ourActor);
 

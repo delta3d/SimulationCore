@@ -11,10 +11,11 @@
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
-#include <StealthGM/PreferencesGeneralConfigObject.h>
-#include <StealthGM/StealthInputComponent.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <dtGame/gamemanager.h>
 #include <dtCore/camera.h>

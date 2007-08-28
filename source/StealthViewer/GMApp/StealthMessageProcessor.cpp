@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson 
  */
-#include <StealthGM/StealthMessageProcessor.h>
+#include <StealthViewer/GMApp/StealthMessageProcessor.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gamemanager.h>
 

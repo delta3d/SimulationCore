@@ -4,8 +4,8 @@
  *
  * @author Eddie Johnson
  */
-#include <StealthQt/FederationFileResourceBrowser.h>
-#include <StealthQt/ui_FederationFileResourceBrowserUi.h>
+#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
+#include <StealthViewer/Qt/ui_FederationFileResourceBrowserUi.h>
 #include <QtGui/QHeaderView>
 
 namespace StealthQt

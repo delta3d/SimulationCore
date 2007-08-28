@@ -47,10 +47,6 @@ namespace SimCore
 
             virtual void AddedToScene(dtCore::Scene* scene);
 
-   #ifdef __APPLE__            
-            //There is bug with shaders on the terrain, so disable it as a hack.
-            virtual void OnShaderGroupChanged() {}
-   #endif
          protected:
 
             /// Destructor

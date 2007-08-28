@@ -53,6 +53,7 @@ namespace SimCore
 {
    namespace Components
    {
+      ///////////////////////////////////////////////////////////////////////////
       ViewerMessageProcessor::ViewerMessageProcessor(): 
          mMagnification(1.0f),
          mTimeSyncLatency(0L)
@@ -61,10 +62,12 @@ namespace SimCore
          mLogger = &dtUtil::Log::GetInstance("ViewerMessageProcessor.cpp");
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       ViewerMessageProcessor::~ViewerMessageProcessor()
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
@@ -132,10 +135,12 @@ namespace SimCore
          dtGame::DefaultMessageProcessor::ProcessMessage(msg);
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::OnAddedToGM()
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       RefPtr<dtGame::GameActorProxy> ViewerMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg)
       {
          RefPtr<dtGame::GameActorProxy> ap = dtGame::DefaultMessageProcessor::ProcessRemoteCreateActor(msg);
@@ -149,6 +154,7 @@ namespace SimCore
          return ap;
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg) 
       {
          dtGame::GameActorProxy *ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
@@ -168,7 +174,8 @@ namespace SimCore
             }
          }
       }
-      
+
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessLocalDeleteActor(const dtGame::ActorDeletedMessage &msg)
       {
          if(mPlayer.valid() && msg.GetAboutActorId() == mPlayer->GetUniqueId())
@@ -177,6 +184,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessUnhandledLocalMessage(const dtGame::Message &msg)
       {
          if(msg.GetSource() != GetGameManager()->GetMachineInfo())
@@ -197,6 +205,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg)
       {
          const unsigned long MILLISECONDS_TO_USECONDS = 1000UL;
@@ -272,11 +281,13 @@ namespace SimCore
 //         }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       bool ViewerMessageProcessor::AcceptPlayer(dtGame::GameActorProxy& playerProxy)
       {
          return !playerProxy.IsRemote();
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessPlayerEnteredWorldMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
@@ -317,6 +328,7 @@ namespace SimCore
             LOG_ERROR("Received a player entered world message of the wrong type");
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::UpdateMagnification()
       {
          //This should be changed to a message.

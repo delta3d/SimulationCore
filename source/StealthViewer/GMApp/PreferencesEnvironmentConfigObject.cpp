@@ -10,7 +10,7 @@
  * 
  * @author Eddie Johnson
  */
-#include <StealthGM/PreferencesEnvironmentConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
 
 #include <SimCore/Components/WeatherComponent.h>
 

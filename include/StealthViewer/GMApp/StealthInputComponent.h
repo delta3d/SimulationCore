@@ -23,13 +23,8 @@
 
 #include <SimCore/Components/BaseInputComponent.h>
 #include <SimCore/StealthMotionModel.h>
-#include <StealthGM/StealthHUD.h>
-#include <StealthGM/Export.h>
-#include <SimCore/Tools/Binoculars.h>
-#include <SimCore/Tools/Compass.h>
-#include <SimCore/Tools/LaserRangeFinder.h>
-#include <SimCore/Tools/Map.h>
-#include <SimCore/MessageType.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
+#include <StealthViewer/GMApp/Export.h>
 
 namespace dtGame
 {
@@ -40,6 +35,16 @@ namespace dtGame
 namespace dtHLAGM
 {
    class HLAComponent;
+}
+
+namespace SimCore
+{
+   class MessageType;
+   
+   namespace Tools
+   {
+      class Tool;
+   }
 }
 
 namespace StealthGM

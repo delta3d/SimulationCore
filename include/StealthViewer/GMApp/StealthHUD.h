@@ -32,7 +32,7 @@
 #include <SimCore/Components/BaseHUD.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/StealthMotionModel.h>
-#include <StealthGM/Export.h>
+#include <StealthViewer/GMApp/Export.h>
 //This is for the CEGUI headers.
 #ifdef None
 #undef None

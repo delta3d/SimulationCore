@@ -13,8 +13,8 @@
 #ifndef _CONTROLS_CAMERA_CONFIG_OBJECT_H_
 #define _CONTROLS_CAMERA_CONFIG_OBJECT_H_
 
-#include <StealthGM/ConfigurationObjectInterface.h>
-#include <StealthGM/Export.h>
+#include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
+#include <StealthViewer/GMApp/Export.h>
 
 namespace StealthGM
 {

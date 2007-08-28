@@ -5,7 +5,7 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMouseEvent>
 
-#include <StealthQt/GLWidgetRenderSurface.h>
+#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
 
 #include <dtCore/deltawin.h>
 #include <dtCore/system.h>

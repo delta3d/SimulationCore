@@ -37,14 +37,12 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
 #endif
 
 using dtCore::RefPtr;
@@ -221,7 +219,6 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
             
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
@@ -231,7 +228,6 @@ namespace SimCore
 
             mGM = new dtGame::GameManager(*scene);
             mGM->SetApplication(*mApp);
-            mGM->LoadActorRegistry("IG");
 
             mMachineInfo = new dtGame::MachineInfo;
             mWeatherComp = new TestWeatherComponent;
@@ -248,7 +244,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception& ex)
          {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
+            CPPUNIT_FAIL(ex.ToString());
          }
       }
 
@@ -385,6 +381,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestAtmosphereActor()      
       {
+         CPPUNIT_ASSERT(mAtmos != NULL);
          Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
 
          CPPUNIT_ASSERT_MESSAGE("UniformAtmosphereActor should be valid", actor != NULL );

@@ -30,11 +30,9 @@
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
 #endif
 
 namespace SimCore
@@ -225,17 +223,13 @@ namespace SimCore
       // Tests code
       //////////////////////////////////////////////////////////////
 
-      std::string libName="IG";//"testGameActorLibrary";
-
       void TimedDeleterComponentTests::setUp()
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             mGM = new dtGame::GameManager(*scene);
-            mGM->LoadActorRegistry(libName);
 
             mMachineInfo = new dtGame::MachineInfo;
             mDeleterComp = new TestTimedDeleterComponent;
@@ -257,7 +251,6 @@ namespace SimCore
          dtCore::System::GetInstance().Stop();
 
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(libName);
 
          mGM = NULL;
          mMachineInfo = NULL;

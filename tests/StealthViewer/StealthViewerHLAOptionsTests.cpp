@@ -5,8 +5,8 @@
  * @author Eddie Johnson
  */
 #include <cppunit/extensions/HelperMacros.h>
-#include <StealthQt/HLAOptions.h>
-#include <StealthQt/ui_HLAOptionsUi.h>
+#include <StealthViewer/Qt/HLAOptions.h>
+#include <StealthViewer/Qt/ui_HLAOptionsUi.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
 #include <dtCore/globals.h>

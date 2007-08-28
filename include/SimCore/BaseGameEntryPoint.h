@@ -23,7 +23,11 @@
 
 #include <dtGame/gameentrypoint.h>
 #include <SimCore/Export.h>
-#include <osg/ArgumentParser>
+
+namespace osg
+{
+   class ArgumentParser;
+}
 
 namespace dtGame
 {
@@ -47,6 +51,9 @@ namespace SimCore
    {
       public:
 
+         static const std::string PROJECT_CONTEXT_DIR;
+         static const std::string LIBRARY_NAME;
+         
          // The clipping plane used by this app.
          // The application should not have to rely
          // on binocular near clipping plane.

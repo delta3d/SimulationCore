@@ -24,6 +24,7 @@
 #include <vector>
 #include <string>
 
+#include <dtUtil/macros.h>
 #include <dtUtil/coordinates.h>
 #include <dtCore/globals.h>
 #include <dtDAL/datatype.h>
@@ -49,9 +50,7 @@
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext = "DVTEProject";
 #else
-   const std::string projectContext = "DVTEProject";
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
@@ -82,8 +81,6 @@ class HLAConfigTests : public CPPUNIT_NS::TestFixture
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(HLAConfigTests);
 
-const char* const HLAConfigTests::mHLAActorRegistry = "IG";
-
 // Called implicitly by CPPUNIT when the app starts
 void HLAConfigTests::setUp()
 {
@@ -97,15 +94,12 @@ void HLAConfigTests::setUp()
    dtCore::Scene* scene = new dtCore::Scene();
    mGameManager = new dtGame::GameManager(*scene);
    SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
-   dtDAL::Project::GetInstance().SetContext(projectContext, true);   
 } 
 
 // Called implicitly by CPPUNIT when the app terminates
 void HLAConfigTests::tearDown()
 {
    mTranslator = NULL;
-   if (mGameManager->GetRegistry(mHLAActorRegistry) != NULL)
-      mGameManager->UnloadActorRegistry(mHLAActorRegistry);  
 
    mGameManager = NULL;
    
@@ -115,7 +109,6 @@ void HLAConfigTests::TestLoadJNTCConfigXML()
 {
    try
    {
-      dtDAL::Project::GetInstance().SetContext(projectContext);
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
       config.LoadConfiguration(*mTranslator, "Federations/JNTC/JNTCMapping.xml");      
@@ -131,7 +124,6 @@ void HLAConfigTests::TestLoadVISITConfigXML()
 {
    try
    {
-      dtDAL::Project::GetInstance().SetContext(projectContext);
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
       config.LoadConfiguration(*mTranslator, "Federations/DVTE-VISIT/VisitMapping.xml");      

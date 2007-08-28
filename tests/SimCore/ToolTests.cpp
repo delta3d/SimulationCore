@@ -40,18 +40,6 @@
 
 using dtCore::RefPtr;
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   const std::string projectContext = "DVTEProject";
-   #if defined (_DEBUG)
-      const std::string libName = "IG";
-   #else
-      const std::string libName = "IG";
-   #endif
-#else
-   const std::string projectContext = "DVTEProject";
-   const std::string libName = "IG";
-#endif
-
 class ToolTests : public CPPUNIT_NS::TestFixture 
 {
    CPPUNIT_TEST_SUITE(ToolTests);
@@ -102,8 +90,6 @@ void ToolTests::setUp()
    // Initialize CEGUI
    try
    {
-      dtDAL::Project::GetInstance().SetContext(projectContext, true);
-      
       dtCore::System::GetInstance().Start();
       mApp = new dtABC::Application;
       mGM  = new dtGame::GameManager(*mApp->GetScene());
@@ -113,7 +99,7 @@ void ToolTests::setUp()
       dtCore::System::GetInstance().Step();
 
       mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow());
-      dvte::SetupCEGUI();
+      SimCore::SetupCEGUI();
    }
    catch(const dtUtil::Exception &e) 
    {
@@ -122,8 +108,6 @@ void ToolTests::setUp()
 
    try
    {
-      mGM->LoadActorRegistry(libName);
-
       const dtDAL::ActorType *type = mGM->FindActorType("Player Actor", "Player Actor");
       CPPUNIT_ASSERT(type != NULL);
       RefPtr<dtDAL::ActorProxy> proxy = mGM->CreateActor(*type);
@@ -144,7 +128,6 @@ void ToolTests::tearDown()
    {
       dtCore::System::GetInstance().Stop();
       mGM->DeleteAllActors(true);
-      mGM->UnloadActorRegistry(libName);
    }
    if (mGUI.valid())
    {

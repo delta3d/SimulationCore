@@ -5,9 +5,9 @@
  * @author Eddie Johnson
  */
 #include <cppunit/extensions/HelperMacros.h>
-#include <StealthQt/HLAWindow.h>
-#include <StealthQt/ui_HLAWindowUi.h>
-#include <StealthQt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/HLAWindow.h>
+#include <StealthViewer/Qt/ui_HLAWindowUi.h>
+#include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
 #include <dtGame/gamemanager.h>

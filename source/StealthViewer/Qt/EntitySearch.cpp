@@ -4,7 +4,7 @@
  *
  * @author Eddie Johnson
  */
-#include <StealthQt/EntitySearch.h>
+#include <StealthViewer/Qt/EntitySearch.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <dtGame/deadreckoninghelper.h>
 

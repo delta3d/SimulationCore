@@ -16,8 +16,7 @@
 #include <SimCore/Actors/ViewerMaterialActor.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
 
-const std::string IG_REGISTRY = "IG";
-using namespace SimCore::entity;
+const std::string SIM_CORE_REGISTRY = "SimViewerCore";
 
 class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
 {
@@ -38,7 +37,7 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
 
          mGM = new dtGame::GameManager(*new dtCore::Scene());
-         mGM->LoadActorRegistry(IG_REGISTRY);
+         mGM->LoadActorRegistry(SIM_CORE_REGISTRY);
               
          dtCore::System::GetInstance().Step();
 
@@ -55,7 +54,7 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Stop();
          
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(IG_REGISTRY);
+         mGM->UnloadActorRegistry(SIM_CORE_REGISTRY);
          mGM = NULL;
       }
 
@@ -78,7 +77,7 @@ void ViewerMaterialsTests::TestFunction()
 {
    CPPUNIT_ASSERT_MESSAGE("Material Component not initialized", (mMaterialComponent != NULL));
    
-   ViewerMaterialActor& viewMaterial = mMaterialComponent->CreateOrChangeMaterialByFID(100);
+   SimCore::Actors::ViewerMaterialActor& viewMaterial = mMaterialComponent->CreateOrChangeMaterialByFID(100);
    viewMaterial.SetBumpiness(1.0f);
    CPPUNIT_ASSERT_MESSAGE("Viewer material unable to be set 0.o", viewMaterial.GetBumpiness() == 1.0f);
    
@@ -91,6 +90,6 @@ void ViewerMaterialsTests::TestFunction()
    //anotherMaterial1.SetBumpiness(1.0f);
    //CPPUNIT_ASSERT_MESSAGE("Returned const material and tried setting, if it let me set it, its wrong.", viewMaterial.GetBumpiness() == 1.0f);
 
-   const ViewerMaterialActor& anotherMaterial2 = mMaterialComponent->GetConstMaterialByName("hummagass");
+   const SimCore::Actors::ViewerMaterialActor& anotherMaterial2 = mMaterialComponent->GetConstMaterialByName("hummagass");
    CPPUNIT_ASSERT_MESSAGE("Should have returned the default material", anotherMaterial2.GetName() == "DefaultMaterial");
 }

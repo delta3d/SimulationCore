@@ -73,17 +73,18 @@
 #include <osg/ApplicationUsage>
 #include <osgUtil/RenderBin>
 
-const std::string ProjectDir = "ProjectAssets";
-const std::string ApplicationLibraryName = "SimCore";
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
-const float SimCore::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE = 0.1f;
-const float SimCore::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE  = 10000.0f;
 
 namespace SimCore
 {
+   const float BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE = 0.1f;
+   const float BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE  = 10000.0f;
+
+   const std::string BaseGameEntryPoint::LIBRARY_NAME("SimViewerCore");
+   const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
       parser(NULL), 
@@ -264,27 +265,29 @@ namespace SimCore
       }
       else
       {
-         if(!fileUtils.DirExists(ProjectDir))
+         if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
          {
             fileUtils.ChangeDirectory("..");
-            if(!fileUtils.DirExists(ProjectDir))
+            if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
             {
                throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-                  "The data directory " + ProjectDir + " could not be located in the working directory or its parent directory. Aborting application."
+                  "The data directory " + PROJECT_CONTEXT_DIR + 
+                  " could not be located in the working directory or its parent directory. Aborting application."
                   , __FILE__, __LINE__);
             }
             else
             {
-               LOG_INFO("The data directory " + ProjectDir + " was located in the parent directory. Setting current working directory to be the parent directory.");
-               dtDAL::Project::GetInstance().SetContext(ProjectDir);
+               LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the parent directory. "
+                        "Setting current working directory to be the parent directory.");
+               dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
             }
          }
          else
          {
-            LOG_INFO("The data directory " + ProjectDir + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(ProjectDir);
+            LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the current working directory.");
+            dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
          }
-         finalProjectPath = ProjectDir;
+         finalProjectPath = PROJECT_CONTEXT_DIR;
       }
       dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
 
@@ -470,7 +473,7 @@ namespace SimCore
 
       camera->AddChild(dtAudio::AudioManager::GetListener());
 
-      gameManager.LoadActorRegistry(ApplicationLibraryName);
+      gameManager.LoadActorRegistry(LIBRARY_NAME);
       
       RefPtr<dtHLAGM::HLAComponent>            hft               = CreateAndSetupHLAComponent();
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;

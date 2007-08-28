@@ -12,7 +12,7 @@
  */
 #include <dtGame/gmcomponent.h>
 
-#include <StealthGM/Export.h>
+#include <StealthViewer/GMApp/Export.h>
 
 namespace StealthGM
 {

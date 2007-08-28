@@ -12,6 +12,8 @@
 */
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <dtUtil/macros.h>
+
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
@@ -42,14 +44,12 @@
 #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
 #endif
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
 #endif
 
 namespace SimCore
@@ -183,11 +183,9 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             mGM = new dtGame::GameManager(*scene);
-            mGM->LoadActorRegistry("IG");
 
             mMachineInfo = new dtGame::MachineInfo;
 
@@ -207,7 +205,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception& ex)
          {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
+            CPPUNIT_FAIL(ex.ToString());
          }
       }
 
@@ -232,7 +230,6 @@ namespace SimCore
          }
 
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry("IG");
 
          mGM = NULL;
          mMachineInfo = NULL;
@@ -308,9 +305,7 @@ namespace SimCore
             proxy.valid() );
 
          // Declare test variables
-         float value = 123.456f; // use a value that will most likely not be a default value
-
-
+         const float value = 123.456f; // use a value that will most likely not be a default value
 
          // Test String & Actor Properties ---------------------------------------------
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor munition type name should be empty by default",

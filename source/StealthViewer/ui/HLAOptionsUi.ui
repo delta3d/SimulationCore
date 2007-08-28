@@ -1,0 +1,419 @@
+<ui version="4.0" >
+ <class>HLAOptions</class>
+ <widget class="QDialog" name="HLAOptions" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>360</width>
+    <height>339</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>HLA Options</string>
+  </property>
+  <property name="toolTip" >
+   <string>These are the options you wish to associate with a HLA connection.</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="leftMargin" >
+    <number>9</number>
+   </property>
+   <property name="topMargin" >
+    <number>9</number>
+   </property>
+   <property name="rightMargin" >
+    <number>9</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>9</number>
+   </property>
+   <property name="horizontalSpacing" >
+    <number>6</number>
+   </property>
+   <property name="verticalSpacing" >
+    <number>6</number>
+   </property>
+   <item row="0" column="0" >
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>HLA Options</string>
+     </property>
+     <layout class="QHBoxLayout" >
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <property name="leftMargin" >
+       <number>9</number>
+      </property>
+      <property name="topMargin" >
+       <number>9</number>
+      </property>
+      <property name="rightMargin" >
+       <number>9</number>
+      </property>
+      <property name="bottomMargin" >
+       <number>9</number>
+      </property>
+      <item>
+       <layout class="QGridLayout" >
+        <property name="leftMargin" >
+         <number>0</number>
+        </property>
+        <property name="topMargin" >
+         <number>0</number>
+        </property>
+        <property name="rightMargin" >
+         <number>0</number>
+        </property>
+        <property name="bottomMargin" >
+         <number>0</number>
+        </property>
+        <property name="horizontalSpacing" >
+         <number>2</number>
+        </property>
+        <property name="verticalSpacing" >
+         <number>2</number>
+        </property>
+        <item row="0" column="0" >
+         <widget class="QLabel" name="mConnectionNameLabel" >
+          <property name="text" >
+           <string>Connection Name</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mConnectionNameLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" >
+         <widget class="QLabel" name="mFederationFileLabel" >
+          <property name="text" >
+           <string>Federation Resource</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mFedFileLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" >
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="mFedFileLineEdit" >
+            <property name="toolTip" >
+             <string>The federation (fed) file is the file that defines the entities you will be using. </string>
+            </property>
+            <property name="whatsThis" >
+             <string>The federation (fed) file is the file that defines the entities you will be using. </string>
+            </property>
+            <property name="readOnly" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mFedFileToolButton" >
+            <property name="text" >
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="4" column="0" >
+         <widget class="QLabel" name="mConfigurationResourceLabel" >
+          <property name="text" >
+           <string>Configuration Resource</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mConfigFileLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" >
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="mMapLineEdit" >
+            <property name="toolTip" >
+             <string>The map you select must correspond to the project context passed in on the command line.</string>
+            </property>
+            <property name="whatsThis" >
+             <string>The map is the XML file which contains all of your game actors and events</string>
+            </property>
+            <property name="readOnly" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mMapToolButton" >
+            <property name="text" >
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="1" >
+         <widget class="QLineEdit" name="mFedExLineEdit" >
+          <property name="toolTip" >
+           <string>The federation execution name (fedex) is the name of the federation that you wish to join in JSAF</string>
+          </property>
+          <property name="whatsThis" >
+           <string>The federation execution name (fedex) is the name of the federation that you wish to join in JSAF.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" >
+         <widget class="QLabel" name="mMapLabel" >
+          <property name="text" >
+           <string>Map</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mMapLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" >
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="mConfigFileLineEdit" >
+            <property name="toolTip" >
+             <string>This configuration file is what maps Delta3D to JSAF entities. </string>
+            </property>
+            <property name="whatsThis" >
+             <string>This configuration file is what maps Delta3D to JSAF entities. </string>
+            </property>
+            <property name="readOnly" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mConfigFileToolButton" >
+            <property name="text" >
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0" >
+         <widget class="QLabel" name="mFedExNameLabel" >
+          <property name="text" >
+           <string>Federation Execution Name</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mFedExLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" >
+         <widget class="QLineEdit" name="mConnectionNameLineEdit" >
+          <property name="toolTip" >
+           <string>This is the name of the connection. It must be unique.</string>
+          </property>
+          <property name="whatsThis" >
+           <string>Name of the connection.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" >
+         <widget class="QLineEdit" name="mFederateNameLineEdit" >
+          <property name="toolTip" >
+           <string>The Federate name is the identifier that will be used for you when you connect to the federation. </string>
+          </property>
+          <property name="whatsThis" >
+           <string>The Federate name is the identifier that will be used for you when you connect to the federation.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" >
+         <widget class="QLabel" name="mFederateNameLabel" >
+          <property name="text" >
+           <string>Federate Name</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mFederateNameLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" >
+         <widget class="QLabel" name="mRidFileLabel" >
+          <property name="text" >
+           <string>Rid File</string>
+          </property>
+          <property name="buddy" >
+           <cstring>mRidFileLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1" >
+         <layout class="QVBoxLayout" >
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" >
+            <property name="spacing" >
+             <number>6</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLineEdit" name="mRidFileLineEdit" >
+              <property name="toolTip" >
+               <string>This is the rid file to use for the RTI. It should match the rid file used by the JSAF you are connecting to. </string>
+              </property>
+              <property name="whatsThis" >
+               <string>This is the rid file to use for the RTI. It should match the rid file used by the JSAF you are connecting to.</string>
+              </property>
+              <property name="readOnly" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="mRidFileToolButton" >
+              <property name="text" >
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QDialogButtonBox" name="mButtonBox" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>mConnectionNameLineEdit</tabstop>
+  <tabstop>mFedExLineEdit</tabstop>
+  <tabstop>mFederateNameLineEdit</tabstop>
+  <tabstop>mMapLineEdit</tabstop>
+  <tabstop>mMapToolButton</tabstop>
+  <tabstop>mConfigFileLineEdit</tabstop>
+  <tabstop>mConfigFileToolButton</tabstop>
+  <tabstop>mFedFileLineEdit</tabstop>
+  <tabstop>mFedFileToolButton</tabstop>
+  <tabstop>mRidFileLineEdit</tabstop>
+  <tabstop>mRidFileToolButton</tabstop>
+  <tabstop>mButtonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mButtonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>HLAOptions</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>270</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mButtonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>HLAOptions</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>270</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

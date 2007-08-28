@@ -10,8 +10,8 @@
  * 
  * @author Eddie Johnson
  */
-#include <StealthGM/ConfigurationObjectInterface.h>
-#include <StealthGM/Export.h>
+#include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
+#include <StealthViewer/GMApp/Export.h>
 
 #include <string>
 

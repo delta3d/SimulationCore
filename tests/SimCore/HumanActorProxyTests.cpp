@@ -50,11 +50,9 @@
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext("DVTEProject");
 #else
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-   const std::string projectContext("DVTEProject");
 #endif
 
 using dtCore::RefPtr;
@@ -63,8 +61,6 @@ using dtCore::ObserverPtr;
 
 class HumanActorProxyTests : public CPPUNIT_NS::TestFixture 
 {
-   static const std::string igActorRegistry;
-
    CPPUNIT_TEST_SUITE(HumanActorProxyTests);
 
       CPPUNIT_TEST(TestPlanDeployedToReady);
@@ -80,10 +76,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
          dtCore::System::GetInstance().Start();
-         dtDAL::Project::GetInstance().SetContext(projectContext, true);
          mGM = new dtGame::GameManager(*new dtCore::Scene());
-         
-         mGM->LoadActorRegistry(igActorRegistry);
          
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, mHumanAP);
       }
@@ -93,7 +86,6 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
-            mGM->UnloadActorRegistry(igActorRegistry);
             mGM = NULL;
          }
          dtCore::System::GetInstance().Stop();
@@ -226,6 +218,4 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(HumanActorProxyTests);
-
-const std::string HumanActorProxyTests::igActorRegistry("IG");
 

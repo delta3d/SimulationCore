@@ -11,9 +11,9 @@
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
-#include <StealthGM/PreferencesToolsConfigObject.h>
-#include <StealthGM/StealthInputComponent.h>
-#include <StealthGM/StealthHUD.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/EntityActorRegistry.h>

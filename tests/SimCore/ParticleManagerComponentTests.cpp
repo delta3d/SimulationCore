@@ -55,11 +55,9 @@
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
 #endif
 
 namespace SimCore
@@ -167,7 +165,6 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
 
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
@@ -177,7 +174,6 @@ namespace SimCore
 
             mGM = new dtGame::GameManager(*scene);
             mGM->SetApplication(*mApp);
-            mGM->LoadActorRegistry("IG");
 
             mMachineInfo = new dtGame::MachineInfo;
             mParticleComp = new TestParticleManagerComponent;
@@ -206,8 +202,6 @@ namespace SimCore
          mPS = NULL;
 
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry("IG");
-
          mGM = NULL;
          mApp = NULL;
          mMachineInfo = NULL;
@@ -229,7 +223,8 @@ namespace SimCore
       {
          ptr = new dtCore::ParticleSystem("TestParticleSystem");
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
-         ptr->LoadFile("Particles/unittestparticles.osg");
+         CPPUNIT_ASSERT(ptr->LoadFile("Particles/unittestparticles.osg") != NULL);
+
          CPPUNIT_ASSERT_MESSAGE("Particles should be valid",
             ptr.valid() );
 

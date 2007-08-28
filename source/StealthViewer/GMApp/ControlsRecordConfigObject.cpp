@@ -11,8 +11,8 @@
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
-#include <StealthGM/ControlsRecordConfigObject.h>
-#include <StealthGM/StealthInputComponent.h>
+#include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
+#include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <dtGame/serverloggercomponent.h>
 #include <dtGame/logcontroller.h>
 #include <dtGame/logkeyframe.h>

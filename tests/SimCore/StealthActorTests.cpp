@@ -49,16 +49,12 @@
 #if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext = "DVTEProject";
 #else
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-   const std::string projectContext = "DVTEProject";
 #endif
 
 using dtCore::RefPtr;
-
-const std::string igActorRegistry = "IG";
 
 class StealthActorTests : public CPPUNIT_NS::TestFixture 
 {
@@ -73,7 +69,6 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         dtDAL::Project::GetInstance().SetContext(projectContext);
          mApp = new dtABC::Application;
          mGM = new dtGame::GameManager(*new dtCore::Scene);
          mGM->SetApplication(*mApp);
@@ -81,7 +76,6 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
          mTestComponent = new TestComponent();
          mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
          mGM->AddComponent(*mTestComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-         mGM->LoadActorRegistry(igActorRegistry);
 
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, mStealthProxy);
 
@@ -102,7 +96,6 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
-            mGM->UnloadActorRegistry(igActorRegistry);
             mGM = NULL;
          }
          dtCore::System::GetInstance().Stop();

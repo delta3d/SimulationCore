@@ -157,5 +157,5 @@ namespace SimCore
          else
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
       }
-   } // ig
+   }
 } // dvte

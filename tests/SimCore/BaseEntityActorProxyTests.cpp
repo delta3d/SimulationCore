@@ -64,11 +64,9 @@
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext("DVTEProject");
 #else
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-   const std::string projectContext("DVTEProject");
 #endif
 
 using dtCore::RefPtr;
@@ -77,8 +75,6 @@ using dtCore::ObserverPtr;
 
 class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture 
 {
-   static const std::string igActorRegistry;
-
    CPPUNIT_TEST_SUITE(BaseEntityActorProxyTests);
 
       CPPUNIT_TEST(TestPlatform);
@@ -127,13 +123,10 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
 
 CPPUNIT_TEST_SUITE_REGISTRATION(BaseEntityActorProxyTests);
 
-const std::string BaseEntityActorProxyTests::igActorRegistry("IG");
-
 void BaseEntityActorProxyTests::setUp()
 {
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
-   dtDAL::Project::GetInstance().SetContext(projectContext, true);
    mGM = new dtGame::GameManager(*new dtCore::Scene());
    
    mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
@@ -144,7 +137,6 @@ void BaseEntityActorProxyTests::setUp()
    mGM->AddComponent(*mWorldComp, dtGame::GameManager::ComponentPriority::NORMAL);
 #endif
 
-   mGM->LoadActorRegistry(igActorRegistry);
 }
 
 void BaseEntityActorProxyTests::tearDown()
@@ -158,7 +150,6 @@ void BaseEntityActorProxyTests::tearDown()
    if (mGM.valid())
    {
       mGM->DeleteAllActors(true);
-      mGM->UnloadActorRegistry(igActorRegistry);
       mGM = NULL;
    }
    dtCore::System::GetInstance().Stop();

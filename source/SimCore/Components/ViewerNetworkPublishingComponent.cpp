@@ -39,15 +39,18 @@ namespace SimCore
    namespace Components
    {
 
+      ///////////////////////////////////////////////////////////////////////////
       ViewerNetworkPublishingComponent::ViewerNetworkPublishingComponent(const std::string& name):
          dtGame::DefaultNetworkPublishingComponent(name)
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       ViewerNetworkPublishingComponent::~ViewerNetworkPublishingComponent()
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerNetworkPublishingComponent::ProcessPublishActor(const dtGame::ActorPublishedMessage &msg)
       {
          dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(msg.GetSendingActorId());
@@ -73,6 +76,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerNetworkPublishingComponent::SendStealthActorMessages(const dtGame::ActorUpdateMessage& msg)
       {
          const dtGame::MessageParameter* mp = msg.GetUpdateParameter("Last Known Rotation");
@@ -103,6 +107,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerNetworkPublishingComponent::ProcessUpdateActor(const dtGame::ActorUpdateMessage& msg)
       {
          const dtDAL::ActorType &stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
@@ -120,6 +125,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////
       void ViewerNetworkPublishingComponent::ProcessUnhandledLocalMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == MessageType::TIME_QUERY)

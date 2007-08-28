@@ -298,11 +298,9 @@ namespace SimCore
       {
          try
          {
-            dtDAL::Project::GetInstance().SetContext(projectContext, true);
             dtCore::System::GetInstance().Start();
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             mGM = new dtGame::GameManager(*scene);
-            mGM->LoadActorRegistry("IG");
 
             mMachineInfo = new dtGame::MachineInfo;
             mDamageComp = new TestMunitionsComponent;
@@ -326,7 +324,6 @@ namespace SimCore
             mDamageComp = NULL;
 
             mGM->DeleteAllActors(true);
-            mGM->UnloadActorRegistry("IG");
 
             mGM = NULL;
             mMachineInfo = NULL;

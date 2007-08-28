@@ -39,7 +39,6 @@
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
-const std::string projectContext = "DVTEProject";
 
 
 
@@ -106,7 +105,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HUDElementsTests);
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setupCEGUI()
 {
-   dvte::SetupCEGUI();
+   SimCore::SetupCEGUI();
    mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
    CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
 }
@@ -114,9 +113,6 @@ void HUDElementsTests::setupCEGUI()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setUp()
 {
-   dtDAL::Project::GetInstance().SetContext(projectContext, true);
-
-
    // Scene needs to exist before a window
    mScene = new dtCore::Scene();
 
@@ -151,14 +147,19 @@ void HUDElementsTests::tearDown()
       mScene->RemoveAllDrawables();
    }
    mScene = NULL;
-   mCamera->SetScene(NULL);
-   mCamera->SetWindow(NULL);
+   if (mCamera.valid())
+   {
+      mCamera->SetScene(NULL);
+      mCamera->SetWindow(NULL);
+   }
    mCamera = NULL;
 
-   mGM->DeleteAllActors(true);
+   if (mGM.valid())
+      mGM->DeleteAllActors(true);
    
    mMainGUIWindow = NULL;
-   mGUI->ShutdownGUI();
+   if (mGUI.valid())
+      mGUI->ShutdownGUI();
    
    mGM = NULL;
    mGUI = NULL;

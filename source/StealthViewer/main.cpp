@@ -1,7 +1,6 @@
 /*
  * DVTE Stealth Viewer
  * Copyright (C) 2006, Alion Science and Technology.
- *
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <QtGui/QApplication>
@@ -9,7 +8,7 @@
 #include <QtGui/QSplashScreen>
 #include <QtGui/QPixmap>
 
-#include <StealthQt/MainWindow.h>
+#include <StealthViewer/Qt/MainWindow.h>
 
 #include <dtUtil/log.h>
 #include <dtUtil/fileutils.h>
@@ -61,23 +60,23 @@ int main(int argc, char *argv[])
 
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
-   
-   dtCore::SetDataFilePathList(".;" +
-                               dtCore::GetDeltaDataPathList() + ";" +
-                               "apps/StealthViewer") ;
+
+   dtCore::SetDataFilePathList(".:" +
+                               dtCore::GetDeltaDataPathList() + ":" +
+                               "src/StealthViewer") ;
    int result;
    QApplication app(argc, argv);
-   
+
    try
    {
       dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
-      
+
       //Now that everything is initialized, show the main window.
       //Construct the application... 
       dtCore::RefPtr<dtGame::GameApplication> gameApp = InitGameApp();
       StealthQt::MainWindow mainWindow(*gameApp);
       mainWindow.show();
-            
+
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
       dtCore::System::GetInstance().Config();
@@ -90,19 +89,19 @@ int main(int argc, char *argv[])
       std::ostringstream ss;
       ss << "Exception (" << e.TypeEnum() << "): " << e.What()
          << "\n\tLine: " << e.Line() << " File: " << e.File(); 
-         
+
       QMessageBox::critical(NULL,"Exception",ss.str().c_str(),
                            QMessageBox::Ok,QMessageBox::NoButton);
-         
+
       dtAudio::AudioManager::Destroy();
-         
+
       return 1;
    }
    catch(const std::exception &e)
    {
       QString message("A std::exception has been thrown. The exception message is: ");
       message += e.what();
-   
+
       QMessageBox::critical(NULL, "Exception", message, QMessageBox::Ok);
 
       dtAudio::AudioManager::Destroy();
@@ -133,7 +132,7 @@ static char* appArgv[appArgc] =
    "--statisticsInterval", "30",
    "--enableLogging", "1",
    "--enablePlayback", "1",
-   "--projectPath", "DVTEProject",
+   "--projectPath", "ProjectAssets",
    "--hasBinos", 
    "--hasCompass",  
    "--hasGPS",
