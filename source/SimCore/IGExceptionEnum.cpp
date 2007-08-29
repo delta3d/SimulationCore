@@ -23,9 +23,5 @@
 
 namespace SimCore
 {
-   namespace Components
-   {
-      IMPLEMENT_ENUM(IGExceptionEnum);
-   
-   }   
+   IMPLEMENT_ENUM(IGExceptionEnum);
 }
