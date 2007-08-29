@@ -23,7 +23,6 @@
 
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
-#include <dtAnim/animationhelper.h>
 #include <dtAnim/animationcomponent.h>
 #include <dtAnim/animationsequence.h>
 #include <dtAnim/animationchannel.h>
