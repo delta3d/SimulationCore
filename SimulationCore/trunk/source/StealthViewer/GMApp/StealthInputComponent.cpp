@@ -66,9 +66,9 @@
 #include <dtHLAGM/hlacomponent.h>
 
 #ifdef AGEIA_PHYSICS
-   #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+   #include <NxAgeiaWorldComponent.h>
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-   #include <dtAgeiaPhysX/NxAgeiaMaterialActor.h>
+   #include <NxAgeiaMaterialActor.h>
    #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
    #include <dtDAL/project.h>
 #endif
