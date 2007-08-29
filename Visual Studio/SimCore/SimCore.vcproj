@@ -73,7 +73,7 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/SimViewer.pdb"
 				SubSystem="1"
-				ImportLibrary="../../lib/SimViewerCoredd.lib"
+				ImportLibrary="../../lib/SimViewerCored.lib"
 				TargetMachine="1"
 			/>
 			<Tool
