@@ -70,7 +70,7 @@
 #include <osg/ArgumentParser>
 
 #ifdef AGEIA_PHYSICS
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+#include <NxAgeiaWorldComponent.h>
 #endif
 
 using dtCore::RefPtr;
