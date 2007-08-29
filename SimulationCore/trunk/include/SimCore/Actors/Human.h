@@ -35,6 +35,7 @@
 #include <dtUtil/enumeration.h>
 
 #include <dtCore/refptr.h>
+#include <dtAnim/animationhelper.h>
 
 namespace dtUtil
 {
@@ -51,10 +52,10 @@ namespace osg
    class Geode;
 }
 
-namespace dtAnim
-{
-   class AnimationHelper;
-}
+//namespace dtAnim
+//{
+//   class AnimationHelper;
+//}
 
 namespace SimCore
 {
@@ -74,7 +75,7 @@ namespace SimCore
             BasicStanceEnum(const std::string& name);
       };
 
-      class AnimationOperators
+      class SIMCORE_EXPORT AnimationOperators
       {
          public:
             typedef std::map<std::string, dtAI::Operator* > NameOperMap;
@@ -234,7 +235,7 @@ namespace SimCore
             dtUtil::Log& mLogger;
       };
 
-      class BasicStanceState: public dtAI::IStateVariable
+      class SIMCORE_EXPORT BasicStanceState: public dtAI::IStateVariable
       {
          public:
             typedef BasicStanceEnum EnumValueType;
@@ -255,7 +256,7 @@ namespace SimCore
             BasicStanceEnum* mStance;
       };
 
-      class WeaponState: public dtAI::IStateVariable
+      class SIMCORE_EXPORT WeaponState: public dtAI::IStateVariable
       {
          public:
             typedef HumanActorProxy::WeaponStateEnum EnumValueType;
