@@ -58,7 +58,7 @@
 #include "TestComponent.h"
 
 #ifdef AGEIA_PHYSICS
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+#include <NxAgeiaWorldComponent.h>
 #endif
 
 #ifdef DELTA_WIN32
