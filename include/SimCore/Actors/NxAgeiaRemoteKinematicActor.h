@@ -32,7 +32,7 @@ namespace SimCore
    namespace Actors
    {
 #ifdef AGEIA_PHYSICS
-   #include <dtAgeiaPhysX/NxAgeiaPrimitivePhysicsHelper.h>
+   #include <NxAgeiaPrimitivePhysicsHelper.h>
 
       class SIMCORE_EXPORT NxAgeiaRemoteKinematicActor : public Platform, 
                                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 

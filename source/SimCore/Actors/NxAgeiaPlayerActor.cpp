@@ -42,7 +42,7 @@
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 
 #ifdef AGEIA_PHYSICS
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+#include <NxAgeiaWorldComponent.h>
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #endif
 

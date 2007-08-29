@@ -21,8 +21,8 @@
 #include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
-#include <dtAgeiaPhysX/NxAgeiaPhysicsHelper.h>
+#include <NxAgeiaWorldComponent.h>
+#include <NxAgeiaPhysicsHelper.h>
 
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 

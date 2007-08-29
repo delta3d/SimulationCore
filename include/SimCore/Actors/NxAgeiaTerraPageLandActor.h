@@ -22,9 +22,9 @@
 #define _NX_AGEIA_TERRA_LAND_
 
 #ifdef AGEIA_PHYSICS
-   #include <dtAgeiaPhysX/NxAgeiaPrimitivePhysicsHelper.h>
-   #include <dtAgeiaPhysX/Stream.h>
-   #include <dtAgeiaPhysX/PhysicsGlobals.h>
+   #include <NxAgeiaPrimitivePhysicsHelper.h>
+   #include <Stream.h>
+   #include <PhysicsGlobals.h>
  
    #include <osgDB/Registry>
    #include <osg/Geode>

@@ -27,7 +27,7 @@
 
 #include <dtGame/gameactor.h>
 
-#include <dtAgeiaPhysX/NxAgeiaPrimitivePhysicsHelper.h>
+#include <NxAgeiaPrimitivePhysicsHelper.h>
 //#include <dtCore/object.h>
 
 #include <osg/BlendFunc>

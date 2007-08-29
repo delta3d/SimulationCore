@@ -21,7 +21,7 @@
 
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
-#include <dtAgeiaPhysX/NxAgeiaPhysicsHelper.h>
+#include <NxAgeiaPhysicsHelper.h>
 #endif
 
 namespace dtAudio

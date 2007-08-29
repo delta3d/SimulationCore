@@ -23,7 +23,7 @@
 
 #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
 
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+#include <NxAgeiaWorldComponent.h>
 
 #include <SimCore/Actors/VolumetricLine.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
