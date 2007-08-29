@@ -21,7 +21,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #ifdef AGEIA_PHYSICS
-   #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+   #include <NxAgeiaWorldComponent.h>
 #endif
 
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>

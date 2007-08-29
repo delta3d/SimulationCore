@@ -21,7 +21,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+#include <NxAgeiaWorldComponent.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>

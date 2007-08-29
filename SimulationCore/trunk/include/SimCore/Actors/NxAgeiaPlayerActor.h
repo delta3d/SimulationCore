@@ -24,7 +24,7 @@
 #include <SimCore/Actors/Human.h>
 
 #ifdef AGEIA_PHYSICS
-#include <dtAgeiaPhysX/NxAgeiaCharacterHelper.h>
+#include <NxAgeiaCharacterHelper.h>
 #endif
 
 namespace dtGame

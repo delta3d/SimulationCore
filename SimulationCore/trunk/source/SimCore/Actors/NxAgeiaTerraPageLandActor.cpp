@@ -33,7 +33,7 @@
 
       #ifdef AGEIA_PHYSICS
 
-      #include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
+      #include <NxAgeiaWorldComponent.h>
       #include <SimCore/ModifiedStream.h>
       #include <NxCooking.h>
 

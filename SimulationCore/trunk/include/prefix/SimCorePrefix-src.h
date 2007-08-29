@@ -10,11 +10,11 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/Human.h>
 
-#ifdef AGEIA_PHYSICS
-#include <dtAgeiaPhysX/NxAgeiaCharacterHelper.h>
-#include <dtAgeiaPhysX/NxAgeiaPrimitivePhysicsHelper.h>
-#include <dtAgeiaPhysX/Stream.h>
-#endif
+//#ifdef AGEIA_PHYSICS
+//#include <NxAgeiaCharacterHelper.h>
+//#include <NxAgeiaPrimitivePhysicsHelper.h>
+//#include <Stream.h>
+//#endif
 
 //#ifdef None
 //#undef None
