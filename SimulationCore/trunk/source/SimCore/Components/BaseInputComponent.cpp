@@ -115,7 +115,7 @@ namespace SimCore
          return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyReleased(keyboard, key, character);
       }
 
-      const std::string &BaseInputComponent::DEFAULT_NAME = "Input Component";
+      const std::string BaseInputComponent::DEFAULT_NAME = "Input Component";
 
       ////////////////////////////////////////////////////////////////////
       BaseInputComponent::BaseInputComponent(const std::string &name) :
