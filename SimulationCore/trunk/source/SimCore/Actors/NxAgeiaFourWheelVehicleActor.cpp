@@ -39,6 +39,7 @@
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
+#include <SimCore/Actors/PortalActor.h>
 
 namespace SimCore
 {

@@ -330,8 +330,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          // Avoid adding another tracer geometry if this is a recycled particle.
          if( NULL != node && node->getNumChildren() == 0 )
          {
-            dtCore::RefPtr<VolumetricLine> line 
-               = new VolumetricLine( 20.0f, 0.5f, "VolumetricLines", "TracerGroup" );
+            dtCore::RefPtr<SimCore::Actors::VolumetricLine> line 
+               = new SimCore::Actors::VolumetricLine( 20.0f, 0.5f, "VolumetricLines", "TracerGroup" );
             _particle->mObj->AddChild( line.get() );
 
             node = (line->GetMatrixNode());

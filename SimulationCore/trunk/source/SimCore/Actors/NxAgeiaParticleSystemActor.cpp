@@ -365,7 +365,7 @@ void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
    // LOAD Object File - most of the time, it will be in the cache
    dtCore::RefPtr<osg::Node> cachedOriginalNode;
    dtCore::RefPtr<osg::Node> copiedNode;
-   if (!IGActor::LoadFileStatic(resourceFile, cachedOriginalNode, copiedNode, true))
+   if (!SimCore::Actors::IGActor::LoadFileStatic(resourceFile, cachedOriginalNode, copiedNode, true))
       throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
       std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile, __FILE__, __LINE__);
 

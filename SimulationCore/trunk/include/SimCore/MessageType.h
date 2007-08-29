@@ -37,7 +37,7 @@ namespace SimCore
     */
    class SIMCORE_EXPORT MessageType : public dtGame::MessageType
    {
-         DECLARE_ENUM(MessageType);
+      DECLARE_ENUM(MessageType);
       public:
 
          static const MessageType ATTACH_TO_ACTOR;

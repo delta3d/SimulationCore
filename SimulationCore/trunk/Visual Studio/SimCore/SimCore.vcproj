@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtGUId.lib dtABCd.lib dtDALd.lib dtUtild.lib dtCored.lib dtGamed.lib dtAudiod.lib dtActorsd.lib dtHLAGMd.lib osgUtild.lib osgd.lib osgDBd.lib osgGAd.lib osgTextd.lib osgProducerd.lib CEGUIBase_d.lib xerces-c_2D.lib osgSimd.lib osgParticled.lib openGL32.lib PhysXLoader.lib Producerd.lib dtAgeiaPhysXd.lib osgEphemerisd.lib dtAnimd.lib"
+				AdditionalDependencies="dtGUId.lib dtABCd.lib dtDALd.lib dtUtild.lib dtCored.lib dtGamed.lib dtAudiod.lib dtActorsd.lib dtHLAGMd.lib osgUtild.lib osgd.lib osgDBd.lib osgGAd.lib osgTextd.lib osgProducerd.lib CEGUIBase_d.lib xerces-c_2D.lib osgSimd.lib osgParticled.lib openGL32.lib PhysXLoader.lib Producerd.lib dtAgeiaPhysXd.lib osgEphemerisd.lib dtAnimd.lib dtAId.lib"
 				OutputFile="../../bin/SimViewerCored.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);"
@@ -150,7 +150,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtABC.lib dtDAL.lib dtUtil.lib dtCore.lib dtGame.lib dtActors.lib dtHLAGM.lib dtGUI.lib osgUtil.lib dtAudio.lib osg.lib osgDB.lib osgGA.lib osgSim.lib osgText.lib osgProducer.lib CEGUIBase.lib xerces-c_2.lib osgParticle.lib openGL32.lib PhysXLoader.lib Producer.lib dtAgeiaPhysx.lib osgEphemeris.lib dtAnim.lib"
+				AdditionalDependencies="dtABC.lib dtDAL.lib dtUtil.lib dtCore.lib dtGame.lib dtActors.lib dtHLAGM.lib dtGUI.lib osgUtil.lib dtAudio.lib osg.lib osgDB.lib osgGA.lib osgSim.lib osgText.lib osgProducer.lib CEGUIBase.lib xerces-c_2.lib osgParticle.lib openGL32.lib PhysXLoader.lib Producer.lib dtAgeiaPhysx.lib osgEphemeris.lib dtAnim.lib dtAI.lib"
 				OutputFile="../../bin/SimViewerCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

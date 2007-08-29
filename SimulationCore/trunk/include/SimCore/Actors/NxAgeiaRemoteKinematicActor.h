@@ -26,17 +26,18 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 
-
+#ifdef AGEIA_PHYSICS
+#include <NxAgeiaPrimitivePhysicsHelper.h>
+#include <NxAgeiaContactReport.h>
+#endif
 namespace SimCore
 {
    namespace Actors
    {
-#ifdef AGEIA_PHYSICS
-   #include <NxAgeiaPrimitivePhysicsHelper.h>
-
+      #ifdef AGEIA_PHYSICS
       class SIMCORE_EXPORT NxAgeiaRemoteKinematicActor : public Platform, 
-                                                      public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
-                                                      public VehicleInterface
+                                                         public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
+                                                         public VehicleInterface
       #else
       class SIMCORE_EXPORT NxAgeiaRemoteKinematicActor : public Platform, 
                                                       public VehicleInterface

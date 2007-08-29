@@ -162,9 +162,9 @@ class SIMCORE_EXPORT NxAgeiaMunitionsPSysActor: public NxAgeiaParticleSystemActo
 
       // Set the weapon that owns this shooter.
       // This allows the weapon to listen for contact reports.
-      void SetWeapon( WeaponActor& weapon ) { mWeapon = &weapon; }
-      WeaponActor* GetWeapon() { return mWeapon.get(); }
-      const WeaponActor* GetWeapon() const { return mWeapon.get(); }
+      void SetWeapon( SimCore::Actors::WeaponActor& weapon ) { mWeapon = &weapon; }
+      SimCore::Actors::WeaponActor* GetWeapon() { return mWeapon.get(); }
+      const SimCore::Actors::WeaponActor* GetWeapon() const { return mWeapon.get(); }
       // to be called from like a wep apointment
       virtual void Fire();
 
@@ -191,7 +191,7 @@ class SIMCORE_EXPORT NxAgeiaMunitionsPSysActor: public NxAgeiaParticleSystemActo
       int            mFrequencyOfTracers;       /// Everytime it hits this number it will reset mCurrentTracerRoundNumber
                                                 /// to 0 and set the curr particle to be tracer
       dtCore::RefPtr<dtCore::Isector>                 mISector;
-      dtCore::ObserverPtr<WeaponActor>  mWeapon;
+      dtCore::ObserverPtr<SimCore::Actors::WeaponActor>  mWeapon;
 };
 
 ////////////////////////////////////////////////////////
