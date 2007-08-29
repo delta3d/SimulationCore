@@ -12,10 +12,10 @@
 #include <SimCore/MessageType.h>
 
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <dtAgeiaPhysX/NxAgeiaPhysicsHelper.h>
-#include <dtAgeiaPhysX/NxAgeiaWorldComponent.h>
-#include <dtAgeiaPhysX/NxAgeiaMaterialActor.h>
-#include <dtAgeiaPhysX/NxAgeiaActorRegistry.h>
+#include <NxAgeiaPhysicsHelper.h>
+#include <NxAgeiaWorldComponent.h>
+#include <NxAgeiaMaterialActor.h>
+#include <NxAgeiaActorRegistry.h>
 
 #include <dtUtil/log.h>
 #include <dtDAL/map.h>
