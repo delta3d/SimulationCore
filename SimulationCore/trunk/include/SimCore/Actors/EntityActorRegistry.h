@@ -68,7 +68,6 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> PORTAL_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> VEHICLE_CONFIG_ACTOR_TYPE;
-            static dtCore::RefPtr<dtDAL::ActorType> JAMMER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> LM_OPENFLIGHT_TERRAIN_ACTORTYPE;
 
             /// Constructor
