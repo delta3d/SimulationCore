@@ -153,8 +153,6 @@ namespace SimCore
                dtDAL::MakeFunctorRet(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
 
-         
-
 //         static const std::string PROPERTY_MIN_RUN_VELOCITY_DESC
 //            ("The Minimum velocity at which the human will begin running");
 //
@@ -171,8 +169,6 @@ namespace SimCore
 //               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
 //               PROPERTY_FULL_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
-         
-         
       }
       
       ////////////////////////////////////////////////////////////////////////////
@@ -232,8 +228,12 @@ namespace SimCore
          
          initialState.AddState(STATE_BASIC_STANCE, stanceState);
 
+         HumanActorProxy::WeaponStateEnum* effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::FIRING_POSITION;
+         if (*mPrimaryWeaponStateEnum != HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
+            effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::DEPLOYED;
+         
          WeaponState* weaponState = new WeaponState();
-         weaponState->SetWeaponStateEnum(*mPrimaryWeaponStateEnum);
+         weaponState->SetWeaponStateEnum(*effectiveWeaponState);
          
          initialState.AddState(STATE_WEAPON,       weaponState);
          initialState.AddState(STATE_DEAD,         new dtAI::StateVariable(
@@ -310,7 +310,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void Human::GenerateNewAnimationSequence()
+      bool Human::GenerateNewAnimationSequence()
       {
          mCurrentPlan.clear();
          mPlanner.Reset(&mPlannerHelper);
@@ -318,7 +318,9 @@ namespace SimCore
          if (result == dtAI::Planner::PLAN_FOUND)
          {
             mCurrentPlan = mPlanner.GetConfig().mResult;
+            return true;
          }
+         return false;
       }
       
       ////////////////////////////////////////////////////////////////////////////
@@ -375,7 +377,11 @@ namespace SimCore
          const WeaponState* weaponState;
          pWS->GetState(STATE_WEAPON, weaponState);
          
-         if (weaponState->GetWeaponStateEnum() != *mPrimaryWeaponStateEnum)
+         HumanActorProxy::WeaponStateEnum* effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::FIRING_POSITION;
+         if (*mPrimaryWeaponStateEnum != HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
+            effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::DEPLOYED;
+         
+         if (weaponState->GetWeaponStateEnum() != *effectiveWeaponState)
             return false;
          
          const dtAI::StateVariable* movingState;
@@ -426,9 +432,13 @@ namespace SimCore
          dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
 
          dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
-         generatedSequence->SetName("transition");
-         i = mCurrentPlan.begin();
-         iend = mCurrentPlan.end();
+         
+         static int count = 0;
+         std::ostringstream ss;
+         ss << "sequence" << count;
+         ++count;
+         generatedSequence->SetName(ss.str());
+         
          
          if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
          {
@@ -436,35 +446,54 @@ namespace SimCore
                   "Current animation plan has \"%d\" steps.", mCurrentPlan.size());
          }
 
-         const float blendTime = 0.5f;
-         float accumulatedStartTime = 0.0f;
-         for (; i != iend; ++i)
+         if (!mCurrentPlan.empty())
          {
-            const dtAI::Operator* op = *i;
-            op->Apply(mPlannerHelper.GetCurrentState());
+            i = mCurrentPlan.begin();
+            iend = mCurrentPlan.end();
             
-            const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
-            if (animatable != NULL)
+            const float blendTime = 0.5f;
+            float accumulatedStartTime = 0.0f;
+            
+            
+            dtCore::RefPtr<dtAnim::Animatable> newAnim;
+            for (; i != iend; ++i)
             {
-               dtCore::RefPtr<dtAnim::Animatable> newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
-               newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime - blendTime));
-               
-               newAnim->SetFadeIn(blendTime);
-               newAnim->SetFadeOut(blendTime);
-               
-               dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
-               if (animChannel != NULL)
+               //if the last anim was NOT the last on, it has to end and be an action
+               if (newAnim.valid())
                {
-                  animChannel->SetMaxDuration(animChannel->GetAnimation()->GetDuration());
-                  animChannel->SetAction(true);
+                  dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
+                  if (animChannel != NULL)
+                  {
+                     animChannel->SetMaxDuration(animChannel->GetAnimation()->GetDuration());
+                     animChannel->SetAction(true);
+                  }
                }
                
-               generatedSequence->AddAnimation(animChannel);
+               const dtAI::Operator* op = *i;
+               
+               op->Apply(mPlannerHelper.GetCurrentState());
+               
+               const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
+               if (animatable != NULL)
+               {
+                  if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+                  {
+                     mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+                           "Adding animatable named \"%s\".", animatable->GetName().c_str());
+                  }
+                  newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
+                  newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime - blendTime));
+                  
+                  newAnim->SetFadeIn(blendTime);
+                  newAnim->SetFadeOut(blendTime);
+      
+                  generatedSequence->AddAnimation(newAnim.get());
+               }
             }
+            
+            seqMixer.ClearActiveAnimations(blendTime);
+            seqMixer.PlayAnimation(generatedSequence.get());
          }
-         
-         seqMixer.ClearActiveAnimations(blendTime);
-         seqMixer.PlayAnimation(generatedSequence.get());
       }
       
       ////////////////////////////////////////////////////////////////////////////
@@ -657,7 +686,7 @@ namespace SimCore
       const std::string AnimationOperators::ANIM_WALK_READY("Walk Ready");
       const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Deployed");
       const std::string AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
-      const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Ready");
+      const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
       const std::string AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
       const std::string AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
       const std::string AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");

@@ -36,6 +36,8 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/logcontroller.h>
 
+#include <dtAnim/animationcomponent.h>
+
 #include <dtUtil/mathdefines.h>
 
 #include <dtActors/coordinateconfigactor.h>
@@ -79,8 +81,11 @@ namespace SimCore
             dtGame::GameManager::NameVector mapNames;
             mlm.GetMapNames(mapNames);
             
-            dtCore::RefPtr<dtGame::GMComponent> component = gameManager.GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME);
-            dtGame::DeadReckoningComponent *drComp = dynamic_cast<dtGame::DeadReckoningComponent*>(component.get());
+            dtGame::DeadReckoningComponent *drComp;
+            gameManager.GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
+            dtAnim::AnimationComponent *animComp;
+            gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
+
             dtHLAGM::HLAComponent *hft = static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
             if(hft == NULL)
             {
@@ -89,19 +94,22 @@ namespace SimCore
 
             std::vector<dtDAL::ActorProxy*> toFill;
             gameManager.FindActorsByName("Terrain", toFill);
-            dtDAL::ActorProxy* terrainNode = NULL;
+            dtDAL::ActorProxy* terrainProxy = NULL;
             if(!toFill.empty())
             {
-               terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-               dtGame::GameActorProxy *gap = dynamic_cast<dtGame::GameActorProxy*>(terrainNode);
-               if(gap == NULL)
+               terrainProxy = toFill.front();
+               dtCore::Transformable* terrain;
+               terrainProxy->GetActor(terrain);
+               if(terrain == NULL)
                {
-                  LOG_ERROR("The terrain actor is not a game actor. Ignoring.");
+                  LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
                }
                else
                {
                   if (drComp != NULL)
-                     drComp->SetTerrainActor(&gap->GetGameActor());
+                     drComp->SetTerrainActor(terrain);
+                  if (animComp != NULL)
+                     animComp->SetTerrainActor(terrain);
                }
             }
             else
