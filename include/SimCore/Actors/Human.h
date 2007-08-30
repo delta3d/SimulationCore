@@ -195,7 +195,7 @@ namespace SimCore
             HumanActorProxy::WeaponStateEnum& GetPrimaryWeaponState() const;
             
             /// When the state is updated, this is called internally to update the plan.
-            void GenerateNewAnimationSequence();
+            bool GenerateNewAnimationSequence();
             void UpdatePlanAndAnimations();
 
             /// This exists for the sake of the unit tests.

@@ -495,6 +495,7 @@ namespace SimCore
       gameManager.AddComponent(*viewerMaterialComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*mMunitionsComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
+      gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());

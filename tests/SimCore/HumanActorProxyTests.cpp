@@ -67,6 +67,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanReadyToDeployed);
       CPPUNIT_TEST(TestPlanStandingToKneelingDeployed);
       CPPUNIT_TEST(TestPlanWalkingReadyToKneelingDeployed);
+      CPPUNIT_TEST(TestStartup);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -104,7 +105,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
-         human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -131,7 +132,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -158,7 +159,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -187,7 +188,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
 
-         human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -207,6 +208,30 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
       }
 
+      void TestStartup()
+      {
+         SimCore::Actors::Human* human;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
+         human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
+         
+         mGM->AddActor(*mHumanAP, false, false);
+         
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
+         human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
+
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+         
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               1U, unsigned(result.size()));
+         
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED, (*iter)->GetName());
+      }
    private:
 
       RefPtr<dtGame::GameManager> mGM;
