@@ -47,67 +47,63 @@ namespace SimCore
       class Platform;
    }
 
-   namespace Components
+   //////////////////////////////////////////////////////////////////////////
+   // PLAYER MOTION MODEL
+   //////////////////////////////////////////////////////////////////////////
+   class SIMCORE_EXPORT PlayerMotionModel : public dtCore::FPSMotionModel
    {
-   
-      //////////////////////////////////////////////////////////////////////////
-      // PLAYER MOTION MODEL
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT PlayerMotionModel : public dtCore::FPSMotionModel
-      {
-         DECLARE_MANAGEMENT_LAYER(PlayerMotionModel)
-   
-         public:
-   
-            // Constructor.
-            // @param keyboard the keyboard instance, or NULL to avoid creating default input mappings
-            // @param mouse the mouse instance, or NULL to avoid creating default input mappings
-            PlayerMotionModel(dtCore::Keyboard* keyboard = NULL,
-                              dtCore::Mouse* mouse = NULL);
-   
-            // Destructor
-            virtual ~PlayerMotionModel();
+      DECLARE_MANAGEMENT_LAYER(PlayerMotionModel)
 
-            void SetGroundClearance( float groundClearance ) { mGroundClearance = groundClearance; }
+      public:
 
-            float GetGroundClearance() const { return (float)mGroundClearance; }
+         // Constructor.
+         // @param keyboard the keyboard instance, or NULL to avoid creating default input mappings
+         // @param mouse the mouse instance, or NULL to avoid creating default input mappings
+         PlayerMotionModel(dtCore::Keyboard* keyboard = NULL,
+                           dtCore::Mouse* mouse = NULL);
 
-            void SetCollidableGeometry( dtCore::DeltaDrawable* geometry );
-            const dtCore::DeltaDrawable* GetCollidableGeometry() const;
+         // Destructor
+         virtual ~PlayerMotionModel();
 
-            const osg::Vec3& GetRotation() const { return mRotation; }
-            const osg::Vec3& GetPosition() const { return mPosition; }
+         void SetGroundClearance( float groundClearance ) { mGroundClearance = groundClearance; }
 
-            // Gets the recently calculated elevation.
-            // @return elevation above sea level measured in meters
-            double GetElevation() const { return mElevation; }
+         float GetGroundClearance() const { return (float)mGroundClearance; }
 
-            void ResetIsector( const osg::Vec3& camPosition );
+         void SetCollidableGeometry( dtCore::DeltaDrawable* geometry );
+         const dtCore::DeltaDrawable* GetCollidableGeometry() const;
 
-            void CollideWithGround();
+         const osg::Vec3& GetRotation() const { return mRotation; }
+         const osg::Vec3& GetPosition() const { return mPosition; }
 
-            // Message handler callback.
-            // @param data the message data
-            virtual void OnMessage(MessageData *data);
-            
-            SimCore::Actors::Platform* CheckWithCloseToVehicle();
-            //virtual void SetEnabled(bool enabled);
+         // Gets the recently calculated elevation.
+         // @return elevation above sea level measured in meters
+         double GetElevation() const { return mElevation; }
 
-      private:
+         void ResetIsector( const osg::Vec3& camPosition );
 
-            // The metric distance the camera should stay away from terrain.
-            double mGroundClearance;
+         void CollideWithGround();
 
-            // The elevation above sea level measured in meters.
-            double mElevation;
+         // Message handler callback.
+         // @param data the message data
+         virtual void OnMessage(MessageData *data);
+         
+         SimCore::Actors::Platform* CheckWithCloseToVehicle();
+         //virtual void SetEnabled(bool enabled);
 
-            // An ISector reference used in ground collision.
-            dtCore::RefPtr<dtCore::Isector> mIsector; 
+   private:
 
-            osg::Vec3 mRotation;
-            osg::Vec3 mPosition;
-      };
-   }
+         // The metric distance the camera should stay away from terrain.
+         double mGroundClearance;
+
+         // The elevation above sea level measured in meters.
+         double mElevation;
+
+         // An ISector reference used in ground collision.
+         dtCore::RefPtr<dtCore::Isector> mIsector; 
+
+         osg::Vec3 mRotation;
+         osg::Vec3 mPosition;
+   };
 }
 
 #endif
