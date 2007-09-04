@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
    dtCore::SetDataFilePathList(".:" +
                                dtCore::GetDeltaDataPathList() + ":" +
-                               "src/StealthViewer") ;
+                               "source/StealthViewer") ;
    int result;
    QApplication app(argc, argv);
 

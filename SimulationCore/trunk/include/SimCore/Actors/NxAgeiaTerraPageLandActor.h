@@ -138,7 +138,7 @@
                      Temp.mMatrix = osg::computeLocalToWorld(nodePath);
 
                      osg::StateSet* tempStateSet = d->getStateSet();
-                     osg::ref_ptr<osg::IntArray> mOurList ;
+                     osg::ref_ptr<osg::IntArray> mOurList;
                      if(tempStateSet != NULL)
                         mOurList = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
 
@@ -148,7 +148,7 @@
                         {
                            iter = 0;
                            std::vector<int>::iterator listiter = mOurList->begin();
-                           for(; listiter != mOurList->end(); listiter++)
+                           for(; listiter != mOurList->end(); ++listiter)
                            {
                               value[iter] = *listiter;
                               ++iter;
