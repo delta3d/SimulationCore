@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
-
    <shadergroup name="DefaultShaders">
       <shader name="DetailMap_PerPixel_Lighting" default="yes">
          <source type="Vertex">Shaders/perpixel_lighting_detailmap_vert.glsl</source>
