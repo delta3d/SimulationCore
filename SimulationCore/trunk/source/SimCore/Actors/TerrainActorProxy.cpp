@@ -99,7 +99,7 @@ namespace SimCore
             if (!fileName.empty())
             {
                dtCore::RefPtr<osg::Node> unused;
-               if( !IGActor::LoadFile(fileName, mTerrainNode, unused, false, true) )
+               if( !IGActor::LoadFile(fileName, mTerrainNode, unused, true, true) )
                   LOG_ERROR("Failed to load the terrain file: " + fileName);
 
                //mTerrainNode = IGActor::LoadFile(fileName, false);
