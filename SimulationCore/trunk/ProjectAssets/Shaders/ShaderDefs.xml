@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<shaderlist>
+
+   <shadergroup name="DefaultShaders">
+      <shader name="DetailMap_PerPixel_Lighting" default="yes">
+         <source type="Vertex">Shaders/perpixel_lighting_detailmap_vert.glsl</source>
+         <source type="Vertex">Shaders/perpixel_lighting_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/perpixel_lighting_detailmap_frag.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/perpixel_lighting_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="detailTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/entity_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+      <shader name="PerPixel_Lighting">
+         <source type="Vertex">Shaders/perpixel_lighting_one_directional_vert.glsl</source>
+         <source type="Vertex">Shaders/perpixel_lighting_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/perpixel_lighting_one_directional_frag.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/perpixel_lighting_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="AAVP7ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/aav/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="BMP2ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/bmp2/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="BMP3ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/bmp3/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="BRDM2ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/brdm2/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+       </shader>
+   </shadergroup>
+
+   <shadergroup name="BTR70ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/btr-70/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+       </shader>
+   </shadergroup>
+
+   <shadergroup name="CobraShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/ah-1w_super_cobra/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+       </shader>
+   </shadergroup>
+
+
+   <shadergroup name="FA18DHornetShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/fa18d/gloss_map.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="AV-8BShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/av-8b_harrier/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="M1A1ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/m1a1/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="fueltruckShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/fuel_truck/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="ApacheShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/ah-64a_apache/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="M35ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/m35/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="M198ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/m198/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="SimpleVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_nogloss_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_nogloss_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter> 
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="M1045_hmmwvShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_nogloss_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_nogloss_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="M1045_hmmwv_Interior_ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex_hmmwv_interior.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel_hmmwv_interior.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="detailTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/terrain_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="MTVRShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/mtvr/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="S1GvodzikaShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/2s1_gvodzika/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="T72ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/t72_mbt/gloss_map.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+	 <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="T80ShaderGroup">
+      <shader name="NoDamage">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/t80u/gloss_map.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+      </shader>
+     </shadergroup>
+
+   <shadergroup name="ToyotaTruckShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/toyota_truck/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="ZilCargoShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/zil131_cargo/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="ZilTruckbedShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/zil131_truckbed/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="2S12_120mmShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/2s12_120mm/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="2S19ShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/2s19/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="ZSU23-4MShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/zsu23_4_shilka/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="TerrainShaderGroup">
+      <shader name="Terrain_DetailMapping" default="yes">
+         <source type="Vertex">Shaders/terrain_vertex.glsl</source>
+         <source type="Vertex">Shaders/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/terrain_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/terrain_fragment.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>  
+         <source type="Fragment">Shaders/terrain_fragment_functions.glsl</source>
+         <parameter name="baseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="secondaryTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/terrain_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="bumpTexture1">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/terrain_detailmap_layer1.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="bumpTexture2">
+            <texture2D textureUnit="3">
+               <source type="Image">Textures/terrain_detailmap_layer2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shaderInEffect">
+            <float defaultValue="1.0"/>
+         </parameter>
+      </shader>
+      
+        <shader name="TerrainNVGSShader" default="no">
+         <source type="Vertex">Shaders/terrain_vertex_nvgs.glsl</source>
+         <source type="Fragment">Shaders/terrain_fragment_nvgs.glsl</source>
+         <parameter name="baseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="secondaryTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/terrain_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="bumpTexture1">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/terrain_detailmap_layer1.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="bumpTexture2">
+            <texture2D textureUnit="3">
+               <source type="Image">Textures/terrain_detailmap_layer2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shaderInEffect">
+            <float defaultValue="1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="TracerGroup">
+      <shader name="VolumetricLines">
+         <source type="Vertex">Shaders/volumetric_lines_vert.glsl</source>
+         <source type="Fragment">Shaders/volumetric_lines_frag.glsl</source>
+         <parameter name="glowTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/tracer.png</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+   
+
+   <shadergroup name="EphemerisFogGroup">
+      <shader name="EphemFog" default="yes">
+         <source type="Vertex">Shaders/ephemeris_fog_vert.glsl</source>
+         <source type="Vertex">Shaders/ephemeris_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/ephemeris_fog_frag.glsl</source>
+         <source type="Fragment">Shaders/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/ephemeris_fragment_functions.glsl</source>
+         <parameter name="DistanceForCompleteFog">
+            <float defaultValue="3000.0"/>
+         </parameter>
+         <parameter name="DistanceForHorizonFog">
+            <float defaultValue="4000.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+</shaderlist>
