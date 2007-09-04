@@ -330,7 +330,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception& ex)
          {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
+            CPPUNIT_FAIL(ex.ToString());
          }
       }
 
@@ -345,7 +345,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception& ex)
          {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
+            CPPUNIT_FAIL(ex.ToString());
          }
       }
 
