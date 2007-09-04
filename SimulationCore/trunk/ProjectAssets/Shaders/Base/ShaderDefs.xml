@@ -3,11 +3,11 @@
 <shaderlist>
    <shadergroup name="DefaultShaders">
       <shader name="DetailMap_PerPixel_Lighting" default="yes">
-         <source type="Vertex">Shaders/perpixel_lighting_detailmap_vert.glsl</source>
-         <source type="Vertex">Shaders/perpixel_lighting_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/perpixel_lighting_detailmap_frag.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/perpixel_lighting_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/perpixel_lighting_detailmap_vert.glsl</source>
+         <source type="Vertex">Shaders/Base/perpixel_lighting_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/perpixel_lighting_detailmap_frag.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/perpixel_lighting_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -22,11 +22,11 @@
          </parameter>
       </shader>
       <shader name="PerPixel_Lighting">
-         <source type="Vertex">Shaders/perpixel_lighting_one_directional_vert.glsl</source>
-         <source type="Vertex">Shaders/perpixel_lighting_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/perpixel_lighting_one_directional_frag.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/perpixel_lighting_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/perpixel_lighting_one_directional_vert.glsl</source>
+         <source type="Vertex">Shaders/Base/perpixel_lighting_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/perpixel_lighting_one_directional_frag.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/perpixel_lighting_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -37,14 +37,14 @@
 
    <shadergroup name="BMP2ShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -69,14 +69,14 @@
 
    <shadergroup name="BMP3ShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -101,14 +101,14 @@
 
    <shadergroup name="BRDM2ShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -133,14 +133,14 @@
 
    <shadergroup name="BTR70ShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -165,12 +165,12 @@
 
    <shadergroup name="SimpleVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_nogloss_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_nogloss_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Vertex">Shaders/Base/shader_nogloss_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_nogloss_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -181,14 +181,14 @@
 
    <shadergroup name="S1GvodzikaShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -213,14 +213,14 @@
 
    <shadergroup name="T72ShaderGroup">
       <shader name="NoDamage" default="yes">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -245,14 +245,14 @@
 
    <shadergroup name="T80ShaderGroup">
       <shader name="NoDamage">
-         <source type="Vertex">Shaders/shader_gloss_reflect_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_vehicle_vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/shader_gloss_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_gloss_reflect_pixel.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/shader_vehicle_fragment_functions.glsl</source>         
-         <source type="Fragment">Shaders/shader_gloss_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/shader_gloss_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect_pixel.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -277,12 +277,12 @@
 
    <shadergroup name="TerrainShaderGroup">
       <shader name="Terrain_DetailMapping" default="yes">
-         <source type="Vertex">Shaders/terrain_vertex.glsl</source>
-         <source type="Vertex">Shaders/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/terrain_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/terrain_fragment.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>  
-         <source type="Fragment">Shaders/terrain_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/terrain_vertex.glsl</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/terrain_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/terrain_fragment.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>  
+         <source type="Fragment">Shaders/Base/terrain_fragment_functions.glsl</source>
          <parameter name="baseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -315,8 +315,8 @@
       </shader>
       
         <shader name="TerrainNVGSShader" default="no">
-         <source type="Vertex">Shaders/terrain_vertex_nvgs.glsl</source>
-         <source type="Fragment">Shaders/terrain_fragment_nvgs.glsl</source>
+         <source type="Vertex">Shaders/Base/terrain_vertex_nvgs.glsl</source>
+         <source type="Fragment">Shaders/Base/terrain_fragment_nvgs.glsl</source>
          <parameter name="baseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -351,8 +351,8 @@
 
    <shadergroup name="TracerGroup">
       <shader name="VolumetricLines">
-         <source type="Vertex">Shaders/volumetric_lines_vert.glsl</source>
-         <source type="Fragment">Shaders/volumetric_lines_frag.glsl</source>
+         <source type="Vertex">Shaders/Base/volumetric_lines_vert.glsl</source>
+         <source type="Fragment">Shaders/Base/volumetric_lines_frag.glsl</source>
          <parameter name="glowTexture">
             <texture2D textureUnit="0">
                <source type="Image">Textures/ShadersBase/tracer.png</source>
@@ -366,11 +366,11 @@
 
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
-         <source type="Vertex">Shaders/ephemeris_fog_vert.glsl</source>
-         <source type="Vertex">Shaders/ephemeris_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/ephemeris_fog_frag.glsl</source>
-         <source type="Fragment">Shaders/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/ephemeris_fragment_functions.glsl</source>
+         <source type="Vertex">Shaders/Base/ephemeris_fog_vert.glsl</source>
+         <source type="Vertex">Shaders/Base/ephemeris_vertex_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/ephemeris_fog_frag.glsl</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/ephemeris_fragment_functions.glsl</source>
          <parameter name="DistanceForCompleteFog">
             <float defaultValue="3000.0"/>
          </parameter>
