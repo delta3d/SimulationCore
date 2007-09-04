@@ -32,16 +32,12 @@
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
-   const std::string projectContext = "DVTEProject";
 #else
    #include <unistd.h>
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-   const std::string projectContext = "DVTEProject";
 #endif
 
 using dtCore::RefPtr;
-
-const std::string libName = "IG";
 
 class PauseResumeTests : public CPPUNIT_NS::TestFixture 
 {
@@ -84,8 +80,6 @@ void PauseResumeTests::setUp()
       dtCore::System::GetInstance().Start();
       RefPtr<dtCore::Scene> scene = new dtCore::Scene;
       mGM = new dtGame::GameManager(*scene);
-      mGM->LoadActorRegistry(libName);
-
       mMachineInfo = new dtGame::MachineInfo;
    }
    catch (const dtUtil::Exception& ex)
@@ -99,8 +93,6 @@ void PauseResumeTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(libName);
-
    mGM = NULL;
    mMachineInfo = NULL;
 }

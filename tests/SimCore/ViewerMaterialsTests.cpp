@@ -16,8 +16,6 @@
 #include <SimCore/Actors/ViewerMaterialActor.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
 
-const std::string SIM_CORE_REGISTRY = "SimViewerCore";
-
 class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ViewerMaterialsTests);
@@ -37,7 +35,6 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
 
          mGM = new dtGame::GameManager(*new dtCore::Scene());
-         mGM->LoadActorRegistry(SIM_CORE_REGISTRY);
               
          dtCore::System::GetInstance().Step();
 
@@ -54,7 +51,6 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Stop();
          
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(SIM_CORE_REGISTRY);
          mGM = NULL;
       }
 
@@ -67,12 +63,6 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ViewerMaterialsTests);
    
-#if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
-   const std::string &projectContextnx = "DVTEProject";
-#else
-   const std::string &projectContextnx = "DVTEProject";
-#endif
-
 void ViewerMaterialsTests::TestFunction()
 {
    CPPUNIT_ASSERT_MESSAGE("Material Component not initialized", (mMaterialComponent != NULL));

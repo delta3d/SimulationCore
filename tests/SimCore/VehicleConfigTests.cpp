@@ -17,14 +17,6 @@
 
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 
-const std::string &IG_REGISTRY_VEHICLE_CONFIG = "IG";
-
-#if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
-const std::string &projectContext_VEHICLE_CONFIG = "DVTEProject";
-#else
-const std::string &projectContext_VEHICLE_CONFIG = "DVTEProject";
-#endif
-
 class VehicleConfigTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(VehicleConfigTests);
@@ -57,7 +49,6 @@ void VehicleConfigTests::setUp()
    dtCore::System::GetInstance().Start();
 
    mGM = new dtGame::GameManager(*new dtCore::Scene());
-   mGM->LoadActorRegistry(IG_REGISTRY_VEHICLE_CONFIG);
 
    dtCore::System::GetInstance().Step();
 
@@ -72,7 +63,6 @@ void VehicleConfigTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(IG_REGISTRY_VEHICLE_CONFIG);
    mGM = NULL;
 }
 

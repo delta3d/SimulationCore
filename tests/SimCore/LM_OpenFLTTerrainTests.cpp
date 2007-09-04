@@ -17,8 +17,6 @@
 
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
 
-const std::string &IG_REGISTRY_LMTERRAIN_CONFIG = "IG";
-
 class LM_OpenFLTTerainTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(LM_OpenFLTTerainTests);
@@ -51,7 +49,6 @@ void LM_OpenFLTTerainTests::setUp()
    dtCore::System::GetInstance().Start();
 
    mGM = new dtGame::GameManager(*new dtCore::Scene());
-   mGM->LoadActorRegistry(IG_REGISTRY_LMTERRAIN_CONFIG);
 
    dtCore::System::GetInstance().Step();
 
@@ -66,7 +63,6 @@ void LM_OpenFLTTerainTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(IG_REGISTRY_LMTERRAIN_CONFIG);
    mGM = NULL;
 }
 

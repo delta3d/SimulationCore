@@ -22,8 +22,6 @@
 #include <dtABC/application.h>
 #include <SimCore/AgeiaTerrainCullVisitor.h>
 
-const std::string &IG_REGISTRY_TERRAPAGE_CONFIG = "IG";
-
 class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(TerraPageLandActorTests);
@@ -73,8 +71,6 @@ void TerraPageLandActorTests::setUp()
   
    mGM = new dtGame::GameManager(*mScene.get());
    mGM->SetApplication(*mApplication.get());
-   mGM->LoadActorRegistry(IG_REGISTRY_TERRAPAGE_CONFIG);
-  
    dtCore::System::GetInstance().Step();
 
    SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
@@ -90,7 +86,6 @@ void TerraPageLandActorTests::tearDown()
 
    mGM->GetApplication().Quit();
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(IG_REGISTRY_TERRAPAGE_CONFIG);
    mGM = NULL;
 
    mApplication = NULL;

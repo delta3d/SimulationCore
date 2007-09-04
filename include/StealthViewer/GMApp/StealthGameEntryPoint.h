@@ -97,9 +97,6 @@ namespace StealthGM
          virtual void HLAConnectionComponentSetup();
 
       private:
-
-         static const std::string ApplicationLibraryName;
-
          //dtCore::RefPtr<dtGame::DeadReckoningComponent> mDrComp;
          dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealth;
          //std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > mActors;
