@@ -29,6 +29,7 @@
 #include <dtCore/transformable.h>
 
 #include <dtDAL/project.h>
+#include <dtDAL/resourcedescriptor.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/actorupdatemessage.h>
@@ -187,7 +188,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception& ex)
          {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
+            CPPUNIT_FAIL(ex.ToString());
          }
       }
 
@@ -223,10 +224,16 @@ namespace SimCore
       {
          ptr = new dtCore::ParticleSystem("TestParticleSystem");
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
-         CPPUNIT_ASSERT(ptr->LoadFile("Particles/unittestparticles.osg") != NULL);
 
-         CPPUNIT_ASSERT_MESSAGE("Particles should be valid",
-            ptr.valid() );
+         dtDAL::Project& project = dtDAL::Project::GetInstance();
+         std::string path = project.GetContext() + "/" + 
+            project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
+         
+         CPPUNIT_ASSERT(!path.empty());
+         
+         CPPUNIT_ASSERT(ptr->LoadFile(path) != NULL);
+
+         CPPUNIT_ASSERT_MESSAGE("Particles should be valid", ptr.valid() );
 
          // Automatically insert the particles into the scene so that they can be ticked
          AddParticlesToScene(*ptr);
