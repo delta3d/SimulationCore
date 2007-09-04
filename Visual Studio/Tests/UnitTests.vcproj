@@ -95,7 +95,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;$(rti)/lib/winnt_vc++-7.1;$(DVTE_ROOT)\ext\bin\win32\&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;set DVTE_ROOT=$(DVTE_ROOT)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
+				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;$(rti)/lib/winnt_vc++-8.0;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -177,7 +177,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;$(rti)/lib/winnt_vc++-7.1;../../bin;$(DVTE_ROOT)\ext\win32\bin&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;set DVTE_ROOT=$(DVTE_ROOT)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
+				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;$(rti)/lib/winnt_vc++-8.0;../../bin;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

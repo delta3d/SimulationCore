@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../../ext/include/win32;../../apps/StealthViewer/include;$(AGEIA_INC);"
+				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;$(AGEIA_INC);"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;STEALTH_GAME_LIBRARY;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../../ext/include/win32;../../apps/StealthViewer/include;$(AGEIA_INC);"
+				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;$(AGEIA_INC);"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;STEALTH_GAME_LIBRARY;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS"
 				StringPooling="true"
 				RuntimeLibrary="2"

@@ -1273,7 +1273,21 @@ namespace SimCore
          }
 
          // Load the map file
-         dtDAL::Map& actorMap = dtDAL::Project::GetInstance().GetMap( mapName );
+         dtDAL::Map *map = NULL;
+         try
+         {
+            map = &dtDAL::Project::GetInstance().GetMap(mapName);
+         }
+         catch(const dtUtil::Exception &e)
+         {
+            std::ostringstream oss;
+            oss << "ERROR! Failed to load the munitions type table named: " << mapName << 
+               " because: " << e.What() << ". You will not be able to see detonations.";
+
+            LOG_ERROR(oss.str());
+            return 0;
+         }
+         dtDAL::Map &actorMap = *map;
          std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxies;
          actorMap.GetAllProxies( proxies );
 
