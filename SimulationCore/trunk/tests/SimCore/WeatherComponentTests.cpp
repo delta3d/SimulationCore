@@ -259,7 +259,6 @@ namespace SimCore
          mApp = NULL;
 
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry("IG");
 
          mGM = NULL;
          mMachineInfo = NULL;

@@ -98,7 +98,6 @@ namespace SimCore
          try
          {
             mGM = new dtGame::GameManager( *new dtCore::Scene );
-            mGM->LoadActorRegistry( "IG" );
             MessageType::RegisterMessageTypes( mGM->GetMessageFactory() );
          }
          catch (const dtUtil::Exception& ex)
@@ -113,7 +112,6 @@ namespace SimCore
          try
          {
             mGM->DeleteAllActors(true);
-            mGM->UnloadActorRegistry("IG");
             mGM = NULL;
          }
          catch (const dtUtil::Exception& ex)

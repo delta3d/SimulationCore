@@ -296,8 +296,6 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
       new StealthGM::PreferencesEnvironmentConfigObject;
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*new dtCore::Scene);
-   gm->LoadActorRegistry("IG");
-
    dtCore::RefPtr<SimCore::Components::WeatherComponent> weatherComponent = 
       new SimCore::Components::WeatherComponent;
 

@@ -49,8 +49,6 @@
 
 using dtCore::RefPtr;
 
-const std::string IG_REGISTRY = "IG";
- 
 class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture 
 {
    CPPUNIT_TEST_SUITE(ViewerNetworkPublishingComponentTests);
@@ -68,7 +66,6 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mApp->GetWindow()->SetPosition(0, 0, 50, 50);
          mGM = new dtGame::GameManager(*new dtCore::Scene());
          mGM->SetApplication(*mApp);
-         mGM->LoadActorRegistry(IG_REGISTRY);
          RefPtr<SimCore::Components::ViewerNetworkPublishingComponent> rulesComp = new SimCore::Components::ViewerNetworkPublishingComponent;         
          mGM->AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::NORMAL);
          mTestComp = new TestComponent;
@@ -96,7 +93,6 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mTestComp = NULL;
          mApp = NULL;
          mGM->DeleteAllActors(true);
-         mGM->UnloadActorRegistry(IG_REGISTRY);
          mGM = NULL;
       }
 

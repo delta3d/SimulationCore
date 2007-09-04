@@ -17,8 +17,6 @@
 
 #include <SimCore/Components/BaseGameAppComponent.h>
 
-const std::string &IG_REGISTRY_BASEGAMEAPPCOMPONENT_CONFIG = "IG";
-
 class BaseGameAppComponentTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE( BaseGameAppComponentTests );
@@ -51,7 +49,6 @@ void BaseGameAppComponentTests::setUp()
    dtCore::System::GetInstance().Start();
 
    mGM = new dtGame::GameManager(*new dtCore::Scene());
-   mGM->LoadActorRegistry(IG_REGISTRY_BASEGAMEAPPCOMPONENT_CONFIG);
 
    dtCore::System::GetInstance().Step();
 
@@ -66,7 +63,6 @@ void BaseGameAppComponentTests::tearDown()
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
-   mGM->UnloadActorRegistry(IG_REGISTRY_BASEGAMEAPPCOMPONENT_CONFIG);
    mGM = NULL;
 }
 

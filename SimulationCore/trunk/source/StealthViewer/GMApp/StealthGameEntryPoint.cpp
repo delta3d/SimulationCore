@@ -78,8 +78,6 @@ using dtCore::ObserverPtr;
 
 namespace StealthGM
 {
-   const std::string StealthGameEntryPoint::ApplicationLibraryName = "IG";
-
    ///////////////////////////////////////////////////////////////////////////
    extern "C" STEALTH_GAME_EXPORT dtGame::GameEntryPoint* CreateGameEntryPoint()
    {
