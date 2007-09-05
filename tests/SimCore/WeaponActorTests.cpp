@@ -454,15 +454,16 @@ namespace SimCore
          // Create a test target entity
          dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy );
-         CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create an BaseEntity",
+         CPPUNIT_ASSERT_MESSAGE( "GameManager should be able to create a Platform",
             proxy.valid() );
-         SimCore::Actors::BaseEntity* target = static_cast<SimCore::Actors::BaseEntity*>(&proxy->GetGameActor());
-         CPPUNIT_ASSERT_MESSAGE( "BaseEntityActorProxy should contain a valid BaseEntity",
+         SimCore::Actors::BaseEntity* target = NULL;
+         proxy->GetActor(target);
+         CPPUNIT_ASSERT_MESSAGE( "BaseEntityActorProxy should contain a valid Entity",
             target != NULL );
 
          // Ensure the MunitionsComponent has munition definitions loaded
          // so that the WeaponActor can find them when entering the world.
-         mMunitionsComp->LoadMunitionTypeTable( "DemoMunitionTypesMap" );
+         mMunitionsComp->LoadMunitionTypeTable( "MunitionTypesMap" );
 
          // Create a tick message used for testing WeaponActor::TickLocal
          dtCore::RefPtr<dtGame::TickMessage> tickMsg;
@@ -503,7 +504,7 @@ namespace SimCore
 
          // --- Test wake up
          CPPUNIT_ASSERT( ! mWeapon->IsTriggerHeld() );
-         CPPUNIT_ASSERT( mWeapon->GetFireRate() == 0.0f ); // single-shot mode
+         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0f, mWeapon->GetFireRate(), 1e-6f); // single-shot mode
          mWeapon->SetTimeBetweenMessages(timeDelta); // attempt to send a message every tick
          mWeapon->SetAutoSleepTime( 2.0f );
          mWeapon->SetTriggerHeld( true ); // causes an instant shot
@@ -511,9 +512,10 @@ namespace SimCore
          mWeapon->TickLocal( *tickMsg ); // again to make sure the weapon only fires once
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 1 );
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 1 );
-         CPPUNIT_ASSERT( mWeapon->GetAmmoCount() == --ammoCount );
+         CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotMessageCount());
+         CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotCount());
+         --ammoCount;
+         CPPUNIT_ASSERT_EQUAL(ammoCount, mWeapon->GetAmmoCount() );
          CPPUNIT_ASSERT( ! mWeapon->IsTriggerHeld() ); // single fire mode will depress the trigger
          mTestComp->ResetShotCount();
 
@@ -533,9 +535,10 @@ namespace SimCore
          mWeapon->TickLocal( *tickMsg ); // 0.5
          dtCore::System::GetInstance().Step(); // process all queued messages
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 1 );
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 1 );
-         CPPUNIT_ASSERT( mWeapon->GetAmmoCount() == --ammoCount );
+         CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotMessageCount());
+         CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotCount());
+         --ammoCount;
+         CPPUNIT_ASSERT_EQUAL(ammoCount, mWeapon->GetAmmoCount());
          mTestComp->ResetShotCount();
 
          // --- Test without auto sleep time (will not sleep)
@@ -548,8 +551,8 @@ namespace SimCore
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
 
          // --- Nothing should have been shot since weapon is still in single-shot mode.
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 0 );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 0 );
+         CPPUNIT_ASSERT_EQUAL(0U, mTestComp->GetShotCount() );
+         CPPUNIT_ASSERT_EQUAL(0U, mTestComp->GetShotMessageCount() );
 
          // TEST RE-FIRE BEHAVIOR ----------------------------------------------
          timeDelta = 0.25f;
@@ -609,8 +612,8 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
          // --- The weapon can only fire as fast as it can be stepped, so
          //     the bullet count will be lower than expected.
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 8 );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 2 );
+         CPPUNIT_ASSERT_EQUAL(8U, mTestComp->GetShotCount());
+         CPPUNIT_ASSERT_EQUAL(2U, mTestComp->GetShotMessageCount());
          mTestComp->ResetShotCount();
          mTestComp->ResetDetonationCount();
 
@@ -659,9 +662,9 @@ namespace SimCore
             dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
          // --- Process all queued messages so the test component can listen for them.
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 7 );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 5 );
-         CPPUNIT_ASSERT( mTestComp->GetDetonationMessageCount() == 4 );
+         CPPUNIT_ASSERT_EQUAL(7U, mTestComp->GetShotCount());
+         CPPUNIT_ASSERT_EQUAL(5U, mTestComp->GetShotMessageCount());
+         CPPUNIT_ASSERT_EQUAL(4U, mTestComp->GetDetonationMessageCount());
 
 
          // Use the same test from above WITHOUT bullet physics (instant hit mode).
@@ -705,9 +708,9 @@ namespace SimCore
             dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
          // --- Process all queued messages so the test component can listen for them.
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT( mTestComp->GetShotCount() == 7 );
-         CPPUNIT_ASSERT( mTestComp->GetShotMessageCount() == 5 );
-         CPPUNIT_ASSERT( mTestComp->GetDetonationMessageCount() == 5 );
+         CPPUNIT_ASSERT_EQUAL(7U, mTestComp->GetShotCount());
+         CPPUNIT_ASSERT_EQUAL(5U, mTestComp->GetShotMessageCount());
+         CPPUNIT_ASSERT_EQUAL(5U, mTestComp->GetDetonationMessageCount());
 #endif
       }
    }

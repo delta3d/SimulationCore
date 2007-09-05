@@ -41,9 +41,9 @@
 #include <dtGame/messagetype.h>
 #include <dtGame/defaultmessageprocessor.h>
 #include <dtCore/system.h>
-#include <dtCore/globals.h>
 
 #include <SimCore/MessageType.h>
+#include <SimCore/Components/HLACustomParameterTranslator.h>
 
 using dtCore::RefPtr;
 
@@ -63,32 +63,11 @@ class HLATests : public CPPUNIT_NS::TestFixture
       void TestHLAConnection();
       
    private:
-      void TestSpecificIntTranslations(dtHLAGM::OneToOneMapping& mapping, 
-         TestHLAComponent& testTrans, 
-         long expectedResult);
       RefPtr<dtGame::GameManager> mGameManager;
-      
-      //shared buffer.
-      char* buffer;
-      
-      static const std::string mTestGameActorLibrary;
-      static const std::string mProjectContext;
-      
-      dtUtil::Log* logger;
 };
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(HLATests);
-
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-  #if defined (_DEBUG)
-      const std::string HLATests::mTestGameActorLibrary="testGameActorLibrary";
-  #else
-      const std::string HLATests::mTestGameActorLibrary="testGameActorLibrary";
-  #endif
-#else
-   const std::string HLATests::mTestGameActorLibrary="testGameActorLibrary";
-#endif
 
 class TestHLAComponent: public dtHLAGM::HLAComponent
 {
@@ -105,17 +84,12 @@ void HLATests::setUp()
 {
    try 
    {
-      dtCore::SetDataFilePathList(dtCore::GetDeltaDataPathList());   
-      std::string logName("HLAConfigTest");
-      logger = &dtUtil::Log::GetInstance(logName);
       RefPtr<dtCore::Scene> scene = new dtCore::Scene();
       mGameManager = new dtGame::GameManager(*scene);
-      mGameManager->LoadActorRegistry(mTestGameActorLibrary);
       SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
       
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
-      buffer = new char[512];
    }
    catch (const dtUtil::Exception& e) 
    {
@@ -129,39 +103,28 @@ void HLATests::tearDown()
    dtCore::System::GetInstance().Stop();
    if (mGameManager.valid())
    {
-      mGameManager->UnloadActorRegistry(mTestGameActorLibrary);
       mGameManager = NULL;
    }
-   delete [] buffer;
-   buffer = NULL;
 }
 
 void HLATests::TestHLAConnection()
 {
-
-   //   dtDAL::ActorType *m1a1 = new dtDAL::ActorType("M1A1", "Vehicles",
-   //						 "This actor represents a M1A1");
-   //   std::string hlaM1A1 = "M1A1";
-   // dtHLAGM::EntityType thisDisID(1,1,225,1,1,9,0);
-  
-   // std::vector<dtHLAGM::AttributeToProperty> thisAttributeToPropertyMappingVector;
-   // thisAttributeToPropertyMappingVector.push_back(thisAttributeToPropertyMapping);
-   // thisAttributeToPropertyMappingVector.push_back(thisAttributeToPropertyMapping);
    RefPtr<dtHLAGM::HLAComponent> thisHLAComponent =  new dtHLAGM::HLAComponent();
 
    try
    {
       mGameManager->AddComponent(*thisHLAComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
-      config.LoadConfiguration(*thisHLAComponent, "Federations/JNTC/JNTCMapping.xml");
+      thisHLAComponent->AddParameterTranslator(*new SimCore::Components::HLACustomParameterTranslator());
+      config.LoadConfiguration(*thisHLAComponent, "Federations/HLAMapping.xml");
    }
    catch (const dtUtil::Exception& ex)
    {
       CPPUNIT_FAIL(ex.What());
    }
 
-   std::string fedResource = "Federations:JNTC:jntc.fed";
-   std::string fedFilePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Federations:JNTC:jntc.fed"));
+   const std::string fedResource("Federations:RPR-FOM.fed");
+   std::string fedFilePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(fedResource));
 
    CPPUNIT_ASSERT_MESSAGE("Fed file \"" + fedResource + "\" was not found.", !fedFilePath.empty());
 

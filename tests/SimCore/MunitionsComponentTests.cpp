@@ -41,11 +41,9 @@
 #ifdef DELTA_WIN32
 #include <Windows.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
-const std::string projectContext = "DVTEProject";
 #else
 #include <unistd.h>
 #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-const std::string projectContext = "DVTEProject";
 #endif
 
 using dtCore::RefPtr;
@@ -1271,22 +1269,22 @@ namespace SimCore
          // --- Create an new munition type actor
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> newType;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, newType );
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> munitionType 
-            = dynamic_cast<SimCore::Actors::MunitionTypeActor*> (newType->GetActor());
+         SimCore::Actors::MunitionTypeActor* munitionType;
+         newType->GetActor(munitionType);
          std::string testMunitionName( "Test Munition" );
 
          // --- Create an effects damage actor that will be used by the munition type
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> newEffectsInfo;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, newEffectsInfo );
-         dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActor> effectsInfo 
-            = dynamic_cast<SimCore::Actors::MunitionEffectsInfoActor*> (newEffectsInfo->GetActor());
+         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo; 
+         newEffectsInfo->GetActor(effectsInfo);
          effectsInfo->SetSmokeLifeTime( 0.0f );
 
-         CPPUNIT_ASSERT_MESSAGE( "A new MunitionTypeActor should have been created", munitionType.valid() );
+         CPPUNIT_ASSERT_MESSAGE( "A new MunitionTypeActor should have been created", munitionType);
 
          // --- Add it to the table so the Munition Component can find it
          newType->SetName(testMunitionName);
-         munitionType->SetDamageType("Medium HE");
+         munitionType->SetDamageType("High Explosive");
          munitionType->SetEffectsInfoActor(newEffectsInfo.get());
          typeTable->AddMunitionType( newType );
 
@@ -1322,9 +1320,9 @@ namespace SimCore
          mGM->GetAllActors(container);
          CPPUNIT_ASSERT_MESSAGE("The actors container should not be empty.", !container.empty());
          unsigned numActors = container.size(); // numActors exists for debugging purposes
-         CPPUNIT_ASSERT_MESSAGE("The actors container should have 2 actors in it.", numActors == 2);
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 2 actors in it.", 2U, numActors);
          mGM->FindActorsByType(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, container);
-         CPPUNIT_ASSERT_MESSAGE("The actors container should have 1 detonation actors in it.", container.size() == 1);
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The actors container should have 1 detonation actors in it.", 1U, unsigned(container.size()));
          RefPtr<dtDAL::ActorProxy> proxy = container[0];
          SimCore::Actors::DetonationActorProxy *dap = dynamic_cast<SimCore::Actors::DetonationActorProxy*>(proxy.get());
          CPPUNIT_ASSERT_MESSAGE("The 1 actor in the GM should a be a detonation actor, hence the dynamic_cast should not have failed", dap != NULL);
@@ -1358,7 +1356,7 @@ namespace SimCore
          mDamageComp->LoadMunitionDamageTables( "Configs:MunitionsConfig.xml" );
 
          // -- Register the entity
-         std::string munitionTableName("HMMWV");
+         std::string munitionTableName("MyEntityTypeName");
          entity->SetMunitionDamageTableName(munitionTableName);
          // NOTE: The component will try to load the munition table upon registration
          // and also link it to the helper created for the registered entity.
@@ -1646,7 +1644,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestMunitionConfigLoading()
       {
-         unsigned int successes = mDamageComp->LoadMunitionDamageTables( "Configs:DemoMunitionsConfig.xml" );
+         unsigned int successes = mDamageComp->LoadMunitionDamageTables( "Configs:MunitionsConfig.xml" );
 
          CPPUNIT_ASSERT_MESSAGE( "MunitionConfig should have loaded 1 table and returned 1 success.",
             successes == 1 );
