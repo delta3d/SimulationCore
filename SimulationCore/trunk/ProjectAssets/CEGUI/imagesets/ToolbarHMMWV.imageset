@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="ToolbarHMMWV" Imagefile="imagesets/ToolbarHMMWV.tga" NativeHorzRes="180" NativeVertRes="297" AutoScaled="true">
+   <Image Name="Embark_OFF" XPos="0" YPos="0" Width="90" Height="99" />
+   <Image Name="Embark_ON" XPos="0" YPos="99" Width="90" Height="99" />
+   <Image Name="Embark_DISABLED" XPos="0" YPos="198" Width="90" Height="99" />
+   <Image Name="Disembark_OFF" XPos="90" YPos="0" Width="90" Height="99" />
+   <Image Name="Disembark_ON" XPos="90" YPos="99" Width="90" Height="99" />
+   <Image Name="Disembark_DISABLED" XPos="90" YPos="198" Width="90" Height="99" />
+</Imageset>
+
