@@ -47,7 +47,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/HLACustomParameterTranslator.h>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
+#ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
 #else
@@ -61,21 +61,18 @@ class HLAConfigTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HLAConfigTests);
   
-      CPPUNIT_TEST(TestLoadJNTCConfigXML);
-      CPPUNIT_TEST(TestLoadVISITConfigXML);
+      CPPUNIT_TEST(TestLoadBasicConfigXML);
 
    CPPUNIT_TEST_SUITE_END();
 
    public:
       void setUp();
       void tearDown();
-      void TestLoadJNTCConfigXML();
-      void TestLoadVISITConfigXML();
+      void TestLoadBasicConfigXML();
    private:
       dtUtil::Log* logger;
       RefPtr<dtHLAGM::HLAComponent> mTranslator;
       RefPtr<dtGame::GameManager> mGameManager;
-      static const char* const mHLAActorRegistry;
 };
 
 // Registers the fixture into the 'registry'
@@ -85,7 +82,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HLAConfigTests);
 void HLAConfigTests::setUp()
 {
    
-   dtCore::SetDataFilePathList(dtCore::GetDeltaDataPathList());   
    std::string logName("HLAConfigTest");
    //dtUtil::Log::GetInstance("hlafomconfigxml.cpp").SetLogLevel(dtUtil::Log::LOG_DEBUG);
    logger = &dtUtil::Log::GetInstance(logName);
@@ -105,28 +101,13 @@ void HLAConfigTests::tearDown()
    
 }
 
-void HLAConfigTests::TestLoadJNTCConfigXML()
+void HLAConfigTests::TestLoadBasicConfigXML()
 {
    try
    {
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
-      config.LoadConfiguration(*mTranslator, "Federations/JNTC/JNTCMapping.xml");      
-   }
-   catch (const dtUtil::Exception& ex)
-   {
-      CPPUNIT_FAIL(ex.What());
-   }
-   
-}
-
-void HLAConfigTests::TestLoadVISITConfigXML()
-{
-   try
-   {
-      mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
-      dtHLAGM::HLAComponentConfig config;
-      config.LoadConfiguration(*mTranslator, "Federations/DVTE-VISIT/VisitMapping.xml");      
+      config.LoadConfiguration(*mTranslator, "Federations/HLAMapping.xml");      
    }
    catch (const dtUtil::Exception& ex)
    {

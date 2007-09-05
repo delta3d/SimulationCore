@@ -289,7 +289,8 @@ namespace SimCore
          }
          finalProjectPath = PROJECT_CONTEXT_DIR;
       }
-      dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
+      //The project sets this and setting CEGUI is no longer necessary.
+      //dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
 
       if(!mIsUIRunning)
       {
