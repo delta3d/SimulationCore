@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="ZoomButton" Imagefile="MiniMap/gui/FO/gui/ZoomButton.tga" NativeHorzRes="50" NativeVertRes="100" AutoScaled="true">
+   <Image Name="InNormal" XPos="0" YPos="0" Width="25" Height="25" />
+   <Image Name="InHover" XPos="0" YPos="25" Width="25" Height="25" />
+   <Image Name="InPushed" XPos="0" YPos="50" Width="25" Height="25" />
+   <Image Name="InDisabled" XPos="0" YPos="75" Width="25" Height="25" />
+   <Image Name="OutNormal" XPos="25" YPos="0" Width="25" Height="25" />
+   <Image Name="OutHover" XPos="25" YPos="25" Width="25" Height="25" />
+   <Image Name="OutPushed" XPos="25" YPos="50" Width="25" Height="25" />
+   <Image Name="OutDisabled" XPos="25" YPos="75" Width="25" Height="25" />
+</Imageset>
