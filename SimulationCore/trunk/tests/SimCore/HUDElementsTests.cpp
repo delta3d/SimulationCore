@@ -965,7 +965,7 @@ void HUDElementsTests::TestStealthToolbar()
 
    // Test strings.
    // NOTE: These names must match those found in the imageset for "Toolbar" 
-   // in DVTEProject/CEGUI/imagesets
+   // in CEGUI/imagesets
    const std::string 
       name1("Binoculars"),
       name2("LRF"),
@@ -974,7 +974,7 @@ void HUDElementsTests::TestStealthToolbar()
 
    // Add all buttons
    // NOTE: Keylabel names must match those found in the imageset for "KeyLabels" 
-   // in DVTEProject/CEGUI/imagesets
+   // in CEGUI/imagesets
    toolbar->AddButton(name1, name1, "F8");
    toolbar->AddButton(name2, name2, "F9");
    toolbar->AddButton(name3, name3, "F10");

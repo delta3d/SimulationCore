@@ -26,6 +26,7 @@
 #include <dtUtil/coordinates.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
+#include <dtCore/globals.h>
 #include <dtABC/application.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameactor.h>
@@ -39,7 +40,6 @@
 #include <osg/StateSet>
 #include <osg/Uniform>
 #include <osgDB/ReadFile>
-#include <osgDB/FileUtils>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 
@@ -218,8 +218,14 @@ namespace SimCore
          double windowWidth = 1920.0; // TODO: access the window for screen width
          double windowHeight = 1200.0; // TODO: access the window for screen height
 
-         std::string compassLensFile("./DVTEProject/Textures/hud/compass/lensatic.osg");
-         osg::ref_ptr<osg::Node> fileNode = osgDB::readNodeFile(compassLensFile);
+         std::string lensaticNode("Textures/huds/compass/lensatic.osg");
+         lensaticNode = dtCore::FindFileInPathList(lensaticNode);
+         
+         osg::ref_ptr<osg::Node> fileNode; 
+         
+         if (!lensaticNode.empty())
+            fileNode = osgDB::readNodeFile(lensaticNode);
+         
          if( fileNode != NULL )
          {
             mLensOverlay = dynamic_cast< osg::MatrixTransform* >(fileNode.get());
@@ -231,7 +237,7 @@ namespace SimCore
          else
          {
             std::stringstream ss;
-            ss << "Compass::InitLens: unable to load node file \"" << compassLensFile << "\"." << std::endl;
+            ss << "Compass::InitLens: unable to load node file \"" << lensaticNode << "\"." << std::endl;
             LOG_ERROR(ss.str());
          }
 
@@ -262,10 +268,8 @@ namespace SimCore
          mLensOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
-         std::string fragFileName = osgDB::findDataFile(
-            std::string("./DVTEProject/Shaders/fisheye_frag.glsl"));
-         std::string vertFileName = osgDB::findDataFile(
-            std::string("./DVTEProject/Shaders/fisheye_vertex.glsl"));
+         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_frag.glsl");
+         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_vertex.glsl");
 
          if( fragFileName.length() != 0 && vertFileName.length() != 0)
          {

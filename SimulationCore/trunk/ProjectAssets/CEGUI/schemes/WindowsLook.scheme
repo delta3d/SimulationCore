@@ -1,24 +1,24 @@
 <?xml version="1.0" ?>
 <GUIScheme Name="WindowsLookSkin">
-        <Imageset Name="Binoculars4.3" Filename="imagesets/Binoculars4.3.imageset" />
-        <Imageset Name="Binoculars8.5" Filename="imagesets/Binoculars8.5.imageset" />
-        <Imageset Name="CallSign" Filename="imagesets/CallSign.imageset" />
-        <Imageset Name="Clipboard" Filename="imagesets/Clipboard.imageset" />
-        <Imageset Name="Compass4.3" Filename="imagesets/Compass4.3.imageset" />
-        <Imageset Name="Compass8.5" Filename="imagesets/Compass8.5.imageset" />
-        <Imageset Name="KeyLabels" Filename="imagesets/KeyLabels.imageset" />
-        <Imageset Name="LRF" Filename="imagesets/LRF.imageset" />
-        <Imageset Name="Map" Filename="imagesets/Map.imageset" />
-        <Imageset Name="MeterBars" Filename="imagesets/MeterBars.imageset" />
-        <Imageset Name="Speedometer" Filename="imagesets/Speedometer.imageset" />
-        <Imageset Name="Toolbar" Filename="imagesets/Toolbar.imageset" />
-        <Imageset Name="WindowsLook" Filename="imagesets/WindowsLook.imageset" />
+        <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
+        <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
+        <Imageset Name="CallSign" Filename="CEGUI/imagesets/CallSign.imageset" />
+        <Imageset Name="Clipboard" Filename="CEGUI/imagesets/Clipboard.imageset" />
+        <Imageset Name="Compass4.3" Filename="CEGUI/imagesets/Compass4.3.imageset" />
+        <Imageset Name="Compass8.5" Filename="CEGUI/imagesets/Compass8.5.imageset" />
+        <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
+        <Imageset Name="LRF" Filename="CEGUI/imagesets/LRF.imageset" />
+        <Imageset Name="Map" Filename="CEGUI/imagesets/Map.imageset" />
+        <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
+        <Imageset Name="Speedometer" Filename="CEGUI/imagesets/Speedometer.imageset" />
+        <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
+        <Imageset Name="WindowsLook" Filename="CEGUI/imagesets/WindowsLook.imageset" />
 
-	<LookNFeel Filename="looknfeel/WindowsLook.looknfeel" />
+	<LookNFeel Filename="CEGUI/looknfeel/WindowsLook.looknfeel" />
 	<WindowSet Filename="CEGUIFalagardWRBase" />
-        <Font Name="Arial-Bold-16" Filename="fonts/Arial-Bold-16.font" />
-        <Font Name="Arial-Bold-12" Filename="fonts/Arial-Bold-12.font" />
-        <Font Name="DejaVuSans-10" Filename="fonts/DejaVuSans-10.font" />
+        <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
+        <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
+        <Font Name="DejaVuSans-10" Filename="CEGUI/fonts/DejaVuSans-10.font" />
 	<FalagardMapping WindowType="WindowsLook/Button"      TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/Button" />
 	<FalagardMapping WindowType="WindowsLook/Checkbox"    TargetType="CEGUI/Checkbox"    Renderer="Falagard/ToggleButton" LookNFeel="WindowsLook/Checkbox" />
 	<FalagardMapping WindowType="WindowsLook/IconButton"  TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/IconButton" />

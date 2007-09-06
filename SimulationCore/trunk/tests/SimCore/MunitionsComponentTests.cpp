@@ -1288,7 +1288,6 @@ namespace SimCore
          munitionType->SetEffectsInfoActor(newEffectsInfo.get());
          typeTable->AddMunitionType( newType );
 
-
          osg::Vec3 tankLocation(0.0f, 0.0f, 0.0f);
          RefPtr<DetonationMessage> detMsg;
          mGM->GetMessageFactory().CreateMessage(MessageType::DETONATION, detMsg);
@@ -1332,7 +1331,6 @@ namespace SimCore
 //         CPPUNIT_ASSERT_MESSAGE("The entity should be quite a bit lower than it's start position because of clamping.", xform.GetTranslation().z() < (tankLocation.z() + 10.0f));
          CPPUNIT_ASSERT_EQUAL_MESSAGE("X position should be the same", tankLocation.x(), xform.GetTranslation().x());
          CPPUNIT_ASSERT_MESSAGE("Y position should be the same", osg::equivalent(tankLocation.y(), xform.GetTranslation().y(), 0.000001f));
-         
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1402,8 +1400,6 @@ namespace SimCore
          munitionType2->SetFamily(SimCore::Actors::MunitionFamily::FAMILY_GENERIC_EXPLOSIVE);
          CPPUNIT_ASSERT( typeTable->AddMunitionType( munitionTypeProxy ) );
 
-
-
          // Initialize all test objects
          // --- Info 1
          float newtonForce = 50.0f;
@@ -1439,8 +1435,6 @@ namespace SimCore
          helper->SetMunitionDamageTable( table );
          // --- Set the helper's damage levels to be used
          helper->GetDamageLevels().Set(0.5f,0.45f,0.0f,0.0f,0.05f);
-
-
 
          // Test Direct Fire
          osg::Vec3 detLocation, trajectory(0.0f,0.0f,-1.0f);
@@ -1483,8 +1477,6 @@ namespace SimCore
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should still be DESTROYED",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
-
-
 
          // Test Indirect Fire (uses Carleton Equation)
          helper->SetDamage( DamageType::DAMAGE_NONE );

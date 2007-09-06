@@ -104,9 +104,12 @@ namespace SimCore
             mGM = new dtGame::GameManager(*scene);
       
             mMachineInfo = new dtGame::MachineInfo;
+
+            dtCore::RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent();
             mVMP = new ViewerMessageProcessor;
       
             mGM->AddComponent(*mVMP, dtGame::GameManager::ComponentPriority::HIGHEST);
+            mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
             MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
          }
          catch (const dtUtil::Exception& ex)
@@ -174,8 +177,8 @@ namespace SimCore
       
       void ViewerMessageProcessorTests::TestPlayerEnteredWorldMessage()
       {
-         RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent();
-         mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
+         dtGame::DeadReckoningComponent* drComp;
+         mGM->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
             
          RefPtr<dtGame::GameActorProxy> proxy;
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, proxy);

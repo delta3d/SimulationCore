@@ -42,7 +42,10 @@ namespace SimCore
          public:
             WeaponShooter() : dtCore::Base("WeaponShooter") {}
 
-            void Fire() { std::cout << "Fired gun." << std::endl; }
+            void Fire()
+            {
+               //std::cout << "Fired gun." << std::endl;
+            }
 
          protected:
             virtual ~WeaponShooter() {}

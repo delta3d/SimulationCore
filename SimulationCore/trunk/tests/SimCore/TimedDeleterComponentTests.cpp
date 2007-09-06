@@ -167,7 +167,7 @@ namespace SimCore
          // being equal to the component name with the id appended.
          // +5 for "actor" that precedes the id.
          std::string idStr = timerName.substr(GetName().length());
-         std::cout << "Deleting index: " << idStr.c_str() << "\n\n";
+         //std::cout << "Deleting index: " << idStr.c_str() << "\n\n";
 
          // This function internally calls the function RemoveId.
          TimedDeleterComponent::RemoveIdByTimerName(timerName);

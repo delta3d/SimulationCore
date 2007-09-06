@@ -1,45 +1,45 @@
 <?xml version="1.0" ?>
 <GUIScheme Name="WindowsLookSkin">
-
+      
         <!-- HMMWV HUD -->
-        <Imageset Name="Binoculars4.3" Filename="imagesets/Binoculars4.3.imageset" />
-        <Imageset Name="Binoculars8.5" Filename="imagesets/Binoculars8.5.imageset" />
-        <Imageset Name="CallSign" Filename="imagesets/CallSign.imageset" />
-        <Imageset Name="Compass4.3" Filename="imagesets/Compass4.3.imageset" />
-        <Imageset Name="Compass8.5" Filename="imagesets/Compass8.5.imageset" />
-        <Imageset Name="Clipboard" Filename="imagesets/Clipboard.imageset" />
-        <Imageset Name="Indicator" Filename="imagesets/Indicator.imageset" />
-        <Imageset Name="JammerSwitch" Filename="imagesets/JammerSwitch.imageset" />
-        <Imageset Name="KeyLabels" Filename="imagesets/KeyLabels.imageset" />
-        <Imageset Name="LRF" Filename="imagesets/LRF.imageset" />
-        <Imageset Name="Map" Filename="imagesets/Map.imageset" />
-        <Imageset Name="MeterBars" Filename="imagesets/MeterBars.imageset" />
-        <Imageset Name="Speedometer" Filename="imagesets/Speedometer.imageset" />
-        <Imageset Name="Toolbar" Filename="imagesets/Toolbar.imageset" />
-        <Imageset Name="ToolbarHMMWV" Filename="imagesets/ToolbarHMMWV.imageset" />
+        <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
+        <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
+        <Imageset Name="CallSign" Filename="CEGUI/imagesets/CallSign.imageset" />
+        <Imageset Name="Compass4.3" Filename="CEGUI/imagesets/Compass4.3.imageset" />
+        <Imageset Name="Compass8.5" Filename="CEGUI/imagesets/Compass8.5.imageset" />
+        <Imageset Name="Clipboard" Filename="CEGUI/imagesets/Clipboard.imageset" />
+        <Imageset Name="Indicator" Filename="CEGUI/imagesets/Indicator.imageset" />
+        <Imageset Name="JammerSwitch" Filename="CEGUI/imagesets/JammerSwitch.imageset" />
+        <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
+        <Imageset Name="LRF" Filename="CEGUI/imagesets/LRF.imageset" />
+        <Imageset Name="Map" Filename="CEGUI/imagesets/Map.imageset" />
+        <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
+        <Imageset Name="Speedometer" Filename="CEGUI/imagesets/Speedometer.imageset" />
+        <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
+        <Imageset Name="ToolbarHMMWV" Filename="CEGUI/imagesets/ToolbarHMMWV.imageset" />
 	
-	<Imageset Name="WindowsLook" Filename="MiniMap/gui/imagesets/WindowsLook.imageset" />
- 	<Imageset Name="FOPCSimButton" Filename="MiniMap/gui/FO/imagesets/FOPCSimButton.imageset" />
-        <Imageset Name="PushButtons" Filename="MiniMap/gui/imagesets/PushButtons.imageset"/> 
-	<Imageset Name="ToggleButtons" Filename="MiniMap/gui/imagesets/ToggleButtons.imageset"/>
-        <Imageset Name="ToggleButton" Filename="MiniMap/gui/FO/imagesets/ToggleButton.imageset"/>
-	<Imageset Name="ZoomButton" Filename="MiniMap/gui/FO/imagesets/ZoomButton.imageset"/>
-	<Imageset Name="ZoomRadioButton" Filename="MiniMap/gui/FO/imagesets/ZoomRadioButton.imageset"/>
+	<Imageset Name="WindowsLook" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/WindowsLook.imageset" />
+ 	<Imageset Name="FOPCSimButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/FOPCSimButton.imageset" />
+        <Imageset Name="PushButtons" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/PushButtons.imageset"/> 
+	<Imageset Name="ToggleButtons" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/ToggleButtons.imageset"/>
+        <Imageset Name="ToggleButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ToggleButton.imageset"/>
+	<Imageset Name="ZoomButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ZoomButton.imageset"/>
+	<Imageset Name="ZoomRadioButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ZoomRadioButton.imageset"/>
 
         <!-- FOPCSIM GUI Imagesets -->
-	<ImagesetFromImage Name="buttonshader" Filename="MiniMap/gui/FO/gui/box_entry.tga" />
-	<ImagesetFromImage Name="buttonhover" Filename="MiniMap/gui/FO/gui/box_entry_rollover.tga" />
-	<ImagesetFromImage Name="buttonclick" Filename="MiniMap/gui/FO/gui/box_entry_select.tga" />
-	<ImagesetFromImage Name="cffbutton" Filename="MiniMap/gui/FO/gui/cff_button.tga" />
-	<ImagesetFromImage Name="cffbuttonclick" Filename="MiniMap/gui/FO/gui/cff_button_click.tga" />
-	<ImagesetFromImage Name="editbox" Filename="MiniMap/gui/FO/gui/edit_shader.tga" />
+	<ImagesetFromImage Name="buttonshader" Filename="CEGUI/MiniMap/gui/FO/gui/box_entry.tga" />
+	<ImagesetFromImage Name="buttonhover" Filename="CEGUI/MiniMap/gui/FO/gui/box_entry_rollover.tga" />
+	<ImagesetFromImage Name="buttonclick" Filename="CEGUI/MiniMap/gui/FO/gui/box_entry_select.tga" />
+	<ImagesetFromImage Name="cffbutton" Filename="CEGUI/MiniMap/gui/FO/gui/cff_button.tga" />
+	<ImagesetFromImage Name="cffbuttonclick" Filename="CEGUI/MiniMap/gui/FO/gui/cff_button_click.tga" />
+	<ImagesetFromImage Name="editbox" Filename="CEGUI/MiniMap/gui/FO/gui/edit_shader.tga" />
 
-	<LookNFeel Filename="MiniMap/gui/looknfeel/WindowsLook.looknfeel" />
-        <LookNFeel Filename="MiniMap/gui/looknfeel/ClearedHot.looknfeel" />
-        <LookNFeel Filename="MiniMap/gui/looknfeel/FOPCSim.looknfeel" />
+	<LookNFeel Filename="CEGUI/MiniMap/gui/looknfeel/WindowsLook.looknfeel" />
+        <LookNFeel Filename="CEGUI/MiniMap/gui/looknfeel/ClearedHot.looknfeel" />
+        <LookNFeel Filename="CEGUI/MiniMap/gui/looknfeel/FOPCSim.looknfeel" />
 
-	<Font Name="Tahoma-8" Filename="MiniMap/gui/fonts/Tahoma-8.font" />
-	<Font Name="Tahoma-12" Filename="MiniMap/gui/fonts/tahoma-12.font" />
+	<Font Name="Tahoma-8" Filename="CEGUI/MiniMap/gui/fonts/Tahoma-8.font" />
+	<Font Name="Tahoma-12" Filename="CEGUI/MiniMap/gui/fonts/tahoma-12.font" />
         <Font Name="Arial-Bold-12" Filename="fonts/Arial-Bold-12.font" />
         <Font Name="Arial-Bold-16" Filename="fonts/Arial-Bold-16.font" />
         <Font Name="DejaVuSans-10" Filename="fonts/DejaVuSans-10.font" />
