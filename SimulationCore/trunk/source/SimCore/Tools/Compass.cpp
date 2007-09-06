@@ -218,7 +218,7 @@ namespace SimCore
          double windowWidth = 1920.0; // TODO: access the window for screen width
          double windowHeight = 1200.0; // TODO: access the window for screen height
 
-         std::string lensaticNode("Textures/huds/compass/lensatic.osg");
+         std::string lensaticNode("Textures/hud/compass/lensatic.osg");
          lensaticNode = dtCore::FindFileInPathList(lensaticNode);
          
          osg::ref_ptr<osg::Node> fileNode; 
