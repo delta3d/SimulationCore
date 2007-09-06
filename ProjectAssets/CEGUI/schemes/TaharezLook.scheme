@@ -1,15 +1,15 @@
 <?xml version="1.0" ?>
 <GUIScheme Name="TaharezLook">
-	<Imageset Name="TaharezLook" Filename="imagesets/TaharezLook.imageset" />
-      <Imageset Name="Binoculars4.3" Filename="imagesets/Binoculars4.3.imageset" />
-      <Imageset Name="Binoculars8.5" Filename="imagesets/Binoculars8.5.imageset" />
-	<Imageset Name="Compass4.3" Filename="imagesets/Compass4.3.imageset" />
-      <Imageset Name="Compass8.5" Filename="imagesets/Compass8.5.imageset" />
-      <Imageset Name="LRF" Filename="imagesets/LRF.imageset" />
-	<Font Name="Tahoma-12" Filename="fonts/tahoma-12.font" />
-	<Font Name="Tahoma-14" Filename="fonts/tahoma-14.font" />
-	<Font Name="Tahoma-16" Filename="fonts/tahoma-16.font" />
-	<Font Name="Digi-48" Filename="fonts/digi-48.font" />
+	<Imageset Name="TaharezLook" Filename="CEGUI/imagesets/TaharezLook.imageset" />
+      <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
+      <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
+	<Imageset Name="Compass4.3" Filename="CEGUI/imagesets/Compass4.3.imageset" />
+      <Imageset Name="Compass8.5" Filename="CEGUI/imagesets/Compass8.5.imageset" />
+      <Imageset Name="LRF" Filename="CEGUI/imagesets/LRF.imageset" />
+	<Font Name="Tahoma-12" Filename="CEGUI/fonts/tahoma-12.font" />
+	<Font Name="Tahoma-14" Filename="CEGUI/fonts/tahoma-14.font" />
+	<Font Name="Tahoma-16" Filename="CEGUI/fonts/tahoma-16.font" />
+	<Font Name="Digi-48" Filename="CEGUI/fonts/digi-48.font" />
 	<WindowSet Filename="CEGUITaharezLook">	
 		<WindowFactory Name="TaharezLook/AlternateProgressBar" />
 		<WindowFactory Name="TaharezLook/Button" />

@@ -94,13 +94,13 @@ void StealthViewerHLAOptionsTests::TestHLAOptionsDefaults()
 
 void StealthViewerHLAOptionsTests::TestConvertFileName()
 {
-   TestConvertFileName("C:\\DVTEProject", "C:\\DVTEProject\\CEGUI\\cegui.config", "CEGUI:cegui.config");
-   TestConvertFileName("c:\\DVTEProject", "C:\\DVTEProject\\CEGUI\\cegui.config", "CEGUI:cegui.config");
-   TestConvertFileName("C:\\DVTEProject", "c:\\DVTEProject\\CEGUI\\cegui.config", "CEGUI:cegui.config");
-   TestConvertFileName("/development/test/DVTEProject", "/development/test/DVTEProject/CEGUI/cegui.config", "CEGUI:cegui.config");
-   TestConvertFileName("C:/junk", "/development/test/DVTEProject/CEGUI/cegui.config", "");
-   TestConvertFileName("", "/development/test/DVTEProject/CEGUI/cegui.config", "");
-   TestConvertFileName("/development/test/DVTEP", "/development/test/DVTEProject/CEGUI/cegui.config", "");
+   TestConvertFileName("C:\\ProjectAssets", "C:\\ProjectAssets\\CEGUI\\cegui.config", "CEGUI:cegui.config");
+   TestConvertFileName("c:\\ProjectAssets", "C:\\ProjectAssets\\CEGUI\\cegui.config", "CEGUI:cegui.config");
+   TestConvertFileName("C:\\ProjectAssets", "c:\\ProjectAssets\\CEGUI\\cegui.config", "CEGUI:cegui.config");
+   TestConvertFileName("/development/test/ProjectAssets", "/development/test/ProjectAssets/CEGUI/cegui.config", "CEGUI:cegui.config");
+   TestConvertFileName("C:/junk", "/development/test/ProjectAssets/CEGUI/cegui.config", "");
+   TestConvertFileName("", "/development/test/ProjectAssets/CEGUI/cegui.config", "");
+   TestConvertFileName("/development/test/DVTEP", "/development/test/ProjectAssets/CEGUI/cegui.config", "");
    TestConvertFileName("/development/test/cegui", "/development/test/cegui.config", "");
 }
 

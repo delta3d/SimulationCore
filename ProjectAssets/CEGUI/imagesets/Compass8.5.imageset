@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Compass8.5" Imagefile="imagesets/compass_8_5.tga" NativeHorzRes="1024" NativeVertRes="550" AutoScaled="true">
+<Imageset Name="Compass8.5" Imagefile="CEGUI/imagesets/compass_8_5.tga" NativeHorzRes="1024" NativeVertRes="550" AutoScaled="true">
    <Image Name="Compass8.5" XPos="0" YPos="0" Width="1024" Height="1024" />
 </Imageset>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Toolbar" Imagefile="imagesets/Toolbar.tga" NativeHorzRes="566" NativeVertRes="297" AutoScaled="true">
+<Imageset Name="Toolbar" Imagefile="CEGUI/imagesets/Toolbar.tga" NativeHorzRes="566" NativeVertRes="297" AutoScaled="true">
    <Image Name="Bracket_Left" XPos="0" YPos="0" Width="26" Height="99" />
    <Image Name="Bracket_Right" XPos="0" YPos="99" Width="26" Height="99" />
    <Image Name="Binoculars_OFF" XPos="26" YPos="0" Width="90" Height="99" />

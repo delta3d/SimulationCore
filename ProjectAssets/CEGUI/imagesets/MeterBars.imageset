@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="MeterBars" Imagefile="imagesets/MeterBars.tga" NativeHorzRes="256" NativeVertRes="256" AutoScaled="true">
+<Imageset Name="MeterBars" Imagefile="CEGUI/imagesets/MeterBars.tga" NativeHorzRes="256" NativeVertRes="256" AutoScaled="true">
    <Image Name="MeterFrame_GMRS" XPos="0" YPos="0" Width="256" Height="64" />
    <Image Name="MeterFrame_Cartesian" XPos="0" YPos="64" Width="384" Height="64" />
    <Image Name="MeterFrame_GPS" XPos="256" YPos="128" Width="256" Height="64" />
