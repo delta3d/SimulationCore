@@ -433,6 +433,44 @@
             </attrToProp>
         </object>
 
+        <!-- ****************************************************** -->
+        <!-- This is A 4th tier object. Heirarchy is:                     -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- 2S12 120mm            -->
+        <!-- ****************************************************** -->    
+        <object extends="GroundVehicle" name="2S12 120mm">
+            <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
+            <actorType>NxAgeiaPhysicsModels.NxAgeiaRemoteKinematicActor</actorType>
+            <remoteOnly>true</remoteOnly>
+            <disEntityEnum>
+                <kind>1</kind>
+                <domain>1</domain>
+                <country>222</country>
+                <category>10</category>
+                <subcategory>13</subcategory>
+                <specific>0</specific>
+                <extra>0</extra>
+            </disEntityEnum>
+            <attrToProp>
+                <gameName>Non-damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:2S12_120mm:2s12_120mm_good.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:2S12_120mm:2s12_120mm_damaged.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Destroyed actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:2S12_120mm:2s12_120mm_destroyed.ive</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>ShaderGroup</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>2S12_120mmShaderGroup</default>
+            </attrToProp>
+        </object>
        
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                              -->
@@ -1052,9 +1090,9 @@
 
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                     -->
-        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- T72M mbt                -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- T72M_mbt                -->
         <!-- ****************************************************** -->    
-        <object extends="GroundVehicle" name="T72M mbt">
+        <object extends="GroundVehicle" name="T72M_mbt">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>NxAgeiaPhysicsModels.NxAgeiaRemoteKinematicActor</actorType>
             <remoteOnly>true</remoteOnly>
@@ -1070,17 +1108,17 @@
             <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_good.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_good.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_damaged.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_destroyed.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_destroyed.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>ShaderGroup</gameName>
@@ -1110,17 +1148,17 @@
             <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:2S1 Gvodzika:2S1_desert_good.ive</default>
+                <default>StaticMeshes:2S1_Gvodzika:2S1_desert_good.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:2S1 Gvodzika:2S1_desert_damaged.ive</default>
+                <default>StaticMeshes:2S1_Gvodzika:2S1_desert_damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:2S1 Gvodzika:2S1_desert_destroyed.ive</default>
+                <default>StaticMeshes:2S1_Gvodzika:2S1_desert_destroyed.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>ShaderGroup</gameName>
@@ -1150,17 +1188,17 @@
             <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_good.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_good.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_damaged.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:T72M mbt:t72m_mbt_desert_destroyed.ive</default>
+                <default>StaticMeshes:T72M_mbt:t72m_mbt_desert_destroyed.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>ShaderGroup</gameName>
