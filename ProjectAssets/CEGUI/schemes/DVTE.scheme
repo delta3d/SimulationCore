@@ -1,7 +1,5 @@
 <?xml version="1.0" ?>
 <GUIScheme Name="WindowsLookSkin">
-      
-        <!-- HMMWV HUD -->
         <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
         <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
         <Imageset Name="CallSign" Filename="CEGUI/imagesets/CallSign.imageset" />
@@ -18,13 +16,13 @@
         <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
         <Imageset Name="ToolbarHMMWV" Filename="CEGUI/imagesets/ToolbarHMMWV.imageset" />
 	
-	<Imageset Name="WindowsLook" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/WindowsLook.imageset" />
- 	<Imageset Name="FOPCSimButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/FOPCSimButton.imageset" />
-        <Imageset Name="PushButtons" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/PushButtons.imageset"/> 
-	<Imageset Name="ToggleButtons" Filename="CEGUI/MiniMap/gui/CEGUI/imagesets/ToggleButtons.imageset"/>
-        <Imageset Name="ToggleButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ToggleButton.imageset"/>
-	<Imageset Name="ZoomButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ZoomButton.imageset"/>
-	<Imageset Name="ZoomRadioButton" Filename="CEGUI/MiniMap/gui/FO/CEGUI/imagesets/ZoomRadioButton.imageset"/>
+	<Imageset Name="WindowsLook" Filename="CEGUI/MiniMap/gui/imagesets/WindowsLook.imageset" />
+ 	<Imageset Name="FOPCSimButton" Filename="CEGUI/MiniMap/gui/FO/ImageSets/FOPCSimButton.imageset" />
+        <Imageset Name="PushButtons" Filename="CEGUI/MiniMap/gui/imagesets/PushButtons.imageset"/> 
+	<Imageset Name="ToggleButtons" Filename="CEGUI/MiniMap/gui/imagesets/ToggleButtons.imageset"/>
+        <Imageset Name="ToggleButton" Filename="CEGUI/MiniMap/gui/FO/ImageSets/ToggleButton.imageset"/>
+	<Imageset Name="ZoomButton" Filename="CEGUI/MiniMap/gui/FO/ImageSets/ZoomButton.imageset"/>
+	<Imageset Name="ZoomRadioButton" Filename="CEGUI/MiniMap/gui/FO/ImageSets/ZoomRadioButton.imageset"/>
 
         <!-- FOPCSIM GUI Imagesets -->
 	<ImagesetFromImage Name="buttonshader" Filename="CEGUI/MiniMap/gui/FO/gui/box_entry.tga" />
@@ -40,9 +38,9 @@
 
 	<Font Name="Tahoma-8" Filename="CEGUI/MiniMap/gui/fonts/Tahoma-8.font" />
 	<Font Name="Tahoma-12" Filename="CEGUI/MiniMap/gui/fonts/tahoma-12.font" />
-        <Font Name="Arial-Bold-12" Filename="fonts/Arial-Bold-12.font" />
-        <Font Name="Arial-Bold-16" Filename="fonts/Arial-Bold-16.font" />
-        <Font Name="DejaVuSans-10" Filename="fonts/DejaVuSans-10.font" />
+	<Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
+        <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
+        <Font Name="DejaVuSans-10" Filename="CEGUI/fonts/DejaVuSans-10.font" />
 
 	<WindowSet Filename="CEGUIFalagardWRBase" />
 
