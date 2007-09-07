@@ -298,17 +298,16 @@ namespace SimCore
                   hour %= 24;
                }
             }
-         }         
-         else if(ap != NULL)
-         {           
-            dtGame::IEnvGameActorProxy *ap = GetGameManager()->GetEnvironmentActor();
-            ap->GetActor(envActor);
-            if(envActor != NULL)
-            {
-               set = eENVIRONMENT_ACTOR;
-               envActor->GetTimeAndDate(year,month,day,hour,minute,sec);
-            }
          }
+//         else if(ap != NULL)
+//         {
+//            ap->GetActor(envActor);
+//            if(envActor != NULL)
+//            {
+//               set = eENVIRONMENT_ACTOR;
+//               envActor->GetTimeAndDate(year,month,day,hour,minute,sec);
+//            }
+//         }
 
          if(set != eNONE)
          {            
@@ -351,10 +350,10 @@ namespace SimCore
 
                weatherComp->UpdateDayTime();
             }
-            else if(set == eENVIRONMENT_ACTOR)
-            {
-               envActor->SetTimeAndDate(year,month,day,hour,minute,sec);
-            }
+//            else if(set == eENVIRONMENT_ACTOR)
+//            {
+//               envActor->SetTimeAndDate(year,month,day,hour,minute,sec);
+//            }
          }
 
       }
