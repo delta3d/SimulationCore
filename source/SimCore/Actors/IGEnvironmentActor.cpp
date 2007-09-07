@@ -53,6 +53,28 @@ struct FogBoundingBoxCallback: public osg::Drawable::ComputeBoundingBoxCallback
 };
 
 
+class BBVisitor : public osg::NodeVisitor
+{
+public:
+
+   BBVisitor(): osg::NodeVisitor(TRAVERSE_ALL_CHILDREN)
+   {
+
+   }
+
+   virtual void apply(osg::Geode& geode)
+   {
+      unsigned pNumDrawables = geode.getNumDrawables();
+      for(unsigned i = 0; i < pNumDrawables; ++i)
+      {
+         osg::Drawable* draw = geode.getDrawable(i);
+         draw->setComputeBoundingBoxCallback(new FogBoundingBoxCallback());
+      }
+
+
+   }
+};
+
 namespace SimCore
 {
    namespace Actors
@@ -162,6 +184,11 @@ namespace SimCore
          }
           
          mFogSphereEyePointTransform->setCenter(mEphemerisModel->getSkyDomeCenter());
+
+         //this little hack will create a large bounding volume for the ephemeris to ensure it doesn't 
+         //get culled out
+         BBVisitor bbv;
+         mEphemerisModel->traverse(bbv);
 
 
          dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*mFogSphere.get());
