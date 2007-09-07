@@ -591,12 +591,12 @@ namespace SimCore
          // within the DayTimeActor that was captured.
          //const dtActors::BasicEnvironmentActorProxy* env =
          //   dynamic_cast<const dtActors::BasicEnvironmentActorProxy*> (mWeatherComp->GetEphemerisEnvironment());
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActorProxy", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an IEnvGameActorProxy", 
          //   env != NULL );
 
          //const dtActors::BasicEnvironmentActor* envActor = 
          //   dynamic_cast<const dtActors::BasicEnvironmentActor*> (&env->GetGameActor());
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent's EnvironmentActorProxy SHOULD have an EnvironmentActor", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent's IEnvGameActorProxy SHOULD have an EnvironmentActor", 
          //   envActor != NULL );
 
          // --- Test the captured values

@@ -61,7 +61,7 @@ namespace SimCore
       // Actor code
       ////////////////////////////////////////////////////////////////////////
       IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy &proxy)
-         : dtGame::EnvironmentActor(proxy)
+         : BaseClass(proxy)
          , mEnableCloudPlane(true)
          , mCurrTime()
          , mWind()
@@ -132,7 +132,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::OnEnteredWorld()
       {
-         dtGame::EnvironmentActor::OnEnteredWorld();
+         BaseClass::OnEnteredWorld();
          //GetGameActorProxy().GetGameManager()->GetScene().UseSceneLight(true);
          mEnvironment->GetOSGNode()->asGroup()->addChild(mEphemerisModel.get());
 

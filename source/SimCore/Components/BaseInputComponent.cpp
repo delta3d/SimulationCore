@@ -270,8 +270,8 @@ namespace SimCore
          TimeSetBy set = eNONE;
          int year =0 ,month=0 ,day=0 ,hour=0 ,minute=0 ,sec=0 ;
         
-         dtGame::EnvironmentActor* envActor = 0;
-         dtGame::EnvironmentActorProxy *ap = GetGameManager()->GetEnvironmentActor();
+         dtGame::IEnvGameActor* envActor = 0;
+         dtGame::IEnvGameActorProxy *ap = GetGameManager()->GetEnvironmentActor();
          SimCore::Components::WeatherComponent* weatherComp = dynamic_cast<SimCore::Components::WeatherComponent*>(GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME));
          SimCore::Actors::DayTimeActor* dayTimeActor = 0;        
          
@@ -301,9 +301,9 @@ namespace SimCore
          }         
          else if(ap != NULL)
          {           
-            dtGame::EnvironmentActorProxy *ap = GetGameManager()->GetEnvironmentActor();
-            envActor = dynamic_cast<dtGame::EnvironmentActor*>(&ap->GetGameActor());     
-            if(envActor)
+            dtGame::IEnvGameActorProxy *ap = GetGameManager()->GetEnvironmentActor();
+            ap->GetActor(envActor);     
+            if(envActor != NULL)
             {
                set = eENVIRONMENT_ACTOR;
                envActor->GetTimeAndDate(year,month,day,hour,minute,sec);

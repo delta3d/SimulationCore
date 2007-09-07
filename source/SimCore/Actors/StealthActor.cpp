@@ -145,7 +145,7 @@ namespace SimCore
             if(GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL &&
                GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetId() == id)
             {
-               dtGame::EnvironmentActor &ea = static_cast<dtGame::EnvironmentActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
+               dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
                ea.AddActor(*this);
                SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
             }
@@ -193,7 +193,7 @@ namespace SimCore
 
                if(GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
                {
-                  dtGame::EnvironmentActor &ea = static_cast<dtGame::EnvironmentActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
+                  dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
                   ea.AddActor(*this);
                }
                else

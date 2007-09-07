@@ -119,11 +119,11 @@ namespace SimCore
       RefPtr<dtActors::BasicEnvironmentActor> envActor = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetActor());
       if(!envActor.valid())
       {
-         LOG_ERROR("The dynamic cast to an EnvironmentActor failed. The EnvironmentActorProxy has an invalid actor. Aborting.");
+         LOG_ERROR("The dynamic cast to an EnvironmentActor failed. The IEnvGameActorProxy has an invalid actor. Aborting.");
          gameManager.GetApplication().Quit();
       }
    
-      gameManager.SetEnvironmentActor(static_cast<dtGame::EnvironmentActorProxy*>(&envActor->GetGameActorProxy()));
+      gameManager.SetEnvironmentActor(static_cast<dtGame::IEnvGameActorProxy*>(&envActor->GetGameActorProxy()));
    
       envActor->SetTimeAndDate(2006, 5, 6, 12, 0, 0);
       envActor->EnableCloudPlane(true);
