@@ -304,6 +304,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\SimCore\Actors\FlareActor.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\SimCore\Actors\Human.cpp"
 					>
 				</File>
@@ -627,6 +631,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Actors\FireActor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\SimCore\Actors\FlareActor.h"
 					>
 				</File>
 				<File

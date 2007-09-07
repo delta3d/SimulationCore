@@ -43,6 +43,7 @@
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
+#include <SimCore/Actors/FlareActor.h>
 
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -86,6 +87,7 @@ namespace SimCore
          "Contains resource paths to various content related to munitions, such as sound, geometry and particles."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::WEAPON_ACTOR_TYPE(new dtDAL::ActorType("WeaponActor", "Munitions", "The actor type that fires a munition."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE(new dtDAL::ActorType("WeaponFlashActor", "Munitions", "The actor that represents a weapon's flash effect."));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::FLARE_ACTOR_TYPE(new dtDAL::ActorType("FlareActor", "Munitions", "The actor that represents a flare (illumination round)."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE(new dtDAL::ActorType("ControlState", "ControlState", "The base control state actor."));
       
 #ifdef AGEIA_PHYSICS
@@ -145,6 +147,7 @@ namespace SimCore
          mActorFactory->RegisterType<MunitionEffectsInfoActorProxy>(MUNITION_EFFECTS_INFO_ACTOR_TYPE.get());
          mActorFactory->RegisterType<WeaponActorProxy>(WEAPON_ACTOR_TYPE.get());
          mActorFactory->RegisterType<WeaponFlashActorProxy>(WEAPON_FLASH_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<FlareActorProxy>(FLARE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
 
