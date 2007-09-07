@@ -302,7 +302,7 @@ namespace SimCore
          else if(ap != NULL)
          {           
             dtGame::IEnvGameActorProxy *ap = GetGameManager()->GetEnvironmentActor();
-            ap->GetActor(envActor);     
+            ap->GetActor(envActor);
             if(envActor != NULL)
             {
                set = eENVIRONMENT_ACTOR;
