@@ -324,7 +324,7 @@ namespace SimCore
             || msgType == dtGame::MessageType::INFO_ACTOR_CREATED )
          {
             // Ignore this message if possible
-            dtGame::EnvironmentActorProxy* env = GetGameManager()->GetEnvironmentActor();
+            dtGame::IEnvGameActorProxy* env = GetGameManager()->GetEnvironmentActor();
             if( env == NULL || env->GetId() != message.GetAboutActorId() )
             {
                return;

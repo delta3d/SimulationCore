@@ -38,10 +38,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Actor Code
       ////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT IGEnvironmentActor : public dtGame::EnvironmentActor
+      class SIMCORE_EXPORT IGEnvironmentActor : public dtGame::IEnvGameActor
       {
       public:
 
+         typedef dtGame::IEnvGameActor BaseClass;
+         
          // Constructor
          IGEnvironmentActor( dtGame::GameActorProxy& proxy );
 
@@ -188,7 +190,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Proxy Code
       ////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT IGEnvironmentActorProxy : public dtGame::EnvironmentActorProxy
+      class SIMCORE_EXPORT IGEnvironmentActorProxy : public dtGame::IEnvGameActorProxy
       {
       public:
 
