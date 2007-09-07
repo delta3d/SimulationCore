@@ -747,7 +747,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       WeaponEffectsManager::WeaponEffectsManager()
          : dtCore::Base("WeaponEffectsManager"),
-         mEffectTimeMax(10.0f),
+         mEffectTimeMax(5.0f),
          mRecycleTime(1.0f),
          mCurRecycleTime(0.0f),
          mMaxWeaponEffects(-1), // no limit
