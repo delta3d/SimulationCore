@@ -22,7 +22,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <dtCore/observerptr.h>
-#include <dtHLAGM/onetomanymapping.h>
 #include <dtHLAGM/parametertranslator.h>
 #include <SimCore/Components/MunitionsComponent.h>
 
@@ -45,6 +44,7 @@ namespace dtDAL
 namespace dtHLAGM
 {
    class ObjectRuntimeMappingInfo;
+   class OneToManyMapping;
 }
 
 namespace SimCore
@@ -62,6 +62,8 @@ namespace SimCore
             static const HLACustomAttributeType MUNITION_TYPE;
             static const HLACustomAttributeType DISCRETE_CONTROL_ARRAY_TYPE;
             static const HLACustomAttributeType CONTINUOUS_CONTROL_ARRAY_TYPE;
+            static const HLACustomAttributeType VEC3F_TYPE;
+            static const HLACustomAttributeType VEC3D_TYPE;
 
          private:
             HLACustomAttributeType(const std::string& name, unsigned char id, size_t encodedLength)
@@ -106,6 +108,18 @@ namespace SimCore
                const char* buffer, 
                const size_t size,
                dtDAL::NamedGroupParameter& parameter ) const;
+
+            void MapToParamFromVec3(
+               const char* buffer, 
+               const size_t size,
+               dtGame::MessageParameter& parameter,
+               const dtDAL::DataType& parameterDataType ) const;
+
+            void MapFromParamToVec3(
+               char* buffer, 
+               const size_t maxSize, 
+               const dtGame::MessageParameter& parameter, 
+               const dtDAL::DataType& parameterDataType) const;
 
             // This function allows the translator access to the table that
             // maps munition names to the munition DIS identifiers.

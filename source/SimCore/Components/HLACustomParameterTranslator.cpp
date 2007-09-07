@@ -16,23 +16,19 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
-#include <osg/Endian>
-
 #include <string>
-
-#include <dtUtil/log.h>
-
+#include <osg/Endian>
 #include <dtCore/scene.h>
-
 #include <dtHLAGM/onetoonemapping.h>
 #include <dtHLAGM/distypes.h>
 #include <dtHLAGM/objectruntimemappinginfo.h>
-
-#include <SimCore/Components/HLACustomParameterTranslator.h>
-#include <SimCore/Components/MunitionsComponent.h>
-
+#include <dtHLAGM/onetoonemapping.h>
+#include <dtHLAGM/onetomanymapping.h>
+#include <dtUtil/log.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
+#include <SimCore/Components/HLACustomParameterTranslator.h>
+#include <SimCore/Components/MunitionsComponent.h>
 
 namespace SimCore
 {
@@ -52,6 +48,12 @@ namespace SimCore
          SimCore::Actors::DiscreteControl::CONTROL_BYTE_SIZE * 5 );
       const HLACustomAttributeType HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE("CONTINUOUS_CONTROL_ARRAY_TYPE", 1, 
          SimCore::Actors::ContinuousControl::CONTROL_BYTE_SIZE * 5 );
+
+      // This attribute type is used in capturing 3-float structures, such
+      // as position and velocity from the network that should not go
+      // through any coordinate conversion.
+      const HLACustomAttributeType HLACustomAttributeType::VEC3F_TYPE("VEC3F_TYPE", 1, 12 );
+      const HLACustomAttributeType HLACustomAttributeType::VEC3D_TYPE("VEC3D_TYPE", 1, 24 );
 
 
 
@@ -125,6 +127,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapFromGroupParamToControlArray(
          const dtHLAGM::AttributeType& type,
          char* buffer,
@@ -314,6 +317,11 @@ namespace SimCore
                // TODO: Log Error
             }
          }
+         else if( hlaType == HLACustomAttributeType::VEC3F_TYPE
+            || hlaType == HLACustomAttributeType::VEC3D_TYPE )
+         {
+            MapFromParamToVec3( buffer, maxSize, parameter, parameter.GetDataType() );
+         }
       }
          
       //////////////////////////////////////////////////////////////////////////
@@ -386,6 +394,161 @@ namespace SimCore
                // TODO: Log Error
             }
          }
+         else if( hlaType == HLACustomAttributeType::VEC3F_TYPE
+            || hlaType == HLACustomAttributeType::VEC3D_TYPE )
+         {
+            MapToParamFromVec3( buffer, size, parameter, parameter.GetDataType() );
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      const HLACustomAttributeType* DetermineHLAVec3AtributeType( unsigned bufferSize )
+      {
+         if( bufferSize >= 24 )
+         {
+            return &HLACustomAttributeType::VEC3D_TYPE;
+         }
+         else if( bufferSize >= 12 )
+         {
+            return &HLACustomAttributeType::VEC3F_TYPE;
+         }
+         return NULL;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapToParamFromVec3(
+         const char* buffer, 
+         const size_t size,
+         dtGame::MessageParameter& parameter,
+         const dtDAL::DataType& parameterDataType ) const
+      {
+         osg::Vec3d position;
+
+         const HLACustomAttributeType* hlaType = DetermineHLAVec3AtributeType(size);
+
+         if( hlaType == NULL )
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               "Unable to decode Vec3 because buffer size is i%",
+               size);
+            return;
+         }
+
+         if( *hlaType == HLACustomAttributeType::VEC3D_TYPE )
+         {
+            dtHLAGM::WorldCoordinate wc;
+            wc.Decode(buffer);
+            position.set( wc.GetX(), wc.GetY(), wc.GetZ() );
+         }
+         else if( *hlaType == HLACustomAttributeType::VEC3D_TYPE )
+         {
+            dtHLAGM::VelocityVector wc;
+            wc.Decode(buffer);
+            position.set( wc.GetX(), wc.GetY(), wc.GetZ() );
+         }
+
+         if(mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+            "Vec3 has been decoded to %lf %lf %lf",
+            position.x(), position.y(), position.z());
+
+         if (parameterDataType == dtDAL::DataType::VEC3)
+         {
+            static_cast<dtGame::Vec3MessageParameter&>(parameter).SetValue(position);
+         }
+         else if (parameterDataType == dtDAL::DataType::VEC3F)
+         {
+            static_cast<dtGame::Vec3fMessageParameter&>(parameter).SetValue(
+               osg::Vec3f(position.x(), position.y(), position.z()));
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapFromParamToVec3(
+         char* buffer, 
+         const size_t maxSize, 
+         const dtGame::MessageParameter& parameter, 
+         const dtDAL::DataType& parameterDataType) const
+      {
+         osg::Vec3d position;
+
+         const HLACustomAttributeType* hlaType = NULL;
+
+         if( maxSize >= 24 )
+         {
+            hlaType = &HLACustomAttributeType::VEC3D_TYPE;
+         }
+         else if( maxSize >= 12 )
+         {
+            hlaType = &HLACustomAttributeType::VEC3F_TYPE;
+         }
+
+         if( hlaType == NULL )
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               "Unable to encode Vec3 because buffer size is i%",
+               maxSize);
+            return;
+         }
+
+         if (parameterDataType == dtDAL::DataType::VEC3)
+         {
+            position = static_cast<const dtGame::Vec3MessageParameter&>(parameter).GetValue();
+         }
+         else if (parameterDataType == dtDAL::DataType::VEC3F)
+         {
+            osg::Vec3f posTemp = static_cast<const dtGame::Vec3fMessageParameter&>(parameter).GetValue();
+            position.x() = posTemp.x();
+            position.y() = posTemp.y();
+            position.z() = posTemp.z();
+         }
+         else if (parameterDataType == dtDAL::DataType::VEC3D)
+         {
+            osg::Vec3d posTemp = static_cast<const dtGame::Vec3dMessageParameter&>(parameter).GetValue();
+            //We're loosing precision here if a Vec3 is not compiled as a vec3d, but the
+            //coordinate converter doesn't support Vec3d directly.
+            position.x() = posTemp.x();
+            position.y() = posTemp.y();
+            position.z() = posTemp.z();
+         }
+         else
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+               "The incoming parameter \"%s\" is not of a supported type \"%s\" for conversion to \"%s\"",
+               parameter.GetName().c_str(), parameterDataType.GetName().c_str(),
+               HLACustomAttributeType::VEC3F_TYPE.GetName().c_str());
+         }
+
+         if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+               "Vec3 is %f %f %f",
+               position.x(), position.y(), position.z());
+         }
+
+         bool errorEncoding = false;
+
+         if( *hlaType == HLACustomAttributeType::VEC3D_TYPE )
+         {
+            dtHLAGM::WorldCoordinate wc( position.x(), position.y(), position.z() );
+            if (maxSize >= wc.EncodedLength())
+               wc.Encode(buffer);
+            else
+               errorEncoding = true;
+         }
+         else if( *hlaType == HLACustomAttributeType::VEC3F_TYPE)
+         {
+            dtHLAGM::VelocityVector wc( position.x(), position.y(), position.z() );
+            if (maxSize >= wc.EncodedLength())
+               wc.Encode(buffer);
+            else
+               errorEncoding = true;
+         }
+
+         if( errorEncoding )
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            "Not enough space was allocated in the buffer to convert",
+            position.x(), position.y(), position.z());
       }
        
    }
