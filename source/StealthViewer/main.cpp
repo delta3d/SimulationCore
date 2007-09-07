@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     return result;
 }
 
-const int appArgc = 15;
+const int appArgc = 13;
 static char* appArgv[appArgc] = 
 {
    "GameStart",
@@ -132,7 +132,6 @@ static char* appArgv[appArgc] =
    "--statisticsInterval", "30",
    "--enableLogging", "1",
    "--enablePlayback", "1",
-   "--projectPath", "ProjectAssets",
    "--hasBinos", 
    "--hasCompass",  
    "--hasGPS",

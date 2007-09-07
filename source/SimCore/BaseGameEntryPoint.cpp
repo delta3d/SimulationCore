@@ -85,6 +85,9 @@ namespace SimCore
 
    const std::string BaseGameEntryPoint::LIBRARY_NAME("SimViewerCore");
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
+
+   const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
+
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
       parser(NULL), 
@@ -205,7 +208,7 @@ namespace SimCore
             mMissingRequiredCommandLineOption = true;
          }
 
-         if (!parser->read("--fedFileName", fedFileResource))
+         if (!parser->read("--fedFileName", mFedFileResource))
          {
             std::cout << "Please specify the name of the federation file name to use with the --fedFileName option\n";
             mMissingRequiredCommandLineOption = true;
@@ -242,78 +245,6 @@ namespace SimCore
          dtAudio::AudioManager::Destroy();
          throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
             ss.str(), __FILE__, __LINE__);
-      }
-
-      dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
-      
-      std::string finalProjectPath;
-
-      if(!mProjectPath.empty())
-      {
-         if(!fileUtils.DirExists(mProjectPath))
-         {
-           throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-                  "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application."
-                  , __FILE__, __LINE__);
-         }
-         else
-         {
-            LOG_INFO("The data directory " + mProjectPath + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(mProjectPath);   
-         }
-         finalProjectPath = mProjectPath;
-      }
-      else
-      {
-         if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
-         {
-            fileUtils.ChangeDirectory("..");
-            if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
-            {
-               throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-                  "The data directory " + PROJECT_CONTEXT_DIR + 
-                  " could not be located in the working directory or its parent directory. Aborting application."
-                  , __FILE__, __LINE__);
-            }
-            else
-            {
-               LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the parent directory. "
-                        "Setting current working directory to be the parent directory.");
-               dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
-            }
-         }
-         else
-         {
-            LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
-         }
-         finalProjectPath = PROJECT_CONTEXT_DIR;
-      }
-      //The project sets this and setting CEGUI is no longer necessary.
-      //dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
-
-      if(!mIsUIRunning)
-      {
-         std::set<std::string> mapNames = dtDAL::Project::GetInstance().GetMapNames();
-         bool containsMap = false;
-         for(std::set<std::string>::iterator i = mapNames.begin(); i != mapNames.end(); ++i)
-            if(*i == mMapName)
-               containsMap = true;
-
-         if(!containsMap)
-         {
-            std::ostringstream oss;
-            oss << "A map named: " << mMapName << " could not be located in the project context: "
-               << mProjectPath;
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-               oss.str(), __FILE__, __LINE__);
-         }
-         dtDAL::ResourceDescriptor rd(fedFileResource, fedFileResource);
-         mFedFileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
-
-         if (mFedFileName.empty())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-               "Federation .fed file named " + mFedFileName + " was not found.  Aborting.", __FILE__, __LINE__);
       }
    }
 
@@ -437,9 +368,95 @@ namespace SimCore
       return hft;
    }
    
+   void BaseGameEntryPoint::AssignProjectContext()
+   {
+      dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
+      std::string finalProjectPath;
+
+      if (mProjectPath.empty())
+      {
+         mProjectPath = GetGameManager()->GetApplication().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
+      }
+      
+      if(!mProjectPath.empty())
+      {
+         if(!fileUtils.DirExists(mProjectPath))
+         {
+           throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+                  "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application."
+                  , __FILE__, __LINE__);
+         }
+         else
+         {
+            LOG_INFO("The data directory " + mProjectPath + " was located in the current working directory.");
+            dtDAL::Project::GetInstance().SetContext(mProjectPath);   
+         }
+         finalProjectPath = mProjectPath;
+      }
+      else
+      {
+         if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
+         {
+            fileUtils.ChangeDirectory("..");
+            if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
+            {
+               throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+                  "The data directory " + PROJECT_CONTEXT_DIR + 
+                  " could not be located in the working directory or its parent directory. Aborting application."
+                  , __FILE__, __LINE__);
+            }
+            else
+            {
+               LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the parent directory. "
+                        "Setting current working directory to be the parent directory.");
+               dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
+            }
+         }
+         else
+         {
+            LOG_INFO("The data directory " + PROJECT_CONTEXT_DIR + " was located in the current working directory.");
+            dtDAL::Project::GetInstance().SetContext(PROJECT_CONTEXT_DIR);
+         }
+         finalProjectPath = PROJECT_CONTEXT_DIR;
+      }
+      //The project sets this and setting CEGUI is no longer necessary.
+      //dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
+
+   }
+
+   void BaseGameEntryPoint::PreLoadMap()
+   {
+      if(!mIsUIRunning)
+      {
+         std::set<std::string> mapNames = dtDAL::Project::GetInstance().GetMapNames();
+         bool containsMap = false;
+         for(std::set<std::string>::iterator i = mapNames.begin(); i != mapNames.end(); ++i)
+            if(*i == mMapName)
+               containsMap = true;
+
+         if(!containsMap)
+         {
+            std::ostringstream oss;
+            oss << "A map named: " << mMapName << " could not be located in the project context: "
+               << mProjectPath;
+            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+               oss.str(), __FILE__, __LINE__);
+         }
+         dtDAL::ResourceDescriptor rd(mFedFileResource, mFedFileResource);
+         mFedFileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
+
+         if (mFedFileName.empty())
+            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+               "Federation .fed file named " + mFedFileName + " was not found.  Aborting.", __FILE__, __LINE__);
+      }
+   }
+   
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup()
    {
+      AssignProjectContext();
+      PreLoadMap();
+      
       dtGame::GameManager &gameManager = *GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();

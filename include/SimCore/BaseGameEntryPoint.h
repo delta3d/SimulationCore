@@ -60,6 +60,8 @@ namespace SimCore
          static const float PLAYER_NEAR_CLIP_PLANE;
          static const float PLAYER_FAR_CLIP_PLANE;
 
+         static const std::string CONFIG_PROP_PROJECT_CONTEXT_PATH;
+
          /// Constructor
          BaseGameEntryPoint();
 
@@ -92,6 +94,11 @@ namespace SimCore
          virtual void InitializeComponents();
 
       protected:
+         
+         /// reads the values of command line parameters and config options set the project context
+         void AssignProjectContext();
+         /// if the UI is not enabled, will load the map specified on the command line.
+         void PreLoadMap();
 
          /// called virtual for loading specific maps
          virtual void HLAConnectionComponentSetup();
@@ -111,6 +118,7 @@ namespace SimCore
          std::string mMapName;
          std::string mFederationExecutionName;
          std::string mFederateName;
+         std::string mFedFileResource;
          std::string mFedFileName;
          std::string mFedMappingFileName;
          std::string mProjectPath;
