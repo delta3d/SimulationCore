@@ -32,6 +32,8 @@
 #include <osgUtil/StateGraph>
 #include <osgUtil/RenderStage>
 
+#include <map>
+
 namespace dtGame
 {
    class GameManager;
@@ -45,6 +47,7 @@ namespace dtCore
 {
    class Camera;
    class DeltaDrawable;
+   class Transformable;
 }
 namespace osg
 {
@@ -55,12 +58,40 @@ namespace SimCore
 {
    namespace Components
    {
+      //class in cpp
+      class UpdateViewCallback;
+
       ///////////////////////////////////////////////////////
       //    The Component
       ///////////////////////////////////////////////////////
       class SIMCORE_EXPORT RenderingSupportComponent : public dtGame::GMComponent
       {
          public:
+
+            typedef unsigned LightID;
+            static const unsigned MAX_LIGHTS;
+
+            struct DynamicLight: public osg::Referenced
+            {                          
+               protected:
+                  /*virtual*/ ~DynamicLight(){}
+                  DynamicLight(const DynamicLight&); //un-implemented
+                  DynamicLight& operator=(const DynamicLight&); //un-implemented
+
+               public:
+                  DynamicLight() : mID(++mLightCounter){}
+
+                  float mIntensity;               
+                  osg::Vec3 mColor;
+                  osg::Vec3 mPosition;
+                  osg::Vec3 mAttenuation;
+
+                  LightID mID;
+                  static LightID mLightCounter;
+                  
+                  dtCore::ObserverPtr<dtCore::Transformable> mTarget;
+
+            };
 
             class RenderFeature: public osg::Referenced
             {
@@ -76,6 +107,10 @@ namespace SimCore
             /// Constructor
             RenderingSupportComponent(const std::string &name = DEFAULT_NAME);
 
+            LightID AddDynamicLight(DynamicLight*);
+            void RemoveDynamicLight(LightID id);
+            DynamicLight* GetDynamicLight(LightID id);
+
             bool GetEnableNVGS();
             void SetEnableNVGS(bool pEnable);
 
@@ -84,6 +119,9 @@ namespace SimCore
             
             void SetNVGS(RenderFeature* rf);
             const RenderFeature* GetNVGS() const;
+
+            void SetEnableDynamicLights(bool);
+            bool GetEnableDynamicLights() const;
 
             void SetGUI(dtCore::DeltaDrawable* gui);
 
@@ -101,9 +139,15 @@ namespace SimCore
             // with future stuff.
             bool UpdateCullVisitor();
 
+            //this function is used internally by a class in the cpp file
+            //which calculates the view matrix on the cull callback
+            void UpdateViewMatrix(const osg::Matrix&);
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
+
+            void SetPosition(DynamicLight* dl);
 
             void InitializeCullVisitor();
             void InitializeFrameBuffer();
@@ -122,12 +166,17 @@ namespace SimCore
             static const int RENDER_BIN_MINIMAP           = 25;
 
          private:
+            bool mEnableDynamicLights;
             bool mEnableCullVisitor;
             bool mEnableNVGS;
             dtCore::RefPtr<osg::CameraNode> mGUIRoot;
             dtCore::RefPtr<osg::CameraNode> mNVGSRoot;
             dtCore::RefPtr<RenderFeature> mNVGS;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
+            dtCore::RefPtr<UpdateViewCallback> mViewCallback;
+
+            typedef std::map<LightID, dtCore::RefPtr<DynamicLight> > ID_To_Light_Map; 
+            ID_To_Light_Map mLights;
       };
    } // namespace
 } // namespace
