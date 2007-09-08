@@ -76,7 +76,7 @@
 		<!-- ZOOM Controls -->
     <Window Name="MiniMapZoomSlider" Type="WindowsLook/VerticalScrollbar">
       <Property Name="UnifiedPosition" Value="{{1.0,-42},{0,80}}"/>
-      <Property Name="UnifiedSize" Value="{{0,22},{0,220}}"/>
+      <Property Name="UnifiedSize" Value="{{0,22},{0,550}}"/>
       <Property Name="PageSize" Value="0.1"/>
       <Property Name="StepSize" Value="0.1"/>
       <Property Name="DocumentSize" Value="1.0"/>
