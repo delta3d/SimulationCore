@@ -6,12 +6,6 @@
 // Thanks :)  
 // -Matthew "w00by" Stokes
 
-const int MAX_LIGHTS = 10;
-const float constant_falloff = 2.0;
-const float linear_falloff = 0.25;
-const float quad_falloff = 0.125;
-
-
 uniform sampler2D baseTexture;
 uniform sampler2D secondaryTexture; 
 
