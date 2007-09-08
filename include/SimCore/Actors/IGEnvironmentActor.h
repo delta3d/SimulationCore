@@ -131,6 +131,8 @@ namespace SimCore
 
          void SetLatitudeAndLongitude( float latitude, float longitude );
 
+         osgEphemeris::Sphere* GetFogSphere() {return mFogSphere.get();}
+
       protected:
 
          // Destructor
