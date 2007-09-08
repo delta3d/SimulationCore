@@ -260,6 +260,7 @@ namespace SimCore
                   if(flare != NULL)
                   {
                      DynamicLight* dl = new DynamicLight();
+                     dl->mSaturationIntensity = 1.0f;
                      dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
                      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->
                      dl->mAttenuation.set(0.1, 0.005, 0.00002);
@@ -333,7 +334,7 @@ namespace SimCore
 
                   lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
                   lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], dl->mSaturationIntensity));
                
                   ++iter;
                }

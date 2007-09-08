@@ -81,7 +81,8 @@ namespace SimCore
                public:
                   DynamicLight() : mID(++mLightCounter){}
 
-                  float mIntensity;               
+                  float mIntensity;          
+                  float mSaturationIntensity;
                   osg::Vec3 mColor;
                   osg::Vec3 mPosition;
                   osg::Vec3 mAttenuation;

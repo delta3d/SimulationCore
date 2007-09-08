@@ -26,6 +26,8 @@
 #include <SimCore/Export.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 
+#include <SimCore/Components/RenderingSupportComponent.h>//for dynamic lights, cant be forward declared
+
 namespace dtCore
 {
    class Isector;
@@ -93,27 +95,27 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-class MunitionsPhysicsParticle : public PhysicsParticle
+class SIMCORE_EXPORT MunitionsPhysicsParticle : public PhysicsParticle
 {
 public:
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   MunitionsPhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f, float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f) : 
-      PhysicsParticle(name, ParticleLengthOfTimeOut, InverseDeletionAlphaTime, alphaInTime)
-      {
-         mIsTracer = false;
-      }
+   MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut = 10.0f, float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f);
+   bool IsATracer() const {return mIsTracer;}
 
-      bool IsATracer() const {return mIsTracer;}
-
-      void SetLastPosition(const osg::Vec3& value) {mLastPosition = value;}
-      const osg::Vec3& GetLastPosition() {return mLastPosition;}
+   void SetLastPosition(const osg::Vec3& value);
+   const osg::Vec3& GetLastPosition() {return mLastPosition;}
 
 protected:
-   virtual ~MunitionsPhysicsParticle() {}
+   virtual ~MunitionsPhysicsParticle();
 
 private:
    bool mIsTracer;
    osg::Vec3 mLastPosition;
+
+   bool mDynamicLightEnabled;
+   unsigned mDynamicLightID;
+   dtCore::RefPtr<dtCore::Transformable> mDynamicLight;
+   dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderComp;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
