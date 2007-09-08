@@ -45,6 +45,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -77,6 +78,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -109,6 +111,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -141,6 +144,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -170,7 +174,8 @@
          <source type="Vertex">Shaders/Base/shader_vehicle_vertex_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_nogloss_pixel.glsl</source>
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
+         <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -189,6 +194,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -221,6 +227,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -253,6 +260,7 @@
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/shader_vehicle_fragment_functions.glsl</source>         
          <source type="Fragment">Shaders/Base/shader_gloss_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -274,80 +282,6 @@
          </parameter>
       </shader>
      </shadergroup>
-
-   <shadergroup name="TerrainShaderGroup">
-      <shader name="Terrain_DetailMapping" default="yes">
-         <source type="Vertex">Shaders/Base/terrain_vertex.glsl</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.glsl</source>
-         <source type="Vertex">Shaders/Base/terrain_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/Base/terrain_fragment.glsl</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>  
-         <source type="Fragment">Shaders/Base/terrain_fragment_functions.glsl</source>
-         <parameter name="baseTexture">
-            <texture2D textureUnit="0">
-               <source type="Auto"/>
-            </texture2D>
-         </parameter>
-         <parameter name="secondaryTexture">
-            <texture2D textureUnit="1">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="bumpTexture1">
-            <texture2D textureUnit="2">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer1.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="bumpTexture2">
-            <texture2D textureUnit="3">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer2.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="shaderInEffect">
-            <float defaultValue="1.0"/>
-         </parameter>
-      </shader>
-      
-        <shader name="TerrainNVGSShader" default="no">
-         <source type="Vertex">Shaders/Base/terrain_vertex_nvgs.glsl</source>
-         <source type="Fragment">Shaders/Base/terrain_fragment_nvgs.glsl</source>
-         <parameter name="baseTexture">
-            <texture2D textureUnit="0">
-               <source type="Auto"/>
-            </texture2D>
-         </parameter>
-         <parameter name="secondaryTexture">
-            <texture2D textureUnit="1">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="bumpTexture1">
-            <texture2D textureUnit="2">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer1.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="bumpTexture2">
-            <texture2D textureUnit="3">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer2.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="shaderInEffect">
-            <float defaultValue="1.0"/>
-         </parameter>
-      </shader>
-   </shadergroup>
 
    <shadergroup name="TracerGroup">
       <shader name="VolumetricLines">
@@ -371,6 +305,7 @@
          <source type="Fragment">Shaders/Base/ephemeris_fog_frag.glsl</source>
          <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
          <source type="Fragment">Shaders/Base/ephemeris_fragment_functions.glsl</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
          <parameter name="DistanceForCompleteFog">
             <float defaultValue="3000.0"/>
          </parameter>
