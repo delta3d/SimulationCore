@@ -24,6 +24,8 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 
+#include <SimCore/Actors/FlareActor.h>
+
 #include <dtGame/gamemanager.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
@@ -40,24 +42,54 @@
 #include <osg/Texture>
 #include <osg/Depth>
 #include <osg/Geometry>
+#include <osg/StateSet>
 
 
 namespace SimCore
 {
    namespace Components
    {
+
+
+      class UpdateViewCallback: public osg::NodeCallback
+      {
+      public:
+         UpdateViewCallback(RenderingSupportComponent* mp):mRenderComp(mp){}
+
+         void operator()(osg::Node*, osg::NodeVisitor* nv)
+         {
+            if(osg::CameraNode* cn = dynamic_cast<osg::CameraNode*>(nv->getNodePath()[0]))
+            {
+               mRenderComp->UpdateViewMatrix(cn->getViewMatrix());
+            }
+         }
+      private:
+         RenderingSupportComponent* mRenderComp;
+      };
+
+
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const std::string &RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";      
+
+      RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 0;
+
+      const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::RenderingSupportComponent(const std::string &name) 
          : dtGame::GMComponent(name)
+         , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
          , mEnableNVGS(false)
          , mGUIRoot(new osg::CameraNode())
          , mNVGSRoot(new osg::CameraNode())
          , mNVGS(0)
+         , mViewCallback(0)
       {
+         ////if this is in the initializer list VS complains
+         ////using this in initializer list is the warning
+         mViewCallback = new UpdateViewCallback(this);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +160,30 @@ namespace SimCore
          }                  
       }
 
+      RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
+      {         
+         mLights.insert(std::make_pair(dl->mID, dl));
+         return dl->mID;
+      }
+
+      void RenderingSupportComponent::RemoveDynamicLight(RenderingSupportComponent::LightID id)
+      {
+         ID_To_Light_Map::iterator iter = mLights.find(id);
+         if(iter != mLights.end())
+         {
+            mLights.erase(iter);
+         }
+      }
+
+      RenderingSupportComponent::DynamicLight* RenderingSupportComponent::GetDynamicLight(RenderingSupportComponent::LightID id)
+      {
+         ID_To_Light_Map::iterator iter = mLights.find(id);
+         if(iter != mLights.end())
+         {
+            return (*iter).second.get();
+         }
+         return 0;
+      }
 
       void RenderingSupportComponent::SetNVGS(RenderFeature* rf)
       {
@@ -153,6 +209,25 @@ namespace SimCore
          mEnableCullVisitor = pEnable;
       }
 
+      void RenderingSupportComponent::SetEnableDynamicLights(bool b)
+      {
+         mEnableDynamicLights = b;
+      }
+      bool RenderingSupportComponent::GetEnableDynamicLights() const
+      {
+         return mEnableDynamicLights;
+      }
+
+      void RenderingSupportComponent::UpdateViewMatrix(const osg::Matrix& mat)
+      {
+         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+         osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+
+         osg::Matrix viewInverse;
+         viewInverse.invert(mat);
+         viewUniform->set(viewInverse);
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::ProcessMessage(const dtGame::Message &msg)
       {
@@ -168,6 +243,38 @@ namespace SimCore
             }
          }
 
+         else if( msg.GetMessageType() == SimCore::MessageType::INFO_ACTOR_CREATED
+            )//|| msg.GetMessageType() == dvte::IG::MessageType::INFO_ACTOR_UPDATED )
+         {
+            const dtGame::ActorUpdateMessage& updateMsg = static_cast<const dtGame::ActorUpdateMessage&>(msg);
+            //this should probably be done within the munitions comp or something 
+            if(updateMsg.GetActorType() == SimCore::Actors::EntityActorRegistry::FLARE_ACTOR_TYPE)
+            {
+               dtDAL::ActorProxy* proxy = dynamic_cast<dtDAL::ActorProxy*>(GetGameManager()->FindActorById( updateMsg.GetAboutActorId()));
+               if(proxy != NULL)
+               {
+                  //to make an illumination round dynamic light we must note that
+                  //these are dropped at 600meters and will light the ground directly below within 
+                  //a radius of 1km
+                  SimCore::Actors::FlareActor* flare = dynamic_cast<SimCore::Actors::FlareActor*>(proxy->GetActor());
+                  if(flare != NULL)
+                  {
+                     DynamicLight* dl = new DynamicLight();
+                     dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
+                     dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->
+                     dl->mAttenuation.set(0.1, 0.005, 0.00002);
+                     dl->mTarget = flare;
+
+                     AddDynamicLight(dl);
+                  }
+               }
+            }
+         }
+         else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
+         {
+            GetGameManager()->GetApplication().GetCamera()->GetOSGNode()->setUpdateCallback(mViewCallback.get());
+         }
+
          /*else if(msg.GetMessageType() == dtGame::MessageType::TICK_REMOTE){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_PUBLISHED){}
@@ -175,6 +282,17 @@ namespace SimCore
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED){}*/
+      }
+
+      void RenderingSupportComponent::SetPosition(DynamicLight* dl)
+      {
+         if(dl != NULL && dl->mTarget.valid())
+         {
+            dtCore::Transform xform;
+            dl->mTarget->GetTransform(xform);
+
+            dl->mPosition = xform.GetTranslation();
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +308,44 @@ namespace SimCore
             // sync up actors if needbe...
             UpdateCullVisitor();
          }
+
+         if(mEnableDynamicLights)
+         {             
+            //now setup the lighting uniforms necessary for rendering the dynamic lights
+            osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+            osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
+            
+            ID_To_Light_Map::iterator iter = mLights.begin();
+            ID_To_Light_Map::iterator endIter = mLights.end();
+
+            //update uniforms
+            int count = 0;
+            for(;count < MAX_LIGHTS * 3; count += 3)
+            { 
+               if(iter != endIter)
+               {
+                  DynamicLight* dl = (*iter).second.get();
+
+                  if(dl->mTarget.valid())
+                  {
+                     SetPosition(dl);
+                  }
+
+                  lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                  lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+               
+                  ++iter;
+               }
+               else
+               {
+                  //else we turn the light off by setting the intensity to 0
+                  lightArray->setElement(count, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+                  lightArray->setElement(count + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  lightArray->setElement(count + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+               }
+            }
+          }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
