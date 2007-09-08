@@ -17,6 +17,8 @@ varying vec3 vViewDir;
 varying vec2 vReflectTexCoord;
 varying float vFog;
 varying float vDistance;
+varying vec3 vPos;
+varying vec3 worldNormal;
 
 void create2DTexture(sampler2D, vec2, out vec4);
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
@@ -24,6 +26,8 @@ void computeBaseVehicleColor(vec3, vec4, out vec3);
 void computeSpecularContribution(vec3, vec3, vec3, vec3, out vec3);
 void computeGlossColor(vec3, vec3, vec3, vec3, inout vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
+void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, out vec3 reflectiveDynamicLightContrib);
+
 
 void main(void)
 {
@@ -35,6 +39,13 @@ void main(void)
    //Compute the light contribution
    vec3 lightContrib;
    lightContribution(vNormal, vLightDir, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), lightContrib);
+   
+   //accumulate the dynamic light contribution
+   vec3 dynamicLightContrib;
+   vec3 reflectiveDynamicLightContrib;
+   dynamic_light_fragment(worldNormal, vPos, dynamicLightContrib, reflectiveDynamicLightContrib);
+   lightContrib += dynamicLightContrib;
+   lightContrib = clamp(lightContrib, 0.0, 1.0);
    
    vec4 tempGlossMap;
    vec3 glossMap;// = vec3(texture2D(glossTexture,gl_TexCoord[0].st));
@@ -56,7 +67,11 @@ void main(void)
    vec3 color;
    computeBaseVehicleColor(lightContrib, diffuseColor, color);
    computeGlossColor(reflectMap, lightContrib, glossMap, specularContrib, color);					
-
+   
+   //add in the dynamic light reflective
+   color += reflectiveDynamicLightContrib;
+   color = clamp(color, 0.0, 1.0);
+   
    if( vDistance > 10000.0)
    {
       discard;

@@ -13,12 +13,13 @@ varying vec3 vNormal;
 varying vec3 vLightDir;
 varying vec3 vViewDir;
 varying float vFog;
-varying vec3 vPosition;
-varying vec4 vPosition4;
+varying vec3 worldPos;
+varying vec3 worldNormal;
 
 void create2DTexture(sampler2D, vec2, out vec4);
 void interiorLightContribution(vec3, vec3, out vec3);
 void computeSpecularContribution(vec3, vec3, vec3, vec3, out vec3);
+void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, out vec3 reflectiveDynamicLightContrib);
 
 /**
  * This is the fragment shader for the interior HMMWV
@@ -47,6 +48,13 @@ void main(void)
    // is too dramatic, we weight the effect of light against a straight up vector.
    vec3 lightContrib;
    interiorLightContribution(vNormal, vLightDir, lightContrib);
+   
+   //accumulate the dynamic light contribution
+   vec3 dynamicLightContrib;
+   vec3 reflectiveDynamicLightContrib;
+   dynamic_light_fragment(worldNormal, worldPos, dynamicLightContrib, reflectiveDynamicLightContrib);
+   lightContrib += dynamicLightContrib;
+   lightContrib = clamp(lightContrib, 0.0, 1.0);
 
    color += lightContrib * vec3(diffuseColor.rgb + detailBlend); 
 
@@ -55,6 +63,10 @@ void main(void)
    computeSpecularContribution(vLightDir, vNormal, vViewDir, vec3(0.1), specularContrib);
    
    color += specularContrib * lightContrib;  // specular value is not set on the light :(
+   
+   //add in the dynamic light reflective
+   color += reflectiveDynamicLightContrib;
+   color = clamp(color, 0.0, 1.0);
 
    if (diffuseColor.a < 0.3) {
       // Give the window a bit of a 'glare' effect if the light is mostly directly on.  
@@ -65,6 +77,6 @@ void main(void)
       gl_FragColor = vec4(vec3(1.7 * winSpecular), pow(diffuseColor.a + 0.9*winSpecular, 2.0));
    }
    else
-      gl_FragColor = vec4(color, diffuseColor.a);
+      gl_FragColor = vec4(color.xyz, 1.0);
 }
 
