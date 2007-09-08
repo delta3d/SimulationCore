@@ -296,22 +296,5 @@
          </parameter>
       </shader>
    </shadergroup>
-   
 
-   <shadergroup name="EphemerisFogGroup">
-      <shader name="EphemFog" default="yes">
-         <source type="Vertex">Shaders/Base/ephemeris_fog_vert.glsl</source>
-         <source type="Vertex">Shaders/Base/ephemeris_vertex_functions.glsl</source>
-         <source type="Fragment">Shaders/Base/ephemeris_fog_frag.glsl</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/Base/ephemeris_fragment_functions.glsl</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.glsl</source>
-         <parameter name="DistanceForCompleteFog">
-            <float defaultValue="3000.0"/>
-         </parameter>
-         <parameter name="DistanceForHorizonFog">
-            <float defaultValue="4000.0"/>
-         </parameter>
-      </shader>
-   </shadergroup>
 </shaderlist>
