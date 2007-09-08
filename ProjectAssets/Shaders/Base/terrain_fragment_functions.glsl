@@ -24,8 +24,3 @@ void computeDetailBlend(sampler2D secondaryTexture,vec2 textCoord, vec3 weights,
    vec3 fineBlend = (vec3(texture2D(secondaryTexture, textCoord * 32.0)) - 0.48) * weights[2];
    detailBlend = (blurBlend.b * 1.8) + (medBlend.r/1.7) + fineBlend.g * 1.2;
 }
-
-void computeTerrainColor(vec3 lightContrib, vec4 baseColor, float detailBlend, out vec3 color)
-{
-   color = lightContrib * (vec3(baseColor) + vec3(detailBlend)); 
-}

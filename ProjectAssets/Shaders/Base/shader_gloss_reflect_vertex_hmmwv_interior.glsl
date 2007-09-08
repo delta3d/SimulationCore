@@ -5,12 +5,14 @@
 // Thanks :)  
 // -Matthew "w00by" Stokes
 
+uniform mat4 inverseViewMatrix;
+
 varying vec3 vNormal;
 varying vec3 vLightDir; 
 varying vec3 vViewDir;
 varying float vFog;
-varying vec3 vPosition;
-varying vec4 vPosition4;
+varying vec3 worldPos;
+varying vec3 worldNormal;
 
 void normalizeGlNormal(out vec3);
 void normalizeLight(mat4, vec4, out vec3); 
@@ -40,8 +42,8 @@ void main()
    const float LOG2E = 1.442695; //1/log(2)
    vFog = exp2(-gl_Fog.density * gl_Fog.density * distance * distance * LOG2E);
    vFog = clamp(vFog,0.0,1.0);
-
-   vPosition = vec3(gl_Vertex);
-   vPosition4 = gl_Vertex;
-
+   
+   //our position and normal is in local space and we want it it
+   worldPos = inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex;
+   worldNormal = mat3(inverseViewMatrix) * gl_NormalMatrix * gl_Normal;   
 }

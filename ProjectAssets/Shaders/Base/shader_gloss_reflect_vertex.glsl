@@ -7,12 +7,16 @@
 // Thanks :)  
 // -Matthew "w00by" Stokes
 
+uniform mat4 inverseViewMatrix;
+
 varying vec3 vNormal;
 varying vec3 vLightDir;
 varying vec3 vViewDir;
 varying vec2 vReflectTexCoord;
 varying float vFog;
 varying float vDistance;
+varying vec3 vPos;
+varying vec3 worldNormal;
 
 void computeVehicleGLTexCoord(out vec4);
 void normalizedViewDir(mat4, vec4, out vec3);
@@ -51,4 +55,8 @@ void main()
    vec4 outGLPosTemp;
    setVehicleGLPosition(outGLPosTemp);
    gl_Position = outGLPosTemp;       
+   
+   //our position and normal is in local space and we want it it
+   vPos = inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex;
+   worldNormal = mat3(inverseViewMatrix) * gl_NormalMatrix * gl_Normal;   
 }

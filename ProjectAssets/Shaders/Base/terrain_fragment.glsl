@@ -6,26 +6,35 @@
 // Thanks :)  
 // -Matthew "w00by" Stokes
 
+const int MAX_LIGHTS = 10;
+const float constant_falloff = 2.0;
+const float linear_falloff = 0.25;
+const float quad_falloff = 0.125;
+
+
 uniform sampler2D baseTexture;
-uniform sampler2D secondaryTexture;
+uniform sampler2D secondaryTexture; 
 
 varying vec3 vNormal;
 varying vec3 vLightDirection;
 varying vec3 vWeights;
 varying float vFog;
 varying float vDistance;
+varying vec3 vPos;
+varying vec3 worldNormal;
 
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void computeDetailBlend(sampler2D, vec2, vec3, out float); 
 void create2DTexture(sampler2D, vec2 , out vec4);
 void computeTerrainColor(vec3, vec4, float, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
+void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, out vec3 reflectiveDynamicLightContrib);
 
 void main(void)
 {   
    //Compute the Light Contribution
    vec3 lightContrib;
-   lightContribution(vNormal, vLightDirection, vec3(gl_LightSource[0].diffuse), vec3(gl_LightSource[0].ambient), lightContrib);
+   lightContribution(vNormal, vLightDirection, gl_LightSource[0].diffuse.xyz, gl_LightSource[0].ambient.xyz, lightContrib);
    
    //Compute Detail Additive
    float detailBlend;
@@ -35,9 +44,15 @@ void main(void)
    vec4 baseColor;
    create2DTexture(baseTexture, gl_TexCoord[0].st, baseColor);
 
-   //Compute final color with light, fog, base color, and detail
-   vec3 color;
-   computeTerrainColor(lightContrib, baseColor, detailBlend, color);
+   vec3 dynamicLightContrib;
+   vec3 reflectiveDynamicLightContrib;
+   dynamic_light_fragment(worldNormal, vPos, dynamicLightContrib, reflectiveDynamicLightContrib);
+   lightContrib += dynamicLightContrib;
+   lightContrib = clamp(lightContrib, 0.0, 1.0);
+   
+   vec3 color = lightContrib * (vec3(baseColor) + vec3(detailBlend)); 
+   color += reflectiveDynamicLightContrib;
+   color = clamp(color, 0.0, 1.0);
 
    //Discard the fragment outside some bound so that we don't get the jagged edges where the terrain ends
    if( vDistance > 10000.0)

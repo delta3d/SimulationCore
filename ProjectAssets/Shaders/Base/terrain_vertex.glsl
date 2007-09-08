@@ -12,6 +12,8 @@ varying vec3 vLightDirection;
 varying vec3 vWeights; // [0] is blur, [1] is medium, and [2] is fine
 varying float vFog;
 varying float vDistance;
+varying vec3 vPos;
+varying vec3 worldNormal;
 
 void normalizeGlNormal(out vec3);
 void normalizeLight(mat4, vec4, out vec3);
@@ -22,6 +24,7 @@ void calculateDistance(mat4, vec4, out float);
 void computeWeights(float, float, float, out vec3);
 void computeTerrainFog(float, float, out float);
 void setTerrainGLPosition(out vec4);
+
 
 //This vertex shader is meant to perform the per vertex operations of per pixel lighting
 //using a single directional light source.
@@ -56,4 +59,7 @@ void main()
    vec4 outGLPosTemp;   
    setTerrainGLPosition(outGLPosTemp);
    gl_Position = outGLPosTemp;
+   
+   vPos = gl_Vertex;
+   worldNormal = gl_Normal;
 }
