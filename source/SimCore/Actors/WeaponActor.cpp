@@ -33,6 +33,8 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/MunitionsComponent.h>
 
+#include <SimCore/Components/RenderingSupportComponent.h> //for dynamic lights
+
 #include <osg/Geode>
 
 namespace SimCore
@@ -43,32 +45,34 @@ namespace SimCore
       // Actor code
       //////////////////////////////////////////////////////////////////////////
       WeaponActor::WeaponActor( WeaponActorProxy &proxy )
-         : Platform(proxy),
-         mUseBulletPhysics(false),
-         mSleeping(false),
-         mJammed(false),
-         mTriggerHeld(false),
-         mFired(false),
-         mTargetChanged(false),
-         mTriggerTime(0.0f),
-         mRecoilDistance(0.0f),
-         mRecoilRestTime(0.0f),
-         mCurRecoilRestTime(0.0f),
-         mAutoSleepTime(0.0f),
-         mCurSleepTime(0.0f),
-         mFireRate(0.0f), // 0 means single fire
-         mJamProbability(0.0f),
-         mFlashProbability(1.0f),
-         mTracerFrequency(0),
-         mAmmoCount(0),
-         mAmmoMax(100000),
-         mShotsFired(0),
-         mFireMessageTime(0.0f),
-         mDetMessageTime(0.0f),
-         mMessageCycleTime(0.5f),
-         mHitCount(0),
-         mMessageCount(0),
-         mFireVelocity(1000.0f)
+         : Platform(proxy)
+         , mUseBulletPhysics(false)
+         , mSleeping(false)
+         , mJammed(false)
+         , mTriggerHeld(false)
+         , mFired(false)
+         , mTargetChanged(false)
+         , mTriggerTime(0.0f)
+         , mRecoilDistance(0.0f)
+         , mRecoilRestTime(0.0f)
+         , mCurRecoilRestTime(0.0f)
+         , mAutoSleepTime(0.0f)
+         , mCurSleepTime(0.0f)
+         , mFireRate(0.0f) // 0 , means single fire
+         , mJamProbability(0.0f)
+         , mFlashProbability(1.0f)
+         , mTracerFrequency(0)
+         , mAmmoCount(0)
+         , mAmmoMax(100000)
+         , mShotsFired(0)
+         , mFireMessageTime(0.0f)
+         , mDetMessageTime(0.0f)
+         , mMessageCycleTime(0.5f)
+         , mHitCount(0)
+         , mMessageCount(0)
+         , mFireVelocity(1000.0f)
+         , mDynamicLightID(0)
+         , mDynamicLightEnabled(false)
       {
       }
 
@@ -168,6 +172,35 @@ namespace SimCore
             mTargetChanged = false;
             mFired = false;
          }
+
+         //if we have a dynamic light active we need to reduce its effect and or remove it from the rendering support component
+         if(mDynamicLightEnabled)
+         {
+            //remove dynamic light effect
+            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
+
+            if(comp != NULL)
+            {
+               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
+               if(renderComp)
+               {
+                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
+                  if(dl)
+                  { 
+                     //the 4.0 is a scalar controlling how fast the effect dissapates
+                     dl->mIntensity -= (10.0f * timeDelta);
+                     if(dl->mIntensity <= 0.0f)
+                     {
+                        dl->mIntensity = 0.0f;
+                        renderComp->RemoveDynamicLight(mDynamicLightID);
+                        mDynamicLightEnabled = false;
+                     }
+                  }
+               }
+            }
+         }
+
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -266,6 +299,31 @@ namespace SimCore
             if( normal.length2() > 0.0 ) { normal.normalize(); }
             std::cout << "\tWeapon: " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
             // --- DEBUG --- END --- /*/
+
+            //this creates a dynamic light
+            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
+
+            if(comp != NULL)
+            {
+               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
+               if(renderComp)
+               {
+                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 0;
+                  if(!mDynamicLightEnabled)
+                  {
+                     dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+                     mDynamicLightID = renderComp->AddDynamicLight(dl);
+
+                     dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
+                     dl->mAttenuation.set(0.1, 0.05, 0.0002);
+                     dl->mIntensity = 1.0f;
+                     dl->mSaturationIntensity = 0.0f; //no saturation
+                     dl->mTarget = this;
+                     mDynamicLightEnabled = true;
+                  }
+               }
+            }
 
 #ifdef AGEIA_PHYSICS
             if( mShooter.valid() )
