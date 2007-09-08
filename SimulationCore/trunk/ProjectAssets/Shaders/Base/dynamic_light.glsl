@@ -4,7 +4,7 @@ const int MAX_DYNAMIC_LIGHTS = 20;
 //each dynamic light has 3 associated vec4's
 //the first vec4 is a vec3 position and an intensity
 //the second vec4 is a vec3 color
-//and the third vec4 is a vec3 attenuation 
+//and the third vec4 is a vec3 attenuation and a saturation intensity
 uniform vec4 dynamicLights[3 * MAX_DYNAMIC_LIGHTS];
 
 void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, out vec3 reflectiveDynamicLightContrib)
@@ -34,7 +34,8 @@ void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, o
          
          //we calculate a close up saturation effect by using 20% of the linear attenuation with the distance squared
          //a linear attentuation of 0.005 will saturate about 10 meters
-         reflectiveDynamicLightContrib += dynamicLights[i].w * normalDotLight * (0.2 / (dynamicLights[i + 2].y * dist2));
+         //dynamicLights[i + 2].w  is the intensity of the saturation effect
+         reflectiveDynamicLightContrib += dynamicLights[i + 2].w * (normalDotLight * (0.2 / (dynamicLights[i + 2].y * dist2)));
       }
    } 
    
