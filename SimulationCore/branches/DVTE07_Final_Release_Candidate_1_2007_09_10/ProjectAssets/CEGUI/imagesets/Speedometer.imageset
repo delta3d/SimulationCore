@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="Speedometer" Imagefile="CEGUI/imagesets/Speedometer.tga" NativeHorzRes="256" NativeVertRes="256" AutoScaled="true">
+   <Image Name="Speedometer" XPos="0" YPos="0" Width="256" Height="256" />
+</Imageset>
+
