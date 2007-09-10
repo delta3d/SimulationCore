@@ -10,7 +10,7 @@ Import('*')
 
 srcs = [env.SGlob('SimCore/*.cpp')] + [env.SGlob('SimCore/Actors/*.cpp')] + [env.SGlob('SimCore/Tools/*.cpp')] + [env.SGlob('SimCore/Components/*.cpp')]
 deps = [ 'osgGA', 'osgProducer', 'Producer', 'OpenThreads', 'xerces-c', 'cal3d', 'osgDB', 'osgParticle', 
-        'osgText', 'osgFX', 'osgSim', 'osg', 'osgUtil', 'rbody', 'gdal', 'dtGui',
+        'osgText', 'osgFX', 'osgSim', 'osg', 'osgUtil', 'rbody', 'rvrutils', 'rcfgscript', 'gdal', 'dtGui',
         'dtAudio', 'dtCore', 'dtAnim', 'dtChar', 'dtUtil', 'dtDAL', 'dtGame', 'dtAI', 'dtActors', 
         'dtABC', 'dtHLAGM', 'dtGUI', 'CEGUIBase', 'CEGUIOpenGLRenderer', 'opengl', 'osgEphemeris' ] + env['rtiLibs']
 
