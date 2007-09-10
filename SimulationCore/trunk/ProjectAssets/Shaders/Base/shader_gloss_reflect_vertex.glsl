@@ -57,6 +57,6 @@ void main()
    gl_Position = outGLPosTemp;       
    
    //our position and normal is in local space and we want it it
-   vPos = inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex;
+   vPos = (inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex).xyz;
    worldNormal = mat3(inverseViewMatrix) * gl_NormalMatrix * gl_Normal;   
 }
