@@ -60,6 +60,6 @@ void main()
    setTerrainGLPosition(outGLPosTemp);
    gl_Position = outGLPosTemp;
    
-   vPos = gl_Vertex;
+   vPos = gl_Vertex.xyz;
    worldNormal = gl_Normal;
 }
