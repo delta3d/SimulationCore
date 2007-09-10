@@ -428,6 +428,10 @@ namespace SimCore
             mEphemerisEnvironmentActor->SetVisibility(atmosActor->GetVisibilityDistance()*1000.0f);
             UpdateFog();
 
+            // Change the Cloud Coverage
+            mEphemerisEnvironmentActor->ChangeClouds((atmosActor->GetCloudCoverage() / 10), 
+                                                      atmosActor->GetWindSpeedX(), 
+                                                      atmosActor->GetWindSpeedY());
             // Change Wind
             // --- The following forces an actor update message for which
             //     components and entity may be listening.
