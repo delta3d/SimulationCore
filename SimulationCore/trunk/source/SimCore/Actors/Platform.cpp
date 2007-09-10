@@ -184,6 +184,8 @@ namespace SimCore
       // Actor code
       /////////////////////////////////////////////////////////////////
       Platform::Platform(dtGame::GameActorProxy &proxy) : BaseEntity(proxy),
+         mTimeBetweenControlStateUpdates(0.3333f),
+         mTimeUntilControlStateUpdate(0.0f),
          mNonDamagedFileNode(new osg::Group()),
          mDamagedFileNode(new osg::Group()),
          mDestroyedFileNode(new osg::Group()),
@@ -596,12 +598,20 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::TickControlState( const dtGame::Message& tickMessage )
       {
+         if( mTimeUntilControlStateUpdate >= 0.0f )
+         {
+            mTimeUntilControlStateUpdate -= 
+               static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaRealTime();
+         }
+
          // Send control state update if controlling articulations directly
          // on a remote entity.
-         if( mArticHelper.valid() && mArticHelper->IsDirty() )
+         if( mTimeUntilControlStateUpdate < 0.0f && mArticHelper.valid() && mArticHelper->IsDirty() )
          {
             if( mArticHelper->GetControlState() != NULL )
             {
+               mTimeUntilControlStateUpdate = mTimeBetweenControlStateUpdates;
+
                mArticHelper->NotifyControlStateUpdate();
                mArticHelper->SetDirty( false );
             }
