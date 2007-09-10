@@ -108,8 +108,8 @@ namespace SimCore
                {
                   if (drComp != NULL)
                      drComp->SetTerrainActor(terrain);
-                  if (animComp != NULL)
-                     animComp->SetTerrainActor(terrain);
+                  //if (animComp != NULL)
+                     //animComp->SetTerrainActor(terrain);
                }
             }
             else
