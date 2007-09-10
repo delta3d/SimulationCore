@@ -33,6 +33,7 @@
 #include <dtAI/basenpcutils.h>
 
 #include <dtGame/gamemanager.h>
+#include <dtGame/deadreckoninghelper.h>
 
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -304,6 +305,9 @@ namespace SimCore
          if (IsRemote())
          {
             RegisterWithDeadReckoningComponent();
+            GetDeadReckoningHelper().SetUseModelDimensions(false);
+            GetDeadReckoningHelper().SetModelDimensions(osg::Vec3(0.2, 0.2, 1.0));
+            
             //Need tick remote to check for plan changes.
             GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
          }
