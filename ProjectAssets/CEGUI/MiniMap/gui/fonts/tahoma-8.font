@@ -1,2 +1,2 @@
 <?xml version="1.0" ?>
-<Font Name="Tahoma-8" Filename="MiniMap/gui/fonts/tahoma.ttf" Type="FreeType" Size="8" NativeHorzRes="800" NativeVertRes="600" AutoScaled="true"/>
+<Font Name="Tahoma-8" Filename="CEGUI/MiniMap/gui/fonts/tahoma.ttf" Type="FreeType" Size="8" NativeHorzRes="800" NativeVertRes="600" AutoScaled="true"/>
