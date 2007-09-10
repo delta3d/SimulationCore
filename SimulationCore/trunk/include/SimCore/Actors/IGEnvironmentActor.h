@@ -85,11 +85,15 @@ namespace SimCore
          virtual void GetTimeAndDate( int& year, int& month, int& day, 
             int& hour, int& minute, int& second ) const;
 
+         //Turn the Fog on and off on the environment
          void EnableFog(bool enable);
 
+         //Set the density on the environments fog
          void SetDensity (float density);
+
+         //Get the density on the environments fog
          float GetDensity ();
-         void UpdateFog();
+ 
          void SetEphemerisFog(bool fog_toggle );
 
          bool IsFogEnabled() const { return mEnvironment->GetFogEnable(); }
@@ -132,6 +136,14 @@ namespace SimCore
          void SetLatitudeAndLongitude( float latitude, float longitude );
 
          osgEphemeris::Sphere* GetFogSphere() {return mFogSphere.get();}
+
+         // Used to change the Cloud Plane texture to some Cloud Texture file that already exists
+         // @param int That represents some numbered file
+         void ChangeClouds(int, float, float);
+
+         // Gets the number of the file that is currently being used for the cloud texture
+         // @return The number of the Cloud texture file that is currently being used.
+         int GetCloudCoverage() const;
 
       protected:
 
@@ -187,6 +199,7 @@ namespace SimCore
          dtCore::RefPtr<MoveWithEyePointTransform> mFogSphereEyePointTransform;
          dtCore::RefPtr<osg::Fog>                  mFog;
 
+         int mCloudCoverage;
       };
 
       ////////////////////////////////////////////////////////////////////////

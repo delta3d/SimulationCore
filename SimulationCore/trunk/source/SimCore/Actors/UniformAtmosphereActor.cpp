@@ -101,6 +101,11 @@ namespace SimCore
             dtDAL::MakeFunctor(actor, &UniformAtmosphereActor::SetExtinctionCoefficient), 
             dtDAL::MakeFunctorRet(actor, &UniformAtmosphereActor::GetExtinctionCoefficient), 
             "A rate for measuring the loss of clarity in the air"));
+        
+         AddProperty(new dtDAL::FloatActorProperty("Cloud Coverage", "Cloud Coverage", 
+            dtDAL::MakeFunctor(actor, &UniformAtmosphereActor::SetCloudCoverage), 
+            dtDAL::MakeFunctorRet(actor, &UniformAtmosphereActor::GetCloudCoverage), 
+            "A relative amount of cloud coverage in the sky"));
       }
 
       //////////////////////////////////////////////////////////
@@ -116,8 +121,10 @@ namespace SimCore
          mFogThickness(0.0f), // m
          mPrecipRate(0.0f), // mm/h
          mExtinctionCoefficient(0.0f),
+         mCloudCoverage(0.0f),
          mCloudType(&CloudType::CLEAR),
          mPrecipType(&PrecipitationType::NONE)
+
       {
 
       }

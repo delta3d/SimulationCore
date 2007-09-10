@@ -87,12 +87,13 @@ namespace SimCore
          , mEnableCloudPlane(true)
          , mCurrTime()
          , mWind()
-         , mCloudPlane(new dtCore::CloudPlane(6, 0.5f, 6, 1, 0.3f, 0.96f, 512, 1400.0f))
+         , mCloudPlane(new dtCore::CloudPlane(1500.0f, "Cloud Plane","./Textures/CloudTexture9.dds"))
          , mEnvironment( new dtCore::Environment("EphemerisEnvironment") )
          , mEphemerisModel(new osgEphemeris::EphemerisModel())
          , mFogSphere(0)
          , mFogSphereEyePointTransform(new MoveWithEyePointTransform())
          , mFog ( new osg::Fog() )
+         , mCloudCoverage(0)
       {
          EnableCloudPlane(true);
          AddChild(mEnvironment.get());
@@ -130,6 +131,8 @@ namespace SimCore
          fogSphereStates->setRenderBinDetails( -1, "RenderBin" );
 
          mFogSphere->setStateSet(fogSphereStates);         
+         //set default fog distance to a clear day
+         mFog->setEnd( 600000 );
       }
 
       /////////////////////////////////////////////////////////////
@@ -234,6 +237,34 @@ namespace SimCore
          // Seems wierd, but we have to set the clear color to black on the camera or 
          // the ephemeris shows stars in the daytime and at night, they are sort of gray instead of white.
          GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->SetClearColor(osg::Vec4(0, 0, 0, 0));
+      }
+
+
+      void IGEnvironmentActor::ChangeClouds(int cloudNumber, float windX, float windY)
+      {
+         //converts wind speed to m/s
+         windX = (windX * 0.0000036f);
+         windY = (windY * 0.0000036f);
+
+         mCloudPlane->SetWind(windX, windY);
+
+         bool loaded;
+         loaded = mCloudPlane->LoadTexture("./ProjectAssets/Textures/CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
+
+         if(loaded)
+         {
+            mCloudCoverage = cloudNumber;
+
+         }
+         else
+         {
+            LOG_ERROR("A Cloud File Texture Could Not be Found");
+         }
+      }
+
+      int IGEnvironmentActor::GetCloudCoverage() const
+      {
+         return mCloudCoverage;
       }
 
       /////////////////////////////////////////////////////////////
@@ -383,11 +414,6 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
-      /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::UpdateFog()
-      {
-
-      }
  
 
       void IGEnvironmentActor::SetDensity(float density)

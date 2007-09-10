@@ -61,6 +61,9 @@ namespace SimCore
          void SetExtinctionCoefficient( float extinction ) { mExtinctionCoefficient = extinction; }
          float GetExtinctionCoefficient() const { return mExtinctionCoefficient; }
 
+         void SetCloudCoverage(float cloudCoverage) { mCloudCoverage = cloudCoverage; }
+         float GetCloudCoverage() const { return mCloudCoverage; }
+
          void SetWindSpeedX( float speedX ) { mWindSpeed[0] = speedX; }
          float GetWindSpeedX() const { return mWindSpeed.x(); }
 
@@ -87,6 +90,7 @@ namespace SimCore
          float mFogThickness;    // m
          float mPrecipRate;      // mm/h
          float mExtinctionCoefficient; // 1/KM
+         float mCloudCoverage;
 
          CloudType* mCloudType;
          PrecipitationType* mPrecipType;
