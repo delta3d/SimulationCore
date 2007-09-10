@@ -601,13 +601,6 @@ namespace SimCore
       {
          bool forceUpdate = false;
 
-         if (mTimeUntilNextUpdate <= 0.0f)
-         {
-            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
-            forceUpdate = true;
-            fullUpdate = true;
-         }
-
          //if it's not time for an update, check to see if it's moved or turned enough to warrant one.
          if (!forceUpdate)
          {
@@ -663,8 +656,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
       {
-         propNamesToFill.push_back("Last Known Translation");
-         propNamesToFill.push_back("Last Known Rotation");
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
       }
       
       ////////////////////////////////////////////////////////////////////////////////////
@@ -681,12 +674,23 @@ namespace SimCore
          GetTransform(xform);
          osg::Vec3 rot;
          xform.GetRotation(rot);
+         osg::Vec3 pos(xform.GetTranslation());
 
-         forceUpdate = ShouldForceUpdate(xform.GetTranslation(), rot, fullUpdate);
+         if (mTimeUntilNextUpdate <= 0.0f)
+         {
+            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
+            fullUpdate = true;
+            forceUpdate = true;
+         }
+
+         if( ! fullUpdate )
+         {
+            forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
+         }
 
          if (forceUpdate)
          {
-            SetLastKnownTranslation(xform.GetTranslation());
+            SetLastKnownTranslation(pos);
             SetLastKnownRotation(rot);
 
             dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
