@@ -213,22 +213,43 @@ namespace SimCore
             /// @return the group parameter for articulations.  This is for supporting the property.
             dtCore::RefPtr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray(); 
 
-            // Sets the entity type.  Entity Type is a string that is used by the Input component 
-            // to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
+            /**
+             * Sets the entity type.  Entity Type is a string that is used by the Input component 
+             * to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
+             */
             void SetEntityType( const std::string& entityType) { mEntityType = entityType; }
-            // Gets the entity type.  Entity Type is a string that is used by the Input component 
-            // to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
+            
+            /**
+             * Gets the entity type.  Entity Type is a string that is used by the Input component 
+             * to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
+             */
             std::string GetEntityType() { return mEntityType; }
 
             void SetVehiclesSeatConfigActorName(const std::string& value) {mVehiclesSeatConfigActorName = value;}
             std::string GetVehiclesSeatConfigActorName() {return mVehiclesSeatConfigActorName;}
 
-            // Set the articulation helper responsible for creating articulation
-            // data used in entity update messages.
+            /**
+             * Set the articulation helper responsible for creating articulation
+             * data used in entity update messages.
+             */
             void SetArticulationHelper( Components::ArticulationHelper* articHelper );
             Components::ArticulationHelper* GetArticulationHelper() { return mArticHelper.get(); }
             const Components::ArticulationHelper* GetArticulationHelper() const { return mArticHelper.get(); }
 
+            /**
+             * Set the minimum time in seconds between control state updates.
+             * This prevents flooding the network with many control state
+             * messages spawning from slight movements.
+             */
+            void SetTimeBetweenControlStateUpdates( float timeBetweenUpdates ) { mTimeBetweenControlStateUpdates = timeBetweenUpdates; }
+            float GetTimeBetweenControlStateUpdates() const { return mTimeBetweenControlStateUpdates; }
+
+            /**
+             * This function advances the update time and determines if an update
+             * regarding a control state should be sent out to the network.
+             * @param tickMessage Tick message sent to this object via registration
+             *        of this function in an invokable mapped to TickRemote messages.
+             */
             void TickControlState( const dtGame::Message& tickMessage );
 
          protected:
@@ -250,6 +271,11 @@ namespace SimCore
             osg::Vec3 mMuzzleFlashPosition;
 
          private:
+            /// The minimum time allowed between control state updates
+            float mTimeBetweenControlStateUpdates;
+
+            /// The current time remaining before another control state update can be sent
+            float mTimeUntilControlStateUpdate;
 
             /// Nodes representing the damagable model file nodes
             dtCore::RefPtr<osg::Group> mNonDamagedFileNode;
