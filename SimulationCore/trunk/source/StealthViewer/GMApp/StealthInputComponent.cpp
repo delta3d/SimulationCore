@@ -936,7 +936,7 @@ namespace StealthGM
    /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ToggleEntityShaders()
    {
-      dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/DVTEShaderDefs.xml");
+      dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
 
    }
    
