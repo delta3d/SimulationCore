@@ -72,6 +72,10 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
+            virtual void SetLastKnownRotation(const osg::Vec3 &vec);
+
+            virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
+
 #ifdef AGEIA_PHYSICS
 
             //////////////////////////////////////////////////////////////////////////////
@@ -104,6 +108,9 @@ namespace SimCore
 
          private:
             bool        mAcceptInput;     // for ai vs human. 
+            bool        mNotifyChangePosition;
+            bool        mNotifyChangeOrient;
+            bool        mNotifyChangeVelocity;
             osg::Vec3   mMoveRateConstant;// for multiplying for movement amount.
             osg::Vec3   mPreviousTransform;
             osg::Vec3   mSentOverTransform;

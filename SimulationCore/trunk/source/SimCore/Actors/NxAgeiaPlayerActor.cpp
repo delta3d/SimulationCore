@@ -56,6 +56,9 @@ namespace SimCore
       NxAgeiaPlayerActor::NxAgeiaPlayerActor(dtGame::GameActorProxy &proxy) : 
          Human(proxy)
       , mAcceptInput(false)
+      , mNotifyChangePosition(false)
+      , mNotifyChangeOrient(false)
+      , mNotifyChangeVelocity(false)
       , mMoveRateConstant(25.0f, 25.0f, 0.0f)
       {  
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
@@ -73,10 +76,20 @@ namespace SimCore
       {
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      bool CompareVectorsPlayer( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
+      {
+         return fabs(op1.x() - op2.x()) < epsilon
+            && fabs(op1.y() - op2.y()) < epsilon
+            && fabs(op1.z() - op2.z()) < epsilon;
+      }
+
       ////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::TickLocal(const dtGame::Message &tickMessage)
       {
-         Human::TickLocal(tickMessage);
+         mNotifyChangePosition = false;
+         mNotifyChangeOrient = false;
+         mNotifyChangeVelocity = false;
 
 #ifdef AGEIA_PHYSICS
          if(IsRemote())
@@ -120,61 +133,94 @@ namespace SimCore
 
             if(mPhysicsHelper->GetActor())
             {
-               float amountChange = 0.5f;
+               float amountChange = GetMaxTranslationError();//0.5f;
                float glmat[16];
-               NxMat33 rotation = mPhysicsHelper->GetActor()->getGlobalOrientation();
+               NxActor* physxObj = mPhysicsHelper->GetActor();
+               NxMat33 rotation = physxObj->getGlobalOrientation();
                rotation.getColumnMajorStride4(glmat);
-               glmat[12] = mPhysicsHelper->GetActor()->getGlobalPosition()[0];
-               glmat[13] = mPhysicsHelper->GetActor()->getGlobalPosition()[1];
-               glmat[14] = mPhysicsHelper->GetActor()->getGlobalPosition()[2];
+               glmat[12] = physxObj->getGlobalPosition()[0];
+               glmat[13] = physxObj->getGlobalPosition()[1];
+               glmat[14] = physxObj->getGlobalPosition()[2];
                glmat[15] = 1.0f;
-               //float zoffset = 0.0;
-               float zoffset = 0;
+
                osg::Matrix currentMatrix(glmat);
                osg::Vec3 globalOrientation;
                dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
                osg::Vec3 nxVecTemp;
-               nxVecTemp.set(mPhysicsHelper->GetActor()->getGlobalPosition().x, mPhysicsHelper->GetActor()->getGlobalPosition().y, mPhysicsHelper->GetActor()->getGlobalPosition().z + zoffset);
+               nxVecTemp.set(mPhysicsHelper->GetActor()->getGlobalPosition().x, mPhysicsHelper->GetActor()->getGlobalPosition().y, mPhysicsHelper->GetActor()->getGlobalPosition().z);
 
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
                const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
-               if(!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange) || 
-                  !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 3, 3.0f))
+
+               mNotifyChangePosition = CompareVectorsPlayer(nxVecTemp, translationVec, amountChange);
+               mNotifyChangeOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 1, 3.0f);
+
+               GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+
+               const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
+               const osg::Vec3 &velocityVec = GetVelocityVector();
+
+               osg::Vec3 angularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
+               osg::Vec3 linearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
+
+               float velocityDiff = (velocityVec - linearVelocity).length();
+               bool velocityNearZero = linearVelocity.length() < 0.1;
+               mNotifyChangeVelocity = velocityDiff > 0.2 || (velocityNearZero && velocityVec.length() > 0.1 );
+
+               if( mNotifyChangeVelocity )
                {
-                  osg::Vec3 globalPosition; 
-                  globalPosition.set(  mPhysicsHelper->GetActor()->getGlobalPosition().x, 
-                                       mPhysicsHelper->GetActor()->getGlobalPosition().y,
-                                       mPhysicsHelper->GetActor()->getGlobalPosition().z + zoffset);
-                  SetLastKnownTranslation(globalPosition);
-                  SetLastKnownRotation(globalOrientation);
-                  
-                  osg::Vec3 AngularVelocity; 
-                  AngularVelocity.set( mPhysicsHelper->GetActor()->getAngularVelocity().x, 
-                                       mPhysicsHelper->GetActor()->getAngularVelocity().y, 
-                                       mPhysicsHelper->GetActor()->getAngularVelocity().z);
-                  
-                  //printf("Angular velocity %f %f %f\n", AngularVelocity[0], AngularVelocity[1], AngularVelocity[2]);
+                  if( velocityNearZero )
+                  {
+                     // DEBUG:
+                     /*std::cout << "\tStopping" 
+                        << "\n\tDifference:\t" << velocityDiff
+                        << "\n\tOld velocity:\t" << velocityVec
+                        << "\n\tNew velocity:\t" << linearVelocity << std::endl;//*/
 
-                  SetAngularVelocityVector(AngularVelocity);
-
-                  osg::Vec3 linearVelocity; 
-                  linearVelocity.set(  mPhysicsHelper->GetActor()->getLinearVelocity().x, 
-                                       mPhysicsHelper->GetActor()->getLinearVelocity().y, 
-                                       mPhysicsHelper->GetActor()->getLinearVelocity().z);              
-                  
-                  //printf("linearVelocity %f %f %f\n", linearVelocity[0], linearVelocity[1], linearVelocity[2]);
-
+                     linearVelocity.set(0.0,0.0,0.0);
+                  }
                   SetVelocityVector(linearVelocity);
-                  
-                  GetGameActorProxy().NotifyFullActorUpdate();
-               }
-               else
-               {
-                  printf("Not sending out\n");
                }
             }
          }
 #endif
+         Human::TickLocal(tickMessage);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::SetLastKnownRotation(const osg::Vec3 &vec)
+      {
+         Human::SetLastKnownRotation( osg::Vec3( vec.x(), 0.0f, 0.0f) );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool NxAgeiaPlayerActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
+      {
+         osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
+
+         float distanceTurned = rot.x() - GetLastKnownRotation().x();
+
+         if (distanceMoved.length2() > GetMaxTranslationError())
+         {
+            // DEBUG: std::cout << "\n\tUpdate Translation:\t" << GetMaxTranslationError() << std::endl;
+            mNotifyChangePosition = true;
+         }
+         
+         if (distanceTurned * distanceTurned > GetMaxRotationError())
+         {
+            // DEBUG: std::cout << "\n\tUpdate Orientation\n" << std::endl;
+            mNotifyChangeOrient = true;
+         }
+
+         // DEBUG: 
+         /*if( mNotifyChangeVelocity )
+         {
+            std::cout << "\n\tUpdate Velocity:\t" << GetVelocityVector() << std::endl;
+         }//*/
+
+         // Do full updates for now until partial updates are required.
+         return mNotifyChangeVelocity || 
+            mNotifyChangeOrient || mNotifyChangePosition;
       }
 
       ////////////////////////////////////////////////////////////
