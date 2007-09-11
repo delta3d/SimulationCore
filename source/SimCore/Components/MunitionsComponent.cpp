@@ -1683,30 +1683,38 @@ namespace SimCore
             // of a new tracer effect.
             int tracerFrequency = munitionType->GetTracerFrequency();
 
-            float probability = 0.0f;
-            if( int(quantity) >= tracerFrequency )
+            // If tracers are allowable...
+            if( tracerFrequency > 0 )
             {
-               probability = 1.0f;
-            }
-            else if( tracerFrequency > 0 )
-            {
-               probability = float(quantity) / float(tracerFrequency);
-            }
-
-            if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
-            {
-               if( entity != NULL && bestDof != NULL )
+               float probability = 0.0f;
+               if( int(quantity) >= tracerFrequency ) // ...with 100% probability...
                {
-                  osg::Matrix mtx;
-                  entity->GetAbsoluteMatrix( bestDof, mtx );
-
-                  mEffectsManager->ApplyTracerEffect( 
-                     mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
+                  probability = 1.0f;
                }
-               else
+               else // ...determine a probability of a tracer effect...
                {
-                  mEffectsManager->ApplyTracerEffect( 
-                     message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
+                  probability = float(quantity) / float(tracerFrequency);
+               }
+
+               // ...and if the probability of a tracer is within the probable area...
+               if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
+               {
+                  // ...generate a tracer effect...
+                  if( entity != NULL && bestDof != NULL )
+                  {
+                     // ...from the fire point on the firing entity.
+                     osg::Matrix mtx;
+                     entity->GetAbsoluteMatrix( bestDof, mtx );
+
+                     mEffectsManager->ApplyTracerEffect( 
+                        mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
+                  }
+                  else
+                  {
+                     // ...from the firing location specified in the message.
+                     mEffectsManager->ApplyTracerEffect( 
+                        message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
+                  }
                }
             }
          }
