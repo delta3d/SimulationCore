@@ -61,10 +61,12 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/HLAConnectionComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/ControlStateComponent.h>
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/MessageType.h>
+#include <SimCore/WeaponTypeEnum.h>
 
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
@@ -306,7 +308,16 @@ namespace StealthGM
 
       mHudGUI->Initialize();
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
-   
+
+      // Control State Component (for swapping weapons on remote HMMWV vehicles)
+      dtCore::RefPtr<SimCore::Components::ControlStateComponent> controlsStateComp
+         = new SimCore::Components::ControlStateComponent;
+      gameManager.AddComponent(*controlsStateComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      std::vector<std::string>& weaponModelFileList = controlsStateComp->GetWeaponModelFileList();
+      SimCore::WeaponTypeEnum::GetModelFileUrlList( weaponModelFileList );
+
+
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.
       InitializeTools();
