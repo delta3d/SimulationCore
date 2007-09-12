@@ -137,14 +137,6 @@ namespace SimCore
          DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
          float time = da.GetDelayTime();
          GetGameManager()->SetTimer("PlayDetonationSoundTimer", this, time);
-
-         dtCore::ParticleSystem* explosionSystem = da.GetExplosionParticleSystem();
-         if( explosionSystem != NULL )
-         {
-            Components::ParticleInfo::AttributeFlags attrs = { true, false };
-            da.RegisterParticleSystem( *explosionSystem, &attrs );
-         }
-               
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -292,11 +284,19 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::OnEnteredWorld()
       {
+         // Register explosion particle effects
          if( mExplosionSystem.valid() )
-            RegisterParticleSystem(*mExplosionSystem);
+         {
+            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            RegisterParticleSystem( *mExplosionSystem, &attrs );
+         }
 
+         // Register smoke particle effects
          if( mSmokeSystem.valid() )
-            RegisterParticleSystem(*mSmokeSystem);
+         {
+            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            RegisterParticleSystem( *mSmokeSystem, &attrs );
+         }
 
          ///////////////////////////////////////////////////////////////////////
          // Add physics particle systems to the detonation
