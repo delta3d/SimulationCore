@@ -378,7 +378,10 @@ namespace SimCore
          const ParticleInfo::AttributeFlags* attrFlags,  const ParticlePriority& priority )
       {
          if( HasRegistered(particles.GetUniqueId()) 
-            || particles.GetAllLayers().empty() ) { return false; }
+            || particles.GetAllLayers().empty() )
+         {
+            return false;
+         }
 
          bool success = mIdToInfoMap.insert( 
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) ) 
@@ -518,6 +521,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void ParticleManagerComponent::UpdateParticleForces()
       {
+         bool forceInfoUpdate = false;
          dtCore::ParticleSystem* curParticles = NULL;
          ParticleInfo::ForceOperatorList* curForces = NULL;
          ParticleInfo* curInfo = NULL;
@@ -527,6 +531,13 @@ namespace SimCore
             curInfo = infoIter->second.get();
             if( curInfo == NULL || curInfo->GetParticleSystem() == NULL )
             {
+               // Ensure that the invalid particle info is removed by calling
+               // UpdateParticleInfo at the end of this function. The update timer
+               // may not have been activated and thus would not call updates on
+               // all particle infos and not remove invalid ones. This makes certain
+               // that any and all invalid infos are removed from the manager.
+               forceInfoUpdate = true;
+
                // DEBUG:
                // std::cout << "\tINFO: " << (curInfo==NULL?"NULL":"OK")
                //   << "\tParticlePtr: " << (curInfo==NULL || curInfo->GetParticleSystem()==NULL?"NULL":"OK") << std::endl;
@@ -550,6 +561,12 @@ namespace SimCore
 
             } // End Forces Loop
          }// End Particle Infos Loop
+
+         // Force an update on particle infos if any were found to be invalid.
+         if( forceInfoUpdate )
+         {
+            UpdateParticleInfo();
+         }
       }
 
       //////////////////////////////////////////////////////////
@@ -605,7 +622,10 @@ namespace SimCore
          {
             curLayer = &(*itor);
 
-            if( ! curLayer->IsModularProgram() ) { continue; }
+            if( ! curLayer->IsModularProgram() )
+            {
+               continue;
+            }
 
             // Obtain the particle layer's modular program which
             // contains the force operators of the particle system.
@@ -662,7 +682,7 @@ namespace SimCore
             // modular program.
             else if( forceOp == NULL )
             {
-               if( !addToAllLayers )
+               if( ! addToAllLayers )
                {
                   // Apply the force only to layers that have an operator
                   // allocated for wind. This allows for a particle system
