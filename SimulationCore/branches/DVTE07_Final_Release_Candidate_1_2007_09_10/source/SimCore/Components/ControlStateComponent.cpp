@@ -250,7 +250,7 @@ namespace SimCore
                {
                   // Change the weapon on the associated vehicle if the weapon
                   // selection has changed.
-                  if( info->mWeaponSelected != control->GetCurrentState()
+                  if( info->mWeaponSelected != unsigned(control->GetCurrentState())
                      || ! info->mControlState.valid() )
                   {
                      // Determine if the current control state is the vehicle control
