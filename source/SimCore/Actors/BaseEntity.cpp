@@ -533,6 +533,7 @@ namespace SimCore
          {
             if(mFlamesSystem.get())
             {
+               UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
                mFlamesSystem = NULL;
             }
@@ -581,11 +582,15 @@ namespace SimCore
             mSmokePlumesSystem->SetEnabled(enable);
             AddChild(mSmokePlumesSystem.get());
             mSmokePlumePresent = enable;
+
+            Components::ParticleInfo::AttributeFlags attrs = {true,true};
+            RegisterParticleSystem(*mSmokePlumesSystem,&attrs);
          }
          else
          {
             if(mSmokePlumesSystem.valid())
             {
+               UnregisterParticleSystem(*mSmokePlumesSystem);
                RemoveChild(mSmokePlumesSystem.get());
                mSmokePlumesSystem = NULL;
             }
