@@ -456,7 +456,7 @@ namespace SimCore
    {
 
       //tell OSG to keep it quite
-      osg::setNotifyLevel(osg::FATAL);
+      //osg::setNotifyLevel(osg::FATAL);
 
       AssignProjectContext();
       PreLoadMap();
