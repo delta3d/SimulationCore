@@ -706,6 +706,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponActor::AttachObject( dtCore::Transformable& object, const std::string& dofName )
       {
+         if( GetNodeCollector() == NULL )
+         {
+            std::stringstream ss;
+            ss << "Weapon actor cannot add object \"" << object.GetName() 
+               << "\" to DOF \"" << dofName << "\" because no weapon model was loaded.";
+            LOG_ERROR(ss.str());
+            return false;
+         }
+
          osgSim::DOFTransform* dof = GetNodeCollector()->GetDOFTransform( dofName );
 
          if( dof == NULL )
