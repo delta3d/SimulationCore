@@ -115,6 +115,9 @@ namespace StealthGM
          // component's true name.
          mHLA = static_cast<dtHLAGM::HLAComponent*>
             (GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
+         if (!mHLA.valid())
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               "Critical Error!  Stealth Input Component could not find an HLA Component!!!");
       }
 
       //SetListeners();
