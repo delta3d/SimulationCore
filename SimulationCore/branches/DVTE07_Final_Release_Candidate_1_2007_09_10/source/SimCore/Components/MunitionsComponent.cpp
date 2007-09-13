@@ -685,19 +685,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadSound( const std::string& filePath )
       {
-         // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
-
-         if( resourcePath.empty() )
-         {
-            std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
-               << resourcePath.c_str() << "\"" << std::endl;
-            LOG_ERROR( ss.str() );
-            return false;
-         }
-
          mSound = NULL;
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
 
@@ -713,19 +700,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadFlash( const std::string& filePath )
       {
-         // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
-
-         if( resourcePath.empty() )
-         {
-            std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
-               << resourcePath.c_str() << "\"" << std::endl;
-            LOG_ERROR( ss.str() );
-            return false;
-         }
-
          dtCore::RefPtr<dtCore::ParticleSystem> flash = new dtCore::ParticleSystem;
          flash->SetParentRelative(true);
 
