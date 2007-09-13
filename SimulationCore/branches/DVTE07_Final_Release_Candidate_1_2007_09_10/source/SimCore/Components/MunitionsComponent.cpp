@@ -497,9 +497,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       WeaponEffect::WeaponEffect()
          : dtCore::Transformable(WeaponEffect::CLASS_NAME),
+         mVisible(true),
          mSoundPlayed(false),
          mSoundStartTime(0.0f),
-         mVisible(true),
          mFlashProbability(1.0f),
          mFlashTime(0.0f),
          mTimeSinceFlash(0.0f)

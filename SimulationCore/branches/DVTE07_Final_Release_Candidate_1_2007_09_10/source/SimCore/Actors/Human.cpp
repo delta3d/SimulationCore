@@ -677,10 +677,10 @@ namespace SimCore
             }
 
          private:
-            
+
             float mCost;
             EffectList mEffects;
-            
+
       };
 
       ////////////////////////////////////////////////////////////////////////////

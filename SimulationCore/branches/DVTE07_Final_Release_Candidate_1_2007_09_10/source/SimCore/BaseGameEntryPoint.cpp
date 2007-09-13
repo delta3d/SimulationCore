@@ -44,6 +44,7 @@
 #include <dtCore/environment.h>
 #include <dtCore/globals.h>
 #include <dtCore/isector.h>
+#include <dtCore/scene.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -61,6 +62,8 @@
 #include <dtGame/exceptionenum.h>
 
 #include <dtAnim/animationcomponent.h>
+#include <dtAnim/cal3ddatabase.h>
+#include <dtAnim/animnodebuilder.h>
 
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>
@@ -506,7 +509,7 @@ namespace SimCore
       RefPtr<Components::MunitionsComponent>               mMunitionsComp    = new Components::MunitionsComponent;
       RefPtr<Components::HLAConnectionComponent> hlacc                       = new Components::HLAConnectionComponent;
       RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
-      RefPtr<dtAnim::AnimationComponent>       animationComponent = new dtAnim::AnimationComponent;
+      RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
       
       gameManager.AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*hft, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -519,6 +522,8 @@ namespace SimCore
       gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
+      nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 

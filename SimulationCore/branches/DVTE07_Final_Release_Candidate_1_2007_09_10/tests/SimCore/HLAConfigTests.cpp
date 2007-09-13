@@ -27,6 +27,7 @@
 #include <dtUtil/macros.h>
 #include <dtUtil/coordinates.h>
 #include <dtCore/globals.h>
+#include <dtCore/scene.h>
 #include <dtDAL/datatype.h>
 #include <dtDAL/project.h>
 #include <dtGame/messagetype.h>
