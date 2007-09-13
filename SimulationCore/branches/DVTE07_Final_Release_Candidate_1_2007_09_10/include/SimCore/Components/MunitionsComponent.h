@@ -230,15 +230,23 @@ namespace SimCore
 
             void Update( float deltaTime );
 
+            void AddDynamicLight( const osg::Vec3& color );
+            void RemoveDynamicLight();
+
+            void SetGameManager( dtGame::GameManager* gameManager );
+
          protected:
             virtual ~TracerEffect();
 
          private:
+            bool      mDynamicLightEnabled;
+            unsigned  mDynamicLightID;
             float     mLifeTime;
             float     mMaxLifeTime;
             float     mSpeed; // aka Velocity Magnitude
             osg::Vec3 mPosition;
             osg::Vec3 mDirection;
+            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -445,7 +453,8 @@ namespace SimCore
             bool ApplyTracerEffect(
                const osg::Vec3& weaponFirePoint,
                const osg::Vec3& intialVelocity,
-               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
+               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+               dtGame::GameManager* gameManager );
 
             // Get the total of effect objects in existence.
             // @return The number of effects objects contained by this effects manager.
