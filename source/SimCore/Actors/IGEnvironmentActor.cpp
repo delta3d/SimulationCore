@@ -27,6 +27,7 @@
 #include <dtCore/nodecollector.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/log.h>
+#include <dtDAL/project.h>
 
 #include <osg/Drawable>
 #include <osg/Matrix>
@@ -249,16 +250,20 @@ namespace SimCore
          mCloudPlane->SetWind(windX, windY);
 
          bool loaded;
-         loaded = mCloudPlane->LoadTexture("./ProjectAssets/Textures/CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
-
-         if(loaded)
+         // Look up the cloud texture from the map so we have the right path. Using ./projectassets doesn't work in all cases depending on path
+         std::string cloudTextureResource("Textures:CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
+         std::string texturePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(cloudTextureResource));
+         if (texturePath.empty()) 
          {
-            mCloudCoverage = cloudNumber;
-
+            LOG_ERROR("The Cloud File Texture [" + texturePath + "] Could Not be Found");
          }
-         else
+         else 
          {
-            LOG_ERROR("A Cloud File Texture Could Not be Found");
+            loaded = mCloudPlane->LoadTexture(texturePath);
+            if(loaded)
+               mCloudCoverage = cloudNumber;
+            else
+               LOG_ERROR("Cloud File Texture was found but had an error while loading [" + texturePath + "].");
          }
       }
 
