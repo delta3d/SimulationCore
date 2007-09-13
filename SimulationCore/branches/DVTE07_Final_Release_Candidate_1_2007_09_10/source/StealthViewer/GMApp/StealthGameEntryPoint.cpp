@@ -252,6 +252,8 @@ namespace StealthGM
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
    
+      SimCore::BaseGameEntryPoint::OnStartup();
+
       // Add Input Component
       dtCore::RefPtr<StealthInputComponent> mInputComponent 
          = new StealthInputComponent(mEnableLogging, 
@@ -266,7 +268,6 @@ namespace StealthGM
       // the connection to the federation.
       StealthInputComponent* inputComp = mInputComponent.get();
    
-      SimCore::BaseGameEntryPoint::OnStartup();
 
 #ifdef NDEBUG
       // Added by Eddie. End users for a stealth viewer don't care about 
