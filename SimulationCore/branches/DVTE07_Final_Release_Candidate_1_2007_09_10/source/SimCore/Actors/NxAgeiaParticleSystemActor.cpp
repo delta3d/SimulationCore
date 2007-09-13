@@ -35,6 +35,8 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
 
+#include <dtUtil/log.h>
+
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/IGActor.h>
 
@@ -235,6 +237,11 @@ void NxAgeiaParticleSystemActor::AddParticle()
          ++numPaths;
    }
 
+   if( numPaths <= 0 )
+   {
+      LOG_WARNING("No file paths set for loading physics particle models");
+      return;
+   }
    std::string referenceString = mPathOfFileToLoad[rand() % numPaths];
 
    if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::TWOD)
