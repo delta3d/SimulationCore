@@ -268,8 +268,8 @@ namespace SimCore
          mLensOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
-         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_frag.glsl");
-         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_vertex.glsl");
+         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.frag");
+         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.vert");
 
          if( fragFileName.length() != 0 && vertFileName.length() != 0)
          {
