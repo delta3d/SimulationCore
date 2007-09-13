@@ -290,12 +290,17 @@ namespace StealthGM
       }
       else if (dynamic_cast<const SimCore::ToolMessage*>(&message) != NULL)
       {
-         if (mStealthActor.valid() && mStealthActor->GetUniqueId() == message.GetAboutActorId())
+         // Act only on local tool messages because the messages could be sent from playback.
+         if( mMachineInfo.valid() && *mMachineInfo == message.GetSource() )
          {
-            const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-            SetEnabledTool(toolMsg.IsEnabled() ? 
-               static_cast<SimCore::MessageType&>(const_cast<dtGame::MessageType&>(toolMsg.GetMessageType())) 
-               : SimCore::MessageType::NO_TOOL);
+            if ( mStealthActor.valid() 
+               && mStealthActor->GetUniqueId() == message.GetAboutActorId())
+            {
+               const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
+               SetToolEnabled(
+                  static_cast<SimCore::MessageType&>(const_cast<dtGame::MessageType&>(toolMsg.GetMessageType())),
+                  toolMsg.IsEnabled());
+            }
          }
       }
       else if (msgType == dtGame::MessageType::INFO_ACTOR_DELETED)
@@ -540,40 +545,42 @@ namespace StealthGM
 
          case Producer::Key_F7:
             {
-               EnableTool(SimCore::MessageType::NIGHT_VISION);
+               ToggleTool(SimCore::MessageType::NIGHT_VISION);
             }
             break;
    
          case Producer::Key_F8:
             {
-               EnableTool(SimCore::MessageType::COMPASS);
+               ToggleTool(SimCore::MessageType::COMPASS);
             }
             break;
    
          case Producer::Key_F9:
             {
                if(GetTool(SimCore::MessageType::BINOCULARS)->GetPlayerActor() == NULL)
+               {
                   GetTool(SimCore::MessageType::BINOCULARS)->SetPlayerActor(mStealthActor.get());
+               }
 
-               EnableTool(SimCore::MessageType::BINOCULARS);
+               ToggleTool(SimCore::MessageType::BINOCULARS);
             }
             break;
    
          case Producer::Key_F10:
             {
-               EnableTool(SimCore::MessageType::LASER_RANGE_FINDER);
+               ToggleTool(SimCore::MessageType::LASER_RANGE_FINDER);
             }
             break;
    
          case Producer::Key_F11:
             {
-               EnableTool(SimCore::MessageType::GPS);
+               ToggleTool(SimCore::MessageType::GPS);
             }
             break;
    
          case Producer::Key_F12:
             {
-               //EnableTool(SimCore::MessageType::MAP);
+               //ToggleTool(SimCore::MessageType::MAP);
             }
             break;
    
@@ -1153,7 +1160,7 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::EnableTool(SimCore::MessageType &msgType)
+   void StealthInputComponent::ToggleTool(SimCore::MessageType& msgType)
    {
       if( ! mStealthActor.valid() 
          || mStealthActor->IsRemote() )
@@ -1172,29 +1179,17 @@ namespace StealthGM
    
       // Fill out the message with important data
       bool enable = !tool->IsEnabled();
+
+      if( enable )
+      {
+         DisableAllTools();
+      }
+
       static_cast<SimCore::ToolMessage*>(msg.get())->SetEnabled(enable);
       msg->SetAboutActorId(mStealthActor->GetUniqueId());
       msg->SetSource(*mMachineInfo);
-   
-      // Avoid circulating tool messages if in RECORD mode.
-      // They should not be recorded by the server logger component.
-      // ...otherwise...
-      // If PLAYBACK mode has ended, the game manager will be paused.
-      // If so, the message will have to be sent directly to the HUD
-      // as well as this component so that they are updated properly.
-      if( IsInRecord() || GetGameManager()->IsPaused() )
-      {
-         // Update this Input Component's current tool
-         SetEnabledTool( enable ? msgType : SimCore::MessageType::NO_TOOL );
-         UpdateTools();
-         // Update the HUD
-         GetHUDComponent()->ProcessMessage(*msg);
-      }
-      else // messages can be circulated
-      {
-         // Let messages update the relevant components.
-         GetGameManager()->SendMessage(*msg);
-      }
+
+      GetGameManager()->SendMessage(*msg);
    
       // Update the camera rotation speed if the tool has
       // differing field of view.
@@ -1218,6 +1213,32 @@ namespace StealthGM
          {
             mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
             mAttachedMM->SetKeyboardTurnSpeed(70.0f);
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::DisableAllTools()
+   {
+      SimCore::Tools::Tool* nvg = GetTool(SimCore::MessageType::NIGHT_VISION);
+
+      // Turn off all other tools (this could be NO_TOOL)
+      std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
+      for(i = mToolList.begin(); i != mToolList.end(); ++i)
+      {
+         if(i->second->IsEnabled())
+         {
+            if( nvg != NULL && i->second == nvg )
+            {
+               dtCore::RefPtr<dtGame::Message> nvgMsg 
+                  = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::NIGHT_VISION);
+               static_cast<SimCore::ToolMessage*>(nvgMsg.get())->SetEnabled(false);
+               nvgMsg->SetAboutActorId(mStealthActor->GetUniqueId());
+               nvgMsg->SetSource(*mMachineInfo);
+               GetGameManager()->SendMessage(*nvgMsg);
+            }
+
+            i->second->Enable(false);
          }
       }
    }
@@ -1302,41 +1323,16 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::SetEnabledTool(SimCore::MessageType &tool)
+   void StealthInputComponent::SetToolEnabled(SimCore::MessageType& toolType, bool enable)
    {
-      if(!SimCore::MessageType::IsValidToolType(tool))
+      SimCore::Tools::Tool* tool = GetTool(toolType);
+
+      if( tool != NULL )
       {
-         LOG_ERROR("Tried to add a tool with an invalid type");
-         return;
-      }
-   
-      if(tool == SimCore::MessageType::NO_TOOL)
-      {
-         std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
-         for(i = mToolList.begin(); i != mToolList.end(); ++i)
+         if( enable != tool->IsEnabled() )
          {
-            if(i->second->IsEnabled())
-               i->second->Enable(false);
+            tool->Enable(enable);
          }
-         return;
-      }
-   
-      SimCore::Tools::Tool *t = GetTool(tool);
-      if(t == NULL)
-      {
-         LOG_WARNING("Tried to enable a tool the player does not have");
-         return;
-      }
-      if(!t->IsEnabled())
-      {
-         // Turn off all other tools
-         std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
-         for(i = mToolList.begin(); i != mToolList.end(); ++i)
-         {
-            if(i->second->IsEnabled())
-               i->second->Enable(false);
-         }
-         t->Enable(true);
       }
    }
    
@@ -1443,6 +1439,10 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////////////
    bool StealthInputComponent::IsConnected() const
    {
-      return mHLA->IsConnectedToFederation();
+      if( ! mHLA.valid() )
+      {
+         LOG_WARNING("HLA component is not accessible.");
+      }
+      return mHLA.valid() && mHLA->IsConnectedToFederation();
    }
 }

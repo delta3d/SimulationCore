@@ -184,7 +184,7 @@ namespace StealthGM
          // TODO: this probably needs to be refactored, for the moment I just needed a tool to add which allows us to support NVGS
          SimCore::Tools::Tool* nvgs = new SimCore::Tools::Tool(mHudGUI->GetToolsWindow());
          inputComp->AddTool(*nvgs, SimCore::MessageType::NIGHT_VISION);
-         mHudGUI->AddToolButton("NightVision","F7",false);
+         mHudGUI->AddToolButton("NightVision","F7");
       }
    
       if( mHasCompass )
