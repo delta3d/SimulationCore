@@ -16,6 +16,7 @@ namespace SimCore
    WeaponTypeEnum WeaponTypeEnum::WEAPON_50CAL("Weaon_50Cal", 0, "StaticMeshes/m2 .50cal/m2_50cal.ive"); 
    WeaponTypeEnum WeaponTypeEnum::WEAPON_MK19("Weaon_MK19", 1, "StaticMeshes/mk19/mk19.ive"); 
    WeaponTypeEnum WeaponTypeEnum::WEAPON_M240("Weaon_M240", 2, "StaticMeshes/m240/m240.ive");
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_M249("Weaon_M249", 3, "StaticMeshes/m249/m249.ive");
 
    ////////////////////////////////////////////////////////////////////////////////
    WeaponTypeEnum::WeaponTypeEnum(const std::string &name, unsigned enumValue, const std::string& modelFileUrl)

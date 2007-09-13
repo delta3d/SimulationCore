@@ -43,6 +43,7 @@ namespace SimCore
          static WeaponTypeEnum WEAPON_50CAL;
          static WeaponTypeEnum WEAPON_MK19;
          static WeaponTypeEnum WEAPON_M240;
+         static WeaponTypeEnum WEAPON_M249;
 
          unsigned GetEnumValue() const { return mEnumValue; }
 
