@@ -27,6 +27,7 @@
 #include <dtGame/invokable.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 
 #include <dtDAL/project.h>
 

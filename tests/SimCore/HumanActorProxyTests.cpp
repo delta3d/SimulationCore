@@ -36,6 +36,7 @@
 
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
+#include <dtCore/scene.h>
 
 #include <dtUtil/macros.h>
 

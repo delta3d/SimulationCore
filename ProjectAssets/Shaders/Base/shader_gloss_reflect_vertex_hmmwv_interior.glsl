@@ -45,5 +45,10 @@ void main()
    
    //our position and normal is in local space and we want it it
    worldPos = inverseViewMatrix * gl_ModelViewMatrix * gl_Vertex;
-   worldNormal = mat3(inverseViewMatrix) * gl_NormalMatrix * gl_Normal;   
+
+   mat3 inverseView3x3 = mat3(inverseViewMatrix[0].xyz, 
+      inverseViewMatrix[1].xyz,
+      inverseViewMatrix[2].xyz);
+   
+   worldNormal = inverseView3x3 * gl_NormalMatrix * gl_Normal;
 }

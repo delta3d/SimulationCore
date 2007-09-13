@@ -27,6 +27,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/scene.h>
 
 #include <dtUtil/coordinates.h>
 
@@ -221,12 +222,6 @@ namespace StealthGM
 //         mHudGUI->AddToolButton("Map","F11");
 //      }
    
-   }
-   
-   ///////////////////////////////////////////////////////////////////////////
-   ObserverPtr<dtGame::GameManager> StealthGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
-   {
-      return BaseGameEntryPoint::CreateGameManager(scene);
    }
 
    ///////////////////////////////////////////////////////////////////////////
