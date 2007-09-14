@@ -353,7 +353,7 @@ namespace SimCore
                      dl->mTarget = flare;
                      dl->mAutoDeleteLightOnTargetNull = true;
                      //dl->mAutoDeleteAfterMaxTime = true;
-                     //dl->mMaxTime = 30.0f;
+                     //dl->mMaxTime = 20.0f;
                      dl->mFadeOut = true;
                      dl->mFadeOutTime = 5.0f;
                      dl->mFlicker = true;
@@ -441,7 +441,7 @@ namespace SimCore
                   else
                   {
                      dl->mDeleteMe = true;
-                     //std::cout << "Auto delete on NULL Ptr" << std::endl;
+                     std::cout << "Auto delete on NULL Ptr" << std::endl;
                      continue;
                   }
                }
@@ -462,7 +462,7 @@ namespace SimCore
                   else
                   {
                      dl->mDeleteMe = true;
-                     //std::cout << "Auto delete on Max Time" << std::endl;
+                     std::cout << "Auto delete on Max Time" << std::endl;
                      continue;
                   }
                }
@@ -473,7 +473,7 @@ namespace SimCore
                if(dl->mIntensity <= 0.0f)
                {
                   dl->mDeleteMe = true;
-                  //std::cout << "Auto delete on fade out" << std::endl;
+                  std::cout << "Auto delete on fade out" << std::endl;
                   continue;
                }
             }
@@ -483,21 +483,14 @@ namespace SimCore
             {
                //lets flicker the lights a little
                static dtUtil::Noise1f perlinNoise;
-               float noiseValue = perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
+               float noiseValue = dl->mFlickerScale * perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
 
                //keep the intensity within range of the noise flicker
-               if(dtUtil::Abs(dl->mIntensity + noiseValue) > dl->mIntensity + dl->mFlicker)
-               {
-                  //just reset it
-                  //todo- dont assume an intensity of one
-                  dl->mIntensity = 1.0f;
-               }
-               else //we'll use it
-               {
-                  dl->mIntensity += dl->mFlickerScale * noiseValue;
-               }
+               //TODO- don't assume an intensity of 1.0
+               if(dtUtil::Abs(1.0f - (dl->mIntensity + noiseValue)) > dl->mFlickerScale) noiseValue *= -1.0f; 
+               dl->mIntensity += noiseValue;
 
-               //if(dl->mIntensity < 0.1f) std::cout << "Intensity dropped to 0" << std::endl;
+               //std::cout << "Intensity " << dl->mIntensity << std::endl;
             }
 
             if(dl->mTarget.valid())
