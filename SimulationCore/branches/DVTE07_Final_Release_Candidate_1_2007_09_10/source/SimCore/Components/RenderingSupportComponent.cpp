@@ -96,7 +96,10 @@ namespace SimCore
             osg::Vec3 vectElement1 = pElement1->mPosition - mViewPos;
             osg::Vec3 vectElement2 = pElement2->mPosition - mViewPos;
 
-            return vectElement1.length() < vectElement2.length();
+            float dist1 = dtUtil::Max(0.0f, vectElement1.length() - pElement1->mRadius);
+            float dist2 = dtUtil::Max(0.0f, vectElement2.length() - pElement2->mRadius);
+
+            return  dist1 < dist2;
          }
 
       private: 
@@ -121,10 +124,11 @@ namespace SimCore
          , mAttenuation(1.0f, 0.01f, 0.001f)
          , mFlicker(false)
          , mFlickerScale(0.1f)
-         , mRemoveLightOverTime(false)
+         , mAutoDeleteAfterMaxTime(false)
          , mMaxTime(0.0f)
          , mFadeOut(false)
          , mFadeOutTime(0.0f)
+         , mRadius(0.0f)
          , mID(++mLightCounter)
          , mAutoDeleteLightOnTargetNull(false)
          , mTarget(NULL)
@@ -333,12 +337,17 @@ namespace SimCore
                      DynamicLight* dl = new DynamicLight();
                      dl->mSaturationIntensity = 1.0f;
                      dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
-                     dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->
+                     dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->GetColor();
                      dl->mAttenuation.set(0.1, 0.005, 0.00002);
                      dl->mTarget = flare;
                      dl->mAutoDeleteLightOnTargetNull = true;
+                     //dl->mAutoDeleteAfterMaxTime = true;
+                     //dl->mMaxTime = 30.0f;
+                     dl->mFadeOut = true;
+                     dl->mFadeOutTime = 5.0f;
                      dl->mFlicker = true;
-                     dl->mFlickerScale = 0.5f;
+                     dl->mFlickerScale = 0.1f; 
+                     dl->mRadius = 100.0f;
 
                      AddDynamicLight(dl);
                   }
@@ -399,8 +408,8 @@ namespace SimCore
          LightArray::iterator iter = mLights.begin();
          LightArray::iterator endIter = mLights.end();
 
-         //update lights
-         for(;iter != endIter;)
+         //update lights, the extra check for !mLights.empty() keeps from crashing if we erase the last element
+         for(;!mLights.empty() && iter != endIter;)
          {
             DynamicLight* dl = (*iter).get();
 
@@ -417,7 +426,7 @@ namespace SimCore
                   continue;
                }
             }
-            else if(dl->mRemoveLightOverTime)
+            else if(dl->mAutoDeleteAfterMaxTime)
             {
                dl->mMaxTime -= dt;
 
@@ -426,7 +435,7 @@ namespace SimCore
                   if(dl->mFadeOut)
                   {
                      //by setting this to false we will continue into a fade out
-                     dl->mRemoveLightOverTime = false;
+                     dl->mAutoDeleteAfterMaxTime = false;
                   }
                   else
                   {
@@ -434,12 +443,13 @@ namespace SimCore
                      continue;
                   }
                }
-            }
-            
-            //apply different update effects
-            if(dl->mFadeOut)
+            }                        
+            //this extra if check on the delete after null is actually very necessary
+            //while it seems to be a mistake, it along with the added if target not valid in the first line
+            //allows all three of these effects to work together
+            else if(!dl->mAutoDeleteLightOnTargetNull && dl->mFadeOut)
             {
-               dl->mIntensity -= (dt / dl->mFadeOutTime);
+               dl->mIntensity -= (dt / dl->mFadeOutTime);               
                if(dl->mIntensity <= 0.0f)
                {
                   iter = mLights.erase(iter);
@@ -447,13 +457,15 @@ namespace SimCore
                }
             }
             
+            //apply different update effects
             if(dl->mFlicker)
             {
                //lets flicker the lights a little
                static dtUtil::Noise1f perlinNoise;
                float noiseValue = perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
-               //this keeps the flicker from varying too much away from intensity 1.0
-               if((dl->mIntensity - noiseValue) < (1.0 - dl->mFlickerScale)) noiseValue += 1.0f; 
+
+               //keep the intensity within range of the noise flicker
+               if(dtUtil::Abs(dl->mIntensity + noiseValue) > dl->mIntensity + dl->mFlicker) noiseValue *= -1.0f; 
                dl->mIntensity += dl->mFlickerScale * noiseValue;
             }
 
@@ -470,7 +482,7 @@ namespace SimCore
          dtCore::Transform trans;
          GetGameManager()->GetApplication().GetCamera()->GetTransform(trans);
 
-         //sort the lights for now, refactor later to be more efficient, besides David is doing 1,000 GCS to LatLong conversions per frame
+         //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(trans.GetTranslation()));
 
          int count = 0;
