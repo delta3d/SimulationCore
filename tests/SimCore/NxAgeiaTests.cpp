@@ -7,6 +7,8 @@
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
+
 #include <string>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
