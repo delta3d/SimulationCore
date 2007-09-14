@@ -85,6 +85,16 @@ namespace SimCore
          RenderingSupportComponent::LightID mID;
       };
 
+      struct removeLightsFunc
+      { 
+         template<class T>
+         bool operator()(T lightPtr)
+         {
+            return lightPtr->mDeleteMe;
+         }
+      };
+
+
       struct funcCompareLights
       {
          funcCompareLights(const osg::Vec3& viewPos): mViewPos(viewPos){}
@@ -118,6 +128,7 @@ namespace SimCore
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
          : mIntensity(1.0f)
+         , mDeleteMe(false)
          , mSaturationIntensity(1.0f)
          , mColor(1.0f, 1.0f, 1.0f)
          , mPosition()
@@ -409,21 +420,30 @@ namespace SimCore
          LightArray::iterator endIter = mLights.end();
 
          //update lights, the extra check for !mLights.empty() keeps from crashing if we erase the last element
-         for(;!mLights.empty() && iter != endIter;)
+         for(;!mLights.empty() && iter != endIter; ++iter)
          {
             DynamicLight* dl = (*iter).get();
 
-            if(dl->mAutoDeleteLightOnTargetNull && !dl->mTarget.valid())
+            //this if check looks a little iffy but the control flow is used to allow the auto delete, max time, and fade out to all work together
+            //while the first component of the if is straight forward, the second component "(!dl->mAutoDeleteAfterMaxTime && dl->mAutoDeleteLightOnTargetNull)"
+            //ensures that we do not fade out if are target is still valid but we DONT have a max time
+            if((dl->mAutoDeleteLightOnTargetNull && !dl->mTarget.valid()) || (!dl->mAutoDeleteAfterMaxTime && dl->mAutoDeleteLightOnTargetNull))
             {
-               if(dl->mFadeOut)
+               if(!dl->mTarget.valid())
                {
-                  //by setting this to false we will continue into a fade out
-                  dl->mAutoDeleteLightOnTargetNull = false;
-               }
-               else
-               {
-                  iter = mLights.erase(iter);
-                  continue;
+                  if(dl->mFadeOut)
+                  {
+                     //by setting this to false we will continue into a fade out
+                     dl->mAutoDeleteLightOnTargetNull = false;
+                     //by setting this one false we ensure we will begin fading out next frame
+                     dl->mAutoDeleteAfterMaxTime = false;
+                  }
+                  else
+                  {
+                     dl->mDeleteMe = true;
+                     //std::cout << "Auto delete on NULL Ptr" << std::endl;
+                     continue;
+                  }
                }
             }
             else if(dl->mAutoDeleteAfterMaxTime)
@@ -436,23 +456,24 @@ namespace SimCore
                   {
                      //by setting this to false we will continue into a fade out
                      dl->mAutoDeleteAfterMaxTime = false;
+                     //by setting this one false we ensure we will begin fading out next frame
+                     dl->mAutoDeleteLightOnTargetNull = false;
                   }
                   else
                   {
-                     iter = mLights.erase(iter);
+                     dl->mDeleteMe = true;
+                     //std::cout << "Auto delete on Max Time" << std::endl;
                      continue;
                   }
                }
             }                        
-            //this extra if check on the delete after null is actually very necessary
-            //while it seems to be a mistake, it along with the added if target not valid in the first line
-            //allows all three of these effects to work together
-            else if(!dl->mAutoDeleteLightOnTargetNull && dl->mFadeOut)
+            else if(dl->mFadeOut)
             {
                dl->mIntensity -= (dt / dl->mFadeOutTime);               
                if(dl->mIntensity <= 0.0f)
                {
-                  iter = mLights.erase(iter);
+                  dl->mDeleteMe = true;
+                  //std::cout << "Auto delete on fade out" << std::endl;
                   continue;
                }
             }
@@ -465,8 +486,18 @@ namespace SimCore
                float noiseValue = perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
 
                //keep the intensity within range of the noise flicker
-               if(dtUtil::Abs(dl->mIntensity + noiseValue) > dl->mIntensity + dl->mFlicker) noiseValue *= -1.0f; 
-               dl->mIntensity += dl->mFlickerScale * noiseValue;
+               if(dtUtil::Abs(dl->mIntensity + noiseValue) > dl->mIntensity + dl->mFlicker)
+               {
+                  //just reset it
+                  //todo- dont assume an intensity of one
+                  dl->mIntensity = 1.0f;
+               }
+               else //we'll use it
+               {
+                  dl->mIntensity += dl->mFlickerScale * noiseValue;
+               }
+
+               //if(dl->mIntensity < 0.1f) std::cout << "Intensity dropped to 0" << std::endl;
             }
 
             if(dl->mTarget.valid())
@@ -474,9 +505,10 @@ namespace SimCore
                //update the light's position
                SetPosition(dl);
             }
-
-             ++iter;
          }
+
+         //now remove all flagged lights, note this is actually faster because we only have a single deallocation for N lights
+         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), removeLightsFunc()), mLights.end());
 
          //update uniforms by finding the closest lights to the camera
          dtCore::Transform trans;

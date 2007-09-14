@@ -83,6 +83,9 @@ namespace SimCore
 
                   DynamicLight();
 
+                  //this flag is used internally for removing, but I suppose if you want to set it you can
+                  bool mDeleteMe;
+
                   //these variables effect the way the light appears..
                   float mIntensity; //the intensity is a multiplier of the effect of the light, can be used to disable or enable a light, typically 1 or 0
                   float mSaturationIntensity; //this is currently not used for performance
@@ -111,6 +114,7 @@ namespace SimCore
                   
                   bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
                                                      //can be used in conjunction with Fade Out
+
                   dtCore::ObserverPtr<dtCore::Transformable> mTarget;
 
             };
