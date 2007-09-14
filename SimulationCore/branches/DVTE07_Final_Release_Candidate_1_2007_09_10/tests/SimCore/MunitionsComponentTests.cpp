@@ -2297,9 +2297,9 @@ namespace SimCore
          const unsigned oldSceneCount = scene->GetNumberOfAddedDrawable();
          const int maxTracerEffects = 3;
 
-         CPPUNIT_ASSERT( effectMgr->GetScene() == NULL );
-         effectMgr->SetScene( scene );
-         CPPUNIT_ASSERT( effectMgr->GetScene() == scene );
+         CPPUNIT_ASSERT( effectMgr->GetGameManager() == NULL );
+         effectMgr->SetGameManager( mGM.get() );
+         CPPUNIT_ASSERT( effectMgr->GetGameManager() == mGM.get() );
 
          CPPUNIT_ASSERT( effectMgr->GetMaxTracerEffects() < 0 ); // Negative numbers mean no limit
          effectMgr->SetMaxTracerEffects( maxTracerEffects );
