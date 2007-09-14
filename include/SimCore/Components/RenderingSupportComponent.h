@@ -72,7 +72,7 @@ namespace SimCore
             typedef unsigned LightID;
             static const unsigned MAX_LIGHTS;
 
-            struct DynamicLight: public osg::Referenced
+            struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
             {                          
                protected:
                   /*virtual*/ ~DynamicLight(){}
