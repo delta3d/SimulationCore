@@ -74,6 +74,8 @@
           dl->mIntensity = 1.0f;
           dl->mSaturationIntensity = 0.0f; //no saturation
           dl->mTarget = mDynamicLight.get();
+          dl->mFlicker = true;
+          dl->mFlickerScale = 0.05f;
           mDynamicLightID = mRenderComp->AddDynamicLight(dl);
           mDynamicLightEnabled = true; 
        }

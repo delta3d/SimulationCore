@@ -32,7 +32,9 @@
 #include <osgUtil/StateGraph>
 #include <osgUtil/RenderStage>
 
-#include <map>
+#include <dtUtil/functor.h>
+
+#include <vector>
 
 namespace dtGame
 {
@@ -67,7 +69,6 @@ namespace SimCore
       class SIMCORE_EXPORT RenderingSupportComponent : public dtGame::GMComponent
       {
          public:
-
             typedef unsigned LightID;
             static const unsigned MAX_LIGHTS;
 
@@ -79,20 +80,38 @@ namespace SimCore
                   DynamicLight& operator=(const DynamicLight&); //un-implemented
 
                public:
-                  DynamicLight() : mID(++mLightCounter){}
 
-                  float mIntensity;          
-                  float mSaturationIntensity;
+                  DynamicLight();
+
+                  //these variables effect the way the light appears..
+                  float mIntensity; //the intensity is a multiplier of the effect of the light, can be used to disable or enable a light, typically 1 or 0
+                  float mSaturationIntensity; //this is currently not used for performance
                   osg::Vec3 mColor;
                   osg::Vec3 mPosition;
-                  osg::Vec3 mAttenuation;
+                  osg::Vec3 mAttenuation; //this controls how far the light is visible from the vec3 represents (constant, linear, quadratic) attentions
 
+                  //these variables effect the simulation of the light
+                  bool mFlicker; //a flickering light will automatically increase and decrease its intensity relative to the flicker scale
+                  float mFlickerScale;  //the flicker scale should be the maximum increase or decrease in the light intensity in a single frame
+                  
+                  bool mRemoveLightOverTime; //using this flag will set the light to be automatically removed after the number of seconds
+                  float mMaxTime;            //specified by mMaxTime, this can be used in conjunction with Fade Out
+                  
+                  bool mFadeOut;      //if this is set to true we will gradually decrease our intensity over the time specified
+                  float mFadeOutTime; //NOTE: if used in accordance with mMaxTime OR mAutoDeleteLightOnTargetNull then the fade out will
+                                      //  occur after the object is marked for deletion.  So if MaxTime = 1.0 and FadeOutTime = 0.5
+                                      //  the light will be at 100% intensity for 1.5 seconds and then fade from 100% to 0% over 0.5 seconds
                   LightID mID;
                   static LightID mLightCounter;
                   
+                  bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
+                                                     //can be used in conjunction with Fade Out
                   dtCore::ObserverPtr<dtCore::Transformable> mTarget;
 
             };
+
+
+            typedef std::vector<dtCore::RefPtr<DynamicLight> > LightArray; 
 
             class RenderFeature: public osg::Referenced
             {
@@ -148,12 +167,17 @@ namespace SimCore
             /// Destructor
             virtual ~RenderingSupportComponent(void);
 
+            void RemoveLight(LightArray::iterator);
+            DynamicLight* FindLight(LightID id);
+
             void SetPosition(DynamicLight* dl);
 
             void InitializeCullVisitor();
             void InitializeFrameBuffer();
 
             virtual void ProcessTick(const dtGame::TickMessage &msg);
+
+            void UpdateDynamicLights(float dt);
 
          public:
             //here we define constants for defining the render bins
@@ -175,9 +199,8 @@ namespace SimCore
             dtCore::RefPtr<RenderFeature> mNVGS;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
             dtCore::RefPtr<UpdateViewCallback> mViewCallback;
-
-            typedef std::map<LightID, dtCore::RefPtr<DynamicLight> > ID_To_Light_Map; 
-            ID_To_Light_Map mLights;
+            
+            LightArray mLights;
       };
    } // namespace
 } // namespace

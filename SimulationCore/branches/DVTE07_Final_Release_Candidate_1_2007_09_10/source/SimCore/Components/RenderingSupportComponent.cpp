@@ -37,6 +37,9 @@
 #include <dtCore/deltadrawable.h>
 #include <dtDAL/enginepropertytypes.h>
 
+#include <dtUtil/noiseutility.h> 
+#include <dtUtil/log.h>
+
 #include <osg/CameraNode>
 #include <osg/Geode>
 #include <osg/Texture>
@@ -67,6 +70,39 @@ namespace SimCore
          RenderingSupportComponent* mRenderComp;
       };
 
+      //useful functors
+      struct findLightById
+      { 
+         findLightById(RenderingSupportComponent::LightID id): mID(id){}
+
+         template<class T>
+         bool operator()(T lightPtr)
+         {
+            return lightPtr->mID == mID;
+         }
+      private:
+
+         RenderingSupportComponent::LightID mID;
+      };
+
+      struct funcCompareLights
+      {
+         funcCompareLights(const osg::Vec3& viewPos): mViewPos(viewPos){}
+
+         //todo- cache these operations for efficiency
+         template<class T>
+         bool operator()(T& pElement1, T& pElement2)
+         {
+            osg::Vec3 vectElement1 = pElement1->mPosition - mViewPos;
+            osg::Vec3 vectElement2 = pElement2->mPosition - mViewPos;
+
+            return vectElement1.length() < vectElement2.length();
+         }
+
+      private: 
+         osg::Vec3 mViewPos;
+               
+      };
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +111,26 @@ namespace SimCore
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 0;
 
       const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
+
+      //dyamic light constructor
+      RenderingSupportComponent::DynamicLight::DynamicLight()
+         : mIntensity(1.0f)
+         , mSaturationIntensity(1.0f)
+         , mColor(1.0f, 1.0f, 1.0f)
+         , mPosition()
+         , mAttenuation(1.0f, 0.01f, 0.001f)
+         , mFlicker(false)
+         , mFlickerScale(0.1f)
+         , mRemoveLightOverTime(false)
+         , mMaxTime(0.0f)
+         , mFadeOut(false)
+         , mFadeOutTime(0.0f)
+         , mID(++mLightCounter)
+         , mAutoDeleteLightOnTargetNull(false)
+         , mTarget(NULL)
+      {
+
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::RenderingSupportComponent(const std::string &name) 
@@ -162,26 +218,41 @@ namespace SimCore
 
       RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
       {         
-         mLights.insert(std::make_pair(dl->mID, dl));
-         return dl->mID;
+         if(dl != NULL)
+         {
+            mLights.push_back(dl);
+            return dl->mID;
+         }
+         else
+         {
+            LOG_ERROR("Attempting to add a light that is NULL to the Rendering Support Component");
+            return 0;
+         }
       }
 
       void RenderingSupportComponent::RemoveDynamicLight(RenderingSupportComponent::LightID id)
       {
-         ID_To_Light_Map::iterator iter = mLights.find(id);
-         if(iter != mLights.end())
-         {
-            mLights.erase(iter);
-         }
+         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)));  
       }
 
+      void RenderingSupportComponent::RemoveLight(LightArray::iterator iter)
+      {
+         mLights.erase(iter);
+      }
+ 
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::GetDynamicLight(RenderingSupportComponent::LightID id)
       {
-         ID_To_Light_Map::iterator iter = mLights.find(id);
+         return FindLight(id);
+      }
+
+      RenderingSupportComponent::DynamicLight* RenderingSupportComponent::FindLight(RenderingSupportComponent::LightID id)
+      {
+         LightArray::iterator iter = std::find_if(mLights.begin(), mLights.end(), findLightById(id));
          if(iter != mLights.end())
          {
-            return (*iter).second.get();
+            return (*iter).get();
          }
+         
          return 0;
       }
 
@@ -265,6 +336,9 @@ namespace SimCore
                      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->
                      dl->mAttenuation.set(0.1, 0.005, 0.00002);
                      dl->mTarget = flare;
+                     dl->mAutoDeleteLightOnTargetNull = true;
+                     dl->mFlicker = true;
+                     dl->mFlickerScale = 0.5f;
 
                      AddDynamicLight(dl);
                   }
@@ -312,41 +386,119 @@ namespace SimCore
 
          if(mEnableDynamicLights)
          {             
-            //now setup the lighting uniforms necessary for rendering the dynamic lights
-            osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-            osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
-            
-            ID_To_Light_Map::iterator iter = mLights.begin();
-            ID_To_Light_Map::iterator endIter = mLights.end();
+           UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
+         }
+      }
 
-            //update uniforms
-            int count = 0;
-            for(;count < MAX_LIGHTS * 3; count += 3)
-            { 
-               if(iter != endIter)
+      void RenderingSupportComponent::UpdateDynamicLights(float dt)
+      {
+         //now setup the lighting uniforms necessary for rendering the dynamic lights
+         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+         osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
+
+         LightArray::iterator iter = mLights.begin();
+         LightArray::iterator endIter = mLights.end();
+
+         //update lights
+         for(;iter != endIter;)
+         {
+            DynamicLight* dl = (*iter).get();
+
+            if(dl->mAutoDeleteLightOnTargetNull && !dl->mTarget.valid())
+            {
+               if(dl->mFadeOut)
                {
-                  DynamicLight* dl = (*iter).second.get();
-
-                  if(dl->mTarget.valid())
-                  {
-                     SetPosition(dl);
-                  }
-
-                  lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                  lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], dl->mSaturationIntensity));
-               
-                  ++iter;
+                  //by setting this to false we will continue into a fade out
+                  dl->mAutoDeleteLightOnTargetNull = false;
                }
                else
                {
-                  //else we turn the light off by setting the intensity to 0
-                  lightArray->setElement(count, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-                  lightArray->setElement(count + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-                  lightArray->setElement(count + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  iter = mLights.erase(iter);
+                  continue;
                }
             }
-          }
+            else if(dl->mRemoveLightOverTime)
+            {
+               dl->mMaxTime -= dt;
+
+               if(dl->mMaxTime <= 0.0f)
+               {
+                  if(dl->mFadeOut)
+                  {
+                     //by setting this to false we will continue into a fade out
+                     dl->mRemoveLightOverTime = false;
+                  }
+                  else
+                  {
+                     iter = mLights.erase(iter);
+                     continue;
+                  }
+               }
+            }
+            
+            //apply different update effects
+            if(dl->mFadeOut)
+            {
+               dl->mIntensity -= (dt / dl->mFadeOutTime);
+               if(dl->mIntensity <= 0.0f)
+               {
+                  iter = mLights.erase(iter);
+                  continue;
+               }
+            }
+            
+            if(dl->mFlicker)
+            {
+               //lets flicker the lights a little
+               static dtUtil::Noise1f perlinNoise;
+               float noiseValue = perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
+               //this keeps the flicker from varying too much away from intensity 1.0
+               if((dl->mIntensity - noiseValue) < (1.0 - dl->mFlickerScale)) noiseValue += 1.0f; 
+               dl->mIntensity += dl->mFlickerScale * noiseValue;
+            }
+
+            if(dl->mTarget.valid())
+            {
+               //update the light's position
+               SetPosition(dl);
+            }
+
+             ++iter;
+         }
+
+         //update uniforms by finding the closest lights to the camera
+         dtCore::Transform trans;
+         GetGameManager()->GetApplication().GetCamera()->GetTransform(trans);
+
+         //sort the lights for now, refactor later to be more efficient, besides David is doing 1,000 GCS to LatLong conversions per frame
+         std::sort(mLights.begin(), mLights.end(), funcCompareLights(trans.GetTranslation()));
+
+         int count = 0;
+         for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3; count += 3)
+         { 
+            if(iter != endIter)
+            {
+               DynamicLight* dl = (*iter).get();
+
+               if(dl->mTarget.valid())
+               {
+                  SetPosition(dl);
+               }
+
+               lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+               lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+               lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+
+               ++iter;
+            }
+            else
+            {
+               //else we turn the light off by setting the intensity to 0
+               lightArray->setElement(count, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+               lightArray->setElement(count + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+               lightArray->setElement(count + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            }
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
