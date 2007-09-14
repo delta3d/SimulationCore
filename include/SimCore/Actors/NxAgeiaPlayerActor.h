@@ -68,6 +68,10 @@ namespace SimCore
             */
             virtual void TickRemote(const dtGame::Message &tickMessage);
 
+            virtual void SetPosition( const osg::Vec3& position );
+
+            virtual void OffsetPosition( const osg::Vec3& offset );
+
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();

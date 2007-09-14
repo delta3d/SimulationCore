@@ -318,6 +318,35 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::SetPosition( const osg::Vec3& position )
+      {
+         dtCore::Transform xform;
+         xform.SetTranslation( position );
+         SetTransform(xform);
+
+         if( ! mPhysicsHelper.valid() )
+         {
+            return;
+         }
+
+         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(position.x(), position.y(), position.z()));
+
+         if(!IsRemote())
+         {
+            mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::OffsetPosition( const osg::Vec3& offset )
+      {
+         dtCore::Transform xform;
+         GetTransform( xform );
+         xform.SetTranslation( xform.GetTranslation() + offset );
+         SetPosition( xform.GetTranslation() );
+      }
+
+      ////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::OnEnteredWorld()
       {
          Human::OnEnteredWorld();
@@ -326,12 +355,8 @@ namespace SimCore
          mPhysicsHelper->InitializeCharacter();
          dtCore::Transform transform;
          GetTransform(transform);
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2]));
 
-         if(!IsRemote())
-         {
-            mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-         }
+         SetPosition( transform.GetTranslation() );
 
          mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
