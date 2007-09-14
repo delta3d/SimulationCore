@@ -1764,7 +1764,7 @@ namespace StealthQt
       }
 
       // Nothing either way, peace out and start like normal
-      if(name.empty())
+      if(name.empty() || QString(name.c_str()).toLower() == "none")
          return;
 
       // Look up the properties for the name
