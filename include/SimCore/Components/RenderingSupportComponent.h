@@ -93,14 +93,19 @@ namespace SimCore
                   //these variables effect the simulation of the light
                   bool mFlicker; //a flickering light will automatically increase and decrease its intensity relative to the flicker scale
                   float mFlickerScale;  //the flicker scale should be the maximum increase or decrease in the light intensity in a single frame
+                                        //and also the maximum it will vary from its original intensity
                   
-                  bool mRemoveLightOverTime; //using this flag will set the light to be automatically removed after the number of seconds
+                  bool mAutoDeleteAfterMaxTime; //using this flag will set the light to be automatically removed after the number of seconds
                   float mMaxTime;            //specified by mMaxTime, this can be used in conjunction with Fade Out
                   
                   bool mFadeOut;      //if this is set to true we will gradually decrease our intensity over the time specified
                   float mFadeOutTime; //NOTE: if used in accordance with mMaxTime OR mAutoDeleteLightOnTargetNull then the fade out will
                                       //  occur after the object is marked for deletion.  So if MaxTime = 1.0 and FadeOutTime = 0.5
                                       //  the light will be at 100% intensity for 1.5 seconds and then fade from 100% to 0% over 0.5 seconds
+
+                  float mRadius;      //this is used to determine how far away we are from the light, it pretty much makes the light into a
+                                      //bounding sphere
+
                   LightID mID;
                   static LightID mLightCounter;
                   
