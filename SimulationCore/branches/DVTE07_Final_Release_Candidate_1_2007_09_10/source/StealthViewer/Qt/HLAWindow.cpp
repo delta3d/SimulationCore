@@ -36,7 +36,8 @@ namespace StealthQt
       mUi(new Ui::HLAWindow), 
       mIsConnected(isConnected), 
       mHLAComp(NULL), 
-      mCurrentConnectionName(currentConnectionName)
+      mCurrentConnectionName(currentConnectionName), 
+      mCancelConnectProcess(false)
    {
       mUi->setupUi(this);
 
@@ -99,6 +100,19 @@ namespace StealthQt
          if(mHLAComp->IsConnected())
          {
             OnDisconnect();
+
+            // If the disconnect from current federation message box 
+            // is picked to cancel, this flag will be set to true
+            // in which case we need to leave this method.
+            
+            // This is done since OnDisconnect is a SLOT, it's return value 
+            // CANNOT be changed to mismatch the SIGNAL prototype. 
+            if(mCancelConnectProcess)
+            {
+               // Make sure to flip this back to false
+               mCancelConnectProcess = false;
+               return;
+            }
          }
       }
 
@@ -158,6 +172,10 @@ namespace StealthQt
          mIsConnected = false;
 
          emit DisconnectedFromHLA();
+      }
+      else
+      {
+         mCancelConnectProcess = true;
       }
    }
 
