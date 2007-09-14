@@ -270,6 +270,12 @@ namespace StealthQt
          /// Called when the timer elapses
          void OnGenericTickTimerElapsed();
 
+         /// Called when the entity info timer elapses
+         void OnRefreshEntityInfoTimerElapsed();
+
+         /// Called when the auto refresh button is changed
+         void OnAutoRefreshEntityInfoCheckBoxChanged(int state);
+
       protected:
 
          /// Called when the window is about to be show, or has just been shown.
@@ -326,6 +332,7 @@ namespace StealthQt
 
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
+         QTimer mRefreshEntityInfoTimer;
 
          dtCore::RefPtr<dtGame::GameApplication> mApp;
          bool mIsConnectedToHLA;
