@@ -398,11 +398,11 @@ namespace SimCore
          public:
             WeaponEffectsManager();
 
-            // Set the scene to which tracer effects may be added.
-            // @param scene The main scene that will render tracer effects.
-            void SetScene( dtCore::Scene* scene ) { mScene = scene; }
-            dtCore::Scene* GetScene() { return mScene.get(); }
-            const dtCore::Scene* GetScene() const { return mScene.get(); }
+            // Set the game manager that has a scene to which tracer effects may be added.
+            // @param gameManager The main scene that will render tracer effects.
+            void SetGameManager( dtGame::GameManager* gameManager ) { mGM = gameManager; }
+            dtGame::GameManager* GetGameManager() { return mGM.get(); }
+            const dtGame::GameManager* GetGameManager() const { return mGM.get(); }
 
             // Set the maximum length of time that any WeaponEffect object should
             // live before being recycled.
@@ -453,8 +453,7 @@ namespace SimCore
             bool ApplyTracerEffect(
                const osg::Vec3& weaponFirePoint,
                const osg::Vec3& intialVelocity,
-               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
-               dtGame::GameManager* gameManager );
+               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
 
             // Get the total of effect objects in existence.
             // @return The number of effects objects contained by this effects manager.
@@ -509,7 +508,7 @@ namespace SimCore
             int mMaxTracerEffects;
             std::map<std::string, dtCore::RefPtr<WeaponEffect> > mEntityToEffectMap;
             std::vector<dtCore::RefPtr<TracerEffect> > mTracerEffects;
-            dtCore::RefPtr<dtCore::Scene> mScene;
+            dtCore::RefPtr<dtGame::GameManager> mGM;
       };
 
 

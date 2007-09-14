@@ -876,10 +876,9 @@ namespace SimCore
       bool WeaponEffectsManager::ApplyTracerEffect(
          const osg::Vec3& weaponFirePoint,
          const osg::Vec3& intialVelocity,
-         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
-         dtGame::GameManager* gameManager )
+         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
       {
-         if( ! mScene.valid() 
+         if( ! mGM.valid() 
             || (mMaxTracerEffects > -1 && (int)mTracerEffects.size() >= mMaxTracerEffects) )
          {
             return false;
@@ -904,10 +903,10 @@ namespace SimCore
                effectsInfo.GetTracerThickness(),
                effectsInfo.GetTracerShaderName(),
                effectsInfo.GetTracerShaderGroup() );
-            effect->SetGameManager( gameManager );
+            effect->SetGameManager( mGM.get() );
 
             // Make sure the tracer is visible in the scene
-            mScene->AddDrawable( effect );
+            mGM->GetScene().AddDrawable( effect );
 
             // Track this tracer effect though out the life of the application
             mTracerEffects.push_back( effect );
@@ -1059,9 +1058,9 @@ namespace SimCore
                if( ! iter->valid() || ( ! (*iter)->IsActive() && mTracerEffects.size() > unsigned(mMaxTracerEffects) ) )
                {
                   // Ensure that the tracer is still not held by the scene.
-                  if( mScene.valid() )
+                  if( mGM.valid() )
                   {
-                     mScene->RemoveDrawable( iter->get() );
+                     mGM->GetScene().RemoveDrawable( iter->get() );
                   }
 
                   std::vector<dtCore::RefPtr<TracerEffect> >::iterator toDelete = 
@@ -1104,12 +1103,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffectsManager::ClearTracerEffects()
       {
-         if( mScene.valid() )
+         if( mGM.valid() )
          {
             unsigned limit = mTracerEffects.size();
             for( unsigned tracer = 0; tracer < limit; ++tracer )
             {
-               mScene->RemoveDrawable( mTracerEffects[tracer].get() );
+               mGM->GetScene().RemoveDrawable( mTracerEffects[tracer].get() );
             }
          }
 
@@ -1756,13 +1755,13 @@ namespace SimCore
                      entity->GetAbsoluteMatrix( bestDof, mtx );
 
                      mEffectsManager->ApplyTracerEffect( 
-                        mtx.getTrans(), message.GetInitialVelocityVector(), *effects, GetGameManager() );
+                        mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
                   }
                   else
                   {
                      // ...from the firing location specified in the message.
                      mEffectsManager->ApplyTracerEffect( 
-                        message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects, GetGameManager() );
+                        message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
                   }
                }
             }
@@ -2002,7 +2001,7 @@ namespace SimCore
       {
          dtGame::GMComponent::OnAddedToGM();
          mIsector->SetScene( &GetGameManager()->GetScene() );
-         mEffectsManager->SetScene( &GetGameManager()->GetScene() );
+         mEffectsManager->SetGameManager( GetGameManager() );
       }
 
       //////////////////////////////////////////////////////////////////////////
