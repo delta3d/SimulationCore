@@ -241,7 +241,7 @@ namespace SimCore
          if(!toFill.empty())
             terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
 
-         if(terrainNode != NULL)
+         /*if(terrainNode != NULL)
          {
             osg::Vec3 hp;
             dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
@@ -271,7 +271,7 @@ namespace SimCore
                mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(mSentOverTransform[0], mSentOverTransform[1], hp[2] + 2) );
                return;
             }
-         }
+         }*/
          
          NxVec3 displacementVector;
          osg::Vec3 currentTransform = mSentOverTransform;
