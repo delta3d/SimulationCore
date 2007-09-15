@@ -19,7 +19,6 @@
 // DELTA 3D
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
-#include <dtCore/batchisector.h>
 #include <dtCore/camera.h>
 #include <dtCore/transformable.h>
 #include <dtCore/scene.h>
@@ -873,7 +872,8 @@ namespace SimCore
          mRecycleTime(1.0f),
          mCurRecycleTime(0.0f),
          mMaxWeaponEffects(-1), // no limit
-         mMaxTracerEffects(-1)  // no limit
+         mMaxTracerEffects(-1), // no limit
+         mIsector(new dtCore::BatchIsector)
       {
       }
 
@@ -881,6 +881,23 @@ namespace SimCore
       WeaponEffectsManager::~WeaponEffectsManager()
       {
          Clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         if( gameManager == NULL )
+         {
+            mIsector->Reset();
+            mIsector->SetScene( NULL );
+         }
+
+         mGM = gameManager;
+
+         if( mGM.valid() )
+         {
+            mIsector->SetScene( &mGM->GetScene() );
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -998,7 +1015,8 @@ namespace SimCore
 
             // Setup tracer to update and render.
             // This also sets the initial orientation of the tracer.
-            effect->Execute( effectsInfo.GetTracerLifeTime() );
+            float tracerLifeTime = CalcTimeToImpact( weaponFirePoint, intialVelocity, effectsInfo.GetTracerLifeTime() );
+            effect->Execute( tracerLifeTime );
          }
 
          return success;
@@ -1199,6 +1217,36 @@ namespace SimCore
       {
          ClearWeaponEffects();
          ClearTracerEffects();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffectsManager::CalcTimeToImpact( 
+         const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime )
+      {
+         float speed = initialVelocity.length();
+         if( speed == 0.0f )
+         {
+            return maxTime;
+         }
+
+         dtCore::BatchIsector::SingleISector& SingleISector = mIsector->EnableAndGetISector(0);
+         osg::Vec3 endPoint( weaponFirePoint + (initialVelocity*maxTime) );
+         SingleISector.SetSectorAsLineSegment( weaponFirePoint, endPoint);
+
+         if( mIsector->Update( osg::Vec3(0,0,0), true ) )
+         {
+            if( SingleISector.GetNumberOfHits() > 0 ) 
+            {
+               SingleISector.GetHitPoint( endPoint );
+
+               maxTime = (endPoint-weaponFirePoint).length()/speed;
+
+               // Clear for next use
+               mIsector->Reset();
+            }
+         }
+
+         return maxTime;
       }
 
 
