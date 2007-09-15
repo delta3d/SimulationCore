@@ -59,47 +59,41 @@
 
    MunitionsPhysicsParticle::MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut, float InverseDeletionAlphaTime, float alphaInTime)
     : PhysicsParticle(name, ParticleLengthOfTimeOut, InverseDeletionAlphaTime, alphaInTime)
-    , mIsTracer(false)
+    , mIsTracer(renderComp!=NULL)
     , mLastPosition()
-    , mDynamicLightEnabled(false)
-    , mDynamicLightID(0)
-    , mDynamicLight(new dtCore::Transformable())
-    , mRenderComp(renderComp)
-    {
-       if(mRenderComp.valid())
-       {
-          SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-          dl->mColor.set(1.0f, 0.2f, 0.2f);
-          dl->mAttenuation.set(0.1, 0.05, 0.0002);
-          dl->mIntensity = 1.0f;
-          dl->mSaturationIntensity = 0.0f; //no saturation
-          dl->mTarget = mDynamicLight.get();
-          dl->mFlicker = true;
-          dl->mFlickerScale = 0.05f;
-          mDynamicLightID = mRenderComp->AddDynamicLight(dl);
-          mDynamicLightEnabled = true; 
-       }
-    }
+    , mDynamicLight()
+   {
+      if( mIsTracer )
+      {
+         SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+         dl->mColor.set(1.0f, 0.2f, 0.2f);
+         dl->mAttenuation.set(0.1, 0.05, 0.0002);
+         dl->mIntensity = 1.0f;
+         mDynamicLight = new dtCore::Transformable();
+         dl->mTarget = mDynamicLight.get();
+         dl->mFlicker = true;
+         dl->mFlickerScale = 0.1f;
+         dl->mAutoDeleteLightOnTargetNull = true;
+         renderComp->AddDynamicLight(dl);
+      }
+   }
 
     MunitionsPhysicsParticle::~MunitionsPhysicsParticle()
     {
-       //remove the dynamic light when we are destroyed
-       if(mRenderComp.valid() && mDynamicLightEnabled)
-       {
-          mRenderComp->RemoveDynamicLight(mDynamicLightID);
-          mDynamicLightEnabled = false;       
-       }
     }
 
     void MunitionsPhysicsParticle::SetLastPosition(const osg::Vec3& value)
     {
       mLastPosition = value;
       
-      osg::Matrix mat;
-      mat(3, 0) = value[0];
-      mat(3, 1) = value[1];
-      mat(3, 2) = value[2];
-      mDynamicLight->GetMatrixNode()->setMatrix(mat);
+      if( mIsTracer && mDynamicLight.valid() )
+      {
+         osg::Matrix mat;
+         mat(3, 0) = value[0];
+         mat(3, 1) = value[1];
+         mat(3, 2) = value[2];
+         mDynamicLight->GetMatrixNode()->setMatrix(mat);
+      }
     }
  
 
@@ -337,9 +331,16 @@ osg::Geode* CreateTracerDrawable( float tracerLength, float tracerThickness )
 ////////////////////////////////////////////////////////////////////
 void NxAgeiaMunitionsPSysActor::AddParticle()
 {
+   bool isTracer = GetSystemToUseTracers() && mCurrentTracerRoundNumber >= mFrequencyOfTracers;
+
    //we obtain the rendering support component so that the particle effect can add a dynamic light effect
-   SimCore::Components::RenderingSupportComponent* renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-      (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+   SimCore::Components::RenderingSupportComponent* renderComp = NULL;
+   
+   if( isTracer ) 
+   {
+      renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+         (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+   }
 
 
    dtCore::UniqueId _id;
@@ -380,7 +381,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    if( GetSystemToUseTracers() )
    {
       ++mCurrentTracerRoundNumber;
-      if(mCurrentTracerRoundNumber >= mFrequencyOfTracers)
+      if(isTracer)
       {
          mCurrentTracerRoundNumber = 0;
          osg::MatrixTransform* node = (_particle->mObj->GetMatrixNode());
