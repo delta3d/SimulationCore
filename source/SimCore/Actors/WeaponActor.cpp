@@ -62,6 +62,7 @@ namespace SimCore
          , mFireRate(0.0f) // 0 , means single fire
          , mJamProbability(0.0f)
          , mFlashProbability(1.0f)
+         , mFlashTime(0.15f)
          , mTracerFrequency(0)
          , mAmmoCount(0)
          , mAmmoMax(100000)
@@ -337,6 +338,18 @@ namespace SimCore
                   // it passes its life time, if life time has been set
                   // greater than 0.
                   mFlash->SetVisible( true );
+                  mFlash->SetFlashTime( GetFlashTime() );
+                  
+                  // Randomly roll the flash effect to a different orientation
+                  // so that the spawned particles do not spawn at the same orientation
+                  // every time a weapon flash is executed. Currently, OSG particles
+                  // systems within Delta3D spawn all particles at the same orientation, 0.0;
+                  // all particle rotations are derived by age and spin rate starting at
+                  // angle 0.0 from time 0.0.
+                  dtCore::Transform flashXform;
+                  mFlash->GetTransform( flashXform, dtCore::Transformable::REL_CS );
+                  flashXform.SetRotation( osg::Vec3(dtUtil::RandFloat(-180.0f,180.0f),0.0,0.0) );
+                  mFlash->SetTransform( flashXform, dtCore::Transformable::REL_CS );
 
                   AddDynamicLight();
                }
@@ -888,6 +901,12 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashProbability),
             dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashProbability),
             "Probability from 0.0 to 1.0 that this weapon will produce a flash effect when firing a round.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Flash Time","Flash Time",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashTime),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashTime),
+            "time in seconds that a weapon flash will remain visible.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Time Between Messages","Time Between Messages",
