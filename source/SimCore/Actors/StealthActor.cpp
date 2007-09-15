@@ -100,7 +100,7 @@ namespace SimCore
          Platform(proxy),
          mAttachAsThirdPerson(true), 
          mOldDRA(&GetDeadReckoningAlgorithm()), 
-         mAttachOffset(0.0f, 0.0f, 3.0f)
+         mAttachOffset(0.0f, -4.0f, 1.5f)
       {
          mLogger = &dtUtil::Log::GetInstance("StealthActor.cpp");
       }

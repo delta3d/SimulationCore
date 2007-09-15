@@ -76,10 +76,10 @@ namespace SimCore
                return;
             }
 
-            dtActors::CoordinateConfigActor &ccActor = 
-               static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
+            dtActors::CoordinateConfigActor* ccActor; 
+            proxies[0]->GetActor(ccActor);
 
-            hlaComp.GetCoordinateConverter() = ccActor.GetCoordinateConverter();
+            hlaComp.GetCoordinateConverter() = ccActor->GetCoordinateConverter();
             std::vector<dtHLAGM::DDMRegionCalculator*> calcs;
             hlaComp.GetDDMSubscriptionCalculators().GetCalculators(calcs);
             for (unsigned i = 0; i < calcs.size(); ++i)
@@ -88,7 +88,7 @@ namespace SimCore
                
                if (geoCalc != NULL)
                {
-                  geoCalc->SetCoordinateConverter(ccActor.GetCoordinateConverter());
+                  geoCalc->SetCoordinateConverter(ccActor->GetCoordinateConverter());
                }
             }
          }

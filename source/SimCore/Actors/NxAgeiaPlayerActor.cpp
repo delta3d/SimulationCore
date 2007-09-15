@@ -324,6 +324,7 @@ namespace SimCore
          xform.SetTranslation( position );
          SetTransform(xform);
 
+#ifdef AGEIA_PHYSICS
          if( ! mPhysicsHelper.valid() )
          {
             return;
@@ -335,6 +336,7 @@ namespace SimCore
          {
             mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
          }
+#endif
       }
 
       ////////////////////////////////////////////////////////////
