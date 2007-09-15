@@ -121,7 +121,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const std::string &RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";      
 
-      RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 0;
+      RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
       const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
 
@@ -441,7 +441,7 @@ namespace SimCore
                   else
                   {
                      dl->mDeleteMe = true;
-                     std::cout << "Auto delete on NULL Ptr" << std::endl;
+                     //std::cout << "Auto delete on NULL Ptr" << std::endl;
                      continue;
                   }
                }
@@ -462,7 +462,7 @@ namespace SimCore
                   else
                   {
                      dl->mDeleteMe = true;
-                     std::cout << "Auto delete on Max Time" << std::endl;
+                     //std::cout << "Auto delete on Max Time" << std::endl;
                      continue;
                   }
                }
@@ -473,7 +473,7 @@ namespace SimCore
                if(dl->mIntensity <= 0.0f)
                {
                   dl->mDeleteMe = true;
-                  std::cout << "Auto delete on fade out" << std::endl;
+                  //std::cout << "Auto delete on fade out" << std::endl;
                   continue;
                }
             }
@@ -516,11 +516,6 @@ namespace SimCore
             if(iter != endIter)
             {
                DynamicLight* dl = (*iter).get();
-
-               if(dl->mTarget.valid())
-               {
-                  SetPosition(dl);
-               }
 
                lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
                lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
