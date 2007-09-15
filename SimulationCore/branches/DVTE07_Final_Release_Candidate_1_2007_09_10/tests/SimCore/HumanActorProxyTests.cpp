@@ -68,6 +68,14 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanReadyToDeployed);
       CPPUNIT_TEST(TestPlanStandingToKneelingDeployed);
       CPPUNIT_TEST(TestPlanWalkingReadyToKneelingDeployed);
+      CPPUNIT_TEST(TestPlanShotStanding);
+      CPPUNIT_TEST(TestPlanShotWalking);
+      CPPUNIT_TEST(TestPlanShotRunning);
+      CPPUNIT_TEST(TestPlanShotKneeling);
+      CPPUNIT_TEST(TestPlanShotCrouching);
+      CPPUNIT_TEST(TestPlanShotSquatting);
+      CPPUNIT_TEST(TestPlanShotProne);
+      CPPUNIT_TEST(TestPlanShotCrouching);
       CPPUNIT_TEST(TestStartup);
 
    CPPUNIT_TEST_SUITE_END();
@@ -174,6 +182,62 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
       }
 
+      void TestPlanShotStanding()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_STANDING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_STANDING);
+      }
+
+      void TestPlanShotWalking()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_STANDING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_STANDING);
+      }
+
+      void TestPlanShotRunning()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_RUNNING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_STANDING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_STANDING);
+      }
+      
+      void TestPlanShotKneeling()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_KNEELING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_KNEELING);
+      }
+
+      void TestPlanShotCrouching()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_KNEELING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_KNEELING);
+      }
+
+      void TestPlanShotSquatting()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::SQUATTING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_KNEELING,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_KNEELING);
+      }
+
+      void TestPlanShotProne()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::PRONE,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_PRONE,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_PRONE);
+      }
+      
+      void TestPlanShotCrawling()
+      {
+         TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING,
+                  SimCore::Actors::AnimationOperators::ANIM_SHOT_PRONE,
+                  SimCore::Actors::AnimationOperators::ANIM_DEAD_PRONE);
+      }
+
       void TestPlanWalkingReadyToKneelingDeployed()
       {
          SimCore::Actors::Human* human;
@@ -234,6 +298,33 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED, (*iter)->GetName());
       }
    private:
+
+      void TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum& stance, const std::string& expectedShotAnim,
+               const std::string& expectedDeadAnim )
+      {
+         SimCore::Actors::Human* human;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(stance);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
+
+         mGM->AddActor(*mHumanAP, false, false);
+         
+         human->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
+         
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+         
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               2U, unsigned(result.size()));
+         
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(expectedShotAnim, (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(expectedDeadAnim, (*iter)->GetName());
+      }
 
       RefPtr<dtGame::GameManager> mGM;
       RefPtr<SimCore::Actors::HumanActorProxy> mHumanAP;
