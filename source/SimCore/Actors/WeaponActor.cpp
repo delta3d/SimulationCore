@@ -73,7 +73,6 @@ namespace SimCore
          , mMessageCount(0)
          , mFireVelocity(1000.0f)
          , mDynamicLightID(0)
-         , mDynamicLightEnabled(false)
       {
       }
 
@@ -174,34 +173,6 @@ namespace SimCore
             mFired = false;
          }
 
-         //if we have a dynamic light active we need to reduce its effect and or remove it from the rendering support component
-         if(mDynamicLightEnabled)
-         {
-            //remove dynamic light effect
-            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-
-            if(comp != NULL)
-            {
-               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-               if(renderComp)
-               {
-                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-                  if(dl)
-                  { 
-                     //the 4.0 is a scalar controlling how fast the effect dissapates
-                     dl->mIntensity -= (10.0f * timeDelta);
-                     if(dl->mIntensity <= 0.0f)
-                     {
-                        dl->mIntensity = 0.0f;
-                        renderComp->RemoveDynamicLight(mDynamicLightID);
-                        mDynamicLightEnabled = false;
-                     }
-                  }
-               }
-            }
-         }
-
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -245,6 +216,41 @@ namespace SimCore
             mTriggerHeld = hold;
          }
          
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::AddDynamicLight()
+      {
+         //this creates a dynamic light
+         SimCore::Components::RenderingSupportComponent* renderComp = 
+            dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+         if(renderComp)
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->GetDynamicLight(mDynamicLightID);
+            
+            if(dl == NULL)
+            {
+               dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               mDynamicLightID = renderComp->AddDynamicLight(dl);
+            }
+
+            dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
+            dl->mAttenuation.set(0.1, 0.05, 0.0002);
+            dl->mIntensity = 1.0f;
+            dl->mSaturationIntensity = 0.0f; //no saturation
+            dtCore::Transformable* transformable = this;
+            if(mFlash.valid())
+            {
+               transformable = mFlash.get();
+            }
+            dl->mTarget = transformable;
+            dl->mAutoDeleteAfterMaxTime = true;
+            dl->mMaxTime = 0.5f;
+            
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -301,31 +307,6 @@ namespace SimCore
             std::cout << "\tWeapon: " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
             // --- DEBUG --- END --- /*/
 
-            //this creates a dynamic light
-            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-
-            if(comp != NULL)
-            {
-               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-               if(renderComp)
-               {
-                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 0;
-                  if(!mDynamicLightEnabled)
-                  {
-                     dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-                     mDynamicLightID = renderComp->AddDynamicLight(dl);
-
-                     dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
-                     dl->mAttenuation.set(0.1, 0.05, 0.0002);
-                     dl->mIntensity = 1.0f;
-                     dl->mSaturationIntensity = 0.0f; //no saturation
-                     dl->mTarget = this;
-                     mDynamicLightEnabled = true;
-                  }
-               }
-            }
-
 #ifdef AGEIA_PHYSICS
             if( mShooter.valid() )
             {
@@ -347,7 +328,8 @@ namespace SimCore
             case WEAPON_EFFECT_FIRE:
             {
                mFired = true;
-               if( mFlash.valid() && mFlashProbability >= dtUtil::RandFloat(0.0f,1.0f) )
+               float flashProb = dtUtil::RandFloat(0.0f,1.0f);
+               if( mFlash.valid() && mFlashProbability >= flashProb )
                {
                   // Setting visible to TRUE will cause the flash
                   // to restart its age time. The age time will progress
@@ -355,6 +337,8 @@ namespace SimCore
                   // it passes its life time, if life time has been set
                   // greater than 0.
                   mFlash->SetVisible( true );
+
+                  AddDynamicLight();
                }
                
                SoundPlay( mSoundFire );
@@ -391,40 +375,8 @@ namespace SimCore
       {
          IGActor::OnEnteredWorld();
 
-         /*/ Try to access the munitions component in order
-         // to obtain the munition types of shooters
-         SimCore::Components::MunitionsComponent* comp = 
-            dynamic_cast<SimCore::Components::MunitionsComponent*>
-            (GetGameActorProxy().GetGameManager()
-            ->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
-
-         if( NULL == comp )
-         { 
-            LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
-            return;
-         }
-
-         SimCore::Components::MunitionTypeTable* table = comp->GetMunitionTypeTable();
-
-         if( NULL == table )
-         {
-            LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
-            return;
-         }*/
-
          if( ! mMunitionType.valid() && ! mMunitionTypeName.empty() )
-         {/*
-            // Get a reference to the weapon's munition type
-            MunitionTypeActor* munitionType = NULL;
-
-            // Get the munition type from the component by the munition type name
-            munitionType = table->GetMunitionType( mMunitionTypeName );
-            if( NULL != munitionType )
-            {
-               // Assign the accessed munition type
-               SetMunitionType( munitionType );
-            }*/
-
+         {
             // Attempt a reload
             LoadMunitionType( mMunitionTypeName );
          }
