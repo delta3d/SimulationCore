@@ -18,6 +18,7 @@
 #include <SimCore/Export.h>
 
 #include <dtCore/base.h>
+#include <dtCore/batchisector.h>
 #include <dtCore/observerptr.h>
 
 #include <SimCore/Actors/VolumetricLine.h>
@@ -40,7 +41,6 @@ namespace dtAudio
 
 namespace dtCore
 {
-   class BatchIsector;
    class UniqueId;
    class ParticleSystem;
 }
@@ -408,9 +408,13 @@ namespace SimCore
 
             // Set the game manager that has a scene to which tracer effects may be added.
             // @param gameManager The main scene that will render tracer effects.
-            void SetGameManager( dtGame::GameManager* gameManager ) { mGM = gameManager; }
+            void SetGameManager( dtGame::GameManager* gameManager );
             dtGame::GameManager* GetGameManager() { return mGM.get(); }
             const dtGame::GameManager* GetGameManager() const { return mGM.get(); }
+
+            // Return the isector responsible for collision detection of tracer effects.
+            // NOTE: This is intended for testing purposes only.
+            const dtCore::BatchIsector* GetIsector() const { return mIsector.get(); }
 
             // Set the maximum length of time that any WeaponEffect object should
             // live before being recycled.
@@ -505,6 +509,8 @@ namespace SimCore
             // Clear all weapon and tracer effects
             void Clear();
 
+            float CalcTimeToImpact( const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime = 10.0f );
+
          protected:
            virtual ~WeaponEffectsManager();
 
@@ -516,6 +522,7 @@ namespace SimCore
             int mMaxTracerEffects;
             std::map<std::string, dtCore::RefPtr<WeaponEffect> > mEntityToEffectMap;
             std::vector<dtCore::RefPtr<TracerEffect> > mTracerEffects;
+            dtCore::RefPtr<dtCore::BatchIsector> mIsector;
             dtCore::RefPtr<dtGame::GameManager> mGM;
       };
 
