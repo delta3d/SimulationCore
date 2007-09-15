@@ -438,7 +438,8 @@ namespace SimCore
          GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
          if( visible )
          {
-            AddDynamicLight(osg::Vec3(1,1,1));
+            // TODO: Make tracer colors dynamic.
+            AddDynamicLight(osg::Vec3(1.0f, 0.2f, 0.2f)); // default color to red
          }
          else
          {
@@ -510,10 +511,10 @@ namespace SimCore
             = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
             (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
 
-         if(renderComp)
+         if( renderComp != NULL )
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 0;
-            if(!mDynamicLightEnabled)
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            if( ! mDynamicLightEnabled )
             {
                dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
                dl->mColor = color;//a bright yellow
@@ -570,6 +571,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       WeaponEffect::WeaponEffect()
          : dtCore::Transformable(WeaponEffect::CLASS_NAME),
+         mDynamicLightID(0),
+         mDynamicLightEnabled(false),
          mVisible(true),
          mSoundPlayed(false),
          mSoundStartTime(0.0f),
@@ -651,6 +654,16 @@ namespace SimCore
          if( mFlash.valid() )
          {
             mFlash->GetOSGNode()->setNodeMask( mVisible ? 0xFFFFFFFF : 0 );
+
+            if( mVisible )
+            {
+               // TODO: Make tracer colors dynamic.
+               AddDynamicLight(osg::Vec3(1.0f, 0.5f, 0.0f)); // yellow
+            }
+            else
+            {
+               RemoveDynamicLight();
+            }
          }
       }
 
@@ -787,6 +800,68 @@ namespace SimCore
          return mFlash.valid();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::AddDynamicLight( const osg::Vec3& color )
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp
+            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            if( ! mDynamicLightEnabled )
+            {
+               dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               dl->mColor = color;//a bright yellow
+               dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               dl->mIntensity = 1.0f;
+               dl->mSaturationIntensity = 0.0f; //no saturation
+               dl->mTarget = mFlash.get();
+
+               mDynamicLightID = renderComp->AddDynamicLight(dl);
+               mDynamicLightEnabled = true;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::RemoveDynamicLight()
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp
+            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
+            if( dl != NULL && mDynamicLightEnabled )
+            {
+               dl->mIntensity = 0.0f;
+               renderComp->RemoveDynamicLight(mDynamicLightID);
+
+               mDynamicLightEnabled = false;
+               mDynamicLightID = 0;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         mGM = gameManager;
+      }
+
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -833,6 +908,7 @@ namespace SimCore
          if( ! foundEffect )
          {
             newEffect->SetOwner( &owner );
+            newEffect->SetGameManager( mGM.get() );
 
             if( ! effectsInfo.GetFireEffect().empty() )
             {
