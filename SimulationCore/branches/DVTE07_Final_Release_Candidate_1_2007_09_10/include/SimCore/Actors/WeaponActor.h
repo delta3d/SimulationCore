@@ -335,6 +335,8 @@ namespace SimCore
                mLastTargetObject = NULL;
             }
 
+            void AddDynamicLight();
+
          protected:
             // Destructor
             virtual ~WeaponActor();
