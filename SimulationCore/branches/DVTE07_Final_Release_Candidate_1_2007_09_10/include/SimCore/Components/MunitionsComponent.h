@@ -372,10 +372,17 @@ namespace SimCore
             // @return TRUE if load and assignment was successful.
             bool LoadFlash( const std::string& filePath );
 
+            void AddDynamicLight( const osg::Vec3& color );
+            void RemoveDynamicLight();
+
+            void SetGameManager( dtGame::GameManager* gameManager );
+
          protected:
             virtual ~WeaponEffect();
 
          private:
+            unsigned  mDynamicLightID;
+            bool mDynamicLightEnabled;
             bool mVisible;
             bool mSoundPlayed;
             float mSoundStartTime;
@@ -386,6 +393,7 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mFlash;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
             osg::observer_ptr<osgSim::DOFTransform> mDOF;
+            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
