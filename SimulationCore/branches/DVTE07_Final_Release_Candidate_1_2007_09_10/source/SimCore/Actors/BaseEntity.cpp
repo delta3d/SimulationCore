@@ -540,20 +540,20 @@ namespace SimCore
 
             if( renderComp != NULL )
             {
-               SimCore::Components::RenderingSupportComponent::DynamicLight* dl 
-                 = new SimCore::Components::RenderingSupportComponent::DynamicLight();                
-
-               dl->mColor.set(1.0,0.5,0.25);//orange
-               dl->mAttenuation.set(0.1, 0.05, 0.0002);
-               dl->mIntensity = 1.0f;
-               dl->mFlicker = true;
-               dl->mFlickerScale = 0.3f;
-               dl->mFadeOut = true;
-               dl->mFadeOutTime = 3.0f;
-               dl->mRadius = 20.0f;
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
                dl->mTarget = mFlamesSystem.get();
-               dl->mAutoDeleteLightOnTargetNull = true;
-               renderComp->AddDynamicLight(dl);
+               //dl->mColor.set(1.0,0.5,0.25);//orange
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mFlicker = true;
+               //dl->mFlickerScale = 0.3f;
+               //dl->mFadeOut = true;
+               //dl->mFadeOutTime = 3.0f;
+               //dl->mRadius = 20.0f;
+               //dl->mTarget = mFlamesSystem.get();
+               //dl->mAutoDeleteLightOnTargetNull = true;
+               //renderComp->AddDynamicLight(dl);
             }
          }
          else

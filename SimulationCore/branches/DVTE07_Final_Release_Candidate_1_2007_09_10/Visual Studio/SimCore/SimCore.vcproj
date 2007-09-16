@@ -300,6 +300,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\SimCore\Actors\DynamicLightPrototypeActor.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\SimCore\Actors\EntityActorRegistry.cpp"
 					>
 				</File>
@@ -635,6 +639,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Actors\DetonationActor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\SimCore\Actors\DynamicLightPrototypeActor.h"
 					>
 				</File>
 				<File

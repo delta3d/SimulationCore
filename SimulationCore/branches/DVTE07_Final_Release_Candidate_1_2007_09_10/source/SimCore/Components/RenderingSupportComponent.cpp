@@ -16,11 +16,12 @@
 * along with this library; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
-* @author Allen Danklefsen, Bradley Anderegg
+* @author Allen Danklefsen, Bradley Anderegg, Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 
@@ -180,11 +181,13 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
          mGUIRoot->addChild(gui->GetOSGNode());
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
          dtCore::RefPtr<osg::Group> grp = new osg::Group();
@@ -199,6 +202,7 @@ namespace SimCore
          mGUIRoot->setClearMask( GL_NONE );
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
       {        
          osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView();
@@ -217,11 +221,13 @@ namespace SimCore
       }
 
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       bool RenderingSupportComponent::GetEnableNVGS()
       {
          return mEnableNVGS;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetEnableNVGS(bool pEnable)
       {
          if(mNVGS.valid())
@@ -231,6 +237,29 @@ namespace SimCore
          }                  
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::LoadPrototypes()
+      {
+         // Find all the dynamic light prototypes
+         std::vector<dtDAL::ActorProxy*> prototypes;
+         GetGameManager()->FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE, prototypes);
+         if(prototypes.empty())
+         {
+            LOG_WARNING("The Rendering component could not find any dynamic light prototypes. Make sure you loaded the correct map.");
+         }
+
+         // Add all the prototypes to our map of light proxies. This allows others to quickly add a light by name
+         unsigned int numPrototypes = prototypes.size();
+         for (unsigned int i = 0; i < numPrototypes; i ++)
+         {
+            SimCore::Actors::DynamicLightPrototypeProxy *prototype = (SimCore::Actors::DynamicLightPrototypeProxy *)prototypes[i];
+            std::cout << " *** Found dynamic light proxy named[" << prototype->GetName() << "]. Adding it to our list." << std::endl;
+            mDynamicLightPrototypes.insert(std::make_pair(prototype->GetName(), prototype));
+         }
+
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
       {         
          if(dl != NULL)
@@ -245,21 +274,61 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      RenderingSupportComponent::DynamicLight *RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string prototypeName)
+      {
+         DynamicLight *result = NULL;
+
+         std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> >::const_iterator iter = mDynamicLightPrototypes.find(prototypeName);
+         if(iter == mDynamicLightPrototypes.end() || iter->second.get() == NULL)
+         {
+            LOG_ERROR("Failed to find dynamic light prototype [" + prototypeName + "]. Make sure the light exists in the map.");
+         }
+         else
+         {
+            SimCore::Actors::DynamicLightPrototypeActor *dlActor = (SimCore::Actors::DynamicLightPrototypeActor *) iter->second.get()->GetActor();
+            result = new DynamicLight();
+            result->mAttenuation = dlActor->GetAttenuation();
+            result->mIntensity = dlActor->GetIntensity();
+            result->mColor = dlActor->GetLightColor();
+            // flick - is on if scale > 0
+            result->mFlicker = (dlActor->GetFlickerScale() > 0.0);
+            result->mFlickerScale = dlActor->GetFlickerScale();
+            // delete after time if maxtime > 0
+            result->mAutoDeleteAfterMaxTime = (dlActor->GetMaxTime() > 0.0);
+            result->mMaxTime = dlActor->GetMaxTime();
+            // fade out on if fade out time > 0
+            result->mFadeOut = (dlActor->GetFadeOutTime() > 0.0);
+            result->mFadeOutTime = dlActor->GetFadeOutTime();
+            result->mRadius = dlActor->GetRadius();
+            result->mAutoDeleteLightOnTargetNull = dlActor->IsDeleteOnTargetIsNull();
+
+            // Set the light type from the enum!
+            mLights.push_back(result);
+         }
+
+         return result;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::RemoveDynamicLight(RenderingSupportComponent::LightID id)
       {
          mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)));  
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::RemoveLight(LightArray::iterator iter)
       {
          mLights.erase(iter);
       }
  
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::GetDynamicLight(RenderingSupportComponent::LightID id)
       {
          return FindLight(id);
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::FindLight(RenderingSupportComponent::LightID id)
       {
          LightArray::iterator iter = std::find_if(mLights.begin(), mLights.end(), findLightById(id));
@@ -271,6 +340,7 @@ namespace SimCore
          return 0;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetNVGS(RenderFeature* rf)
       {
          if(rf != NULL)
@@ -280,30 +350,37 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       const RenderingSupportComponent::RenderFeature* RenderingSupportComponent::GetNVGS() const
       {
          return mNVGS.get();
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       bool RenderingSupportComponent::GetEnableCullVisitor()
       {
          return mEnableCullVisitor;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetEnableCullVisitor(bool pEnable)
       {
          mEnableCullVisitor = pEnable;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetEnableDynamicLights(bool b)
       {
          mEnableDynamicLights = b;
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       bool RenderingSupportComponent::GetEnableDynamicLights() const
       {
          return mEnableDynamicLights;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateViewMatrix(const osg::Matrix& mat)
       {
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
@@ -329,47 +406,22 @@ namespace SimCore
             }
          }
 
-         else if( msg.GetMessageType() == SimCore::MessageType::INFO_ACTOR_CREATED
-            )//|| msg.GetMessageType() == dvte::IG::MessageType::INFO_ACTOR_UPDATED )
+         // When the map change begins, clear out our lists. 
+         else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_CHANGE_BEGIN)
          {
-            const dtGame::ActorUpdateMessage& updateMsg = static_cast<const dtGame::ActorUpdateMessage&>(msg);
-            //this should probably be done within the munitions comp or something 
-            if(updateMsg.GetActorType() == SimCore::Actors::EntityActorRegistry::FLARE_ACTOR_TYPE)
-            {
-               dtDAL::ActorProxy* proxy = dynamic_cast<dtDAL::ActorProxy*>(GetGameManager()->FindActorById( updateMsg.GetAboutActorId()));
-               if(proxy != NULL)
-               {
-                  //to make an illumination round dynamic light we must note that
-                  //these are dropped at 600meters and will light the ground directly below within 
-                  //a radius of 1km
-                  SimCore::Actors::FlareActor* flare = dynamic_cast<SimCore::Actors::FlareActor*>(proxy->GetActor());
-                  if(flare != NULL)
-                  {
-                     DynamicLight* dl = new DynamicLight();
-                     dl->mSaturationIntensity = 1.0f;
-                     dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
-                     dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->GetColor();
-                     dl->mAttenuation.set(0.1, 0.005, 0.00002);
-                     dl->mTarget = flare;
-                     dl->mAutoDeleteLightOnTargetNull = true;
-                     //dl->mAutoDeleteAfterMaxTime = true;
-                     //dl->mMaxTime = 20.0f;
-                     dl->mFadeOut = true;
-                     dl->mFadeOutTime = 5.0f;
-                     dl->mFlicker = true;
-                     dl->mFlickerScale = 0.1f; 
-                     dl->mRadius = 100.0f;
-
-                     AddDynamicLight(dl);
-                  }
-               }
-            }
+            mLights.clear();
+            mDynamicLightPrototypes.clear();
          }
+
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             GetGameManager()->GetApplication().GetCamera()->GetOSGNode()->setUpdateCallback(mViewCallback.get());
+
+            LoadPrototypes();
          }
 
+         //else if( msg.GetMessageType() == SimCore::MessageType::INFO_ACTOR_CREATED
+         //   )//|| msg.GetMessageType() == dvte::IG::MessageType::INFO_ACTOR_UPDATED )
          /*else if(msg.GetMessageType() == dtGame::MessageType::TICK_REMOTE){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_PUBLISHED){}
@@ -379,6 +431,7 @@ namespace SimCore
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED){}*/
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetPosition(DynamicLight* dl)
       {
          if(dl != NULL && dl->mTarget.valid())
@@ -410,6 +463,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateDynamicLights(float dt)
       {
          //now setup the lighting uniforms necessary for rendering the dynamic lights
