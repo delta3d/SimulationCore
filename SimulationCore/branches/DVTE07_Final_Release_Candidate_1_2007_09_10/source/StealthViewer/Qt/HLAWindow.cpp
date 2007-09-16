@@ -217,7 +217,14 @@ namespace StealthQt
 
       HLAOptions options(this, currentItem->text(), true);
       options.SetCaseSensitiveFilePaths(caseSensitive);
-      options.exec();
+      if(options.exec() == QDialog::Accepted)
+      {
+         QStringList toDisplay = 
+            StealthViewerData::GetInstance().GetSettings().GetConnectionNames();
+
+         mUi->mNetworkListWidget->clear();
+         mUi->mNetworkListWidget->addItems(toDisplay);
+      }
    }
 
    void HLAWindow::OnDelete(bool checked)

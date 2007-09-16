@@ -233,6 +233,7 @@ namespace StealthQt
 
          std::map<QString, unsigned int> mConnectionNameMap;
          unsigned int mNumConnections;
+         bool mIsLoadingFromIni;
    };
 }
 
