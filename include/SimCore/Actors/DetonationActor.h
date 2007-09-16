@@ -226,6 +226,9 @@ namespace SimCore
             /// Disables the rendering of smoke
             void StopRenderingSmoke();
 
+            ///adds a light for the explosion effect
+            void AddDynamicLight();
+
             dtCore::RefPtr<dtCore::ParticleSystem> mExplosionSystem, mSmokeSystem;
             dtCore::RefPtr<dtAudio::Sound> mSound;
             float mDelayTime;
