@@ -81,6 +81,8 @@ namespace SimCore
             {
                GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
+
+            mHPRChange.set( 0.0, 0.0, 0.0 );
          }
          else
          {
