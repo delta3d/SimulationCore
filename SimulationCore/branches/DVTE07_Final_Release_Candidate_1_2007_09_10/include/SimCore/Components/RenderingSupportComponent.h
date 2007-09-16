@@ -142,7 +142,7 @@ namespace SimCore
             RenderingSupportComponent(const std::string &name = DEFAULT_NAME);
 
             // Convenience method to add a new dynamic light by looking it up from the prototypes. Returns the unique dynamic light instance
-            DynamicLight *AddDynamicLightByPrototypeName(const std::string prototypeName);
+            DynamicLight *AddDynamicLightByPrototypeName(const std::string &prototypeName);
 
             LightID AddDynamicLight(DynamicLight*);
             void RemoveDynamicLight(LightID id);
