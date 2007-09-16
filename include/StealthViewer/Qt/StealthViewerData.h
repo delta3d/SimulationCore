@@ -11,6 +11,8 @@
 
 #include <dtCore/refptr.h>
 
+#include <QtCore/QString>
+
 namespace StealthGM
 {
    class PreferencesGeneralConfigObject;
@@ -89,6 +91,18 @@ namespace StealthQt
           */
          void SetMainWindow(MainWindow &window) { mMainWindow = &window; }
 
+         /**
+          * Sets the previous connection name
+          * @param name The new name
+          */
+         void SetOldConnectionName(const QString &name) { mOldConnectionName = name; }
+
+         /**
+          * Gets the old connection name
+          * @return mOldConnectionName
+          */
+         const QString& GetOldConnectionName() const { return mOldConnectionName; }
+
       protected:
 
          /// Destructor
@@ -118,6 +132,8 @@ namespace StealthQt
          StealthGM::ControlsPlaybackConfigObject *mPlaybackConfigObject;
 
          MainWindow* mMainWindow;
+
+         QString mOldConnectionName;
    };
 }
 

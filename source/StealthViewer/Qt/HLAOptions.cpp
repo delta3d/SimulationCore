@@ -41,6 +41,9 @@ namespace StealthQt
 
       // Check name of previous entry before defaulting
       PopulateFields(connectionName);
+
+      if(mIsEditMode)
+         StealthViewerData::GetInstance().SetOldConnectionName(connectionName);
    }
 
    HLAOptions::~HLAOptions()
