@@ -14,6 +14,7 @@
 
 #include <prefix/SimCorePrefix-src.h>
 #include <dtGame/gameactor.h>
+#include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 
 namespace SimCore
