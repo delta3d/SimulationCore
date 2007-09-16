@@ -38,6 +38,7 @@
 #include <dtABC/application.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 namespace SimCore
 {
@@ -303,6 +304,10 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS        
          if(mUsesPhysics && mCollidedMaterial != NULL)
          {
+            //this is kind of a hack, but it ensures it is at least a relatively large explosion
+            //and keeps the gun fire from being an explosion
+            AddDynamicLight();
+
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
             particleSystems[1] = mCollidedMaterial->GetPhysicsParticleLookupStringTwo();
@@ -463,6 +468,30 @@ namespace SimCore
                        (position[2] - detonationPos[2]) * (position[2] - detonationPos[2])));
 
          mDelayTime = distance / 350.0f;
+      }
+      
+      ///////////////////////////////////////////////////////////////////////
+      void DetonationActor::AddDynamicLight()
+      {
+         SimCore::Components::RenderingSupportComponent* renderComp = 
+            dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+         if(renderComp)
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+
+            dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
+            dl->mAttenuation.set(0.1, 0.05, 0.0002);
+            dl->mIntensity = 1.0f;
+            dl->mTarget = this;
+            dl->mAutoDeleteAfterMaxTime = true;
+            dl->mMaxTime = 1.0f;
+            dl->mFadeOut = true;
+            dl->mFadeOutTime = 0.5f;
+
+            renderComp->AddDynamicLight(dl);
+         }
       }
    }
 }
