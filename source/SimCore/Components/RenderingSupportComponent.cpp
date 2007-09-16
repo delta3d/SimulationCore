@@ -275,14 +275,18 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::DynamicLight *RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string prototypeName)
+      RenderingSupportComponent::DynamicLight *RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string &prototypeName)
       {
          DynamicLight *result = NULL;
 
          std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> >::const_iterator iter = mDynamicLightPrototypes.find(prototypeName);
          if(iter == mDynamicLightPrototypes.end() || iter->second.get() == NULL)
          {
-            LOG_ERROR("Failed to find dynamic light prototype [" + prototypeName + "]. Make sure the light exists in the map.");
+            LOG_ERROR("Failed to find dynamic light prototype [" + prototypeName + "]. Making bogus default light instead. Make sure the light exists in the map.");
+            result = new DynamicLight();
+            result->mMaxTime = 1.0f;
+            result->mAutoDeleteLightOnTargetNull = true;
+            mLights.push_back(result);
          }
          else
          {
