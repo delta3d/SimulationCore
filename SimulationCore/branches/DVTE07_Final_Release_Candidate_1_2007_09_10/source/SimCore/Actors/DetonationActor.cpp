@@ -301,12 +301,12 @@ namespace SimCore
 
          ///////////////////////////////////////////////////////////////////////
          // Add physics particle systems to the detonation
-#ifdef AGEIA_PHYSICS        
          if(mUsesPhysics && mCollidedMaterial != NULL)
          {
+            AddDynamicLight();
+#ifdef AGEIA_PHYSICS        
             //this is kind of a hack, but it ensures it is at least a relatively large explosion
             //and keeps the gun fire from being an explosion
-            AddDynamicLight();
 
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
@@ -335,8 +335,8 @@ namespace SimCore
                   }
                }
             }
-         }
 #endif     
+         }
          ///////////////////////////////////////////////////////////////////////
 
          RenderDetonation();
