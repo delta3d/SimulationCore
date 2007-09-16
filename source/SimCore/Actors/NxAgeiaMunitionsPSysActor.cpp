@@ -65,16 +65,18 @@
    {
       if( mIsTracer )
       {
-         SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         dl->mColor.set(1.0f, 0.2f, 0.2f);
-         dl->mAttenuation.set(0.1, 0.05, 0.0002);
-         dl->mIntensity = 1.0f;
+         SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+            renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
+         //SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+         //dl->mColor.set(1.0f, 0.2f, 0.2f);
+         //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+         //dl->mIntensity = 1.0f;
          mDynamicLight = new dtCore::Transformable();
          dl->mTarget = mDynamicLight.get();
-         dl->mFlicker = true;
-         dl->mFlickerScale = 0.1f;
-         dl->mAutoDeleteLightOnTargetNull = true;
-         renderComp->AddDynamicLight(dl);
+         //dl->mFlicker = true;
+         //dl->mFlickerScale = 0.1f;
+         //dl->mAutoDeleteLightOnTargetNull = true;
+         //renderComp->AddDynamicLight(dl);
       }
    }
 

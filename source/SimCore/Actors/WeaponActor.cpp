@@ -231,25 +231,25 @@ namespace SimCore
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
                   renderComp->GetDynamicLight(mDynamicLightID);
-            
             if(dl == NULL)
             {
-               dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-               mDynamicLightID = renderComp->AddDynamicLight(dl);
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-WeaponFlash");
+               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               mDynamicLightID = dl->mID;//renderComp->AddDynamicLight(dl);
             }
 
-            dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
-            dl->mAttenuation.set(0.1, 0.05, 0.0002);
-            dl->mIntensity = 1.0f;
-            dl->mSaturationIntensity = 0.0f; //no saturation
+            //dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
+            //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+            //dl->mIntensity = 1.0f;
+            //dl->mSaturationIntensity = 0.0f; //no saturation
             dtCore::Transformable* transformable = this;
             if(mFlash.valid())
             {
                transformable = mFlash.get();
             }
             dl->mTarget = transformable;
-            dl->mAutoDeleteAfterMaxTime = true;
-            dl->mMaxTime = 0.5f;
+            //dl->mAutoDeleteAfterMaxTime = true;
+            //dl->mMaxTime = 0.5f;
             
          }
       }

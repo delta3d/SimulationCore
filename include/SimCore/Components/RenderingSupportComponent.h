@@ -58,6 +58,11 @@ namespace osg
 
 namespace SimCore
 {
+   namespace Actors
+   {
+      class DynamicLightPrototypeProxy;
+   }
+
    namespace Components
    {
       //class in cpp
@@ -136,6 +141,9 @@ namespace SimCore
             /// Constructor
             RenderingSupportComponent(const std::string &name = DEFAULT_NAME);
 
+            // Convenience method to add a new dynamic light by looking it up from the prototypes. Returns the unique dynamic light instance
+            DynamicLight *AddDynamicLightByPrototypeName(const std::string prototypeName);
+
             LightID AddDynamicLight(DynamicLight*);
             void RemoveDynamicLight(LightID id);
             DynamicLight* GetDynamicLight(LightID id);
@@ -184,6 +192,9 @@ namespace SimCore
             void InitializeCullVisitor();
             void InitializeFrameBuffer();
 
+            // Finds all the dynamic light actor prototypes in the GM and holds onto them
+            void LoadPrototypes();
+
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
             void UpdateDynamicLights(float dt);
@@ -208,7 +219,10 @@ namespace SimCore
             dtCore::RefPtr<RenderFeature> mNVGS;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
             dtCore::RefPtr<UpdateViewCallback> mViewCallback;
-            
+
+            // list of dynamic light actor prototypes
+            std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > mDynamicLightPrototypes;
+
             LightArray mLights;
       };
    } // namespace

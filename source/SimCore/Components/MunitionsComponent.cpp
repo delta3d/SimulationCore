@@ -515,14 +515,18 @@ namespace SimCore
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
             if( ! mDynamicLightEnabled )
             {
-               dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-               dl->mColor = color;//a bright yellow
-               dl->mAttenuation.set(0.1, 0.05, 0.0002);
-               dl->mIntensity = 1.0f;
-               dl->mSaturationIntensity = 0.0f; //no saturation
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
                dl->mTarget = this;
+               dl->mColor = color;
+               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               //dl->mColor = color;//a bright yellow
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mSaturationIntensity = 0.0f; //no saturation
+               //dl->mTarget = this;
 
-               mDynamicLightID = renderComp->AddDynamicLight(dl);
+               //mDynamicLightID = renderComp->AddDynamicLight(dl);
+               mDynamicLightID = dl->mID;
                mDynamicLightEnabled = true;
             }
          }
@@ -816,14 +820,16 @@ namespace SimCore
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
             if( ! mDynamicLightEnabled )
             {
-               dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
                dl->mColor = color;//a bright yellow
-               dl->mAttenuation.set(0.1, 0.05, 0.0002);
-               dl->mIntensity = 1.0f;
-               dl->mSaturationIntensity = 0.0f; //no saturation
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mSaturationIntensity = 0.0f; //no saturation
                dl->mTarget = mFlash.get();
 
-               mDynamicLightID = renderComp->AddDynamicLight(dl);
+               //mDynamicLightID = renderComp->AddDynamicLight(dl);
+               mDynamicLightID = dl->mID;
                mDynamicLightEnabled = true;
             }
          }
