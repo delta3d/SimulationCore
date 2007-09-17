@@ -70,6 +70,9 @@ namespace SimCore
             void SetParticleFileName( const std::string& fileName );
             std::string GetParticleFileName() const;
 
+            void SetLightName( const std::string& fileName );
+            std::string GetLightName() const;
+
             void LoadParticlesFile( const std::string& fileName );
 
             virtual void HandleModelDrawToggle(bool draw);
@@ -91,6 +94,8 @@ namespace SimCore
             float mSourceIntensity;
             std::string mModelType;
             std::string mParticleFileName;
+            std::string mParticleFileNameBad;
+            std::string mLightName;
             dtCore::RefPtr<dtCore::ParticleSystem> mParticles;
       };
 

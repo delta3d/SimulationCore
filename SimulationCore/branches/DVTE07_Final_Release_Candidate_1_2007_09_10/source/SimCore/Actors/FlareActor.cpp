@@ -43,7 +43,8 @@ namespace SimCore
          mHeightDelta(0.0f),
          mPeakAngle(0.0f),
          mPeakAngleDelta(0.0f),
-         mSourceIntensity(0.0f)
+         mSourceIntensity(0.0f),
+         mLightName(SimCore::Components::RenderingSupportComponent::DEFAULT_LIGHT_NAME)
       {
       }
 
@@ -191,13 +192,56 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void FlareActor::SetLightName( const std::string& lightName )
+      {
+         mLightName = lightName;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      std::string FlareActor::GetLightName() const
+      {
+         return mLightName;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void FlareActor::LoadParticlesFile( const std::string& fileName )
       {
-         mParticles = new dtCore::ParticleSystem("FlareParticles");
-         // Flare particles designed to keep particles together at one point
-         // to give the effect of shimmer and brightness (via additive blending).
-         mParticles->SetParentRelative(true);
-         mParticles->LoadFile(fileName);
+         if( mParticleFileName != fileName && mParticleFileNameBad != fileName )
+         {
+            bool inGM = GetGameActorProxy().IsInGM();
+            if( mParticles.valid() )
+            {
+               RemoveChild( mParticles.get() );
+               if( inGM )
+               {
+                  UnregisterParticleSystem( *mParticles );
+               }
+               mParticles = NULL;
+            }
+
+            SetParticleFileName( fileName );
+
+            if( fileName.empty() )
+            {
+            }
+            else
+            {
+               mParticles = new dtCore::ParticleSystem("FlareParticles");
+               // Flare particles designed to keep particles together at one point
+               // to give the effect of shimmer and brightness (via additive blending).
+               mParticles->SetParentRelative(true);
+               if( NULL == mParticles->LoadFile(fileName) )
+               {
+                  mParticleFileNameBad = fileName;
+               }
+
+               AddChild( mParticles.get() );
+               if( inGM )
+               {
+                  RegisterParticleSystem( *mParticles );
+               }
+            }
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -231,8 +275,10 @@ namespace SimCore
             if( renderComp != NULL )
             {               
                SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
-                  renderComp->AddDynamicLightByPrototypeName("Light-Flare-Large");
+                  renderComp->AddDynamicLightByPrototypeName( GetLightName() );
                dl->mTarget = this;
+
+               // DEBUG:
                //SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
                //dl->mSaturationIntensity = 1.0f;
                //dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
@@ -324,10 +370,15 @@ namespace SimCore
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetModelTypeString), 
             "The type of flare being modeled by this actor"));
 
-         AddProperty(new dtDAL::StringActorProperty("Particle File", "Particle File", 
-            dtDAL::MakeFunctor(actor, &FlareActor::SetParticleFileName), 
-            dtDAL::MakeFunctorRet(actor, &FlareActor::GetParticleFileName), 
-            "The type of flare being modeled by this actor"));
+         AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name", 
+            dtDAL::MakeFunctor(actor, &FlareActor::SetLightName), 
+            dtDAL::MakeFunctorRet(actor, &FlareActor::GetLightName), 
+            "The name of the light prototype actor that describes the light effect used by this flare actor"));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+            "Particle File", "Particle File", 
+            dtDAL::MakeFunctor(actor, &FlareActor::LoadParticlesFile), 
+            "The particle effect that represents the flare"));
       }
 
       //////////////////////////////////////////////////////////////////////////
