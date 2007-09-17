@@ -120,7 +120,9 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string &RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";      
+      const std::string &RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";  
+
+      const std::string &RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";      
 
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
