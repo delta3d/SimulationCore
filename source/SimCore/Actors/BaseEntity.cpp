@@ -13,6 +13,8 @@
 #include <osg/MatrixTransform>
 #include <osg/Group>
 
+#include <SimCore/Components/RenderingSupportComponent.h>
+
 namespace SimCore
 {
 
@@ -327,6 +329,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////
       BaseEntity::~BaseEntity()
       {
+         SetFlamesPresent(false);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -528,11 +531,36 @@ namespace SimCore
 
             Components::ParticleInfo::AttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
+
+            // HACK: Add lights with copied code
+            SimCore::Components::RenderingSupportComponent* renderComp
+               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+               (GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+            if( renderComp != NULL )
+            {
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
+               dl->mTarget = mFlamesSystem.get();
+               //dl->mColor.set(1.0,0.5,0.25);//orange
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mFlicker = true;
+               //dl->mFlickerScale = 0.3f;
+               //dl->mFadeOut = true;
+               //dl->mFadeOutTime = 3.0f;
+               //dl->mRadius = 20.0f;
+               //dl->mTarget = mFlamesSystem.get();
+               //dl->mAutoDeleteLightOnTargetNull = true;
+               //renderComp->AddDynamicLight(dl);
+            }
          }
          else
          {
             if(mFlamesSystem.get())
             {
+               UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
                mFlamesSystem = NULL;
             }
@@ -581,11 +609,15 @@ namespace SimCore
             mSmokePlumesSystem->SetEnabled(enable);
             AddChild(mSmokePlumesSystem.get());
             mSmokePlumePresent = enable;
+
+            Components::ParticleInfo::AttributeFlags attrs = {true,true};
+            RegisterParticleSystem(*mSmokePlumesSystem,&attrs);
          }
          else
          {
             if(mSmokePlumesSystem.valid())
             {
+               UnregisterParticleSystem(*mSmokePlumesSystem);
                RemoveChild(mSmokePlumesSystem.get());
                mSmokePlumesSystem = NULL;
             }

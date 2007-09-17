@@ -235,6 +235,10 @@ namespace StealthQt
       mGenericTickTimer.setSingleShot(false);
       mGenericTickTimer.start();
 
+      mRefreshEntityInfoTimer.setInterval(1000);
+      mRefreshEntityInfoTimer.setSingleShot(false);
+      mRefreshEntityInfoTimer.start();
+
       // Disable full screen
       mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
    }
@@ -440,12 +444,17 @@ namespace StealthQt
 
       connect(mUi->mSearchAttachPushButton, SIGNAL(clicked(bool)), 
               this,                         SLOT(OnEntitySearchAttachButtonClicked(bool)));
+
+      connect(mUi->mEntityInfoAutoRefreshCheckBox, SIGNAL(stateChanged(int)), 
+              this,                                SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
       
       ////////////////////////////////////////////////////
 
       connect(&mDurationTimer, SIGNAL(timeout()), this, SLOT(OnDurationTimerElapsed()));
 
       connect(&mGenericTickTimer, SIGNAL(timeout()), this, SLOT(OnGenericTickTimerElapsed()));
+
+      connect(&mRefreshEntityInfoTimer, SIGNAL(timeout()), this, SLOT(OnRefreshEntityInfoTimerElapsed()));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1251,6 +1260,8 @@ namespace StealthQt
          LOG_ERROR("Unknown attach mode: " + genConfig.GetAttachMode().GetName());
       }
 
+      mUi->mEntityInfoAutoRefreshCheckBox->setChecked(genConfig.GetAutoRefreshEntityInfoWindow());
+
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
       mUi->mGeneralFarClippingPlaneLineEdit->setText(
@@ -1753,7 +1764,7 @@ namespace StealthQt
       }
 
       // Nothing either way, peace out and start like normal
-      if(name.empty())
+      if(name.empty() || QString(name.c_str()).toLower() == "none")
          return;
 
       // Look up the properties for the name
@@ -1787,5 +1798,18 @@ namespace StealthQt
       // Kind of hackish, but connect through the window like you normally would
       // to preserve signal delegation
       window.SetConnectionValues(connectionProps);
+   }
+
+   void MainWindow::OnRefreshEntityInfoTimerElapsed()
+   {
+      if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+      {
+         PopulateEntityInfoWindow();
+      }
+   }
+
+   void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
+   {
+      StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(state == Qt::Checked);
    }
 }

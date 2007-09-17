@@ -16,7 +16,9 @@
 #include <SimCore/Components/BaseHUDElements.h>
 
 #include <dtDAL/project.h>
+#include <dtUtil/exception.h>
 #include <dtUtil/fileutils.h>
+#include <dtUtil/log.h>
 #include <osgDB/FileUtils>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -1221,15 +1223,24 @@ namespace SimCore
          if( ! imageFileName.empty() )
          {
             // Set the texture
-            osg::Texture2D* texture = new osg::Texture2D;
+            dtCore::RefPtr<osg::Texture2D> texture = new osg::Texture2D;
             texture->setDataVariance(osg::Object::DYNAMIC);
             osg::Image* image;
             std::string filePath("Textures:");
             filePath += imageFileName;
-            filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
-            image = osgDB::readImageFile(filePath);
-            texture->setImage(image);
-            states->setTextureAttributeAndModes(0,texture,osg::StateAttribute::ON);
+            try{
+               filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
+               image = osgDB::readImageFile(filePath);
+               texture->setImage(image);
+               states->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON);
+            }
+            catch( dtUtil::Exception& e )
+            {
+               std::stringstream ss;
+               ss << "HUDQuadElement could not load texture \"" << filePath << "\" because:\n"
+                  << e.ToString() << std::endl;
+               LOG_ERROR( ss.str() );
+            }
          }
 
          // Setup the geometry

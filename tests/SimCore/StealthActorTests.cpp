@@ -35,6 +35,7 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
 
+#include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 #include <dtCore/globals.h>

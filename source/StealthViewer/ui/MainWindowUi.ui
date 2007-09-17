@@ -2475,6 +2475,12 @@
                     <property name="toolTip" >
                      <string>Currently existing time markers in the scenario. </string>
                     </property>
+                    <property name="layoutMode" >
+                     <enum>QListView::Batched</enum>
+                    </property>
+                    <property name="batchSize" >
+                     <number>1000</number>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -2777,6 +2783,13 @@
             <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2" >
+            <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
+             <property name="text" >
+              <string>Auto Refresh</string>
              </property>
             </widget>
            </item>

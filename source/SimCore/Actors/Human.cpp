@@ -225,22 +225,17 @@ namespace SimCore
          dtAI::WorldState initialState;
          
          BasicStanceState* stanceState = new BasicStanceState();
-         stanceState->SetStance(mStance->GetAssocBasicStanceEnum());
+         stanceState->SetStance(BasicStanceEnum::STANDING);
          
          initialState.AddState(STATE_BASIC_STANCE, stanceState);
 
-         HumanActorProxy::WeaponStateEnum* effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::FIRING_POSITION;
-         if (*mPrimaryWeaponStateEnum != HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
-            effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::DEPLOYED;
-         
          WeaponState* weaponState = new WeaponState();
-         weaponState->SetWeaponStateEnum(*effectiveWeaponState);
-         
+         weaponState->SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum::DEPLOYED);
          initialState.AddState(STATE_WEAPON,       weaponState);
-         initialState.AddState(STATE_DEAD,         new dtAI::StateVariable(
-               GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED));
-         initialState.AddState(STATE_MOVING,       new dtAI::StateVariable(
-               !dtUtil::Equivalent(GetVelocityVector().length2(), 0.0f)));
+
+         initialState.AddState(STATE_DEAD,         new dtAI::StateVariable(false));
+
+         initialState.AddState(STATE_MOVING,       new dtAI::StateVariable(0.0));
          //Setting transition to true will make the planner generate the correct initial animation.
          initialState.AddState(STATE_TRANSITION,   new dtAI::StateVariable(true));
          initialState.AddState(STATE_SHOT,         new dtAI::StateVariable(false));
@@ -289,6 +284,11 @@ namespace SimCore
       void Human::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
+         
+         //No burning or smoking people.
+         SetFlamesPresentFile("");
+         SetSmokePlumesFile("");
+
          SetupPlannerHelper();
          UpdatePlanAndAnimations();
 
@@ -455,7 +455,7 @@ namespace SimCore
             i = mCurrentPlan.begin();
             iend = mCurrentPlan.end();
             
-            const float blendTime = 0.5f;
+            const float blendTime = 0.01f;
             float accumulatedStartTime = 0.0f;
             
             
@@ -677,10 +677,10 @@ namespace SimCore
             }
 
          private:
-            
+
             float mCost;
             EffectList mEffects;
-            
+
       };
 
       ////////////////////////////////////////////////////////////////////////////
@@ -693,6 +693,21 @@ namespace SimCore
       const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
       const std::string AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
       const std::string AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
+
+      const std::string AnimationOperators::ANIM_PRONE_READY("Prone Ready");
+      const std::string AnimationOperators::ANIM_PRONE_DEPLOYED("Prone Deployed");
+
+      const std::string AnimationOperators::ANIM_PRONE_TO_KNEEL("Prone To Kneel");
+      const std::string AnimationOperators::ANIM_KNEEL_TO_PRONE("Kneel To Prone");
+      
+      const std::string AnimationOperators::ANIM_SHOT_STANDING("Shot Standing");
+      const std::string AnimationOperators::ANIM_SHOT_KNEELING("Shot Kneeling");
+      const std::string AnimationOperators::ANIM_SHOT_PRONE("Shot Prone");
+
+      const std::string AnimationOperators::ANIM_DEAD_STANDING("Dead Standing");
+      const std::string AnimationOperators::ANIM_DEAD_KNEELING("Dead Kneeling");
+      const std::string AnimationOperators::ANIM_DEAD_PRONE("Dead Prone");
+      
       const std::string AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");
       const std::string AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
 
@@ -861,6 +876,38 @@ namespace SimCore
          newOp->AddEffect(standingEff.get());
          newOp->AddEffect(transitionEff.get());
 
+         newOp = AddOperator(ANIM_PRONE_READY);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(ready.get());
+
+         newOp->AddEffect(proneEff.get());
+         newOp->AddEffect(notMovingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_PRONE_DEPLOYED);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(deployed.get());
+
+         newOp->AddEffect(proneEff.get());
+         newOp->AddEffect(notMovingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_PRONE_TO_KNEEL);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(deployed.get());
+         newOp->AddPreCondition(notMoving.get());
+
+         newOp->AddEffect(kneelingEff.get());
+         newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_KNEEL_TO_PRONE);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddPreCondition(deployed.get());
+         newOp->AddPreCondition(notMoving.get());
+
+         newOp->AddEffect(proneEff.get());
+         newOp->AddEffect(transitionEff.get());
+
          newOp = AddOperator(OPER_READY_TO_DEPLOYED);
          newOp->AddPreCondition(ready.get());
          newOp->AddEffect(deployedEff.get());
@@ -870,6 +917,39 @@ namespace SimCore
          newOp->AddPreCondition(deployed.get());
          newOp->AddEffect(readyEff.get());
          newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_SHOT_STANDING);
+         newOp->AddPreCondition(standing.get());
+         newOp->AddEffect(shotEff.get());
+         newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_SHOT_KNEELING);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddEffect(shotEff.get());
+         newOp->AddEffect(transitionEff.get());
+
+//         newOp = AddOperator(ANIM_SHOT_PRONE);
+//         newOp->AddPreCondition(prone.get());
+//         newOp->AddEffect(shotEff.get());
+//         newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_DEAD_STANDING);
+         newOp->AddPreCondition(standing.get());
+         newOp->AddPreCondition(isShot.get());
+         newOp->AddEffect(deadEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_DEAD_KNEELING);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddPreCondition(isShot.get());
+         newOp->AddEffect(deadEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+//
+//         newOp = AddOperator(ANIM_DEAD_PRONE);
+//         newOp->AddPreCondition(prone.get());
+//         newOp->AddPreCondition(isShot.get());
+//         newOp->AddEffect(deadEff.get());
+//         newOp->AddEffect(notTransitionEff.get());
       }
    }
 }

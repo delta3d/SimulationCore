@@ -112,10 +112,7 @@ private:
    bool mIsTracer;
    osg::Vec3 mLastPosition;
 
-   bool mDynamicLightEnabled;
-   unsigned mDynamicLightID;
    dtCore::RefPtr<dtCore::Transformable> mDynamicLight;
-   dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderComp;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

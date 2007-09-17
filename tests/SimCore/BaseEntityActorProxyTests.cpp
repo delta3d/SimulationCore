@@ -35,6 +35,7 @@
 #include <dtDAL/resourcedescriptor.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 #include <dtCore/globals.h>
 #include <dtCore/refptr.h>
 #include <dtCore/observerptr.h>

@@ -75,11 +75,6 @@ namespace StealthGM
          virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
 
          /**
-          * Override the method to create the game manager.
-          */
-         virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
-
-         /**
           * Called after all startup related code is run.
           * @param app the current application
           */

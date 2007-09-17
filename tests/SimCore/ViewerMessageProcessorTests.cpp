@@ -39,6 +39,8 @@
 #include <dtAudio/audiomanager.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
+
 #include <dtUtil/macros.h>
 
 #include <osg/Vec3>

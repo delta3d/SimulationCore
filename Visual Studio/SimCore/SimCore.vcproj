@@ -268,6 +268,10 @@
 				RelativePath="..\..\source\SimCore\StealthMotionModel.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\SimCore\WeaponTypeEnum.cpp"
+				>
+			</File>
 			<Filter
 				Name="Actors"
 				>
@@ -293,6 +297,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\SimCore\Actors\DetonationActor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\SimCore\Actors\DynamicLightPrototypeActor.cpp"
 					>
 				</File>
 				<File
@@ -433,6 +441,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\SimCore\Components\BaseInputComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\SimCore\Components\ControlStateComponent.cpp"
 					>
 				</File>
 				<File
@@ -598,6 +610,10 @@
 				RelativePath="..\..\include\SimCore\StealthMotionModel.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\include\SimCore\WeaponTypeEnum.h"
+				>
+			</File>
 			<Filter
 				Name="Actors"
 				>
@@ -623,6 +639,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Actors\DetonationActor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\SimCore\Actors\DynamicLightPrototypeActor.h"
 					>
 				</File>
 				<File
@@ -767,6 +787,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Components\BaseInputComponent.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\SimCore\Components\ControlStateComponent.h"
 					>
 				</File>
 				<File

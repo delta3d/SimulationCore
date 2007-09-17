@@ -32,6 +32,7 @@
 #include <dtCore/globals.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/scene.h>
 
 #include <dtGame/binarylogstream.h>
 #include <dtGame/logtag.h>

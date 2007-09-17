@@ -22,7 +22,8 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <SimCore/Actors/FlareActor.h>
-
+#include <SimCore/Components/RenderingSupportComponent.h>
+#include <osg/Vec3>
 
 
 namespace SimCore
@@ -218,6 +219,36 @@ namespace SimCore
             RegisterParticleSystem( *mParticles );
 
             RegisterWithDeadReckoningComponent();
+
+
+            //to make an illumination round dynamic light we must note that
+            //these are dropped at 600meters and will light the ground directly below within 
+            //a radius of 1km
+            SimCore::Components::RenderingSupportComponent* renderComp
+               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+               (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+            if( renderComp != NULL )
+            {               
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->AddDynamicLightByPrototypeName("Light-Flare-Large");
+               dl->mTarget = this;
+               //SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               //dl->mSaturationIntensity = 1.0f;
+               //dl->mIntensity = 1.0f;//flare->GetSourceIntensity();
+               //dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));//flare->GetColor();
+               //dl->mAttenuation.set(0.1, 0.005, 0.00002);
+               //dl->mTarget = this;
+               //dl->mAutoDeleteLightOnTargetNull = true;
+               ////  //dl->mAutoDeleteAfterMaxTime = true;
+               ////  //dl->mMaxTime = 20.0f;
+               //dl->mFadeOut = true;
+               //dl->mFadeOutTime = 5.0f;
+               //dl->mFlicker = true;
+               //dl->mFlickerScale = 0.1f; 
+               //dl->mRadius = 100.0f;
+               //renderComp->AddDynamicLight(dl);
+            }
          }
       }
 

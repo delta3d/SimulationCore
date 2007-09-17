@@ -71,6 +71,8 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> VEHICLE_CONFIG_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> LM_OPENFLIGHT_TERRAIN_ACTORTYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 

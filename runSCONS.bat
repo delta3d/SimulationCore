@@ -11,7 +11,7 @@ set PATH=""
 
 :: Delta3D
 :: This path is the default install path for the Delta3D Self Extracting Installer
-if not defined DELTA_ROOT set DELTA_ROOT=C:\Documents and Settings\johnson\Desktop\delta3d
+if not defined DELTA_ROOT set DELTA_ROOT=C:\Documents and Settings\johnson\Desktop\dvte_branches\delta3d
 if not defined DELTA_INC set DELTA_INC=%DELTA_ROOT%\inc;%DELTA_ROOT%\ext\inc;%DELTA_ROOT%\ext\inc\CEGUI
 if not defined DELTA_LIB set DELTA_LIB=%DELTA_ROOT%\lib;%DELTA_ROOT%\ext\lib
 if not defined DELTA_DATA set DELTA_DATE=%DELTA_ROOT%\data
@@ -20,30 +20,27 @@ set DELTA_PATH=%DELTA_ROOT%\bin
 set DELTA_EXT_PATH=%DELTA_ROOT%\ext\bin
 
 :: Simulation Core
-if not defined SIM_CORE_ROOT set SIM_CORE_ROOT=C:\Documents and Settings\johnson\Desktop\dvte\SimulationCore
-if not defined SIM_CORE_INC set SIM_CORE_INC=%SIM_CORE_ROOT%\include
-if not defined SIM_CORE_LIB set SIM_CORE_LIB=%SIM_CORE_ROOT%\lib
+if not defined SIMCORE_ROOT set SIMCORE_ROOT=C:\Documents and Settings\johnson\Desktop\dvte_branches\SimulationCore
+if not defined SIMCORE_INC set SIMCORE_INC=%SIM_CORE_ROOT%\include
+if not defined SIMCORE_LIB set SIMCORE_LIB=%SIM_CORE_ROOT%\lib
 
 set SIM_CORE_PATH=%SIM_CORE_ROOT%\bin
 
 :: dtAgeiaPhysX
-if not defined DT_AGEIA_ROOT set DT_AGEIA_ROOT=C:\Documents and Settings\johnson\Desktop\dvte\dtAgeiaPhysX
+if not defined DT_AGEIA_ROOT set DT_AGEIA_ROOT=C:\Documents and Settings\johnson\Desktop\dvte_branches\dtAgeiaPhysX
 if not defined DT_AGEIA_INC set DT_AGEIA_INC=%DT_AGEIA_ROOT%\include
 if not defined DT_AGEIA_LIB set DT_AGEIA_LIB=%DT_AGEIA_ROOT%\lib
 
 set DT_AGEIA_PATH=%DT_AGEIA_ROOT%\bin
 
 :: Humvee App
-if not defined DVTE_ROOT set DVTE_ROOT=C:\Documents and Settings\johnson\Desktop\dvte\dvte
-if not defined DVTE_INC set DVTE_INC=%DVTE_ROOT%\include;%DVTE_ROOT%\ext\include\win32
-if not defined DVTE_LIB set DVTE_LIB=%DVTE_ROOT%\lib;%DVTE_ROOT%\ext\lib\win32
+if not defined DVTE_ROOT set DVTE_ROOT=C:\Documents and Settings\johnson\Desktop\dvte_branches\dvte
+
+set INCLUDE=%INCLUDE%;%DVTE_ROOT%\include;%DVTE_ROOT%\ext\include\win32;%DT_AGEIA_INC%
+set LIB=%LIB%;%DVTE_ROOT%\lib;%DVTE_ROOT%\ext\lib\win32;%DT_AGEIA_LIB%
 
 set DVTE_PATH=%DVTE_ROOT%\bin
 set DVTE_EXT_PATH=%DVTE_ROOT%\ext\bin\win32
-
-set EXTERNAL_PATH=%DVTE_ROOT%\ext\bin\win32
-set EXTERNAL_INC=%DVTE_ROOT%\ext\include\win32
-set EXTERNAL_LIB=%DVTE_ROOT%\ext\lib\win32
 
 :: Ageia
 :: This is the default Ageia install path
@@ -52,7 +49,6 @@ if not defined AGEIA_INC set AGEIA_INC=%AGEIA_ROOT%\SDKs\Cooking\include;%AGEIA_
 if not defined AGEIA_LIB set AGEIA_LIB=%AGEIA_ROOT%\SDKs\lib\win32;%DT_AGEIA_LIB%;
 
 set AGEIA_PATH=%AGEIA_ROOT%\Bin\win32
-
 
 :: Qt
 if not defined QTDIR set QTDIR=C:\Qt\4.3.0
@@ -74,14 +70,14 @@ set PYTHON_PATH=%PYTHON_ROOT%
 set WIN_DIR=C:\WINDOWS\system32
 
 :: PATH
-set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIM_CORE_PATH%;%DT_AGEIA_PATH%;%DVTE_PATH%;%DVTE_EXT_PATH%;%AGEIA_PATH%;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%WIN_DIR%
+set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIMCORE_PATH%;%DT_AGEIA_PATH%;%DVTE_PATH%;%DVTE_EXT_PATH%;%AGEIA_PATH%;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%WIN_DIR%
 
 path
 
 :: Configure and launch SCONS
 if "%2%" == "clean" goto clean
 
-call scons mode="%1%"
+call scons mode="%1%" ageia=1
 goto end
 
 :clean

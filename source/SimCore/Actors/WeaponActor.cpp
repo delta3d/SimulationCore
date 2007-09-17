@@ -19,6 +19,7 @@
 #include <dtUtil/mathdefines.h>
 
 #include <dtCore/nodecollector.h>
+#include <dtCore/scene.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
@@ -61,6 +62,7 @@ namespace SimCore
          , mFireRate(0.0f) // 0 , means single fire
          , mJamProbability(0.0f)
          , mFlashProbability(1.0f)
+         , mFlashTime(0.15f)
          , mTracerFrequency(0)
          , mAmmoCount(0)
          , mAmmoMax(100000)
@@ -72,7 +74,6 @@ namespace SimCore
          , mMessageCount(0)
          , mFireVelocity(1000.0f)
          , mDynamicLightID(0)
-         , mDynamicLightEnabled(false)
       {
       }
 
@@ -173,34 +174,6 @@ namespace SimCore
             mFired = false;
          }
 
-         //if we have a dynamic light active we need to reduce its effect and or remove it from the rendering support component
-         if(mDynamicLightEnabled)
-         {
-            //remove dynamic light effect
-            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-
-            if(comp != NULL)
-            {
-               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-               if(renderComp)
-               {
-                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-                  if(dl)
-                  { 
-                     //the 4.0 is a scalar controlling how fast the effect dissapates
-                     dl->mIntensity -= (10.0f * timeDelta);
-                     if(dl->mIntensity <= 0.0f)
-                     {
-                        dl->mIntensity = 0.0f;
-                        renderComp->RemoveDynamicLight(mDynamicLightID);
-                        mDynamicLightEnabled = false;
-                     }
-                  }
-               }
-            }
-         }
-
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -244,6 +217,41 @@ namespace SimCore
             mTriggerHeld = hold;
          }
          
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::AddDynamicLight()
+      {
+         //this creates a dynamic light
+         SimCore::Components::RenderingSupportComponent* renderComp = 
+            dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+
+         if(renderComp)
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->GetDynamicLight(mDynamicLightID);
+            if(dl == NULL)
+            {
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-WeaponFlash");
+               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               mDynamicLightID = dl->mID;//renderComp->AddDynamicLight(dl);
+            }
+
+            //dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
+            //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+            //dl->mIntensity = 1.0f;
+            //dl->mSaturationIntensity = 0.0f; //no saturation
+            dtCore::Transformable* transformable = this;
+            if(mFlash.valid())
+            {
+               transformable = mFlash.get();
+            }
+            dl->mTarget = transformable;
+            //dl->mAutoDeleteAfterMaxTime = true;
+            //dl->mMaxTime = 0.5f;
+            
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -300,31 +308,6 @@ namespace SimCore
             std::cout << "\tWeapon: " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
             // --- DEBUG --- END --- /*/
 
-            //this creates a dynamic light
-            SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-            dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-
-            if(comp != NULL)
-            {
-               renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-               if(renderComp)
-               {
-                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 0;
-                  if(!mDynamicLightEnabled)
-                  {
-                     dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-                     mDynamicLightID = renderComp->AddDynamicLight(dl);
-
-                     dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
-                     dl->mAttenuation.set(0.1, 0.05, 0.0002);
-                     dl->mIntensity = 1.0f;
-                     dl->mSaturationIntensity = 0.0f; //no saturation
-                     dl->mTarget = this;
-                     mDynamicLightEnabled = true;
-                  }
-               }
-            }
-
 #ifdef AGEIA_PHYSICS
             if( mShooter.valid() )
             {
@@ -346,7 +329,8 @@ namespace SimCore
             case WEAPON_EFFECT_FIRE:
             {
                mFired = true;
-               if( mFlash.valid() && mFlashProbability >= dtUtil::RandFloat(0.0f,1.0f) )
+               float flashProb = dtUtil::RandFloat(0.0f,1.0f);
+               if( mFlash.valid() && mFlashProbability >= flashProb )
                {
                   // Setting visible to TRUE will cause the flash
                   // to restart its age time. The age time will progress
@@ -354,6 +338,20 @@ namespace SimCore
                   // it passes its life time, if life time has been set
                   // greater than 0.
                   mFlash->SetVisible( true );
+                  mFlash->SetFlashTime( GetFlashTime() );
+                  
+                  // Randomly roll the flash effect to a different orientation
+                  // so that the spawned particles do not spawn at the same orientation
+                  // every time a weapon flash is executed. Currently, OSG particles
+                  // systems within Delta3D spawn all particles at the same orientation, 0.0;
+                  // all particle rotations are derived by age and spin rate starting at
+                  // angle 0.0 from time 0.0.
+                  dtCore::Transform flashXform;
+                  mFlash->GetTransform( flashXform, dtCore::Transformable::REL_CS );
+                  flashXform.SetRotation( osg::Vec3(dtUtil::RandFloat(-180.0f,180.0f),0.0,0.0) );
+                  mFlash->SetTransform( flashXform, dtCore::Transformable::REL_CS );
+
+                  AddDynamicLight();
                }
                
                SoundPlay( mSoundFire );
@@ -390,40 +388,8 @@ namespace SimCore
       {
          IGActor::OnEnteredWorld();
 
-         /*/ Try to access the munitions component in order
-         // to obtain the munition types of shooters
-         SimCore::Components::MunitionsComponent* comp = 
-            dynamic_cast<SimCore::Components::MunitionsComponent*>
-            (GetGameActorProxy().GetGameManager()
-            ->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
-
-         if( NULL == comp )
-         { 
-            LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
-            return;
-         }
-
-         SimCore::Components::MunitionTypeTable* table = comp->GetMunitionTypeTable();
-
-         if( NULL == table )
-         {
-            LOG_ERROR( "WeaponActor could not access the MunitionsComponent's munition type table." );
-            return;
-         }*/
-
          if( ! mMunitionType.valid() && ! mMunitionTypeName.empty() )
-         {/*
-            // Get a reference to the weapon's munition type
-            MunitionTypeActor* munitionType = NULL;
-
-            // Get the munition type from the component by the munition type name
-            munitionType = table->GetMunitionType( mMunitionTypeName );
-            if( NULL != munitionType )
-            {
-               // Assign the accessed munition type
-               SetMunitionType( munitionType );
-            }*/
-
+         {
             // Attempt a reload
             LoadMunitionType( mMunitionTypeName );
          }
@@ -706,6 +672,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponActor::AttachObject( dtCore::Transformable& object, const std::string& dofName )
       {
+         if( GetNodeCollector() == NULL )
+         {
+            std::stringstream ss;
+            ss << "Weapon actor cannot add object \"" << object.GetName() 
+               << "\" to DOF \"" << dofName << "\" because no weapon model was loaded.";
+            LOG_ERROR(ss.str());
+            return false;
+         }
+
          osgSim::DOFTransform* dof = GetNodeCollector()->GetDOFTransform( dofName );
 
          if( dof == NULL )
@@ -926,6 +901,12 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashProbability),
             dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashProbability),
             "Probability from 0.0 to 1.0 that this weapon will produce a flash effect when firing a round.",
+            groupBehaviors));
+
+         AddProperty(new dtDAL::FloatActorProperty("Flash Time","Flash Time",
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashTime),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashTime),
+            "time in seconds that a weapon flash will remain visible.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Time Between Messages","Time Between Messages",

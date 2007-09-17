@@ -194,20 +194,21 @@ namespace StealthQt
          ridFile = "RTI.rid";
       }
 
-      bool success = StealthViewerData::GetInstance().GetSettings().AddConnection(name, 
-                                                                                  map, 
-                                                                                  config, 
-                                                                                  fedFile, 
-                                                                                  fedex, 
-                                                                                  fedName, 
-                                                                                  ridFile, 
-                                                                                  mIsEditMode);
+      bool success = 
+         StealthViewerData::GetInstance().GetSettings().AddConnection(name, 
+                                                                      map, 
+                                                                      config, 
+                                                                      fedFile, 
+                                                                      fedex, 
+                                                                      fedName, 
+                                                                      ridFile, 
+                                                                      mIsEditMode);
 
       if(!success)
       {
          mUi->mConnectionNameLineEdit->setText(tr(""));
-
          reject();
+         return;
       }
 
       accept();
@@ -229,6 +230,12 @@ namespace StealthQt
       StealthViewerSettings &settings = StealthViewerData::GetInstance().GetSettings();
 
       QStringList list = settings.GetConnectionProperties(connectionName);
+      if(list.isEmpty())
+      {
+         LOG_ERROR("Failed to find properties for connection: " + connectionName.toStdString());
+         return;
+      }
+
       mUi->mConnectionNameLineEdit->setText(list[0]);
       mUi->mMapLineEdit->setText(list[1]);
       mUi->mConfigFileLineEdit->setText(list[2]);

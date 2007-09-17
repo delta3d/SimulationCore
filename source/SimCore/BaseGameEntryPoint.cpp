@@ -44,6 +44,7 @@
 #include <dtCore/environment.h>
 #include <dtCore/globals.h>
 #include <dtCore/isector.h>
+#include <dtCore/scene.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -61,6 +62,8 @@
 #include <dtGame/exceptionenum.h>
 
 #include <dtAnim/animationcomponent.h>
+#include <dtAnim/cal3ddatabase.h>
+#include <dtAnim/animnodebuilder.h>
 
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>
@@ -456,7 +459,7 @@ namespace SimCore
    {
 
       //tell OSG to keep it quite
-      osg::setNotifyLevel(osg::FATAL);
+      //osg::setNotifyLevel(osg::FATAL);
 
       AssignProjectContext();
       PreLoadMap();
@@ -466,9 +469,9 @@ namespace SimCore
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
       
       camera->GetSceneHandler()->GetSceneView()->
-         //setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+         setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
-         setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
+         //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 
       //camera->GetSceneHandler()->GetSceneView()->
       //   setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
@@ -506,7 +509,7 @@ namespace SimCore
       RefPtr<Components::MunitionsComponent>               mMunitionsComp    = new Components::MunitionsComponent;
       RefPtr<Components::HLAConnectionComponent> hlacc                       = new Components::HLAConnectionComponent;
       RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
-      RefPtr<dtAnim::AnimationComponent>       animationComponent = new dtAnim::AnimationComponent;
+      RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
       
       gameManager.AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*hft, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -519,6 +522,8 @@ namespace SimCore
       gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
+      nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 

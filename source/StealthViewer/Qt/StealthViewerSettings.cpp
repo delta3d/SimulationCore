@@ -1,4 +1,4 @@
-/*
+ /*
  * DVTE Stealth Viewer
  * Copyright (C) 2006, Alion Science and Technology.
  *
@@ -38,6 +38,7 @@ namespace StealthQt
    const QString StealthViewerSettings::GENERAL_GROUP("GENERAL_GROUP");
       const QString StealthViewerSettings::DOCK_STATE("DOCK_STATE");
       const QString StealthViewerSettings::WINDOW_GEOMETRY("WINDOW_GEOMETRY");
+      const QString StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO("AUTO_REFRESH_ENTITY_INFO");
 
    const QString StealthViewerSettings::PREFERENCES_GENERAL_GROUP("PREFERENCES_GENERAL_GROUP");
       const QString StealthViewerSettings::ATTACH_MODE("ATTACH_MODE");
@@ -307,6 +308,9 @@ namespace StealthQt
          setValue(StealthViewerSettings::WINDOW_GEOMETRY, 
             StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
 
+         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO, 
+            StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
+
       endGroup();
 
       // Low cyclomatic complexity
@@ -499,6 +503,14 @@ namespace StealthQt
          }
 
          genConfig.SetReconnectOnStartup(connectValue, name.toStdString());
+
+         if(contains(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO))
+         {
+            bool enable = 
+               value(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO).toBool();
+
+            StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(enable);
+         }
 
       endGroup();
    }
