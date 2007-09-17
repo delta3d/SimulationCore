@@ -290,6 +290,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFireFlashTime ), 
             "The length of time that a flash effect shall remain visible", groupFire));
 
+         AddProperty(new dtDAL::StringActorProperty("Fire Light", "Fire Light", 
+            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFireLight ),  
+            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFireLight ),
+            "The name of light effect for the weapon fire effect", groupFire));
+
          // GROUND IMPACT PROPERTIES
          AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Ground Impact Effect", "Ground Impact Effect", 
@@ -311,6 +316,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance),
             "The maximum range in meters for ground impact sounds", groupGroundImpact));
 
+         AddProperty(new dtDAL::StringActorProperty("Ground Impact Light", "Ground Impact Light", 
+            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetGroundImpactLight ),  
+            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetGroundImpactLight ),
+            "The name of light effect for the ground impact effect", groupGroundImpact));
+
          // ENTITY IMPACT PROPERTIES
          AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Entity Impact Effect", "Entity Impact Effect", 
@@ -331,6 +341,11 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance ),  
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetEntityImpactSoundMaxDistance),
             "The maximum range in meters for entity impact sounds", groupEntityImpact));
+
+         AddProperty(new dtDAL::StringActorProperty("Entity Impact Light", "Entity Impact Light", 
+            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactLight ),  
+            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetEntityImpactLight ),
+            "The name of light effect for the entity impact effect", groupEntityImpact));
 
          // SMOKE PROPERTIES
          AddProperty(new dtDAL::ResourceActorProperty( *this, dtDAL::DataType::PARTICLE_SYSTEM,
@@ -368,6 +383,11 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetTracerThickness ),  
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetTracerThickness ),
             "The visual thickness of the tracer in meters", groupTracer));
+
+         AddProperty(new dtDAL::StringActorProperty("Tracer Light", "Tracer Light", 
+            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetTracerLight ),  
+            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetTracerLight ),
+            "The name of light effect for the tracer effect", groupTracer));
       }
 
 

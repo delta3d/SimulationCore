@@ -240,6 +240,19 @@ namespace SimCore
             void SetTracerThickness( float tracerThickness ) { mTracerThickness = tracerThickness; }
             float GetTracerThickness() const { return mTracerThickness; }
 
+            // LIGHT PROPERTIES
+            void SetGroundImpactLight( const std::string& lightName ) { mLightImpactGround = lightName; }
+            std::string GetGroundImpactLight() const { return mLightImpactGround; }
+
+            void SetEntityImpactLight( const std::string& lightName ) { mLightImpactEntity = lightName; }
+            std::string GetEntityImpactLight() const { return mLightImpactEntity; }
+
+            void SetFireLight( const std::string& lightName ) { mLightFire = lightName; }
+            std::string GetFireLight() const { return mLightFire; }
+
+            void SetTracerLight( const std::string& lightName ) { mLightTracer = lightName; }
+            std::string GetTracerLight() const { return mLightTracer; }
+
          protected:
             virtual ~MunitionEffectsInfoActor();
 
@@ -269,6 +282,10 @@ namespace SimCore
             std::string mEffectSmoke;
             std::string mTracerShaderName;
             std::string mTracerShaderGroup;
+            std::string mLightImpactGround;
+            std::string mLightImpactEntity;
+            std::string mLightFire;
+            std::string mLightTracer;
             dtCore::RefPtr<MunitionEffectsInfoActorProxy> mProxy;
       };
 
