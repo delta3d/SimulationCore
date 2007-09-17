@@ -65,7 +65,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dtABCd.lib dtActorsd.lib dtAudiod.lib dtUtild.lib dtCored.lib dtDALd.lib dtGamed.lib dtHLAGMd.lib osgd.lib osgDBd.lib osgUtild.lib QtCored4.lib QtGUId4.lib Qtmaind.lib QtOpenGLd4.lib StealthQtLibd.lib StealthGMAppd.lib Producerd.lib opengl32.lib SimViewerCored.lib"
-				OutputFile="../../bin/StealthQtExed.exe"
+				OutputFile="../../bin/StealthQtd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(QTDIR)/lib;"
 				GenerateDebugInformation="true"
@@ -147,7 +147,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dtABC.lib dtActors.lib dtAudio.lib dtUtil.lib dtCore.lib dtDAL.lib dtGame.lib dtHLAGM.lib osg.lib osgDB.lib osgUtil.lib QtCore4.lib QtGUI4.lib Qtmain.lib QtOpenGL4.lib StealthQtLib.lib StealthGMApp.lib SimViewerCore.lib Producer.lib opengl32.lib"
-				OutputFile="../../bin/StealthQtExe.exe"
+				OutputFile="../../bin/StealthQt.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(QTDIR)/lib;"
 				GenerateDebugInformation="false"
