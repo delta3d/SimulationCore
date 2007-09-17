@@ -352,7 +352,11 @@
                   </widget>
                  </item>
                  <item row="0" column="1" >
-                  <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" />
+                  <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
+                   <property name="toolTip" >
+                    <string>This is the scale value for level of detail</string>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="0" >
                   <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
@@ -375,10 +379,18 @@
                   </widget>
                  </item>
                  <item row="1" column="1" >
-                  <widget class="QLineEdit" name="mGeneralNearClippingPlaneLineEdit" />
+                  <widget class="QLineEdit" name="mGeneralNearClippingPlaneLineEdit" >
+                   <property name="toolTip" >
+                    <string>The distance at which the camera will cull near geometry</string>
+                   </property>
+                  </widget>
                  </item>
                  <item row="2" column="1" >
-                  <widget class="QLineEdit" name="mGeneralFarClippingPlaneLineEdit" />
+                  <widget class="QLineEdit" name="mGeneralFarClippingPlaneLineEdit" >
+                   <property name="toolTip" >
+                    <string>The distance at which the camera will cull far geometry</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -588,6 +600,9 @@
                  </property>
                  <item row="0" column="1" >
                   <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
+                   <property name="toolTip" >
+                    <string>The time of the network of the current network connection</string>
+                   </property>
                    <property name="readOnly" >
                     <bool>true</bool>
                    </property>
@@ -612,6 +627,9 @@
                  </item>
                  <item row="2" column="1" >
                   <widget class="QLineEdit" name="mWeatherLineEdit" >
+                   <property name="toolTip" >
+                    <string>The weather of the network of the current network connection</string>
+                   </property>
                    <property name="readOnly" >
                     <bool>true</bool>
                    </property>
@@ -633,6 +651,9 @@
                  </item>
                  <item row="1" column="1" >
                   <widget class="QLineEdit" name="mVisibilityLineEdit" >
+                   <property name="toolTip" >
+                    <string>The visibility of the network of the current network connection</string>
+                   </property>
                    <property name="readOnly" >
                     <bool>true</bool>
                    </property>
@@ -1022,6 +1043,9 @@
               </item>
               <item>
                <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
+                <property name="toolTip" >
+                 <string>Select this to print the elevation of the object being viewed by binoculars</string>
+                </property>
                 <property name="text" >
                  <string>Show Elevation of Object</string>
                 </property>
@@ -1059,6 +1083,9 @@
                 </item>
                 <item>
                  <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
+                  <property name="toolTip" >
+                   <string>This selects the magnification of the binoculars</string>
+                  </property>
                   <property name="buttonSymbols" >
                    <enum>QAbstractSpinBox::PlusMinus</enum>
                   </property>
@@ -1126,6 +1153,9 @@
               </property>
               <item>
                <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
+                <property name="toolTip" >
+                 <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
+                </property>
                 <property name="text" >
                  <string>Automatically Attach on Selection</string>
                 </property>
@@ -2285,6 +2315,9 @@
                  </item>
                  <item>
                   <widget class="QToolButton" name="mPlaybackStartOverPushButton" >
+                   <property name="toolTip" >
+                    <string>Restarts the playback of the scenario</string>
+                   </property>
                    <property name="text" >
                     <string>|&lt;</string>
                    </property>
@@ -2292,6 +2325,9 @@
                  </item>
                  <item>
                   <widget class="QToolButton" name="mPlaybackJumpToPrevTimeMarkerPushButton" >
+                   <property name="toolTip" >
+                    <string>Jumps to the previous time marker</string>
+                   </property>
                    <property name="text" >
                     <string>&lt;&lt;</string>
                    </property>
@@ -2299,6 +2335,9 @@
                  </item>
                  <item>
                   <widget class="QToolButton" name="mPlaybackPlayPushButton" >
+                   <property name="toolTip" >
+                    <string>Plays the current scenario</string>
+                   </property>
                    <property name="text" >
                     <string>Play</string>
                    </property>
@@ -2306,6 +2345,9 @@
                  </item>
                  <item>
                   <widget class="QToolButton" name="mPlaybackJumpToNextTimeMarkerPushButton" >
+                   <property name="toolTip" >
+                    <string>Jumps to the next time marker. </string>
+                   </property>
                    <property name="text" >
                     <string>>></string>
                    </property>
