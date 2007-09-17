@@ -804,7 +804,7 @@ namespace StealthQt
       }
       else
       {
-         mUi->mPlaybackPlayPushButton->setText(tr(">"));
+         mUi->mPlaybackPlayPushButton->setText(tr("Play"));
          pbObject.EndPlayback();
          mDurationTimer.stop();
       }
