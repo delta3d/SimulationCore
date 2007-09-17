@@ -229,6 +229,14 @@ namespace StealthQt
 
    void HLAWindow::OnDelete(bool checked)
    {
+      int result = 
+         QMessageBox::information(this, tr("Confirm Delete"), 
+            tr("Are you sure you want to delete this connection?"), 
+            QMessageBox::Yes, QMessageBox::No);
+
+      if(result == QMessageBox::No)
+         return;
+
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
       if(currentItem == NULL)
       {
