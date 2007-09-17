@@ -826,8 +826,14 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowAdvancedPlaybackOptionsChanged(int state)
    {
-      state == Qt::Checked ? mUi->mPlaybackTimeMarkersGroupBox->show() : 
-                             mUi->mPlaybackTimeMarkersGroupBox->hide();
+      if(state == Qt::Checked && mIsPlayingBack) 
+      {
+         mUi->mPlaybackTimeMarkersGroupBox->show(); 
+      }
+      else
+      {
+         mUi->mPlaybackTimeMarkersGroupBox->hide();
+      }
 
       StealthGM::ControlsPlaybackConfigObject &pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();

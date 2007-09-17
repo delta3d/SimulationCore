@@ -694,7 +694,7 @@ namespace StealthQt
 
          if(contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
          {
-            bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS).toBool();
+            bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS).toBool();
             playbackConfig.SetShowAdvancedOptions(savedValue);
          }
 
