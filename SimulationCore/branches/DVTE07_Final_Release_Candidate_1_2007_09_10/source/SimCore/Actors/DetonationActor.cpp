@@ -119,6 +119,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet(da, &DetonationActor::GetMinimumSoundDistance), 
             "Sets the minimum number of meters that a sound will clip"));
 
+         AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name", 
+            dtDAL::MakeFunctor(da, &DetonationActor::SetLightName), 
+            dtDAL::MakeFunctorRet(da, &DetonationActor::GetLightName), 
+            "Sets the name of the light effect to be used when a detonation is spawned"));
+
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
             "Smoke Particle System", "Smoke Particle System", dtDAL::MakeFunctor(da, &DetonationActor::LoadSmokeFile), 
             "Loads the particle system for this detonation to use for smoke"));
@@ -479,18 +484,9 @@ namespace SimCore
 
          if(renderComp)
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-
-            dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow
-            dl->mAttenuation.set(0.1, 0.05, 0.0002);
-            dl->mIntensity = 1.0f;
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+               renderComp->AddDynamicLightByPrototypeName( GetLightName() );
             dl->mTarget = this;
-            dl->mAutoDeleteAfterMaxTime = true;
-            dl->mMaxTime = 1.0f;
-            dl->mFadeOut = true;
-            dl->mFadeOutTime = 0.5f;
-
-            renderComp->AddDynamicLight(dl);
          }
       }
    }
