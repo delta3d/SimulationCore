@@ -2122,6 +2122,14 @@ namespace SimCore
             || munitionType->GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
          da->SetPhysicsEnabled( ! avoidPhysics );
 
+         // Prepare the reference light effect type
+         curValue = effects->GetEntityImpactLight();
+         if( ! hitEntity || curValue.empty() )
+         {
+            curValue = effects->GetGroundImpactLight();
+         }
+         da->SetLightName( curValue );
+
          // Add the newly created detonation to the scene
          GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);  
       }
