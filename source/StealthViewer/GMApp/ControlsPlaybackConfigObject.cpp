@@ -82,6 +82,8 @@ namespace StealthGM
       if(!mKeyFrameName.empty())
       { 
          inputComponent->HandleGotoKeyFrame(mKeyFrameName);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mKeyFrameName.clear();
       }
 
