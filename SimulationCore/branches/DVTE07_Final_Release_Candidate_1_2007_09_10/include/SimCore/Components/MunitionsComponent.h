@@ -224,6 +224,9 @@ namespace SimCore
             void SetVisible( bool visible );
             bool IsVisible() const;
 
+            void SetMaxLength( float maxLength );
+            float GetMaxLength() const;
+
             bool IsActive() const;
 
             void Execute( float maxLifeTime );
@@ -244,6 +247,8 @@ namespace SimCore
             float     mLifeTime;
             float     mMaxLifeTime;
             float     mSpeed; // aka Velocity Magnitude
+            float     mMaxLength;
+            osg::Vec3 mLastPosition;
             osg::Vec3 mPosition;
             osg::Vec3 mDirection;
             dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)

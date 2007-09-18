@@ -371,7 +371,8 @@ namespace SimCore
          mDynamicLightID(0),
          mLifeTime(0.0f),
          mMaxLifeTime(1.0f),
-         mSpeed(0.0f)
+         mSpeed(0.0f),
+         mMaxLength(10.0f)
       {
          SetVisible( true ); // ensures node mask is set to the proper value.
       }
@@ -423,6 +424,23 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::SetPosition( const osg::Vec3& position )
       {
+         // Set the last position...
+         if( ! IsActive() )
+         {
+            // ...to the specified point if this effect is about to be executed again
+            mLastPosition.set(position);
+         }
+         else
+         {
+            // ...to remember the last point
+            osg::Vec3 diff(mPosition-position);
+            if( diff.length() >= mMaxLength )
+            {
+               diff.normalize();
+               mLastPosition.set( diff * mMaxLength );
+            }
+         }
+
          mPosition.set(position);
 
          dtCore::Transform xform;
@@ -465,12 +483,18 @@ namespace SimCore
          mLifeTime = 0.0f;
          SetVisible( true );
 
+         // Start the tracer line with zero stretch
+         mLastPosition = mPosition;
+         SetLength(0.001f);
+
          // Physically adjust orientation to match direction
          dtCore::Transform xform;
          GetTransform(xform,dtCore::Transformable::REL_CS);
          osg::Matrix mtx;
          osg::Vec3 right = mDirection ^ osg::Vec3(0.0,0.0,1.0);
+         right.normalize();
          osg::Vec3 up = right ^ mDirection;
+         up.normalize();
          mtx.ptr()[0] = right[0];
          mtx.ptr()[1] = right[1];
          mtx.ptr()[2] = right[2];
@@ -487,10 +511,21 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::Update( float deltaTime )
       {
-         if( mLifeTime < mMaxLifeTime )
+         if( IsActive() )
          {
             SetPosition( mPosition + (mDirection * mSpeed * deltaTime) );
             mLifeTime += deltaTime;
+
+            // Update the tracer length for stretching
+            float length = (mLastPosition-mPosition).length();
+            if( length > mMaxLength )
+            {
+               SetLength( mMaxLength );
+            }
+            else if( length > 0.0 && length < mMaxLength )
+            {
+               SetLength( length );
+            }
          }
          else if( IsVisible() )
          {
@@ -562,6 +597,18 @@ namespace SimCore
       void TracerEffect::SetGameManager( dtGame::GameManager* gameManager )
       {
          mGM = gameManager;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetMaxLength( float maxLength )
+      {
+         mMaxLength = maxLength;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float TracerEffect::GetMaxLength() const
+      {
+         return mMaxLength;
       }
 
 
@@ -998,10 +1045,11 @@ namespace SimCore
             && ( mMaxTracerEffects < 0 || (int)limit <= mMaxTracerEffects ) )
          {
             effect = new TracerEffect( 
-               effectsInfo.GetTracerLength(), 
+               0.001,//effectsInfo.GetTracerLength(), 
                effectsInfo.GetTracerThickness(),
                effectsInfo.GetTracerShaderName(),
                effectsInfo.GetTracerShaderGroup() );
+            effect->SetMaxLength( effectsInfo.GetTracerLength() );
             effect->SetGameManager( mGM.get() );
 
             // Make sure the tracer is visible in the scene
