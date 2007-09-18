@@ -15,7 +15,6 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <dtCore/shadermanager.h>
 #include <osg/Geode>
-#include <osg/Geometry>
 #include <osg/StateSet>
 #include <osg/MatrixTransform>
 #include <SimCore/Actors/VolumetricLine.h>
@@ -58,37 +57,37 @@ namespace SimCore
          (*mVerts)[3].set( start );
 
          // NORMALS
-         osg::Vec3Array* norms = new osg::Vec3Array( 4 );
-         (*norms)[0].set( 0.0f, 1.0f, 0.0f ); // point to end
-         (*norms)[1].set( 0.0f, -1.0f, 0.0f ); // point to start
-         (*norms)[2].set( 0.0f, -1.0f, 0.0f ); // point to start
-         (*norms)[3].set( 0.0f, 1.0f, 0.0f ); // point to end
+         dtCore::RefPtr<osg::Vec3Array> norms = new osg::Vec3Array( 4 );
+         (*norms)[0].set( 0.0f, -1.0f, 0.0f ); // point to end
+         (*norms)[1].set( 0.0f, 1.0f, 0.0f ); // point to start
+         (*norms)[2].set( 0.0f, 1.0f, 0.0f ); // point to start
+         (*norms)[3].set( 0.0f, -1.0f, 0.0f ); // point to end
 
          // STATES
-         osg::StateSet* states = new osg::StateSet();
+         dtCore::RefPtr<osg::StateSet> states = new osg::StateSet();
          states->setMode(GL_BLEND,osg::StateAttribute::ON);
          states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 
          // GEOMETRY
-         osg::Geometry* geom = new osg::Geometry;
-         geom->setColorArray( mData.get() ); // use colors for uvs and other parameters
-         geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-         geom->setNormalArray( norms );
-         geom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
-         geom->setVertexArray( mVerts.get() );
+         mGeom = new osg::Geometry;
+         mGeom->setColorArray( mData.get() ); // use colors for uvs and other parameters
+         mGeom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+         mGeom->setNormalArray( norms.get() );
+         mGeom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+         mGeom->setVertexArray( mVerts.get() );
 
          // Make sure the geometry knows that it is a quad
-         geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, mVerts->size()));
+         mGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, mVerts->size()));
 
-         osg::Geode* geode = new osg::Geode;
-         geode->setStateSet( states );
-         geode->addDrawable( geom );
+         dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
+         geode->setStateSet( states.get() );
+         geode->addDrawable( mGeom.get() );
 
          // Attach the shader
          dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype( *shader, *geode );
 
-         GetMatrixNode()->addChild( geode );
+         GetMatrixNode()->addChild( geode.get() );
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -101,11 +100,12 @@ namespace SimCore
          (*mData)[3][3] = lineLength;
 
          // Adjust end points
-         lineLength *= 0.5f;
-         (*mVerts)[0][1] = -lineLength; // start
-         (*mVerts)[1][1] =  lineLength; // end
-         (*mVerts)[2][1] =  lineLength; // end
-         (*mVerts)[3][1] = -lineLength; // start
+         (*mVerts)[0][1] = 0.0f; // start
+         (*mVerts)[1][1] = -lineLength; // end
+         (*mVerts)[2][1] = -lineLength; // end
+         (*mVerts)[3][1] = 0.0f; // start
+
+         mGeom->setVertexArray( mVerts.get() );
       }
 
       //////////////////////////////////////////////////////////////////////////
