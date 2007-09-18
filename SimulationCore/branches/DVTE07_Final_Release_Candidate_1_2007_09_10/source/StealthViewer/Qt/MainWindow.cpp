@@ -1735,7 +1735,7 @@ namespace StealthQt
          QString message = tr("Could not find info for the actor named: ") + currentItem->text() + 
             tr(" because this actor has been removed from the scenario. Please select another actor");
 
-         QMessageBox::warning(this, tr("Error find info for actor"), message, QMessageBox::Ok);
+         QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
       }
    }
 
@@ -1796,7 +1796,7 @@ namespace StealthQt
          // Apparently not
          QString message = tr("The application failed to reconnect to the connection named: ") + 
             connectionName + tr(" . Please select a new federation to connect to from the Network tab.");
-         QMessageBox::critical(this, tr("Failed to reconnect"), message, QMessageBox::Ok);
+         QMessageBox::critical(this, tr("Failed to reconnect to the federation"), message, QMessageBox::Ok);
 
          // Peace out
          return;
