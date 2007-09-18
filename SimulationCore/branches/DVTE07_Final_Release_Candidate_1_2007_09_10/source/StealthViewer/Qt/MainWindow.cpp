@@ -1671,11 +1671,11 @@ namespace StealthQt
       
       if(mIsRecording)
       {
-         mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Idle"));
+         mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
       }
       else if(mIsPlayingBack)
       {
-         mUi->mPlaybackDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Idle"));
+         mUi->mPlaybackDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
       }
       else
       {
