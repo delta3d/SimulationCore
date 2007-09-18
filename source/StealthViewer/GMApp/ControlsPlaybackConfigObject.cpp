@@ -74,11 +74,13 @@ namespace StealthGM
       if(mJumpToNextKeyFrame)
       {
          inputComponent->HandleGotoKeyFrame(true);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mJumpToNextKeyFrame = false;
       }
 
       if(!mKeyFrameName.empty())
-      {
+      { 
          inputComponent->HandleGotoKeyFrame(mKeyFrameName);
          mKeyFrameName.clear();
       }
@@ -86,6 +88,8 @@ namespace StealthGM
       if(mJumpToPreviousKeyFrame)
       {
          inputComponent->HandleGotoKeyFrame(false);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mJumpToPreviousKeyFrame = false;
       }
 

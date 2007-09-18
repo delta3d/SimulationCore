@@ -448,6 +448,8 @@ namespace StealthQt
       connect(mUi->mEntityInfoAutoRefreshCheckBox, SIGNAL(stateChanged(int)), 
               this,                                SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
       
+      connect(mUi->mPlaybackTimeMarkersTextBox, SIGNAL(itemDoubleClicked(QListWidgetItem*)), 
+              this,                             SLOT(OnTimeMarkerDoubleClicked(QListWidgetItem*)));
       ////////////////////////////////////////////////////
 
       connect(&mDurationTimer, SIGNAL(timeout()), this, SLOT(OnDurationTimerElapsed()));
@@ -860,13 +862,22 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(bool checked)
    {
-      StealthGM::ControlsPlaybackConfigObject &pbObject = 
-         StealthViewerData::GetInstance().GetPlaybackConfigObject();
-
       QListWidgetItem *currentItem = mUi->mPlaybackTimeMarkersTextBox->currentItem();
       if(currentItem != NULL)
       {
-         pbObject.JumpToKeyFrame(currentItem->text().toStdString());
+         OnPlaybackJumpToTimeMarkerButtonClicked(currentItem->text());
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName)
+   {
+      if(!itemName.isEmpty())
+      {
+         StealthGM::ControlsPlaybackConfigObject &pbObject = 
+            StealthViewerData::GetInstance().GetPlaybackConfigObject();
+
+         pbObject.JumpToKeyFrame(itemName.toStdString());
       }
    }
 
@@ -1817,5 +1828,13 @@ namespace StealthQt
    void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
    {
       StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(state == Qt::Checked);
+   }
+
+   void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
+   {
+      if(item != NULL)
+      {
+         OnPlaybackJumpToTimeMarkerButtonClicked(item->text());
+      }
    }
 }

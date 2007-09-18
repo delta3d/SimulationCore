@@ -29,6 +29,7 @@ class QCloseEvent;
 class QDateTime;
 class QTableWidgetItem;
 class QDoubleValidator;
+class QListWidgetItem;
 
 namespace StealthQt 
 {
@@ -145,6 +146,9 @@ namespace StealthQt
 
          /// Called when the jump to TM button is clicked
          void OnPlaybackJumpToTimeMarkerButtonClicked(bool checked = false);
+
+         /// Called when the jump to TM button is clicked
+         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName);
 
          /// Called when a time marker is selected
          void OnPlaybackTimeMarkerSelected(const QString &text);
@@ -275,6 +279,9 @@ namespace StealthQt
 
          /// Called when the auto refresh button is changed
          void OnAutoRefreshEntityInfoCheckBoxChanged(int state);
+
+         /// Called when a time marker is double clicked in the list
+         void OnTimeMarkerDoubleClicked(QListWidgetItem *item);
 
       protected:
 
