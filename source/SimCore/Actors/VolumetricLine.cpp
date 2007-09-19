@@ -47,7 +47,7 @@ namespace SimCore
          //lineLength *= 0.5f;
 
          osg::Vec3 start( 0.0f, 0.0f, 0.0f );
-         osg::Vec3 end( 0.0f, lineLength, 0.f );
+         osg::Vec3 end( 0.0f, -lineLength, 0.f );
 
          // VERTICES
          mVerts = new osg::Vec3Array( 4 );
