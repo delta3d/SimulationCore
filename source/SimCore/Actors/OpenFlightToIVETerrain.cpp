@@ -91,7 +91,7 @@ namespace SimCore
                GetMatrixNode()->removeChild(0, GetMatrixNode()->getNumChildren());
             }
 
-            if(!fileName.empty())
+            if(!mTerrainPath.empty())
             {
                /////////////////////////////////////////////////////////////////////
                // do loading here
