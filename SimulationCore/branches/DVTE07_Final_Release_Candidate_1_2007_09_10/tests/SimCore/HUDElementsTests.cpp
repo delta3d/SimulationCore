@@ -117,7 +117,7 @@ void HUDElementsTests::setUp()
    mScene = new dtCore::Scene();
 
    // A window & camera are needed for GUI rendering
-   mApp = new dtABC::Application;
+   mApp = new dtABC::Application("config.xml");
    mApp->GetWindow()->SetPosition(0, 0, 50, 50);
    mGM = new dtGame::GameManager(*mScene);
    mGM->SetApplication( *mApp );

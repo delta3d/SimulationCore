@@ -60,7 +60,7 @@ void TerraPageLandActorTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
    
-   mApplication = new dtABC::Application();
+   mApplication = new dtABC::Application("config.xml");
 
    mScene = new dtCore::Scene();
    mWin = new dtCore::DeltaWin();

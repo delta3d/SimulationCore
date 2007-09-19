@@ -96,7 +96,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 
          // A window & camera are needed to allow terrain
          // to generate geometry.
-         mApp = new dtABC::Application;
+         mApp = new dtABC::Application("config.xml");
          mApp->GetWindow()->SetPosition(0, 0, 50, 50);
 
          mGM = new dtGame::GameManager(*mScene);

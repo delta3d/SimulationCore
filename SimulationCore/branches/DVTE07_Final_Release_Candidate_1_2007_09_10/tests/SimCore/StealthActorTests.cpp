@@ -39,6 +39,7 @@
 #include <dtCore/system.h>
 #include <dtCore/transform.h>
 #include <dtCore/globals.h>
+#include <dtCore/deltawin.h>
 
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/DetonationActor.h>
@@ -70,7 +71,8 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         mApp = new dtABC::Application;
+         mApp = new dtABC::Application("config.xml");
+         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
          mGM = new dtGame::GameManager(*new dtCore::Scene);
          mGM->SetApplication(*mApp);
          mDeadReckoningComponent = new dtGame::DeadReckoningComponent("DeadReckoningComponent");
