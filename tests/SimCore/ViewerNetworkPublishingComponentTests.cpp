@@ -62,7 +62,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
       void setUp()
       {
-         mApp = new dtABC::Application;
+         mApp = new dtABC::Application("config.xml");
          mApp->GetWindow()->SetPosition(0, 0, 50, 50);
          mGM = new dtGame::GameManager(*new dtCore::Scene());
          mGM->SetApplication(*mApp);
