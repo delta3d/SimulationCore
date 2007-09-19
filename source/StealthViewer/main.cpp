@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
    }
    catch(const std::exception &e)
    {
-      QString message("A std::exception has been thrown. The exception message is: ");
+      QString message("A standard exception has been thrown. The exception message is: ");
       message += e.what();
 
       QMessageBox::critical(NULL, "Exception", message, QMessageBox::Ok);
