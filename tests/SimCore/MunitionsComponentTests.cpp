@@ -1758,6 +1758,28 @@ namespace SimCore
          CPPUNIT_ASSERT( effectsInfo->GetSmokeEffect().empty() );
          effectsInfo->SetSmokeEffect( testValue );
          CPPUNIT_ASSERT( effectsInfo->GetSmokeEffect() == testValue );
+
+         // Test light name properties
+         const std::string& lightName = "testLightName";
+         CPPUNIT_ASSERT_MESSAGE("Fire light name should be empty by default",
+            effectsInfo->GetFireLight().empty() );
+         effectsInfo->SetFireLight(lightName);
+         CPPUNIT_ASSERT( effectsInfo->GetFireLight() == lightName );
+
+         CPPUNIT_ASSERT_MESSAGE("Ground impact light name should be empty by default",
+            effectsInfo->GetGroundImpactLight().empty() );
+         effectsInfo->SetGroundImpactLight(lightName);
+         CPPUNIT_ASSERT( effectsInfo->GetGroundImpactLight() == lightName );
+
+         CPPUNIT_ASSERT_MESSAGE("Entity impact light name should be empty by default",
+            effectsInfo->GetEntityImpactLight().empty() );
+         effectsInfo->SetEntityImpactLight(lightName);
+         CPPUNIT_ASSERT( effectsInfo->GetEntityImpactLight() == lightName );
+
+         CPPUNIT_ASSERT_MESSAGE("Tracer light name should be empty by default",
+            effectsInfo->GetTracerLight().empty() );
+         effectsInfo->SetTracerLight(lightName);
+         CPPUNIT_ASSERT( effectsInfo->GetTracerLight() == lightName );
       }
 
       //////////////////////////////////////////////////////////////////////////

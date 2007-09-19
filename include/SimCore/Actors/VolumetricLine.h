@@ -38,6 +38,8 @@ namespace SimCore
             VolumetricLine( float lineLength, float lineThickness,
                const std::string& shaderName, const std::string& shaderGroup );
 
+            bool IsValid() const;
+
             void SetLength( float lineLength );
             float GetLength() const;
 
