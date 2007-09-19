@@ -91,8 +91,22 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      bool VolumetricLine::IsValid() const
+      {
+         return mData.valid() 
+            && mVerts.valid()
+            && mData->getNumElements() == 4
+            && mVerts->getNumElements() == 4;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void VolumetricLine::SetLength( float lineLength )
       {
+         if( ! IsValid() )
+         {
+            return;
+         }
+
          // Update the vertex data
          (*mData)[0][3] = lineLength;
          (*mData)[1][3] = lineLength;
@@ -111,12 +125,21 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       float VolumetricLine::GetLength() const
       {
+         if( ! IsValid() )
+         {
+            return 0.0f;
+         }
          return (*mData)[0][3];
       }
 
       //////////////////////////////////////////////////////////////////////////
       void VolumetricLine::SetThickness( float lineThickness )
       {
+         if( ! IsValid() )
+         {
+            return;
+         }
+
          (*mData)[0][2] = -lineThickness;
          (*mData)[1][2] =  lineThickness;
          (*mData)[2][2] = -lineThickness;
@@ -126,6 +149,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       float VolumetricLine::GetThickness() const
       {
+         if( ! IsValid() )
+         {
+            return 0.0f;
+         }
+
          return (*mData)[1][2]; // the second Vec4 has positive thickness
       }
 
