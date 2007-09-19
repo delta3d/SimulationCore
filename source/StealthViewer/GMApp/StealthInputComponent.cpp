@@ -202,6 +202,9 @@ namespace StealthGM
          else if(!stealthProxy->IsRemote())
          {
             mStealthActor = stealthActor.get();
+            osg::Vec3 attachOffset = mStealthActor->GetAttachOffset();
+            attachOffset.y() = -4.0f;
+            mStealthActor->SetAttachOffset( attachOffset );
             mStealthActor->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
 
             // Ensure thatthe compass tool has reference to the stealth actor
