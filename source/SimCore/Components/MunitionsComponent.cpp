@@ -367,6 +367,7 @@ namespace SimCore
       TracerEffect::TracerEffect( float lineLength, float lineThickness,
          const std::string& shaderName, const std::string& shaderGroup )
          : SimCore::Actors::VolumetricLine(lineLength,lineThickness,shaderName,shaderGroup),
+         mHasLight(false),
          mDynamicLightEnabled(false),
          mDynamicLightID(0),
          mLifeTime(0.0f),
@@ -381,6 +382,7 @@ namespace SimCore
       TracerEffect::~TracerEffect()
       {
       }
+
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::SetDirection( const osg::Vec3& direction )
       {
@@ -453,7 +455,7 @@ namespace SimCore
       void TracerEffect::SetVisible( bool visible )
       {
          GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
-         if( visible )
+         if( visible && mHasLight )
          {
             // TODO: Make tracer colors dynamic.
             AddDynamicLight(osg::Vec3(1.0f, 0.2f, 0.2f)); // default color to red
@@ -553,14 +555,7 @@ namespace SimCore
                dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
                dl->mTarget = this;
                dl->mColor = color;
-               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-               //dl->mColor = color;//a bright yellow
-               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
-               //dl->mIntensity = 1.0f;
-               //dl->mSaturationIntensity = 0.0f; //no saturation
-               //dl->mTarget = this;
 
-               //mDynamicLightID = renderComp->AddDynamicLight(dl);
                mDynamicLightID = dl->mID;
                mDynamicLightEnabled = true;
             }
@@ -1022,7 +1017,8 @@ namespace SimCore
       bool WeaponEffectsManager::ApplyTracerEffect(
          const osg::Vec3& weaponFirePoint,
          const osg::Vec3& intialVelocity,
-         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
+         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+         bool useLight )
       {
          if( ! mGM.valid() 
             || (mMaxTracerEffects > -1 && (int)mTracerEffects.size() >= mMaxTracerEffects) )
@@ -1045,7 +1041,7 @@ namespace SimCore
             && ( mMaxTracerEffects < 0 || (int)limit <= mMaxTracerEffects ) )
          {
             effect = new TracerEffect( 
-               0.001,//effectsInfo.GetTracerLength(), 
+               0.001, // spawn tracer at a near-zero size; it will be stretched to max size during updates.
                effectsInfo.GetTracerThickness(),
                effectsInfo.GetTracerShaderName(),
                effectsInfo.GetTracerShaderGroup() );
@@ -1069,11 +1065,90 @@ namespace SimCore
 
             // Setup tracer to update and render.
             // This also sets the initial orientation of the tracer.
-            float tracerLifeTime = CalcTimeToImpact( weaponFirePoint, intialVelocity, effectsInfo.GetTracerLifeTime() );
+            float tracerLifeTime = CalcTimeToImpact( 
+               weaponFirePoint, intialVelocity, 
+               effectsInfo.GetTracerLifeTime() );
+            effect->SetHasLight( useLight );
             effect->Execute( tracerLifeTime );
          }
 
          return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponEffectsManager::AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest )
+      {
+         if( ! effectRequest.valid() )
+         {
+            return false;
+         }
+         unsigned lastSize = mTracerRequests.size();
+         mTracerRequests.push_back( effectRequest.get() );
+
+         return mTracerRequests.size() > lastSize;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned WeaponEffectsManager::ClearTracerEffectRequests()
+      {
+         unsigned lastSize = mTracerRequests.size();
+         mTracerRequests.clear();
+         return lastSize;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::UpdateTracerEffectRequests( float timeDelta )
+      {
+         if( mTracerRequests.empty() )
+         {
+            return;
+         }
+
+         bool deleteEffectRequest = false;
+         bool firstEffectRequestProcessed = false;
+         TracerEffectRequest* curRequest = NULL;
+         TracerEffectRequestList::iterator iter(--mTracerRequests.end());
+         while( ! firstEffectRequestProcessed )
+         {
+            firstEffectRequestProcessed = iter == mTracerRequests.begin();
+            deleteEffectRequest = false;
+            curRequest = iter->get();
+
+            if( curRequest == NULL ) // This should not happen
+            {
+               deleteEffectRequest = true;
+               LOG_WARNING( "WeaponEffectsManager acquired a NULL TracerEffectRequest" );
+            }
+            else
+            {
+               curRequest->Update( timeDelta );
+               if( curRequest->IsEffectReady() )
+               {
+                  ApplyTracerEffect( curRequest->GetFirePoint(),
+                     curRequest->GetVelocity(), curRequest->GetEffectsInfo(), curRequest->IsFirstEffect() );
+
+                  curRequest->Decrement();
+               }
+
+               if( curRequest->GetTotalEffects() < 1 )
+               {
+                  deleteEffectRequest = true;
+               }
+            }
+
+            if( deleteEffectRequest )
+            {
+               TracerEffectRequestList::iterator deleteIter = iter;
+               if( ! firstEffectRequestProcessed )
+                  --iter;
+               mTracerRequests.erase(deleteIter);
+            }
+            else
+            {
+               if( ! firstEffectRequestProcessed )
+                  --iter;
+            }
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1126,6 +1201,8 @@ namespace SimCore
             // elements properly.
             iter->second->Update( deltaTime );
          }
+
+         UpdateTracerEffectRequests( deltaTime );
 
          unsigned limit = mTracerEffects.size();
          for( unsigned effect = 0; effect < limit; ++effect )
@@ -1223,6 +1300,8 @@ namespace SimCore
                }
             }
          }
+
+         // DEBUG: std::cout << "Tracers:\t" << mTracerEffects.size() << std::endl;
 
          return recycleCount;
       }
@@ -1925,21 +2004,31 @@ namespace SimCore
                // ...and if the probability of a tracer is within the probable area...
                if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
                {
-                  // ...generate a tracer effect...
+                  // ...generate a tracer effect request...
+                  dtCore::RefPtr<TracerEffectRequest> effectRequest
+                     = new TracerEffectRequest( quantity, 0.05f, *effects );
+                  effectRequest->SetVelocity( message.GetInitialVelocityVector() );
+
                   if( entity != NULL && bestDof != NULL )
                   {
                      // ...from the fire point on the firing entity.
                      osg::Matrix mtx;
                      entity->GetAbsoluteMatrix( bestDof, mtx );
 
-                     mEffectsManager->ApplyTracerEffect( 
-                        mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
+                     effectRequest->SetFirePoint( mtx.getTrans() );
+                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+
+                     //mEffectsManager->ApplyTracerEffect( 
+                     //   mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
                   }
                   else
                   {
                      // ...from the firing location specified in the message.
-                     mEffectsManager->ApplyTracerEffect( 
-                        message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
+                     effectRequest->SetFirePoint( message.GetFiringLocation() );
+                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+
+                     //mEffectsManager->ApplyTracerEffect( 
+                     //   message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
                   }
                }
             }
