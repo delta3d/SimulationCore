@@ -474,7 +474,13 @@ namespace SimCore
       {
          //now setup the lighting uniforms necessary for rendering the dynamic lights
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-         osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
+//temporary hack
+#ifdef __APPLE__
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+#else
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+#endif
+         osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
 
          LightArray::iterator iter = mLights.begin();
          LightArray::iterator endIter = mLights.end();

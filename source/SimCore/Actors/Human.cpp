@@ -455,7 +455,7 @@ namespace SimCore
             i = mCurrentPlan.begin();
             iend = mCurrentPlan.end();
             
-            const float blendTime = 0.5f;
+            const float blendTime = 0.01f;
             float accumulatedStartTime = 0.0f;
             
             
@@ -928,10 +928,10 @@ namespace SimCore
          newOp->AddEffect(shotEff.get());
          newOp->AddEffect(transitionEff.get());
 
-//         newOp = AddOperator(ANIM_SHOT_PRONE);
-//         newOp->AddPreCondition(prone.get());
-//         newOp->AddEffect(shotEff.get());
-//         newOp->AddEffect(transitionEff.get());
+         newOp = AddOperator(ANIM_SHOT_PRONE);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddEffect(shotEff.get());
+         newOp->AddEffect(transitionEff.get());
 
          newOp = AddOperator(ANIM_DEAD_STANDING);
          newOp->AddPreCondition(standing.get());
@@ -944,12 +944,12 @@ namespace SimCore
          newOp->AddPreCondition(isShot.get());
          newOp->AddEffect(deadEff.get());
          newOp->AddEffect(notTransitionEff.get());
-//
-//         newOp = AddOperator(ANIM_DEAD_PRONE);
-//         newOp->AddPreCondition(prone.get());
-//         newOp->AddPreCondition(isShot.get());
-//         newOp->AddEffect(deadEff.get());
-//         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_DEAD_PRONE);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(isShot.get());
+         newOp->AddEffect(deadEff.get());
+         newOp->AddEffect(notTransitionEff.get());
       }
    }
 }
