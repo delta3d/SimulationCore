@@ -315,7 +315,20 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
-         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+         std::ostringstream opListText;
+         
+         opListText << "The plan: " << std::endl;
+         
+         dtAI::Planner::OperatorList::const_iterator i, end;
+         i = result.begin();
+         end = result.end();
+         for (; i != result.end(); ++i)
+         {
+            opListText << "   ";
+            opListText << (*i)->GetName() << std::endl;
+         }
+         
+         CPPUNIT_ASSERT_EQUAL_MESSAGE(opListText.str(),
                2U, unsigned(result.size()));
          
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
