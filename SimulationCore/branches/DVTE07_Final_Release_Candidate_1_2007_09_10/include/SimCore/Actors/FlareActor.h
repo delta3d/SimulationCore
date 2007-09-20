@@ -34,19 +34,6 @@ namespace SimCore
       class SIMCORE_EXPORT FlareActor : public BaseEntity
       {
          public:
-            static const std::string& PROPERTY_CELL;
-            static const std::string& PROPERTY_GUISE;
-            static const std::string& PROPERTY_NUMBER_OF_SOURCES;
-            static const std::string& PROPERTY_TIME_SINCE_DETONATION;
-            static const std::string& PROPERTY_HEIGHT;
-            static const std::string& PROPERTY_HEIGHT_DELTA;
-            static const std::string& PROPERTY_PEAK_ANGLE;
-            static const std::string& PROPERTY_PEAK_ANGLE_DELTA;
-            static const std::string& PROPERTY_SOURCE_INTENSITY;
-            static const std::string& PROPERTY_MODEL_TYPE;
-            static const std::string& PROPERTY_LIGHT_NAME;
-            static const std::string& PROPERTY_PARTICLE_FILE;
-
             FlareActor( FlareActorProxy& proxy );
 
             void SetCell( int cell );
@@ -119,6 +106,19 @@ namespace SimCore
       class SIMCORE_EXPORT FlareActorProxy : public BaseEntityActorProxy
       {
          public:
+            static const std::string& PROPERTY_CELL;
+            static const std::string& PROPERTY_GUISE;
+            static const std::string& PROPERTY_NUMBER_OF_SOURCES;
+            static const std::string& PROPERTY_TIME_SINCE_DETONATION;
+            static const std::string& PROPERTY_HEIGHT;
+            static const std::string& PROPERTY_HEIGHT_DELTA;
+            static const std::string& PROPERTY_PEAK_ANGLE;
+            static const std::string& PROPERTY_PEAK_ANGLE_DELTA;
+            static const std::string& PROPERTY_SOURCE_INTENSITY;
+            static const std::string& PROPERTY_MODEL_TYPE;
+            static const std::string& PROPERTY_LIGHT_NAME;
+            static const std::string& PROPERTY_PARTICLE_FILE;
+
             FlareActorProxy();
 
             virtual void BuildPropertyMap();
