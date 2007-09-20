@@ -33,6 +33,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // FLARE ACTOR CODE
       //////////////////////////////////////////////////////////////////////////
+      const std::string& FlareActor::PROPERTY_CELL = "Cell"; 
+      const std::string& FlareActor::PROPERTY_GUISE = "Guise"; 
+      const std::string& FlareActor::PROPERTY_NUMBER_OF_SOURCES = "Number Of Sources"; 
+      const std::string& FlareActor::PROPERTY_TIME_SINCE_DETONATION = "Time Since Detonation";
+      const std::string& FlareActor::PROPERTY_HEIGHT = "Height";
+      const std::string& FlareActor::PROPERTY_HEIGHT_DELTA = "Height Delta"; 
+      const std::string& FlareActor::PROPERTY_PEAK_ANGLE = "Peak Angle"; 
+      const std::string& FlareActor::PROPERTY_PEAK_ANGLE_DELTA = "Peak Angle Delta"; 
+      const std::string& FlareActor::PROPERTY_SOURCE_INTENSITY = "Source Intensity"; 
+      const std::string& FlareActor::PROPERTY_MODEL_TYPE = "Model Type"; 
+      const std::string& FlareActor::PROPERTY_LIGHT_NAME = "Light Name"; 
+      const std::string& FlareActor::PROPERTY_PARTICLE_FILE = "Particle File"; 
+
+      //////////////////////////////////////////////////////////////////////////
       FlareActor::FlareActor( FlareActorProxy& proxy )
          : BaseEntity(proxy),
          mCell(0),
@@ -206,42 +220,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void FlareActor::LoadParticlesFile( const std::string& fileName )
       {
-         if( mParticleFileName != fileName && mParticleFileNameBad != fileName )
-         {
-            bool inGM = GetGameActorProxy().IsInGM();
-            if( mParticles.valid() )
-            {
-               RemoveChild( mParticles.get() );
-               if( inGM )
-               {
-                  UnregisterParticleSystem( *mParticles );
-               }
-               mParticles = NULL;
-            }
-
-            SetParticleFileName( fileName );
-
-            if( fileName.empty() )
-            {
-            }
-            else
-            {
-               mParticles = new dtCore::ParticleSystem("FlareParticles");
-               // Flare particles designed to keep particles together at one point
-               // to give the effect of shimmer and brightness (via additive blending).
-               mParticles->SetParentRelative(true);
-               if( NULL == mParticles->LoadFile(fileName) )
-               {
-                  mParticleFileNameBad = fileName;
-               }
-
-               AddChild( mParticles.get() );
-               if( inGM )
-               {
-                  RegisterParticleSystem( *mParticles );
-               }
-            }
-         }
+         mParticles = new dtCore::ParticleSystem("FlareParticles");
+         // Flare particles designed to keep particles together at one point
+         // to give the effect of shimmer and brightness (via additive blending).
+         mParticles->SetParentRelative(true);
+         mParticles->LoadFile(fileName);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -320,65 +303,77 @@ namespace SimCore
 
          FlareActor& actor = static_cast<FlareActor&>(GetGameActor());
 
-         AddProperty(new dtDAL::IntActorProperty("Cell", "Cell", 
+         AddProperty(new dtDAL::IntActorProperty(FlareActor::PROPERTY_CELL,
+            FlareActor::PROPERTY_CELL, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetCell), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetCell), 
             "Assumed to be the regional atmospheric position"));
 
-         AddProperty(new dtDAL::IntActorProperty("Guise", "Guise", 
+         AddProperty(new dtDAL::IntActorProperty(FlareActor::PROPERTY_GUISE,
+            FlareActor::PROPERTY_GUISE, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetGuise), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetGuise), 
             "")); // ?
 
-         AddProperty(new dtDAL::IntActorProperty("Number Of Sources", "Number Of Sources", 
+         AddProperty(new dtDAL::IntActorProperty(FlareActor::PROPERTY_NUMBER_OF_SOURCES,
+            FlareActor::PROPERTY_NUMBER_OF_SOURCES, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetNumberOfSources), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetNumberOfSources), 
             "Assumed to be the number of sub-components that produce light"));
 
-         AddProperty(new dtDAL::IntActorProperty("Time Since Detonation", "Time Since Detonation", 
+         AddProperty(new dtDAL::IntActorProperty(FlareActor::PROPERTY_TIME_SINCE_DETONATION,
+            FlareActor::PROPERTY_TIME_SINCE_DETONATION, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetTimeSinceDetonation), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetTimeSinceDetonation), 
             "Length of time that the flare has been luminous, measured in milliseconds"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Height", "Height", 
+         AddProperty(new dtDAL::FloatActorProperty(FlareActor::PROPERTY_HEIGHT,
+            FlareActor::PROPERTY_HEIGHT, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetHeight), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetHeight), 
             "Assumed to be height above ground level measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Height Delta", "Height Delta", 
+         AddProperty(new dtDAL::FloatActorProperty(FlareActor::PROPERTY_HEIGHT_DELTA,
+            FlareActor::PROPERTY_HEIGHT_DELTA, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetHeightDelta), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetHeightDelta), 
             "Assumed to be the change in height since the last actor update, measured in meters"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Peak Angle", "Peak Angle", 
+         AddProperty(new dtDAL::FloatActorProperty(FlareActor::PROPERTY_PEAK_ANGLE,
+            FlareActor::PROPERTY_PEAK_ANGLE, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetPeakAngle), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetPeakAngle), 
             "")); // ?
 
-         AddProperty(new dtDAL::FloatActorProperty("Peak Angle Delta", "Peak Angle Delta", 
+         AddProperty(new dtDAL::FloatActorProperty(FlareActor::PROPERTY_PEAK_ANGLE_DELTA,
+            FlareActor::PROPERTY_PEAK_ANGLE_DELTA, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetPeakAngleDelta), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetPeakAngleDelta), 
             "")); // ?
 
-         AddProperty(new dtDAL::FloatActorProperty("Source Intensity", "Source Intensity", 
+         AddProperty(new dtDAL::FloatActorProperty(FlareActor::PROPERTY_SOURCE_INTENSITY,
+            FlareActor::PROPERTY_SOURCE_INTENSITY, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetSourceIntensity), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetSourceIntensity), 
             "")); // ?
 
-         AddProperty(new dtDAL::StringActorProperty("Model Type", "Model Type", 
+         AddProperty(new dtDAL::StringActorProperty(FlareActor::PROPERTY_MODEL_TYPE,
+            FlareActor::PROPERTY_MODEL_TYPE, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetModelType), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetModelTypeString), 
             "The type of flare being modeled by this actor"));
 
-         AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name", 
+         AddProperty(new dtDAL::StringActorProperty(FlareActor::PROPERTY_LIGHT_NAME,
+            FlareActor::PROPERTY_LIGHT_NAME, 
             dtDAL::MakeFunctor(actor, &FlareActor::SetLightName), 
             dtDAL::MakeFunctorRet(actor, &FlareActor::GetLightName), 
             "The name of the light prototype actor that describes the light effect used by this flare actor"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Particle File", "Particle File", 
-            dtDAL::MakeFunctor(actor, &FlareActor::LoadParticlesFile), 
-            "The particle effect that represents the flare"));
+         AddProperty(new dtDAL::StringActorProperty(FlareActor::PROPERTY_PARTICLE_FILE,
+            FlareActor::PROPERTY_PARTICLE_FILE, 
+            dtDAL::MakeFunctor(actor, &FlareActor::SetParticleFileName), 
+            dtDAL::MakeFunctorRet(actor, &FlareActor::GetParticleFileName), 
+            "The type of flare being modeled by this actor"));
       }
 
       //////////////////////////////////////////////////////////////////////////
