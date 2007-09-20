@@ -41,9 +41,14 @@
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
+#include <dtUtil/macros.h>
 
 #include <osg/Geode>
 #include <osg/MatrixTransform>
+
+#ifdef DELTA_WIN32
+   #pragma warning(disable : 4355)
+#endif
 
 namespace SimCore
 {
