@@ -103,7 +103,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanReadyToDeployed()
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -130,7 +130,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanDeployedToReady()
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
@@ -157,7 +157,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanStandingToKneelingDeployed()
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
@@ -240,7 +240,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void TestPlanWalkingReadyToKneelingDeployed()
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -275,7 +275,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void TestStartup()
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
@@ -302,7 +302,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       void TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum& stance, const std::string& expectedShotAnim,
                const std::string& expectedDeadAnim )
       {
-         SimCore::Actors::Human* human;
+         SimCore::Actors::Human* human = NULL;
          mHumanAP->GetActor(human);
 
          human->SetStance(stance);
