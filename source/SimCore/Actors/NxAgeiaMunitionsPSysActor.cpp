@@ -379,6 +379,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
 
    _particle->mObj = new dtCore::Object(_id.ToString().c_str());
 
+   bool orientDrawable = false;
+
    // Determine if this system uses tracers.
    if( GetSystemToUseTracers() )
    {
@@ -396,7 +398,10 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
             _particle->mObj->AddChild( line.get() );
 
             node = (line->GetMatrixNode());
-            if( node != NULL ) { node->setMatrix(ourRotationMatrix); }
+            if( node != NULL )
+            {
+               node->setMatrix(ourRotationMatrix);
+            }
          }
       }
       else
@@ -407,7 +412,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          else if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::THREED)
          {
             //_particle->mObj->LoadFile(mPathOfFileToLoad[0]);
-            LoadParticleResource(*_particle.get(), mPathOfFileToLoad[0]);
+            LoadParticleResource(*_particle, mPathOfFileToLoad[0]);
+            orientDrawable = true;
          }
       }
    }
@@ -419,7 +425,18 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       else if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::THREED)
       {
          //_particle->mObj->LoadFile(mPathOfFileToLoad[0]);
-         LoadParticleResource(*_particle.get(), mPathOfFileToLoad[0]);
+         LoadParticleResource(*_particle, mPathOfFileToLoad[0]);
+         orientDrawable = true;
+      }
+   }
+
+   if( orientDrawable )
+   {
+      osg::Group* g = _particle->mObj->GetOSGNode()->asGroup();
+      osg::MatrixTransform* node = dynamic_cast<osg::MatrixTransform*>(g->getChild(0));
+      if( node != NULL )
+      {
+         node->setMatrix(ourRotationMatrix);
       }
    }
 
