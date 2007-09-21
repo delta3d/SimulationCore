@@ -109,6 +109,7 @@ namespace SimCore
          protected:
 
             virtual ~ParticleInfo();
+            void AttachShader(const std::string&, osg::Node&);
 
          private:
             const ParticlePriority* mPriority;
