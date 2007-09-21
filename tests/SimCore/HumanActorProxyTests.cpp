@@ -312,7 +312,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          
          human->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
          
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         bool shouldBeTrue = human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(shouldBeTrue);
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
          
          std::ostringstream opListText;
