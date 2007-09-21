@@ -251,16 +251,19 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void Human::SetSkeletalMeshFile(const std::string& fileName)
       {
-         mSkeletalMeshFileName = fileName;
-
-         osg::MatrixTransform& transform = GetScaleMatrixTransform();
-         transform.removeChildren(0, transform.getNumChildren());
-         mModelGeode = NULL;
-
-         if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
+         if (mSkeletalMeshFileName != fileName)
          {
-            mModelGeode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateGeode(mAnimationHelper->GetModelWrapper());
-            HandleModelDrawToggle(IsDrawingModel());
+            mSkeletalMeshFileName = fileName;
+   
+            osg::MatrixTransform& transform = GetScaleMatrixTransform();
+            transform.removeChildren(0, transform.getNumChildren());
+            mModelGeode = NULL;
+   
+            if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
+            {
+               mModelGeode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateGeode(mAnimationHelper->GetModelWrapper());
+               HandleModelDrawToggle(IsDrawingModel());
+            }
          }
       }
       
