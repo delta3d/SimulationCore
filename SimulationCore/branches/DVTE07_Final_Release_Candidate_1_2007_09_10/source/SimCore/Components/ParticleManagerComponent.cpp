@@ -13,6 +13,7 @@
 
 #include <prefix/SimCorePrefix-src.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/shadermanager.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/message.h>
@@ -168,9 +169,53 @@ namespace SimCore
          {
             dtCore::ObserverPtr<osgParticle::ParticleSystem> ref = &itor->GetParticleSystem();
             mLayerRefs.push_back(ref);
+
+            //attaching a shader to the particle, one for emmisive particles the other for non emmisive
+            dtCore::ParticleLayer& pLayer = *itor;
+            osg::StateSet* ss = pLayer.GetParticleSystem().getOrCreateStateSet();
+            std::string shaderName;
+            (ss->getMode(GL_LIGHTING) == osg::StateAttribute::ON) ? shaderName = "NonEmissive" : shaderName = "Emissive";
+            AttachShader(shaderName, pLayer.GetGeode());
+
+
+            //osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, 60);
+
+            //int count = 0;
+            //for(;count < 20 * 3; count += 3)
+            //{ 
+            //   //else we turn the light off by setting the intensity to 0
+            //   lightArray->setElement(count, osg::Vec4(1000.0f, 1000.0f, 1000000.0f, 10.0f));
+            //   lightArray->setElement(count + 1, osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            //   lightArray->setElement(count + 2, osg::Vec4(0.00001f, 0.0000001f, 0.00000001f, 1.0f));
+            //
+            //}
+
          }
 
          //mPriority = &priority;
+      }
+
+      void ParticleInfo::AttachShader(const std::string& name, osg::Node& node)
+      {
+         dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
+         dtCore::ShaderGroup* sg = sm.FindShaderGroupPrototype("ParticleShaderGroup");
+         if(sg)
+         {
+            dtCore::ShaderProgram* sp = sg->FindShader(name);
+
+            if(sp != NULL)
+            {
+               sm.AssignShaderFromPrototype(*sp, node);
+            }
+            else
+            {
+               LOG_ERROR("Unable to find a particle system shader with the name '." + name + "' ");
+            }
+         }
+         else
+         {
+            LOG_ERROR("Unable to find shader group for particle system manager.");
+         }            
       }
 
       //////////////////////////////////////////////////////////
