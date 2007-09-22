@@ -174,6 +174,8 @@ namespace SimCore
             static const std::string PARAM_NAME_ARRAY_DISCRETE_CONTROLS;
             static const std::string PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS;
 
+            static const float TIME_BETWEEN_UPDATES;//(10.0f);
+
             ControlStateActor( ControlStateProxy& proxy );
 
             // NOTE: Does not return a reference since an entity might not exist.
@@ -225,6 +227,9 @@ namespace SimCore
 
             void Clear();
 
+            // Periodically do a full actor publish
+            virtual void TickLocal(const dtGame::Message& tickMessage);
+
          protected:
             virtual ~ControlStateActor();
 
@@ -264,6 +269,7 @@ namespace SimCore
             dtCore::ObserverPtr<Platform> mEntity; // direct reference to the entity
             std::map<const std::string, dtCore::RefPtr<ContinuousControl> > mContinuousTypes;
             std::map<const std::string, dtCore::RefPtr<DiscreteControl> > mDiscreteTypes;
+            float mTimeUntilNextUpdate;
       };
 
 
@@ -283,6 +289,10 @@ namespace SimCore
 
             // Adds the properties associated with this actor
             virtual void BuildPropertyMap();
+
+            // Register for messages
+            virtual void OnEnteredWorld();
+
 
          protected:
 

@@ -481,13 +481,16 @@ namespace SimCore
       const std::string ControlStateActor::PARAM_NAME_ARRAY_DISCRETE_CONTROLS("ArrayDiscreteControls");
       const std::string ControlStateActor::PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS("ArrayContinuousControls");
 
+      const float ControlStateActor::TIME_BETWEEN_UPDATES(5.0f);
+
       //////////////////////////////////////////////////////////////////////////
       ControlStateActor::ControlStateActor( ControlStateProxy& proxy )
          : dtGame::GameActor(proxy),
          mChanged(false),
          mNumDiscreteControls(0),
          mNumContinuousControls(0),
-         mStationType(0)
+         mStationType(0),
+         mTimeUntilNextUpdate(TIME_BETWEEN_UPDATES)
       {
          // DEBUG: std::cout << "ControlState: " << GetUniqueId().ToString().c_str() << std::endl;
       }
@@ -730,6 +733,18 @@ namespace SimCore
          return GetMapAsGroupParameter( mContinuousTypes, PARAM_NAME_ARRAY_CONTINUOUS_CONTROLS );
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void ControlStateActor::TickLocal(const dtGame::Message& tickMessage)
+      {
+         mTimeUntilNextUpdate -= static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+
+         // Periodically send out an update for our control states so new people on the network will get them.
+         if (mTimeUntilNextUpdate < 0.0)
+         {
+            GetGameActorProxy().NotifyFullActorUpdate();
+            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
+         }
+      }
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -746,6 +761,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       ControlStateProxy::~ControlStateProxy()
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void ControlStateProxy::OnEnteredWorld()
+      {
+         if (!IsRemote())
+         {
+            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+         }
+
       }
 
       //////////////////////////////////////////////////////////////////////////
