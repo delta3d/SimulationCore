@@ -169,6 +169,11 @@ namespace SimCore
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
 
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
+
+         // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
+         dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity", 
+               "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
+         mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
       }
    }
 }
