@@ -25,7 +25,7 @@
 #include <dtUtil/log.h>
 #include <SimCore/Actors/ControlStateActor.h>
 #include <osg/Endian>
-
+#include <dtGame/basemessages.h>
 
 
 namespace SimCore
