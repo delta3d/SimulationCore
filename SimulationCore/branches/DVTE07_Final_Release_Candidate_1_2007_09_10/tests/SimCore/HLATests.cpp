@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson, Olen Bruce, and David Guthrie
  */
-
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <iostream>
 #include <vector>
