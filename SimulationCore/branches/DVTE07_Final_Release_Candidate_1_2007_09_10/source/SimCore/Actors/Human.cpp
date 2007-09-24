@@ -263,6 +263,10 @@ namespace SimCore
             {
                mModelGeode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateGeode(mAnimationHelper->GetModelWrapper());
                HandleModelDrawToggle(IsDrawingModel());
+               
+               SetupPlannerHelper();
+               
+               
             }
          }
       }
@@ -447,7 +451,8 @@ namespace SimCore
          
          static int count = 0;
          std::ostringstream ss;
-         ss << "sequence" << count;
+         //nasty hack to make sure the sequence names don't match.
+         ss << "sequence " << count;
          ++count;
          generatedSequence->SetName(ss.str());
          
@@ -462,15 +467,14 @@ namespace SimCore
          {
             i = mCurrentPlan.begin();
             iend = mCurrentPlan.end();
-            
+
             const float blendTime = 0.01f;
             float accumulatedStartTime = 0.0f;
-            
-            
+
             dtCore::RefPtr<dtAnim::Animatable> newAnim;
             for (; i != iend; ++i)
             {
-               //if the last anim was NOT the last on, it has to end and be an action
+               //if the last anim was NOT the last one, it has to end and be an action
                if (newAnim.valid())
                {
                   dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
@@ -480,11 +484,11 @@ namespace SimCore
                      animChannel->SetAction(true);
                   }
                }
-               
+
                const dtAI::Operator* op = *i;
-               
+
                op->Apply(mPlannerHelper.GetCurrentState());
-               
+
                const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
                if (animatable != NULL)
                {
@@ -495,10 +499,10 @@ namespace SimCore
                   }
                   newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
                   newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime - blendTime));
-                  
+
                   newAnim->SetFadeIn(blendTime);
                   newAnim->SetFadeOut(blendTime);
-      
+
                   generatedSequence->AddAnimation(newAnim.get());
                }
             }
