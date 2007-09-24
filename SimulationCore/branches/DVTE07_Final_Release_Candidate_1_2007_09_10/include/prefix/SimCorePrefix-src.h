@@ -7,14 +7,14 @@
 #include <prefix/dtgameprefix-src.h>
 #undef NO_DT_WIN_PCH_HEADER
 
-#include <SimCore/Actors/Platform.h>
+//#include <SimCore/Actors/Platform.h>
 //#include <SimCore/Actors/Human.h>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaCharacterHelper.h>
-#include <NxAgeiaPrimitivePhysicsHelper.h>
+//#ifdef AGEIA_PHYSICS
+//#include <NxAgeiaCharacterHelper.h>
+//#include <NxAgeiaPrimitivePhysicsHelper.h>
 //#include <Stream.h>
-#endif
+//#endif
 
 //#ifdef None
 //#undef None

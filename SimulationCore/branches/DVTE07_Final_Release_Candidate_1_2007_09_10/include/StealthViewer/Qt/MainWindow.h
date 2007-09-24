@@ -347,6 +347,8 @@ namespace StealthQt
          std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;
 
          QDoubleValidator *mDoubleValidator;
+
+         bool mShowMissingEntityInfoErrorMessage;
    };
 }
 

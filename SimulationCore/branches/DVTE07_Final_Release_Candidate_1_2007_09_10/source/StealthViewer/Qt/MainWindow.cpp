@@ -68,7 +68,8 @@ namespace StealthQt
       mIsPlayingBack(false),
       mApp(&app), 
       mIsConnectedToHLA(false), 
-      mDoubleValidator(new QDoubleValidator(0, 10000, 5, this))
+      mDoubleValidator(new QDoubleValidator(0, 10000, 5, this)), 
+      mShowMissingEntityInfoErrorMessage(true)
    {
       mUi->setupUi(this);
       ConnectSlots();
@@ -1732,10 +1733,18 @@ namespace StealthQt
       }
       else
       {
-         QString message = tr("Could not find info for the actor named: ") + currentItem->text() + 
-            tr(" because this actor has been removed from the scenario. Please select another actor");
+         if(mShowMissingEntityInfoErrorMessage)
+         {
+            QString message = 
+               tr("Could not find info for the actor named: ") + 
+               currentItem->text() + 
+               tr(" because this actor has been removed from the scenario. Please select another actor");
 
-         QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+            QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+         
+            if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+               mShowMissingEntityInfoErrorMessage = false;
+         }
       }
    }
 
@@ -1827,7 +1836,10 @@ namespace StealthQt
 
    void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
    {
-      StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(state == Qt::Checked);
+      bool isChecked = (state == Qt::Checked);
+      if(isChecked)
+         mShowMissingEntityInfoErrorMessage = true;
+      StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(isChecked);
    }
 
    void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
