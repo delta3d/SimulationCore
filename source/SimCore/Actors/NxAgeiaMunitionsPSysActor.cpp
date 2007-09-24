@@ -552,8 +552,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
-   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), _id.ToString().c_str());
-
+   newActor->userData = mPhysicsHelper.get();
    _particle->SetPhysicsActor(newActor);
 
    // add to our list for updating and such....

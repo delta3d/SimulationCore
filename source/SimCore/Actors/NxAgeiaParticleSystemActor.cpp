@@ -358,7 +358,7 @@ void NxAgeiaParticleSystemActor::AddParticle()
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
-   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), _id.ToString().c_str());
+   newActor->userData = mPhysicsHelper.get();
 
    // add to our list for updating and such....
    _particle->SetPhysicsActor(newActor);
@@ -410,8 +410,6 @@ void NxAgeiaParticleSystemActor::OnEnteredWorld()
 {
    dtAgeiaPhysX::NxAgeiaWorldComponent *component = dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
    component->RegisterAgeiaHelper(*mPhysicsHelper.get());
-
-   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
 
    // this way we dont turn off defaults to the scene.....
    // your particle system may not work the way you wanted if this 
