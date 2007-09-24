@@ -47,7 +47,8 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -128,7 +129,8 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
@@ -260,6 +262,28 @@
 			<File
 				RelativePath="..\..\tests\SimCore\PauseResumeTests.cpp"
 				>
+			</File>
+			<File
+				RelativePath="..\..\tests\precomp.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\tests\SimCore\StealthActorTests.cpp"
