@@ -1830,7 +1830,70 @@ namespace StealthQt
    {
       if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
       {
-         PopulateEntityInfoWindow();
+         // Nasty duplicated code.
+         // This is a quick fix to stop the entity info window from 
+         // refreshing and causing an attach to the current actor 
+         // if the box is selected. 
+
+         // Simply call the same code with no attach call instead
+         // of calling the method in order not to break existing 
+         // functionality. 
+         
+         // Remember, you cannot change the method signatures to take a 
+         // flag or anything because the signatures between a SIGNAL 
+         // and SLOT HAVE to match EXACTLY. 
+
+         // I will fix this at a later date with a more robust approach 
+         // - Eddie 
+
+         //PopulateEntityInfoWindow();
+         QTableWidgetItem *currentItem = mUi->mSearchEntityTableWidget->currentItem();
+         unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
+         if(index > mFoundActors.size() || currentItem == NULL)
+            return;
+
+         QString id = currentItem->data(Qt::UserRole).toString();
+
+         // Retrieve proxy from the GM
+         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
+         if(proxy != NULL)
+         {
+            osg::Vec3 pos = proxy->GetTranslation(), 
+               rot = proxy->GetRotation();
+
+            std::ostringstream oss;
+            oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
+
+            mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
+            mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
+            oss.str("");
+
+            oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
+
+            mUi->mRotationLineEdit->setText(tr(oss.str().c_str()));
+
+            mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
+            mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
+
+            double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
+
+            mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime));
+         }
+         else
+         {
+            if(mShowMissingEntityInfoErrorMessage)
+            {
+               QString message = 
+                  tr("Could not find info for the actor named: ") + 
+                  currentItem->text() + 
+                  tr(" because this actor has been removed from the scenario. Please select another actor");
+
+               QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+
+               if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+                  mShowMissingEntityInfoErrorMessage = false;
+            }
+         }
       }
    }
 
