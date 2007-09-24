@@ -130,8 +130,8 @@ namespace SimCore
 
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
-         : mIntensity(1.0f)
-         , mDeleteMe(false)
+         : mDeleteMe(false)
+         , mIntensity(1.0f)
          , mSaturationIntensity(1.0f)
          , mColor(1.0f, 1.0f, 1.0f)
          , mPosition()
@@ -576,7 +576,7 @@ namespace SimCore
          //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(trans.GetTranslation()));
 
-         int count = 0;
+         unsigned count = 0;
          for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3; count += 3)
          { 
             if(iter != endIter)
