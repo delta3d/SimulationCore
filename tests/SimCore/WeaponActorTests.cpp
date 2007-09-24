@@ -10,6 +10,7 @@
 * 
 * @author Chris Rodgers
 */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtUtil/macros.h>

@@ -1,3 +1,4 @@
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtDAL/project.h>
 #include <dtDAL/datatype.h>

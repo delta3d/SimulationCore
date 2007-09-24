@@ -1,4 +1,5 @@
 //#ifdef AGEIA_PHYSICS_ 1
+#include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 
 #include <cppunit/extensions/HelperMacros.h>

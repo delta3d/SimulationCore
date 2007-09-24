@@ -18,6 +18,7 @@
  *
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>

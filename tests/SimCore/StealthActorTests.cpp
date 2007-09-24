@@ -18,6 +18,7 @@
  *
  * @author David Guthrie
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <string>

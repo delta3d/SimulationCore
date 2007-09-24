@@ -18,6 +18,7 @@
  *
  * @author David Guthrie
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <string>
 #include <vector>
 #include <set>
