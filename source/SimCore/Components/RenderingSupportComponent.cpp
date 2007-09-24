@@ -255,7 +255,7 @@ namespace SimCore
          for (unsigned int i = 0; i < numPrototypes; i ++)
          {
             SimCore::Actors::DynamicLightPrototypeProxy *prototype = (SimCore::Actors::DynamicLightPrototypeProxy *)prototypes[i];
-            LOG_INFO("Found dynamic light proxy [" + prototype->GetName() + "].");
+            LOG_DEBUG("Found dynamic light proxy [" + prototype->GetName() + "].");
             mDynamicLightPrototypes.insert(std::make_pair(prototype->GetName(), prototype));
          }
 
