@@ -156,6 +156,8 @@ namespace SimCore
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
          , mEnableNVGS(false)
+         , mDeltaScene(new osg::Group())
+         , mSceneRoot(new osg::Group())
          , mGUIRoot(new osg::CameraNode())
          , mNVGSRoot(new osg::CameraNode())
          , mNVGS(0)
@@ -192,12 +194,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         dtCore::RefPtr<osg::Group> grp = new osg::Group();
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mNVGSRoot.get());
-         GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->setSceneData(grp.get());
+         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
+         GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->setSceneData(mSceneRoot.get());
 
-         grp->addChild(mNVGSRoot.get());
-         grp->addChild(mGUIRoot.get());
+         mSceneRoot->addChild(mNVGSRoot.get());
+         mSceneRoot->addChild(mGUIRoot.get());
+         mSceneRoot->addChild(mDeltaScene.get());                 
                   
          mNVGSRoot->setRenderOrder(osg::CameraNode::NESTED_RENDER);      
          mGUIRoot->setRenderOrder(osg::CameraNode::POST_RENDER);
@@ -233,7 +235,7 @@ namespace SimCore
       void RenderingSupportComponent::SetEnableNVGS(bool pEnable)
       {
          if(mNVGS.valid())
-         {
+         {            
             mEnableNVGS = pEnable;
             mNVGS->SetEnable(mEnableNVGS);
          }                  

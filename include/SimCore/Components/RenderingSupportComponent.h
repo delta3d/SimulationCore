@@ -215,6 +215,8 @@ namespace SimCore
             bool mEnableDynamicLights;
             bool mEnableCullVisitor;
             bool mEnableNVGS;
+            dtCore::RefPtr<osg::Group> mDeltaScene;
+            dtCore::RefPtr<osg::Group> mSceneRoot;
             dtCore::RefPtr<osg::CameraNode> mGUIRoot;
             dtCore::RefPtr<osg::CameraNode> mNVGSRoot;
             dtCore::RefPtr<RenderFeature> mNVGS;
