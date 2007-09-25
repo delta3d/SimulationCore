@@ -12,6 +12,7 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/IGExceptionEnum.h>
 
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtHLAGM/hlacomponent.h>
@@ -24,7 +25,7 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string &HLAConnectionComponent::DEFAULT_NAME = "HLAConnectionComponent";
+      const std::string HLAConnectionComponent::DEFAULT_NAME = "HLAConnectionComponent";
 
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
          dtGame::GMComponent(name), 
@@ -96,22 +97,23 @@ namespace SimCore
 
       void HLAConnectionComponent::Connect()
       {
+         if(mMapNames.empty())
+         {
+            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA, 
+               "You have tried to connect when no maps have been specified. \
+                Please specify the name of the map to load for this connection", __FILE__, __LINE__);
+         }
+
          // Temporary fix added by Eddie. This is not particularly hackish, and 
          // maintains support for both the Stealth Viewer and the other apps
          // that requires multiple map support
-         if(mMapNames.size() == 1)
-         {
-            GetGameManager()->ChangeMap(mMapNames[0], false, true);
-         }
-         else
-         {
-            GetGameManager()->ChangeMapSet(mMapNames, false, true);
-         }
+         GetGameManager()->ChangeMapSet(mMapNames, false, true);
       }
 
       void HLAConnectionComponent::Disconnect()
       {
          GetGameManager()->CloseCurrentMap();
+         mMapNames.clear();
          dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
          try
          {

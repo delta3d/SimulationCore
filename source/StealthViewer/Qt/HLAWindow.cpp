@@ -154,10 +154,11 @@ namespace StealthQt
 
       if(result == QMessageBox::Yes)
       {
-         // disconnect from federation
+         // Disconnect from federation
          if(mHLAComp != NULL)
             mHLAComp->Disconnect();
 
+         // Disable applicable buttons
          mUi->mCurrentFederationLineEdit->setText("None");
          mCurrentConnectionName = mUi->mCurrentFederationLineEdit->text();
          mUi->mDisconnectPushButton->setEnabled(false);
@@ -175,6 +176,7 @@ namespace StealthQt
       }
       else
       {
+         // Cancel, because they selected QMessageBox::No
          mCancelConnectProcess = true;
       }
    }
@@ -280,14 +282,24 @@ namespace StealthQt
             mHLAComp->SetFedEx(fedex);
             mHLAComp->SetRidFile(ridFile);
 
-            mHLAComp->Connect();
+            try
+            {
+               mHLAComp->Connect();
+            }
+            catch(const dtUtil::Exception &e)
+            {
+               QMessageBox::warning(this, tr("Error"), 
+                  tr("An error occured while trying to connect to the federation: ") + 
+                  tr(e.What().c_str()), QMessageBox::Ok);
+            }
+
             emit ConnectedToHLA(properties[0]);
          }
       }
       catch(const dtUtil::Exception &ex)
       {
-         QMessageBox::information(this, tr("Error"), 
-               tr("Error searching for HLA resource files. Unable to connect to federation: ") + tr(ex.ToString().c_str()), 
+         QMessageBox::warning(this, tr("Error"), 
+               tr("Error searching for HLA resource files. Unable to connect to the federation: ") + tr(ex.ToString().c_str()), 
                QMessageBox::Ok);
          return;
       }      

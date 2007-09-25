@@ -31,6 +31,8 @@
       DECLARE_ENUM(IGExceptionEnum);
       public:
 
+         static IGExceptionEnum INVALID_CONNECTION_DATA;
+
       protected:
          IGExceptionEnum(const std::string &name) : dtUtil::Enumeration(name)
          {
