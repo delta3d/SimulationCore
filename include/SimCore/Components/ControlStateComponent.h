@@ -21,6 +21,7 @@
 #include <SimCore/Export.h>
 #include <dtGame/gmcomponent.h>
 #include <SimCore/Actors/Platform.h>
+#include <SimCore/Actors/ControlStateActor.h>
 
 
 
@@ -46,14 +47,25 @@ namespace osg
 
 namespace SimCore
 {
-   namespace Actors
-   {
-      class ControlStateActor;
-      class ControlStateProxy;
-   }
-
    namespace Components
    {
+      ////////////////////////////////////////////////////////////////////////////////
+      // CONTROL STATE INFO
+      ////////////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT ControlStateInfo : public dtCore::Base
+      {
+      public:
+         ControlStateInfo() : mWeaponSelected(0) {}
+         unsigned mWeaponSelected;
+         dtCore::RefPtr<osg::Node> mWeaponModel;
+         dtCore::RefPtr<SimCore::Actors::ControlStateActor> mControlState;
+
+      protected:
+         virtual ~ControlStateInfo() {}
+      };
+
+
+
       ////////////////////////////////////////////////////////////////////////////////
       // CONTROL STATE COMPONENT
       ////////////////////////////////////////////////////////////////////////////////
@@ -90,6 +102,8 @@ namespace SimCore
             bool DetachWeaponOnVehicle( osg::Node& weapon, SimCore::Actors::Platform& vehicle, const std::string& dofName );
       
             bool DetachRemoteWeaponOnVehicle( SimCore::Actors::Platform& vehicle, const std::string& dofName );
+
+            bool SetRemoteWeaponOnVehicleVisible( SimCore::Actors::Platform& vehicle, const std::string& dofName, bool visible );
       
             /**
              * Access list of file names for weapon models that this component will be
@@ -136,26 +150,31 @@ namespace SimCore
             SimCore::Actors::ControlStateActor* FindVehicleControlState( const SimCore::Actors::Platform& vehicle );
             
             const std::string CreateStationName( unsigned stationNumber );
-      
-            struct ControlStateInfo
-            {
-               unsigned mWeaponSelected;
-               dtCore::RefPtr<osg::Node> mWeaponModel;
-               dtCore::RefPtr<SimCore::Actors::ControlStateActor> mControlState;
-            };
+
             ControlStateInfo* GetRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID );
-            bool AddRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID, const ControlStateInfo& info );
+            bool AddRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
             bool RemoveRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID );
+
+            ControlStateInfo* GetRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID );
+            bool AddRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
+            bool RemoveRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID );
+
+            bool IsVehicleControlState( const SimCore::Actors::ControlStateActor& controlState ) const;
 
             void UpdateWeaponOnVehicle( ControlStateInfo& controlStateInfo );
 
          private:
             // Remote Gunner Map
-            typedef std::map<dtCore::UniqueId, ControlStateInfo > RemoteGunnerMap;
-            RemoteGunnerMap mRemoteGunnerMap;
+            typedef std::map<dtCore::UniqueId, dtCore::RefPtr<ControlStateInfo> > RemoteControlStateMap;
+            RemoteControlStateMap mRemoteGunnerMap;
+            RemoteControlStateMap mRemoteVehicleMap;
 
             // Weapon Model File List
             std::vector<std::string> mWeaponModelFileList;
+
+            ControlStateInfo* GetControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
+            bool AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
+            bool RemoveControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
       
       };
 

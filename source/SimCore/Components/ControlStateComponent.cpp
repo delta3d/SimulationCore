@@ -29,7 +29,6 @@
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Actors/ControlStateActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/IGActor.h>
 #include <SimCore/Components/ControlStateComponent.h>
@@ -184,6 +183,7 @@ namespace SimCore
       void ControlStateComponent::HandleEntityDeleted( const dtCore::UniqueId& entityID )
       {
          RemoveRemoteGunnerControlStateInfo( entityID );
+         RemoveRemoteVehicleControlStateInfo( entityID );
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +221,7 @@ namespace SimCore
          if( controlState.IsRemote() )
          {
             const std::string& vehicleID = controlState.GetEntityID();
+            bool isVehicleControlState = IsVehicleControlState( controlState );
 
             // A vehicle or gunner control state will have a weapon ID (index).
             SimCore::Actors::DiscreteControl* control = controlState.GetDiscreteControl( CONTROL_NAME_WEAPON );
@@ -231,19 +232,31 @@ namespace SimCore
                //DEBUG: std::cout << "\nGunnerControlState:\n\tweapon(" << control->GetCurrentState() << ")" << std::endl;
 
                // This control state should have its previous weapon values tracked.
-               ControlStateInfo* info = GetRemoteGunnerControlStateInfo( control->GetUniqueId() );
+               ControlStateInfo* info = isVehicleControlState
+                  ? GetRemoteVehicleControlStateInfo( vehicleID )
+                  : GetRemoteGunnerControlStateInfo( vehicleID );
 
                // Add the control state info if one does not exist for the current vehicle.
                if( info == NULL )
                {
                   // Use a local struct to pass values to be inserted into this
                   // component's control state info map for gunner control states.
-                  ControlStateInfo newInfo;
-                  AddRemoteGunnerControlStateInfo( vehicleID, newInfo );
+                  if( isVehicleControlState )
+                  {
+                     AddRemoteVehicleControlStateInfo( vehicleID, new ControlStateInfo );
 
-                  // Retrieve the control state info so that the rest of the function
-                  // operate with it.
-                  info = GetRemoteGunnerControlStateInfo( vehicleID );
+                     // Retrieve the control state info so that the rest of the function
+                     // operate with it.
+                     info = GetRemoteVehicleControlStateInfo( vehicleID );
+                  }
+                  else
+                  {
+                     AddRemoteGunnerControlStateInfo( vehicleID, new ControlStateInfo );
+
+                     // Retrieve the control state info so that the rest of the function
+                     // operate with it.
+                     info = GetRemoteGunnerControlStateInfo( vehicleID );
+                  }
                }
 
                if( info != NULL )
@@ -253,26 +266,26 @@ namespace SimCore
                   if( info->mWeaponSelected != unsigned(control->GetCurrentState())
                      || ! info->mControlState.valid() )
                   {
-                     // Determine if the current control state is the vehicle control
-                     // state, and if so, replace it with the gunner control state if
-                     // the incoming control state represents the gunner.
-                     if( info->mControlState.valid() )
-                     {
-                        // Determine if the incoming object is a gunner control state by
-                        // looking for a control that only a gunner control state will contain.
-                        if( IsGunnerControlState( *info->mControlState ) )
-                        {
-                           info->mControlState = &controlState; // this is a gunner control state.
-                        }
-                     }
-                     else
-                     {
-                        // This could be the gunner or vehicle control state, but
-                        // will most likely be the vehicle control state.
-                        info->mControlState = &controlState;
-                     }
+                     // This could be the gunner or vehicle control state.
+                     info->mControlState = &controlState;
+
                      // Update the old value with the current value
                      info->mWeaponSelected = unsigned(control->GetCurrentState());
+
+                     // Update references to vehicle-only control states
+                     if( ! isVehicleControlState )
+                     {
+                        ControlStateInfo* vehicleControlInfo = GetRemoteVehicleControlStateInfo( vehicleID );
+                        
+                        dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
+                        SimCore::Actors::Platform* vehicle = proxy != NULL 
+                           ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor()) : NULL;
+
+                        if( vehicle != NULL && vehicleControlInfo != NULL && vehicleControlInfo->mWeaponModel.valid() )
+                        {
+                           DetachWeaponOnVehicle( *vehicleControlInfo->mWeaponModel, *vehicle, DOF_NAME_WEAPON );
+                        }
+                     }
 
                      // Swap the weapon on the vehicle
                      UpdateWeaponOnVehicle( *info );
@@ -411,6 +424,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::SetRemoteWeaponOnVehicleVisible( 
+         SimCore::Actors::Platform& vehicle, const std::string& dofName, bool visible )
+      {
+         osg::Node* weapon = GetWeaponModelOnVehicle( vehicle.GetUniqueId() );
+         if( weapon != NULL )
+         {
+            weapon->setNodeMask( visible ? 0xFFFFFFFF : 0x0 );
+            return true;
+         }
+         return false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
       const std::string& ControlStateComponent::GetWeaponModelFileName( unsigned weaponIndex )
       {
          static const std::string EMPTY("");
@@ -429,6 +455,10 @@ namespace SimCore
       osg::Node* ControlStateComponent::GetWeaponModelOnVehicle( const dtCore::UniqueId& vehicleID )
       {
          ControlStateInfo* info = GetRemoteGunnerControlStateInfo( vehicleID );
+         if( info == NULL )
+         {
+            info = GetRemoteVehicleControlStateInfo( vehicleID );
+         }
 
          if( info != NULL )
          {
@@ -447,25 +477,64 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      ControlStateComponent::ControlStateInfo* ControlStateComponent::GetRemoteGunnerControlStateInfo( 
+      ControlStateInfo* ControlStateComponent::GetRemoteGunnerControlStateInfo( 
          const dtCore::UniqueId& vehicleID )
       {
-         RemoteGunnerMap::iterator foundIter = mRemoteGunnerMap.find( vehicleID );
-         return foundIter != mRemoteGunnerMap.end() ? &foundIter->second : NULL;
+         return GetControlStateInfo( mRemoteGunnerMap, vehicleID );
       }
 
       ////////////////////////////////////////////////////////////////////////////////
       bool ControlStateComponent::AddRemoteGunnerControlStateInfo( 
-         const dtCore::UniqueId& vehicleID, const ControlStateComponent::ControlStateInfo& info )
+         const dtCore::UniqueId& vehicleID, ControlStateInfo* info )
       {
-         return mRemoteGunnerMap.insert( std::make_pair(vehicleID, info) ).second;
+         return AddControlStateInfo( mRemoteGunnerMap, vehicleID, info );
       }
 
       ////////////////////////////////////////////////////////////////////////////////
       bool ControlStateComponent::RemoveRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID )
       {
-         RemoteGunnerMap::iterator foundIter = mRemoteGunnerMap.find( vehicleID );
-         if( foundIter != mRemoteGunnerMap.end() )
+         return RemoveControlStateInfo( mRemoteGunnerMap, vehicleID );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      ControlStateInfo* ControlStateComponent::GetRemoteVehicleControlStateInfo( 
+         const dtCore::UniqueId& vehicleID )
+      {
+         return GetControlStateInfo( mRemoteVehicleMap, vehicleID );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::AddRemoteVehicleControlStateInfo( 
+         const dtCore::UniqueId& vehicleID, ControlStateInfo* info )
+      {
+         return AddControlStateInfo( mRemoteVehicleMap, vehicleID, info );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::RemoveRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID )
+      {
+         return RemoveControlStateInfo( mRemoteVehicleMap, vehicleID );
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      ControlStateInfo* ControlStateComponent::GetControlStateInfo( 
+         RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID )
+      {
+         RemoteControlStateMap::iterator foundIter = infoMap.find( vehicleID );
+         return foundIter != infoMap.end() ? foundIter->second.get() : NULL;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo* info )
+      {
+         return infoMap.insert( std::make_pair(vehicleID, info) ).second;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::RemoveControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID )
+      {
+         RemoteControlStateMap::iterator foundIter = infoMap.find( vehicleID );
+         if( foundIter != infoMap.end() )
          {
             // Since the control state info is being removed, it must mean that control
             // of the weapon is not being used. Remove the loaded weapon model from the
@@ -486,10 +555,17 @@ namespace SimCore
             }
 
             // Finally remove the control state info
-            mRemoteGunnerMap.erase( foundIter );
+            infoMap.erase( foundIter );
             return true;
          }
          return false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      bool ControlStateComponent::IsVehicleControlState( const SimCore::Actors::ControlStateActor& controlState ) const
+      {
+         const static std::string firstStation(STATION_NAME_PREFIX+"0");
+         return controlState.GetContinuousControl( firstStation ) != NULL;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
