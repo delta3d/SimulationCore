@@ -467,7 +467,7 @@ namespace SimCore
       dtGame::GameManager &gameManager = *GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
-      
+       
       camera->GetSceneHandler()->GetSceneView()->
          setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
@@ -476,11 +476,11 @@ namespace SimCore
       //camera->GetSceneHandler()->GetSceneView()->
       //   setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
 
-      camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
+      //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
-      camera->GetSceneHandler()->GetSceneView()->
-         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
-                             PLAYER_FAR_CLIP_PLANE);
+      //camera->GetSceneHandler()->GetSceneView()->
+      //   setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
+      //                       PLAYER_FAR_CLIP_PLANE);
 
       camera->SetPerspective(60.0f, 60.0f,
                              PLAYER_NEAR_CLIP_PLANE, 
