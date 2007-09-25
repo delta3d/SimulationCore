@@ -51,6 +51,8 @@ namespace SimCore
       mResetRotation(false),
       mReverseLeftRight(false),
       mReverseUpDown(false),
+      mEnabledUpDown(true),
+      mEnabledLeftRight(true),
       mLeftRightLimit(-1.0),
       mUpDownLimit(-1.0),
       mKeyboard(keyboard),
@@ -101,7 +103,7 @@ namespace SimCore
 
             bool setHPR = false;
 
-            if (GetLeftRightMouseAxis()->GetState() != 0)
+            if( mEnabledLeftRight && GetLeftRightMouseAxis()->GetState() != 0)
             {
                setHPR = true;
                double change = GetLeftRightMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
@@ -114,7 +116,7 @@ namespace SimCore
                GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
-            if (GetUpDownMouseAxis()->GetState() != 0)
+            if( mEnabledUpDown && GetUpDownMouseAxis()->GetState() != 0)
             {
                setHPR = true;
                double change = GetUpDownMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
