@@ -146,6 +146,18 @@ namespace SimCore
          bool IsReverseUpDown() const { return mReverseUpDown; }
 
          /**
+          * Allows vertical rotation
+          */
+         void SetUpDownEnabled( bool enabled ) { mEnabledUpDown = enabled; }
+         bool IsUpDownEnabled() const { return mEnabledUpDown; }
+
+         /**
+          * Allows horizontal rotation
+          */
+         void SetLeftRightEnabled( bool enabled ) { mEnabledLeftRight = enabled; }
+         bool IsLeftRightEnabled() const { return mEnabledLeftRight; }
+
+         /**
           * Set the default rest rotation (orientation) in degrees of 
           * heading-pitch-roll to which the motion model should re-orient 
           * the target object, if ResetRotation has been set to TRUE.
@@ -238,6 +250,12 @@ namespace SimCore
 
          // Reverses up/down rotation
          bool mReverseUpDown;
+
+         // Allow vertical rotation
+         bool mEnabledUpDown;
+
+         // Allow horizontal rotation
+         bool mEnabledLeftRight;
 
          // Max degrees the motion model can turn left and right
          // from the attach-to object's heading.
