@@ -64,6 +64,12 @@ public:
    {
       dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
          (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
+      
+      if(hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == true)
+      {
+         return false;
+      }
+
       dtCore::DeltaDrawable *hitTarget = NULL;
       if (physicsHelper != NULL)
          hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
