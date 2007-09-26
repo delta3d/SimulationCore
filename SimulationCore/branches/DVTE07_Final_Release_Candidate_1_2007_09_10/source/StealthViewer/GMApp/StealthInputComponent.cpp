@@ -370,8 +370,11 @@ namespace StealthGM
                {
                   if( mLogController.valid() )
                   {
-                     mLogController->RequestAddIgnoredActor(terrainActor->GetId());
-                     mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
+                     if (terrainActor.valid())
+                        mLogController->RequestAddIgnoredActor(terrainActor->GetId());
+                     
+                     if (gameManager.GetEnvironmentActor() != NULL)
+                        mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
                   }
                   else
                   {
