@@ -48,6 +48,8 @@
 #include <osg/Geometry>
 #include <osg/StateSet>
 
+#include <osg/Notify>//to squelch warnings
+
 
 namespace SimCore
 {
@@ -237,6 +239,16 @@ namespace SimCore
          if(mNVGS.valid())
          {            
             mEnableNVGS = pEnable;
+            if(mEnableNVGS)
+            {
+               //tell OSG to keep it quite
+               osg::setNotifyLevel(osg::FATAL);
+            }
+            else
+            {
+               osg::setNotifyLevel(osg::WARN);
+            }
+
             mNVGS->SetEnable(mEnableNVGS);
          }                  
       }

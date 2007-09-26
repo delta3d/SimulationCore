@@ -75,7 +75,6 @@
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 #include <osgUtil/RenderBin>
-#include <osg/Notify>//to squelch warnings
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
@@ -457,9 +456,6 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup()
    {
-
-      //tell OSG to keep it quite
-      //osg::setNotifyLevel(osg::FATAL);
 
       AssignProjectContext();
       PreLoadMap();
