@@ -83,6 +83,9 @@ namespace SimCore
             mElevationText->setProperty("FrameEnabled", "false");
             mElevationText->setProperty("BackgroundEnabled", "false");
             mElevationText->setHorizontalAlignment(CEGUI::HA_LEFT);*/
+
+            mElevationText->setText("");
+            mOverlay->hide();
          }
          catch(CEGUI::Exception &e)
          {
@@ -91,7 +94,6 @@ namespace SimCore
             throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                oss.str(), __FILE__, __LINE__);
          }
-         Enable(false);
       }
 
       LaserRangeFinder::~LaserRangeFinder()
@@ -124,9 +126,10 @@ namespace SimCore
          }
          else
          {
+            std::cout << "LRF ENABLE" << std::endl;
             mOverlay->hide();
             GetCamera()->GetSceneHandler()->GetSceneView()->setLODScale(GetOriginalLODScale());
-            GetCamera()->SetPerspective(GetOriginalHFOV(), GetOriginalVFOV(), Binoculars::NEAR_CLIPPING_PLANE, Binoculars::FAR_CLIPPING_PLANE);
+            GetCamera()->SetPerspective(GetOriginalHFOV(), GetOriginalVFOV(), GetOriginalNear(), GetOriginalFar());
             //mIntersectionText->setText("");
             mElevationText->setText("");
          }

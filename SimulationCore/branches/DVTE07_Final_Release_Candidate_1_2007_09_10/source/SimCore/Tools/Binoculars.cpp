@@ -52,6 +52,8 @@ namespace SimCore
          mOverlay(NULL),
          mOriginalHFOV(camera.GetHorizontalFov()),
          mOriginalVFOV(camera.GetVerticalFov()),
+         mOriginalNear(NEAR_CLIPPING_PLANE),
+         mOriginalFar(FAR_CLIPPING_PLANE),
          mOriginalLODScale(camera.GetSceneHandler()->GetSceneView()->getLODScale()),
          mIsDynamicZooming(false), 
          mZoomFactor(7.0f)
@@ -104,6 +106,8 @@ namespace SimCore
                mElevationText->setHorizontalAlignment(CEGUI::HA_LEFT);
                SetElevationReadoutScreenPosition(0.925f,0.8f);
             }
+
+            mOverlay->hide();
          }
          catch(CEGUI::Exception &e)
          {
@@ -112,7 +116,6 @@ namespace SimCore
             throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
                oss.str(), __FILE__, __LINE__);
          }
-         Enable(false);
  	   }
 
  	   Binoculars::~Binoculars()
@@ -122,7 +125,23 @@ namespace SimCore
          
          CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
          wm->destroyWindow(mOverlay);
- 	   }
+      }
+
+      void Binoculars::SetOriginalNearFar( float nearValue, float farValue )
+      { 
+         mOriginalNear = nearValue;
+         mOriginalFar = farValue;
+      }
+
+      void Binoculars::SetOriginalNear( float nearValue )
+      { 
+         mOriginalNear = nearValue;
+      }
+
+      void Binoculars::SetOriginalFar( float farValue )
+      { 
+         mOriginalFar = farValue;
+      }
 
       void Binoculars::Enable(bool enable)
       {
@@ -137,7 +156,7 @@ namespace SimCore
          {
             mOverlay->hide();
             mCamera->GetSceneHandler()->GetSceneView()->setLODScale(mOriginalLODScale);
-            mCamera->SetPerspective(mOriginalHFOV, mOriginalVFOV, NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+            mCamera->SetPerspective(mOriginalHFOV, mOriginalVFOV, mOriginalNear, mOriginalFar);
          }
       }
 
