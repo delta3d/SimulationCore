@@ -65,16 +65,16 @@ class MunitionRaycastReport : public NxUserRaycastReport
          dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
             (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
          
-         if(hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == true
-         || physicsHelper == NULL)
+         if(hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == true)
          {
             return false;
          }
 
          dtCore::DeltaDrawable *hitTarget = NULL;
          
-         // null checked up above in the return
-         hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
+         if(physicsHelper != NULL)
+            // null checked up above in the return
+            hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
 
          // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
          // whatever hit we get.  Otherwise, we check the owner drawables
