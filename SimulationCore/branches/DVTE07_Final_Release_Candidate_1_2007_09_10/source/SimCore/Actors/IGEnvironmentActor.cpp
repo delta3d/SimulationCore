@@ -116,6 +116,10 @@ namespace SimCore
          osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
          states->setAttributeAndModes(depthState);
 
+         osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
+         cloudPlaneSS->setAttributeAndModes(depthState);
+         cloudPlaneSS->setRenderBinDetails( -1, "RenderBin" );
+
          states->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
          states->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT, "RenderBin" );
