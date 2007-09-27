@@ -104,13 +104,16 @@ namespace SimCore
             virtual NxControllerAction AgeiaCharacterControllerReport(const NxControllersHit& controllerHit);
             //////////////////////////////////////////////////////////////////////////////
 
-            /// our helper
-            osg::ref_ptr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
+            dtAgeiaPhysX::NxAgeiaCharacterHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+            
 #endif
 
             void SetMovementTransform(const osg::Vec3& movement);
 
          private:
+            /// our helper
+            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
+
             bool        mAcceptInput;     // for ai vs human. 
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;

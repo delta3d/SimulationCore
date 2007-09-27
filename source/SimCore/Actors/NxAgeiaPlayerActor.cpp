@@ -280,7 +280,6 @@ namespace SimCore
          displacementVector.z = currentTransform[2] - mPreviousTransform[2];
          mPreviousTransform = currentTransform;
 
-
          dtGame::GMComponent *comp = 
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
 
@@ -313,7 +312,9 @@ namespace SimCore
          dtCore::Transform transform;
          GetTransform(transform);
          mPreviousTransform = transform.GetTranslation(); 
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2]) );
+
+         osg::Vec3 offset = mPhysicsHelper->GetDimensions();
+         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2] + ( offset[2] / 2 ) ) );
 #endif
       }
 
@@ -357,9 +358,7 @@ namespace SimCore
          mPhysicsHelper->InitializeCharacter();
          dtCore::Transform transform;
          GetTransform(transform);
-
          SetPosition( transform.GetTranslation() );
-
          mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 #endif
@@ -374,18 +373,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::AgeiaPrePhysicsUpdate()
       {
-
       }
 
       //////////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::AgeiaPostPhysicsUpdate()
       {
-         dtCore::Transform xform;
-         GetTransform(xform);
-         const NxExtendedVec3* pos = mPhysicsHelper->GetCharacterPos();
-         xform.SetTranslation(pos->x, pos->y, pos->z);
-         SetTransform(xform);
-         mPreviousTransform = xform.GetTranslation();
+         if(!IsRemote())
+         {
+            dtCore::Transform xform;
+            GetTransform(xform);
+            const NxExtendedVec3* pos = mPhysicsHelper->GetCharacterPos();
+            xform.SetTranslation(pos->x, pos->y, pos->z);
+            SetTransform(xform);
+            mPreviousTransform = xform.GetTranslation();
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////////
@@ -429,20 +430,23 @@ namespace SimCore
          SetClassName("NxAgeiaPlayerActor");
       }
 
+      //////////////////////////////////////////////////////////////////////////
       NxAgeiaPlayerActorProxy::~NxAgeiaPlayerActorProxy()
       {
 
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActorProxy::BuildPropertyMap()
       {
          HumanActorProxy::BuildPropertyMap();
 #ifdef AGEIA_PHYSICS
          NxAgeiaPlayerActor* actor = dynamic_cast<NxAgeiaPlayerActor*>(GetActor());
-         actor->mPhysicsHelper->BuildPropertyMap();
+         actor->GetPhysicsHelper()->BuildPropertyMap();
 #endif
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActorProxy::BuildInvokables()
       {
          HumanActorProxy::BuildInvokables();

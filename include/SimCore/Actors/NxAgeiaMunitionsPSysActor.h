@@ -46,57 +46,58 @@ namespace SimCore
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 class MunitionRaycastReport : public NxUserRaycastReport
 {
-public:
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   MunitionRaycastReport(/*NxActor *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
-      //, mOurActor(actor)
-      , mGotAHit(false)
-      , mOwnerActor(ownerActor)
-      , mClosestHitsHelper(NULL)
-   {
-   }
-
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   virtual ~MunitionRaycastReport(){}
-
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   virtual bool onHit(const NxRaycastHit& hit)
-   {
-      dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
-         (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
-      
-      if(hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == true)
+   public:
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      MunitionRaycastReport(/*NxActor *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
+         //, mOurActor(actor)
+         , mGotAHit(false)
+         , mOwnerActor(ownerActor)
+         , mClosestHitsHelper(NULL)
       {
-         return false;
       }
 
-      dtCore::DeltaDrawable *hitTarget = NULL;
-      if (physicsHelper != NULL)
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      virtual ~MunitionRaycastReport(){}
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      virtual bool onHit(const NxRaycastHit& hit)
+      {
+         dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+            (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
+         
+         if(hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == true
+         || physicsHelper == NULL)
+         {
+            return false;
+         }
+
+         dtCore::DeltaDrawable *hitTarget = NULL;
+         
+         // null checked up above in the return
          hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
 
-      // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
-      // whatever hit we get.  Otherwise, we check the owner drawables
-      if (mOwnerActor == NULL || hitTarget != mOwnerActor)
-      {
-         if (!mGotAHit || mClosestHit.distance > hit.distance)
+         // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
+         // whatever hit we get.  Otherwise, we check the owner drawables
+         if (mOwnerActor == NULL || hitTarget != mOwnerActor)
          {
-            mClosestHitsHelper = physicsHelper;
-            mGotAHit = true;
-            mClosestHit = hit;
-            //return true;
+            if (!mGotAHit || mClosestHit.distance > hit.distance)
+            {
+               mClosestHitsHelper = physicsHelper;
+               mGotAHit = true;
+               mClosestHit = hit;
+               return true;
+            }
          }
-      }
 
-      return true;
-   }	
+         return true;
+      }	
 
-public:
-   //NxActor *mOurActor;
-   bool mGotAHit;
-   NxRaycastHit mClosestHit;
-   dtCore::DeltaDrawable *mOwnerActor;
-   dtAgeiaPhysX::NxAgeiaPhysicsHelper* mClosestHitsHelper;
-
+   public:
+      //NxActor *mOurActor;
+      bool mGotAHit;
+      NxRaycastHit mClosestHit;
+      dtCore::DeltaDrawable *mOwnerActor;
+      dtAgeiaPhysX::NxAgeiaPhysicsHelper* mClosestHitsHelper;
 };
 
 
