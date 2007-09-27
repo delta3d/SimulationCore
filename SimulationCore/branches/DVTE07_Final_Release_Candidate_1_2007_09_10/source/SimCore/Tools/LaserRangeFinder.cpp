@@ -126,7 +126,6 @@ namespace SimCore
          }
          else
          {
-            std::cout << "LRF ENABLE" << std::endl;
             mOverlay->hide();
             GetCamera()->GetSceneHandler()->GetSceneView()->setLODScale(GetOriginalLODScale());
             GetCamera()->SetPerspective(GetOriginalHFOV(), GetOriginalVFOV(), GetOriginalNear(), GetOriginalFar());
