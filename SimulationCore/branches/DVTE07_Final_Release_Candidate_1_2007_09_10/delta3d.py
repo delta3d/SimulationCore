@@ -409,7 +409,7 @@ def TOOL_BUNDLE(env):
          
          if env['OS'] == 'windows':
            env.Append( CPPDEFINES = ['WIN32', 'NDEBUG', '_NOAUTOLIBMSG'],
-                    CXXFLAGS = ['/EHsc', '/GR', '/MD' ], #synchronous exception handling (c-?), run-time type info, multi-threaded dll
+                    CXXFLAGS = ['/EHsc', '/GR', '/MD', '/Ox'], #synchronous exception handling (c-?), run-time type info, multi-threaded dll
                     LINKFLAGS = ['/NODEFAULTLIB:LIBCMT', '/NODEFAULTLIB:LIBC'] )  
          elif env['OS'] == 'linux':
            env.Append( CXXFLAGS=['-O2', '-pipe'], #optimizations, pipe object data
@@ -495,7 +495,7 @@ def TOOL_BUNDLE(env):
             dtLibs[lib] = lib + 'd'
             
       # platform-specific naming of dependencies
-      if env['OS'] == 'windows' :
+      if env['OS'] == 'windows' :'/Ox'
          if mode == 'debug' :
             extLibs =  { 
                'CEGUIBase'           : 'CEGUIBase_d',
