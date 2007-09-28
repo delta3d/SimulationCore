@@ -28,6 +28,7 @@
 #include <dtAnim/animationchannel.h>
 #include <dtAnim/animationwrapper.h>
 #include <dtAnim/sequencemixer.h>
+#include <dtAnim/cal3dmodelwrapper.h>
 
 #include <dtAI/worldstate.h>
 #include <dtAI/basenpcutils.h>
@@ -440,6 +441,7 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////////////////////////////////
       void Human::UpdatePlanAndAnimations()
       {
          GenerateNewAnimationSequence();
@@ -468,7 +470,7 @@ namespace SimCore
             i = mCurrentPlan.begin();
             iend = mCurrentPlan.end();
 
-            const float blendTime = 0.01f;
+            const float blendTime = 0.2f;
             float accumulatedStartTime = 0.0f;
 
             dtCore::RefPtr<dtAnim::Animatable> newAnim;
@@ -480,7 +482,9 @@ namespace SimCore
                   dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
                   if (animChannel != NULL)
                   {
-                     animChannel->SetMaxDuration(animChannel->GetAnimation()->GetDuration());
+                     float duration = animChannel->GetAnimation()->GetDuration();
+                     accumulatedStartTime += duration;
+                     animChannel->SetMaxDuration(duration);
                      animChannel->SetAction(true);
                   }
                }
