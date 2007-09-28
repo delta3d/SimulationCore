@@ -495,7 +495,7 @@ def TOOL_BUNDLE(env):
             dtLibs[lib] = lib + 'd'
             
       # platform-specific naming of dependencies
-      if env['OS'] == 'windows' :'/Ox'
+      if env['OS'] == 'windows' :
          if mode == 'debug' :
             extLibs =  { 
                'CEGUIBase'           : 'CEGUIBase_d',
