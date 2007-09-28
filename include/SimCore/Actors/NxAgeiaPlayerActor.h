@@ -80,6 +80,8 @@ namespace SimCore
 
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
+            virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
+
 #ifdef AGEIA_PHYSICS
 
             //////////////////////////////////////////////////////////////////////////////
