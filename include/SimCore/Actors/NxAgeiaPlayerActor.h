@@ -106,13 +106,15 @@ namespace SimCore
 
             dtAgeiaPhysX::NxAgeiaCharacterHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
             
-#endif
-
-            void SetMovementTransform(const osg::Vec3& movement);
-
          private:
             /// our helper
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
+#endif
+
+         public:
+            void SetMovementTransform(const osg::Vec3& movement);
+            
+         private:
 
             bool        mAcceptInput;     // for ai vs human. 
             bool        mNotifyChangePosition;
