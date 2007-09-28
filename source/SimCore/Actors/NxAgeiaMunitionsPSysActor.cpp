@@ -182,10 +182,10 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          NxRaycastHit   mOurHit;
 
          // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
-         // Make sure we DO hit hte terrain appropriately
+         // Make sure we DO hit hte terrain appropriatelys
          MunitionRaycastReport myReport((mWeapon.valid() ? mWeapon->GetOwner() : NULL));
          //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0));
+         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0) | (1 << 30));
          if(numHits > 0 && myReport.mGotAHit)
          {
             if (myReport.mClosestHit.distance <= length)
@@ -411,7 +411,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          }
          else if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::THREED)
          {
-            //_particle->mObj->LoadFile(mPathOfFileToLoad[0]);
             LoadParticleResource(*_particle, mPathOfFileToLoad[0]);
             orientDrawable = true;
          }
@@ -424,7 +423,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       }
       else if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::THREED)
       {
-         //_particle->mObj->LoadFile(mPathOfFileToLoad[0]);
          LoadParticleResource(*_particle, mPathOfFileToLoad[0]);
          orientDrawable = true;
       }
@@ -440,11 +438,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       }
    }
 
-   //dtCore::Transform tempTransformForParticleScale;
-   //tempTransformForParticleScale.SetScale(GetGameActorProxy()->GetScale());
-   //_particle->mObj->SetTransform
-   //dtCore::Object::GetOSGNode::set
-   
    NxActor* newActor = NULL;
    //////////////////////////////////////////////////////////////////////////
    // Set up the physics values for the object
@@ -471,9 +464,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::FLATPLAIN)
    {
-      // load flat plain            
-      newActor = mPhysicsHelper->SetCollisionFlatSurface(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-         dimensions, collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH)
    {
@@ -507,7 +497,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    
    //////////////////////////////////////////////////////////////////////////
    // Set up emitter values on the particle...
-   //NxActor* pNewActor =  mPhysicsHelper->GetPhysXObject(_id.ToString().c_str());
    
    osg::Vec4 linearVelocities;
    linearVelocities[0] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[0], mStartingLinearVelocityScaleMin[0]);
@@ -519,25 +508,6 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    linearVelocities[0] += mParentsWorldRelativeVelocityVector[0];
    linearVelocities[1] += mParentsWorldRelativeVelocityVector[1];
    linearVelocities[2] += mParentsWorldRelativeVelocityVector[2];
-
-   //cone capping
-   //for(int i = 0 ; i < 3; i++)
-   //{
-   //   if(linearVelocities[i] > -mStartingLinearVelocityScaleInnerConeCap[i] && linearVelocities[i] < mStartingLinearVelocityScaleInnerConeCap[i])
-   //   {
-   //      float diffone = (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]);
-   //      float difftwo = (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]);
-   //      
-   //      if(diffone > difftwo)
-   //      {
-   //         linearVelocities[i] = -mStartingLinearVelocityScaleInnerConeCap[i];
-   //      }
-   //      else if(difftwo > diffone)
-   //      {
-   //         linearVelocities[i] = mStartingLinearVelocityScaleInnerConeCap[i];
-   //      }
-   //   }
-   //}
 
    NxVec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
    newActor->setLinearVelocity(vRandVec);
@@ -552,7 +522,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
-   newActor->userData = mPhysicsHelper.get();
+   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), _id.ToString().c_str());
+   //newActor->userData = mPhysicsHelper.get();
    _particle->SetPhysicsActor(newActor);
 
    // add to our list for updating and such....
@@ -569,49 +540,6 @@ void NxAgeiaMunitionsPSysActor::OnEnteredWorld()
 ////////////////////////////////////////////////////////////////////
 void NxAgeiaMunitionsPSysActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, NxActor& ourSelf, NxActor& whatWeHit)
 {
-   if (true)
-      return;
-
-   // do something with the collision report...
-   bool doNotsendReport = false;
-   if(mObjectsStayStaticWhenHit == false)
-   {
-      std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
-      for(;iter!= mOurParticleList.end(); ++iter)
-      {
-         if(&ourSelf == (*iter)->GetPhysicsActor() )
-         {
-            MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>((*iter).get());
-            doNotsendReport = ResolveISectorCollision(*munitionsParticle);
-
-            if(doNotsendReport == false && mWeapon.valid())
-            {
-               dtGame::GameActor* ignoreActor = dynamic_cast<dtGame::GameActor*>(mWeapon->GetOwner());
-               dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsActor = (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(whatWeHit.userData);
-
-               // If actor is NULL, it is land or static geometry thats not moving
-               dtGame::GameActorProxy* proxy = physicsActor != NULL ? physicsActor->GetPhysicsGameActorProxy() : NULL;
-
-               if(proxy != NULL)
-               {
-                  if(proxy->GetActor() != ignoreActor)
-                  {
-                     // Notify the weapon of the contact
-                     munitionsParticle->FlagToDelete();
-                     mWeapon->ReceiveContactReport( contactReport, proxy );
-                  }
-               }
-               else
-               {
-                  munitionsParticle->FlagToDelete();
-                  mWeapon->ReceiveContactReport( contactReport, proxy );
-               }
-            }
-
-            break;
-         }
-      }
-   }
 }
 
 ////////////////////////////////////////////////////////////////////
