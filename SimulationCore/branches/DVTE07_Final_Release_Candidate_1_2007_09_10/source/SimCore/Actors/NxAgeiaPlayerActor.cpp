@@ -224,6 +224,13 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
+      {
+         SimCore::Actors::BaseEntity::FillPartialUpdatePropertyVector(propNamesToFill);
+         propNamesToFill.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
+      }
+
+      ////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::SetMovementTransform(const osg::Vec3& movement)
       {
 #ifdef AGEIA_PHYSICS
