@@ -89,7 +89,6 @@ class MunitionRaycastReport : public NxUserRaycastReport
             }
          }
 
-         
          return true;
       }	
 
