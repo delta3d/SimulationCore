@@ -62,6 +62,7 @@ namespace SimCore
    namespace Actors
    {
       class HumanOperator;
+      class WalkRunBlend;
       
       class SIMCORE_EXPORT BasicStanceEnum : public dtUtil::Enumeration
       {

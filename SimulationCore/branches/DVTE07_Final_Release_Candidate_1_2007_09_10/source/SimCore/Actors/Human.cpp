@@ -51,11 +51,239 @@
    #pragma warning(disable : 4355)
 #endif
 
+
 namespace SimCore
 {
 
    namespace Actors
    {
+
+      //A class to simulate a walk run blend
+      class WalkRunBlend: public dtAnim::AnimationSequence
+      {
+      public:
+
+         class WRController: public dtAnim::AnimationSequence::AnimationController
+         {
+            public:
+               typedef dtAnim::AnimationSequence::AnimationController BaseClass;
+
+               WRController(WalkRunBlend& pWR, Human* h)
+                  : BaseClass(pWR)
+                  , mSpeed(0.0f)
+                  , mWalkStart(0.000001f)//in m/s
+                  , mWalkFadeIn(0.25f)//in m/s
+                  , mWalkStop(1.5f)//in m/s
+                  , mWalkFadeOut(0.75f)//in m/s
+                  , mRunStart(0.75f)//in m/s
+                  , mRunFadeIn(0.75) //in m/s
+                  , mRunStop(std::numeric_limits<float>::max()) //we dont want to stop running
+                  , mRunFadeOut(std::numeric_limits<float>::max()) //we dont want to stop running
+                  , mParentHuman(h)
+               {
+               }
+
+               WRController(const WRController& pWR)
+                  : BaseClass(pWR)
+                  , mSpeed(pWR.mSpeed)
+                  , mWalkStart(pWR.mWalkStart)
+                  , mWalkFadeIn(pWR.mWalkFadeIn)
+                  , mWalkStop(pWR.mWalkStop)
+                  , mWalkFadeOut(pWR.mWalkFadeOut)
+                  , mRunStart(pWR.mRunStart)
+                  , mRunFadeIn(pWR.mRunFadeIn) 
+                  , mRunStop(pWR.mRunStop) 
+                  , mRunFadeOut(pWR.mRunFadeOut)
+                  , mParentHuman(pWR.mParentHuman)
+               {
+
+               }
+
+               void SetAnimations(dtAnim::Animatable* walk, dtAnim::Animatable* run)
+               {
+                  mRun = run;
+                  mWalk = walk;
+               }
+
+               //this sets the basic necessary blend values, the others get expected values
+               void SetRunWalkBasic(float walkStop, float walkFadeOut, float runStart, float runFadeIn)
+               {
+                  mWalkStart = 0.000001f;
+                  mWalkFadeIn = 0.25f;
+                  mWalkStop= walkStop;
+                  mWalkFadeOut = walkFadeOut;
+                  mRunStart = runStart;
+                  mRunFadeIn = runFadeIn;
+                  mRunStop = std::numeric_limits<float>::max();
+                  mRunFadeOut = std::numeric_limits<float>::max();
+               }
+
+               //customize the walk
+               void SetWalk(float start, float fadeIn, float stop, float fadeOut)
+               {
+                  mWalkStart = start;
+                  mWalkFadeIn = fadeIn;
+                  mWalkStop = stop;
+                  mWalkFadeOut = fadeOut;
+               }
+
+               //customize the run
+               void SetRun(float start, float fadeIn, float stop, float fadeOut)
+               {
+                  mRunStart = start;
+                  mRunFadeIn = fadeIn;
+                  mRunStop = stop;
+                  mRunFadeOut = fadeOut;               
+               }
+
+               void SetCurrentSpeed(float pSpeed)
+               {
+                  mSpeed = pSpeed;
+               }
+
+               /*virtual*/ void Update(float dt)
+               {
+                  //update our velocity vector
+                  if(mParentHuman.valid())
+                  {
+                     mSpeed = mParentHuman->GetVelocityVector().length();
+                     //std::cout << "Human Speed: " << mSpeed << std::endl;
+                  }
+                  else
+                  {
+                     LOG_ERROR("Controller has no valid parent pointer");
+                  }
+
+                  float walkWeight = ComputeWeight(mWalk.get(), mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut);
+                  float runWeight = ComputeWeight(mRun.get(), mRunStart, mRunFadeIn, mRunStop, mRunFadeOut);
+
+                  mWalk->SetCurrentWeight(walkWeight);
+                  mRun->SetCurrentWeight(runWeight);
+
+                  if(walkWeight > 0.0f)
+                  {
+                     mWalk->Update(dt);
+                     //std::cout << "Walking Weight: " << walkWeight << std::endl;
+                  }
+
+                  if(runWeight > 0.0f)
+                  {
+                     mRun->Update(dt);
+                     //std::cout << "Running Weight: " << runWeight << std::endl;
+                  }
+               }
+
+               dtAnim::Animatable* GetWalk()
+               {
+                  return mWalk.get();
+               }
+
+               dtAnim::Animatable* GetRun()
+               {
+                  return mRun.get();
+               }
+
+               dtCore::RefPtr<WRController> CloneDerived() const
+               {
+                  return new WRController(*this);
+               }
+               
+            protected:
+               ~WRController()
+               {
+
+               }
+
+               float ComputeWeight(dtAnim::Animatable* pAnim, float startSpeed, float fadeIn, float stopSpeed, float fadeOut)
+               {
+                  //we will have the default imply mSpeed is between startSpeed and stopSpeed
+                  //which basically just saves us another if check
+                  float weight = 1.0f;
+
+                  //if we are out of bounds 
+                  if(mSpeed < startSpeed || mSpeed > stopSpeed)
+                  {
+                     weight = 0.0f;
+                  }
+                  else if(mSpeed < startSpeed + fadeIn) //else if we are fading in
+                  {
+                     weight = (mSpeed - startSpeed) / fadeIn;
+                  }
+                  else if(mSpeed > (stopSpeed - fadeOut)) //else we are fading out
+                  {
+                     weight = (stopSpeed - mSpeed) / fadeOut;      
+                  }
+
+                  dtUtil::Clamp(weight, 0.0f, 1.0f);
+                  return weight;
+               }
+
+               float mSpeed;
+               float mWalkStart, mWalkFadeIn, mWalkStop, mWalkFadeOut;
+               float mRunStart, mRunFadeIn, mRunStop, mRunFadeOut;
+
+
+               dtCore::ObserverPtr<Human> mParentHuman;
+               dtCore::RefPtr<dtAnim::Animatable> mWalk;
+               dtCore::RefPtr<dtAnim::Animatable> mRun;
+         };
+
+
+            WalkRunBlend(Human* h)
+            {
+               mWRController = new WRController(*this, h);
+               SetController(mWRController.get());
+            }
+
+            WalkRunBlend(WRController& controller)
+               : mWRController(&controller)
+
+            {
+               SetController(mWRController.get());
+            }
+
+            void SetAnimations(dtAnim::Animatable* walk, dtAnim::Animatable* run)
+            {
+               AddAnimation(walk);
+               AddAnimation(run);
+               mWRController->SetAnimations(walk, run);
+            }
+
+            void SetCurrentSpeed(float speed)
+            {
+               mWRController->SetCurrentSpeed(speed);
+            }
+
+
+            WRController& GetWalkRunController()
+            {
+               return *mWRController;
+            }
+
+            dtCore::RefPtr<dtAnim::Animatable> Clone(dtAnim::Cal3DModelWrapper* modelWrapper) const
+            {
+               WalkRunBlend* wrb = new WalkRunBlend(*mWRController->CloneDerived());
+
+               if(mWRController->GetWalk() && mWRController->GetRun())
+               {
+                  wrb->SetAnimations(mWRController->GetWalk()->Clone(modelWrapper).get(), mWRController->GetRun()->Clone(modelWrapper).get());
+               }
+               return wrb;
+            }
+
+      protected:
+         ~WalkRunBlend()
+         {
+            mWRController = 0;
+         }
+
+         dtCore::RefPtr<WRController> mWRController;
+      };
+
+
+
+
+
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////    HumanActorProxy      ///////////////////////////
       ////////////////////////////////////////////////////////////////////////////
@@ -206,16 +434,17 @@ namespace SimCore
       const std::string Human::STATE_SHOT("ShotState");
 
       ////////////////////////////////////////////////////////////////////////////
-      Human::Human(dtGame::GameActorProxy& proxy) : BaseEntity(proxy),
-         mAnimationHelper(new dtAnim::AnimationHelper), 
-         mPlannerHelper(
+      Human::Human(dtGame::GameActorProxy& proxy) 
+         : BaseEntity(proxy)
+         , mAnimationHelper(new dtAnim::AnimationHelper)
+         , mPlannerHelper(
                dtAI::PlannerHelper::RemainingCostFunctor(this, &Human::GetRemainingCost),
                dtAI::PlannerHelper::DesiredStateFunctor(this, &Human::IsDesiredState)
-               ),
-         mAnimOperators(mPlannerHelper, *mAnimationHelper),
-         mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING),
-         mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::NO_WEAPON),
-         mLogger(dtUtil::Log::GetInstance("Human.cpp"))
+               )
+         , mAnimOperators(mPlannerHelper, *mAnimationHelper)
+         , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
+         , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::NO_WEAPON)
+         , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
       {
          SetDrawingModel(true);
       }
@@ -265,8 +494,41 @@ namespace SimCore
                mModelGeode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateGeode(mAnimationHelper->GetModelWrapper());
                HandleModelDrawToggle(IsDrawingModel());
                
-               SetupPlannerHelper();
-               
+               //setup speed blends
+               WalkRunBlend* walkRunReady = new WalkRunBlend(this);
+               WalkRunBlend* walkRunDeployed = new WalkRunBlend(this);
+               walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
+               walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
+
+               dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+
+               const dtAnim::Animatable* walkReady = seqMixer.GetRegisteredAnimation("Walk Ready");
+               const dtAnim::Animatable* runReady = seqMixer.GetRegisteredAnimation("Run Ready");
+               if(walkReady && runReady)
+               {
+                  walkRunReady->SetAnimations(walkReady->Clone(mAnimationHelper->GetModelWrapper()).get(), runReady->Clone(mAnimationHelper->GetModelWrapper()).get());
+               }
+               else
+               {
+                  LOG_ERROR("Cannot load animations 'Walk Ready' and 'Run Ready' necessary for speed blend.")
+               }
+
+               const dtAnim::Animatable* walkDeployed = seqMixer.GetRegisteredAnimation("Walk Deployed");
+               const dtAnim::Animatable* runDeployed = seqMixer.GetRegisteredAnimation("Run Deployed");
+               if(walkDeployed && runDeployed)
+               {
+                  walkRunDeployed->SetAnimations(walkDeployed->Clone(mAnimationHelper->GetModelWrapper()).get(), runDeployed->Clone(mAnimationHelper->GetModelWrapper()).get());
+               }
+               else
+               {
+                  LOG_ERROR("Cannot load animations 'Walk Deployed' and 'Run Deployed' necessary for speed blend.")
+               }
+
+               mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunReady);
+               mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
+
+               //initialize helper
+               SetupPlannerHelper();              
                
             }
          }
@@ -324,6 +586,7 @@ namespace SimCore
             //Need tick remote to check for plan changes.
             GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
          }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -703,8 +966,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       const std::string AnimationOperators::ANIM_STAND_READY("Stand Ready");
       const std::string AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
-      const std::string AnimationOperators::ANIM_WALK_READY("Walk Ready");
-      const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Deployed");
+      const std::string AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
+      const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
       const std::string AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
       const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
       const std::string AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
