@@ -70,7 +70,6 @@ namespace SimCore
 
             std::vector<dtDAL::ActorProxy*> proxies;
             GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
-
             if(proxies.empty())
             {
                LOG_ERROR("Failed to find a coordinate config actor in the map. Using default values.");
@@ -83,11 +82,10 @@ namespace SimCore
             hlaComp.GetCoordinateConverter() = ccActor->GetCoordinateConverter();
             std::vector<dtHLAGM::DDMRegionCalculator*> calcs;
             hlaComp.GetDDMSubscriptionCalculators().GetCalculators(calcs);
-            for (unsigned i = 0; i < calcs.size(); ++i)
+            for(size_t i = 0; i < calcs.size(); ++i)
             {
                dtHLAGM::DDMCalculatorGeographic* geoCalc = dynamic_cast<dtHLAGM::DDMCalculatorGeographic*>(calcs[i]);
-               
-               if (geoCalc != NULL)
+               if(geoCalc != NULL)
                {
                   geoCalc->SetCoordinateConverter(ccActor->GetCoordinateConverter());
                }
