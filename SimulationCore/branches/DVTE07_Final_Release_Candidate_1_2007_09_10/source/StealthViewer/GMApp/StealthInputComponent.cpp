@@ -201,13 +201,16 @@ namespace StealthGM
          }
          else if(!stealthProxy->IsRemote())
          {
-            mStealthActor = stealthActor.get();
+            if( ! mStealthActor.valid() )
+            {
+               mStealthActor = stealthActor.get();
+            }
             osg::Vec3 attachOffset = mStealthActor->GetAttachOffset();
             attachOffset.y() = -4.0f;
             mStealthActor->SetAttachOffset( attachOffset );
             mStealthActor->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
 
-            // Ensure thatthe compass tool has reference to the stealth actor
+            // Ensure that the compass tool has reference to the stealth actor
             SimCore::Tools::Compass* compass
                = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
             if(compass != NULL) 
@@ -314,7 +317,7 @@ namespace StealthGM
          const dtCore::UniqueId& id = message.GetAboutActorId();
          if (mStealthActor.valid() && mStealthActor->GetUniqueId() == id)
          {
-            mStealthActor = NULL;
+//            mStealthActor = NULL;
          }
          else if (mTerrainActor.valid() && mTerrainActor->GetId() == id)
          {
@@ -394,22 +397,36 @@ namespace StealthGM
             mLogController->RequestAddIgnoredActor(proxy->GetId());
          }
 
-         std::vector<dtDAL::ActorProxy*> proxies;
-         gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
-         if(proxies.empty())
+         if( mStealthActor.valid() && mStealthActorProxy.valid() )
          {
-            throw dtUtil::Exception(dtDAL::ExceptionEnum::InvalidActorException, 
-               "Failed to find the stealth actor prototype in the map", 
-               __FILE__, __LINE__);
+            // DO NOTHING
+         }
+         else
+         {
+            std::vector<dtDAL::ActorProxy*> proxies;
+            gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
+            if(proxies.empty())
+            {
+               throw dtUtil::Exception(dtDAL::ExceptionEnum::InvalidActorException, 
+                  "Failed to find the stealth actor prototype in the map", 
+                  __FILE__, __LINE__);
+            }
+            else
+            {
+               dtCore::RefPtr<dtDAL::ActorProxy> proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
+               mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
+
+               mStealthActor = static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor());
+            }
          }
 
-         dtCore::RefPtr<dtDAL::ActorProxy> p = 
-            gameManager.CreateActorFromPrototype(proxies[0]->GetId());
-         
-         mStealthActor = 
-            static_cast<SimCore::Actors::StealthActor*>(p->GetActor());
-
-         gameManager.AddActor(mStealthActor->GetGameActorProxy(), false, false);
+         // Re-add the stealth actor to the game manager since a map unload
+         // will have already removed it from the game manager. This assumes
+         // load map has been called after an unload map procedure.
+         if( mStealthActorProxy.valid() )
+         {
+            gameManager.AddActor( *mStealthActorProxy, false, false);
+         }
 
          // After map is loaded, we could set the base elevation - default is 0, which is fine. 
          //SimCore::Components::WeatherComponent* weatherComp = static_cast<SimCore::Components::WeatherComponent*>
@@ -733,7 +750,7 @@ namespace StealthGM
    {
       if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK )
       {
-         std::cout << "StealthInputComponent::HandlePlayback" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandlePlayback" << std::endl;
          // Disconnect from the network if currently in IDLE mode
          if( mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
@@ -746,7 +763,7 @@ namespace StealthGM
          else if(mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
          {
-            std::cout << "\tStealthInputComponent::GotoFirstKeyframe" << std::endl;
+            // DEBUG: std::cout << "\tStealthInputComponent::GotoFirstKeyframe" << std::endl;
             GotoFirstKeyframe();
          }
          else // this must be RECORD state
@@ -756,7 +773,7 @@ namespace StealthGM
       }
       else if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_RECORD )
       {
-         std::cout << "StealthInputComponent::HandleRecord" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandleRecord" << std::endl;
          if(mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
          {
@@ -772,7 +789,7 @@ namespace StealthGM
       }
       else if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE )
       {
-         std::cout << "StealthInputComponent::HandleIdle" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandleIdle" << std::endl;
          mLogController->RequestChangeStateToIdle();
 
          if(mLogController->GetLastKnownStatus().GetStateEnum() 
@@ -864,7 +881,7 @@ namespace StealthGM
 
    void StealthInputComponent::HandleGotoKeyFrame(bool nextKeyFrame)
    {     
-      std::cout << "StealthInputComponent::HandleGotoKeyFrame" << std::endl;
+      // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame" << std::endl;
       if(mEnableLogging && mEnablePlayback)
       {
          nextKeyFrame ? GotoNextKeyframe() : GotoPreviousKeyframe();
@@ -873,7 +890,7 @@ namespace StealthGM
 
    void StealthInputComponent::HandleGotoKeyFrame(const std::string &name)
    {
-      std::cout << "StealthInputComponent::HandleGotoKeyFrame(" << name.c_str() << ")" << std::endl;
+      // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame(" << name.c_str() << ")" << std::endl;
       if(mEnableLogging && mEnablePlayback)
       {
          const std::vector<dtGame::LogKeyframe> &KFs = mLogController->GetLastKnownKeyframeList();
@@ -1060,9 +1077,10 @@ namespace StealthGM
          // found one, so jump to keyframe
          if (prevFrame != NULL)
          {
-            std::ostringstream ss;
+            // DEBUG: 
+            /*std::ostringstream ss;
             ss << "## Attempting to Jump to Previous Keyframe: [" << prevFrame->GetName() << "] ##";
-            std::cout << ss.str() << std::endl;
+            std::cout << ss.str() << std::endl;*/
    
             mLogController->RequestJumpToKeyframe(*prevFrame);
          }
@@ -1091,9 +1109,10 @@ namespace StealthGM
          // found one, so jump to keyframe
          if (nextFrame != NULL)
          {
-            std::ostringstream ss;
+            // DEBUG: 
+            /*std::ostringstream ss;
             ss << "## Attempting to Jump to Next Keyframe: [" << nextFrame->GetName() << "] ##";
-            std::cout << ss.str() << std::endl;
+            std::cout << ss.str() << std::endl;*/
    
             mLogController->RequestJumpToKeyframe(*nextFrame);
          }
