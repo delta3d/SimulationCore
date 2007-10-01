@@ -102,6 +102,17 @@ namespace SimCore
                 Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
 
+         // HACK: Let the HLAComponent know about the prototype maps it
+         // should add along with the terrain map. This should be a UI feature.
+         //
+         // If the component had disconnected, the map names previously pushed
+         // onto the HLA component's map list will have been cleared and lost.
+         // This ensures that all commonly used proto maps are loaded along with the terrain
+         // and ensures that the environment actor can be instantiated from a prototype.
+         mMapNames.push_back("DVTEPrototypes");
+         mMapNames.push_back("DVTEMaterials");
+         mMapNames.push_back("DVTEActors");
+
          // Temporary fix added by Eddie. This is not particularly hackish, and 
          // maintains support for both the Stealth Viewer and the other apps
          // that requires multiple map support
