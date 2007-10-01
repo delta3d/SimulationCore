@@ -279,18 +279,6 @@ namespace StealthQt
          {
             // Assign the primary map to load
             mHLAComp->AddMap(map);
-
-            // HACK: Let the HLAComponent know about the prototype maps it
-            // should add along with the terrain map.
-            //
-            // If the component had disconnected, the map names previously pushed
-            // onto the HLA component's map list will have been cleared and lost.
-            // This ensures that all commonly used proto maps are loaded along with the terrain
-            // and ensures that the environment actor can be instantiated from a prototype.
-            mHLAComp->AddMap("DVTEPrototypes");
-            mHLAComp->AddMap("DVTEMaterials");
-            mHLAComp->AddMap("DVTEActors");
-
             mHLAComp->SetConfigFile(config);
             mHLAComp->SetFedFile(fedFile);
             mHLAComp->SetFedName(federateName);
