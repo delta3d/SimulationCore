@@ -91,7 +91,7 @@ namespace SimCore
             // Reset the mouse position back to the center
             if( mRecenterMouse )
             {
-               GetMouse()->SetPosition(0.0f,0.0f);
+               //GetMouse()->SetPosition(0.0f,0.0f);
             }
 
             // Do the original rotation
@@ -113,7 +113,7 @@ namespace SimCore
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[0] -= mReverseLeftRight ? -change : change;
                GetLeftRightMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             if( mEnabledUpDown && GetUpDownMouseAxis()->GetState() != 0)
@@ -126,7 +126,7 @@ namespace SimCore
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[1] += mReverseUpDown ? -change : change;
                GetUpDownMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Clamp rotation
@@ -156,7 +156,7 @@ namespace SimCore
             {
                hpr[2] = 0.0f;
                SetTargetsRotation(hpr);                  
-               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Get the current change in orientation
