@@ -502,7 +502,12 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage){}
+      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage)
+      {
+         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateSoundEffects(ElapsedTime);
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::AgeiaPrePhysicsUpdate()
       {
@@ -659,14 +664,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetMPH()
       {
-         if( IsRemote() )
-         {
-            return GetVelocityVector().length() * 2.236936291;
-         }
-         else
-         {
-            return GetPhysicsHelper()->GetMPH();
-         }
+         return GetVelocityVector().length() * 2.236936291;
+         //return GetPhysicsHelper()->GetMPH();
          return 0.0f;
       }
 
