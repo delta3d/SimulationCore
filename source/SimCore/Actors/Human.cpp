@@ -746,7 +746,7 @@ namespace SimCore
                   if (animChannel != NULL)
                   {
                      float duration = animChannel->GetAnimation()->GetDuration();
-                     accumulatedStartTime += duration;
+                     accumulatedStartTime += (duration - blendTime);
                      animChannel->SetMaxDuration(duration);
                      animChannel->SetAction(true);
                   }
