@@ -181,6 +181,15 @@ void BaseEntityActorProxyTests::TestPlatform()
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
+   prop = eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
+   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
+   std::stringstream textMessage;
+   textMessage << "The default value of \"" 
+      << SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED << "\" should be false.";
+   CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
+   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
    CPPUNIT_ASSERT_EQUAL(1, eap->referenceCount());
    eap = NULL;
    CPPUNIT_ASSERT(!edraw.valid());

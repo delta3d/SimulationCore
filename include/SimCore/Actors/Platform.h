@@ -74,6 +74,8 @@ namespace SimCore
       {
          public:
             typedef BaseEntityActorProxy BaseClass;
+
+            static const std::string PROPERTY_HEAD_LIGHTS_ENABLED;
             
             // Constructor
             PlatformActorProxy();
@@ -245,6 +247,12 @@ namespace SimCore
             float GetTimeBetweenControlStateUpdates() const { return mTimeBetweenControlStateUpdates; }
 
             /**
+             * Set whether the headlights of the vehicle are on or off.
+             */
+            void SetHeadLightsEnabled( bool enabled );
+            bool IsHeadLightsEnabled() const;
+
+            /**
              * This function advances the update time and determines if an update
              * regarding a control state should be sent out to the network.
              * @param tickMessage Tick message sent to this object via registration
@@ -310,6 +318,9 @@ namespace SimCore
             // The articulation helper used in creating out-going articulation
             // data for entity update messages.
             dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
+            
+            // Flag for determining 
+            bool mHeadLightsEnabled;
       };
 
    }

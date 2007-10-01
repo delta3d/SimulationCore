@@ -63,12 +63,15 @@ namespace SimCore
 {
    namespace Actors
    {
-      //////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       const std::string Platform::INVOKABLE_TICK_CONTROL_STATE("TickControlState");
 
-      ///////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       // Actor Proxy code
-      ///////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
+      const std::string PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED("Head Lights Enabled");
+
+      ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
       {
          SetClassName("SimCore::Actors::Platform");
@@ -86,47 +89,71 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
+         static const std::string PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Non-damaged actor", "Non-damaged actor",
+            PROPERTY_MESH_NON_DAMAGED_ACTOR,
+            PROPERTY_MESH_NON_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadNonDamagedFile),
             "This is the model for a non damaged actor"));
 
+         static const std::string PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Damaged actor", "Damaged actor",
+            PROPERTY_MESH_DAMAGED_ACTOR,
+            PROPERTY_MESH_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDamagedFile),
             "This is the model for a damaged actor"));
 
+         static const std::string PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Destroyed actor", "Destroyed actor",
+            PROPERTY_MESH_DESTROYED_ACTOR,
+            PROPERTY_MESH_DESTROYED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDestroyedFile),
             "This is the model for a destroyed actor"));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("Muzzle Flash Position", "Muzzle Flash Position",
+         static const std::string PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
+         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
+            PROPERTY_MUZZLE_FLASH_POSITION,
             dtDAL::MakeFunctor(e, &Platform::SetMuzzleFlashPosition),
             dtDAL::MakeFunctorRet(e, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
          
-         AddProperty(new dtDAL::GroupActorProperty("Articulated Parameters Array", "Articulated Parameters Array", 
+         static const std::string PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
+         AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
+            PROPERTY_ARTICULATION_PARAM_ARRAY, 
             dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray), 
             dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray), 
             "The list of articulated parameters for modifying DOF's", ""));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Firepower Disabled", "Firepower Disabled",
+         static const std::string PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
+            PROPERTY_FIREPOWER_DISABLED,
             dtDAL::MakeFunctor(e, &Platform::SetFirepowerDisabled),
             dtDAL::MakeFunctorRet(e, &Platform::IsFirepowerDisabled),
             "Determines if this entity has had its fire power disabled."));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Mobility Disabled", "Mobility Disabled",
+         static const std::string PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
+            PROPERTY_MOBILITY_DISABLED,
             dtDAL::MakeFunctor(e, &Platform::SetMobilityDisabled),
             dtDAL::MakeFunctorRet(e, &Platform::IsMobilityDisabled),
             "Determines if this entity has had its mobility disabled."));
 
-         AddProperty(new dtDAL::StringActorProperty("VehiclesSeatConfigActorNameTable","VehiclesSeatConfigActorNameTable",
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
+            PROPERTY_HEAD_LIGHTS_ENABLED,
+            dtDAL::MakeFunctor(e, &Platform::SetHeadLightsEnabled),
+            dtDAL::MakeFunctorRet(e, &Platform::IsHeadLightsEnabled),
+            "Determines if the entity has it head lights on or not."));
+
+         static const std::string PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
+         AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
+            PROPERTY_SEAT_CONFIG_TABLE_NAME,
             dtDAL::MakeFunctor(e, &Platform::SetVehiclesSeatConfigActorName),
             dtDAL::MakeFunctorRet(e, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
-         AddProperty(new dtDAL::StringActorProperty("EntityType","Entity Type",
+         static const std::string PROPERTY_ENTITY_TYPE("EntityType");
+         AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
+            PROPERTY_ENTITY_TYPE,
             dtDAL::MakeFunctor(e, &Platform::SetEntityType),
             dtDAL::MakeFunctorRet(e, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
@@ -189,7 +216,8 @@ namespace SimCore
          mNonDamagedFileNode(new osg::Group()),
          mDamagedFileNode(new osg::Group()),
          mDestroyedFileNode(new osg::Group()),
-         mSwitchNode(new osg::Switch)
+         mSwitchNode(new osg::Switch),
+         mHeadLightsEnabled(false)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -203,6 +231,18 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       Platform::~Platform()
       {
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::SetHeadLightsEnabled( bool enabled )
+      {
+         mHeadLightsEnabled = enabled;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool Platform::IsHeadLightsEnabled() const
+      {
+         return mHeadLightsEnabled;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
