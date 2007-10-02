@@ -265,6 +265,9 @@ namespace StealthQt
          /// Called when the duration time elapses
          void OnDurationTimerElapsed();
 
+         /// Called when the HLA error checking timer elapses
+         void OnHLAErrorTimerElapsed();
+
          /// Called when an entity is selected from the search list
          void PopulateEntityInfoWindow(bool notUsed = false);
 
@@ -340,6 +343,7 @@ namespace StealthQt
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
          QTimer mRefreshEntityInfoTimer;
+         QTimer mHLAErrorTimer;
 
          dtCore::RefPtr<dtGame::GameApplication> mApp;
          bool mIsConnectedToHLA;
