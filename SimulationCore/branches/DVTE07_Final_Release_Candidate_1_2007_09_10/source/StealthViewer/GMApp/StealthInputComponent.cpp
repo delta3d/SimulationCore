@@ -133,7 +133,7 @@ namespace StealthGM
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
-         UpdateTools();
+         UpdateTools( tick.GetDeltaSimTime() );
 
          if( mTicksToLogStateChange > 0 )
          {
@@ -1316,7 +1316,7 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::UpdateTools()
+   void StealthInputComponent::UpdateTools( float timeDelta )
    {
       SimCore::Tools::Compass *compass = static_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
       if(compass == NULL)
@@ -1326,7 +1326,7 @@ namespace StealthGM
       }
       else
       {
-   	   compass->Update();
+   	   compass->Update( timeDelta );
       }
    
       SimCore::Tools::GPS *gps = static_cast<SimCore::Tools::GPS*>(GetTool(SimCore::MessageType::GPS));
