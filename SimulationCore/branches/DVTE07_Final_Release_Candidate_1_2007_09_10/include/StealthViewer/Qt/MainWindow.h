@@ -330,6 +330,11 @@ namespace StealthQt
           */
          void ReconnectToHLA();
 
+         /**
+          * Clears data on disconnect
+          */
+         void ClearData();
+
          bool mFirstShow;
 
          bool mIsPlaybackMode;

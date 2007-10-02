@@ -1624,6 +1624,8 @@ namespace StealthQt
       mUi->mEntityInfoDockWidget->setEnabled(false);
 
       mGenericTickTimer.stop();
+
+      ClearData();
    }
 
    void MainWindow::OnSecondTimerElapsed()
@@ -1718,7 +1720,7 @@ namespace StealthQt
 
          oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
 
-         mUi->mRotationLineEdit->setText(tr(oss.str().c_str()));
+         mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
 
          mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
          mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
@@ -1871,7 +1873,7 @@ namespace StealthQt
 
             oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
 
-            mUi->mRotationLineEdit->setText(tr(oss.str().c_str()));
+            mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
 
             mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
             mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
@@ -1912,5 +1914,18 @@ namespace StealthQt
       {
          OnPlaybackJumpToTimeMarkerButtonClicked(item->text());
       }
+   }
+
+   void MainWindow::ClearData()
+   {
+      // Search table results
+      mUi->mSearchEntityTableWidget->clear();
+
+      // Entity Info window
+      mUi->mEntityInfoCallSignLineEdit->setText(tr(""));
+      mUi->mEntityInfoForceLineEdit->setText(tr(""));
+      mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr(""));
+      mUi->mEntityInfoPositionLineEdit->setText(tr(""));
+      mUi->mEntityInfoRotationLineEdit->setText(tr(""));
    }
 }
