@@ -648,6 +648,17 @@ namespace SimCore
          if (transState->Get())
             return false;
 
+         const dtAI::StateVariable* deadState;
+         pWS->GetState(STATE_DEAD, deadState);
+
+         //dead is the same as the damage state being equal to destroyed.
+         if (deadState->Get() != (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED))
+            return false;
+         
+         //If we are dead, ignore any other changes.  Just let's be dead, shall we :-)
+         if (deadState->Get() && GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+            return true;
+
          const BasicStanceState* stanceState;
          pWS->GetState(STATE_BASIC_STANCE, stanceState);
          
@@ -670,13 +681,6 @@ namespace SimCore
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
          if (movingState->Get() != !dtUtil::Equivalent(GetVelocityVector().length2(), 0.0f))
-            return false;
-
-         const dtAI::StateVariable* deadState;
-         pWS->GetState(STATE_DEAD, deadState);
-
-         //dead is the same as the damage state being equal to destroyed.
-         if (deadState->Get() != (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED))
             return false;
 
          // we don't care about shot.
@@ -745,6 +749,7 @@ namespace SimCore
                   dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
                   if (animChannel != NULL)
                   {
+                     
                      float duration = animChannel->GetAnimation()->GetDuration();
                      accumulatedStartTime += (duration - blendTime);
                      animChannel->SetMaxDuration(duration);
@@ -765,12 +770,15 @@ namespace SimCore
                            "Adding animatable named \"%s\".", animatable->GetName().c_str());
                   }
                   newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
-                  newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime - blendTime));
-
+                  newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime));
                   newAnim->SetFadeIn(blendTime);
                   newAnim->SetFadeOut(blendTime);
 
                   generatedSequence->AddAnimation(newAnim.get());
+               }
+               else
+               {
+                  newAnim = NULL;
                }
             }
             
