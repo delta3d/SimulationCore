@@ -237,9 +237,10 @@ namespace SimCore
             //to make an illumination round dynamic light we must note that
             //these are dropped at 600meters and will light the ground directly below within 
             //a radius of 1km
-            SimCore::Components::RenderingSupportComponent* renderComp
-               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-               (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+            SimCore::Components::RenderingSupportComponent* renderComp;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
 
             if( renderComp != NULL )
             {               

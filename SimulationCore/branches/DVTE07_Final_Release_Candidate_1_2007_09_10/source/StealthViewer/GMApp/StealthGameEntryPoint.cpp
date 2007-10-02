@@ -227,19 +227,6 @@ namespace StealthGM
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::HLAConnectionComponentSetup()
    {
-      // This code has been moved to the point in the program where
-      // HLA network connection is created. This is because disconnection
-      // from the network causes the HLA component to clear it list of map
-      // names, thus the following maps will not be loaded on future connection attempts.
-      /*SimCore::Components::HLAConnectionComponent *hlaCC 
-         = dynamic_cast<SimCore::Components::HLAConnectionComponent *>(GetGameManager()->GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
-      if(hlaCC != NULL)
-      {
-         hlaCC->AddMap("DVTEPrototypes");
-         hlaCC->AddMap("DVTEMaterials");
-         hlaCC->AddMap("DVTEActors");
-      }*/
-
       SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup();
    }
    

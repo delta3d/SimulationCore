@@ -20,6 +20,11 @@
 
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
+#include <dtABC/application.h>
+
+#include <dtUtil/stringutils.h>
+
+#include <sstream>
 
 namespace SimCore
 {
@@ -31,7 +36,8 @@ namespace SimCore
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTED("CONNECTED");
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_ERROR("ERROR");
 
-      const std::string HLAConnectionComponent::DEFAULT_NAME = "HLAConnectionComponent";
+      const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
+      const std::string HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP("AdditionalMap");
 
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
          dtGame::GMComponent(name), 
@@ -48,8 +54,8 @@ namespace SimCore
 
       dtHLAGM::HLAComponent& HLAConnectionComponent::GetHLAComponent()
       {
-         dtGame::GMComponent *component = 
-            GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME);
+         dtHLAGM::HLAComponent* component; 
+         GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME, component);
 
          if(component == NULL)
          {
@@ -58,7 +64,7 @@ namespace SimCore
                __FILE__, __LINE__);
          }
 
-         return static_cast<dtHLAGM::HLAComponent&>(*component);
+         return *component;
       }
       
       void HLAConnectionComponent::ProcessMessage(const dtGame::Message &msg)
@@ -107,6 +113,24 @@ namespace SimCore
          }
       }
 
+      void HLAConnectionComponent::GetAdditionalMaps(std::vector<std::string>& toFill) const
+      {
+         std::ostringstream oss;
+         std::string addMap;
+         unsigned i = 1;
+         do
+         {
+            if (i > 1)
+               toFill.push_back(addMap);
+
+            oss << CONFIG_PROP_ADDITIONAL_MAP << i;
+            addMap = GetGameManager()->GetApplication().GetConfigPropertyValue(oss.str());
+            oss.str("");
+            ++i;
+         }
+         while (!addMap.empty());
+      }
+      
       void HLAConnectionComponent::Connect()
       {
          if(mMapNames.empty())
@@ -115,21 +139,18 @@ namespace SimCore
                "You have tried to connect when no maps have been specified. \
                 Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
+         else if (GetGameManager() == NULL)
+         {
+            throw dtUtil::Exception( 
+               "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
+         }
+         
 
-         // HACK: Let the HLAComponent know about the prototype maps it
-         // should add along with the terrain map. This should be a UI feature.
-         //
-         // If the component had disconnected, the map names previously pushed
-         // onto the HLA component's map list will have been cleared and lost.
-         // This ensures that all commonly used proto maps are loaded along with the terrain
-         // and ensures that the environment actor can be instantiated from a prototype.
-         mMapNames.push_back("DVTEPrototypes");
-         mMapNames.push_back("DVTEMaterials");
-         mMapNames.push_back("DVTEActors");
+         std::vector<std::string> values;
+         GetAdditionalMaps(values);
 
-         // Temporary fix added by Eddie. This is not particularly hackish, and 
-         // maintains support for both the Stealth Viewer and the other apps
-         // that requires multiple map support
+         mMapNames.insert(mMapNames.end(), values.begin(), values.end());
+
          GetGameManager()->ChangeMapSet(mMapNames, false, true);
          mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
       }
@@ -150,5 +171,5 @@ namespace SimCore
 
          mState = &ConnectionState::STATE_NOT_CONNECTED;
       }
-   }  
+   }
 }

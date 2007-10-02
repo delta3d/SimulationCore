@@ -89,6 +89,7 @@ namespace SimCore
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
@@ -292,8 +293,9 @@ namespace SimCore
       if(!mIsUIRunning)
       {
          dtGame::GameManager &gameManager = *GetGameManager();
-         SimCore::Components::HLAConnectionComponent *hlaCC 
-            = dynamic_cast<SimCore::Components::HLAConnectionComponent *>(gameManager.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+         SimCore::Components::HLAConnectionComponent *hlaCC;
+         gameManager.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
+
          if(hlaCC != NULL)
          {
             const std::string fedMappingFile = dtDAL::Project::GetInstance().
@@ -518,8 +520,22 @@ namespace SimCore
       gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      
+      std::string useGPUSkinning = GetGameManager()->GetApplication().GetConfigPropertyValue(
+               CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
+
       dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
-      nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
+      
+      if (useGPUSkinning == "1" || useGPUSkinning == "true")
+      {
+         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
+         LOG_INFO("Using GPU Character Skinning");
+      }
+      else
+      {
+         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
+         LOG_INFO("Using CPU Character Skinning");
+      }
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 
