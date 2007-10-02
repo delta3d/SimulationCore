@@ -58,7 +58,13 @@ namespace SimCore
          Tool(mainWindow),
          mOverlay(NULL),
          mAzimuthText(NULL),
-         mUseMagneticNorth(useMagNorth)
+         mUseMagneticNorth(useMagNorth),
+         mNeedleRotation(0.0f),
+         mNeedlePosition(0.0f),
+         mNeedleVelocity(0.0f),
+         mNeedleAcceleration(0.0f),
+         mNeedleTorque(2.0f),
+         mNeedleDragCoef(0.9f)
       {
          try
          {
@@ -140,7 +146,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Compass::Update()
+      void Compass::Update( float timeDelta )
       {
          if(IsEnabled() && GetPlayerActor() != NULL)
          {
@@ -153,11 +159,7 @@ namespace SimCore
                h += GetCoordinateConverter().GetMagneticNorthOffset();
             unsigned int mils = dtUtil::Coordinates::DegreesToMils(h);
 
-            mAzimuthText->setText(PadNumber(mils));
-
-            std::stringstream ss;
-            ss << ((int)(100.0*(360.0-(h<0.0?360.0+h:h)))/100.0);
-            mAzimuthDegreesText->setText(ss.str());
+            h = float(UpdateNeedle(timeDelta,h));
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
@@ -173,10 +175,55 @@ namespace SimCore
                float yVal = sin(osg::DegreesToRadians(-h+90))*.375f+.5f;
                osg::Vec2f foc (xVal, yVal);
                mLensFocus->set(foc);
-
             }
             // --- LOCKHEED CODE --- END --- //
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float Compass::UpdateNeedle( float deltaTime, float heading )
+      {
+         if (heading < 0.0f)
+            heading += 360.0f;
+         if (heading > 360.0f)
+            heading -= 360.0f;
+
+         float fHeadingRadians = osg::DegreesToRadians(heading);
+         float diff = fHeadingRadians - mNeedlePosition;
+
+         //figure out the direction of acceleration
+         float ninetyDegs = (osg::PI_2);
+         float twoSeventyDegs = (osg::PI + osg::PI_2);
+         if (fHeadingRadians > twoSeventyDegs && mNeedlePosition < ninetyDegs)
+            diff = (fHeadingRadians - (osg::PI + osg::PI)) + (0.0f - mNeedlePosition);
+         else if (fHeadingRadians <  ninetyDegs && mNeedlePosition > twoSeventyDegs)
+            diff = (fHeadingRadians - 0.0f) + ((osg::PI + osg::PI) - mNeedlePosition);
+         else if (diff > 0.0f)
+         {
+            float ccwDiff = -mNeedlePosition + (fHeadingRadians - (osg::PI + osg::PI));
+            if (fabsf(ccwDiff) < diff)
+               diff = ccwDiff;
+         }
+         else if (diff < 0.0f)
+         {
+            float cwDiff = ((osg::PI + osg::PI) - mNeedlePosition) + fHeadingRadians;
+            if (cwDiff < fabs(diff))
+               diff = cwDiff;
+         }
+
+         mNeedleAcceleration = (mNeedleTorque * diff) -
+            (mNeedleDragCoef * mNeedleVelocity);
+
+         mNeedleVelocity = mNeedleVelocity + mNeedleAcceleration*deltaTime;
+
+         float newPosition = mNeedlePosition + mNeedleVelocity*deltaTime;
+
+         static const float zero = 0.0001f;
+         if (mNeedleVelocity < zero && mNeedleVelocity > -zero)
+            newPosition = mNeedlePosition;
+
+         mNeedlePosition = newPosition;
+         return osg::RadiansToDegrees(mNeedlePosition);
       }
 
       //////////////////////////////////////////////////////////////////////////
