@@ -36,9 +36,6 @@ set DT_AGEIA_PATH=%DT_AGEIA_ROOT%\bin
 :: Humvee App
 if not defined DVTE_ROOT set DVTE_ROOT=C:\Documents and Settings\johnson\Desktop\dvte_branches\dvte
 
-set INCLUDE=%INCLUDE%;%DVTE_ROOT%\include;%DVTE_ROOT%\ext\include\win32;%DT_AGEIA_INC%
-set LIB=%LIB%;%DVTE_ROOT%\lib;%DVTE_ROOT%\ext\lib\win32;%DT_AGEIA_LIB%
-
 set DVTE_PATH=%DVTE_ROOT%\bin
 set DVTE_EXT_PATH=%DVTE_ROOT%\ext\bin\win32
 
@@ -49,6 +46,9 @@ if not defined AGEIA_INC set AGEIA_INC=%AGEIA_ROOT%\SDKs\Cooking\include;%AGEIA_
 if not defined AGEIA_LIB set AGEIA_LIB=%AGEIA_ROOT%\SDKs\lib\win32;%DT_AGEIA_LIB%;
 
 set AGEIA_PATH=%AGEIA_ROOT%\Bin\win32
+
+set INCLUDE=%INCLUDE%;%DVTE_ROOT%\include;%DVTE_ROOT%\ext\include\win32;%DT_AGEIA_INC%
+set LIB=%LIB%;%DVTE_ROOT%\lib;%DVTE_ROOT%\ext\lib\win32;%AGEIA_LIB%
 
 :: Qt
 if not defined QTDIR set QTDIR=C:\Qt\4.3.0
@@ -77,7 +77,7 @@ path
 :: Configure and launch SCONS
 if "%2%" == "clean" goto clean
 
-call scons mode="%1%" ageia=1
+call scons mode="%1%" ageia=1 -j3
 goto end
 
 :clean

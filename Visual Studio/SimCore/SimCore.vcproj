@@ -40,7 +40,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm132"
+				AdditionalOptions="/Zm116"
 				Optimization="0"
 				EnableFiberSafeOptimizations="false"
 				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC)"

@@ -2765,7 +2765,7 @@
             </widget>
            </item>
            <item row="2" column="1" >
-            <widget class="QLineEdit" name="mRotationLineEdit" >
+            <widget class="QLineEdit" name="mEntityInfoRotationLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
              </property>
@@ -2790,7 +2790,7 @@
               <string>Rotation</string>
              </property>
              <property name="buddy" >
-              <cstring>mRotationLineEdit</cstring>
+              <cstring>mEntityInfoRotationLineEdit</cstring>
              </property>
             </widget>
            </item>
