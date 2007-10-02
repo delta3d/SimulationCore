@@ -543,9 +543,8 @@ namespace SimCore
             return;
          }
 
-         SimCore::Components::RenderingSupportComponent* renderComp
-            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
          if( renderComp != NULL )
          {
@@ -570,9 +569,8 @@ namespace SimCore
             return;
          }
 
-         SimCore::Components::RenderingSupportComponent* renderComp
-            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
          if( renderComp != NULL )
          {
@@ -853,9 +851,8 @@ namespace SimCore
             return;
          }
 
-         SimCore::Components::RenderingSupportComponent* renderComp
-            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
          if( renderComp != NULL )
          {
@@ -885,9 +882,8 @@ namespace SimCore
             return;
          }
 
-         SimCore::Components::RenderingSupportComponent* renderComp
-            = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
          if( renderComp != NULL )
          {
@@ -2196,7 +2192,9 @@ namespace SimCore
          dtCore::Transform xform(pos[0], pos[1], pos[2]);
          da->SetTransform(xform, dtCore::Transformable::REL_CS);
 
-         SimCore::Components::ViewerMaterialComponent* materialComponent = dynamic_cast<SimCore::Components::ViewerMaterialComponent*>(GetGameManager()->GetComponentByName("ViewerMaterialComponent"));
+         SimCore::Components::ViewerMaterialComponent* materialComponent;
+         GetGameManager()->GetComponentByName(SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
+         
          if(materialComponent != NULL)
          {
             SimCore::Actors::ViewerMaterialActor& viewerMaterial = materialComponent->CreateOrChangeMaterialByFID(fidID);

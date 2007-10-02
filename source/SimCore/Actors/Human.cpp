@@ -528,7 +528,7 @@ namespace SimCore
                mAnimationHelper->GetSequenceMixer().RegisterAnimation(walkRunDeployed);
 
                //initialize helper
-               SetupPlannerHelper();              
+               SetupPlannerHelper();
                
             }
          }

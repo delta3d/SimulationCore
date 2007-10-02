@@ -15,6 +15,7 @@
 #include <dtUtil/enumeration.h>
 
 #include <SimCore/Export.h>
+#include <vector>
 
 namespace dtHLAGM
 {
@@ -50,7 +51,8 @@ namespace SimCore
              };
 
             static const std::string DEFAULT_NAME;
-
+            static const std::string CONFIG_PROP_ADDITIONAL_MAP;
+            
             /// Constructor
             HLAConnectionComponent(const std::string &name = DEFAULT_NAME);
 
@@ -143,6 +145,9 @@ namespace SimCore
              */
             virtual void ProcessMessage(const dtGame::Message &msg);
 
+            /// Fills a vector with an additional maps  list loaded from the application config.
+            void GetAdditionalMaps(std::vector<std::string>& toFill) const;
+
          protected:
 
             /**
@@ -153,6 +158,7 @@ namespace SimCore
 
             /// Destructor
             virtual ~HLAConnectionComponent();
+
 
          private:
 

@@ -124,21 +124,25 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsEngineSmokeOn),
             "Enables engine smoke", BASE_ENTITY_GROUP));
 
+         static const std::string PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
          static const std::string PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, "Flames Present",
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, PROPERTY_FLAMES_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFlamesPresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlamesPresent),
             PROPERTY_FLAMES_PRESENT_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
+         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_LABEL("Flames Present");
+         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_DESC("Enables engine smoke");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, PROPERTY_SMOKE_PLUME_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetSmokePlumePresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsSmokePlumePresent),
-            "Enables engine smoke", BASE_ENTITY_GROUP));
+            PROPERTY_SMOKE_PLUME_PRESENT_DESC, BASE_ENTITY_GROUP));
 
+         static const std::string PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
-            "Position of the engine in the vehicle", BASE_ENTITY_GROUP);
+            PROPERTY_ENGINE_POSITION_DESC, BASE_ENTITY_GROUP);
 
          prop->SetReadOnly(true);
          AddProperty(prop);
@@ -533,12 +537,12 @@ namespace SimCore
             RegisterParticleSystem(*mFlamesSystem,&attrs);
 
             // HACK: Add lights with copied code
-            SimCore::Components::RenderingSupportComponent* renderComp
-               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-               (GetGameActorProxy().GetGameManager()->GetComponentByName(
-                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+            SimCore::Components::RenderingSupportComponent* renderComp;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
 
-            if( renderComp != NULL )
+            if(renderComp != NULL)
             {
                SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
                   renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");

@@ -478,11 +478,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::AddDynamicLight()
       {
-         SimCore::Components::RenderingSupportComponent* renderComp = 
-            dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(
+               SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+               renderComp);
 
-         if(renderComp)
+         if(renderComp != NULL)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
                renderComp->AddDynamicLightByPrototypeName( GetLightName() );

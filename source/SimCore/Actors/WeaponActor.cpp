@@ -223,11 +223,11 @@ namespace SimCore
       void WeaponActor::AddDynamicLight()
       {
          //this creates a dynamic light
-         SimCore::Components::RenderingSupportComponent* renderComp = 
-            dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
 
-         if(renderComp)
+         if(renderComp != NULL)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
                   renderComp->GetDynamicLight(mDynamicLightID);
@@ -404,9 +404,8 @@ namespace SimCore
          {
             // Try to access the munitions component in order
             // to obtain the munition types of shooters
-            SimCore::Components::MunitionsComponent* comp = 
-               dynamic_cast<SimCore::Components::MunitionsComponent*>
-               (gm->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
+            SimCore::Components::MunitionsComponent* comp;
+            gm->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
 
             if( NULL == comp )
             { 

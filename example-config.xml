@@ -30,6 +30,10 @@ find it.  It shows an example set of values one may set
 
     <Properties>
       <Property Name="ProjectPath" >./ProjectAssets</Property>
+      <Property Name="AdditionalMap1">Prototypes</Property>
+      <Property Name="AdditionalMap2">Materials</Property>
+      <Property Name="AdditionalMap3">Global Actors</Property>
+      <Property Name="UseGPUCharacterSkinning">true</Property>
     </Properties>
 
 </Application>
