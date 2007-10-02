@@ -621,11 +621,11 @@ namespace SimCore
 
          if( ! IsMobilityDisabled() && GetHasDriver() )
          {
-            if (keyboard->GetKeyState(Producer::Key_W))
+            if (keyboard->GetKeyState(Producer::Key_W) || keyboard->GetKeyState(Producer::Key_Up))
             {
                GetPhysicsHelper()->ApplyAccel();
             }
-            else if (keyboard->GetKeyState(Producer::Key_S))
+            else if (keyboard->GetKeyState(Producer::Key_S) || keyboard->GetKeyState(Producer::Key_Down))
             {
                GetPhysicsHelper()->ApplyHandBrake();
             }
@@ -639,11 +639,11 @@ namespace SimCore
                GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
-            if (keyboard->GetKeyState(Producer::Key_A))
+            if (keyboard->GetKeyState(Producer::Key_A) || keyboard->GetKeyState(Producer::Key_Left))
             {
                GetPhysicsHelper()->SteerLeft(deltaTime);
             }
-            else if(keyboard->GetKeyState(Producer::Key_D))
+            else if(keyboard->GetKeyState(Producer::Key_D) || keyboard->GetKeyState(Producer::Key_Right))
             {
                GetPhysicsHelper()->SteerRight(deltaTime);
             }
