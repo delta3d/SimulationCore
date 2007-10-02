@@ -23,7 +23,10 @@
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtHLAGM/hlacomponent.h>
 
+#include <dtGame/gamemanager.h>
+
 #include <dtCore/globals.h>
+#include <dtCore/scene.h>
 
 #include <dtDAL/project.h>
 
@@ -134,21 +137,26 @@ namespace StealthQt
       QString result = FindFile(QString("Select a configuration resource"), 
             QString("Federations"), QString("Configuration Files(*.xml)"));
 
-      dtCore::RefPtr<dtHLAGM::HLAComponent> dummyComp = new dtHLAGM::HLAComponent;
-      dtHLAGM::HLAComponentConfig config;
-      try
+      /////////////////////////////////////////////////////////////////////
+      // Simulate this being loaded to try and catch any exceptions thrown
+      // so we can immediately notify the user
+      //dtCore::RefPtr<dtHLAGM::HLAComponent> dummyComp = new dtHLAGM::HLAComponent;
+      //dtHLAGM::HLAComponentConfig config;
+      //result.replace(":", "/");
+      //try
       {
-         config.LoadConfiguration(*dummyComp, result.toStdString());   
+      //   config.LoadConfiguration(*dummyComp, result.toStdString());   
       }
-      catch(const dtUtil::Exception &e)
+      //catch(const dtUtil::Exception &e)
       {
-         QMessageBox::warning(this, tr("Error"), 
-                              tr("The configuration resource you have selected is not valid. ") + 
-                              tr("Please check the file format and try again. ") + 
-                              tr("Error message to follow: ") + tr(e.What().c_str()), 
-                              QMessageBox::Ok);
-         return;
+      //   QMessageBox::critical(this, tr("Error"), 
+      //                         tr("The configuration resource you have selected is not valid. ") + 
+      //                         tr("Please check the file format and try again. ") + 
+      //                         tr("Error message to follow: ") + tr(e.What().c_str()), 
+       //                        QMessageBox::Ok);
+       //  return;
       }
+      //////////////////////////////////////////////////////////////////////
 
       if(!result.isEmpty())
          mUi->mConfigFileLineEdit->setText(result);   

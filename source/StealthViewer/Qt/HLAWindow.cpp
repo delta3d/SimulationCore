@@ -97,7 +97,8 @@ namespace StealthQt
    {
       if(mHLAComp != NULL)
       {
-         if(mHLAComp->IsConnected())
+         if(mHLAComp->GetConnectionState() == 
+            SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
          {
             OnDisconnect();
 

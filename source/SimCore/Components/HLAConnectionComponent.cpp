@@ -25,12 +25,18 @@ namespace SimCore
 {
    namespace Components
    {
+      IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionState);
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED("NOT_CONNECTED");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTING("CONNECTING");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTED("CONNECTED");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_ERROR("ERROR");
+
       const std::string HLAConnectionComponent::DEFAULT_NAME = "HLAConnectionComponent";
 
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
          dtGame::GMComponent(name), 
          mRidFile("RTI.rid"), // default to an RTI.rid file so that there is something to find.
-         mIsConnected(false)
+         mState(&ConnectionState::STATE_NOT_CONNECTED)
       {
 
       }
@@ -59,14 +65,20 @@ namespace SimCore
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-            mIsConnected = true;
-
             dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
             hlaComp.ClearConfiguration();
             
             dtHLAGM::HLAComponentConfig componentConfig;
-            componentConfig.LoadConfiguration(hlaComp, mConfigFile);
-            hlaComp.JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
+            try
+            {
+               componentConfig.LoadConfiguration(hlaComp, mConfigFile);
+               hlaComp.JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
+            }
+            catch(const dtUtil::Exception &e)
+            {
+               mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
+               throw e;
+            }
 
             std::vector<dtDAL::ActorProxy*> proxies;
             GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
@@ -117,6 +129,7 @@ namespace SimCore
          // maintains support for both the Stealth Viewer and the other apps
          // that requires multiple map support
          GetGameManager()->ChangeMapSet(mMapNames, false, true);
+         mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
       }
 
       void HLAConnectionComponent::Disconnect()
@@ -133,7 +146,7 @@ namespace SimCore
             ex.LogException(dtUtil::Log::LOG_ERROR);
          }
 
-         mIsConnected = false;
+         mState = &ConnectionState::STATE_NOT_CONNECTED;
       }
    }  
 }

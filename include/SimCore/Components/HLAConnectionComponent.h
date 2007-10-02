@@ -11,6 +11,9 @@
  * @author Eddie Johnson
  */
 #include <dtGame/gmcomponent.h>
+
+#include <dtUtil/enumeration.h>
+
 #include <SimCore/Export.h>
 
 namespace dtHLAGM
@@ -25,6 +28,26 @@ namespace SimCore
       class SIMCORE_EXPORT HLAConnectionComponent : public dtGame::GMComponent
       {
          public:
+
+             class SIMCORE_EXPORT ConnectionState : public dtUtil::Enumeration
+             {
+                DECLARE_ENUM(ConnectionState);
+
+                public:
+
+                   static const ConnectionState STATE_NOT_CONNECTED;
+                   static const ConnectionState STATE_CONNECTING;
+                   static const ConnectionState STATE_CONNECTED;
+                   static const ConnectionState STATE_ERROR;
+
+                protected:
+
+                   ConnectionState(const std::string &name) : 
+                      dtUtil::Enumeration(name)
+                   {
+                      AddInstance(this);
+                   }
+             };
 
             static const std::string DEFAULT_NAME;
 
@@ -68,12 +91,6 @@ namespace SimCore
             void SetRidFile(const std::string &file) { mRidFile = file; }
 
             /**
-             * Returns the map name
-             * @return mMapName
-             */
-            //const std::string& GetMapName() const { return mMapName; }
-
-            /**
              * Returns the config file
              * @return mConfigFile
              */
@@ -103,6 +120,13 @@ namespace SimCore
              */
             const std::string& GetRidFile() const { return mRidFile; }
 
+            /** 
+             * Returns the currect connection state
+             * @return mState
+             * @see class ConnectionState
+             */
+            const ConnectionState& GetConnectionState() const { return *mState; }
+
             /**
              * Tells this component to connect to the federation
              */
@@ -114,19 +138,13 @@ namespace SimCore
             void Disconnect();
 
             /**
-             * Returns true if connected
-             * @return mIsConnected
-             */
-            bool IsConnected() const { return mIsConnected; }
-
-            /**
              * Processes messages to we can sync up events on ticks
              * @param msg The message to process
              */
             virtual void ProcessMessage(const dtGame::Message &msg);
 
          protected:
-            
+
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
@@ -145,7 +163,7 @@ namespace SimCore
             std::string mFedFile;
             std::string mRidFile;
 
-            bool mIsConnected;
+            const ConnectionState *mState;
       };
    }
 }

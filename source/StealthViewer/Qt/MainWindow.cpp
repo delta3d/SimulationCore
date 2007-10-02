@@ -34,6 +34,8 @@
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
+#include <SimCore/Components/HLAConnectionComponent.h>
+
 #include <dtUtil/stringutils.h>
 
 #include <dtCore/deltawin.h>
@@ -209,6 +211,9 @@ namespace StealthQt
 
       mDurationTimer.setInterval(1000);
       mDurationTimer.setSingleShot(false);
+
+      mHLAErrorTimer.setInterval(10000);
+      mHLAErrorTimer.setSingleShot(true);
 
       const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
       if(!file.empty())
@@ -458,6 +463,8 @@ namespace StealthQt
       connect(&mGenericTickTimer, SIGNAL(timeout()), this, SLOT(OnGenericTickTimerElapsed()));
 
       connect(&mRefreshEntityInfoTimer, SIGNAL(timeout()), this, SLOT(OnRefreshEntityInfoTimerElapsed()));
+   
+      connect(&mHLAErrorTimer, SIGNAL(timeout()), this, SLOT(OnHLAErrorTimerElapsed()));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1440,27 +1447,6 @@ namespace StealthQt
          LOG_ERROR("Unknown visibility theme: " + envConfig.GetVisibility().GetName());
       }
 
-      /*if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else
-      {
-         LOG_ERROR("Unknown weather theme: " + envConfig.GetWeatherTheme().GetName());
-      }*/
-
       StealthGM::PreferencesToolsConfigObject &toolsConfig = 
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
@@ -1489,9 +1475,7 @@ namespace StealthQt
       mUi->mToolsShowElevationOfObjectCheckBox->setChecked(toolsConfig.GetShowElevationOfObject());
 
       // Camera controls
-      //StealthGM::ControlsCameraConfigObject &cameraConfig = 
-      //   StealthViewerData::GetInstance().GetCameraConfigObject();
-
+     
       // Record controls
       StealthGM::ControlsRecordConfigObject &recordConfig =
          StealthViewerData::GetInstance().GetRecordConfigObject();
@@ -1625,6 +1609,7 @@ namespace StealthQt
       mUi->mEntityInfoDockWidget->setEnabled(true);
 
       mGenericTickTimer.start();
+      mHLAErrorTimer.start();
 
       EndWaitCursor();
    }
@@ -1681,6 +1666,22 @@ namespace StealthQt
       else
       {
          // Do nothing
+      }
+   }
+
+   void MainWindow::OnHLAErrorTimerElapsed()
+   {
+      SimCore::Components::HLAConnectionComponent *comp = 
+         static_cast<SimCore::Components::HLAConnectionComponent*>
+         (mApp->GetGameManager()->GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+
+      if(comp->GetConnectionState() == SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_ERROR)
+      {
+         QMessageBox::critical(this, tr("Error"), 
+                               tr("An error occured while connecting to HLA. ") + 
+                               tr("Please check your connection settings from the Network tab ") + 
+                               tr("and ensure they are correct."), 
+                               QMessageBox::Ok);
       }
    }
 
