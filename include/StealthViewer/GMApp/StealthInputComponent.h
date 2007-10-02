@@ -78,7 +78,7 @@ namespace StealthGM
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
          void RemoveTool(SimCore::MessageType &type);
          bool IsToolEnabled(SimCore::MessageType &type) const;
-         void UpdateTools();
+         void UpdateTools( float timeDelta );
          void ToggleTool(SimCore::MessageType& msgType);
          void DisableAllTools();
          SimCore::MessageType& GetEnabledTool() const;
