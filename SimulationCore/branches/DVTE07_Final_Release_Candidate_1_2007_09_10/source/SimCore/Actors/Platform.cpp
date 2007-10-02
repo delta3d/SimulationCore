@@ -23,6 +23,7 @@
 #include <string>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
@@ -58,6 +59,7 @@
 #include <osg/Point>
 #include <osg/NodeVisitor>
 #include <osg/Program>
+#include <osgSim/DOFTransform>
 
 namespace SimCore
 {
@@ -207,9 +209,12 @@ namespace SimCore
          static_cast<Platform&>(GetGameActor()).LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::DESTROYED);
       }
 
-      /////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       // Actor code
-      /////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
+      const std::string Platform::DOF_NAME_HEAD_LIGHTS("headlight_01");
+
+      ////////////////////////////////////////////////////////////////////////////////////
       Platform::Platform(dtGame::GameActorProxy &proxy) : BaseEntity(proxy),
          mTimeBetweenControlStateUpdates(0.3333f),
          mTimeUntilControlStateUpdate(0.0f),
@@ -217,7 +222,8 @@ namespace SimCore
          mDamagedFileNode(new osg::Group()),
          mDestroyedFileNode(new osg::Group()),
          mSwitchNode(new osg::Switch),
-         mHeadLightsEnabled(false)
+         mHeadLightsEnabled(false),
+         mHeadLightID(0)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -237,6 +243,86 @@ namespace SimCore
       void Platform::SetHeadLightsEnabled( bool enabled )
       {
          mHeadLightsEnabled = enabled;
+
+         // Attempt to capture the headlight transformable that is tracked by the
+         // light effect for world position information.
+         dtCore::RefPtr<dtCore::Transformable> headLightPoint;
+         dtCore::DeltaDrawable* curChild = NULL;
+         unsigned limit = GetNumChildren();
+         for( unsigned i = 0; i < limit; ++i )
+         {
+            curChild = GetChild( i );
+            if( curChild != NULL && curChild->GetName() == DOF_NAME_HEAD_LIGHTS )
+            {
+               headLightPoint = dynamic_cast<dtCore::Transformable*>(curChild);
+               break;
+            }
+         }
+
+         // If the head light point was not found then try to create it.
+         if( ! headLightPoint.valid() )
+         {
+            // If there is a node collector...
+            dtCore::NodeCollector* nodeCollector = GetNodeCollector();
+
+            // ...and there is a head light DOF...
+            osgSim::DOFTransform* lightTrans = nodeCollector != NULL 
+               ? nodeCollector->GetDOFTransform( DOF_NAME_HEAD_LIGHTS )
+               : NULL;
+            if( lightTrans == NULL )
+            {
+               return;
+            }
+
+            // ...add a Delta transformable at the same point as the DOF so that the
+            // dynamic light effect can track the position; it does not track OSG DOF transforms.
+            headLightPoint = new dtCore::Transformable( DOF_NAME_HEAD_LIGHTS );
+            AddChild( headLightPoint.get() );
+            dtCore::Transform xform;
+            // NOTE: currently the DOF does not return a position for watever reason, so
+            // the position is offset by a hard-coded offset temporarily.
+            xform.SetTranslation( lightTrans->getCurrentTranslate()+osg::Vec3(0,20.0,0) );
+            headLightPoint->SetTransform( xform, dtCore::Transformable::REL_CS );
+         }
+
+         // If the light point has been created or accessed...
+         if( headLightPoint.valid() )
+         {
+            // ...get the game manager...
+            dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+            if( gm == NULL )
+            {
+               return;
+            }
+
+            // ...so that the render support component can be accessed...
+            SimCore::Components::RenderingSupportComponent* rsComp
+               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+               (gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME ));
+
+            // ...so that the head light effect can be accessed...
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = rsComp->GetDynamicLight( mHeadLightID );
+
+            if( enabled )
+            {
+               // ...and if the light effect does not exist...
+               if( dl == NULL )
+               {
+                  // ...create it and get its ID to be tracked.
+                  //
+                  // NOTE: The following string value for the light name should eventually be
+                  //       property, but is not currently for the sake of time.
+                  dl = rsComp->AddDynamicLightByPrototypeName( "Light-HMMWV-Headlight" );
+                  dl->mTarget = headLightPoint.get();
+                  mHeadLightID = dl->mID;
+               }
+            }
+            else if( dl != NULL )
+            {
+               // ...turn it off by removing it.
+               rsComp->RemoveDynamicLight( mHeadLightID );
+            }
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
