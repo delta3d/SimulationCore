@@ -80,6 +80,8 @@ namespace SimCore
                throw e;
             }
 
+            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
+
             std::vector<dtDAL::ActorProxy*> proxies;
             GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
             if(proxies.empty())
