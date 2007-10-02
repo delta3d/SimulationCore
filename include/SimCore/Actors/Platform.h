@@ -136,6 +136,7 @@ namespace SimCore
             typedef BaseEntity BaseClass;
 
             static const std::string INVOKABLE_TICK_CONTROL_STATE;
+            static const std::string DOF_NAME_HEAD_LIGHTS;
 
             /**
              * Constructor.
@@ -319,8 +320,11 @@ namespace SimCore
             // data for entity update messages.
             dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
             
-            // Flag for determining 
+            // Flag for determining if the head light effect should be enabled or disabled
             bool mHeadLightsEnabled;
+
+            // Handle to the light effect
+            unsigned mHeadLightID;
       };
 
    }
