@@ -149,7 +149,7 @@ namespace SimCore
       
             SimCore::Actors::ControlStateActor* FindVehicleControlState( const SimCore::Actors::Platform& vehicle );
             
-            const std::string CreateStationName( unsigned stationNumber );
+            const std::string CreateStationName( unsigned stationNumber ) const;
 
             ControlStateInfo* GetRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID );
             bool AddRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
