@@ -159,7 +159,7 @@ namespace SimCore
                h += GetCoordinateConverter().GetMagneticNorthOffset();
             unsigned int mils = dtUtil::Coordinates::DegreesToMils(h);
 
-            h = float(UpdateNeedle(timeDelta,h));
+            h = float(UpdateNeedle(timeDelta,h+180.0f))-180.0f;
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
@@ -188,25 +188,30 @@ namespace SimCore
          if (heading > 360.0f)
             heading -= 360.0f;
 
-         float fHeadingRadians = osg::DegreesToRadians(heading);
-         float diff = fHeadingRadians - mNeedlePosition;
+         if (mNeedlePosition < 0.0f)
+            mNeedlePosition += 360.0f;
+         if (mNeedlePosition > 360.0f)
+            mNeedlePosition -= 360.0f;
+
+         float diff = heading - mNeedlePosition;
 
          //figure out the direction of acceleration
-         float ninetyDegs = (osg::PI_2);
-         float twoSeventyDegs = (osg::PI + osg::PI_2);
-         if (fHeadingRadians > twoSeventyDegs && mNeedlePosition < ninetyDegs)
-            diff = (fHeadingRadians - (osg::PI + osg::PI)) + (0.0f - mNeedlePosition);
-         else if (fHeadingRadians <  ninetyDegs && mNeedlePosition > twoSeventyDegs)
-            diff = (fHeadingRadians - 0.0f) + ((osg::PI + osg::PI) - mNeedlePosition);
+         static const float deg360 = 360.0f;//(osg::PI + osg::PI);
+         static const float deg90 = 90.0f;//(osg::PI_2);
+         static const float deg270 = 270.0f;//(osg::PI + osg::PI_2);
+         if (heading > deg270 && mNeedlePosition < deg90)
+            diff = (heading - deg360) + (0.0f - mNeedlePosition);
+         else if (heading <  deg90 && mNeedlePosition > deg270)
+            diff = (heading - 0.0f) + (deg360 - mNeedlePosition);
          else if (diff > 0.0f)
          {
-            float ccwDiff = -mNeedlePosition + (fHeadingRadians - (osg::PI + osg::PI));
+            float ccwDiff = -mNeedlePosition + (heading - deg360);
             if (fabsf(ccwDiff) < diff)
                diff = ccwDiff;
          }
          else if (diff < 0.0f)
          {
-            float cwDiff = ((osg::PI + osg::PI) - mNeedlePosition) + fHeadingRadians;
+            float cwDiff = (deg360 - mNeedlePosition) + heading;
             if (cwDiff < fabs(diff))
                diff = cwDiff;
          }
@@ -223,7 +228,7 @@ namespace SimCore
             newPosition = mNeedlePosition;
 
          mNeedlePosition = newPosition;
-         return osg::RadiansToDegrees(mNeedlePosition);
+         return mNeedlePosition;
       }
 
       //////////////////////////////////////////////////////////////////////////
