@@ -424,5 +424,25 @@ namespace SimCore
 
          virtual ~MagnificationMessage();
    };
+
+
+   class SIMCORE_EXPORT ControlStateMessage : public dtGame::Message
+   {
+      public:
+         // NOTE: About Id will point to the vehicle.
+         static const std::string PARAM_CONTROL_STATE_ID;
+         static const std::string PARAM_STATION;
+
+         ControlStateMessage();
+
+         void SetControlStateID( const std::string& controlStateID );
+         const std::string GetControlStateID() const;
+
+         void SetStation( int station );
+         int GetStation() const;
+
+      protected:
+         virtual ~ControlStateMessage();
+   };
 }
 #endif
