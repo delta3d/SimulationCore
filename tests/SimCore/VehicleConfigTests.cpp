@@ -77,9 +77,17 @@ void VehicleConfigTests::TestFunction()
 
    CPPUNIT_ASSERT(objActor.valid());
    
-   objActor->SetInsideModelResource("TestString");
-   const std::string& testAgainst = objActor->GetInsideModelResource();
+   objActor->SetInsideModelResourceGood("TestString");
+   const std::string& testAgainst = objActor->GetInsideModelResourceGood();
    CPPUNIT_ASSERT(testAgainst == "TestString");
+
+   objActor->SetInsideModelResourceDamaged("TestString2");
+   const std::string& testAgainst2 = objActor->GetInsideModelResourceDamaged();
+   CPPUNIT_ASSERT(testAgainst2 == "TestString2");
+
+   objActor->SetInsideModelResourceDestroyed("TestString3");
+   const std::string& testAgainst3 = objActor->GetInsideModelResourceDestroyed();
+   CPPUNIT_ASSERT(testAgainst3 == "TestString3");
 
    objActor->SetUsesInsideModel(true);
    CPPUNIT_ASSERT(objActor->GetUsesInsideModel());
