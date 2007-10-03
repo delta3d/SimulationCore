@@ -469,7 +469,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      const std::string ControlStateComponent::CreateStationName( unsigned stationNumber )
+      const std::string ControlStateComponent::CreateStationName( unsigned stationNumber ) const
       {
          std::stringstream ss;
          ss << STATION_NAME_PREFIX << stationNumber;
@@ -564,7 +564,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       bool ControlStateComponent::IsVehicleControlState( const SimCore::Actors::ControlStateActor& controlState ) const
       {
-         const static std::string firstStation(STATION_NAME_PREFIX+"0");
+         const static std::string firstStation(CreateStationName(0));
          return controlState.GetContinuousControl( firstStation ) != NULL;
       }
 
