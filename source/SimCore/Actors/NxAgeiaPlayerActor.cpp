@@ -147,7 +147,9 @@ namespace SimCore
                osg::Vec3 globalOrientation;
                dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
                osg::Vec3 nxVecTemp;
-               nxVecTemp.set(mPhysicsHelper->GetActor()->getGlobalPosition().x, mPhysicsHelper->GetActor()->getGlobalPosition().y, mPhysicsHelper->GetActor()->getGlobalPosition().z);
+               nxVecTemp.set( mPhysicsHelper->GetActor()->getGlobalPosition().x, 
+                              mPhysicsHelper->GetActor()->getGlobalPosition().y, 
+                              mPhysicsHelper->GetActor()->getGlobalPosition().z);
 
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
                const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
@@ -194,8 +196,33 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::SetLastKnownTranslation(const osg::Vec3 &vec)
+      {
+         if(mPhysicsHelper != NULL)
+         {
+            float zValue = mPhysicsHelper->GetCharacterExtents()[2];
+
+            // Note this should really be zValue /= 2. However since jsaf is a p.o.s
+            // it doesnt use the float value for w/e reason. so it has to round the number,
+            // this being that the number is 1.5 which turns out to move the character down
+            // correctly (well reporting it down correctly). Without subtracting,
+            // 0.75 the altitude is 1 meter, you subtract 0.75 (the correct amount)
+            // and the alt is still 1 meter. You subtract 20 and its 19. Subtract
+            // 1.5 and its 1. Isnt jsaf great!? Maybe it uses a float in the background,
+            // but only reporting whole numbers is very sucky  imo.
+            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2] - zValue));
+         }
+         else
+            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       bool NxAgeiaPlayerActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
+         osg::Vec3 position = pos;
+         if(mPhysicsHelper != NULL)
+            position[2] -= (mPhysicsHelper->GetCharacterExtents()[2]);
+
          osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
 
          float distanceTurned = rot.x() - GetLastKnownRotation().x();

@@ -77,6 +77,7 @@ namespace SimCore
             virtual void OnEnteredWorld();
 
             virtual void SetLastKnownRotation(const osg::Vec3 &vec);
+            virtual void SetLastKnownTranslation(const osg::Vec3 &vec);
 
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
