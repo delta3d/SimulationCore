@@ -54,14 +54,21 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT ControlStateInfo : public dtCore::Base
       {
-      public:
-         ControlStateInfo() : mWeaponSelected(0) {}
-         unsigned mWeaponSelected;
-         dtCore::RefPtr<osg::Node> mWeaponModel;
-         dtCore::RefPtr<SimCore::Actors::ControlStateActor> mControlState;
+         public:
+            ControlStateInfo() 
+               : mGunnerModelAttached(false),
+               mWeaponSelected(0)
+            {
+            }
 
-      protected:
-         virtual ~ControlStateInfo() {}
+            bool mGunnerModelAttached;
+            unsigned mWeaponSelected;
+            dtCore::RefPtr<osg::Node> mWeaponModel;
+            dtCore::RefPtr<osg::Node> mGunnerModel;
+            dtCore::RefPtr<SimCore::Actors::ControlStateActor> mControlState;
+
+         protected:
+            virtual ~ControlStateInfo() {}
       };
 
 
@@ -76,6 +83,7 @@ namespace SimCore
             static const std::string STATION_NAME_PREFIX;
             static const std::string CONTROL_NAME_WEAPON;
             static const std::string CONTROL_NAME_TURRET_HEADING;
+            static const std::string DOF_NAME_TURRET;
             static const std::string DOF_NAME_WEAPON;
             static const std::string DOF_NAME_WEAPON_HOTSPOT;
 
@@ -98,8 +106,8 @@ namespace SimCore
             // OVERRIDE!!!
             virtual bool HasVehicleControl( const dtCore::UniqueId& vehicleID ) const { return false; }
 
-            bool AttachWeaponOnVehicle( osg::Node& weapon, SimCore::Actors::Platform& vehicle, const std::string& dofName );
-            bool DetachWeaponOnVehicle( osg::Node& weapon, SimCore::Actors::Platform& vehicle, const std::string& dofName );
+            bool AttachModelOnVehicle( osg::Node& weapon, SimCore::Actors::Platform& vehicle, const std::string& dofName );
+            bool DetachModelOnVehicle( osg::Node& weapon, SimCore::Actors::Platform& vehicle, const std::string& dofName );
       
             bool DetachRemoteWeaponOnVehicle( SimCore::Actors::Platform& vehicle, const std::string& dofName );
 
@@ -152,11 +160,11 @@ namespace SimCore
             const std::string CreateStationName( unsigned stationNumber ) const;
 
             ControlStateInfo* GetRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID );
-            bool AddRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
+            bool AddRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo& info );
             bool RemoveRemoteGunnerControlStateInfo( const dtCore::UniqueId& vehicleID );
 
             ControlStateInfo* GetRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID );
-            bool AddRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
+            bool AddRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID, ControlStateInfo& info );
             bool RemoveRemoteVehicleControlStateInfo( const dtCore::UniqueId& vehicleID );
 
             bool IsVehicleControlState( const SimCore::Actors::ControlStateActor& controlState ) const;
@@ -173,7 +181,7 @@ namespace SimCore
             std::vector<std::string> mWeaponModelFileList;
 
             ControlStateInfo* GetControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
-            bool AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo* info );
+            bool AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo& info );
             bool RemoveControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
       
       };
