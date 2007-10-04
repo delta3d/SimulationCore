@@ -40,6 +40,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm116"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS"

@@ -220,6 +220,7 @@ namespace StealthQt
       {
          QPixmap pixmap(tr(file.c_str()));
          mUi->mControlsCameraImageLabel->setPixmap(pixmap);
+         mUi->mControlsCameraImageLabel->setScaledContents(true);
       }
 
       const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
@@ -1886,15 +1887,15 @@ namespace StealthQt
          {
             if(mShowMissingEntityInfoErrorMessage)
             {
+               if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+                  mShowMissingEntityInfoErrorMessage = false;
+
                QString message = 
                   tr("Could not find info for the actor named: ") + 
                   currentItem->text() + 
                   tr(" because this actor has been removed from the scenario. Please select another actor");
 
                QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
-
-               if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
-                  mShowMissingEntityInfoErrorMessage = false;
             }
          }
       }
