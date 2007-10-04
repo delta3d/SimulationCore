@@ -68,7 +68,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe" && (GetTarget() != NULL || GetTargetDOF() != NULL) && IsEnabled())
+      if(data->message == "preframe" && (GetTarget() != NULL || GetTargetDOF() != NULL) && IsEnabled() && GetMouse()->GetHasFocus())
       {
          if( ! IsFreeLookHeld() )
          {
