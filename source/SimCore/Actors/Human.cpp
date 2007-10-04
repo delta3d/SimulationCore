@@ -72,11 +72,11 @@ namespace SimCore
                   : BaseClass(pWR)
                   , mSpeed(0.0f)
                   , mWalkStart(0.000001f)//in m/s
-                  , mWalkFadeIn(0.25f)//in m/s
+                  , mWalkFadeIn(0.15f)//in m/s
                   , mWalkStop(1.5f)//in m/s
-                  , mWalkFadeOut(0.75f)//in m/s
-                  , mRunStart(0.75f)//in m/s
-                  , mRunFadeIn(0.75) //in m/s
+                  , mWalkFadeOut(0.15f)//in m/s
+                  , mRunStart(1.35f)//in m/s
+                  , mRunFadeIn(0.15f) //in m/s
                   , mRunStop(std::numeric_limits<float>::max()) //we dont want to stop running
                   , mRunFadeOut(std::numeric_limits<float>::max()) //we dont want to stop running
                   , mParentHuman(h)
