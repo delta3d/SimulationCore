@@ -473,7 +473,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       SetTransform(identityTransform);
       // load triangle mesh
       newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(), 
-			     NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
+         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)), 
+         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])),
 				 mPhysicsHelper->GetDensity(),mPhysicsHelper->GetAgeiaMass(), 
 				 mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0], 
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
