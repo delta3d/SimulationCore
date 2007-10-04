@@ -25,6 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -43,8 +44,8 @@
 				AdditionalOptions="/Zm116"
 				Optimization="0"
 				EnableFiberSafeOptimizations="false"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC)"
-				PreprocessorDefinitions="WIN32;_DEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS;"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
+				PreprocessorDefinitions="WIN32;_DEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -69,7 +70,7 @@
 				AdditionalDependencies="dtGUId.lib dtABCd.lib dtDALd.lib dtUtild.lib dtCored.lib dtGamed.lib dtAudiod.lib dtActorsd.lib dtHLAGMd.lib osgUtild.lib osgd.lib osgDBd.lib osgGAd.lib osgTextd.lib osgProducerd.lib CEGUIBase_d.lib xerces-c_2D.lib osgSimd.lib osgParticled.lib openGL32.lib PhysXLoader.lib Producerd.lib dtAgeiaPhysXd.lib osgEphemerisd.lib dtAnimd.lib dtAId.lib"
 				OutputFile="../../bin/SimViewerCored.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(DELTA_LIB);$(AGEIA_LIB);$(EXTERNAL_LIB)"
+				AdditionalLibraryDirectories="$(DELTA_LIB);$(AGEIA_LIB);$(EXTERNAL_LIB);;$(DT_AGEIA_LIB);"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/SimViewer.pdb"
 				SubSystem="1"
@@ -128,8 +129,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm132"
 				Optimization="3"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC)"
-				PreprocessorDefinitions="WIN32;NDEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
+				PreprocessorDefinitions="WIN32;NDEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS;_SECURE_SCL=0"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -154,7 +155,7 @@
 				OutputFile="../../bin/SimViewerCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(DELTA_LIB);$(AGEIA_LIB);$(EXTERNAL_LIB)"
+				AdditionalLibraryDirectories="$(DELTA_LIB);$(AGEIA_LIB);$(EXTERNAL_LIB);$(DT_AGEIA_LIB)"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
