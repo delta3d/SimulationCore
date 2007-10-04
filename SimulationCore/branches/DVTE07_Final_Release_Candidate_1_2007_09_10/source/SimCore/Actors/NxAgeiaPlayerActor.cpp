@@ -202,14 +202,13 @@ namespace SimCore
          {
             float zValue = mPhysicsHelper->GetCharacterExtents()[2];
 
-            // Note this should really be zValue /= 2. However since jsaf is a p.o.s
-            // it doesnt use the float value for w/e reason. so it has to round the number,
+            // Note this should really be zValue /= 2. However, jsaf doesnt use 
+            // the float value for w/e reason. so it has to round the number,
             // this being that the number is 1.5 which turns out to move the character down
             // correctly (well reporting it down correctly). Without subtracting,
             // 0.75 the altitude is 1 meter, you subtract 0.75 (the correct amount)
             // and the alt is still 1 meter. You subtract 20 and its 19. Subtract
-            // 1.5 and its 1. Isnt jsaf great!? Maybe it uses a float in the background,
-            // but only reporting whole numbers is very sucky  imo.
+            // 1.5 and its 1.
             Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2] - zValue));
          }
          else
