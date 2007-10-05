@@ -51,7 +51,8 @@ namespace StealthQt
       mUi->mNetworkListWidget->addItems(toDisplay);
 
       mHLAComp = 
-         static_cast<SimCore::Components::HLAConnectionComponent*>(gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+         static_cast<SimCore::Components::HLAConnectionComponent*>
+         (gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
 
       mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != NULL);
       mUi->mDisconnectPushButton->setEnabled(mIsConnected);
@@ -311,7 +312,7 @@ namespace StealthQt
 
    void HLAWindow::OnCurrentTextChanged(const QString &str)
    {
-      mUi->mConnectPushButton->setEnabled(!str.isEmpty() && str != mCurrentConnectionName);
+      mUi->mConnectPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       //mUi->mDisconnectPushButton->setEnabled(mIsConnected);
       mUi->mEditPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       mUi->mDeletePushButton->setEnabled(!str.isEmpty() && !mIsConnected);
