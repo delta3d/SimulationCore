@@ -130,7 +130,7 @@
 				AdditionalOptions="/Zm132"
 				Optimization="3"
 				AdditionalIncludeDirectories="$(DELTA_INC);../../include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
-				PreprocessorDefinitions="WIN32;NDEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS;_SECURE_SCL=0"
+				PreprocessorDefinitions="WIN32;NDEBUG;SIMCORE_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;AGEIA_PHYSICS;"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
