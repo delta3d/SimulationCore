@@ -90,6 +90,7 @@ namespace SimCore
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
    const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 

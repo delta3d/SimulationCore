@@ -64,6 +64,7 @@ namespace SimCore
          static const std::string CONFIG_PROP_PROJECT_CONTEXT_PATH;
          /// Property enable shader-based human/character skinning
          static const std::string CONFIG_PROP_USE_GPU_CHARACTER_SKINNING;
+         static const std::string CONFIG_PROP_DEVELOPERMODE;
 
          /// Constructor
          BaseGameEntryPoint();
