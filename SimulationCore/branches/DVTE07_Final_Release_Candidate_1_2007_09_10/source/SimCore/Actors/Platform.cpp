@@ -42,6 +42,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
+#include <dtCore/camera.h>
 #include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
@@ -52,6 +53,11 @@
 
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
+
+#include <dtAudio/sound.h>
+#include <dtAudio/audiomanager.h>
+
+#include <dtABC/application.h>
 
 #include <osg/Geode>
 #include <osg/Group>
@@ -160,8 +166,26 @@ namespace SimCore
             dtDAL::MakeFunctor(e, &Platform::SetEntityType),
             dtDAL::MakeFunctorRet(e, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
+
+         static const std::string SOUND_PROPERTY_TYPE("Sounds");
+
+         AddProperty(new dtDAL::FloatActorProperty("MinDistanceIdleSound", "MinDistanceIdleSound",
+            dtDAL::MakeFunctor(e, &Platform::SetMinDistanceIdleSound),
+            dtDAL::MakeFunctorRet(e, &Platform::GetMinDistanceIdleSound),
+            "Distance for the sound", SOUND_PROPERTY_TYPE));
+
+         AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
+            dtDAL::MakeFunctor(e, &Platform::SetMaxDistanceIdleSound),
+            dtDAL::MakeFunctorRet(e, &Platform::GetMaxDistanceIdleSound),
+            "Distance for the sound", SOUND_PROPERTY_TYPE));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(e, 
+            &Platform::SetSFXEngineIdleLoop),
+            "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
       }
       
+      ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();
@@ -170,6 +194,11 @@ namespace SimCore
 
          AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE, 
             dtDAL::MakeFunctor(*actor, &Platform::TickControlState)));
+
+         AddInvokable(*new dtGame::Invokable("TimeElapsedForSoundIdle",
+            dtDAL::MakeFunctor(*actor, &Platform::TickTimerMessage)));
+
+         RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -224,7 +253,9 @@ namespace SimCore
          mDestroyedFileNode(new osg::Group()),
          mSwitchNode(new osg::Switch),
          mHeadLightsEnabled(false),
-         mHeadLightID(0)
+         mHeadLightID(0),
+         mMinIdleSoundDistance(5.0f),
+         mMaxIdleSoundDistance(30.0f)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -238,6 +269,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       Platform::~Platform()
       {
+         if(mSndIdleLoop.valid())
+         {
+            mSndIdleLoop->Stop();
+            RemoveChild(mSndIdleLoop.get());
+            dtAudio::Sound *sound = mSndIdleLoop.release();
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -719,8 +756,86 @@ namespace SimCore
             mDamagedFileNode->accept(*visitor.get());
             mDestroyedFileNode->accept(*visitor.get());
          }
+         
+         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+            LoadSFXEngineIdleLoop();
       }
-      
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::SetSFXEngineIdleLoop(const std::string& soundFX)
+      {
+         mSFXSoundIdleEffect = soundFX;
+         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+            LoadSFXEngineIdleLoop();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::LoadSFXEngineIdleLoop()
+      {
+         if(mSndIdleLoop.valid())
+         {
+            mSndIdleLoop->Stop();
+            RemoveChild(mSndIdleLoop.get());
+            dtAudio::Sound *sound = mSndIdleLoop.release();
+         }
+
+         if(!mSFXSoundIdleEffect.empty())
+         {
+            GetGameActorProxy().GetGameManager()->SetTimer("TimeElapsedForSoundIdle", &GetGameActorProxy(), 1, true);
+            mSndIdleLoop = dtAudio::AudioManager::GetInstance().NewSound();
+            mSndIdleLoop->LoadFile(mSFXSoundIdleEffect.c_str());
+            mSndIdleLoop->ListenerRelative(false);
+            mSndIdleLoop->SetLooping(true);
+            mSndIdleLoop->SetMinDistance(mMinIdleSoundDistance);
+            mSndIdleLoop->SetMaxDistance(mMaxIdleSoundDistance);
+            AddChild(mSndIdleLoop.get());
+            dtCore::Transform xform;
+            mSndIdleLoop->SetTransform(xform, dtCore::Transformable::REL_CS);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::TickTimerMessage(const dtGame::Message& tickMessage)
+      {
+         UpdateEngineIdleSoundEffect();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::UpdateEngineIdleSoundEffect()
+      {
+         if(mSndIdleLoop == NULL)
+            return;
+
+         if(GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            if(mSndIdleLoop->IsPlaying())
+               mSndIdleLoop->Stop();
+            return;
+         }
+
+         dtCore::Transform ourTransform;
+         dtCore::Transform cameraTransform;
+
+         GetTransform(ourTransform);
+         GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
+         
+         osg::Vec3 ourXYZ, cameraXYZ;
+
+         ourXYZ = ourTransform.GetTranslation();
+         cameraXYZ = cameraTransform.GetTranslation();
+         
+         osg::Vec3 distanceVector = ourXYZ - cameraXYZ;
+         float distanceFormula = distanceVector.length2();
+         if( (mMaxIdleSoundDistance * mMaxIdleSoundDistance ) <  distanceFormula)
+         {
+            mSndIdleLoop->Stop();
+         }
+         else
+         {
+            mSndIdleLoop->Play();
+         }
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue)
       {
@@ -796,7 +911,6 @@ namespace SimCore
 
          return forceUpdate;
       }
-      
 
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)

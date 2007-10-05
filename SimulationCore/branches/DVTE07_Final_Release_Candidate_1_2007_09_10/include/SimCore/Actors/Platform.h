@@ -38,6 +38,11 @@ namespace dtCore
    class NodeCollector;
 }
 
+namespace dtAudio
+{
+   class Sound;
+}
+
 namespace dtDAL
 {
    class NamedGroupParameter;
@@ -261,6 +266,15 @@ namespace SimCore
              */
             void TickControlState( const dtGame::Message& tickMessage );
 
+            // for the engine idle sound effect
+            void SetSFXEngineIdleLoop(const std::string& soundFX);
+            void SetMinDistanceIdleSound(float value) {mMinIdleSoundDistance = value;}
+            void SetMaxDistanceIdleSound(float value) {mMaxIdleSoundDistance = value;}
+
+            float GetMinDistanceIdleSound() const {return mMinIdleSoundDistance;}
+            float GetMaxDistanceIdleSound() const {return mMaxIdleSoundDistance;}
+            
+            void TickTimerMessage(const dtGame::Message& tickMessage);
          protected:
 
             /**
@@ -278,6 +292,12 @@ namespace SimCore
             virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
 
             osg::Vec3 mMuzzleFlashPosition;
+
+            // tests to see if we are in range, if so play the sound effect if its playing
+            // else dont.
+            void UpdateEngineIdleSoundEffect();
+
+            void LoadSFXEngineIdleLoop();
 
          private:
             /// The minimum time allowed between control state updates
@@ -325,6 +345,12 @@ namespace SimCore
 
             // Handle to the light effect
             unsigned mHeadLightID;
+
+            // For idle engine sounds, great for hearing things coming!
+            dtCore::RefPtr<dtAudio::Sound>   mSndIdleLoop;
+            std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
+            float                            mMaxIdleSoundDistance;
+            float                            mMinIdleSoundDistance;
       };
 
    }
