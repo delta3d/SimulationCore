@@ -105,7 +105,7 @@ namespace SimCore
 
          //FogSphere SetUp
          mFogSphere = new osgEphemeris::Sphere( 8500.0f,
-            osgEphemeris::Sphere::TessNormal,
+            osgEphemeris::Sphere::TessLow,
             osgEphemeris::Sphere::OuterOrientation,
             osgEphemeris::Sphere::BothHemispheres,
             false
@@ -438,15 +438,15 @@ namespace SimCore
 
       void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) 
       {
-            if(fog_toggle == true)
-            {
-               mFogSphere->setNodeMask(0xFFFFFFFF);
-            }
-            else
-            {   
-               mFogSphere->setNodeMask(0);
-            }
+         if(fog_toggle == true)
+         {
+            mFogSphere->setNodeMask(0xFFFFFFFF);
          }
+         else
+         {   
+            mFogSphere->setNodeMask(0);
+         }
+      }
 
       /////////////////////////////////////////////////////////////
       osgEphemeris::EphemerisModel* IGEnvironmentActor::GetEphemerisModel()
