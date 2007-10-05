@@ -258,7 +258,7 @@ namespace StealthGM
 #ifdef NDEBUG
       // Added by Eddie. End users for a stealth viewer don't care about 
       // debugging stats
-      gameManager.DebugStatisticsTurnOff(false, true);
+      //gameManager.DebugStatisticsTurnOff(false, true);
 #endif
       
       // AAR logging
@@ -335,7 +335,7 @@ namespace StealthGM
       //this enables night vision
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent 
          = new SimCore::Components::RenderingSupportComponent();
-      renderingSupportComponent->SetEnableCullVisitor(false);
+      renderingSupportComponent->SetEnableCullVisitor(true);
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 

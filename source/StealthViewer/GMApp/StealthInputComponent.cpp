@@ -20,6 +20,7 @@
  */
 #include <SimCore/StealthMotionModel.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
+#include <SimCore/BaseGameEntryPoint.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -480,7 +481,11 @@ namespace StealthGM
          case Producer::Key_backslash:
          case Producer::Key_Insert:
          {
-            GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
+            std::string developerMode;
+            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue
+               (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+            if (developerMode == "true" || developerMode == "1")
+               GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
          }
          break;
    
@@ -509,7 +514,10 @@ namespace StealthGM
    
          case Producer::Key_P:
          {
-            ToggleEntityShaders();
+            std::string developerMode;
+            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue("DeveloperMode");
+            if (developerMode == "true" || developerMode == "1")
+               ToggleEntityShaders();
          }
          break;
    
