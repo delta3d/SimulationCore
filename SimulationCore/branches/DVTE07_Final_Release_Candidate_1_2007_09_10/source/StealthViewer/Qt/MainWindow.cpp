@@ -689,9 +689,6 @@ namespace StealthQt
       StealthGM::ControlsRecordConfigObject &recConfig = 
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
-      //StealthGM::ControlsPlaybackConfigObject &pbConfig = 
-      //   StealthViewerData::GetInstance().GetPlaybackConfigObject();
-
       mIsPlaybackMode = !mIsPlaybackMode;
 
       if(mIsPlaybackMode)
@@ -702,6 +699,11 @@ namespace StealthQt
       }
       else
       {
+         // Turn off paused in case the playback ended and paused the GM. 
+         // It will continue to be paused afterward.
+         if(mApp->GetGameManager()->IsPaused())
+            mApp->GetGameManager()->SetPaused(false);
+
          recConfig.JoinFederation();
          mUi->mPlaybackOptionsGroupBox->hide();
          mUi->mPlaybackSwitchToPlaybackModePushButton->setText(tr("Switch to Playback Mode"));
