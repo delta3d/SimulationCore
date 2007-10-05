@@ -436,10 +436,8 @@ namespace SimCore
       }
 
 
-      void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) {
-            
-            osg::StateSet* states = mFogSphere->getStateSet();
-            
+      void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) 
+      {
             if(fog_toggle == true)
             {
                mFogSphere->setNodeMask(0xFFFFFFFF);
@@ -448,7 +446,6 @@ namespace SimCore
             {   
                mFogSphere->setNodeMask(0);
             }
-
          }
 
       /////////////////////////////////////////////////////////////
