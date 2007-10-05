@@ -623,11 +623,11 @@ namespace SimCore
          {
             if (keyboard->GetKeyState(Producer::Key_W) || keyboard->GetKeyState(Producer::Key_Up))
             {
-               GetPhysicsHelper()->ApplyAccel();
+               GetPhysicsHelper()->ApplyAccel(GetMPH());
             }
             else if (keyboard->GetKeyState(Producer::Key_S) || keyboard->GetKeyState(Producer::Key_Down))
             {
-               GetPhysicsHelper()->ApplyHandBrake();
+               GetPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
             else if (!keyboard->GetKeyState(Producer::Key_space))
             {
@@ -658,7 +658,7 @@ namespace SimCore
             accelOrBrakePressedThisFrame = true;
             GetPhysicsHelper()->ApplyBrake(deltaTime);
          }
-         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame);
+         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
