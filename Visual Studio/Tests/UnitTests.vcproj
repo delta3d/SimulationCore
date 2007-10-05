@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS;_SECURE_SCL=0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS;"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"

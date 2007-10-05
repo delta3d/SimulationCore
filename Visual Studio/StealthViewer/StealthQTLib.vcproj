@@ -112,7 +112,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../../ext/include/win32;../../apps/StealthViewer/include;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;_SECURE_SCL=0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
