@@ -160,6 +160,7 @@ namespace SimCore
          if(envActor == NULL)
          {
             LOG_ERROR("The dynamic cast to an EnvironmentActor failed. Can't change weather.");
+            return;
          }
 
          if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR)
