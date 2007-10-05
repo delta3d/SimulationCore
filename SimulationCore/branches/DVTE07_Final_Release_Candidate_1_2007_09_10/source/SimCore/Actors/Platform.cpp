@@ -42,6 +42,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
+#include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/groupactorproperty.h>
@@ -332,19 +333,62 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      osg::Vec3 ComputeDimensions( osg::Node& node )
+      {
+         dtCore::BoundingBoxVisitor bbv;
+         node.accept(bbv);
+
+         osg::Vec3 modelDimensions;
+         modelDimensions.x() = bbv.mBoundingBox.xMax() - bbv.mBoundingBox.xMin();
+         modelDimensions.y() = bbv.mBoundingBox.yMax() - bbv.mBoundingBox.yMin();
+         modelDimensions.z() = bbv.mBoundingBox.zMax() - bbv.mBoundingBox.zMin();
+         return modelDimensions;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void Platform::InternalSetDamageState(PlatformActorProxy::DamageStateEnum &damageState)
       {
          if(IsDrawingModel())
          {
+
+            bool setUseDimensions = true;
+            osg::Node* modelToCalcDims = NULL;
+
             if(damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
+            {
                mSwitchNode->setSingleChildOn(0);
+               modelToCalcDims = mNonDamagedFileNode.get();
+            }
             else if(damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+            {
                mSwitchNode->setSingleChildOn(1);
+               modelToCalcDims = mDamagedFileNode.get();
+            }
             else if(damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
+            {
                mSwitchNode->setSingleChildOn(2);
+               modelToCalcDims = mDestroyedFileNode.get();
+            }
             else
+            {
                mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,  
                "Damage state is not a valid state");
+
+               setUseDimensions = false;
+            }
+
+
+            //compute the model dimensions for this damage state model, since the dimensions will differ from
+            //the other damage states
+            //NOTE: this fixes the flaming entity problem because the DeadReckoningComponent will
+            //factor in any particle system attached to us with our bounding volume
+            if(modelToCalcDims != NULL)
+            {
+               GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));               
+            }
+
+            GetDeadReckoningHelper().SetUseModelDimensions(setUseDimensions);
+
          }
 
          BaseClass::SetDamageState(damageState);
