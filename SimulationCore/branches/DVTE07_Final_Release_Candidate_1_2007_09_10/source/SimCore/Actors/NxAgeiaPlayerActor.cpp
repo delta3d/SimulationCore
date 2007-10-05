@@ -198,6 +198,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::SetLastKnownTranslation(const osg::Vec3 &vec)
       {
+#ifdef AGEIA_PHYSICS
          if(mPhysicsHelper != NULL)
          {
             float zValue = mPhysicsHelper->GetCharacterExtents()[2];
@@ -212,6 +213,7 @@ namespace SimCore
             Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2] - zValue));
          }
          else
+#endif
             Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
       }
 
@@ -219,9 +221,10 @@ namespace SimCore
       bool NxAgeiaPlayerActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
          osg::Vec3 position = pos;
+#ifdef AGEIA_PHYSICS
          if(mPhysicsHelper != NULL)
             position[2] -= (mPhysicsHelper->GetCharacterExtents()[2]);
-
+#endif
          osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
 
          float distanceTurned = rot.x() - GetLastKnownRotation().x();
@@ -231,7 +234,7 @@ namespace SimCore
             // DEBUG: std::cout << "\n\tUpdate Translation:\t" << GetMaxTranslationError() << std::endl;
             mNotifyChangePosition = true;
          }
-         
+
          if (distanceTurned * distanceTurned > GetMaxRotationError())
          {
             // DEBUG: std::cout << "\n\tUpdate Orientation\n" << std::endl;

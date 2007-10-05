@@ -581,7 +581,7 @@ namespace SimCore
          {
             RegisterWithDeadReckoningComponent();
             GetDeadReckoningHelper().SetUseModelDimensions(false);
-            GetDeadReckoningHelper().SetModelDimensions(osg::Vec3(0.2, 0.2, 1.0));
+            GetDeadReckoningHelper().SetAdjustRotationToGround(false);
             
             //Need tick remote to check for plan changes.
             GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
