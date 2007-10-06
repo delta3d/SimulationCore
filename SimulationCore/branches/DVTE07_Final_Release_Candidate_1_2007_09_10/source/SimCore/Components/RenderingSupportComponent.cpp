@@ -591,15 +591,20 @@ namespace SimCore
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(trans.GetTranslation()));
 
          unsigned count = 0;
-         for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3; count += 3)
+         for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3;)
          { 
             if(iter != endIter)
             {
                DynamicLight* dl = (*iter).get();
 
-               lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-               lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-               lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+               //don't bind lights of zero intensity
+               if(dl->mIntensity > 0.0001f)
+               {
+                  lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                  lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+                  count += 3;
+               }
 
                ++iter;
             }
@@ -609,6 +614,7 @@ namespace SimCore
                lightArray->setElement(count, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
                lightArray->setElement(count + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
                lightArray->setElement(count + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+               count += 3;
             }
          }
       }
