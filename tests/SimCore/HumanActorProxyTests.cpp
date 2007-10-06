@@ -68,6 +68,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanDeployedToReady);
       CPPUNIT_TEST(TestPlanReadyToDeployed);
       CPPUNIT_TEST(TestPlanStandingToKneelingDeployed);
+      CPPUNIT_TEST(TestPlanStandingToCrouchingNoWeaponMoving);
+      CPPUNIT_TEST(TestCrouchingNoWeaponMovingToCrawlingReady);
       CPPUNIT_TEST(TestPlanWalkingReadyToKneelingDeployed);
       CPPUNIT_TEST(TestPlanShotStanding);
       CPPUNIT_TEST(TestPlanShotWalking);
@@ -171,16 +173,84 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
                2U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL, (*iter)->GetName());
          ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
+      }
+
+      void TestPlanStandingToCrouchingNoWeaponMoving()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(0.0f, 0.0f, 0.0f));
+
+         mGM->AddActor(*mHumanAP, false, false);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
+
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               2U, unsigned(result.size()));
+
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL, (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED, (*iter)->GetName());
+      }
+
+      void TestCrouchingNoWeaponMovingToCrawlingReady()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
+
+         mGM->AddActor(*mHumanAP, false, false);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
+
+         human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
+
+         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               4U, unsigned(result.size()));
+
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_PRONE, (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY, (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_CRAWL_READY, (*iter)->GetName());
       }
 
       void TestPlanShotStanding()
