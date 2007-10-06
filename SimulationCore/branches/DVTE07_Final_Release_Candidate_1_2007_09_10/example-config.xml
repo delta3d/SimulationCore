@@ -35,6 +35,7 @@ find it.  It shows an example set of values one may set
       <Property Name="AdditionalMap3">Global Actors</Property>
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <Property Name="DeveloperMode">true</Property>
+      <Property Name="GMStatisticsInterval">0</Property>
     </Properties>
 
 </Application>
