@@ -85,6 +85,10 @@ namespace SimCore
             static const std::string ANIM_STAND_DEPLOYED;
             static const std::string ANIM_WALK_READY;
             static const std::string ANIM_WALK_DEPLOYED;
+            static const std::string ANIM_LOW_WALK_READY;
+            static const std::string ANIM_LOW_WALK_DEPLOYED;
+            static const std::string ANIM_CRAWL_READY;
+            static const std::string ANIM_CRAWL_DEPLOYED;
             static const std::string ANIM_KNEEL_READY;
             static const std::string ANIM_KNEEL_DEPLOYED;
             static const std::string ANIM_STAND_TO_KNEEL;

@@ -289,7 +289,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(HumanActorProxy::StanceEnum);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::NOT_APPLICABLE("NOT_APPLICABLE",
-            BasicStanceEnum::IDLE);
+            BasicStanceEnum::STANDING);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::UPRIGHT_STANDING("UPRIGHT_STANDING",
             BasicStanceEnum::STANDING);
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::UPRIGHT_WALKING("UPRIGHT_WALKING",
@@ -470,7 +470,7 @@ namespace SimCore
 
          initialState.AddState(STATE_DEAD,         new dtAI::StateVariable(false));
 
-         initialState.AddState(STATE_MOVING,       new dtAI::StateVariable(0.0));
+         initialState.AddState(STATE_MOVING,       new dtAI::StateVariable(false));
          //Setting transition to true will make the planner generate the correct initial animation.
          initialState.AddState(STATE_TRANSITION,   new dtAI::StateVariable(true));
          initialState.AddState(STATE_SHOT,         new dtAI::StateVariable(false));
@@ -594,11 +594,23 @@ namespace SimCore
       {
          mCurrentPlan.clear();
          mPlanner.Reset(&mPlannerHelper);
+         
+         mPlanner.GetConfig().mMaxTimePerIteration = 1.0;
+         
          dtAI::Planner::PlannerResult result = mPlanner.GeneratePlan();
          if (result == dtAI::Planner::PLAN_FOUND)
          {
             mCurrentPlan = mPlanner.GetConfig().mResult;
             return true;
+         }
+         else
+         {
+            std::ostringstream ss;
+            ss << "Unable to generate a plan:  Stance:  " << GetStance().GetName() 
+               << " Primary Weapon: " << GetPrimaryWeaponState().GetName()
+               << " Damage: " << GetDamageState().GetName() 
+               << " Velocty:" << GetVelocityVector();
+            mLogger.LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, ss.str());
          }
          return false;
       }
@@ -702,88 +714,94 @@ namespace SimCore
                mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
                      "Planner is not in the desired state.  Generating animations.");
             }
-            
+
             UpdatePlanAndAnimations();
-            
+
          }
       }
 
       ////////////////////////////////////////////////////////////////////////////
       void Human::UpdatePlanAndAnimations()
       {
-         GenerateNewAnimationSequence();
-         dtAI::Planner::OperatorList::iterator i, iend;
+         const float blendTime = 0.2f;
 
-         dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
-
-         dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
-         
-         static int count = 0;
-         std::ostringstream ss;
-         //nasty hack to make sure the sequence names don't match.
-         ss << "sequence " << count;
-         ++count;
-         generatedSequence->SetName(ss.str());
-         
-         
-         if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+         if (!GenerateNewAnimationSequence())
          {
-            mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
-                  "Current animation plan has \"%d\" steps.", mCurrentPlan.size());
+            mAnimationHelper->ClearAll(blendTime);
+            mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
-
-         if (!mCurrentPlan.empty())
+         else
          {
-            i = mCurrentPlan.begin();
-            iend = mCurrentPlan.end();
+            dtAI::Planner::OperatorList::iterator i, iend;
+            dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+            dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
 
-            const float blendTime = 0.2f;
-            float accumulatedStartTime = 0.0f;
-
-            dtCore::RefPtr<dtAnim::Animatable> newAnim;
-            for (; i != iend; ++i)
-            {
-               //if the last anim was NOT the last one, it has to end and be an action
-               if (newAnim.valid())
-               {
-                  dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
-                  if (animChannel != NULL)
-                  {
-                     
-                     float duration = animChannel->GetAnimation()->GetDuration();
-                     accumulatedStartTime += (duration - blendTime);
-                     animChannel->SetMaxDuration(duration);
-                     animChannel->SetAction(true);
-                  }
-               }
-
-               const dtAI::Operator* op = *i;
-
-               op->Apply(mPlannerHelper.GetCurrentState());
-
-               const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
-               if (animatable != NULL)
-               {
-                  if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-                  {
-                     mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
-                           "Adding animatable named \"%s\".", animatable->GetName().c_str());
-                  }
-                  newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
-                  newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime));
-                  newAnim->SetFadeIn(blendTime);
-                  newAnim->SetFadeOut(blendTime);
-
-                  generatedSequence->AddAnimation(newAnim.get());
-               }
-               else
-               {
-                  newAnim = NULL;
-               }
-            }
+            static int count = 0;
+            std::ostringstream ss;
+            //nasty hack to make sure the sequence names don't match.
+            ss << "sequence " << count;
+            ++count;
+            generatedSequence->SetName(ss.str());
             
-            seqMixer.ClearActiveAnimations(blendTime);
-            seqMixer.PlayAnimation(generatedSequence.get());
+            
+            if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            {
+               mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+                     "Current animation plan has \"%d\" steps.", mCurrentPlan.size());
+            }
+   
+            if (!mCurrentPlan.empty())
+            {
+               i = mCurrentPlan.begin();
+               iend = mCurrentPlan.end();
+   
+               float accumulatedStartTime = 0.0f;
+   
+               dtCore::RefPtr<dtAnim::Animatable> newAnim;
+               for (; i != iend; ++i)
+               {
+                  //if the last anim was NOT the last one, it has to end and be an action
+                  if (newAnim.valid())
+                  {
+                     dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
+                     if (animChannel != NULL)
+                     {
+                        
+                        float duration = animChannel->GetAnimation()->GetDuration();
+                        accumulatedStartTime += (duration - blendTime);
+                        animChannel->SetMaxDuration(duration);
+                        animChannel->SetAction(true);
+                     }
+                  }
+   
+                  const dtAI::Operator* op = *i;
+   
+                  op->Apply(mPlannerHelper.GetCurrentState());
+   
+                  const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
+                  if (animatable != NULL)
+                  {
+                     if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+                     {
+                        mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+                              "Adding animatable named \"%s\".", animatable->GetName().c_str());
+                     }
+                     newAnim = animatable->Clone(mAnimationHelper->GetModelWrapper());
+                     newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime));
+                     newAnim->SetFadeIn(blendTime);
+                     newAnim->SetFadeOut(blendTime);
+   
+                     generatedSequence->AddAnimation(newAnim.get());
+                  }
+                  else
+                  {
+                     newAnim = NULL;
+                  }
+               }
+               
+               seqMixer.ClearActiveAnimations(blendTime);
+               seqMixer.PlayAnimation(generatedSequence.get());
+            }
          }
       }
       
@@ -976,8 +994,16 @@ namespace SimCore
       const std::string AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
       const std::string AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
       const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
+      
       const std::string AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
       const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
+
+      const std::string AnimationOperators::ANIM_LOW_WALK_READY("Low Walk Ready");
+      const std::string AnimationOperators::ANIM_LOW_WALK_DEPLOYED("Low Walk Deployed");
+
+      const std::string AnimationOperators::ANIM_CRAWL_READY("Crawl Ready");
+      const std::string AnimationOperators::ANIM_CRAWL_DEPLOYED("Crawl Deployed");
+
       const std::string AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
       const std::string AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
 
@@ -986,7 +1012,7 @@ namespace SimCore
 
       const std::string AnimationOperators::ANIM_PRONE_TO_KNEEL("Prone To Kneel");
       const std::string AnimationOperators::ANIM_KNEEL_TO_PRONE("Kneel To Prone");
-      
+
       const std::string AnimationOperators::ANIM_SHOT_STANDING("Shot Standing");
       const std::string AnimationOperators::ANIM_SHOT_KNEELING("Shot Kneeling");
       const std::string AnimationOperators::ANIM_SHOT_PRONE("Shot Prone");
@@ -994,7 +1020,7 @@ namespace SimCore
       const std::string AnimationOperators::ANIM_DEAD_STANDING("Dead Standing");
       const std::string AnimationOperators::ANIM_DEAD_KNEELING("Dead Kneeling");
       const std::string AnimationOperators::ANIM_DEAD_PRONE("Dead Prone");
-      
+
       const std::string AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");
       const std::string AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
 
@@ -1147,6 +1173,22 @@ namespace SimCore
          newOp->AddEffect(notMovingEff.get());
          newOp->AddEffect(notTransitionEff.get());
 
+         newOp = AddOperator(ANIM_LOW_WALK_READY);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddPreCondition(ready.get());
+
+         newOp->AddEffect(kneelingEff.get());
+         newOp->AddEffect(movingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_LOW_WALK_DEPLOYED);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddPreCondition(deployed.get());
+
+         newOp->AddEffect(kneelingEff.get());
+         newOp->AddEffect(movingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
          newOp = AddOperator(ANIM_STAND_TO_KNEEL);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(deployed.get());
@@ -1186,6 +1228,22 @@ namespace SimCore
 
          newOp->AddEffect(kneelingEff.get());
          newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_CRAWL_READY);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(ready.get());
+
+         newOp->AddEffect(proneEff.get());
+         newOp->AddEffect(movingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_CRAWL_DEPLOYED);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(deployed.get());
+
+         newOp->AddEffect(proneEff.get());
+         newOp->AddEffect(movingEff.get());
+         newOp->AddEffect(notTransitionEff.get());
 
          newOp = AddOperator(ANIM_KNEEL_TO_PRONE);
          newOp->AddPreCondition(kneeling.get());
