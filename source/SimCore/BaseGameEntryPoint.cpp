@@ -39,6 +39,7 @@
 #include <SimCore/Tools/Binoculars.h>
 
 #include <dtUtil/fileutils.h>
+#include <dtUtil/stringutils.h>
 
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
@@ -91,6 +92,7 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
    const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
    const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_GMSTATS("GMStatisticsInterval");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
@@ -156,7 +158,7 @@ namespace SimCore
       parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource", "Name of the federation mapping resource file to load.");
       parser->getApplicationUsage()->addCommandLineOption("--aspectRatio", "The aspect ratio to use for the camera [1.33 or 1.6]");
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
-      parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
+      //parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
 
       std::string fedFileResource;
 
@@ -193,10 +195,10 @@ namespace SimCore
          mLingeringShotEffectSecs = 300.0f;
       }
 
-      if (!parser->read("--statisticsInterval", mStatisticsInterval))
-      {
-         mStatisticsInterval = 0;
-      }
+      //if (!parser->read("--statisticsInterval", mStatisticsInterval))
+      //{
+      //   mStatisticsInterval = 0;
+      //}
 
       if(!mIsUIRunning)
       {
@@ -564,7 +566,24 @@ namespace SimCore
       // called virtual, will get ur overridden version first.
       HLAConnectionComponentSetup();
 
-      gameManager.DebugStatisticsTurnOn(true, true, mStatisticsInterval);
+
+      // Turn on debug statistics if the option is set in the config.xml
+      // Note - this makes the --statisticsInterval option obsolete.
+      std::string statisticsIntervalOption;
+      statisticsIntervalOption = GetGameManager()->GetApplication().GetConfigPropertyValue
+         (SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS, "0");
+      if (!statisticsIntervalOption.empty())
+      {
+         // Not error checking the value before calling ToFloat makes me nervous, but it seems to 
+         // handle the errors of 'abcd' or "" just fine.  
+         float interval = dtUtil::ToFloat(statisticsIntervalOption);
+         if (interval > 0.0 && interval < 9999.0)
+         {
+            gameManager.DebugStatisticsTurnOn(true, true, interval);
+            LOG_ALWAYS("Enabling GM Debug Statistics with interval[" + statisticsIntervalOption + 
+               "] because " + SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS + " was set in the config.xml.");
+         }
+      }
 
       // CURT - This conflicts with requirement request to make it a parameter but can't
       // support various munition types.

@@ -254,13 +254,6 @@ namespace StealthGM
       // the connection to the federation.
       StealthInputComponent* inputComp = mInputComponent.get();
    
-
-#ifdef NDEBUG
-      // Added by Eddie. End users for a stealth viewer don't care about 
-      // debugging stats
-      //gameManager.DebugStatisticsTurnOff(false, true);
-#endif
-      
       // AAR logging
       if (mEnableLogging)
       {

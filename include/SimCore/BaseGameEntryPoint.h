@@ -65,6 +65,7 @@ namespace SimCore
          /// Property enable shader-based human/character skinning
          static const std::string CONFIG_PROP_USE_GPU_CHARACTER_SKINNING;
          static const std::string CONFIG_PROP_DEVELOPERMODE;
+         static const std::string CONFIG_PROP_GMSTATS;
 
          /// Constructor
          BaseGameEntryPoint();
@@ -128,7 +129,7 @@ namespace SimCore
          std::string mProjectPath;
          float mAspectRatio;
          float mLingeringShotEffectSecs;
-         int mStatisticsInterval;
+         //int mStatisticsInterval;
          osg::Vec3 mStartPos;
          bool mIsUIRunning;
          bool mMissingRequiredCommandLineOption;
