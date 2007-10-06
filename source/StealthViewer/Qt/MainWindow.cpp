@@ -215,7 +215,8 @@ namespace StealthQt
       mHLAErrorTimer.setInterval(10000);
       mHLAErrorTimer.setSingleShot(true);
 
-      const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
+      //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
+      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
       if(!file.empty())
       {
          QPixmap pixmap(tr(file.c_str()));
