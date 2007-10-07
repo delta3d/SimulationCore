@@ -158,17 +158,6 @@ namespace SimCore
                   p->InitDeadReckoningHelper();
                }
             }
-
-            //////////////////////////////////////
-            virtual void OnEnteredWorld()
-            {
-               HumanActorProxy::OnEnteredWorld();
-
-               if (IsRemote())
-                  RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-               else
-                  RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
-            }
       };
    }
 }
