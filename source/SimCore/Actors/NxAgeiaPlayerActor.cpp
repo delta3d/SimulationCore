@@ -477,6 +477,18 @@ namespace SimCore
 
       }
 
+      /// Instantiates the actor this proxy encapsulated
+      void NxAgeiaPlayerActorProxy::CreateActor() 
+      { 
+         NxAgeiaPlayerActor* p = new NxAgeiaPlayerActor(*this);
+         SetActor(*p); 
+
+         if(!IsRemote())
+         {
+            p->InitDeadReckoningHelper();
+         }
+      }
+
       //////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActorProxy::BuildPropertyMap()
       {
