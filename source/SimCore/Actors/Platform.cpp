@@ -197,8 +197,6 @@ namespace SimCore
 
          AddInvokable(*new dtGame::Invokable("TimeElapsedForSoundIdle",
             dtDAL::MakeFunctor(*actor, &Platform::TickTimerMessage)));
-
-         RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +271,7 @@ namespace SimCore
          {
             mSndIdleLoop->Stop();
             RemoveChild(mSndIdleLoop.get());
-            dtAudio::Sound *sound = mSndIdleLoop.release();
+            mSndIdleLoop.release();
          }
       }
 
@@ -729,15 +727,21 @@ namespace SimCore
       void Platform::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         
+
+         GetGameActorProxy().RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");
+
          if (IsRemote())
          {
             dtCore::NodeCollector* nodeCollector = GetNodeCollector();
             if(nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
                GetDeadReckoningHelper().SetNodeCollector(*nodeCollector);
-
-            RegisterWithDeadReckoningComponent();
          }
+         else
+         {
+            GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+         }
+
+         RegisterWithDeadReckoningComponent();
 
          //// Curt - bump mapping
          dtCore::ShaderProgram *defaultShader = dtCore::ShaderManager::GetInstance().
@@ -776,7 +780,7 @@ namespace SimCore
          {
             mSndIdleLoop->Stop();
             RemoveChild(mSndIdleLoop.get());
-            dtAudio::Sound *sound = mSndIdleLoop.release();
+            mSndIdleLoop.release();
          }
 
          if(!mSFXSoundIdleEffect.empty())

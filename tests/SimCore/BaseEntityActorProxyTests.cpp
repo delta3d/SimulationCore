@@ -533,7 +533,7 @@ void BaseEntityActorProxyTests::TestPlatformDRRegistration()
    CPPUNIT_ASSERT(eap.valid());
 
    mGM->AddActor(*eap, false, false);
-   CPPUNIT_ASSERT_MESSAGE("Entity should not be added when it's not remote.", !mDeadReckoningComponent->IsRegisteredActor(*eap));
+   CPPUNIT_ASSERT_MESSAGE("Entity should be added when it's not remote.", mDeadReckoningComponent->IsRegisteredActor(*eap));
    mGM->DeleteActor(*eap);
 
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
@@ -549,7 +549,7 @@ void BaseEntityActorProxyTests::TestHumanDRRegistration()
    CPPUNIT_ASSERT(hap.valid());
 
    mGM->AddActor(*hap, false, false);
-   CPPUNIT_ASSERT_MESSAGE("Entity should not be added when it's not remote.", !mDeadReckoningComponent->IsRegisteredActor(*hap));
+   CPPUNIT_ASSERT_MESSAGE("Entity should be added when it's not remote.", mDeadReckoningComponent->IsRegisteredActor(*hap));
    mGM->DeleteActor(*hap);
 
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
@@ -646,7 +646,8 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
    CPPUNIT_ASSERT_MESSAGE("The message found should be of the correct type", msg->GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
 
    tc->reset();
-   mGM->DeleteAllActors(true);
+   mGM->DeleteAllActors();
+   dtCore::System::GetInstance().Step();
 
    mGM->AddActor(*pa, true, false);
    SLEEP(10);

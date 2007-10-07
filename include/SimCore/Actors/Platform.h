@@ -349,8 +349,8 @@ namespace SimCore
             // For idle engine sounds, great for hearing things coming!
             dtCore::RefPtr<dtAudio::Sound>   mSndIdleLoop;
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
-            float                            mMaxIdleSoundDistance;
             float                            mMinIdleSoundDistance;
+            float                            mMaxIdleSoundDistance;
       };
 
    }
