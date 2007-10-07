@@ -174,11 +174,6 @@ namespace SimCore
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
-
-            dtGame::DeadReckoningComponent* component = 
-               static_cast<dtGame::DeadReckoningComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName(
-                                                                        dtGame::DeadReckoningComponent::DEFAULT_NAME));
-            component->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
          }
 
          GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
@@ -773,9 +768,6 @@ namespace SimCore
          if (IsRemote())
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
             dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-         else
-            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, 
-            dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
       }
