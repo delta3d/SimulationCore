@@ -185,7 +185,7 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          // Make sure we DO hit hte terrain appropriatelys
          MunitionRaycastReport myReport((mWeapon.valid() ? mWeapon->GetOwner() : NULL));
          //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0) | (1 << 30));
+         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0) | (1 << 30) | (1 << 31));
          if(numHits > 0 && myReport.mGotAHit)
          {
             if (myReport.mClosestHit.distance <= length)

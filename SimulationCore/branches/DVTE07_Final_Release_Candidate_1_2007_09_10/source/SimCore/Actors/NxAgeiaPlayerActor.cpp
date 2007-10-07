@@ -391,12 +391,17 @@ namespace SimCore
          Human::OnEnteredWorld();
 
 #ifdef AGEIA_PHYSICS
+         // We don't want remote players to kick the HMMWV around, so we put them in a different group.
+         if (IsRemote())
+            mPhysicsHelper->SetCollisionGroup(31);
+
          mPhysicsHelper->InitializeCharacter();
          dtCore::Transform transform;
          GetTransform(transform);
          SetPosition( transform.GetTranslation() );
          mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+
 #endif
 
          if(!IsRemote())
