@@ -49,6 +49,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/Human.h>
 
 using dtCore::RefPtr;
 
@@ -2084,6 +2085,7 @@ namespace SimCore
 
          // Figure out if we hit an entity or if we hit the ground!
          bool hitEntity = ! message.GetAboutActorId().ToString().empty();
+         bool entityIsHuman = false;
          if( hitEntity )
          {
             dtDAL::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
@@ -2092,6 +2094,10 @@ namespace SimCore
             hitEntity = ! (targetProxy != NULL 
                && ( dynamic_cast<NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
                || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
+            
+            // Check to see if we hit a person. Needs a different effect
+            entityIsHuman = (hitEntity && 
+               dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
          }
 
          // Set the position and ground clamp
@@ -2214,7 +2220,11 @@ namespace SimCore
          std::string curValue;
 
          // Load the particle effect
-         if( hitEntity && effects->HasEntityImpactEffect() )
+         if (hitEntity && entityIsHuman) // For humans, we play a different effect
+         {
+            // do nothing for right now
+         }
+         else if( hitEntity && effects->HasEntityImpactEffect() )
          {
             curValue = effects->GetEntityImpactEffect();
             if( ! curValue.empty() ) { da->LoadDetonationFile( curValue ); }
@@ -2226,7 +2236,11 @@ namespace SimCore
          }
 
          // Load the sound
-         if( hitEntity && effects->HasEntityImpactSound() )
+         if (hitEntity && entityIsHuman) // For humans, we play a different effect
+         {
+            // do nothing for shooting a player. For now we have no hit human thud.
+         }
+         else if( hitEntity && effects->HasEntityImpactSound() )
          {
             curValue = effects->GetEntityImpactSound();
             if( ! curValue.empty() ) 
