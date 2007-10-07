@@ -474,20 +474,23 @@ namespace SimCore
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 
+      //camera->GetSceneHandler()->GetSceneView()->
+      //   setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
       camera->GetSceneHandler()->GetSceneView()->
-         setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
-
+         setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING | 
+            osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING | 
+            osg::CullSettings::VIEW_FRUSTUM_SIDES_CULLING);
       //camera->GetSceneHandler()->GetSceneView()->setSmallFeatureCullingPixelSize(250.0f);
 
       //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
-      //camera->GetSceneHandler()->GetSceneView()->
-      //   setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
-      //                       PLAYER_FAR_CLIP_PLANE);
-
       camera->SetPerspective(60.0f, 60.0f,
                              PLAYER_NEAR_CLIP_PLANE, 
                              PLAYER_FAR_CLIP_PLANE);
+      camera->GetSceneHandler()->GetSceneView()->
+         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
+                             PLAYER_FAR_CLIP_PLANE);
+
 
       if(mAspectRatio == 0.0f)
       {
