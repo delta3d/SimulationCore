@@ -148,16 +148,7 @@ namespace SimCore
             virtual void BuildInvokables();
 
             /// Instantiates the actor this proxy encapsulated
-            virtual void CreateActor() 
-            { 
-               NxAgeiaPlayerActor* p = new NxAgeiaPlayerActor(*this);
-               SetActor(*p); 
-
-               if(!IsRemote())
-               {
-                  p->InitDeadReckoningHelper();
-               }
-            }
+            virtual void CreateActor();
       };
    }
 }
