@@ -113,6 +113,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
@@ -140,6 +142,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -167,6 +171,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -196,6 +202,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(0.0f, 0.0f, 0.0f));
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
@@ -227,6 +235,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
 
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
@@ -319,6 +329,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(0.0f,1.0f,0.0f));
          
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -354,6 +366,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
          
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
@@ -380,6 +394,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
          mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
          
          human->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
          

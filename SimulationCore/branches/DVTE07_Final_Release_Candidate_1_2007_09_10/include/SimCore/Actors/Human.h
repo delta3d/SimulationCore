@@ -211,13 +211,17 @@ namespace SimCore
             
             /// When the state is updated, this is called internally to update the plan.
             bool GenerateNewAnimationSequence();
+            /// Actually runs the planner update.
             void UpdatePlanAndAnimations();
+            /// Checks the desired state to see if a new plan need to be generated, and if so generates it.
+            void CheckAndUpdateAnimationState();
 
             /// This exists for the sake of the unit tests.
             const dtAI::Planner::OperatorList& GetCurrentPlan();
             
             /*virtual*/ void OnEnteredWorld();
             /*virtual*/ void TickRemote(const dtGame::Message& tickRemote);
+            /*virtual*/ void TickLocal(const dtGame::Message& tickLocal);
 
          protected:
             virtual ~Human();

@@ -529,6 +529,7 @@ namespace SimCore
 
                //initialize helper
                SetupPlannerHelper();
+               UpdatePlanAndAnimations();
                
             }
          }
@@ -565,8 +566,12 @@ namespace SimCore
          SetSmokePlumesFile("");
 
          SetupPlannerHelper();
-         UpdatePlanAndAnimations();
 
+         if (!GetSkeletalMeshFile().empty())
+         {
+            UpdatePlanAndAnimations();
+         }
+         
          dtAnim::AnimationComponent* animComponent = NULL;
 
          GetGameActorProxy().GetGameManager()->
@@ -577,14 +582,19 @@ namespace SimCore
             animComponent->RegisterActor(GetGameActorProxy(), *mAnimationHelper);
          }
 
+         RegisterWithDeadReckoningComponent();
+         GetDeadReckoningHelper().SetUseModelDimensions(false);
+         GetDeadReckoningHelper().SetAdjustRotationToGround(false);
+
          if (IsRemote())
          {
-            RegisterWithDeadReckoningComponent();
-            GetDeadReckoningHelper().SetUseModelDimensions(false);
-            GetDeadReckoningHelper().SetAdjustRotationToGround(false);
-            
             //Need tick remote to check for plan changes.
-            GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+            GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE,
+                     dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+         }
+         else
+         {
+            GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
          }
 
       }
@@ -707,7 +717,21 @@ namespace SimCore
       {
          //just in case
          BaseClass::TickRemote(tickRemote);
-         if (!IsDesiredState(mPlannerHelper.GetCurrentState()))
+         CheckAndUpdateAnimationState();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void Human::TickLocal(const dtGame::Message& tickLocal)
+      {
+         //just in case
+         BaseClass::TickLocal(tickLocal);
+         CheckAndUpdateAnimationState();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void Human::CheckAndUpdateAnimationState()
+      {
+         if (!IsDesiredState(mPlannerHelper.GetCurrentState()) && !GetSkeletalMeshFile().empty())
          {
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
@@ -716,7 +740,6 @@ namespace SimCore
             }
 
             UpdatePlanAndAnimations();
-
          }
       }
 
