@@ -409,7 +409,7 @@ def TOOL_BUNDLE(env):
          
          if env['OS'] == 'windows':
            env.Append( CPPDEFINES = ['WIN32', 'NDEBUG', '_NOAUTOLIBMSG'],
-                    CXXFLAGS = ['/EHsc', '/GR', '/MD' ], #synchronous exception handling (c-?), run-time type info, multi-threaded dll
+                    CXXFLAGS = ['/EHsc', '/GR', '/MD', '/Ox'], #synchronous exception handling (c-?), run-time type info, multi-threaded dll
                     LINKFLAGS = ['/NODEFAULTLIB:LIBCMT', '/NODEFAULTLIB:LIBC'] )  
          elif env['OS'] == 'linux':
            env.Append( CXXFLAGS=['-O2', '-pipe'], #optimizations, pipe object data
@@ -790,7 +790,7 @@ def TOOL_BUNDLE(env):
       
          if not foundGdalH: 
             print "gdal.h was not found, aborting."
-            Exit(1)
+            env.Exit(1)
          
       
       #this actually SEARCHES, not good

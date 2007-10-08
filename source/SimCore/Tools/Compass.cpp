@@ -58,7 +58,13 @@ namespace SimCore
          Tool(mainWindow),
          mOverlay(NULL),
          mAzimuthText(NULL),
-         mUseMagneticNorth(useMagNorth)
+         mUseMagneticNorth(useMagNorth),
+         mNeedleRotation(0.0f),
+         mNeedlePosition(0.0f),
+         mNeedleVelocity(0.0f),
+         mNeedleAcceleration(0.0f),
+         mNeedleTorque(2.0f),
+         mNeedleDragCoef(0.9f)
       {
          try
          {
@@ -140,7 +146,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Compass::Update()
+      void Compass::Update( float timeDelta )
       {
          if(IsEnabled() && GetPlayerActor() != NULL)
          {
@@ -153,11 +159,7 @@ namespace SimCore
                h += GetCoordinateConverter().GetMagneticNorthOffset();
             unsigned int mils = dtUtil::Coordinates::DegreesToMils(h);
 
-            mAzimuthText->setText(PadNumber(mils));
-
-            std::stringstream ss;
-            ss << ((int)(100.0*(360.0-(h<0.0?360.0+h:h)))/100.0);
-            mAzimuthDegreesText->setText(ss.str());
+            h = float(UpdateNeedle(timeDelta,h+180.0f))-180.0f;
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
@@ -173,10 +175,60 @@ namespace SimCore
                float yVal = sin(osg::DegreesToRadians(-h+90))*.375f+.5f;
                osg::Vec2f foc (xVal, yVal);
                mLensFocus->set(foc);
-
             }
             // --- LOCKHEED CODE --- END --- //
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float Compass::UpdateNeedle( float deltaTime, float heading )
+      {
+         if (heading < 0.0f)
+            heading += 360.0f;
+         if (heading > 360.0f)
+            heading -= 360.0f;
+
+         if (mNeedlePosition < 0.0f)
+            mNeedlePosition += 360.0f;
+         if (mNeedlePosition > 360.0f)
+            mNeedlePosition -= 360.0f;
+
+         float diff = heading - mNeedlePosition;
+
+         //figure out the direction of acceleration
+         static const float deg360 = 360.0f;//(osg::PI + osg::PI);
+         static const float deg90 = 90.0f;//(osg::PI_2);
+         static const float deg270 = 270.0f;//(osg::PI + osg::PI_2);
+         if (heading > deg270 && mNeedlePosition < deg90)
+            diff = (heading - deg360) + (0.0f - mNeedlePosition);
+         else if (heading <  deg90 && mNeedlePosition > deg270)
+            diff = (heading - 0.0f) + (deg360 - mNeedlePosition);
+         else if (diff > 0.0f)
+         {
+            float ccwDiff = -mNeedlePosition + (heading - deg360);
+            if (fabsf(ccwDiff) < diff)
+               diff = ccwDiff;
+         }
+         else if (diff < 0.0f)
+         {
+            float cwDiff = (deg360 - mNeedlePosition) + heading;
+            if (cwDiff < fabs(diff))
+               diff = cwDiff;
+         }
+
+         mNeedleAcceleration = (mNeedleTorque * diff) -
+            (mNeedleDragCoef * mNeedleVelocity);
+
+         mNeedleVelocity = mNeedleVelocity + mNeedleAcceleration*deltaTime;
+
+         float newPosition = mNeedlePosition + mNeedleVelocity*deltaTime;
+
+         static const float zero = 0.0001f;
+         if (mNeedleVelocity < zero && mNeedleVelocity > -zero)
+            newPosition = mNeedlePosition;
+
+         mNeedlePosition = newPosition;
+         return mNeedlePosition;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -268,8 +320,8 @@ namespace SimCore
          mLensOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
-         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_frag.glsl");
-         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye_vertex.glsl");
+         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.frag");
+         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.vert");
 
          if( fragFileName.length() != 0 && vertFileName.length() != 0)
          {

@@ -1,4 +1,4 @@
-/*
+ /*
  * DVTE Stealth Viewer
  * Copyright (C) 2006, Alion Science and Technology.
  *
@@ -38,6 +38,7 @@ namespace StealthQt
    const QString StealthViewerSettings::GENERAL_GROUP("GENERAL_GROUP");
       const QString StealthViewerSettings::DOCK_STATE("DOCK_STATE");
       const QString StealthViewerSettings::WINDOW_GEOMETRY("WINDOW_GEOMETRY");
+      const QString StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO("AUTO_REFRESH_ENTITY_INFO");
 
    const QString StealthViewerSettings::PREFERENCES_GENERAL_GROUP("PREFERENCES_GENERAL_GROUP");
       const QString StealthViewerSettings::ATTACH_MODE("ATTACH_MODE");
@@ -88,7 +89,8 @@ namespace StealthQt
                 QSettings::UserScope, 
                 StealthViewerSettings::ORGANIZATION, 
                 applicationName), 
-      mNumConnections(0)
+      mNumConnections(0), 
+      mIsLoadingFromIni(false)
    {
       ParseIniFile();
    }
@@ -115,7 +117,7 @@ namespace StealthQt
          return false;
       }
 
-      if(!isEditMode)
+      if(!isEditMode && !mIsLoadingFromIni)
       {
          QStringList existingConnections = GetConnectionNames();
          for(int i = 0; i < existingConnections.size(); i++)
@@ -134,7 +136,7 @@ namespace StealthQt
          }
       }
 
-      if(!ContainsConnection(name))
+      if((!ContainsConnection(name) || mIsLoadingFromIni) && !isEditMode)
       {
          QString groupName = StealthViewerSettings::CONNECTION + QString::number(mNumConnections);
          beginGroup(groupName);
@@ -155,7 +157,10 @@ namespace StealthQt
       else
       {
          // Edit an existing connection
-         std::map<QString, unsigned int>::iterator itor = mConnectionNameMap.find(name);
+         std::map<QString, unsigned int>::iterator itor = 
+            mConnectionNameMap.find(
+               StealthViewerData::GetInstance().GetOldConnectionName());
+
          if(itor != mConnectionNameMap.end())
          {
             QString groupName = StealthViewerSettings::CONNECTION + QString::number(itor->second);
@@ -170,6 +175,15 @@ namespace StealthQt
                setValue(StealthViewerSettings::RID_FILE,        ridFile);
 
             endGroup();
+
+            // The name of this connection was edited. 
+            // Since the connections are mapped by name we 
+            // need to readd it to the map, binded with the 
+            // same number since it is a simple edit, and 
+            // not a new connection
+            unsigned int toReplace = itor->second;
+            mConnectionNameMap.erase(itor);
+            mConnectionNameMap.insert(std::make_pair(name, toReplace));
          }
       }
 
@@ -224,6 +238,8 @@ namespace StealthQt
 
    void StealthViewerSettings::ParseIniFile()
    {
+      mIsLoadingFromIni = true;
+
       // Get the top level groups
       QStringList groups = childGroups();
 
@@ -237,8 +253,10 @@ namespace StealthQt
             
          // Add internally
          AddConnection(list[0], list[1], list[2], 
-                       list[3], list[4], list[5], list[6], true);
+                       list[3], list[4], list[5], list[6]);
       }
+
+      mIsLoadingFromIni = false;
    }
 
    void StealthViewerSettings::RemoveConnection(const QString &connectionName)
@@ -306,6 +324,9 @@ namespace StealthQt
          
          setValue(StealthViewerSettings::WINDOW_GEOMETRY, 
             StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
+
+         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO, 
+            StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
 
       endGroup();
 
@@ -500,6 +521,14 @@ namespace StealthQt
 
          genConfig.SetReconnectOnStartup(connectValue, name.toStdString());
 
+         if(contains(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO))
+         {
+            bool enable = 
+               value(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO).toBool();
+
+            StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(enable);
+         }
+
       endGroup();
    }
 
@@ -665,7 +694,7 @@ namespace StealthQt
 
          if(contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
          {
-            bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS).toBool();
+            bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS).toBool();
             playbackConfig.SetShowAdvancedOptions(savedValue);
          }
 

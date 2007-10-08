@@ -55,8 +55,16 @@ namespace SimCore
          VehicleAttachingConfigActor &actor = static_cast<VehicleAttachingConfigActor&>(GetGameActor());
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResource),
-            "What is the filepath / string of the inside model", GROUP));
+            "VEHICLE_INSIDE_MODEL_GOOD", "VEHICLE_INSIDE_MODEL_PATH_GOOD", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceGood),
+            "What is the filepath / string of the inside model good", GROUP));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
+            "VEHICLE_INSIDE_MODEL_DESTROYED", "VEHICLE_INSIDE_MODEL_PATH_DESTROYED", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDestroyed),
+            "What is the filepath / string of the inside model dmged", GROUP));
+         
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
+            "VEHICLE_INSIDE_MODEL_DAMAGED", "VEHICLE_INSIDE_MODEL_PATH_DAMAGED", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDamaged),
+            "What is the filepath / string of the inside model destroyed", GROUP));
 
          AddProperty(new dtDAL::Vec3ActorProperty("SeatOffSetPosition", "SeatOffSetPosition",
             dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetSeatPosition),

@@ -29,6 +29,7 @@ class QCloseEvent;
 class QDateTime;
 class QTableWidgetItem;
 class QDoubleValidator;
+class QListWidgetItem;
 
 namespace StealthQt 
 {
@@ -146,6 +147,9 @@ namespace StealthQt
          /// Called when the jump to TM button is clicked
          void OnPlaybackJumpToTimeMarkerButtonClicked(bool checked = false);
 
+         /// Called when the jump to TM button is clicked
+         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName);
+
          /// Called when a time marker is selected
          void OnPlaybackTimeMarkerSelected(const QString &text);
          ///////////////////////////////////////////////////////////////////////
@@ -261,6 +265,9 @@ namespace StealthQt
          /// Called when the duration time elapses
          void OnDurationTimerElapsed();
 
+         /// Called when the HLA error checking timer elapses
+         void OnHLAErrorTimerElapsed();
+
          /// Called when an entity is selected from the search list
          void PopulateEntityInfoWindow(bool notUsed = false);
 
@@ -269,6 +276,15 @@ namespace StealthQt
 
          /// Called when the timer elapses
          void OnGenericTickTimerElapsed();
+
+         /// Called when the entity info timer elapses
+         void OnRefreshEntityInfoTimerElapsed();
+
+         /// Called when the auto refresh button is changed
+         void OnAutoRefreshEntityInfoCheckBoxChanged(int state);
+
+         /// Called when a time marker is double clicked in the list
+         void OnTimeMarkerDoubleClicked(QListWidgetItem *item);
 
       protected:
 
@@ -314,6 +330,11 @@ namespace StealthQt
           */
          void ReconnectToHLA();
 
+         /**
+          * Clears data on disconnect
+          */
+         void ClearData();
+
          bool mFirstShow;
 
          bool mIsPlaybackMode;
@@ -326,6 +347,8 @@ namespace StealthQt
 
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
+         QTimer mRefreshEntityInfoTimer;
+         QTimer mHLAErrorTimer;
 
          dtCore::RefPtr<dtGame::GameApplication> mApp;
          bool mIsConnectedToHLA;
@@ -333,6 +356,8 @@ namespace StealthQt
          std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;
 
          QDoubleValidator *mDoubleValidator;
+
+         bool mShowMissingEntityInfoErrorMessage;
    };
 }
 

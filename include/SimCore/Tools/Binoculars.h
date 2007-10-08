@@ -110,6 +110,14 @@ namespace SimCore
              */
             void Update(dtCore::DeltaDrawable &terrain);
 
+            void SetOriginalNearFar( float nearValue, float farValue );
+
+            void SetOriginalNear( float nearValue );
+            float GetOriginalNear() const { return mOriginalNear; }
+
+            void SetOriginalFar( float nearValue );
+            float GetOriginalFar() const { return mOriginalFar; }
+
          protected:
 
             /// Destructor
@@ -167,6 +175,8 @@ namespace SimCore
             // The original settings of the perspectives and LOD
             const float mOriginalHFOV;
             const float mOriginalVFOV;
+            float mOriginalNear;
+            float mOriginalFar;
             //This is read each time one zooms in.
             float mOriginalLODScale;
             // Static zooming?

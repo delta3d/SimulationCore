@@ -54,6 +54,10 @@ namespace SimCore
    MessageType MessageType::GPS("GPS", "Tools", "GPS", USER_DEFINED_MESSAGE_TYPE + 14);
    MessageType MessageType::NO_TOOL("No Tool", "Tools", "No Tool", USER_DEFINED_MESSAGE_TYPE + 15);
    MessageType MessageType::MAP("Map", "Tools", "Map", USER_DEFINED_MESSAGE_TYPE + 17);
+
+   MessageType MessageType::CONTROL_STATE_CONFLICT("Conflict", "Control State", 
+      "Conflict in controls states, possibly pointing to the same station", 
+      USER_DEFINED_MESSAGE_TYPE + 20);
   
    MessageType::MessageType(
       const std::string &name, 
@@ -86,6 +90,8 @@ namespace SimCore
       factory.RegisterMessageType<ToolMessage>(GPS);
       factory.RegisterMessageType<ToolMessage>(MAP);
       factory.RegisterMessageType<ToolMessage>(NIGHT_VISION);
+
+      factory.RegisterMessageType<ControlStateMessage>(CONTROL_STATE_CONFLICT);
    }
 
    bool MessageType::IsValidToolType(const dtGame::MessageType &type)

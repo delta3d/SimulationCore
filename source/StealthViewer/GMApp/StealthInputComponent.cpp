@@ -20,6 +20,7 @@
  */
 #include <SimCore/StealthMotionModel.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
+#include <SimCore/BaseGameEntryPoint.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -115,6 +116,9 @@ namespace StealthGM
          // component's true name.
          mHLA = static_cast<dtHLAGM::HLAComponent*>
             (GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
+         if (!mHLA.valid())
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               "Critical Error!  Stealth Input Component could not find an HLA Component!!!");
       }
 
       //SetListeners();
@@ -130,7 +134,7 @@ namespace StealthGM
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
-         UpdateTools();
+         UpdateTools( tick.GetDeltaSimTime() );
 
          if( mTicksToLogStateChange > 0 )
          {
@@ -198,10 +202,16 @@ namespace StealthGM
          }
          else if(!stealthProxy->IsRemote())
          {
-            mStealthActor = stealthActor.get();
+            if( ! mStealthActor.valid() )
+            {
+               mStealthActor = stealthActor.get();
+            }
+            osg::Vec3 attachOffset = mStealthActor->GetAttachOffset();
+            attachOffset.y() = -4.0f;
+            mStealthActor->SetAttachOffset( attachOffset );
             mStealthActor->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
 
-            // Ensure thatthe compass tool has reference to the stealth actor
+            // Ensure that the compass tool has reference to the stealth actor
             SimCore::Tools::Compass* compass
                = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
             if(compass != NULL) 
@@ -290,12 +300,17 @@ namespace StealthGM
       }
       else if (dynamic_cast<const SimCore::ToolMessage*>(&message) != NULL)
       {
-         if (mStealthActor.valid() && mStealthActor->GetUniqueId() == message.GetAboutActorId())
+         // Act only on local tool messages because the messages could be sent from playback.
+         if( mMachineInfo.valid() && *mMachineInfo == message.GetSource() )
          {
-            const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-            SetEnabledTool(toolMsg.IsEnabled() ? 
-               static_cast<SimCore::MessageType&>(const_cast<dtGame::MessageType&>(toolMsg.GetMessageType())) 
-               : SimCore::MessageType::NO_TOOL);
+            if ( mStealthActor.valid() 
+               && mStealthActor->GetUniqueId() == message.GetAboutActorId())
+            {
+               const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
+               SetToolEnabled(
+                  static_cast<SimCore::MessageType&>(const_cast<dtGame::MessageType&>(toolMsg.GetMessageType())),
+                  toolMsg.IsEnabled());
+            }
          }
       }
       else if (msgType == dtGame::MessageType::INFO_ACTOR_DELETED)
@@ -303,7 +318,7 @@ namespace StealthGM
          const dtCore::UniqueId& id = message.GetAboutActorId();
          if (mStealthActor.valid() && mStealthActor->GetUniqueId() == id)
          {
-            mStealthActor = NULL;
+//            mStealthActor = NULL;
          }
          else if (mTerrainActor.valid() && mTerrainActor->GetId() == id)
          {
@@ -359,8 +374,11 @@ namespace StealthGM
                {
                   if( mLogController.valid() )
                   {
-                     mLogController->RequestAddIgnoredActor(terrainActor->GetId());
-                     mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
+                     if (terrainActor.valid())
+                        mLogController->RequestAddIgnoredActor(terrainActor->GetId());
+                     
+                     if (gameManager.GetEnvironmentActor() != NULL)
+                        mLogController->RequestAddIgnoredActor(gameManager.GetEnvironmentActor()->GetId());
                   }
                   else
                   {
@@ -380,22 +398,36 @@ namespace StealthGM
             mLogController->RequestAddIgnoredActor(proxy->GetId());
          }
 
-         std::vector<dtDAL::ActorProxy*> proxies;
-         gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
-         if(proxies.empty())
+         if( mStealthActor.valid() && mStealthActorProxy.valid() )
          {
-            throw dtUtil::Exception(dtDAL::ExceptionEnum::InvalidActorException, 
-               "Failed to find the stealth actor prototype in the map", 
-               __FILE__, __LINE__);
+            // DO NOTHING
+         }
+         else
+         {
+            std::vector<dtDAL::ActorProxy*> proxies;
+            gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
+            if(proxies.empty())
+            {
+               throw dtUtil::Exception(dtDAL::ExceptionEnum::InvalidActorException, 
+                  "Failed to find the stealth actor prototype in the map", 
+                  __FILE__, __LINE__);
+            }
+            else
+            {
+               dtCore::RefPtr<dtDAL::ActorProxy> proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
+               mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
+
+               mStealthActor = static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor());
+            }
          }
 
-         dtCore::RefPtr<dtDAL::ActorProxy> p = 
-            gameManager.CreateActorFromPrototype(proxies[0]->GetId());
-         
-         mStealthActor = 
-            static_cast<SimCore::Actors::StealthActor*>(p->GetActor());
-
-         gameManager.AddActor(mStealthActor->GetGameActorProxy(), false, false);
+         // Re-add the stealth actor to the game manager since a map unload
+         // will have already removed it from the game manager. This assumes
+         // load map has been called after an unload map procedure.
+         if( mStealthActorProxy.valid() )
+         {
+            gameManager.AddActor( *mStealthActorProxy, false, false);
+         }
 
          // After map is loaded, we could set the base elevation - default is 0, which is fine. 
          //SimCore::Components::WeatherComponent* weatherComp = static_cast<SimCore::Components::WeatherComponent*>
@@ -449,7 +481,11 @@ namespace StealthGM
          case Producer::Key_backslash:
          case Producer::Key_Insert:
          {
-            GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
+            std::string developerMode;
+            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue
+               (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+            if (developerMode == "true" || developerMode == "1")
+               GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
          }
          break;
    
@@ -478,7 +514,10 @@ namespace StealthGM
    
          case Producer::Key_P:
          {
-            ToggleEntityShaders();
+            std::string developerMode;
+            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue("DeveloperMode");
+            if (developerMode == "true" || developerMode == "1")
+               ToggleEntityShaders();
          }
          break;
    
@@ -540,40 +579,42 @@ namespace StealthGM
 
          case Producer::Key_F7:
             {
-               EnableTool(SimCore::MessageType::NIGHT_VISION);
+               ToggleTool(SimCore::MessageType::NIGHT_VISION);
             }
             break;
    
          case Producer::Key_F8:
             {
-               EnableTool(SimCore::MessageType::COMPASS);
+               ToggleTool(SimCore::MessageType::COMPASS);
             }
             break;
    
          case Producer::Key_F9:
             {
                if(GetTool(SimCore::MessageType::BINOCULARS)->GetPlayerActor() == NULL)
+               {
                   GetTool(SimCore::MessageType::BINOCULARS)->SetPlayerActor(mStealthActor.get());
+               }
 
-               EnableTool(SimCore::MessageType::BINOCULARS);
+               ToggleTool(SimCore::MessageType::BINOCULARS);
             }
             break;
    
          case Producer::Key_F10:
             {
-               EnableTool(SimCore::MessageType::LASER_RANGE_FINDER);
+               ToggleTool(SimCore::MessageType::LASER_RANGE_FINDER);
             }
             break;
    
          case Producer::Key_F11:
             {
-               EnableTool(SimCore::MessageType::GPS);
+               ToggleTool(SimCore::MessageType::GPS);
             }
             break;
    
          case Producer::Key_F12:
             {
-               //EnableTool(SimCore::MessageType::MAP);
+               //ToggleTool(SimCore::MessageType::MAP);
             }
             break;
    
@@ -717,7 +758,7 @@ namespace StealthGM
    {
       if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK )
       {
-         std::cout << "StealthInputComponent::HandlePlayback" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandlePlayback" << std::endl;
          // Disconnect from the network if currently in IDLE mode
          if( mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
@@ -730,7 +771,7 @@ namespace StealthGM
          else if(mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
          {
-            std::cout << "\tStealthInputComponent::GotoFirstKeyframe" << std::endl;
+            // DEBUG: std::cout << "\tStealthInputComponent::GotoFirstKeyframe" << std::endl;
             GotoFirstKeyframe();
          }
          else // this must be RECORD state
@@ -740,7 +781,7 @@ namespace StealthGM
       }
       else if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_RECORD )
       {
-         std::cout << "StealthInputComponent::HandleRecord" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandleRecord" << std::endl;
          if(mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
          {
@@ -756,7 +797,7 @@ namespace StealthGM
       }
       else if( targetState == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE )
       {
-         std::cout << "StealthInputComponent::HandleIdle" << std::endl;
+         // DEBUG: std::cout << "StealthInputComponent::HandleIdle" << std::endl;
          mLogController->RequestChangeStateToIdle();
 
          if(mLogController->GetLastKnownStatus().GetStateEnum() 
@@ -848,7 +889,7 @@ namespace StealthGM
 
    void StealthInputComponent::HandleGotoKeyFrame(bool nextKeyFrame)
    {     
-      std::cout << "StealthInputComponent::HandleGotoKeyFrame" << std::endl;
+      // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame" << std::endl;
       if(mEnableLogging && mEnablePlayback)
       {
          nextKeyFrame ? GotoNextKeyframe() : GotoPreviousKeyframe();
@@ -857,7 +898,7 @@ namespace StealthGM
 
    void StealthInputComponent::HandleGotoKeyFrame(const std::string &name)
    {
-      std::cout << "StealthInputComponent::HandleGotoKeyFrame(" << name.c_str() << ")" << std::endl;
+      // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame(" << name.c_str() << ")" << std::endl;
       if(mEnableLogging && mEnablePlayback)
       {
          const std::vector<dtGame::LogKeyframe> &KFs = mLogController->GetLastKnownKeyframeList();
@@ -1044,9 +1085,10 @@ namespace StealthGM
          // found one, so jump to keyframe
          if (prevFrame != NULL)
          {
-            std::ostringstream ss;
+            // DEBUG: 
+            /*std::ostringstream ss;
             ss << "## Attempting to Jump to Previous Keyframe: [" << prevFrame->GetName() << "] ##";
-            std::cout << ss.str() << std::endl;
+            std::cout << ss.str() << std::endl;*/
    
             mLogController->RequestJumpToKeyframe(*prevFrame);
          }
@@ -1075,9 +1117,10 @@ namespace StealthGM
          // found one, so jump to keyframe
          if (nextFrame != NULL)
          {
-            std::ostringstream ss;
+            // DEBUG: 
+            /*std::ostringstream ss;
             ss << "## Attempting to Jump to Next Keyframe: [" << nextFrame->GetName() << "] ##";
-            std::cout << ss.str() << std::endl;
+            std::cout << ss.str() << std::endl;*/
    
             mLogController->RequestJumpToKeyframe(*nextFrame);
          }
@@ -1153,7 +1196,7 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::EnableTool(SimCore::MessageType &msgType)
+   void StealthInputComponent::ToggleTool(SimCore::MessageType& msgType)
    {
       if( ! mStealthActor.valid() 
          || mStealthActor->IsRemote() )
@@ -1172,29 +1215,17 @@ namespace StealthGM
    
       // Fill out the message with important data
       bool enable = !tool->IsEnabled();
+
+      if( enable )
+      {
+         DisableAllTools();
+      }
+
       static_cast<SimCore::ToolMessage*>(msg.get())->SetEnabled(enable);
       msg->SetAboutActorId(mStealthActor->GetUniqueId());
       msg->SetSource(*mMachineInfo);
-   
-      // Avoid circulating tool messages if in RECORD mode.
-      // They should not be recorded by the server logger component.
-      // ...otherwise...
-      // If PLAYBACK mode has ended, the game manager will be paused.
-      // If so, the message will have to be sent directly to the HUD
-      // as well as this component so that they are updated properly.
-      if( IsInRecord() || GetGameManager()->IsPaused() )
-      {
-         // Update this Input Component's current tool
-         SetEnabledTool( enable ? msgType : SimCore::MessageType::NO_TOOL );
-         UpdateTools();
-         // Update the HUD
-         GetHUDComponent()->ProcessMessage(*msg);
-      }
-      else // messages can be circulated
-      {
-         // Let messages update the relevant components.
-         GetGameManager()->SendMessage(*msg);
-      }
+
+      GetGameManager()->SendMessage(*msg);
    
       // Update the camera rotation speed if the tool has
       // differing field of view.
@@ -1218,6 +1249,32 @@ namespace StealthGM
          {
             mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
             mAttachedMM->SetKeyboardTurnSpeed(70.0f);
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::DisableAllTools()
+   {
+      SimCore::Tools::Tool* nvg = GetTool(SimCore::MessageType::NIGHT_VISION);
+
+      // Turn off all other tools (this could be NO_TOOL)
+      std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
+      for(i = mToolList.begin(); i != mToolList.end(); ++i)
+      {
+         if(i->second->IsEnabled())
+         {
+            if( nvg != NULL && i->second == nvg )
+            {
+               dtCore::RefPtr<dtGame::Message> nvgMsg 
+                  = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::NIGHT_VISION);
+               static_cast<SimCore::ToolMessage*>(nvgMsg.get())->SetEnabled(false);
+               nvgMsg->SetAboutActorId(mStealthActor->GetUniqueId());
+               nvgMsg->SetSource(*mMachineInfo);
+               GetGameManager()->SendMessage(*nvgMsg);
+            }
+
+            i->second->Enable(false);
          }
       }
    }
@@ -1267,7 +1324,7 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::UpdateTools()
+   void StealthInputComponent::UpdateTools( float timeDelta )
    {
       SimCore::Tools::Compass *compass = static_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
       if(compass == NULL)
@@ -1277,7 +1334,7 @@ namespace StealthGM
       }
       else
       {
-   	   compass->Update();
+   	   compass->Update( timeDelta );
       }
    
       SimCore::Tools::GPS *gps = static_cast<SimCore::Tools::GPS*>(GetTool(SimCore::MessageType::GPS));
@@ -1302,41 +1359,16 @@ namespace StealthGM
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void StealthInputComponent::SetEnabledTool(SimCore::MessageType &tool)
+   void StealthInputComponent::SetToolEnabled(SimCore::MessageType& toolType, bool enable)
    {
-      if(!SimCore::MessageType::IsValidToolType(tool))
+      SimCore::Tools::Tool* tool = GetTool(toolType);
+
+      if( tool != NULL )
       {
-         LOG_ERROR("Tried to add a tool with an invalid type");
-         return;
-      }
-   
-      if(tool == SimCore::MessageType::NO_TOOL)
-      {
-         std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
-         for(i = mToolList.begin(); i != mToolList.end(); ++i)
+         if( enable != tool->IsEnabled() )
          {
-            if(i->second->IsEnabled())
-               i->second->Enable(false);
+            tool->Enable(enable);
          }
-         return;
-      }
-   
-      SimCore::Tools::Tool *t = GetTool(tool);
-      if(t == NULL)
-      {
-         LOG_WARNING("Tried to enable a tool the player does not have");
-         return;
-      }
-      if(!t->IsEnabled())
-      {
-         // Turn off all other tools
-         std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
-         for(i = mToolList.begin(); i != mToolList.end(); ++i)
-         {
-            if(i->second->IsEnabled())
-               i->second->Enable(false);
-         }
-         t->Enable(true);
       }
    }
    
@@ -1443,6 +1475,10 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////////////
    bool StealthInputComponent::IsConnected() const
    {
-      return mHLA->IsConnectedToFederation();
+      if( ! mHLA.valid() )
+      {
+         LOG_WARNING("HLA component is not accessible.");
+      }
+      return mHLA.valid() && mHLA->IsConnectedToFederation();
    }
 }

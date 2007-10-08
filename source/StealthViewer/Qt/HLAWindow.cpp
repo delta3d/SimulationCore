@@ -36,7 +36,8 @@ namespace StealthQt
       mUi(new Ui::HLAWindow), 
       mIsConnected(isConnected), 
       mHLAComp(NULL), 
-      mCurrentConnectionName(currentConnectionName)
+      mCurrentConnectionName(currentConnectionName), 
+      mCancelConnectProcess(false)
    {
       mUi->setupUi(this);
 
@@ -50,7 +51,8 @@ namespace StealthQt
       mUi->mNetworkListWidget->addItems(toDisplay);
 
       mHLAComp = 
-         static_cast<SimCore::Components::HLAConnectionComponent*>(gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+         static_cast<SimCore::Components::HLAConnectionComponent*>
+         (gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
 
       mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != NULL);
       mUi->mDisconnectPushButton->setEnabled(mIsConnected);
@@ -96,9 +98,23 @@ namespace StealthQt
    {
       if(mHLAComp != NULL)
       {
-         if(mHLAComp->IsConnected())
+         if(mHLAComp->GetConnectionState() == 
+            SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
          {
             OnDisconnect();
+
+            // If the disconnect from current federation message box 
+            // is picked to cancel, this flag will be set to true
+            // in which case we need to leave this method.
+            
+            // This is done since OnDisconnect is a SLOT, it's return value 
+            // CANNOT be changed to mismatch the SIGNAL prototype. 
+            if(mCancelConnectProcess)
+            {
+               // Make sure to flip this back to false
+               mCancelConnectProcess = false;
+               return;
+            }
          }
       }
 
@@ -140,10 +156,13 @@ namespace StealthQt
 
       if(result == QMessageBox::Yes)
       {
-         // disconnect from federation
+         // Disconnect from federation
          if(mHLAComp != NULL)
+         {
             mHLAComp->Disconnect();
+         }
 
+         // Disable applicable buttons
          mUi->mCurrentFederationLineEdit->setText("None");
          mCurrentConnectionName = mUi->mCurrentFederationLineEdit->text();
          mUi->mDisconnectPushButton->setEnabled(false);
@@ -158,6 +177,11 @@ namespace StealthQt
          mIsConnected = false;
 
          emit DisconnectedFromHLA();
+      }
+      else
+      {
+         // Cancel, because they selected QMessageBox::No
+         mCancelConnectProcess = true;
       }
    }
 
@@ -199,11 +223,26 @@ namespace StealthQt
 
       HLAOptions options(this, currentItem->text(), true);
       options.SetCaseSensitiveFilePaths(caseSensitive);
-      options.exec();
+      if(options.exec() == QDialog::Accepted)
+      {
+         QStringList toDisplay = 
+            StealthViewerData::GetInstance().GetSettings().GetConnectionNames();
+
+         mUi->mNetworkListWidget->clear();
+         mUi->mNetworkListWidget->addItems(toDisplay);
+      }
    }
 
    void HLAWindow::OnDelete(bool checked)
    {
+      int result = 
+         QMessageBox::information(this, tr("Confirm Delete"), 
+            tr("Are you sure you want to delete this connection?"), 
+            QMessageBox::Yes, QMessageBox::No);
+
+      if(result == QMessageBox::No)
+         return;
+
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
       if(currentItem == NULL)
       {
@@ -240,6 +279,7 @@ namespace StealthQt
 
          if(mHLAComp != NULL)
          {
+            // Assign the primary map to load
             mHLAComp->AddMap(map);
             mHLAComp->SetConfigFile(config);
             mHLAComp->SetFedFile(fedFile);
@@ -247,14 +287,24 @@ namespace StealthQt
             mHLAComp->SetFedEx(fedex);
             mHLAComp->SetRidFile(ridFile);
 
-            mHLAComp->Connect();
+            try
+            {
+               mHLAComp->Connect();
+            }
+            catch(const dtUtil::Exception &e)
+            {
+               QMessageBox::warning(this, tr("Error"), 
+                  tr("An error occured while trying to connect to the federation: ") + 
+                  tr(e.What().c_str()), QMessageBox::Ok);
+            }
+
             emit ConnectedToHLA(properties[0]);
          }
       }
       catch(const dtUtil::Exception &ex)
       {
-         QMessageBox::information(this, tr("Error"), 
-               tr("Error searching for HLA resource files. Unable to connect to federation: ") + tr(ex.ToString().c_str()), 
+         QMessageBox::warning(this, tr("Error"), 
+               tr("Error searching for HLA resource files. Unable to connect to the federation: ") + tr(ex.ToString().c_str()), 
                QMessageBox::Ok);
          return;
       }      
@@ -262,7 +312,7 @@ namespace StealthQt
 
    void HLAWindow::OnCurrentTextChanged(const QString &str)
    {
-      mUi->mConnectPushButton->setEnabled(!str.isEmpty() && str != mCurrentConnectionName);
+      mUi->mConnectPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       //mUi->mDisconnectPushButton->setEnabled(mIsConnected);
       mUi->mEditPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
       mUi->mDeletePushButton->setEnabled(!str.isEmpty() && !mIsConnected);

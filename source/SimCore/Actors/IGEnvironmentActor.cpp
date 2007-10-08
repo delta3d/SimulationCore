@@ -27,6 +27,7 @@
 #include <dtCore/nodecollector.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/log.h>
+#include <dtDAL/project.h>
 
 #include <osg/Drawable>
 #include <osg/Matrix>
@@ -104,7 +105,7 @@ namespace SimCore
 
          //FogSphere SetUp
          mFogSphere = new osgEphemeris::Sphere( 8500.0f,
-            osgEphemeris::Sphere::TessNormal,
+            osgEphemeris::Sphere::TessLow,
             osgEphemeris::Sphere::OuterOrientation,
             osgEphemeris::Sphere::BothHemispheres,
             false
@@ -114,6 +115,10 @@ namespace SimCore
          osg::StateSet* states = mEphemerisModel->getOrCreateStateSet();
          osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
          states->setAttributeAndModes(depthState);
+
+         osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
+         cloudPlaneSS->setAttributeAndModes(depthState);
+         cloudPlaneSS->setRenderBinDetails( -1, "RenderBin" );
 
          states->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
@@ -249,16 +254,20 @@ namespace SimCore
          mCloudPlane->SetWind(windX, windY);
 
          bool loaded;
-         loaded = mCloudPlane->LoadTexture("./ProjectAssets/Textures/CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
-
-         if(loaded)
+         // Look up the cloud texture from the map so we have the right path. Using ./projectassets doesn't work in all cases depending on path
+         std::string cloudTextureResource("Textures:CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
+         std::string texturePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(cloudTextureResource));
+         if (texturePath.empty()) 
          {
-            mCloudCoverage = cloudNumber;
-
+            LOG_ERROR("The Cloud File Texture [" + texturePath + "] Could Not be Found");
          }
-         else
+         else 
          {
-            LOG_ERROR("A Cloud File Texture Could Not be Found");
+            loaded = mCloudPlane->LoadTexture(texturePath);
+            if(loaded)
+               mCloudCoverage = cloudNumber;
+            else
+               LOG_ERROR("Cloud File Texture was found but had an error while loading [" + texturePath + "].");
          }
       }
 
@@ -427,20 +436,17 @@ namespace SimCore
       }
 
 
-      void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) {
-            
-            osg::StateSet* states = mFogSphere->getStateSet();
-            
-            if(fog_toggle == true)
-            {
-               mFogSphere->setNodeMask(0xFFFFFFFF);
-            }
-            else
-            {   
-               mFogSphere->setNodeMask(0);
-            }
-
+      void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) 
+      {
+         if(fog_toggle == true)
+         {
+            mFogSphere->setNodeMask(0xFFFFFFFF);
          }
+         else
+         {   
+            mFogSphere->setNodeMask(0);
+         }
+      }
 
       /////////////////////////////////////////////////////////////
       osgEphemeris::EphemerisModel* IGEnvironmentActor::GetEphemerisModel()

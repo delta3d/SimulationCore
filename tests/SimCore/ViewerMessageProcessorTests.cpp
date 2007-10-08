@@ -18,6 +18,7 @@
  *
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
@@ -39,6 +40,8 @@
 #include <dtAudio/audiomanager.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
+
 #include <dtUtil/macros.h>
 
 #include <osg/Vec3>
