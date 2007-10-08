@@ -18,6 +18,7 @@
  *
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <string>
@@ -35,6 +36,7 @@
 #include <dtDAL/resourcedescriptor.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 #include <dtCore/globals.h>
 #include <dtCore/refptr.h>
 #include <dtCore/observerptr.h>
@@ -176,6 +178,15 @@ void BaseEntityActorProxyTests::TestPlatform()
    prop = eap->GetProperty("Mobility Disabled");
    CPPUNIT_ASSERT_MESSAGE("The mobility property should not be NULL", prop != NULL);
    CPPUNIT_ASSERT_MESSAGE("The default value of \"Mobility Disabled\" should be false.", !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
+   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
+   prop = eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
+   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
+   std::stringstream textMessage;
+   textMessage << "The default value of \"" 
+      << SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED << "\" should be false.";
+   CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
@@ -522,7 +533,7 @@ void BaseEntityActorProxyTests::TestPlatformDRRegistration()
    CPPUNIT_ASSERT(eap.valid());
 
    mGM->AddActor(*eap, false, false);
-   CPPUNIT_ASSERT_MESSAGE("Entity should not be added when it's not remote.", !mDeadReckoningComponent->IsRegisteredActor(*eap));
+   CPPUNIT_ASSERT_MESSAGE("Entity should be added when it's not remote.", mDeadReckoningComponent->IsRegisteredActor(*eap));
    mGM->DeleteActor(*eap);
 
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
@@ -538,7 +549,7 @@ void BaseEntityActorProxyTests::TestHumanDRRegistration()
    CPPUNIT_ASSERT(hap.valid());
 
    mGM->AddActor(*hap, false, false);
-   CPPUNIT_ASSERT_MESSAGE("Entity should not be added when it's not remote.", !mDeadReckoningComponent->IsRegisteredActor(*hap));
+   CPPUNIT_ASSERT_MESSAGE("Entity should be added when it's not remote.", mDeadReckoningComponent->IsRegisteredActor(*hap));
    mGM->DeleteActor(*hap);
 
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, hap);
@@ -635,7 +646,8 @@ void BaseEntityActorProxyTests::TestPlayerActorProxy()
    CPPUNIT_ASSERT_MESSAGE("The message found should be of the correct type", msg->GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
 
    tc->reset();
-   mGM->DeleteAllActors(true);
+   mGM->DeleteAllActors();
+   dtCore::System::GetInstance().Step();
 
    mGM->AddActor(*pa, true, false);
    SLEEP(10);

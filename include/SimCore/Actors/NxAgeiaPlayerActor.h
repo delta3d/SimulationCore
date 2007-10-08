@@ -68,13 +68,20 @@ namespace SimCore
             */
             virtual void TickRemote(const dtGame::Message &tickMessage);
 
+            virtual void SetPosition( const osg::Vec3& position );
+
+            virtual void OffsetPosition( const osg::Vec3& offset );
+
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
             virtual void SetLastKnownRotation(const osg::Vec3 &vec);
+            virtual void SetLastKnownTranslation(const osg::Vec3 &vec);
 
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
+
+            virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
 
 #ifdef AGEIA_PHYSICS
 
@@ -100,13 +107,18 @@ namespace SimCore
             virtual NxControllerAction AgeiaCharacterControllerReport(const NxControllersHit& controllerHit);
             //////////////////////////////////////////////////////////////////////////////
 
+            dtAgeiaPhysX::NxAgeiaCharacterHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+            
+         private:
             /// our helper
-            osg::ref_ptr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
+            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
 #endif
 
+         public:
             void SetMovementTransform(const osg::Vec3& movement);
-
+            
          private:
+
             bool        mAcceptInput;     // for ai vs human. 
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;
@@ -136,27 +148,7 @@ namespace SimCore
             virtual void BuildInvokables();
 
             /// Instantiates the actor this proxy encapsulated
-            virtual void CreateActor() 
-            { 
-               NxAgeiaPlayerActor* p = new NxAgeiaPlayerActor(*this);
-               SetActor(*p); 
-
-               if(!IsRemote())
-               {
-                  p->InitDeadReckoningHelper();
-               }
-            }
-
-            //////////////////////////////////////
-            virtual void OnEnteredWorld()
-            {
-               HumanActorProxy::OnEnteredWorld();
-
-               if (IsRemote())
-                  RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-               else
-                  RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
-            }
+            virtual void CreateActor();
       };
    }
 }

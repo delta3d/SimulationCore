@@ -104,9 +104,8 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
          if( gm == NULL ) { return; }
 
-         SimCore::Components::ParticleManagerComponent* comp =
-            dynamic_cast<SimCore::Components::ParticleManagerComponent*> 
-            (gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME) );
+         SimCore::Components::ParticleManagerComponent* comp;
+         gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
          if( comp != NULL )
          {
@@ -121,9 +120,8 @@ namespace SimCore
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
          if( gm == NULL ) { return; }
 
-         SimCore::Components::ParticleManagerComponent* comp =
-            dynamic_cast<SimCore::Components::ParticleManagerComponent*> 
-            (gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME) );
+         SimCore::Components::ParticleManagerComponent* comp;
+         gm->GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
          if( comp != NULL )
          {

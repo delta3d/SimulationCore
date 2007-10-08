@@ -174,11 +174,6 @@ namespace SimCore
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
-
-            dtGame::DeadReckoningComponent* component = 
-               static_cast<dtGame::DeadReckoningComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName(
-                                                                        dtGame::DeadReckoningComponent::DEFAULT_NAME));
-            component->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
          }
 
          GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
@@ -502,7 +497,12 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage){}
+      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage)
+      {
+         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateSoundEffects(ElapsedTime);
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::AgeiaPrePhysicsUpdate()
       {
@@ -616,13 +616,13 @@ namespace SimCore
 
          if( ! IsMobilityDisabled() && GetHasDriver() )
          {
-            if (keyboard->GetKeyState(Producer::Key_W))
+            if (keyboard->GetKeyState(Producer::Key_W) || keyboard->GetKeyState(Producer::Key_Up))
             {
-               GetPhysicsHelper()->ApplyAccel();
+               GetPhysicsHelper()->ApplyAccel(GetMPH());
             }
-            else if (keyboard->GetKeyState(Producer::Key_S))
+            else if (keyboard->GetKeyState(Producer::Key_S) || keyboard->GetKeyState(Producer::Key_Down))
             {
-               GetPhysicsHelper()->ApplyHandBrake();
+               GetPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
             else if (!keyboard->GetKeyState(Producer::Key_space))
             {
@@ -634,11 +634,11 @@ namespace SimCore
                GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
-            if (keyboard->GetKeyState(Producer::Key_A))
+            if (keyboard->GetKeyState(Producer::Key_A) || keyboard->GetKeyState(Producer::Key_Left))
             {
                GetPhysicsHelper()->SteerLeft(deltaTime);
             }
-            else if(keyboard->GetKeyState(Producer::Key_D))
+            else if(keyboard->GetKeyState(Producer::Key_D) || keyboard->GetKeyState(Producer::Key_Right))
             {
                GetPhysicsHelper()->SteerRight(deltaTime);
             }
@@ -653,20 +653,14 @@ namespace SimCore
             accelOrBrakePressedThisFrame = true;
             GetPhysicsHelper()->ApplyBrake(deltaTime);
          }
-         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame);
+         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetMPH()
       {
-         if( IsRemote() )
-         {
-            return GetVelocityVector().length() * 2.236936291;
-         }
-         else
-         {
-            return GetPhysicsHelper()->GetMPH();
-         }
+         return GetVelocityVector().length() * 2.236936291;
+         //return GetPhysicsHelper()->GetMPH();
          return 0.0f;
       }
 
@@ -774,9 +768,6 @@ namespace SimCore
          if (IsRemote())
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
             dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-         else
-            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, 
-            dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
       }

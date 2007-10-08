@@ -96,5 +96,7 @@ namespace StealthQt
          SimCore::Components::HLAConnectionComponent *mHLAComp;
 
          QString mCurrentConnectionName;
+
+         bool mCancelConnectProcess;
    };
 }

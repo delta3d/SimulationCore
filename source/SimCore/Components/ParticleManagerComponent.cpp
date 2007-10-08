@@ -13,6 +13,7 @@
 
 #include <prefix/SimCorePrefix-src.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/shadermanager.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/message.h>
@@ -168,9 +169,53 @@ namespace SimCore
          {
             dtCore::ObserverPtr<osgParticle::ParticleSystem> ref = &itor->GetParticleSystem();
             mLayerRefs.push_back(ref);
+
+            //attaching a shader to the particle, one for emmisive particles the other for non emmisive
+            dtCore::ParticleLayer& pLayer = *itor;
+            osg::StateSet* ss = pLayer.GetParticleSystem().getOrCreateStateSet();
+            std::string shaderName;
+            (ss->getMode(GL_LIGHTING) == osg::StateAttribute::ON) ? shaderName = "NonEmissive" : shaderName = "Emissive";
+            AttachShader(shaderName, pLayer.GetGeode());
+
+
+            //osg::Uniform* lightArray = ss->getOrCreateUniform("dynamicLights", osg::Uniform::FLOAT_VEC4, 60);
+
+            //int count = 0;
+            //for(;count < 20 * 3; count += 3)
+            //{ 
+            //   //else we turn the light off by setting the intensity to 0
+            //   lightArray->setElement(count, osg::Vec4(1000.0f, 1000.0f, 1000000.0f, 10.0f));
+            //   lightArray->setElement(count + 1, osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            //   lightArray->setElement(count + 2, osg::Vec4(0.00001f, 0.0000001f, 0.00000001f, 1.0f));
+            //
+            //}
+
          }
 
          //mPriority = &priority;
+      }
+
+      void ParticleInfo::AttachShader(const std::string& name, osg::Node& node)
+      {
+         dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
+         dtCore::ShaderGroup* sg = sm.FindShaderGroupPrototype("ParticleShaderGroup");
+         if(sg)
+         {
+            dtCore::ShaderProgram* sp = sg->FindShader(name);
+
+            if(sp != NULL)
+            {
+               sm.AssignShaderFromPrototype(*sp, node);
+            }
+            else
+            {
+               LOG_ERROR("Unable to find a particle system shader with the name '." + name + "' ");
+            }
+         }
+         else
+         {
+            LOG_ERROR("Unable to find shader group for particle system manager.");
+         }            
       }
 
       //////////////////////////////////////////////////////////
@@ -378,7 +423,10 @@ namespace SimCore
          const ParticleInfo::AttributeFlags* attrFlags,  const ParticlePriority& priority )
       {
          if( HasRegistered(particles.GetUniqueId()) 
-            || particles.GetAllLayers().empty() ) { return false; }
+            || particles.GetAllLayers().empty() )
+         {
+            return false;
+         }
 
          bool success = mIdToInfoMap.insert( 
             std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) ) 
@@ -518,6 +566,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void ParticleManagerComponent::UpdateParticleForces()
       {
+         bool forceInfoUpdate = false;
          dtCore::ParticleSystem* curParticles = NULL;
          ParticleInfo::ForceOperatorList* curForces = NULL;
          ParticleInfo* curInfo = NULL;
@@ -527,6 +576,13 @@ namespace SimCore
             curInfo = infoIter->second.get();
             if( curInfo == NULL || curInfo->GetParticleSystem() == NULL )
             {
+               // Ensure that the invalid particle info is removed by calling
+               // UpdateParticleInfo at the end of this function. The update timer
+               // may not have been activated and thus would not call updates on
+               // all particle infos and not remove invalid ones. This makes certain
+               // that any and all invalid infos are removed from the manager.
+               forceInfoUpdate = true;
+
                // DEBUG:
                // std::cout << "\tINFO: " << (curInfo==NULL?"NULL":"OK")
                //   << "\tParticlePtr: " << (curInfo==NULL || curInfo->GetParticleSystem()==NULL?"NULL":"OK") << std::endl;
@@ -550,6 +606,12 @@ namespace SimCore
 
             } // End Forces Loop
          }// End Particle Infos Loop
+
+         // Force an update on particle infos if any were found to be invalid.
+         if( forceInfoUpdate )
+         {
+            UpdateParticleInfo();
+         }
       }
 
       //////////////////////////////////////////////////////////
@@ -605,7 +667,10 @@ namespace SimCore
          {
             curLayer = &(*itor);
 
-            if( ! curLayer->IsModularProgram() ) { continue; }
+            if( ! curLayer->IsModularProgram() )
+            {
+               continue;
+            }
 
             // Obtain the particle layer's modular program which
             // contains the force operators of the particle system.
@@ -662,7 +727,7 @@ namespace SimCore
             // modular program.
             else if( forceOp == NULL )
             {
-               if( !addToAllLayers )
+               if( ! addToAllLayers )
                {
                   // Apply the force only to layers that have an operator
                   // allocated for wind. This allows for a particle system

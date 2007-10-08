@@ -18,6 +18,7 @@
  * 
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtGame/gamemanager.h> 
 #include <dtGame/exceptionenum.h>
@@ -91,7 +92,7 @@ void ToolTests::setUp()
    try
    {
       dtCore::System::GetInstance().Start();
-      mApp = new dtABC::Application;
+      mApp = new dtABC::Application("config.xml");
       mGM  = new dtGame::GameManager(*mApp->GetScene());
       mApp->GetWindow()->SetPosition(0, 0, 50, 50);
       mApp->Config();

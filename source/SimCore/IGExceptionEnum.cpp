@@ -24,4 +24,6 @@
 namespace SimCore
 {
    IMPLEMENT_ENUM(IGExceptionEnum);
+
+   IGExceptionEnum IGExceptionEnum::INVALID_CONNECTION_DATA("INVALID_CONNECTION_DATA");
 }

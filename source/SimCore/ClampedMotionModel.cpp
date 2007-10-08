@@ -51,6 +51,8 @@ namespace SimCore
       mResetRotation(false),
       mReverseLeftRight(false),
       mReverseUpDown(false),
+      mEnabledUpDown(true),
+      mEnabledLeftRight(true),
       mLeftRightLimit(-1.0),
       mUpDownLimit(-1.0),
       mKeyboard(keyboard),
@@ -66,7 +68,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe" && (GetTarget() != NULL || GetTargetDOF() != NULL) && IsEnabled())
+      if(data->message == "preframe" && (GetTarget() != NULL || GetTargetDOF() != NULL) && IsEnabled() && GetMouse()->GetHasFocus())
       {
          if( ! IsFreeLookHeld() )
          {
@@ -81,13 +83,15 @@ namespace SimCore
             {
                GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
+
+            mHPRChange.set( 0.0, 0.0, 0.0 );
          }
          else
          {
             // Reset the mouse position back to the center
             if( mRecenterMouse )
             {
-               GetMouse()->SetPosition(0.0f,0.0f);
+               //GetMouse()->SetPosition(0.0f,0.0f);
             }
 
             // Do the original rotation
@@ -99,7 +103,7 @@ namespace SimCore
 
             bool setHPR = false;
 
-            if (GetLeftRightMouseAxis()->GetState() != 0)
+            if( mEnabledLeftRight && GetLeftRightMouseAxis()->GetState() != 0)
             {
                setHPR = true;
                double change = GetLeftRightMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
@@ -109,10 +113,10 @@ namespace SimCore
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[0] -= mReverseLeftRight ? -change : change;
                GetLeftRightMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
-            if (GetUpDownMouseAxis()->GetState() != 0)
+            if( mEnabledUpDown && GetUpDownMouseAxis()->GetState() != 0)
             {
                setHPR = true;
                double change = GetUpDownMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
@@ -122,7 +126,7 @@ namespace SimCore
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[1] += mReverseUpDown ? -change : change;
                GetUpDownMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Clamp rotation
@@ -152,7 +156,7 @@ namespace SimCore
             {
                hpr[2] = 0.0f;
                SetTargetsRotation(hpr);                  
-               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
+               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Get the current change in orientation

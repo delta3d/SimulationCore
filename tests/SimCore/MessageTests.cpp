@@ -18,6 +18,7 @@
  *
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtGame/gamemanager.h> 
@@ -27,6 +28,8 @@
 #include <dtGame/invokable.h>
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
+#include <dtCore/deltawin.h>
 
 #include <dtDAL/project.h>
 
@@ -75,7 +78,8 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         mApp = new dtABC::Application;
+         mApp = new dtABC::Application("config.xml");
+         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
          mGM = new dtGame::GameManager(*new dtCore::Scene());
          mGM->SetApplication(*mApp);
          RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;

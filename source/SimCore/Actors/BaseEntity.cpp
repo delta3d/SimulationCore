@@ -13,6 +13,8 @@
 #include <osg/MatrixTransform>
 #include <osg/Group>
 
+#include <SimCore/Components/RenderingSupportComponent.h>
+
 namespace SimCore
 {
 
@@ -122,21 +124,25 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsEngineSmokeOn),
             "Enables engine smoke", BASE_ENTITY_GROUP));
 
+         static const std::string PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
          static const std::string PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, "Flames Present",
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, PROPERTY_FLAMES_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFlamesPresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlamesPresent),
             PROPERTY_FLAMES_PRESENT_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
+         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_LABEL("Flames Present");
+         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_DESC("Enables engine smoke");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, PROPERTY_SMOKE_PLUME_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetSmokePlumePresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsSmokePlumePresent),
-            "Enables engine smoke", BASE_ENTITY_GROUP));
+            PROPERTY_SMOKE_PLUME_PRESENT_DESC, BASE_ENTITY_GROUP));
 
+         static const std::string PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
-            "Position of the engine in the vehicle", BASE_ENTITY_GROUP);
+            PROPERTY_ENGINE_POSITION_DESC, BASE_ENTITY_GROUP);
 
          prop->SetReadOnly(true);
          AddProperty(prop);
@@ -327,6 +333,7 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////
       BaseEntity::~BaseEntity()
       {
+         SetFlamesPresent(false);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -528,11 +535,36 @@ namespace SimCore
 
             Components::ParticleInfo::AttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
+
+            // HACK: Add lights with copied code
+            SimCore::Components::RenderingSupportComponent* renderComp;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
+
+            if(renderComp != NULL)
+            {
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
+               dl->mTarget = mFlamesSystem.get();
+               //dl->mColor.set(1.0,0.5,0.25);//orange
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mFlicker = true;
+               //dl->mFlickerScale = 0.3f;
+               //dl->mFadeOut = true;
+               //dl->mFadeOutTime = 3.0f;
+               //dl->mRadius = 20.0f;
+               //dl->mTarget = mFlamesSystem.get();
+               //dl->mAutoDeleteLightOnTargetNull = true;
+               //renderComp->AddDynamicLight(dl);
+            }
          }
          else
          {
             if(mFlamesSystem.get())
             {
+               UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
                mFlamesSystem = NULL;
             }
@@ -581,11 +613,15 @@ namespace SimCore
             mSmokePlumesSystem->SetEnabled(enable);
             AddChild(mSmokePlumesSystem.get());
             mSmokePlumePresent = enable;
+
+            Components::ParticleInfo::AttributeFlags attrs = {true,true};
+            RegisterParticleSystem(*mSmokePlumesSystem,&attrs);
          }
          else
          {
             if(mSmokePlumesSystem.valid())
             {
+               UnregisterParticleSystem(*mSmokePlumesSystem);
                RemoveChild(mSmokePlumesSystem.get());
                mSmokePlumesSystem = NULL;
             }

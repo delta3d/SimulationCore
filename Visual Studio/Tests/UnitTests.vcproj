@@ -40,14 +40,16 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm116"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC)"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -66,7 +68,7 @@
 				AdditionalDependencies="dtAId.lib dtAnimd.lib dtActorsd.lib dtCored.lib dtGamed.lib dtUtild.lib dtDALd.lib dtAudiod.lib osgd.lib dtHLAGMd.lib cppunitd.lib CEGUIBase_d.lib dtGUId.lib dtABCd.lib osgDBd.lib osgSimd.lib osgParticled.lib dtAgeiaPhysXD.lib SimViewerCored.lib StealthGMAppd.lib StealthQTLibd.lib"
 				OutputFile="../../bin/UnitTestsd.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);"
+				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);$(DT_AGEIA_LIB)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/UnitTests.pdb"
 				SubSystem="1"
@@ -123,12 +125,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../tests/include;$(AGEIA_INC);$(EXTERNAL_INC);$(DT_AGEIA_INC)"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;AGEIA_PHYSICS;"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="0"
@@ -147,7 +150,7 @@
 				AdditionalDependencies="dtAI.lib dtCore.lib dtGame.lib dtUtil.lib dtAudio.lib dtActors.lib cppunit.lib dtDAL.lib osg.lib dtHLAGM.lib CEGUIBase.lib dtGUI.lib dtABC.lib SimViewerCore.lib osgDB.lib osgParticle.lib osgSim.lib dtAgeiaPhysX.lib StealthGMApp.lib StealthQTLib.lib"
 				OutputFile="../../bin/UnitTests.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(rti)/lib/winnt_vc++-7.1;$(AGEIA_LIB);"
+				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);$(DT_AGEIA_LIB)"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -260,6 +263,28 @@
 			<File
 				RelativePath="..\..\tests\SimCore\PauseResumeTests.cpp"
 				>
+			</File>
+			<File
+				RelativePath="..\..\tests\precomp.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="prefix/SimCorePrefix-src.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\tests\SimCore\StealthActorTests.cpp"
