@@ -10,7 +10,6 @@
         <Imageset Name="JammerSwitch" Filename="CEGUI/imagesets/JammerSwitch.imageset" />
         <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
         <Imageset Name="LRF" Filename="CEGUI/imagesets/LRF.imageset" />
-        <Imageset Name="Map" Filename="CEGUI/imagesets/Map.imageset" />
         <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
         <Imageset Name="Speedometer" Filename="CEGUI/imagesets/Speedometer.imageset" />
         <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />

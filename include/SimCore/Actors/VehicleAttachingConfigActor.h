@@ -41,19 +41,22 @@ namespace SimCore
             void SetSeatPosition(const osg::Vec3& seatPosition) {mSeatPosition = seatPosition;}
 
             //////////////////////////////////////////////////////////////////////////////////
-            bool  GetUsesInsideModel() {return mUseInsideModel;}
+            bool GetUsesInsideModel() {return mUseInsideModel;}
             void SetUsesInsideModel(bool value) {mUseInsideModel = value;}
 
             //////////////////////////////////////////////////////////////////////////////////
-            std::string GetInsideModelResource() {return mInsideModelResource;}
-            void SetInsideModelResource(const std::string& value) {mInsideModelResource = value;}
+            std::string GetInsideModelResourceGood() {return mInsideModelResourceGood;}
+            void SetInsideModelResourceGood(const std::string& value) {mInsideModelResourceGood = value;}
+            std::string GetInsideModelResourceDamaged() {return mInsideModelResourceDamaged;}
+            void SetInsideModelResourceDamaged(const std::string& value) {mInsideModelResourceDamaged = value;}
+            std::string GetInsideModelResourceDestroyed() {return mInsideModelResourceDestroyed;}
+            void SetInsideModelResourceDestroyed(const std::string& value) {mInsideModelResourceDestroyed = value;}
 
             //////////////////////////////////////////////////////////////////////////////////
             osg::Vec3 GetRotationOffSet() {return mRotationOffSet;}
             void SetRotationOffSet(const osg::Vec3& value){mRotationOffSet = value;}
 
          protected:
-
 
             /// Destructor
             virtual ~VehicleAttachingConfigActor();
@@ -62,7 +65,9 @@ namespace SimCore
             osg::Vec3   mSeatPosition;
             osg::Vec3   mRotationOffSet;
             bool        mUseInsideModel;
-            std::string mInsideModelResource;
+            std::string mInsideModelResourceGood;
+            std::string mInsideModelResourceDamaged;
+            std::string mInsideModelResourceDestroyed;
       };
 
       /////////////////////////////////////////////////////////////////////////////

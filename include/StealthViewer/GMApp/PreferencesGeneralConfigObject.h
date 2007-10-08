@@ -204,6 +204,18 @@ namespace StealthGM
           */
          const std::string& GetStartupConnectionName() const { return mStartupConnectionName; }
 
+         /**
+          * Sets auto refreshing the entity info window
+          * @param enable True to enable, false otherwise
+          */
+         void SetAutoRefreshEntityInfoWindow(bool enable) { mAutoRefreshEntityInfo = enable; }
+
+         /**
+          * Gets refreshing the entity info window
+          * @return mAutoRefreshEntityInfo
+          */
+         bool GetAutoRefreshEntityInfoWindow() const { return mAutoRefreshEntityInfo; }
+
       protected:
 
          /// Destructor
@@ -221,6 +233,7 @@ namespace StealthGM
          const dtGame::GameActorProxy *mAttachProxy;
          bool mReconnectOnStartup;
          std::string mStartupConnectionName;
+         bool mAutoRefreshEntityInfo;
    };
 }
 #endif

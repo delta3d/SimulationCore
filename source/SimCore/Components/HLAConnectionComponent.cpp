@@ -12,6 +12,7 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/IGExceptionEnum.h>
 
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtHLAGM/hlacomponent.h>
@@ -19,17 +20,29 @@
 
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
+#include <dtABC/application.h>
+
+#include <dtUtil/stringutils.h>
+
+#include <sstream>
 
 namespace SimCore
 {
    namespace Components
    {
-      const std::string &HLAConnectionComponent::DEFAULT_NAME = "HLAConnectionComponent";
+      IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionState);
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED("NOT_CONNECTED");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTING("CONNECTING");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_CONNECTED("CONNECTED");
+      const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_ERROR("ERROR");
+
+      const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
+      const std::string HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP("AdditionalMap");
 
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
          dtGame::GMComponent(name), 
          mRidFile("RTI.rid"), // default to an RTI.rid file so that there is something to find.
-         mIsConnected(false)
+         mState(&ConnectionState::STATE_NOT_CONNECTED)
       {
 
       }
@@ -41,8 +54,8 @@ namespace SimCore
 
       dtHLAGM::HLAComponent& HLAConnectionComponent::GetHLAComponent()
       {
-         dtGame::GMComponent *component = 
-            GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME);
+         dtHLAGM::HLAComponent* component; 
+         GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME, component);
 
          if(component == NULL)
          {
@@ -51,67 +64,101 @@ namespace SimCore
                __FILE__, __LINE__);
          }
 
-         return static_cast<dtHLAGM::HLAComponent&>(*component);
+         return *component;
       }
       
       void HLAConnectionComponent::ProcessMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-            mIsConnected = true;
-
             dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
             hlaComp.ClearConfiguration();
             
             dtHLAGM::HLAComponentConfig componentConfig;
-            componentConfig.LoadConfiguration(hlaComp, mConfigFile);
-            hlaComp.JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
+            try
+            {
+               componentConfig.LoadConfiguration(hlaComp, mConfigFile);
+               hlaComp.JoinFederationExecution(mFedEx, mFedFile, mFedName, mRidFile);
+            }
+            catch(const dtUtil::Exception &e)
+            {
+               mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
+               throw e;
+            }
+
+            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
 
             std::vector<dtDAL::ActorProxy*> proxies;
             GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
-
             if(proxies.empty())
             {
                LOG_ERROR("Failed to find a coordinate config actor in the map. Using default values.");
                return;
             }
 
-            dtActors::CoordinateConfigActor &ccActor = 
-               static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
+            dtActors::CoordinateConfigActor* ccActor; 
+            proxies[0]->GetActor(ccActor);
 
-            hlaComp.GetCoordinateConverter() = ccActor.GetCoordinateConverter();
+            hlaComp.GetCoordinateConverter() = ccActor->GetCoordinateConverter();
             std::vector<dtHLAGM::DDMRegionCalculator*> calcs;
             hlaComp.GetDDMSubscriptionCalculators().GetCalculators(calcs);
-            for (unsigned i = 0; i < calcs.size(); ++i)
+            for(size_t i = 0; i < calcs.size(); ++i)
             {
                dtHLAGM::DDMCalculatorGeographic* geoCalc = dynamic_cast<dtHLAGM::DDMCalculatorGeographic*>(calcs[i]);
-               
-               if (geoCalc != NULL)
+               if(geoCalc != NULL)
                {
-                  geoCalc->SetCoordinateConverter(ccActor.GetCoordinateConverter());
+                  geoCalc->SetCoordinateConverter(ccActor->GetCoordinateConverter());
                }
             }
          }
       }
 
+      void HLAConnectionComponent::GetAdditionalMaps(std::vector<std::string>& toFill) const
+      {
+         std::ostringstream oss;
+         std::string addMap;
+         unsigned i = 1;
+         do
+         {
+            if (i > 1)
+               toFill.push_back(addMap);
+
+            oss << CONFIG_PROP_ADDITIONAL_MAP << i;
+            addMap = GetGameManager()->GetApplication().GetConfigPropertyValue(oss.str());
+            oss.str("");
+            ++i;
+         }
+         while (!addMap.empty());
+      }
+      
       void HLAConnectionComponent::Connect()
       {
-         // Temporary fix added by Eddie. This is not particularly hackish, and 
-         // maintains support for both the Stealth Viewer and the other apps
-         // that requires multiple map support
-         if(mMapNames.size() == 1)
+         if(mMapNames.empty())
          {
-            GetGameManager()->ChangeMap(mMapNames[0], false, true);
+            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA, 
+               "You have tried to connect when no maps have been specified. \
+                Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
-         else
+         else if (GetGameManager() == NULL)
          {
-            GetGameManager()->ChangeMapSet(mMapNames, false, true);
+            throw dtUtil::Exception( 
+               "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
          }
+         
+
+         std::vector<std::string> values;
+         GetAdditionalMaps(values);
+
+         mMapNames.insert(mMapNames.end(), values.begin(), values.end());
+
+         GetGameManager()->ChangeMapSet(mMapNames, false, true);
+         mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
       }
 
       void HLAConnectionComponent::Disconnect()
       {
          GetGameManager()->CloseCurrentMap();
+         mMapNames.clear();
          dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
          try
          {
@@ -122,7 +169,7 @@ namespace SimCore
             ex.LogException(dtUtil::Log::LOG_ERROR);
          }
 
-         mIsConnected = false;
+         mState = &ConnectionState::STATE_NOT_CONNECTED;
       }
-   }  
+   }
 }

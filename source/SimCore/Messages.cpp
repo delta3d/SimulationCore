@@ -534,4 +534,43 @@ namespace SimCore
    {
       return static_cast<const dtGame::FloatMessageParameter&>(*GetParameter("Magnification")).GetValue();
    }
+
+   /////////////////////////////////////////////////////////////////
+   const std::string ControlStateMessage::PARAM_CONTROL_STATE_ID("ControlStateID");
+   const std::string ControlStateMessage::PARAM_STATION("Station");
+
+   ControlStateMessage::ControlStateMessage()
+   {
+      AddParameter(new dtGame::StringMessageParameter(PARAM_CONTROL_STATE_ID));
+      AddParameter(new dtGame::IntMessageParameter(PARAM_STATION));
+   }
+
+   ControlStateMessage::~ControlStateMessage()
+   {
+   }
+
+   void ControlStateMessage::SetControlStateID( const std::string& controlStateID )
+   {
+      static_cast<dtGame::StringMessageParameter*>
+         (GetParameter(PARAM_CONTROL_STATE_ID))->FromString(controlStateID);
+   }
+   
+   const std::string ControlStateMessage::GetControlStateID() const
+   {
+      return static_cast<const dtGame::StringMessageParameter*>
+         (GetParameter(PARAM_CONTROL_STATE_ID))->ToString();
+   }
+
+   void ControlStateMessage::SetStation( int station )
+   {
+      static_cast<dtGame::IntMessageParameter*>
+         (GetParameter(PARAM_STATION))->SetValue(station);
+   }
+
+   int ControlStateMessage::GetStation() const
+   {
+      return static_cast<const dtGame::IntMessageParameter*>
+         (GetParameter(PARAM_STATION))->GetValue();
+   }
+
 }

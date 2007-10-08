@@ -38,6 +38,7 @@
 #include <dtABC/application.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 namespace SimCore
 {
@@ -118,6 +119,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet(da, &DetonationActor::GetMinimumSoundDistance), 
             "Sets the minimum number of meters that a sound will clip"));
 
+         AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name", 
+            dtDAL::MakeFunctor(da, &DetonationActor::SetLightName), 
+            dtDAL::MakeFunctorRet(da, &DetonationActor::GetLightName), 
+            "Sets the name of the light effect to be used when a detonation is spawned"));
+
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
             "Smoke Particle System", "Smoke Particle System", dtDAL::MakeFunctor(da, &DetonationActor::LoadSmokeFile), 
             "Loads the particle system for this detonation to use for smoke"));
@@ -137,14 +143,6 @@ namespace SimCore
          DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
          float time = da.GetDelayTime();
          GetGameManager()->SetTimer("PlayDetonationSoundTimer", this, time);
-
-         dtCore::ParticleSystem* explosionSystem = da.GetExplosionParticleSystem();
-         if( explosionSystem != NULL )
-         {
-            Components::ParticleInfo::AttributeFlags attrs = { true, false };
-            da.RegisterParticleSystem( *explosionSystem, &attrs );
-         }
-               
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -292,17 +290,29 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::OnEnteredWorld()
       {
+         // Register explosion particle effects
          if( mExplosionSystem.valid() )
-            RegisterParticleSystem(*mExplosionSystem);
+         {
+            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            RegisterParticleSystem( *mExplosionSystem, &attrs );
+         }
 
+         // Register smoke particle effects
          if( mSmokeSystem.valid() )
-            RegisterParticleSystem(*mSmokeSystem);
+         {
+            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            RegisterParticleSystem( *mSmokeSystem, &attrs );
+         }
 
          ///////////////////////////////////////////////////////////////////////
          // Add physics particle systems to the detonation
-#ifdef AGEIA_PHYSICS        
          if(mUsesPhysics && mCollidedMaterial != NULL)
          {
+            AddDynamicLight();
+#ifdef AGEIA_PHYSICS        
+            //this is kind of a hack, but it ensures it is at least a relatively large explosion
+            //and keeps the gun fire from being an explosion
+
             std::string particleSystems[5];
             particleSystems[0] = mCollidedMaterial->GetPhysicsParticleLookupStringOne();
             particleSystems[1] = mCollidedMaterial->GetPhysicsParticleLookupStringTwo();
@@ -330,8 +340,8 @@ namespace SimCore
                   }
                }
             }
-         }
 #endif     
+         }
          ///////////////////////////////////////////////////////////////////////
 
          RenderDetonation();
@@ -463,6 +473,22 @@ namespace SimCore
                        (position[2] - detonationPos[2]) * (position[2] - detonationPos[2])));
 
          mDelayTime = distance / 350.0f;
+      }
+      
+      ///////////////////////////////////////////////////////////////////////
+      void DetonationActor::AddDynamicLight()
+      {
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(
+               SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+               renderComp);
+
+         if(renderComp != NULL)
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+               renderComp->AddDynamicLightByPrototypeName( GetLightName() );
+            dl->mTarget = this;
+         }
       }
    }
 }

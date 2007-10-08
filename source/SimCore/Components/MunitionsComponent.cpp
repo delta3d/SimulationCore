@@ -19,7 +19,6 @@
 // DELTA 3D
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
-#include <dtCore/batchisector.h>
 #include <dtCore/camera.h>
 #include <dtCore/transformable.h>
 #include <dtCore/scene.h>
@@ -36,10 +35,11 @@
 #include <SimCore/MessageType.h>
 // Components
 #include <SimCore/Components/DamageHelper.h>
+#include <SimCore/Components/MunitionDamage.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/MunitionsConfig.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
-#include <SimCore/Components/MunitionDamage.h>
 // Actors
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
@@ -49,6 +49,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/Human.h>
 
 using dtCore::RefPtr;
 
@@ -367,9 +368,13 @@ namespace SimCore
       TracerEffect::TracerEffect( float lineLength, float lineThickness,
          const std::string& shaderName, const std::string& shaderGroup )
          : SimCore::Actors::VolumetricLine(lineLength,lineThickness,shaderName,shaderGroup),
+         mHasLight(false),
+         mDynamicLightEnabled(false),
+         mDynamicLightID(0),
          mLifeTime(0.0f),
          mMaxLifeTime(1.0f),
-         mSpeed(0.0f)
+         mSpeed(0.0f),
+         mMaxLength(10.0f)
       {
          SetVisible( true ); // ensures node mask is set to the proper value.
       }
@@ -378,6 +383,7 @@ namespace SimCore
       TracerEffect::~TracerEffect()
       {
       }
+
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::SetDirection( const osg::Vec3& direction )
       {
@@ -421,6 +427,23 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::SetPosition( const osg::Vec3& position )
       {
+         // Set the last position...
+         if( ! IsActive() )
+         {
+            // ...to the specified point if this effect is about to be executed again
+            mLastPosition.set(position);
+         }
+         else
+         {
+            // ...to remember the last point
+            osg::Vec3 diff(mPosition-position);
+            if( diff.length() >= mMaxLength )
+            {
+               diff.normalize();
+               mLastPosition.set( diff * mMaxLength );
+            }
+         }
+
          mPosition.set(position);
 
          dtCore::Transform xform;
@@ -433,6 +456,15 @@ namespace SimCore
       void TracerEffect::SetVisible( bool visible )
       {
          GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
+         if( visible && mHasLight )
+         {
+            // TODO: Make tracer colors dynamic.
+            AddDynamicLight(osg::Vec3(1.0f, 0.2f, 0.2f)); // default color to red
+         }
+         else
+         {
+            RemoveDynamicLight();
+         }
       }
       
       //////////////////////////////////////////////////////////////////////////
@@ -454,12 +486,18 @@ namespace SimCore
          mLifeTime = 0.0f;
          SetVisible( true );
 
+         // Start the tracer line with zero stretch
+         mLastPosition = mPosition;
+         SetLength(0.001f);
+
          // Physically adjust orientation to match direction
          dtCore::Transform xform;
          GetTransform(xform,dtCore::Transformable::REL_CS);
          osg::Matrix mtx;
          osg::Vec3 right = mDirection ^ osg::Vec3(0.0,0.0,1.0);
+         right.normalize();
          osg::Vec3 up = right ^ mDirection;
+         up.normalize();
          mtx.ptr()[0] = right[0];
          mtx.ptr()[1] = right[1];
          mtx.ptr()[2] = right[2];
@@ -476,15 +514,95 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void TracerEffect::Update( float deltaTime )
       {
-         if( mLifeTime < mMaxLifeTime )
+         if( IsActive() )
          {
             SetPosition( mPosition + (mDirection * mSpeed * deltaTime) );
             mLifeTime += deltaTime;
+
+            // Update the tracer length for stretching
+            float length = (mLastPosition-mPosition).length();
+            if( length > mMaxLength )
+            {
+               SetLength( mMaxLength );
+            }
+            else if( length > 0.0 && length < mMaxLength )
+            {
+               SetLength( length );
+            }
          }
          else if( IsVisible() )
          {
             SetVisible( false );
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::AddDynamicLight( const osg::Vec3& color )
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            if( ! mDynamicLightEnabled )
+            {
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
+               dl->mTarget = this;
+               dl->mColor = color;
+
+               mDynamicLightID = dl->mID;
+               mDynamicLightEnabled = true;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::RemoveDynamicLight()
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
+            if( dl != NULL && mDynamicLightEnabled )
+            {
+               dl->mIntensity = 0.0f;
+               renderComp->RemoveDynamicLight(mDynamicLightID);
+
+               mDynamicLightEnabled = false;
+               mDynamicLightID = 0;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         mGM = gameManager;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetMaxLength( float maxLength )
+      {
+         mMaxLength = maxLength;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float TracerEffect::GetMaxLength() const
+      {
+         return mMaxLength;
       }
 
 
@@ -497,9 +615,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       WeaponEffect::WeaponEffect()
          : dtCore::Transformable(WeaponEffect::CLASS_NAME),
+         mDynamicLightID(0),
+         mDynamicLightEnabled(false),
+         mVisible(true),
          mSoundPlayed(false),
          mSoundStartTime(0.0f),
-         mVisible(true),
          mFlashProbability(1.0f),
          mFlashTime(0.0f),
          mTimeSinceFlash(0.0f)
@@ -578,6 +698,16 @@ namespace SimCore
          if( mFlash.valid() )
          {
             mFlash->GetOSGNode()->setNodeMask( mVisible ? 0xFFFFFFFF : 0 );
+
+            if( mVisible )
+            {
+               // TODO: Make tracer colors dynamic.
+               AddDynamicLight(osg::Vec3(1.0f, 0.5f, 0.0f)); // yellow
+            }
+            else
+            {
+               RemoveDynamicLight();
+            }
          }
       }
 
@@ -685,19 +815,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadSound( const std::string& filePath )
       {
-         // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
-
-         if( resourcePath.empty() )
-         {
-            std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
-               << resourcePath.c_str() << "\"" << std::endl;
-            LOG_ERROR( ss.str() );
-            return false;
-         }
-
          mSound = NULL;
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
 
@@ -713,19 +830,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool WeaponEffect::LoadFlash( const std::string& filePath )
       {
-         // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
-
-         if( resourcePath.empty() )
-         {
-            std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
-               << resourcePath.c_str() << "\"" << std::endl;
-            LOG_ERROR( ss.str() );
-            return false;
-         }
-
          dtCore::RefPtr<dtCore::ParticleSystem> flash = new dtCore::ParticleSystem;
          flash->SetParentRelative(true);
 
@@ -740,6 +844,68 @@ namespace SimCore
          return mFlash.valid();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::AddDynamicLight( const osg::Vec3& color )
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            if( ! mDynamicLightEnabled )
+            {
+               //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
+               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
+               dl->mColor = color;//a bright yellow
+               //dl->mAttenuation.set(0.1, 0.05, 0.0002);
+               //dl->mIntensity = 1.0f;
+               //dl->mSaturationIntensity = 0.0f; //no saturation
+               dl->mTarget = mFlash.get();
+
+               //mDynamicLightID = renderComp->AddDynamicLight(dl);
+               mDynamicLightID = dl->mID;
+               mDynamicLightEnabled = true;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::RemoveDynamicLight()
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
+            if( dl != NULL && mDynamicLightEnabled )
+            {
+               dl->mIntensity = 0.0f;
+               renderComp->RemoveDynamicLight(mDynamicLightID);
+
+               mDynamicLightEnabled = false;
+               mDynamicLightID = 0;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         mGM = gameManager;
+      }
+
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -751,7 +917,8 @@ namespace SimCore
          mRecycleTime(1.0f),
          mCurRecycleTime(0.0f),
          mMaxWeaponEffects(-1), // no limit
-         mMaxTracerEffects(-1)  // no limit
+         mMaxTracerEffects(-1), // no limit
+         mIsector(new dtCore::BatchIsector)
       {
       }
 
@@ -759,6 +926,23 @@ namespace SimCore
       WeaponEffectsManager::~WeaponEffectsManager()
       {
          Clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         if( gameManager == NULL )
+         {
+            mIsector->Reset();
+            mIsector->SetScene( NULL );
+         }
+
+         mGM = gameManager;
+
+         if( mGM.valid() )
+         {
+            mIsector->SetScene( &mGM->GetScene() );
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -786,6 +970,7 @@ namespace SimCore
          if( ! foundEffect )
          {
             newEffect->SetOwner( &owner );
+            newEffect->SetGameManager( mGM.get() );
 
             if( ! effectsInfo.GetFireEffect().empty() )
             {
@@ -829,9 +1014,10 @@ namespace SimCore
       bool WeaponEffectsManager::ApplyTracerEffect(
          const osg::Vec3& weaponFirePoint,
          const osg::Vec3& intialVelocity,
-         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
+         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+         bool useLight )
       {
-         if( ! mScene.valid() 
+         if( ! mGM.valid() 
             || (mMaxTracerEffects > -1 && (int)mTracerEffects.size() >= mMaxTracerEffects) )
          {
             return false;
@@ -852,13 +1038,15 @@ namespace SimCore
             && ( mMaxTracerEffects < 0 || (int)limit <= mMaxTracerEffects ) )
          {
             effect = new TracerEffect( 
-               effectsInfo.GetTracerLength(), 
+               0.001, // spawn tracer at a near-zero size; it will be stretched to max size during updates.
                effectsInfo.GetTracerThickness(),
                effectsInfo.GetTracerShaderName(),
                effectsInfo.GetTracerShaderGroup() );
+            effect->SetMaxLength( effectsInfo.GetTracerLength() );
+            effect->SetGameManager( mGM.get() );
 
             // Make sure the tracer is visible in the scene
-            mScene->AddDrawable( effect );
+            mGM->GetScene().AddDrawable( effect );
 
             // Track this tracer effect though out the life of the application
             mTracerEffects.push_back( effect );
@@ -874,10 +1062,90 @@ namespace SimCore
 
             // Setup tracer to update and render.
             // This also sets the initial orientation of the tracer.
-            effect->Execute( effectsInfo.GetTracerLifeTime() );
+            float tracerLifeTime = CalcTimeToImpact( 
+               weaponFirePoint, intialVelocity, 
+               effectsInfo.GetTracerLifeTime() );
+            effect->SetHasLight( useLight );
+            effect->Execute( tracerLifeTime );
          }
 
          return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponEffectsManager::AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest )
+      {
+         if( ! effectRequest.valid() )
+         {
+            return false;
+         }
+         unsigned lastSize = mTracerRequests.size();
+         mTracerRequests.push_back( effectRequest.get() );
+
+         return mTracerRequests.size() > lastSize;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned WeaponEffectsManager::ClearTracerEffectRequests()
+      {
+         unsigned lastSize = mTracerRequests.size();
+         mTracerRequests.clear();
+         return lastSize;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::UpdateTracerEffectRequests( float timeDelta )
+      {
+         if( mTracerRequests.empty() )
+         {
+            return;
+         }
+
+         bool deleteEffectRequest = false;
+         bool firstEffectRequestProcessed = false;
+         TracerEffectRequest* curRequest = NULL;
+         TracerEffectRequestList::iterator iter(--mTracerRequests.end());
+         while( ! firstEffectRequestProcessed )
+         {
+            firstEffectRequestProcessed = iter == mTracerRequests.begin();
+            deleteEffectRequest = false;
+            curRequest = iter->get();
+
+            if( curRequest == NULL ) // This should not happen
+            {
+               deleteEffectRequest = true;
+               LOG_WARNING( "WeaponEffectsManager acquired a NULL TracerEffectRequest" );
+            }
+            else
+            {
+               curRequest->Update( timeDelta );
+               if( curRequest->IsEffectReady() )
+               {
+                  ApplyTracerEffect( curRequest->GetFirePoint(),
+                     curRequest->GetVelocity(), curRequest->GetEffectsInfo(), curRequest->IsFirstEffect() );
+
+                  curRequest->Decrement();
+               }
+
+               if( curRequest->GetTotalEffects() < 1 )
+               {
+                  deleteEffectRequest = true;
+               }
+            }
+
+            if( deleteEffectRequest )
+            {
+               TracerEffectRequestList::iterator deleteIter = iter;
+               if( ! firstEffectRequestProcessed )
+                  --iter;
+               mTracerRequests.erase(deleteIter);
+            }
+            else
+            {
+               if( ! firstEffectRequestProcessed )
+                  --iter;
+            }
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -930,6 +1198,8 @@ namespace SimCore
             // elements properly.
             iter->second->Update( deltaTime );
          }
+
+         UpdateTracerEffectRequests( deltaTime );
 
          unsigned limit = mTracerEffects.size();
          for( unsigned effect = 0; effect < limit; ++effect )
@@ -1010,9 +1280,9 @@ namespace SimCore
                if( ! iter->valid() || ( ! (*iter)->IsActive() && mTracerEffects.size() > unsigned(mMaxTracerEffects) ) )
                {
                   // Ensure that the tracer is still not held by the scene.
-                  if( mScene.valid() )
+                  if( mGM.valid() )
                   {
-                     mScene->RemoveDrawable( iter->get() );
+                     mGM->GetScene().RemoveDrawable( iter->get() );
                   }
 
                   std::vector<dtCore::RefPtr<TracerEffect> >::iterator toDelete = 
@@ -1027,6 +1297,8 @@ namespace SimCore
                }
             }
          }
+
+         // DEBUG: std::cout << "Tracers:\t" << mTracerEffects.size() << std::endl;
 
          return recycleCount;
       }
@@ -1055,12 +1327,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffectsManager::ClearTracerEffects()
       {
-         if( mScene.valid() )
+         if( mGM.valid() )
          {
             unsigned limit = mTracerEffects.size();
             for( unsigned tracer = 0; tracer < limit; ++tracer )
             {
-               mScene->RemoveDrawable( mTracerEffects[tracer].get() );
+               mGM->GetScene().RemoveDrawable( mTracerEffects[tracer].get() );
             }
          }
 
@@ -1075,6 +1347,36 @@ namespace SimCore
       {
          ClearWeaponEffects();
          ClearTracerEffects();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffectsManager::CalcTimeToImpact( 
+         const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime )
+      {
+         float speed = initialVelocity.length();
+         if( speed == 0.0f )
+         {
+            return maxTime;
+         }
+
+         dtCore::BatchIsector::SingleISector& SingleISector = mIsector->EnableAndGetISector(0);
+         osg::Vec3 endPoint( weaponFirePoint + (initialVelocity*maxTime) );
+         SingleISector.SetSectorAsLineSegment( weaponFirePoint, endPoint);
+
+         if( mIsector->Update( osg::Vec3(0,0,0), true ) )
+         {
+            if( SingleISector.GetNumberOfHits() > 0 ) 
+            {
+               SingleISector.GetHitPoint( endPoint );
+
+               maxTime = (endPoint-weaponFirePoint).length()/speed;
+
+               // Clear for next use
+               mIsector->Reset();
+            }
+         }
+
+         return maxTime;
       }
 
 
@@ -1683,30 +1985,48 @@ namespace SimCore
             // of a new tracer effect.
             int tracerFrequency = munitionType->GetTracerFrequency();
 
-            float probability = 0.0f;
-            if( int(quantity) >= tracerFrequency )
+            // If tracers are allowable...
+            if( tracerFrequency > 0 )
             {
-               probability = 1.0f;
-            }
-            else if( tracerFrequency > 0 )
-            {
-               probability = float(quantity) / float(tracerFrequency);
-            }
-
-            if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
-            {
-               if( entity != NULL && bestDof != NULL )
+               float probability = 0.0f;
+               if( int(quantity) >= tracerFrequency ) // ...with 100% probability...
                {
-                  osg::Matrix mtx;
-                  entity->GetAbsoluteMatrix( bestDof, mtx );
-
-                  mEffectsManager->ApplyTracerEffect( 
-                     mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
+                  probability = 1.0f;
                }
-               else
+               else // ...determine a probability of a tracer effect...
                {
-                  mEffectsManager->ApplyTracerEffect( 
-                     message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
+                  probability = float(quantity) / float(tracerFrequency);
+               }
+
+               // ...and if the probability of a tracer is within the probable area...
+               if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
+               {
+                  // ...generate a tracer effect request...
+                  dtCore::RefPtr<TracerEffectRequest> effectRequest
+                     = new TracerEffectRequest( quantity, 0.05f, *effects );
+                  effectRequest->SetVelocity( message.GetInitialVelocityVector() );
+
+                  if( entity != NULL && bestDof != NULL )
+                  {
+                     // ...from the fire point on the firing entity.
+                     osg::Matrix mtx;
+                     entity->GetAbsoluteMatrix( bestDof, mtx );
+
+                     effectRequest->SetFirePoint( mtx.getTrans() );
+                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+
+                     //mEffectsManager->ApplyTracerEffect( 
+                     //   mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
+                  }
+                  else
+                  {
+                     // ...from the firing location specified in the message.
+                     effectRequest->SetFirePoint( message.GetFiringLocation() );
+                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+
+                     //mEffectsManager->ApplyTracerEffect( 
+                     //   message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
+                  }
                }
             }
          }
@@ -1765,6 +2085,7 @@ namespace SimCore
 
          // Figure out if we hit an entity or if we hit the ground!
          bool hitEntity = ! message.GetAboutActorId().ToString().empty();
+         bool entityIsHuman = false;
          if( hitEntity )
          {
             dtDAL::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
@@ -1773,6 +2094,10 @@ namespace SimCore
             hitEntity = ! (targetProxy != NULL 
                && ( dynamic_cast<NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
                || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
+            
+            // Check to see if we hit a person. Needs a different effect
+            entityIsHuman = (hitEntity && 
+               dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
          }
 
          // Set the position and ground clamp
@@ -1873,7 +2198,9 @@ namespace SimCore
          dtCore::Transform xform(pos[0], pos[1], pos[2]);
          da->SetTransform(xform, dtCore::Transformable::REL_CS);
 
-         SimCore::Components::ViewerMaterialComponent* materialComponent = dynamic_cast<SimCore::Components::ViewerMaterialComponent*>(GetGameManager()->GetComponentByName("ViewerMaterialComponent"));
+         SimCore::Components::ViewerMaterialComponent* materialComponent;
+         GetGameManager()->GetComponentByName(SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
+         
          if(materialComponent != NULL)
          {
             SimCore::Actors::ViewerMaterialActor& viewerMaterial = materialComponent->CreateOrChangeMaterialByFID(fidID);
@@ -1893,7 +2220,11 @@ namespace SimCore
          std::string curValue;
 
          // Load the particle effect
-         if( hitEntity && effects->HasEntityImpactEffect() )
+         if (hitEntity && entityIsHuman) // For humans, we play a different effect
+         {
+            // do nothing for right now
+         }
+         else if( hitEntity && effects->HasEntityImpactEffect() )
          {
             curValue = effects->GetEntityImpactEffect();
             if( ! curValue.empty() ) { da->LoadDetonationFile( curValue ); }
@@ -1905,7 +2236,11 @@ namespace SimCore
          }
 
          // Load the sound
-         if( hitEntity && effects->HasEntityImpactSound() )
+         if (hitEntity && entityIsHuman) // For humans, we play a different effect
+         {
+            // do nothing for shooting a player. For now we have no hit human thud.
+         }
+         else if( hitEntity && effects->HasEntityImpactSound() )
          {
             curValue = effects->GetEntityImpactSound();
             if( ! curValue.empty() ) 
@@ -1936,6 +2271,14 @@ namespace SimCore
             || munitionType->GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
          da->SetPhysicsEnabled( ! avoidPhysics );
 
+         // Prepare the reference light effect type
+         curValue = effects->GetEntityImpactLight();
+         if( ! hitEntity || curValue.empty() )
+         {
+            curValue = effects->GetGroundImpactLight();
+         }
+         da->SetLightName( curValue );
+
          // Add the newly created detonation to the scene
          GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);  
       }
@@ -1945,7 +2288,7 @@ namespace SimCore
       {
          dtGame::GMComponent::OnAddedToGM();
          mIsector->SetScene( &GetGameManager()->GetScene() );
-         mEffectsManager->SetScene( &GetGameManager()->GetScene() );
+         mEffectsManager->SetGameManager( GetGameManager() );
       }
 
       //////////////////////////////////////////////////////////////////////////

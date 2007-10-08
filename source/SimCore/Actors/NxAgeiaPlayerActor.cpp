@@ -147,7 +147,9 @@ namespace SimCore
                osg::Vec3 globalOrientation;
                dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
                osg::Vec3 nxVecTemp;
-               nxVecTemp.set(mPhysicsHelper->GetActor()->getGlobalPosition().x, mPhysicsHelper->GetActor()->getGlobalPosition().y, mPhysicsHelper->GetActor()->getGlobalPosition().z);
+               nxVecTemp.set( mPhysicsHelper->GetActor()->getGlobalPosition().x, 
+                              mPhysicsHelper->GetActor()->getGlobalPosition().y, 
+                              mPhysicsHelper->GetActor()->getGlobalPosition().z);
 
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
                const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
@@ -194,8 +196,35 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::SetLastKnownTranslation(const osg::Vec3 &vec)
+      {
+#ifdef AGEIA_PHYSICS
+         if(mPhysicsHelper != NULL)
+         {
+            float zValue = mPhysicsHelper->GetCharacterExtents()[2];
+
+            // Note this should really be zValue /= 2. However, jsaf doesnt use 
+            // the float value for w/e reason. so it has to round the number,
+            // this being that the number is 1.5 which turns out to move the character down
+            // correctly (well reporting it down correctly). Without subtracting,
+            // 0.75 the altitude is 1 meter, you subtract 0.75 (the correct amount)
+            // and the alt is still 1 meter. You subtract 20 and its 19. Subtract
+            // 1.5 and its 1.
+            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2] - zValue));
+         }
+         else
+#endif
+            Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       bool NxAgeiaPlayerActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
+         osg::Vec3 position = pos;
+#ifdef AGEIA_PHYSICS
+         if(mPhysicsHelper != NULL)
+            position[2] -= (mPhysicsHelper->GetCharacterExtents()[2]);
+#endif
          osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
 
          float distanceTurned = rot.x() - GetLastKnownRotation().x();
@@ -205,7 +234,7 @@ namespace SimCore
             // DEBUG: std::cout << "\n\tUpdate Translation:\t" << GetMaxTranslationError() << std::endl;
             mNotifyChangePosition = true;
          }
-         
+
          if (distanceTurned * distanceTurned > GetMaxRotationError())
          {
             // DEBUG: std::cout << "\n\tUpdate Orientation\n" << std::endl;
@@ -221,6 +250,13 @@ namespace SimCore
          // Do full updates for now until partial updates are required.
          return mNotifyChangeVelocity || 
             mNotifyChangeOrient || mNotifyChangePosition;
+      }
+
+      ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
+      {
+         SimCore::Actors::BaseEntity::FillPartialUpdatePropertyVector(propNamesToFill);
+         propNamesToFill.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
       }
 
       ////////////////////////////////////////////////////////////
@@ -241,7 +277,7 @@ namespace SimCore
          if(!toFill.empty())
             terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
 
-         if(terrainNode != NULL)
+         /*if(terrainNode != NULL)
          {
             osg::Vec3 hp;
             dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
@@ -271,7 +307,7 @@ namespace SimCore
                mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(mSentOverTransform[0], mSentOverTransform[1], hp[2] + 2) );
                return;
             }
-         }
+         }*/
          
          NxVec3 displacementVector;
          osg::Vec3 currentTransform = mSentOverTransform;
@@ -279,7 +315,6 @@ namespace SimCore
          displacementVector.y = currentTransform[1] - mPreviousTransform[1];
          displacementVector.z = currentTransform[2] - mPreviousTransform[2];
          mPreviousTransform = currentTransform;
-
 
          dtGame::GMComponent *comp = 
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
@@ -313,8 +348,41 @@ namespace SimCore
          dtCore::Transform transform;
          GetTransform(transform);
          mPreviousTransform = transform.GetTranslation(); 
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2]) );
+
+         osg::Vec3 offset = mPhysicsHelper->GetDimensions();
+         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2] + ( offset[2] / 2 ) ) );
 #endif
+      }
+
+      ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::SetPosition( const osg::Vec3& position )
+      {
+         dtCore::Transform xform;
+         xform.SetTranslation( position );
+         SetTransform(xform);
+
+#ifdef AGEIA_PHYSICS
+         if( ! mPhysicsHelper.valid() )
+         {
+            return;
+         }
+
+         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(position.x(), position.y(), position.z()));
+
+         if(!IsRemote())
+         {
+            mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
+         }
+#endif
+      }
+
+      ////////////////////////////////////////////////////////////
+      void NxAgeiaPlayerActor::OffsetPosition( const osg::Vec3& offset )
+      {
+         dtCore::Transform xform;
+         GetTransform( xform );
+         xform.SetTranslation( xform.GetTranslation() + offset );
+         SetPosition( xform.GetTranslation() );
       }
 
       ////////////////////////////////////////////////////////////
@@ -323,18 +391,17 @@ namespace SimCore
          Human::OnEnteredWorld();
 
 #ifdef AGEIA_PHYSICS
+         // We don't want remote players to kick the HMMWV around, so we put them in a different group.
+         if (IsRemote())
+            mPhysicsHelper->SetCollisionGroup(31);
+
          mPhysicsHelper->InitializeCharacter();
          dtCore::Transform transform;
          GetTransform(transform);
-         mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(transform.GetTranslation()[0], transform.GetTranslation()[1], transform.GetTranslation()[2]));
-
-         if(!IsRemote())
-         {
-            mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-         }
-
+         SetPosition( transform.GetTranslation() );
          mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+
 #endif
 
          if(!IsRemote())
@@ -347,18 +414,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::AgeiaPrePhysicsUpdate()
       {
-
       }
 
       //////////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActor::AgeiaPostPhysicsUpdate()
       {
-         dtCore::Transform xform;
-         GetTransform(xform);
-         const NxExtendedVec3* pos = mPhysicsHelper->GetCharacterPos();
-         xform.SetTranslation(pos->x, pos->y, pos->z);
-         SetTransform(xform);
-         mPreviousTransform = xform.GetTranslation();
+         if(!IsRemote())
+         {
+            dtCore::Transform xform;
+            GetTransform(xform);
+            const NxExtendedVec3* pos = mPhysicsHelper->GetCharacterPos();
+            xform.SetTranslation(pos->x, pos->y, pos->z);
+            SetTransform(xform);
+            mPreviousTransform = xform.GetTranslation();
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////////
@@ -402,20 +471,35 @@ namespace SimCore
          SetClassName("NxAgeiaPlayerActor");
       }
 
+      //////////////////////////////////////////////////////////////////////////
       NxAgeiaPlayerActorProxy::~NxAgeiaPlayerActorProxy()
       {
 
       }
 
+      /// Instantiates the actor this proxy encapsulated
+      void NxAgeiaPlayerActorProxy::CreateActor() 
+      { 
+         NxAgeiaPlayerActor* p = new NxAgeiaPlayerActor(*this);
+         SetActor(*p); 
+
+         if(!IsRemote())
+         {
+            p->InitDeadReckoningHelper();
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActorProxy::BuildPropertyMap()
       {
          HumanActorProxy::BuildPropertyMap();
 #ifdef AGEIA_PHYSICS
          NxAgeiaPlayerActor* actor = dynamic_cast<NxAgeiaPlayerActor*>(GetActor());
-         actor->mPhysicsHelper->BuildPropertyMap();
+         actor->GetPhysicsHelper()->BuildPropertyMap();
 #endif
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void NxAgeiaPlayerActorProxy::BuildInvokables()
       {
          HumanActorProxy::BuildInvokables();

@@ -38,6 +38,11 @@ namespace dtCore
    class NodeCollector;
 }
 
+namespace dtAudio
+{
+   class Sound;
+}
+
 namespace dtDAL
 {
    class NamedGroupParameter;
@@ -74,6 +79,8 @@ namespace SimCore
       {
          public:
             typedef BaseEntityActorProxy BaseClass;
+
+            static const std::string PROPERTY_HEAD_LIGHTS_ENABLED;
             
             // Constructor
             PlatformActorProxy();
@@ -134,6 +141,7 @@ namespace SimCore
             typedef BaseEntity BaseClass;
 
             static const std::string INVOKABLE_TICK_CONTROL_STATE;
+            static const std::string DOF_NAME_HEAD_LIGHTS;
 
             /**
              * Constructor.
@@ -245,6 +253,12 @@ namespace SimCore
             float GetTimeBetweenControlStateUpdates() const { return mTimeBetweenControlStateUpdates; }
 
             /**
+             * Set whether the headlights of the vehicle are on or off.
+             */
+            void SetHeadLightsEnabled( bool enabled );
+            bool IsHeadLightsEnabled() const;
+
+            /**
              * This function advances the update time and determines if an update
              * regarding a control state should be sent out to the network.
              * @param tickMessage Tick message sent to this object via registration
@@ -252,6 +266,15 @@ namespace SimCore
              */
             void TickControlState( const dtGame::Message& tickMessage );
 
+            // for the engine idle sound effect
+            void SetSFXEngineIdleLoop(const std::string& soundFX);
+            void SetMinDistanceIdleSound(float value) {mMinIdleSoundDistance = value;}
+            void SetMaxDistanceIdleSound(float value) {mMaxIdleSoundDistance = value;}
+
+            float GetMinDistanceIdleSound() const {return mMinIdleSoundDistance;}
+            float GetMaxDistanceIdleSound() const {return mMaxIdleSoundDistance;}
+            
+            void TickTimerMessage(const dtGame::Message& tickMessage);
          protected:
 
             /**
@@ -269,6 +292,12 @@ namespace SimCore
             virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
 
             osg::Vec3 mMuzzleFlashPosition;
+
+            // tests to see if we are in range, if so play the sound effect if its playing
+            // else dont.
+            void UpdateEngineIdleSoundEffect();
+
+            void LoadSFXEngineIdleLoop();
 
          private:
             /// The minimum time allowed between control state updates
@@ -310,6 +339,18 @@ namespace SimCore
             // The articulation helper used in creating out-going articulation
             // data for entity update messages.
             dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
+            
+            // Flag for determining if the head light effect should be enabled or disabled
+            bool mHeadLightsEnabled;
+
+            // Handle to the light effect
+            unsigned mHeadLightID;
+
+            // For idle engine sounds, great for hearing things coming!
+            dtCore::RefPtr<dtAudio::Sound>   mSndIdleLoop;
+            std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
+            float                            mMinIdleSoundDistance;
+            float                            mMaxIdleSoundDistance;
       };
 
    }

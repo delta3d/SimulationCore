@@ -165,13 +165,16 @@ namespace SimCore
       }
    }
 
-   //////////////////////////////////////////////////////////////////////////         
+   //////////////////////////////////////////////////////////////////////////
    SimCore::Actors::Platform* PlayerMotionModel::CheckWithCloseToVehicle()
    {
       SimCore::Actors::NxAgeiaPlayerActor* player = dynamic_cast<SimCore::Actors::NxAgeiaPlayerActor*>(GetTarget());
       if(player != NULL)
       {
-         SimCore::Components::PortalComponent* portalComponent = dynamic_cast<SimCore::Components::PortalComponent*>(player->GetGameActorProxy().GetGameManager()->GetComponentByName("PortalComponent"));
+         SimCore::Components::PortalComponent* portalComponent; 
+         player->GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::PortalComponent::DEFAULT_NAME,
+                  portalComponent);
+         
          if(portalComponent != NULL)
          {
             if(portalComponent->GetNumberOfPortals() > 0)

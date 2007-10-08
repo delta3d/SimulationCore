@@ -18,6 +18,7 @@
 #include <SimCore/Export.h>
 
 #include <dtCore/base.h>
+#include <dtCore/batchisector.h>
 #include <dtCore/observerptr.h>
 
 #include <SimCore/Actors/VolumetricLine.h>
@@ -40,7 +41,6 @@ namespace dtAudio
 
 namespace dtCore
 {
-   class BatchIsector;
    class UniqueId;
    class ParticleSystem;
 }
@@ -205,6 +205,9 @@ namespace SimCore
                const std::string& shaderName = "VolumetricLines",
                const std::string& shaderGroup = "TracerGroup" );
 
+            void SetHasLight( bool hasLight ) { mHasLight = hasLight; }
+            bool HasLight() const { return mHasLight; }
+
             void SetMaxLifeTime( float maxLifeTime ) { mMaxLifeTime = maxLifeTime; }
             float GetMaxLifeTime() const { return mMaxLifeTime; }
 
@@ -224,21 +227,101 @@ namespace SimCore
             void SetVisible( bool visible );
             bool IsVisible() const;
 
+            void SetMaxLength( float maxLength );
+            float GetMaxLength() const;
+
             bool IsActive() const;
 
             void Execute( float maxLifeTime );
 
             void Update( float deltaTime );
 
+            void AddDynamicLight( const osg::Vec3& color );
+            void RemoveDynamicLight();
+
+            void SetGameManager( dtGame::GameManager* gameManager );
+
          protected:
             virtual ~TracerEffect();
 
          private:
+            bool      mHasLight;
+            bool      mDynamicLightEnabled;
+            unsigned  mDynamicLightID;
             float     mLifeTime;
             float     mMaxLifeTime;
             float     mSpeed; // aka Velocity Magnitude
+            float     mMaxLength;
+            osg::Vec3 mLastPosition;
             osg::Vec3 mPosition;
             osg::Vec3 mDirection;
+            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Tracer Effect Request Code
+      //////////////////////////////////////////////////////////////////////////
+      class TracerEffectRequest : public dtCore::Base
+      {
+         public:
+            TracerEffectRequest( unsigned totalEffects, float cycleTime,
+               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
+               : mIsFirstEffect(true),
+               mTotalEffects(totalEffects),
+               mCycleTime(cycleTime),
+               mCurrentTime(0.0),
+               mEffectsInfo(&effectsInfo)
+            {
+            }
+
+            void SetFirePoint( const osg::Vec3& firePoint ) { mFirePoint = firePoint; }
+            const osg::Vec3& GetFirePoint() const { return mFirePoint; }
+
+            void SetVelocity( const osg::Vec3& velocity ) { mVelocity = velocity; }
+            const osg::Vec3& GetVelocity() const { return mVelocity; }
+
+            const SimCore::Actors::MunitionEffectsInfoActor& GetEffectsInfo() const { return *mEffectsInfo; }
+
+            float GetCycleTime() const { return mCycleTime; }
+
+            unsigned GetTotalEffects() const { return mTotalEffects; }
+
+            bool IsFirstEffect() const { return mIsFirstEffect; }
+
+            bool IsEffectReady() const
+            {
+               return mTotalEffects > 0 && mCurrentTime > mCycleTime;
+            }
+
+            void Update( float timeDelta )
+            {
+               mCurrentTime += timeDelta;
+            }
+
+            unsigned Decrement()
+            {
+               if( mTotalEffects > 0 )
+               {
+                  --mTotalEffects;
+               }
+               mCurrentTime = 0.0f;
+               mIsFirstEffect = false;
+               return mTotalEffects;
+            }
+         
+         protected:
+            virtual ~TracerEffectRequest() {}
+
+         private:
+            bool     mIsFirstEffect;
+            unsigned mTotalEffects;
+            float    mCycleTime;
+            float    mCurrentTime;
+            osg::Vec3 mFirePoint;
+            osg::Vec3 mVelocity;
+            dtCore::RefPtr<const SimCore::Actors::MunitionEffectsInfoActor> mEffectsInfo;
       };
 
 
@@ -364,10 +447,17 @@ namespace SimCore
             // @return TRUE if load and assignment was successful.
             bool LoadFlash( const std::string& filePath );
 
+            void AddDynamicLight( const osg::Vec3& color );
+            void RemoveDynamicLight();
+
+            void SetGameManager( dtGame::GameManager* gameManager );
+
          protected:
             virtual ~WeaponEffect();
 
          private:
+            unsigned  mDynamicLightID;
+            bool mDynamicLightEnabled;
             bool mVisible;
             bool mSoundPlayed;
             float mSoundStartTime;
@@ -378,6 +468,7 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mFlash;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
             osg::observer_ptr<osgSim::DOFTransform> mDOF;
+            dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
       };
 
 
@@ -390,11 +481,15 @@ namespace SimCore
          public:
             WeaponEffectsManager();
 
-            // Set the scene to which tracer effects may be added.
-            // @param scene The main scene that will render tracer effects.
-            void SetScene( dtCore::Scene* scene ) { mScene = scene; }
-            dtCore::Scene* GetScene() { return mScene.get(); }
-            const dtCore::Scene* GetScene() const { return mScene.get(); }
+            // Set the game manager that has a scene to which tracer effects may be added.
+            // @param gameManager The main scene that will render tracer effects.
+            void SetGameManager( dtGame::GameManager* gameManager );
+            dtGame::GameManager* GetGameManager() { return mGM.get(); }
+            const dtGame::GameManager* GetGameManager() const { return mGM.get(); }
+
+            // Return the isector responsible for collision detection of tracer effects.
+            // NOTE: This is intended for testing purposes only.
+            const dtCore::BatchIsector* GetIsector() const { return mIsector.get(); }
 
             // Set the maximum length of time that any WeaponEffect object should
             // live before being recycled.
@@ -441,11 +536,21 @@ namespace SimCore
             // @param intialVelocity The speed and direction in which the tracer travels.
             // @param effectsInfo The structure that holds parameters used in tracer creation,
             //        such as the tracer shader name, dimensions, and life span
+            // @param useLight Determines if the effect should use a dynamic light; this is
+            //        normally used for the first tracer in a group of tracer effects spawned
+            //        by a tracer effect request.
             // @return The success of the operation; FALSE means that
             bool ApplyTracerEffect(
                const osg::Vec3& weaponFirePoint,
                const osg::Vec3& intialVelocity,
-               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
+               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+               bool useLight = false );
+
+            bool AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest );
+
+            unsigned ClearTracerEffectRequests();
+            
+            void UpdateTracerEffectRequests( float timeDelta );
 
             // Get the total of effect objects in existence.
             // @return The number of effects objects contained by this effects manager.
@@ -489,6 +594,8 @@ namespace SimCore
             // Clear all weapon and tracer effects
             void Clear();
 
+            float CalcTimeToImpact( const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime = 10.0f );
+
          protected:
            virtual ~WeaponEffectsManager();
 
@@ -500,7 +607,12 @@ namespace SimCore
             int mMaxTracerEffects;
             std::map<std::string, dtCore::RefPtr<WeaponEffect> > mEntityToEffectMap;
             std::vector<dtCore::RefPtr<TracerEffect> > mTracerEffects;
-            dtCore::RefPtr<dtCore::Scene> mScene;
+            dtCore::RefPtr<dtCore::BatchIsector> mIsector;
+            dtCore::RefPtr<dtGame::GameManager> mGM;
+
+            typedef std::vector<dtCore::RefPtr<TracerEffectRequest> > TracerEffectRequestList;
+            TracerEffectRequestList mTracerRequests;
+            TracerEffectRequestList mTracerRequestsDeletable;
       };
 
 

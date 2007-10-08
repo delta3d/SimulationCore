@@ -20,7 +20,7 @@ if env.get('ageia') != 0 :
    defines += ['AGEIA_PHYSICS']
 
 if env['OS'] == 'windows':
-   defines += ['DVTE_LIBRARY', 'NOMINMAX']
+   defines += ['SIMCORE_LIBRARY', 'NOMINMAX']
 
 env.BuildLib('SimViewerCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
 

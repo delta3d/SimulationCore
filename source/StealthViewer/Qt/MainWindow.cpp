@@ -34,6 +34,8 @@
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
+#include <SimCore/Components/HLAConnectionComponent.h>
+
 #include <dtUtil/stringutils.h>
 
 #include <dtCore/deltawin.h>
@@ -68,7 +70,8 @@ namespace StealthQt
       mIsPlayingBack(false),
       mApp(&app), 
       mIsConnectedToHLA(false), 
-      mDoubleValidator(new QDoubleValidator(0, 10000, 5, this))
+      mDoubleValidator(new QDoubleValidator(0, 10000, 5, this)), 
+      mShowMissingEntityInfoErrorMessage(true)
    {
       mUi->setupUi(this);
       ConnectSlots();
@@ -209,11 +212,16 @@ namespace StealthQt
       mDurationTimer.setInterval(1000);
       mDurationTimer.setSingleShot(false);
 
-      const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
+      mHLAErrorTimer.setInterval(10000);
+      mHLAErrorTimer.setSingleShot(true);
+
+      //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
+      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
       if(!file.empty())
       {
          QPixmap pixmap(tr(file.c_str()));
          mUi->mControlsCameraImageLabel->setPixmap(pixmap);
+         mUi->mControlsCameraImageLabel->setScaledContents(true);
       }
 
       const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
@@ -234,6 +242,10 @@ namespace StealthQt
       mGenericTickTimer.setInterval(5000);
       mGenericTickTimer.setSingleShot(false);
       mGenericTickTimer.start();
+
+      mRefreshEntityInfoTimer.setInterval(1000);
+      mRefreshEntityInfoTimer.setSingleShot(false);
+      mRefreshEntityInfoTimer.start();
 
       // Disable full screen
       mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
@@ -440,12 +452,21 @@ namespace StealthQt
 
       connect(mUi->mSearchAttachPushButton, SIGNAL(clicked(bool)), 
               this,                         SLOT(OnEntitySearchAttachButtonClicked(bool)));
+
+      connect(mUi->mEntityInfoAutoRefreshCheckBox, SIGNAL(stateChanged(int)), 
+              this,                                SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
       
+      connect(mUi->mPlaybackTimeMarkersTextBox, SIGNAL(itemDoubleClicked(QListWidgetItem*)), 
+              this,                             SLOT(OnTimeMarkerDoubleClicked(QListWidgetItem*)));
       ////////////////////////////////////////////////////
 
       connect(&mDurationTimer, SIGNAL(timeout()), this, SLOT(OnDurationTimerElapsed()));
 
       connect(&mGenericTickTimer, SIGNAL(timeout()), this, SLOT(OnGenericTickTimerElapsed()));
+
+      connect(&mRefreshEntityInfoTimer, SIGNAL(timeout()), this, SLOT(OnRefreshEntityInfoTimerElapsed()));
+   
+      connect(&mHLAErrorTimer, SIGNAL(timeout()), this, SLOT(OnHLAErrorTimerElapsed()));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -669,9 +690,6 @@ namespace StealthQt
       StealthGM::ControlsRecordConfigObject &recConfig = 
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
-      //StealthGM::ControlsPlaybackConfigObject &pbConfig = 
-      //   StealthViewerData::GetInstance().GetPlaybackConfigObject();
-
       mIsPlaybackMode = !mIsPlaybackMode;
 
       if(mIsPlaybackMode)
@@ -682,6 +700,11 @@ namespace StealthQt
       }
       else
       {
+         // Turn off paused in case the playback ended and paused the GM. 
+         // It will continue to be paused afterward.
+         if(mApp->GetGameManager()->IsPaused())
+            mApp->GetGameManager()->SetPaused(false);
+
          recConfig.JoinFederation();
          mUi->mPlaybackOptionsGroupBox->hide();
          mUi->mPlaybackSwitchToPlaybackModePushButton->setText(tr("Switch to Playback Mode"));
@@ -795,7 +818,7 @@ namespace StealthQt
       }
       else
       {
-         mUi->mPlaybackPlayPushButton->setText(tr(">"));
+         mUi->mPlaybackPlayPushButton->setText(tr("Play"));
          pbObject.EndPlayback();
          mDurationTimer.stop();
       }
@@ -817,8 +840,14 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowAdvancedPlaybackOptionsChanged(int state)
    {
-      state == Qt::Checked ? mUi->mPlaybackTimeMarkersGroupBox->show() : 
-                             mUi->mPlaybackTimeMarkersGroupBox->hide();
+      if(state == Qt::Checked && mIsPlayingBack) 
+      {
+         mUi->mPlaybackTimeMarkersGroupBox->show(); 
+      }
+      else
+      {
+         mUi->mPlaybackTimeMarkersGroupBox->hide();
+      }
 
       StealthGM::ControlsPlaybackConfigObject &pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
@@ -845,13 +874,22 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(bool checked)
    {
-      StealthGM::ControlsPlaybackConfigObject &pbObject = 
-         StealthViewerData::GetInstance().GetPlaybackConfigObject();
-
       QListWidgetItem *currentItem = mUi->mPlaybackTimeMarkersTextBox->currentItem();
       if(currentItem != NULL)
       {
-         pbObject.JumpToKeyFrame(currentItem->text().toStdString());
+         OnPlaybackJumpToTimeMarkerButtonClicked(currentItem->text());
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName)
+   {
+      if(!itemName.isEmpty())
+      {
+         StealthGM::ControlsPlaybackConfigObject &pbObject = 
+            StealthViewerData::GetInstance().GetPlaybackConfigObject();
+
+         pbObject.JumpToKeyFrame(itemName.toStdString());
       }
    }
 
@@ -1251,6 +1289,8 @@ namespace StealthQt
          LOG_ERROR("Unknown attach mode: " + genConfig.GetAttachMode().GetName());
       }
 
+      mUi->mEntityInfoAutoRefreshCheckBox->setChecked(genConfig.GetAutoRefreshEntityInfoWindow());
+
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
       mUi->mGeneralFarClippingPlaneLineEdit->setText(
@@ -1411,27 +1451,6 @@ namespace StealthQt
          LOG_ERROR("Unknown visibility theme: " + envConfig.GetVisibility().GetName());
       }
 
-      /*if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else if(envConfig.GetWeatherTheme().GetName() == "")
-      {
-
-      }
-      else
-      {
-         LOG_ERROR("Unknown weather theme: " + envConfig.GetWeatherTheme().GetName());
-      }*/
-
       StealthGM::PreferencesToolsConfigObject &toolsConfig = 
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
@@ -1460,9 +1479,7 @@ namespace StealthQt
       mUi->mToolsShowElevationOfObjectCheckBox->setChecked(toolsConfig.GetShowElevationOfObject());
 
       // Camera controls
-      //StealthGM::ControlsCameraConfigObject &cameraConfig = 
-      //   StealthViewerData::GetInstance().GetCameraConfigObject();
-
+     
       // Record controls
       StealthGM::ControlsRecordConfigObject &recordConfig =
          StealthViewerData::GetInstance().GetRecordConfigObject();
@@ -1596,6 +1613,7 @@ namespace StealthQt
       mUi->mEntityInfoDockWidget->setEnabled(true);
 
       mGenericTickTimer.start();
+      mHLAErrorTimer.start();
 
       EndWaitCursor();
    }
@@ -1610,6 +1628,8 @@ namespace StealthQt
       mUi->mEntityInfoDockWidget->setEnabled(false);
 
       mGenericTickTimer.stop();
+
+      ClearData();
    }
 
    void MainWindow::OnSecondTimerElapsed()
@@ -1643,15 +1663,31 @@ namespace StealthQt
       
       if(mIsRecording)
       {
-         mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Idle"));
+         mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
       }
       else if(mIsPlayingBack)
       {
-         mUi->mPlaybackDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Idle"));
+         mUi->mPlaybackDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
       }
       else
       {
          // Do nothing
+      }
+   }
+
+   void MainWindow::OnHLAErrorTimerElapsed()
+   {
+      SimCore::Components::HLAConnectionComponent *comp = 
+         static_cast<SimCore::Components::HLAConnectionComponent*>
+         (mApp->GetGameManager()->GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+
+      if(comp->GetConnectionState() == SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_ERROR)
+      {
+         QMessageBox::critical(this, tr("Error"), 
+                               tr("An error occured while connecting to HLA. ") + 
+                               tr("Please check your connection settings from the Network tab ") + 
+                               tr("and ensure they are correct."), 
+                               QMessageBox::Ok);
       }
    }
 
@@ -1688,7 +1724,7 @@ namespace StealthQt
 
          oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
 
-         mUi->mRotationLineEdit->setText(tr(oss.str().c_str()));
+         mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
 
          mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
          mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
@@ -1704,10 +1740,18 @@ namespace StealthQt
       }
       else
       {
-         QString message = tr("Could not find info for the actor named: ") + currentItem->text() + 
-            tr(" because this actor has been removed from the scenario. Please select another actor");
+         if(mShowMissingEntityInfoErrorMessage)
+         {
+            QString message = 
+               tr("Could not find info for the actor named: ") + 
+               currentItem->text() + 
+               tr(" because this actor has been removed from the scenario. Please select another actor");
 
-         QMessageBox::warning(this, tr("Error find info for actor"), message, QMessageBox::Ok);
+            QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+         
+            if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+               mShowMissingEntityInfoErrorMessage = false;
+         }
       }
    }
 
@@ -1753,7 +1797,7 @@ namespace StealthQt
       }
 
       // Nothing either way, peace out and start like normal
-      if(name.empty())
+      if(name.empty() || QString(name.c_str()).toLower() == "none")
          return;
 
       // Look up the properties for the name
@@ -1768,7 +1812,7 @@ namespace StealthQt
          // Apparently not
          QString message = tr("The application failed to reconnect to the connection named: ") + 
             connectionName + tr(" . Please select a new federation to connect to from the Network tab.");
-         QMessageBox::critical(this, tr("Failed to reconnect"), message, QMessageBox::Ok);
+         QMessageBox::critical(this, tr("Failed to reconnect to the federation"), message, QMessageBox::Ok);
 
          // Peace out
          return;
@@ -1787,5 +1831,105 @@ namespace StealthQt
       // Kind of hackish, but connect through the window like you normally would
       // to preserve signal delegation
       window.SetConnectionValues(connectionProps);
+   }
+
+   void MainWindow::OnRefreshEntityInfoTimerElapsed()
+   {
+      if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+      {
+         // Nasty duplicated code.
+         // This is a quick fix to stop the entity info window from 
+         // refreshing and causing an attach to the current actor 
+         // if the box is selected. 
+
+         // Simply call the same code with no attach call instead
+         // of calling the method in order not to break existing 
+         // functionality. 
+         
+         // Remember, you cannot change the method signatures to take a 
+         // flag or anything because the signatures between a SIGNAL 
+         // and SLOT HAVE to match EXACTLY. 
+
+         // I will fix this at a later date with a more robust approach 
+         // - Eddie 
+
+         //PopulateEntityInfoWindow();
+         QTableWidgetItem *currentItem = mUi->mSearchEntityTableWidget->currentItem();
+         unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
+         if(index > mFoundActors.size() || currentItem == NULL)
+            return;
+
+         QString id = currentItem->data(Qt::UserRole).toString();
+
+         // Retrieve proxy from the GM
+         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
+         if(proxy != NULL)
+         {
+            osg::Vec3 pos = proxy->GetTranslation(), 
+               rot = proxy->GetRotation();
+
+            std::ostringstream oss;
+            oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
+
+            mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
+            mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
+            oss.str("");
+
+            oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
+
+            mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
+
+            mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
+            mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
+
+            double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
+
+            mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime));
+         }
+         else
+         {
+            if(mShowMissingEntityInfoErrorMessage)
+            {
+               if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+                  mShowMissingEntityInfoErrorMessage = false;
+
+               QString message = 
+                  tr("Could not find info for the actor named: ") + 
+                  currentItem->text() + 
+                  tr(" because this actor has been removed from the scenario. Please select another actor");
+
+               QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+            }
+         }
+      }
+   }
+
+   void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
+   {
+      bool isChecked = (state == Qt::Checked);
+      if(isChecked)
+         mShowMissingEntityInfoErrorMessage = true;
+      StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(isChecked);
+   }
+
+   void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
+   {
+      if(item != NULL)
+      {
+         OnPlaybackJumpToTimeMarkerButtonClicked(item->text());
+      }
+   }
+
+   void MainWindow::ClearData()
+   {
+      // Search table results
+      mUi->mSearchEntityTableWidget->clear();
+
+      // Entity Info window
+      mUi->mEntityInfoCallSignLineEdit->setText(tr(""));
+      mUi->mEntityInfoForceLineEdit->setText(tr(""));
+      mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr(""));
+      mUi->mEntityInfoPositionLineEdit->setText(tr(""));
+      mUi->mEntityInfoRotationLineEdit->setText(tr(""));
    }
 }
