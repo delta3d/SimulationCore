@@ -271,7 +271,6 @@ namespace StealthGM
          Mouse Left Btn : Turn camera\n\
          Arrow Keys : Turn camera\n\
          +/- : Change camera speed\n\
-         ,/. : Cycle between entities\n\
          L : Attach/Detach from entity\n\
          F2 : Toggle HUD display\n\
          Insert : Toggle statistics";
