@@ -159,8 +159,11 @@ namespace SimCore
          Wheel[FRONT_LEFT] = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_01");
          Wheel[FRONT_RIGHT]= GetNodeCollector()->GetDOFTransform("dof_wheel_rt_01");
          
+         dtCore::Transform ourTransform;
+         GetTransform(ourTransform);
+
          GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,1.1));
-         GetPhysicsHelper()->CreateVehicle(GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel);
+         GetPhysicsHelper()->CreateVehicle(ourTransform, GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel, !IsRemote());
          GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
 
          if(!IsRemote())
