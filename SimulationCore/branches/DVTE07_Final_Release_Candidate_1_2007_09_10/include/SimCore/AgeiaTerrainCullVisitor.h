@@ -63,13 +63,26 @@ namespace SimCore
          void SetCameraTransform(const osg::Vec3& camTransform) {mCameraPosition = camTransform;}
          osg::Vec3 GetCameraTransform() const {return mCameraPosition;}
 
+         ///this will enable cooking and sending the terrain vertex data to Ageia for collision detection
+         void SetEnablePhysics(bool);
+         bool GetEnablePhysics() const;
+
+         ///this will set the radius at which tiles from the terrain will be sent to the physics engine for collision
+         void SetCookingRadius(float);
+         float GetCookingRadius() const;
+
+         ///this controls the radius at which we will perform culling and marking terrain tiles
+         void SetCullRadius(float);
+         float GetCullRadius() const;
+
+         ///this controls how often we update the scene with the frame stamps relative to our radius
+         void SetFrameDelay(int);
+         int GetFrameDelay() const;
+
+
       protected:
          /// Destructor
-         virtual ~AgeiaTerrainCullVisitor()
-         {
-            mLandActor = NULL;
-            mTerrainNode = NULL;
-         }
+         virtual ~AgeiaTerrainCullVisitor();
 
       private:
          /// we feed the terrain data through here, it loads the physics
@@ -87,13 +100,13 @@ namespace SimCore
          osg::Vec3                                       mCameraPosition;
 
          /// radius check for loading tiles to physics
-         static const int                                mRadius  = 1250;
+         float                                             mRadius;//  = 1250;
 
          /// radius check for paging in tiles
-         static const int                                mPagingDistance = 7500;
+         float                                             mPagingDistance;// = 7500;
 
          /// How often we do terrain stuff....
-         static const int                                mCheckTerrainAmount = 30;
+         int                                             mCheckTerrainAmount;// = 30;
 
          /// iter used with mCheckTerrainAmount
          int                                             mTerrainStep;
@@ -106,6 +119,9 @@ namespace SimCore
          /// This is for proxy nodes that arent loaded into the basic geode structure 
          /// of the terrain.
          bool                                            mHitProxyNode;
+
+         ///setting this flag will enable the cull visitor to upload the terrain tiles to Ageia
+         bool                                            mEnablePhysics;
    };
 } // namespace
 

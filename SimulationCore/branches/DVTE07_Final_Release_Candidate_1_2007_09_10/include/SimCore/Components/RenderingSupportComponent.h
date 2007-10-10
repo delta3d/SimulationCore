@@ -179,6 +179,9 @@ namespace SimCore
 
             void UpdateViewMatrix();
 
+            ///by default we will always create a cullvisitor
+            AgeiaTerrainCullVisitor* GetCullVisitor();
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);

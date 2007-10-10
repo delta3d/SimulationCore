@@ -146,6 +146,7 @@ namespace SimCore
          , mGUIRoot(new osg::CameraNode())
          , mNVGSRoot(new osg::CameraNode())
          , mNVGS(0)
+         , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
       }
 
@@ -164,6 +165,12 @@ namespace SimCore
          {
             InitializeCullVisitor();
          }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      AgeiaTerrainCullVisitor* RenderingSupportComponent::GetCullVisitor()
+      {
+         return mCullVisitor.get();
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +198,6 @@ namespace SimCore
       void RenderingSupportComponent::InitializeCullVisitor()
       {        
          osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView();
-         mCullVisitor = new SimCore::AgeiaTerrainCullVisitor();
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
 

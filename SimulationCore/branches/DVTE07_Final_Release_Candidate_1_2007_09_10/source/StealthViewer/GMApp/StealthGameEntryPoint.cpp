@@ -328,7 +328,11 @@ namespace StealthGM
       //this enables night vision
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent 
          = new SimCore::Components::RenderingSupportComponent();
-      renderingSupportComponent->SetEnableCullVisitor(false);
+      renderingSupportComponent->SetEnableCullVisitor(true);
+      renderingSupportComponent->GetCullVisitor()->SetEnablePhysics(false);
+      renderingSupportComponent->GetCullVisitor()->SetCullRadius(100.0f);
+      renderingSupportComponent->GetCullVisitor()->SetFrameDelay(10.0f);
+
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 
