@@ -59,7 +59,11 @@ namespace SimCore
       , mNotifyChangePosition(false)
       , mNotifyChangeOrient(false)
       , mNotifyChangeVelocity(false)
-      , mMoveRateConstant(25.0f, 25.0f, 0.0f)
+      , mMoveRateConstant(30.0f, 30.0f, 0.0f) 
+      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint 
+      // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH 
+      // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be 
+      // irrelevant of FPS.
       {  
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
