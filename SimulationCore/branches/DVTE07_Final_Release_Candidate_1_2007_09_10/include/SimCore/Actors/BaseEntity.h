@@ -129,6 +129,8 @@ namespace SimCore
 
             virtual void OnEnteredWorld();
 
+            virtual void OnRemovedFromWorld();
+
             /**
              * Sets this entity's DIS/RPR-FOM damage state.
              *
