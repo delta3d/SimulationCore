@@ -205,6 +205,7 @@ namespace SimCore
             //here we define constants for defining the render bins
             //so we don't have hard coded render bin numbers all over the place
             static const int RENDER_BIN_ENVIRONMENT       = -2;
+            static const int RENDER_BIN_TERRAIN           = 5;
             static const int RENDER_BIN_SKY_AND_ATMOSPHERE=  9;
             static const int RENDER_BIN_PRECIPITATION     = 11;
             static const int RENDER_BIN_TRANSPARENT       = 10;
