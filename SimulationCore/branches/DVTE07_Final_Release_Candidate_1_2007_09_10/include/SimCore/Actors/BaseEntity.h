@@ -104,6 +104,8 @@ namespace SimCore
              */
             virtual void BuildPropertyMap();
 
+            virtual void OnRemovedFromWorld();
+
             /// Build the invokables
             virtual void BuildInvokables();
 
