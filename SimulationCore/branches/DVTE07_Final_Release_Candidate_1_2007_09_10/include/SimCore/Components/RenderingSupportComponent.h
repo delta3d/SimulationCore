@@ -177,9 +177,7 @@ namespace SimCore
             // with future stuff.
             bool UpdateCullVisitor();
 
-            //this function is used internally by a class in the cpp file
-            //which calculates the view matrix on the cull callback
-            void UpdateViewMatrix(const osg::Matrix&);
+            void UpdateViewMatrix();
 
          protected:
             /// Destructor
@@ -221,7 +219,6 @@ namespace SimCore
             dtCore::RefPtr<osg::CameraNode> mNVGSRoot;
             dtCore::RefPtr<RenderFeature> mNVGS;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
-            dtCore::RefPtr<UpdateViewCallback> mViewCallback;
 
             // list of dynamic light actor prototypes
             std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > mDynamicLightPrototypes;
