@@ -566,6 +566,8 @@ namespace SimCore
             bool mDisabledFirepower;
             bool mDisabledMobility;
 
+            unsigned mFireLightID;
+
       };
 
    }
