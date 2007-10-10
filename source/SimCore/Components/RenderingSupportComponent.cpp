@@ -56,24 +56,7 @@ namespace SimCore
    namespace Components
    {
 
-
-      class UpdateViewCallback: public osg::NodeCallback
-      {
-      public:
-         UpdateViewCallback(RenderingSupportComponent* mp):mRenderComp(mp){}
-
-         void operator()(osg::Node*, osg::NodeVisitor* nv)
-         {
-            if(osg::CameraNode* cn = dynamic_cast<osg::CameraNode*>(nv->getNodePath()[0]))
-            {
-               mRenderComp->UpdateViewMatrix(cn->getViewMatrix());
-            }
-         }
-      private:
-         RenderingSupportComponent* mRenderComp;
-      };
-
-      //useful functors
+     //useful functors
       struct findLightById
       { 
          findLightById(RenderingSupportComponent::LightID id): mID(id){}
@@ -163,11 +146,7 @@ namespace SimCore
          , mGUIRoot(new osg::CameraNode())
          , mNVGSRoot(new osg::CameraNode())
          , mNVGS(0)
-         , mViewCallback(0)
       {
-         ////if this is in the initializer list VS complains
-         ////using this in initializer list is the warning
-         mViewCallback = new UpdateViewCallback(this);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,14 +380,16 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateViewMatrix(const osg::Matrix& mat)
-      {
+      void RenderingSupportComponent::UpdateViewMatrix()
+      {         
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
          osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+   
+         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetCamera()->getViewMatrix());
 
          osg::Matrix viewInverse;
          viewInverse.invert(mat);
-         viewUniform->set(viewInverse);
+         viewUniform->set(viewInverse);         
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -435,8 +416,6 @@ namespace SimCore
 
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-            GetGameManager()->GetApplication().GetCamera()->GetOSGNode()->setUpdateCallback(mViewCallback.get());
-
             LoadPrototypes();
          }
 
@@ -466,6 +445,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
+         //we update the view matrix for all the shaders
+         UpdateViewMatrix();
+
          if(mEnableNVGS && mNVGS.valid())
          {
             mNVGS->Update();
