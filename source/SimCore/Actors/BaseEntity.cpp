@@ -281,6 +281,15 @@ namespace SimCore
             //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
          //}
       }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntityActorProxy::OnRemovedFromWorld()
+      {
+         // TODO: !!! Call both the actor and proxy functions with InvokeRemovedFromWorld on Game Actor.
+         // Game Actor currently does not have this function nor is it being called by the game manager.
+         static_cast<SimCore::Actors::BaseEntity*>(&GetGameActor())->OnRemovedFromWorld();
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::SetLastKnownRotation(const osg::Vec3 &vec)
       {
