@@ -159,6 +159,8 @@ namespace SimCore
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaMunitionsPSysActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
+#else
+         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
 #endif
          mActorFactory->RegisterType<NxAgeiaPlayerActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());

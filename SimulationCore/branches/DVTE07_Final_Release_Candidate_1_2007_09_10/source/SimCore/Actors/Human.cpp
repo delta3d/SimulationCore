@@ -605,7 +605,7 @@ namespace SimCore
          mCurrentPlan.clear();
          mPlanner.Reset(&mPlannerHelper);
          
-         mPlanner.GetConfig().mMaxTimePerIteration = 1.0;
+         mPlanner.GetConfig().mMaxTimePerIteration = 0.25;
          
          dtAI::Planner::PlannerResult result = mPlanner.GeneratePlan();
          if (result == dtAI::Planner::PLAN_FOUND)
@@ -616,10 +616,10 @@ namespace SimCore
          else
          {
             std::ostringstream ss;
-            ss << "Unable to generate a plan:  Stance:  " << GetStance().GetName() 
-               << " Primary Weapon: " << GetPrimaryWeaponState().GetName()
-               << " Damage: " << GetDamageState().GetName() 
-               << " Velocty:" << GetVelocityVector();
+            ss << "Unable to generate a plan:  Stance:  \"" << GetStance().GetName() 
+               << "\" Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
+               << "\" Damage: \"" << GetDamageState().GetName() 
+               << "\" Velocty: \"" << GetVelocityVector() << "\"";
             mLogger.LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, ss.str());
          }
          return false;
@@ -748,12 +748,16 @@ namespace SimCore
       {
          const float blendTime = 0.2f;
 
-         if (!GenerateNewAnimationSequence())
+         bool gottaSequence = GenerateNewAnimationSequence();
+         if (!gottaSequence)
          {
-            mAnimationHelper->ClearAll(blendTime);
-            mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
+            SetupPlannerHelper();
+            gottaSequence = GenerateNewAnimationSequence();
+            //mAnimationHelper->ClearAll(blendTime);
+            //mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
-         else
+         
+         if (gottaSequence)
          {
             dtAI::Planner::OperatorList::iterator i, iend;
             dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
@@ -766,20 +770,19 @@ namespace SimCore
             ++count;
             generatedSequence->SetName(ss.str());
             
-            
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
                mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
                      "Current animation plan has \"%d\" steps.", mCurrentPlan.size());
             }
-   
+
             if (!mCurrentPlan.empty())
             {
                i = mCurrentPlan.begin();
                iend = mCurrentPlan.end();
-   
+
                float accumulatedStartTime = 0.0f;
-   
+
                dtCore::RefPtr<dtAnim::Animatable> newAnim;
                for (; i != iend; ++i)
                {
@@ -796,11 +799,11 @@ namespace SimCore
                         animChannel->SetAction(true);
                      }
                   }
-   
+
                   const dtAI::Operator* op = *i;
-   
+
                   op->Apply(mPlannerHelper.GetCurrentState());
-   
+
                   const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
                   if (animatable != NULL)
                   {
@@ -813,7 +816,7 @@ namespace SimCore
                      newAnim->SetStartDelay(std::max(0.0f, accumulatedStartTime));
                      newAnim->SetFadeIn(blendTime);
                      newAnim->SetFadeOut(blendTime);
-   
+
                      generatedSequence->AddAnimation(newAnim.get());
                   }
                   else
@@ -825,6 +828,11 @@ namespace SimCore
                seqMixer.ClearActiveAnimations(blendTime);
                seqMixer.PlayAnimation(generatedSequence.get());
             }
+         }
+         else
+         {
+            mAnimationHelper->ClearAll(blendTime);
+            //mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
       }
       
