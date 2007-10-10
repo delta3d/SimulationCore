@@ -320,7 +320,8 @@ namespace SimCore
          mFlamesPresent(false),
          mIsPlayerAttached(false),
          mDisabledFirepower(false),
-         mDisabledMobility(false)
+         mDisabledMobility(false),
+         mFireLightID(0)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();
@@ -542,11 +543,13 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-            if(renderComp != NULL)
+            if(renderComp != NULL && mFireLightID == 0 )
             {
                SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
                   renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
                dl->mTarget = mFlamesSystem.get();
+               mFireLightID = dl->mID;
+
                //dl->mColor.set(1.0,0.5,0.25);//orange
                //dl->mAttenuation.set(0.1, 0.05, 0.0002);
                //dl->mIntensity = 1.0f;
@@ -567,6 +570,20 @@ namespace SimCore
                UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
                mFlamesSystem = NULL;
+            }
+            if( mFireLightID != 0 )
+            {
+               // HACK: Remove the fire light since a NULL target does not remove it.
+               SimCore::Components::RenderingSupportComponent* renderComp;
+               GetGameActorProxy().GetGameManager()->GetComponentByName(
+                  SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                  renderComp);
+
+               if( renderComp != NULL )
+               {
+                  renderComp->RemoveDynamicLight( mFireLightID );
+               }
+               mFireLightID = 0;
             }
          }
          mFlamesPresent = enable;
