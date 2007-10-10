@@ -270,6 +270,8 @@ namespace SimCore
             BasicStanceEnum& GetStance() const;
             void SetStance(BasicStanceEnum& newStance);
 
+            virtual const std::string ToString() const { return GetStance().GetName(); }
+
          private:
 
             BasicStanceEnum* mStance;
@@ -291,6 +293,8 @@ namespace SimCore
             
             HumanActorProxy::WeaponStateEnum& GetWeaponStateEnum() const;
             void SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum& newWeaponStateEnum);
+
+            virtual const std::string ToString() const { return GetWeaponStateEnum().GetName(); }
 
          private:
             HumanActorProxy::WeaponStateEnum* mWeaponStateEnum;

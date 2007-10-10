@@ -616,7 +616,10 @@ namespace SimCore
          else
          {
             std::ostringstream ss;
-            ss << "Unable to generate a plan:  Stance:  \"" << GetStance().GetName() 
+            ss << "Unable to generate a plan:  \n\nGoing from:\n\n"
+               << *mPlannerHelper.GetCurrentState()
+               << "\n\n Going To:\n\n"
+               << "Stance:  \"" << GetStance().GetName() 
                << "\" Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
                << "\" Damage: \"" << GetDamageState().GetName() 
                << "\" Velocty: \"" << GetVelocityVector() << "\"";
@@ -748,13 +751,18 @@ namespace SimCore
       {
          const float blendTime = 0.2f;
 
+         const dtAI::StateVariable* deadState;
+         mPlannerHelper.GetCurrentState()->GetState(STATE_DEAD, deadState);
+
+         //if we WERE dead and now we are not, we have to reset our state.
+         if (deadState->Get() && (GetDamageState() != BaseEntityActorProxy::DamageStateEnum::DESTROYED))
+            SetupPlannerHelper();
+
          bool gottaSequence = GenerateNewAnimationSequence();
          if (!gottaSequence)
          {
             SetupPlannerHelper();
             gottaSequence = GenerateNewAnimationSequence();
-            //mAnimationHelper->ClearAll(blendTime);
-            //mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
          
          if (gottaSequence)
@@ -831,8 +839,9 @@ namespace SimCore
          }
          else
          {
+            //This is the error-out state.
             mAnimationHelper->ClearAll(blendTime);
-            //mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
+            mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
       }
       
