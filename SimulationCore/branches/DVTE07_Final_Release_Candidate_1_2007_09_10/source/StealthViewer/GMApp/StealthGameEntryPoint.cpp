@@ -330,7 +330,7 @@ namespace StealthGM
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(true);
       renderingSupportComponent->GetCullVisitor()->SetEnablePhysics(false);
-      renderingSupportComponent->GetCullVisitor()->SetCullRadius(100.0f);
+      renderingSupportComponent->GetCullVisitor()->SetCullRadius(5000.0f);
       renderingSupportComponent->GetCullVisitor()->SetFrameDelay(10.0f);
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
