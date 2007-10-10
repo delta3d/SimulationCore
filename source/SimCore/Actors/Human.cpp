@@ -365,6 +365,9 @@ namespace SimCore
          
          static const std::string HUMAN_GROUP("Human");
          
+         RemoveProperty(BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT);
+         RemoveProperty(BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT);
+
          static const std::string PROPERTY_SKELETAL_MESH_DESC
             ("The skeletal mesh file that defines the human's look and animation set.");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SKELETAL_MESH,
@@ -555,15 +558,15 @@ namespace SimCore
                GetScaleMatrixTransform().addChild(mModelGeode.get());
          }
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void Human::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
          
          //No burning or smoking people.
-         SetFlamesPresentFile("");
-         SetSmokePlumesFile("");
+         //SetFlamesPresentFile("");
+         //SetSmokePlumesFile("");
 
          SetupPlannerHelper();
 
