@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="ZoomRadioButton" Imagefile="MiniMap/gui/FO/gui/ZoomRadioButton.tga" NativeHorzRes="32" NativeVertRes="76" AutoScaled="true">
+   <Image Name="Normal" XPos="0" YPos="0" Width="32" Height="19" />
+   <Image Name="Hover" XPos="0" YPos="19" Width="32" Height="19" />
+   <Image Name="Mark" XPos="0" YPos="38" Width="32" Height="19" />
+   <Image Name="Disabled" XPos="0" YPos="57" Width="32" Height="19" />
+</Imageset>
