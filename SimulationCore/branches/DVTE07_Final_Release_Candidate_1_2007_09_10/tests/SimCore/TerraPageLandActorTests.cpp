@@ -100,7 +100,7 @@ void TerraPageLandActorTests::TestFunction()
    mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
    
    // This method calls GetGameManager() so it needs to be added first
-   CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
+   //CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
 
    renderingSupportComponent->SetEnableCullVisitor(true);
    //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
