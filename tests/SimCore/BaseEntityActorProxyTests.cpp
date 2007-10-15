@@ -302,15 +302,19 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
-   prop = eap.GetProperty("FlamesPresent");
-   CPPUNIT_ASSERT_MESSAGE("The flames present property should not be NULL", prop != NULL);
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   SimCore::Actors::HumanActorProxy *hap = dynamic_cast<SimCore::Actors::HumanActorProxy*>(&eap);
+   if(hap == NULL)
+   {
+      prop = eap.GetProperty("FlamesPresent");
+      CPPUNIT_ASSERT_MESSAGE("The flames present property should not be NULL", prop != NULL);
+      static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
+      CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
 
-   prop = eap.GetProperty("SmokePlumePresent");
-   CPPUNIT_ASSERT_MESSAGE("The smoke plume present on property should not be NULL", prop != NULL);
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+      prop = eap.GetProperty("SmokePlumePresent");
+      CPPUNIT_ASSERT_MESSAGE("The smoke plume present on property should not be NULL", prop != NULL);
+      static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
+      CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   }
 
    dtDAL::ActorProperty *ap = eap.GetProperty("Service");
    CPPUNIT_ASSERT(ap != NULL);
