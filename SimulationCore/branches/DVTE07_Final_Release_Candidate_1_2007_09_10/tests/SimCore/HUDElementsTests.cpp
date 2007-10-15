@@ -128,6 +128,7 @@ void HUDElementsTests::setupCEGUI()
    SimCore::SetupCEGUI();
    mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
    CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
+   SLEEP(250);
 }
 
 //////////////////////////////////////////////////////////////
