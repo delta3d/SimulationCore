@@ -2091,13 +2091,16 @@ namespace SimCore
             dtDAL::ActorProxy * targetProxy = GetGameManager()->FindActorById(message.GetAboutActorId());
             // Note - the mIsector here is kinda wonky cause it holds the terrain Drawable.
             // Change hitEntity to false if this is found to be the terrain actor.
-            hitEntity = ! (targetProxy != NULL 
-               && ( dynamic_cast<NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
-               || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
+            if(targetProxy != NULL)
+            {
+               hitEntity = ! (targetProxy != NULL 
+                  && ( dynamic_cast<NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
+                  || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
             
-            // Check to see if we hit a person. Needs a different effect
-            entityIsHuman = (hitEntity && 
-               dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
+               // Check to see if we hit a person. Needs a different effect
+               entityIsHuman = (hitEntity && 
+                  dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
+            }
          }
 
          // Set the position and ground clamp
