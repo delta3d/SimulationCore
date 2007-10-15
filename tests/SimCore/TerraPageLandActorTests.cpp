@@ -97,10 +97,13 @@ void TerraPageLandActorTests::tearDown()
 void TerraPageLandActorTests::TestFunction()
 {
    renderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
+   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   
+   // This method calls GetGameManager() so it needs to be added first
    CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
 
    renderingSupportComponent->SetEnableCullVisitor(true);
-   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    dtCore::System::GetInstance().Step();
 
