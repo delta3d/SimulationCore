@@ -54,7 +54,7 @@
 
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
-#include <SimCore/Actors/NxAgeiaPlayerActor.h>
+#include <SimCore/Actors/HumanWithPhysicsActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -100,7 +100,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_CHARACTER_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaPlayerActor", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_CHARACTER_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
       //RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_EMBARKABLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaEmbarkableVehicleActor", "NxAgeiaPhysicsModels"));
       
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
@@ -162,7 +162,7 @@ namespace SimCore
 #else
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
 #endif
-         mActorFactory->RegisterType<NxAgeiaPlayerActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE.get());
 

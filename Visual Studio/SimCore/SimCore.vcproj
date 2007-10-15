@@ -321,6 +321,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\SimCore\Actors\HumanWithPhysicsActor.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\SimCore\Actors\IGActor.cpp"
 					>
 				</File>
@@ -354,10 +358,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\SimCore\Actors\NxAgeiaParticleSystemActor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\SimCore\Actors\NxAgeiaPlayerActor.cpp"
 					>
 				</File>
 				<File
@@ -663,6 +663,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\SimCore\Actors\HumanWithPhysicsActor.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\SimCore\Actors\IGActor.h"
 					>
 				</File>
@@ -696,10 +700,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Actors\NxAgeiaParticleSystemActor.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\SimCore\Actors\NxAgeiaPlayerActor.h"
 					>
 				</File>
 				<File
