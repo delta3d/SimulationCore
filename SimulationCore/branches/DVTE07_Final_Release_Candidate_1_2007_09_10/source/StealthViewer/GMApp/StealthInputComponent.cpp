@@ -66,6 +66,8 @@
 
 #include <dtHLAGM/hlacomponent.h>
 
+#include <osgDB/FileNameUtils>
+
 #ifdef AGEIA_PHYSICS
    #include <NxAgeiaWorldComponent.h>
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -1402,7 +1404,19 @@ namespace StealthGM
    {
       if(mLogController.valid())
       {
-         mLogController->RequestSetLogFile(fileName);
+         std::string file = osgDB::getStrippedName(fileName);
+         dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(fileName);
+         
+         mLogController->RequestSetLogFile(file);
+         
+         dtGame::ServerLoggerComponent *serverComp = NULL;
+         GetGameManager()->GetComponentByName(dtGame::ServerLoggerComponent::DEFAULT_NAME, serverComp);
+         if(serverComp == NULL)
+         {
+            LOG_ERROR("ERROR: The ServerLoggerComponent was not found.");
+            return;
+         }
+         serverComp->SetLogDirectory(info.path);
       }
    }
 

@@ -56,7 +56,7 @@ namespace StealthGM
 
       if(mStartRecording)
       {
-         inputComponent->SetLogFileName(GetOutputFilename());
+         inputComponent->SetLogFileName(mOutputFilename);
          inputComponent->EnableRecord();
          mStartRecording = false;
       }
