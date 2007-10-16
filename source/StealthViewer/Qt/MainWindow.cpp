@@ -635,7 +635,7 @@ namespace StealthQt
 
       if(!msg.empty())
       {
-         recordObject.SetOutputFilename(msg);
+         recordObject.SetOutputFilename(msgFile.toStdString());
 
          mUi->mRecordStartButton->setEnabled(true);
          mUi->mRecordFileLineEdit->setText(tr(msg.c_str()));
@@ -758,7 +758,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject = 
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      pbObject.SetInputFilename(msg);
+      pbObject.SetInputFilename(msgFile.toStdString());
 
       //EnablePlaybackButtons(true);
       mUi->mPlaybackPlayPushButton->setEnabled(true);
@@ -798,7 +798,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject = 
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      if(pbObject.GetInputFilename().empty())
+      if(mUi->mPlaybackFileLineEdit->text().isEmpty())
       {
          QMessageBox::warning(this, tr("Please select an input file"), 
             tr("Please select an input file that contains record data to playback"), 
@@ -812,13 +812,17 @@ namespace StealthQt
       if(mIsPlayingBack)
       {
          mUi->mPlaybackPlayPushButton->setText(tr("Stop"));
-         pbObject.BeginPlayback();
          mUi->mPlaybackDurationLineEdit->setText("0");
+
+         pbObject.BeginPlayback();
          mDurationTimer.start();
       }
       else
       {
          mUi->mPlaybackPlayPushButton->setText(tr("Play"));
+         mUi->mSearchEntityTableWidget->clear();
+         mUi->mPlaybackTimeMarkersTextBox->clear();
+
          pbObject.EndPlayback();
          mDurationTimer.stop();
       }
