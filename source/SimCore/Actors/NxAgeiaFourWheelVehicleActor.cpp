@@ -696,7 +696,10 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
-         actor.GetPhysicsHelper()->BuildPropertyMap();
+         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            AddProperty(toFillIn[i].get());
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 

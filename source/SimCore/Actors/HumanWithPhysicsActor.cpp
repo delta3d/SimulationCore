@@ -461,7 +461,10 @@ namespace SimCore
          HumanActorProxy::BuildPropertyMap();
 #ifdef AGEIA_PHYSICS
          HumanWithPhysicsActor* actor = dynamic_cast<HumanWithPhysicsActor*>(GetActor());
-         actor->GetPhysicsHelper()->BuildPropertyMap();
+         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            AddProperty(toFillIn[i].get());
 #endif
       }
 

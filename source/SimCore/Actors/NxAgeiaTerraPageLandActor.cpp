@@ -416,7 +416,10 @@
 
             #ifdef AGEIA_PHYSICS
                NxAgeiaTerraPageLandActor &actor = static_cast<NxAgeiaTerraPageLandActor&>(GetGameActor());
-               actor.GetPhysicsHelper()->BuildPropertyMap();
+               std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+               actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+               for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+                  AddProperty(toFillIn[i].get());
             #endif
          }
 

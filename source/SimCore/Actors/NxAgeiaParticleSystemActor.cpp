@@ -523,7 +523,10 @@ void NxAgeiaParticleSystemActorProxy::BuildPropertyMap()
 
    NxAgeiaParticleSystemActor &actor = static_cast<NxAgeiaParticleSystemActor&>(GetGameActor());
 
-   actor.mPhysicsHelper->BuildPropertyMap();
+   std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+   actor.mPhysicsHelper->BuildPropertyMap(toFillIn);
+   for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+      AddProperty(toFillIn[i].get());
 
    AddProperty(new dtDAL::EnumActorProperty<NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetTwoDOrThreeDTypeEnum),
