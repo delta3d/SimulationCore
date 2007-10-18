@@ -223,7 +223,10 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
       #ifdef AGEIA_PHYSICS
          NxAgeiaRemoteKinematicActor* actor = dynamic_cast<NxAgeiaRemoteKinematicActor*> (GetActor());
-         actor->GetPhysicsHelper()->BuildPropertyMap();
+         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            AddProperty(toFillIn[i].get());
       #endif
       }
 
