@@ -77,13 +77,13 @@ namespace SimCore
          /**
           * Override the method to create the game manager.
           */
-         virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
+         //virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
 
          /**
           * Called after all startup related code is run.
           * @param gameManager The game manager to init
           */
-         virtual void OnStartup();
+         virtual void OnStartup(dtGame::GameApplication &app);
 
          /// called from external to 'end' the parser so anyone can
          /// mess with the parser wherever they need and not tied into
@@ -96,15 +96,15 @@ namespace SimCore
       protected:
          
          /// reads the values of command line parameters and config options set the project context
-         void AssignProjectContext();
+         void AssignProjectContext(dtGame::GameManager &gm);
          /// if the UI is not enabled, will load the map specified on the command line.
          void PreLoadMap();
 
          /// called virtual for loading specific maps
-         virtual void HLAConnectionComponentSetup();
+         virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
 
          /// creates and configures the HLA Component.
-         virtual dtCore::RefPtr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent();
+         virtual dtCore::RefPtr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent(dtGame::GameManager &gm);
 
          /// Destructor
          virtual ~BaseGameEntryPoint();
