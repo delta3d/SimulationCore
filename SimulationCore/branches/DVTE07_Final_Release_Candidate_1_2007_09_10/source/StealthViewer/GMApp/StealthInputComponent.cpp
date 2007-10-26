@@ -70,12 +70,13 @@
 
 #include <osgDB/FileNameUtils>
 
+#include <dtDAL/project.h>
+
 #ifdef AGEIA_PHYSICS
    #include <NxAgeiaWorldComponent.h>
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
    #include <NxAgeiaMaterialActor.h>
    #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
-   #include <dtDAL/project.h>
 #endif
 
 using dtCore::RefPtr;
@@ -1418,7 +1419,17 @@ namespace StealthGM
             LOG_ERROR("ERROR: The ServerLoggerComponent was not found.");
             return;
          }
-         serverComp->SetLogDirectory(info.path);
+         if(!info.path.empty())
+         {
+            LOG_DEBUG("Setting the record log directory to:" + info.path);
+            serverComp->SetLogDirectory(info.path);
+         }
+         else
+         {
+            LOG_DEBUG("Settings the record log directory to the current working directory. \
+                      This may or may not cause unpredictable behavior.");
+            serverComp->SetLogDirectory(".");
+         }
       }
    }
 

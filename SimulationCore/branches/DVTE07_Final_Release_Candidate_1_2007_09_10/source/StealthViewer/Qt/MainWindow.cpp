@@ -37,6 +37,7 @@
 #include <SimCore/Components/HLAConnectionComponent.h>
 
 #include <dtUtil/stringutils.h>
+#include <dtUtil/fileutils.h>
 
 #include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
@@ -630,6 +631,23 @@ namespace StealthQt
 
       if(msgFile.isEmpty())
          return;
+
+      dtUtil::FileUtils &instance = dtUtil::FileUtils::GetInstance();
+      if(!instance.FileExists(msgFile.toStdString()))
+      {
+         // The file selected does not exist. 
+         // So, create it and prompt if the create fails.
+         std::ofstream out(msgFile.toStdString().c_str());
+         if(!out.is_open())
+         {
+            QMessageBox::warning(this, tr("Error"), 
+                                 tr("An error occurred trying to create the \
+                                 file. Please select another file."), 
+                                 QMessageBox::Ok);
+            return;
+         }
+         out.close();
+      }
 
       std::string msg = osgDB::getStrippedName(msgFile.toStdString());
 
