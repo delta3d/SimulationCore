@@ -2094,7 +2094,7 @@ namespace SimCore
             if(targetProxy != NULL)
             {
                hitEntity = ! (targetProxy != NULL 
-                  && ( dynamic_cast<NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
+                  && ( dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
                   || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
             
                // Check to see if we hit a person. Needs a different effect

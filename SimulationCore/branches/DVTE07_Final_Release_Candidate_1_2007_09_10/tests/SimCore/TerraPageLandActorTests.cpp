@@ -109,14 +109,13 @@ void TerraPageLandActorTests::TestFunction()
 
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE, obj);
-   dtCore::RefPtr<NxAgeiaTerraPageLandActor> objActor = dynamic_cast<NxAgeiaTerraPageLandActor*>(obj->GetActor());
+   SimCore::Actors::NxAgeiaTerraPageLandActor* ourActor;
+   obj->GetActor(ourActor);
 
-   CPPUNIT_ASSERT(objActor.valid());
+   CPPUNIT_ASSERT(ourActor != NULL);
 
    dtCore::System::GetInstance().Step();
 
-   // Actor
-   NxAgeiaTerraPageLandActor* ourActor = objActor.get();
    CPPUNIT_ASSERT(ourActor->DEFAULT_NAME == "PhysX Terra Page Listener");
 #ifdef AGEIA_PHYSICS
    CPPUNIT_ASSERT(ourActor->GetPhysicsHelper() != NULL);

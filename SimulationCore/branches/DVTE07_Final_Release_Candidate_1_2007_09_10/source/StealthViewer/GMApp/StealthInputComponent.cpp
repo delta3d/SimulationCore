@@ -62,6 +62,8 @@
 #include <dtGame/gameapplication.h>
 #include <dtGame/basemessages.h>
 
+#include <dtUtil/fileutils.h>
+
 #include <SimCore/Actors/TerrainActorProxy.h>
 
 #include <dtHLAGM/hlacomponent.h>
@@ -1428,7 +1430,7 @@ namespace StealthGM
       StealthHUD *hud = GetHUDComponent();
 
        if(firstPerson)
-      {
+       {
          if(!mAttachedMM.valid())
             return;
 
@@ -1480,7 +1482,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::EnableCameraCollision(bool enable)
    {
-      mCollideWithGround = enable; 
+      mCollideWithGround = enable;
 
       if(mStealthMM.valid())
          mStealthMM->SetCollideWithGround(mCollideWithGround);
