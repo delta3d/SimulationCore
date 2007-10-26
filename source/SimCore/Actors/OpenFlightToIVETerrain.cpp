@@ -113,11 +113,13 @@ namespace SimCore
 
                int tile_x =0 ,tile_y =0;
 
+               int pagingMaxXInt = int(mPaging_Max_X);
+               int pagingMaxYInt = int(mPaging_Max_Y);
                mGroupNodeForTerrain = new osg::Group;
                
-               for(tile_x = mPaging_Min_X;tile_x <= mPaging_Max_X;tile_x++)
+               for(tile_x = int(mPaging_Min_X);tile_x <= pagingMaxXInt;tile_x++)
                {
-                  for(tile_y = mPaging_Min_Y;tile_y <= mPaging_Max_Y;tile_y++)
+                  for(tile_y = int(mPaging_Min_Y);tile_y <= pagingMaxYInt;tile_y++)
                   {
                      char name[512];
                      sprintf(name,mPaging_BaseName.c_str(),tile_x,tile_y);

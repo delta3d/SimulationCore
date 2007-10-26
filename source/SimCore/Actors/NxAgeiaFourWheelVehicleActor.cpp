@@ -490,13 +490,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
       {
-         if(abs(startValue) < 0.01f && abs(newValue) < 0.01f)
-            return 1;
+         if(fabs(startValue) < 0.01f && fabs(newValue) < 0.01f)
+            return 1.0;
 
          if(startValue == 0)
             startValue = 1.0f;
 
-         return abs((((newValue - startValue) / startValue) * 100.0f));
+         return fabs((((newValue - startValue) / startValue) * 100.0f));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

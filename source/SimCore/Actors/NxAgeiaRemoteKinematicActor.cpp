@@ -28,7 +28,7 @@
 #include <dtCore/scene.h>
 #include <dtDAL/enginepropertytypes.h>
 
-#include <osg/matrix>
+#include <osg/Matrix>
 
 namespace SimCore
 {
