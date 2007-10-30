@@ -280,7 +280,7 @@ namespace SimCore
             virtual ~BaseInputComponent();
 
             dtUtil::Log* mLogger;
-            dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealthActor;
+            dtCore::RefPtr<SimCore::Actors::StealthActor> mStealthActor;
             dtCore::RefPtr<SimCore::AttachedMotionModel> mAttachedMM;
             dtCore::RefPtr<dtDAL::ActorProxy> mTerrainActor;
             dtUtil::Coordinates mCoordinateConverter;

@@ -33,7 +33,7 @@
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Components/PortalComponent.h>
 
-#include <SimCore/Actors/NxAgeiaPlayerActor.h>
+#include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <SimCore/Actors/Platform.h>
 
 namespace SimCore
@@ -146,7 +146,7 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
          // If physics, force the physics to update the player
-         SimCore::Actors::NxAgeiaPlayerActor* player = dynamic_cast<SimCore::Actors::NxAgeiaPlayerActor*>(GetTarget());
+         SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
          if(player != NULL)
          {
             // Get the new translation
@@ -165,13 +165,16 @@ namespace SimCore
       }
    }
 
-   //////////////////////////////////////////////////////////////////////////         
+   //////////////////////////////////////////////////////////////////////////
    SimCore::Actors::Platform* PlayerMotionModel::CheckWithCloseToVehicle()
    {
-      SimCore::Actors::NxAgeiaPlayerActor* player = dynamic_cast<SimCore::Actors::NxAgeiaPlayerActor*>(GetTarget());
+      SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
       if(player != NULL)
       {
-         SimCore::Components::PortalComponent* portalComponent = dynamic_cast<SimCore::Components::PortalComponent*>(player->GetGameActorProxy().GetGameManager()->GetComponentByName("PortalComponent"));
+         SimCore::Components::PortalComponent* portalComponent; 
+         player->GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::PortalComponent::DEFAULT_NAME,
+                  portalComponent);
+         
          if(portalComponent != NULL)
          {
             if(portalComponent->GetNumberOfPortals() > 0)

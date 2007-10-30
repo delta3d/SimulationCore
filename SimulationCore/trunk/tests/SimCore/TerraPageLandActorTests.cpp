@@ -1,9 +1,11 @@
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtDAL/project.h>
 #include <dtDAL/datatype.h>
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 #include <string>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
@@ -59,7 +61,7 @@ void TerraPageLandActorTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
    
-   mApplication = new dtABC::Application();
+   mApplication = new dtABC::Application("config.xml");
 
    mScene = new dtCore::Scene();
    mWin = new dtCore::DeltaWin();
@@ -95,23 +97,25 @@ void TerraPageLandActorTests::tearDown()
 void TerraPageLandActorTests::TestFunction()
 {
    renderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
-   CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
+   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   
+   // This method calls GetGameManager() so it needs to be added first
+   //CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
 
    renderingSupportComponent->SetEnableCullVisitor(true);
-   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    dtCore::System::GetInstance().Step();
 
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE, obj);
-   dtCore::RefPtr<NxAgeiaTerraPageLandActor> objActor = dynamic_cast<NxAgeiaTerraPageLandActor*>(obj->GetActor());
+   SimCore::Actors::NxAgeiaTerraPageLandActor* ourActor;
+   obj->GetActor(ourActor);
 
-   CPPUNIT_ASSERT(objActor.valid());
+   CPPUNIT_ASSERT(ourActor != NULL);
 
    dtCore::System::GetInstance().Step();
 
-   // Actor
-   NxAgeiaTerraPageLandActor* ourActor = objActor.get();
    CPPUNIT_ASSERT(ourActor->DEFAULT_NAME == "PhysX Terra Page Listener");
 #ifdef AGEIA_PHYSICS
    CPPUNIT_ASSERT(ourActor->GetPhysicsHelper() != NULL);

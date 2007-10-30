@@ -11,7 +11,6 @@
  *
  * @author Chris Rodgers
  */
-
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -49,7 +48,30 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HUDElementsTests);
 
-      CPPUNIT_TEST(TestAllHUDElements);
+      //CPPUNIT_TEST(TestAllHUDElements);
+
+      CPPUNIT_TEST(TestHUDElement);
+      CPPUNIT_TEST(TestHUDText);
+      CPPUNIT_TEST(TestHUDGroup);
+      CPPUNIT_TEST(TestHUDButton);
+      CPPUNIT_TEST(TestHUDToolbar);
+      CPPUNIT_TEST(TestHUDMeter);
+      CPPUNIT_TEST(TestHUDBarMeter);
+      CPPUNIT_TEST(TestHUDSlideBarMeter);
+      CPPUNIT_TEST(TestHUDQuadElement);
+
+      //////////////////////////////////////////////////////////////
+      CPPUNIT_TEST(TestStealthButton);
+      CPPUNIT_TEST(TestStealthToolbar);
+      CPPUNIT_TEST(TestStealthMeter);
+      CPPUNIT_TEST(TestStealthHealthMeter);
+      CPPUNIT_TEST(TestStealthAmmoMeter);
+      CPPUNIT_TEST(TestStealthCompassMeter);
+      CPPUNIT_TEST(TestStealthGPSMeter);
+      CPPUNIT_TEST(TestStealthMGRSMeter);
+      CPPUNIT_TEST(TestStealthCartesianMeter);
+      CPPUNIT_TEST(TestStealthSpeedometer);
+      CPPUNIT_TEST(TestStealthCallSign);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -91,8 +113,6 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
 
    private:
       dtCore::RefPtr<dtGame::GameManager> mGM;
-      dtCore::RefPtr<dtCore::Scene> mScene;
-      dtCore::RefPtr<dtCore::Camera> mCamera;
       dtCore::RefPtr<dtABC::Application> mApp;
       dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
@@ -108,57 +128,38 @@ void HUDElementsTests::setupCEGUI()
    SimCore::SetupCEGUI();
    mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
    CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
+   SLEEP(250);
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setUp()
 {
-   // Scene needs to exist before a window
-   mScene = new dtCore::Scene();
-
    // A window & camera are needed for GUI rendering
-   mApp = new dtABC::Application;
+   mApp = new dtABC::Application("config.xml");
    mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-   mGM = new dtGame::GameManager(*mScene);
-   mGM->SetApplication( *mApp );
-
-   mCamera = new dtCore::Camera();
-   mCamera->SetScene(mScene.get());
-   mCamera->SetWindow(mApp->GetWindow());
-   
    mApp->Config();
 
-   dtCore::System::GetInstance().Config();
+   mGM = new dtGame::GameManager(*mApp->GetScene());
+   mGM->SetApplication(*mApp);
 
    mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow());
-   mScene->AddDrawable( mGUI.get() );
-   setupCEGUI();
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
+
+   setupCEGUI();
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::tearDown()
 {
    dtCore::System::GetInstance().Stop();
-   if(mScene.valid())
-   {
-      mScene->RemoveAllDrawables();
-   }
-   mScene = NULL;
-   if (mCamera.valid())
-   {
-      mCamera->SetScene(NULL);
-      mCamera->SetWindow(NULL);
-   }
-   mCamera = NULL;
 
-   if (mGM.valid())
+   if(mGM.valid())
       mGM->DeleteAllActors(true);
    
    mMainGUIWindow = NULL;
-   if (mGUI.valid())
+   if(mGUI.valid())
       mGUI->ShutdownGUI();
    
    mGM = NULL;
@@ -323,6 +324,7 @@ void HUDElementsTests::TestHUDElement()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDText()
 {
+   LOG_ERROR("TESTING HUD TEXT");
    dtCore::RefPtr<SimCore::Components::HUDText> text = new SimCore::Components::HUDText("TestText");
 
    // Test text setting

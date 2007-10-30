@@ -28,10 +28,68 @@ namespace SimCore
    ///////////////////////////////////////////////////////////////////////////
    AgeiaTerrainCullVisitor::AgeiaTerrainCullVisitor() : CullVisitor()
       , mCurrentlyInTerrain(false)
+      , mCameraPosition()
+      , mRadius(1250)
+      , mPagingDistance(7500)
+      , mCheckTerrainAmount(30)
       , mTerrainStep(0)
       , mRunFinalizeTerrain(false)
       , mHitProxyNode(false)
+      , mEnablePhysics(true)
    {
+   }
+
+   AgeiaTerrainCullVisitor::~AgeiaTerrainCullVisitor()
+   {
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   void AgeiaTerrainCullVisitor::SetEnablePhysics(bool b)
+   {
+      mEnablePhysics = b;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   bool AgeiaTerrainCullVisitor::GetEnablePhysics() const
+   {
+      return mEnablePhysics;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   void AgeiaTerrainCullVisitor::SetCookingRadius(float radius)
+   {
+      mRadius = radius;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   float AgeiaTerrainCullVisitor::GetCookingRadius() const
+   {
+      return mRadius;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   void AgeiaTerrainCullVisitor::SetCullRadius(float radius)
+   {
+      mPagingDistance = radius;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   float AgeiaTerrainCullVisitor::GetCullRadius() const
+   {
+      return mPagingDistance;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   void AgeiaTerrainCullVisitor::SetFrameDelay(int delay)
+   {
+      mCheckTerrainAmount = delay;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
+   int AgeiaTerrainCullVisitor::GetFrameDelay() const
+   {
+      return mCheckTerrainAmount;
    }
 
    ///////////////////////////////////////////////////////////////////////////
@@ -44,7 +102,12 @@ namespace SimCore
          if(&node == mTerrainNode.get())
          {
             mTerrainStep = 0;
-            mLandActor->ResetTerrainIterator();
+            
+            if(mEnablePhysics)
+            {
+               mLandActor->ResetTerrainIterator();
+            }
+
             mCurrentlyInTerrain = true;
             mRunFinalizeTerrain = true;
          }
@@ -57,7 +120,7 @@ namespace SimCore
          mCurrentlyInTerrain = false;
       }
 
-      if(mCurrentlyInTerrain == false && mRunFinalizeTerrain && mLandActor.valid())
+      if(mEnablePhysics && mCurrentlyInTerrain == false && mRunFinalizeTerrain && mLandActor.valid())
       {
          mRunFinalizeTerrain = mLandActor->FinalizeTerrain(mCheckTerrainAmount - 1);
       }
@@ -67,39 +130,42 @@ namespace SimCore
    void AgeiaTerrainCullVisitor::apply(osg::Geode& node)
    {
       // Terrex terrain for example
-      if(mLandActor.valid() && mCurrentlyInTerrain && node.getBoundingBox().valid())
+      if(mEnablePhysics)
       {
-         osg::Vec3 position = node.getBoundingBox().center() - GetCameraTransform();
+         if(mLandActor.valid() && mCurrentlyInTerrain && node.getBoundingBox().valid())
+         {
+            osg::Vec3 position = node.getBoundingBox().center() - GetCameraTransform();
 
-         osg::Matrix absMatrix;
-         if(mHitProxyNode)
-         {
-            osg::NodePath& nodePath = getNodePath();
-            absMatrix.set( osg::computeLocalToWorld(nodePath) );
-            position = (node.getBoundingBox().center() + absMatrix.getTrans()) - GetCameraTransform();
-         }
+            osg::Matrix absMatrix;
+            if(mHitProxyNode)
+            {
+               osg::NodePath& nodePath = getNodePath();
+               absMatrix.set( osg::computeLocalToWorld(nodePath) );
+               position = (node.getBoundingBox().center() + absMatrix.getTrans()) - GetCameraTransform();
+            }
 
-         if( position.length() <= mRadius)
-         {
-            mLandActor->CheckGeode(node, mHitProxyNode, absMatrix);
+            if( position.length() <= mRadius)
+            {
+               mLandActor->CheckGeode(node, mHitProxyNode, absMatrix);
+            }
          }
-      }
-      // ive terrain for example
-      else if(mLandActor.valid() && mCurrentlyInTerrain && node.getBound().valid())
-      {
-         osg::Vec3 position = node.getBound().center() - GetCameraTransform();
-         
-         osg::Matrix absMatrix;
-         if(mHitProxyNode)
+         // ive terrain for example
+         else if(mLandActor.valid() && mCurrentlyInTerrain && node.getBound().valid())
          {
-            osg::NodePath& nodePath = getNodePath();
-            absMatrix.set( osg::computeLocalToWorld(nodePath) );
-            position = (node.getBound().center() + absMatrix.getTrans()) - GetCameraTransform();
-         }
+            osg::Vec3 position = node.getBound().center() - GetCameraTransform();
+            
+            osg::Matrix absMatrix;
+            if(mHitProxyNode)
+            {
+               osg::NodePath& nodePath = getNodePath();
+               absMatrix.set( osg::computeLocalToWorld(nodePath) );
+               position = (node.getBound().center() + absMatrix.getTrans()) - GetCameraTransform();
+            }
 
-         if( position.length() <= mRadius)
-         {
-            mLandActor->CheckGeode(node, mHitProxyNode, absMatrix);
+            if( position.length() <= mRadius)
+            {
+               mLandActor->CheckGeode(node, mHitProxyNode, absMatrix);
+            }
          }
       }
 
@@ -161,3 +227,4 @@ namespace SimCore
    }
 
 }
+

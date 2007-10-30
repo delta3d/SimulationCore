@@ -1,10 +1,13 @@
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
+#include <string>
+
 #include <dtDAL/project.h>
 #include <dtDAL/datatype.h>
 #include <dtGame/gamemanager.h> 
 
 #include <dtCore/system.h>
-#include <string>
+#include <dtCore/scene.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 

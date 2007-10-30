@@ -44,6 +44,7 @@
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
 #include <SimCore/Actors/FlareActor.h>
+#include <SimCore/Actors/DynamicLightPrototypeActor.h>
 
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -53,7 +54,7 @@
 
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
-#include <SimCore/Actors/NxAgeiaPlayerActor.h>
+#include <SimCore/Actors/HumanWithPhysicsActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -99,13 +100,16 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_CHARACTER_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaPlayerActor", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_CHARACTER_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
       //RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_EMBARKABLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaEmbarkableVehicleActor", "NxAgeiaPhysicsModels"));
       
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::VEHICLE_CONFIG_ACTOR_TYPE(new dtDAL::ActorType("VehicleConfigActorType", "ViSiTToolkit"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE(new dtDAL::ActorType("LM_OpenFlightTerrain", "DVTETerrain"));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
+      
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -155,14 +159,23 @@ namespace SimCore
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaMunitionsPSysActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
+#else
+         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
 #endif
-         mActorFactory->RegisterType<NxAgeiaPlayerActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<VehicleAttachingConfigActorProxy>(VEHICLE_CONFIG_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
+
+         mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
+
+         // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
+         dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity", 
+               "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
+         mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
       }
    }
 }

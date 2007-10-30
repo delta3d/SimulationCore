@@ -277,10 +277,9 @@ namespace SimCore
             }
          }
 
-         Components::ParticleManagerComponent* comp =
-            dynamic_cast<Components::ParticleManagerComponent*> 
-            (GetGameActorProxy().GetGameManager()
-            ->GetComponentByName(Components::ParticleManagerComponent::DEFAULT_NAME) );
+         SimCore::Components::ParticleManagerComponent* comp;
+         GetGameActorProxy().GetGameManager()->
+            GetComponentByName(SimCore::Components::ParticleManagerComponent::DEFAULT_NAME, comp);
 
          if( comp != NULL )
          {

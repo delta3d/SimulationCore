@@ -62,6 +62,7 @@ namespace SimCore
    namespace Actors
    {
       class HumanOperator;
+      class WalkRunBlend;
       
       class SIMCORE_EXPORT BasicStanceEnum : public dtUtil::Enumeration
       {
@@ -84,10 +85,24 @@ namespace SimCore
             static const std::string ANIM_STAND_DEPLOYED;
             static const std::string ANIM_WALK_READY;
             static const std::string ANIM_WALK_DEPLOYED;
+            static const std::string ANIM_LOW_WALK_READY;
+            static const std::string ANIM_LOW_WALK_DEPLOYED;
+            static const std::string ANIM_CRAWL_READY;
+            static const std::string ANIM_CRAWL_DEPLOYED;
             static const std::string ANIM_KNEEL_READY;
             static const std::string ANIM_KNEEL_DEPLOYED;
             static const std::string ANIM_STAND_TO_KNEEL;
             static const std::string ANIM_KNEEL_TO_STAND;
+            static const std::string ANIM_PRONE_READY;
+            static const std::string ANIM_PRONE_DEPLOYED;
+            static const std::string ANIM_PRONE_TO_KNEEL;
+            static const std::string ANIM_KNEEL_TO_PRONE;
+            static const std::string ANIM_SHOT_STANDING;
+            static const std::string ANIM_SHOT_KNEELING;
+            static const std::string ANIM_SHOT_PRONE;
+            static const std::string ANIM_DEAD_STANDING;
+            static const std::string ANIM_DEAD_KNEELING;
+            static const std::string ANIM_DEAD_PRONE;
             static const std::string OPER_DEPLOYED_TO_READY;
             static const std::string OPER_READY_TO_DEPLOYED;
             
@@ -196,13 +211,17 @@ namespace SimCore
             
             /// When the state is updated, this is called internally to update the plan.
             bool GenerateNewAnimationSequence();
+            /// Actually runs the planner update.
             void UpdatePlanAndAnimations();
+            /// Checks the desired state to see if a new plan need to be generated, and if so generates it.
+            void CheckAndUpdateAnimationState();
 
             /// This exists for the sake of the unit tests.
             const dtAI::Planner::OperatorList& GetCurrentPlan();
             
             /*virtual*/ void OnEnteredWorld();
             /*virtual*/ void TickRemote(const dtGame::Message& tickRemote);
+            /*virtual*/ void TickLocal(const dtGame::Message& tickLocal);
 
          protected:
             virtual ~Human();
@@ -251,6 +270,8 @@ namespace SimCore
             BasicStanceEnum& GetStance() const;
             void SetStance(BasicStanceEnum& newStance);
 
+            virtual const std::string ToString() const { return GetStance().GetName(); }
+
          private:
 
             BasicStanceEnum* mStance;
@@ -272,6 +293,8 @@ namespace SimCore
             
             HumanActorProxy::WeaponStateEnum& GetWeaponStateEnum() const;
             void SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum& newWeaponStateEnum);
+
+            virtual const std::string ToString() const { return GetWeaponStateEnum().GetName(); }
 
          private:
             HumanActorProxy::WeaponStateEnum* mWeaponStateEnum;

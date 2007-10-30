@@ -104,6 +104,8 @@ namespace SimCore
              */
             virtual void BuildPropertyMap();
 
+            virtual void OnRemovedFromWorld();
+
             /// Build the invokables
             virtual void BuildInvokables();
 
@@ -128,6 +130,8 @@ namespace SimCore
             BaseEntity(dtGame::GameActorProxy& proxy);
 
             virtual void OnEnteredWorld();
+
+            virtual void OnRemovedFromWorld();
 
             /**
              * Sets this entity's DIS/RPR-FOM damage state.
@@ -565,6 +569,8 @@ namespace SimCore
             bool mIsPlayerAttached;
             bool mDisabledFirepower;
             bool mDisabledMobility;
+
+            unsigned mFireLightID;
 
       };
 

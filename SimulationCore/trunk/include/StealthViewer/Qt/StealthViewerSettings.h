@@ -32,6 +32,7 @@ namespace StealthQt
             static const int WINDOW_DOCK_ID = 0;
             static const QString DOCK_STATE;
             static const QString WINDOW_GEOMETRY;
+            static const QString AUTO_REFRESH_ENTITY_INFO;
 
          static const QString PREFERENCES_GENERAL_GROUP;
             static const QString ATTACH_MODE;
@@ -232,6 +233,7 @@ namespace StealthQt
 
          std::map<QString, unsigned int> mConnectionNameMap;
          unsigned int mNumConnections;
+         bool mIsLoadingFromIni;
    };
 }
 

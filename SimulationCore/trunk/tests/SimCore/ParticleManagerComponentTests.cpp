@@ -10,7 +10,7 @@
  * 
  * @author Chris Rodgers
  */
-
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtABC/application.h>
@@ -170,7 +170,7 @@ namespace SimCore
 
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             
-            mApp = new dtABC::Application;
+            mApp = new dtABC::Application("config.xml");
             mApp->GetWindow()->SetPosition(0, 0, 50, 50);
 
             mGM = new dtGame::GameManager(*scene);

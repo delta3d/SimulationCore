@@ -78,10 +78,11 @@ namespace StealthGM
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
          void RemoveTool(SimCore::MessageType &type);
          bool IsToolEnabled(SimCore::MessageType &type) const;
-         void UpdateTools();
-         void EnableTool(SimCore::MessageType &msgType);
+         void UpdateTools( float timeDelta );
+         void ToggleTool(SimCore::MessageType& msgType);
+         void DisableAllTools();
          SimCore::MessageType& GetEnabledTool() const;
-         void SetEnabledTool(SimCore::MessageType &tool);
+         void SetToolEnabled(SimCore::MessageType& toolType, bool enable);
 
          bool IsConnected() const;
    
@@ -167,6 +168,9 @@ namespace StealthGM
          // HACK: variables for hacking the ephemeris to update to the correct time of day
          float mEnvUpdateTime;
          int mEnvUpdateAttempts;
+
+         // Ensures stealth actor persists between map changes.
+         dtCore::RefPtr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;
    };
 }
 #endif

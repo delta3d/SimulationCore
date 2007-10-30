@@ -10,6 +10,7 @@
 #include <StealthViewer/Qt/FederationFileResourceBrowser.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+
 #include <QtGui/QPushButton>
 #include <QtGui/QMessageBox>
 #include <QtGui/QDialog>
@@ -18,9 +19,19 @@
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QFileDialog>
+
+#include <dtHLAGM/hlacomponentconfig.h>
+#include <dtHLAGM/hlacomponent.h>
+
+#include <dtGame/gamemanager.h>
+
 #include <dtCore/globals.h>
+#include <dtCore/scene.h>
+
 #include <dtDAL/project.h>
+
 #include <dtUtil/macros.h>
+
 #include <osgDB/FileNameUtils>
 
 #include <cctype>
@@ -41,6 +52,9 @@ namespace StealthQt
 
       // Check name of previous entry before defaulting
       PopulateFields(connectionName);
+
+      if(mIsEditMode)
+         StealthViewerData::GetInstance().SetOldConnectionName(connectionName);
    }
 
    HLAOptions::~HLAOptions()
@@ -100,20 +114,21 @@ namespace StealthQt
                
       QString displayName = ConvertFileName(file, qContext);
 
-      if (displayName.size() == 0)
+      if(displayName.size() == 0)
+      {
          QMessageBox::warning(this, "Invalid selection", tr("The file selected must be within the ") + qContext + tr(" context") , 
                   QMessageBox::Ok, QMessageBox::Ok);
-         
+      }
+
       return displayName;
    }
    
    void HLAOptions::OnFedResourceToolButtonClicked(bool checked)
    {
-
       QString result = FindFile(QString("Select a federation resource"), 
             QString("Federations"), QString("Federation Files(*.fed)"));
 
-      if (!result.isEmpty())
+      if(!result.isEmpty())
          mUi->mFedFileLineEdit->setText(result);
    }
 
@@ -122,7 +137,28 @@ namespace StealthQt
       QString result = FindFile(QString("Select a configuration resource"), 
             QString("Federations"), QString("Configuration Files(*.xml)"));
 
-      if (!result.isEmpty())
+      /////////////////////////////////////////////////////////////////////
+      // Simulate this being loaded to try and catch any exceptions thrown
+      // so we can immediately notify the user
+      //dtCore::RefPtr<dtHLAGM::HLAComponent> dummyComp = new dtHLAGM::HLAComponent;
+      //dtHLAGM::HLAComponentConfig config;
+      //result.replace(":", "/");
+      //try
+      {
+      //   config.LoadConfiguration(*dummyComp, result.toStdString());   
+      }
+      //catch(const dtUtil::Exception &e)
+      {
+      //   QMessageBox::critical(this, tr("Error"), 
+      //                         tr("The configuration resource you have selected is not valid. ") + 
+      //                         tr("Please check the file format and try again. ") + 
+      //                         tr("Error message to follow: ") + tr(e.What().c_str()), 
+       //                        QMessageBox::Ok);
+       //  return;
+      }
+      //////////////////////////////////////////////////////////////////////
+
+      if(!result.isEmpty())
          mUi->mConfigFileLineEdit->setText(result);   
    }
 
@@ -131,7 +167,7 @@ namespace StealthQt
       QString result = FindFile(QString("Select a rid file"), 
             QString("Federations"), QString("RID Files(*.rid *.rid-mc)"));
 
-      if (!result.isEmpty())
+      if(!result.isEmpty())
          mUi->mRidFileLineEdit->setText(result);   
    }
 
@@ -194,20 +230,21 @@ namespace StealthQt
          ridFile = "RTI.rid";
       }
 
-      bool success = StealthViewerData::GetInstance().GetSettings().AddConnection(name, 
-                                                                                  map, 
-                                                                                  config, 
-                                                                                  fedFile, 
-                                                                                  fedex, 
-                                                                                  fedName, 
-                                                                                  ridFile, 
-                                                                                  mIsEditMode);
+      bool success = 
+         StealthViewerData::GetInstance().GetSettings().AddConnection(name, 
+                                                                      map, 
+                                                                      config, 
+                                                                      fedFile, 
+                                                                      fedex, 
+                                                                      fedName, 
+                                                                      ridFile, 
+                                                                      mIsEditMode);
 
       if(!success)
       {
          mUi->mConnectionNameLineEdit->setText(tr(""));
-
          reject();
+         return;
       }
 
       accept();
@@ -229,6 +266,12 @@ namespace StealthQt
       StealthViewerSettings &settings = StealthViewerData::GetInstance().GetSettings();
 
       QStringList list = settings.GetConnectionProperties(connectionName);
+      if(list.isEmpty())
+      {
+         LOG_ERROR("Failed to find properties for connection: " + connectionName.toStdString());
+         return;
+      }
+
       mUi->mConnectionNameLineEdit->setText(list[0]);
       mUi->mMapLineEdit->setText(list[1]);
       mUi->mConfigFileLineEdit->setText(list[2]);

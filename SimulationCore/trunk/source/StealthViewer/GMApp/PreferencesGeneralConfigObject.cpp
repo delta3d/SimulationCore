@@ -43,7 +43,8 @@ namespace StealthGM
       mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
       mShowAdvancedOptions(false), 
       mAttachProxy(NULL), 
-      mReconnectOnStartup(true)
+      mReconnectOnStartup(true), 
+      mAutoRefreshEntityInfo(false)
    {
 
    }

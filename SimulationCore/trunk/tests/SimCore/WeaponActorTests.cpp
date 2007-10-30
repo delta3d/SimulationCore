@@ -10,6 +10,7 @@
 * 
 * @author Chris Rodgers
 */
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtUtil/macros.h>
@@ -446,6 +447,15 @@ namespace SimCore
             mWeapon->GetFlashProbability() == 0.0f );
          mWeapon->SetFlashProbability( 0.5f );
          CPPUNIT_ASSERT( mWeapon->GetFlashProbability() == 0.5f );
+
+         CPPUNIT_ASSERT_MESSAGE( "WeaponActor default flash time should be greater than 0.0",
+            mWeapon->GetFlashTime() > 0.0f );
+         mWeapon->SetFlashTime( value );
+         CPPUNIT_ASSERT( mWeapon->GetFlashTime() == value );
+         // --- Ensure the returned value is not the default value
+         float newValue = value * 0.5f; 
+         mWeapon->SetFlashTime( newValue );
+         CPPUNIT_ASSERT( mWeapon->GetFlashTime() == newValue );
       }
 
       //////////////////////////////////////////////////////////////////////////

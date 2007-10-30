@@ -11,7 +11,11 @@
  * @author Eddie Johnson
  */
 #include <dtGame/gmcomponent.h>
+
+#include <dtUtil/enumeration.h>
+
 #include <SimCore/Export.h>
+#include <vector>
 
 namespace dtHLAGM
 {
@@ -26,8 +30,29 @@ namespace SimCore
       {
          public:
 
-            static const std::string &DEFAULT_NAME;
+             class SIMCORE_EXPORT ConnectionState : public dtUtil::Enumeration
+             {
+                DECLARE_ENUM(ConnectionState);
 
+                public:
+
+                   static const ConnectionState STATE_NOT_CONNECTED;
+                   static const ConnectionState STATE_CONNECTING;
+                   static const ConnectionState STATE_CONNECTED;
+                   static const ConnectionState STATE_ERROR;
+
+                protected:
+
+                   ConnectionState(const std::string &name) : 
+                      dtUtil::Enumeration(name)
+                   {
+                      AddInstance(this);
+                   }
+             };
+
+            static const std::string DEFAULT_NAME;
+            static const std::string CONFIG_PROP_ADDITIONAL_MAP;
+            
             /// Constructor
             HLAConnectionComponent(const std::string &name = DEFAULT_NAME);
 
@@ -68,12 +93,6 @@ namespace SimCore
             void SetRidFile(const std::string &file) { mRidFile = file; }
 
             /**
-             * Returns the map name
-             * @return mMapName
-             */
-            //const std::string& GetMapName() const { return mMapName; }
-
-            /**
              * Returns the config file
              * @return mConfigFile
              */
@@ -103,6 +122,13 @@ namespace SimCore
              */
             const std::string& GetRidFile() const { return mRidFile; }
 
+            /** 
+             * Returns the currect connection state
+             * @return mState
+             * @see class ConnectionState
+             */
+            const ConnectionState& GetConnectionState() const { return *mState; }
+
             /**
              * Tells this component to connect to the federation
              */
@@ -114,19 +140,16 @@ namespace SimCore
             void Disconnect();
 
             /**
-             * Returns true if connected
-             * @return mIsConnected
-             */
-            bool IsConnected() const { return mIsConnected; }
-
-            /**
              * Processes messages to we can sync up events on ticks
              * @param msg The message to process
              */
             virtual void ProcessMessage(const dtGame::Message &msg);
 
+            /// Fills a vector with an additional maps  list loaded from the application config.
+            void GetAdditionalMaps(std::vector<std::string>& toFill) const;
+
          protected:
-            
+
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
@@ -135,6 +158,7 @@ namespace SimCore
 
             /// Destructor
             virtual ~HLAConnectionComponent();
+
 
          private:
 
@@ -145,7 +169,7 @@ namespace SimCore
             std::string mFedFile;
             std::string mRidFile;
 
-            bool mIsConnected;
+            const ConnectionState *mState;
       };
    }
 }

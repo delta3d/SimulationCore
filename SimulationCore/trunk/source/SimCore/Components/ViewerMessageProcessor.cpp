@@ -86,7 +86,9 @@ namespace SimCore
             dtAnim::AnimationComponent *animComp;
             gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
-            dtHLAGM::HLAComponent *hft = static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
+            dtHLAGM::HLAComponent *hft;
+            gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME, hft);
+
             if(hft == NULL)
             {
                LOG_ERROR("Failed to find a HLAComponent in the GameManager");
@@ -250,12 +252,15 @@ namespace SimCore
          // change the timescale.  Allows time scale to be set in playback.
          float timeScale = tvMsg.GetTimeScale();
          if (timeScale == TimeValueMessage::DEFAULT_TIME_SCALE)
+         {
             timeScale = GetGameManager()->GetTimeScale();
-         // We also have to check to see if the ServerLoggerComponent is alive and active.
+         }
          else 
          {
-            dtGame::LogController *logController = dynamic_cast<dtGame::LogController *>(GetGameManager()->
-                  GetComponentByName(dtGame::LogController::DEFAULT_NAME));
+            // We also have to check to see if the ServerLoggerComponent is alive and active.
+            dtGame::LogController *logController;
+            GetGameManager()->GetComponentByName(dtGame::LogController::DEFAULT_NAME, logController);
+            
             if (logController != NULL)
             {
                const dtGame::LogStatus &logStatus = logController->GetLastKnownStatus();
