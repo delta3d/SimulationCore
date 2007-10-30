@@ -20,6 +20,7 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 
@@ -29,6 +30,8 @@
 
 #include <osg/MatrixTransform>
 #include <osg/Node>
+#include <osg/StateSet>
+
 
 namespace SimCore
 {
@@ -105,6 +108,12 @@ namespace SimCore
                //mTerrainNode = IGActor::LoadFile(fileName, false);
                //if (mTerrainNode == NULL)
                //   LOG_ERROR("Failed to load the terrain file: " + fileName);
+
+               if(mTerrainNode.valid())
+               {
+                  osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
+                  ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "RenderBin");
+               }
             }
 
             if (!GetShaderGroup().empty())

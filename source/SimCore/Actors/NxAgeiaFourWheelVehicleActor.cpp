@@ -159,8 +159,11 @@ namespace SimCore
          Wheel[FRONT_LEFT] = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_01");
          Wheel[FRONT_RIGHT]= GetNodeCollector()->GetDOFTransform("dof_wheel_rt_01");
          
+         dtCore::Transform ourTransform;
+         GetTransform(ourTransform);
+
          GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,1.1));
-         GetPhysicsHelper()->CreateVehicle(GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel);
+         GetPhysicsHelper()->CreateVehicle(ourTransform, GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel, !IsRemote());
          GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
 
          if(!IsRemote())
@@ -174,11 +177,6 @@ namespace SimCore
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
-
-            dtGame::DeadReckoningComponent* component = 
-               static_cast<dtGame::DeadReckoningComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName(
-                                                                        dtGame::DeadReckoningComponent::DEFAULT_NAME));
-            component->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
          }
 
          GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
@@ -492,17 +490,22 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
       {
-         if(abs(startValue) < 0.01f && abs(newValue) < 0.01f)
-            return 1;
+         if(fabs(startValue) < 0.01f && fabs(newValue) < 0.01f)
+            return 1.0;
 
          if(startValue == 0)
             startValue = 1.0f;
 
-         return abs((((newValue - startValue) / startValue) * 100.0f));
+         return fabs((((newValue - startValue) / startValue) * 100.0f));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage){}
+      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage)
+      {
+         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateSoundEffects(ElapsedTime);
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::AgeiaPrePhysicsUpdate()
       {
@@ -616,13 +619,13 @@ namespace SimCore
 
          if( ! IsMobilityDisabled() && GetHasDriver() )
          {
-            if (keyboard->GetKeyState(Producer::Key_W))
+            if (keyboard->GetKeyState(Producer::Key_W) || keyboard->GetKeyState(Producer::Key_Up))
             {
-               GetPhysicsHelper()->ApplyAccel();
+               GetPhysicsHelper()->ApplyAccel(GetMPH());
             }
-            else if (keyboard->GetKeyState(Producer::Key_S))
+            else if (keyboard->GetKeyState(Producer::Key_S) || keyboard->GetKeyState(Producer::Key_Down))
             {
-               GetPhysicsHelper()->ApplyHandBrake();
+               GetPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
             else if (!keyboard->GetKeyState(Producer::Key_space))
             {
@@ -634,11 +637,11 @@ namespace SimCore
                GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
-            if (keyboard->GetKeyState(Producer::Key_A))
+            if (keyboard->GetKeyState(Producer::Key_A) || keyboard->GetKeyState(Producer::Key_Left))
             {
                GetPhysicsHelper()->SteerLeft(deltaTime);
             }
-            else if(keyboard->GetKeyState(Producer::Key_D))
+            else if(keyboard->GetKeyState(Producer::Key_D) || keyboard->GetKeyState(Producer::Key_Right))
             {
                GetPhysicsHelper()->SteerRight(deltaTime);
             }
@@ -653,20 +656,14 @@ namespace SimCore
             accelOrBrakePressedThisFrame = true;
             GetPhysicsHelper()->ApplyBrake(deltaTime);
          }
-         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame);
+         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetMPH()
       {
-         if( IsRemote() )
-         {
-            return GetVelocityVector().length() * 2.236936291;
-         }
-         else
-         {
-            return GetPhysicsHelper()->GetMPH();
-         }
+         return GetVelocityVector().length() * 2.236936291;
+         //return GetPhysicsHelper()->GetMPH();
          return 0.0f;
       }
 
@@ -699,7 +696,10 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
-         actor.GetPhysicsHelper()->BuildPropertyMap();
+         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            AddProperty(toFillIn[i].get());
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 
@@ -774,9 +774,6 @@ namespace SimCore
          if (IsRemote())
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
             dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-         else
-            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, 
-            dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
       }

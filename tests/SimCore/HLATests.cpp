@@ -18,7 +18,7 @@
  *
  * @author Eddie Johnson, Olen Bruce, and David Guthrie
  */
-
+#include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <iostream>
 #include <vector>
@@ -41,6 +41,7 @@
 #include <dtGame/messagetype.h>
 #include <dtGame/defaultmessageprocessor.h>
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/HLACustomParameterTranslator.h>

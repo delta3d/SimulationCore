@@ -23,6 +23,7 @@
 #include <string>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
@@ -41,6 +42,8 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
+#include <dtCore/camera.h>
+#include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/groupactorproperty.h>
@@ -51,6 +54,11 @@
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
 
+#include <dtAudio/sound.h>
+#include <dtAudio/audiomanager.h>
+
+#include <dtABC/application.h>
+
 #include <osg/Geode>
 #include <osg/Group>
 #include <osg/Switch>
@@ -58,17 +66,21 @@
 #include <osg/Point>
 #include <osg/NodeVisitor>
 #include <osg/Program>
+#include <osgSim/DOFTransform>
 
 namespace SimCore
 {
    namespace Actors
    {
-      //////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       const std::string Platform::INVOKABLE_TICK_CONTROL_STATE("TickControlState");
 
-      ///////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       // Actor Proxy code
-      ///////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
+      const std::string PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED("Head Lights Enabled");
+
+      ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
       {
          SetClassName("SimCore::Actors::Platform");
@@ -86,52 +98,94 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
+         static const std::string PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Non-damaged actor", "Non-damaged actor",
+            PROPERTY_MESH_NON_DAMAGED_ACTOR,
+            PROPERTY_MESH_NON_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadNonDamagedFile),
             "This is the model for a non damaged actor"));
 
+         static const std::string PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Damaged actor", "Damaged actor",
+            PROPERTY_MESH_DAMAGED_ACTOR,
+            PROPERTY_MESH_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDamagedFile),
             "This is the model for a damaged actor"));
 
+         static const std::string PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "Destroyed actor", "Destroyed actor",
+            PROPERTY_MESH_DESTROYED_ACTOR,
+            PROPERTY_MESH_DESTROYED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDestroyedFile),
             "This is the model for a destroyed actor"));
 
-         AddProperty(new dtDAL::Vec3ActorProperty("Muzzle Flash Position", "Muzzle Flash Position",
+         static const std::string PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
+         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
+            PROPERTY_MUZZLE_FLASH_POSITION,
             dtDAL::MakeFunctor(e, &Platform::SetMuzzleFlashPosition),
             dtDAL::MakeFunctorRet(e, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
          
-         AddProperty(new dtDAL::GroupActorProperty("Articulated Parameters Array", "Articulated Parameters Array", 
+         static const std::string PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
+         AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
+            PROPERTY_ARTICULATION_PARAM_ARRAY, 
             dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray), 
             dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray), 
             "The list of articulated parameters for modifying DOF's", ""));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Firepower Disabled", "Firepower Disabled",
+         static const std::string PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
+            PROPERTY_FIREPOWER_DISABLED,
             dtDAL::MakeFunctor(e, &Platform::SetFirepowerDisabled),
             dtDAL::MakeFunctorRet(e, &Platform::IsFirepowerDisabled),
             "Determines if this entity has had its fire power disabled."));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Mobility Disabled", "Mobility Disabled",
+         static const std::string PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
+            PROPERTY_MOBILITY_DISABLED,
             dtDAL::MakeFunctor(e, &Platform::SetMobilityDisabled),
             dtDAL::MakeFunctorRet(e, &Platform::IsMobilityDisabled),
             "Determines if this entity has had its mobility disabled."));
 
-         AddProperty(new dtDAL::StringActorProperty("VehiclesSeatConfigActorNameTable","VehiclesSeatConfigActorNameTable",
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
+            PROPERTY_HEAD_LIGHTS_ENABLED,
+            dtDAL::MakeFunctor(e, &Platform::SetHeadLightsEnabled),
+            dtDAL::MakeFunctorRet(e, &Platform::IsHeadLightsEnabled),
+            "Determines if the entity has it head lights on or not."));
+
+         static const std::string PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
+         AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
+            PROPERTY_SEAT_CONFIG_TABLE_NAME,
             dtDAL::MakeFunctor(e, &Platform::SetVehiclesSeatConfigActorName),
             dtDAL::MakeFunctorRet(e, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
-         AddProperty(new dtDAL::StringActorProperty("EntityType","Entity Type",
+         static const std::string PROPERTY_ENTITY_TYPE("EntityType");
+         AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
+            PROPERTY_ENTITY_TYPE,
             dtDAL::MakeFunctor(e, &Platform::SetEntityType),
             dtDAL::MakeFunctorRet(e, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
+
+         static const std::string SOUND_PROPERTY_TYPE("Sounds");
+
+         AddProperty(new dtDAL::FloatActorProperty("MinDistanceIdleSound", "MinDistanceIdleSound",
+            dtDAL::MakeFunctor(e, &Platform::SetMinDistanceIdleSound),
+            dtDAL::MakeFunctorRet(e, &Platform::GetMinDistanceIdleSound),
+            "Distance for the sound", SOUND_PROPERTY_TYPE));
+
+         AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
+            dtDAL::MakeFunctor(e, &Platform::SetMaxDistanceIdleSound),
+            dtDAL::MakeFunctorRet(e, &Platform::GetMaxDistanceIdleSound),
+            "Distance for the sound", SOUND_PROPERTY_TYPE));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(e, 
+            &Platform::SetSFXEngineIdleLoop),
+            "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
       }
       
+      ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();
@@ -140,6 +194,9 @@ namespace SimCore
 
          AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE, 
             dtDAL::MakeFunctor(*actor, &Platform::TickControlState)));
+
+         AddInvokable(*new dtGame::Invokable("TimeElapsedForSoundIdle",
+            dtDAL::MakeFunctor(*actor, &Platform::TickTimerMessage)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -180,16 +237,23 @@ namespace SimCore
          static_cast<Platform&>(GetGameActor()).LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::DESTROYED);
       }
 
-      /////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
       // Actor code
-      /////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////
+      const std::string Platform::DOF_NAME_HEAD_LIGHTS("headlight_01");
+
+      ////////////////////////////////////////////////////////////////////////////////////
       Platform::Platform(dtGame::GameActorProxy &proxy) : BaseEntity(proxy),
          mTimeBetweenControlStateUpdates(0.3333f),
          mTimeUntilControlStateUpdate(0.0f),
          mNonDamagedFileNode(new osg::Group()),
          mDamagedFileNode(new osg::Group()),
          mDestroyedFileNode(new osg::Group()),
-         mSwitchNode(new osg::Switch)
+         mSwitchNode(new osg::Switch),
+         mHeadLightsEnabled(false),
+         mHeadLightID(0),
+         mMinIdleSoundDistance(5.0f),
+         mMaxIdleSoundDistance(30.0f)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -203,6 +267,117 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       Platform::~Platform()
       {
+         if(mSndIdleLoop.valid())
+         {
+            mSndIdleLoop->Stop();
+            RemoveChild(mSndIdleLoop.get());
+            mSndIdleLoop.release();
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::SetHeadLightsEnabled( bool enabled )
+      {
+         mHeadLightsEnabled = enabled;
+
+         // Attempt to capture the headlight transformable that is tracked by the
+         // light effect for world position information.
+         dtCore::RefPtr<dtCore::Transformable> headLightPoint;
+         dtCore::DeltaDrawable* curChild = NULL;
+         unsigned limit = GetNumChildren();
+         for( unsigned i = 0; i < limit; ++i )
+         {
+            curChild = GetChild( i );
+            if( curChild != NULL && curChild->GetName() == DOF_NAME_HEAD_LIGHTS )
+            {
+               headLightPoint = dynamic_cast<dtCore::Transformable*>(curChild);
+               break;
+            }
+         }
+
+         // If the head light point was not found then try to create it.
+         if( ! headLightPoint.valid() )
+         {
+            // If there is a node collector...
+            dtCore::NodeCollector* nodeCollector = GetNodeCollector();
+
+            // ...and there is a head light DOF...
+            osgSim::DOFTransform* lightTrans = nodeCollector != NULL 
+               ? nodeCollector->GetDOFTransform( DOF_NAME_HEAD_LIGHTS )
+               : NULL;
+            if( lightTrans == NULL )
+            {
+               return;
+            }
+
+            // ...add a Delta transformable at the same point as the DOF so that the
+            // dynamic light effect can track the position; it does not track OSG DOF transforms.
+            headLightPoint = new dtCore::Transformable( DOF_NAME_HEAD_LIGHTS );
+            AddChild( headLightPoint.get() );
+            dtCore::Transform xform;
+            // NOTE: currently the DOF does not return a position for watever reason, so
+            // the position is offset by a hard-coded offset temporarily.
+            xform.SetTranslation( lightTrans->getCurrentTranslate()+osg::Vec3(0,20.0,0) );
+            headLightPoint->SetTransform( xform, dtCore::Transformable::REL_CS );
+         }
+
+         // If the light point has been created or accessed...
+         if( headLightPoint.valid() )
+         {
+            // ...get the game manager...
+            dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+            if( gm == NULL )
+            {
+               return;
+            }
+
+            // ...so that the render support component can be accessed...
+            SimCore::Components::RenderingSupportComponent* rsComp
+               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
+               (gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME ));
+
+            // ...so that the head light effect can be accessed...
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = rsComp->GetDynamicLight( mHeadLightID );
+
+            if( enabled )
+            {
+               // ...and if the light effect does not exist...
+               if( dl == NULL )
+               {
+                  // ...create it and get its ID to be tracked.
+                  //
+                  // NOTE: The following string value for the light name should eventually be
+                  //       property, but is not currently for the sake of time.
+                  dl = rsComp->AddDynamicLightByPrototypeName( "Light-HMMWV-Headlight" );
+                  dl->mTarget = headLightPoint.get();
+                  mHeadLightID = dl->mID;
+               }
+            }
+            else if( dl != NULL )
+            {
+               // ...turn it off by removing it.
+               rsComp->RemoveDynamicLight( mHeadLightID );
+            }
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool Platform::IsHeadLightsEnabled() const
+      {
+         return mHeadLightsEnabled;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      osg::Vec3 ComputeDimensions( osg::Node& node )
+      {
+         dtCore::BoundingBoxVisitor bbv;
+         node.accept(bbv);
+
+         osg::Vec3 modelDimensions;
+         modelDimensions.x() = bbv.mBoundingBox.xMax() - bbv.mBoundingBox.xMin();
+         modelDimensions.y() = bbv.mBoundingBox.yMax() - bbv.mBoundingBox.yMin();
+         modelDimensions.z() = bbv.mBoundingBox.zMax() - bbv.mBoundingBox.zMin();
+         return modelDimensions;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -210,15 +385,45 @@ namespace SimCore
       {
          if(IsDrawingModel())
          {
+
+            bool setUseDimensions = true;
+            osg::Node* modelToCalcDims = NULL;
+
             if(damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
+            {
                mSwitchNode->setSingleChildOn(0);
+               modelToCalcDims = mNonDamagedFileNode.get();
+            }
             else if(damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+            {
                mSwitchNode->setSingleChildOn(1);
+               modelToCalcDims = mDamagedFileNode.get();
+            }
             else if(damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
+            {
                mSwitchNode->setSingleChildOn(2);
+               modelToCalcDims = mDestroyedFileNode.get();
+            }
             else
+            {
                mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,  
                "Damage state is not a valid state");
+
+               setUseDimensions = false;
+            }
+
+
+            //compute the model dimensions for this damage state model, since the dimensions will differ from
+            //the other damage states
+            //NOTE: this fixes the flaming entity problem because the DeadReckoningComponent will
+            //factor in any particle system attached to us with our bounding volume
+            if(modelToCalcDims != NULL)
+            {
+               GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));               
+            }
+
+            GetDeadReckoningHelper().SetUseModelDimensions(setUseDimensions);
+
          }
 
          BaseClass::SetDamageState(damageState);
@@ -522,15 +727,21 @@ namespace SimCore
       void Platform::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         
+
+         GetGameActorProxy().RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "TimeElapsedForSoundIdle");
+
          if (IsRemote())
          {
             dtCore::NodeCollector* nodeCollector = GetNodeCollector();
             if(nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
                GetDeadReckoningHelper().SetNodeCollector(*nodeCollector);
-
-            RegisterWithDeadReckoningComponent();
          }
+         else
+         {
+            GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
+         }
+
+         RegisterWithDeadReckoningComponent();
 
          //// Curt - bump mapping
          dtCore::ShaderProgram *defaultShader = dtCore::ShaderManager::GetInstance().
@@ -549,8 +760,86 @@ namespace SimCore
             mDamagedFileNode->accept(*visitor.get());
             mDestroyedFileNode->accept(*visitor.get());
          }
+         
+         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+            LoadSFXEngineIdleLoop();
       }
-      
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::SetSFXEngineIdleLoop(const std::string& soundFX)
+      {
+         mSFXSoundIdleEffect = soundFX;
+         if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
+            LoadSFXEngineIdleLoop();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::LoadSFXEngineIdleLoop()
+      {
+         if(mSndIdleLoop.valid())
+         {
+            mSndIdleLoop->Stop();
+            RemoveChild(mSndIdleLoop.get());
+            mSndIdleLoop.release();
+         }
+
+         if(!mSFXSoundIdleEffect.empty())
+         {
+            GetGameActorProxy().GetGameManager()->SetTimer("TimeElapsedForSoundIdle", &GetGameActorProxy(), 1, true);
+            mSndIdleLoop = dtAudio::AudioManager::GetInstance().NewSound();
+            mSndIdleLoop->LoadFile(mSFXSoundIdleEffect.c_str());
+            mSndIdleLoop->ListenerRelative(false);
+            mSndIdleLoop->SetLooping(true);
+            mSndIdleLoop->SetMinDistance(mMinIdleSoundDistance);
+            mSndIdleLoop->SetMaxDistance(mMaxIdleSoundDistance);
+            AddChild(mSndIdleLoop.get());
+            dtCore::Transform xform;
+            mSndIdleLoop->SetTransform(xform, dtCore::Transformable::REL_CS);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::TickTimerMessage(const dtGame::Message& tickMessage)
+      {
+         UpdateEngineIdleSoundEffect();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::UpdateEngineIdleSoundEffect()
+      {
+         if(mSndIdleLoop == NULL)
+            return;
+
+         if(GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {
+            if(mSndIdleLoop->IsPlaying())
+               mSndIdleLoop->Stop();
+            return;
+         }
+
+         dtCore::Transform ourTransform;
+         dtCore::Transform cameraTransform;
+
+         GetTransform(ourTransform);
+         GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
+         
+         osg::Vec3 ourXYZ, cameraXYZ;
+
+         ourXYZ = ourTransform.GetTranslation();
+         cameraXYZ = cameraTransform.GetTranslation();
+         
+         osg::Vec3 distanceVector = ourXYZ - cameraXYZ;
+         float distanceFormula = distanceVector.length2();
+         if( (mMaxIdleSoundDistance * mMaxIdleSoundDistance ) <  distanceFormula)
+         {
+            mSndIdleLoop->Stop();
+         }
+         else
+         {
+            mSndIdleLoop->Play();
+         }
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue)
       {
@@ -626,7 +915,6 @@ namespace SimCore
 
          return forceUpdate;
       }
-      
 
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)

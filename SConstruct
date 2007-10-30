@@ -161,21 +161,26 @@ env['OS'] = OS
 
 env['boost']=False
 
+if OS == 'windows' :
+   splitChar = ';'
+else :
+   splitChar = ':'
+   
+
 if(env.get('ageia') != 0) :
-   env['AGEIA_INC'] = os.environ.get('AGEIA_INC')
-   env['AGEIA_LIB'] = os.environ.get('AGEIA_LIB')
-   env.Append(CPPPATH = env['AGEIA_INC']) 
-   env.Append(LIBPATH = env['AGEIA_LIB']) 
+   ageia_inc = os.environ.get('AGEIA_INC')
+   ageia_lib = os.environ.get('AGEIA_LIB')
+   
+   ageia_inc = ageia_inc.split(splitChar)
+   ageia_lib = ageia_lib.split(splitChar)
+   
+   env.Append(CPPPATH = ageia_inc) 
+   env.Append(LIBPATH = ageia_lib) 
 
 # Locate and add the Delta3D directories
 delta_inc = os.environ.get('DELTA_INC')
 delta_lib = os.environ.get('DELTA_LIB')
 
-if OS == 'windows' :
-	splitChar = ';'
-else :
-	splitChar = ':'
-   
 delta_inc = delta_inc.split(splitChar)
 delta_lib = delta_lib.split(splitChar)
 
@@ -192,19 +197,34 @@ if env.get('ageia') != 0 :
    env['additionalLibsOrder'] += [ 'NxCooking', 'NxCharacter', 'NxExtensions', 'PhysXLoader' ]
 	
 
-if OS == 'windows' and env['mode'] == 'debug' :
-   env['dtLibs']['SimViewerCore'] = 'SimViewerCored'
-   env['dtLibs']['StealthGMApp'] = 'StealthGMAppd'
-   env['dtLibs']['StealthQt'] = 'StealthQtd'
-   env['extLibs']['osgGA'] = 'osgGAd'
-   env['extLibs']['osgProducer'] = 'osgProducerd'
-   env['extLibs']['osgEphemeris'] = 'osgEphemerisd'
-   if env.get('ageia') != 0 :
-      env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysXd'
-      env['extLibs']['NxCooking'] = 'NxCooking'
-      env['extLibs']['NxCharacter'] = 'NxCharacter'
-      env['extLibs']['NxExtensions'] = 'NxExtensions'
-      env['extLibs']['PhysXLoader'] = 'PhysXLoader'
+if OS == 'windows' :
+   if env['mode'] == 'debug' :
+      env['dtLibs']['SimViewerCore'] = 'SimViewerCored'
+      env['dtLibs']['StealthGMApp'] = 'StealthGMAppd'
+      env['dtLibs']['StealthQt'] = 'StealthQtd'
+      env['extLibs']['osgGA'] = 'osgGAd'
+      env['extLibs']['osgProducer'] = 'osgProducerd'
+      env['extLibs']['osgEphemeris'] = 'osgEphemerisd'
+      if env.get('ageia') != 0 :
+         env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysXd'
+         env['extLibs']['NxCooking'] = 'NxCooking'
+         env['extLibs']['NxCharacter'] = 'NxCharacter'
+         env['extLibs']['NxExtensions'] = 'NxExtensions'
+         env['extLibs']['PhysXLoader'] = 'PhysXLoader'
+   else:
+      env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
+      env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
+      env['dtLibs']['StealthQt'] = 'StealthQt'
+      env['extLibs']['osgGA'] = 'osgGA'
+      env['extLibs']['osgProducer'] = 'osgProducer'
+      env['extLibs']['osgEphemeris'] = 'osgEphemeris'
+      if env.get('ageia') != 0 :
+         env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysX'
+         env['extLibs']['NxCooking'] = 'NxCooking'
+         env['extLibs']['NxCharacter'] = 'NxCharacter'
+         env['extLibs']['NxExtensions'] = 'NxExtensions'
+         env['extLibs']['PhysXLoader'] = 'PhysXLoader'
+      
 else :
    env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
    env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
@@ -216,7 +236,7 @@ else :
       env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysX'
       env['extLibs']['NxCooking'] = 'NxCooking'
       env['extLibs']['NxCharacter'] = 'NxCharacter'
-      env['extLibs']['NxExtensions'] = 'NxExtensions'
+      env['extLibs']['NxExtensions'] = 'PhysXCore'
       env['extLibs']['PhysXLoader'] = 'PhysXLoader'
 
 env.CompilerConf(conf, errorLog)

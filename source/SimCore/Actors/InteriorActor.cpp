@@ -49,6 +49,7 @@ namespace SimCore
       InteriorActor::InteriorActor(dtGame::GameActorProxy &proxy)
          : Platform(proxy),
          mVisible(true)
+         , mLoadedDamageFiles(false)
       {
       }
 

@@ -595,6 +595,11 @@ namespace SimCore
       void WeatherComponent::AssignNewProxy(const dtCore::UniqueId &id)
       {
          dtDAL::ActorProxy *actor = GetGameManager()->FindActorById(id);
+         if( actor == NULL )
+         {
+            return;
+         }
+
          const dtDAL::ActorType &type = actor->GetActorType();
 
          if(type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)

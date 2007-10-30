@@ -46,13 +46,13 @@ namespace SimCore
          , mPaging_Max_X(85.0f)     
          , mPaging_Max_Y(33.0f)     
          , mPaging_Delta(1000.0f)   
-         , mPaging_Radius(4000.0f)  
-         , mPaging_Range(4000.0f)
+         , mPaging_Radius(4000.0f) // Changing these two values does NOT show more terrain
+         , mPaging_Range(4000.0f) // Changing these two values does NOT show more terrain
          , mPaging_BaseName("flight%i_%i.ive")
          , mPaging_ExpiringDelay(30.0f)
          , mPaging_Frame_Rate_Targeted(30.0f)
          , mPaging_Precompile(false)
-         , mMaximumObjectsToCompile(1)
+         , mMaximumObjectsToCompile(5) // used to be 1
          , mZOffsetForTerrain(100.0f)
          , mTerrainPath("Terrains/BaghdadFallujah/")
       {
@@ -91,7 +91,7 @@ namespace SimCore
                GetMatrixNode()->removeChild(0, GetMatrixNode()->getNumChildren());
             }
 
-            if(!fileName.empty())
+            if(!mTerrainPath.empty())
             {
                /////////////////////////////////////////////////////////////////////
                // do loading here
@@ -108,16 +108,18 @@ namespace SimCore
                //pPager->setTargetFrameRate(mPaging_Frame_Rate_Targeted);
                //pPager->setExpiryDelay(mPaging_ExpiringDelay);
                pPager->setMaximumNumOfObjectsToCompilePerFrame(mMaximumObjectsToCompile);
-               pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_HIGH);
-               pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_HIGH);
+               pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
+               pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
 
                int tile_x =0 ,tile_y =0;
 
+               int pagingMaxXInt = int(mPaging_Max_X);
+               int pagingMaxYInt = int(mPaging_Max_Y);
                mGroupNodeForTerrain = new osg::Group;
                
-               for(tile_x = mPaging_Min_X;tile_x <= mPaging_Max_X;tile_x++)
+               for(tile_x = int(mPaging_Min_X);tile_x <= pagingMaxXInt;tile_x++)
                {
-                  for(tile_y = mPaging_Min_Y;tile_y <= mPaging_Max_Y;tile_y++)
+                  for(tile_y = int(mPaging_Min_Y);tile_y <= pagingMaxYInt;tile_y++)
                   {
                      char name[512];
                      sprintf(name,mPaging_BaseName.c_str(),tile_x,tile_y);

@@ -28,6 +28,7 @@
 #include <dtCore/scene.h>
 #include <dtDAL/enginepropertytypes.h>
 
+#include <osg/Matrix>
 
 namespace SimCore
 {
@@ -142,6 +143,15 @@ namespace SimCore
          }
          else
          {
+            dtCore::Transform ourTransform, zeroTransform;
+            GetTransform(ourTransform);
+            osg::Matrix rot = ourTransform.GetRotation();
+            rot.invert(rot);
+
+            NxMat34 sendInMatrix(NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
+                                          NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
+                                          NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))), 
+                                 NxVec3(0,0,0));
             mPhysicsHelper->SetAgeiaMass(5000);
             mPhysicsHelper->SetResourceName(checkValue);
             mPhysicsHelper->SetLoadAsCached(true);
@@ -151,20 +161,20 @@ namespace SimCore
             {
                case 0:
                {
-                  mPhysicsHelper->InitializePrimitive(GetNonDamagedFileNode(), NxVec3(0,0,0));
+                  mPhysicsHelper->InitializePrimitive(GetNonDamagedFileNode(), sendInMatrix);
                }            
                break;
 
                case 1:
                {
-                  mPhysicsHelper->InitializePrimitive(GetDamagedFileNode(), NxVec3(0,0,0));
+                  mPhysicsHelper->InitializePrimitive(GetDamagedFileNode(), sendInMatrix);
                }
                break;
 
                case 2:
                default:
                {
-                  mPhysicsHelper->InitializePrimitive(GetDestroyedFileNode(), NxVec3(0,0,0));
+                  mPhysicsHelper->InitializePrimitive(GetDestroyedFileNode(),sendInMatrix);
                }
                break;
             }
@@ -190,8 +200,8 @@ namespace SimCore
                toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2]));
                toFillIn->setGlobalOrientation(
                   NxMat33( NxVec3(rot->operator ()(0,0), rot->operator ()(0,1), rot->operator ()(0,2)),
-                  NxVec3(rot->operator ()(1,0), rot->operator ()(1,1), rot->operator ()(1,2)),
-                  NxVec3(rot->operator ()(2,0), rot->operator ()(2,1), rot->operator ()(2,2))));
+                           -NxVec3(rot->operator ()(1,0), rot->operator ()(1,1), rot->operator ()(1,2)),
+                           NxVec3(rot->operator ()(2,0), rot->operator ()(2,1), rot->operator ()(2,2))));
             }
          }
       }
@@ -213,7 +223,10 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
       #ifdef AGEIA_PHYSICS
          NxAgeiaRemoteKinematicActor* actor = dynamic_cast<NxAgeiaRemoteKinematicActor*> (GetActor());
-         actor->GetPhysicsHelper()->BuildPropertyMap();
+         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            AddProperty(toFillIn[i].get());
       #endif
       }
 

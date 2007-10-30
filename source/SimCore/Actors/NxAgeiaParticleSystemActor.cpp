@@ -35,6 +35,8 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
 
+#include <dtUtil/log.h>
+
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/IGActor.h>
 
@@ -235,6 +237,11 @@ void NxAgeiaParticleSystemActor::AddParticle()
          ++numPaths;
    }
 
+   if( numPaths <= 0 )
+   {
+      LOG_WARNING("No file paths set for loading physics particle models");
+      return;
+   }
    std::string referenceString = mPathOfFileToLoad[rand() % numPaths];
 
    if(GetTwoDOrThreeDTypeEnum() == TwoDOrThreeDTypeEnum::TWOD)
@@ -281,7 +288,8 @@ void NxAgeiaParticleSystemActor::AddParticle()
       SetTransform(identityTransform);
       // load triangle mesh
       newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(), 
-		         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
+		         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)), 
+               NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])), 
                  mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), 
 				 mPhysicsHelper->GetLoadAsCached(), referenceString, 
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
@@ -351,7 +359,7 @@ void NxAgeiaParticleSystemActor::AddParticle()
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
-   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), _id.ToString().c_str());
+   newActor->userData = mPhysicsHelper.get();
 
    // add to our list for updating and such....
    _particle->SetPhysicsActor(newActor);
@@ -403,8 +411,6 @@ void NxAgeiaParticleSystemActor::OnEnteredWorld()
 {
    dtAgeiaPhysX::NxAgeiaWorldComponent *component = dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
    component->RegisterAgeiaHelper(*mPhysicsHelper.get());
-
-   mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
 
    // this way we dont turn off defaults to the scene.....
    // your particle system may not work the way you wanted if this 
@@ -517,7 +523,10 @@ void NxAgeiaParticleSystemActorProxy::BuildPropertyMap()
 
    NxAgeiaParticleSystemActor &actor = static_cast<NxAgeiaParticleSystemActor&>(GetGameActor());
 
-   actor.mPhysicsHelper->BuildPropertyMap();
+   std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+   actor.mPhysicsHelper->BuildPropertyMap(toFillIn);
+   for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+      AddProperty(toFillIn[i].get());
 
    AddProperty(new dtDAL::EnumActorProperty<NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetTwoDOrThreeDTypeEnum),

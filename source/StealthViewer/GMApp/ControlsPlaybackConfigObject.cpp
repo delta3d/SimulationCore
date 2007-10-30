@@ -55,7 +55,7 @@ namespace StealthGM
 
       if(mBeginPlayback)
       {
-         inputComponent->SetLogFileName(GetInputFilename());
+         inputComponent->SetLogFileName(mInputFilename);
          inputComponent->EnablePlayback();
          mBeginPlayback = false;
       }
@@ -74,18 +74,24 @@ namespace StealthGM
       if(mJumpToNextKeyFrame)
       {
          inputComponent->HandleGotoKeyFrame(true);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mJumpToNextKeyFrame = false;
       }
 
       if(!mKeyFrameName.empty())
-      {
+      { 
          inputComponent->HandleGotoKeyFrame(mKeyFrameName);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mKeyFrameName.clear();
       }
 
       if(mJumpToPreviousKeyFrame)
       {
          inputComponent->HandleGotoKeyFrame(false);
+         if(gameManager.IsPaused())
+            gameManager.SetPaused(false);
          mJumpToPreviousKeyFrame = false;
       }
 

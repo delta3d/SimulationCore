@@ -253,7 +253,7 @@ namespace SimCore
 
             // Set the probability that this shooter will jam.
             // This function will clamp the supplied value between 0.0 and 1.0.
-            // @param The probability ranging from 0.0 to 1.0; 1.0 is 100%
+            // @param probability The probability ranging from 0.0 to 1.0; 1.0 is 100%
             void SetJamProbability( float probability )
             {
                mJamProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
@@ -262,12 +262,17 @@ namespace SimCore
 
             // Set the probability that this weapon will produce a flash when fired.
             // This function will clamp the supplied value between 0.0 and 1.0.
-            // @param The probability ranging from 0.0 to 1.0; 1.0 is 100%
+            // @param probability The probability ranging from 0.0 to 1.0; 1.0 is 100%
             void SetFlashProbability( float probability )
             {
                mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
             }
             float GetFlashProbability() const { return mFlashProbability; }
+
+            // Set the amount of time that a flash effect will remain visible when created.
+            // @param flashTime The time in seconds that a flash effect remains visible.
+            void SetFlashTime( float flashTime ) { mFlashTime = flashTime; }
+            float GetFlashTime() const { return mFlashTime; }
 
             // Set the minimum amount of time between sending messages hitting
             // the same or no target.
@@ -335,6 +340,8 @@ namespace SimCore
                mLastTargetObject = NULL;
             }
 
+            void AddDynamicLight();
+
          protected:
             // Destructor
             virtual ~WeaponActor();
@@ -391,6 +398,9 @@ namespace SimCore
 
             // The probability that the weapon will produce a flash effect.
             float mFlashProbability;
+
+            // The length of time a flash will remain visible
+            float mFlashTime;
 
             // Every nth (mTracerFrequency) round will be a tracer.
             int mTracerFrequency;

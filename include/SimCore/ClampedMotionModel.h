@@ -146,6 +146,18 @@ namespace SimCore
          bool IsReverseUpDown() const { return mReverseUpDown; }
 
          /**
+          * Allows vertical rotation
+          */
+         void SetUpDownEnabled( bool enabled ) { mEnabledUpDown = enabled; }
+         bool IsUpDownEnabled() const { return mEnabledUpDown; }
+
+         /**
+          * Allows horizontal rotation
+          */
+         void SetLeftRightEnabled( bool enabled ) { mEnabledLeftRight = enabled; }
+         bool IsLeftRightEnabled() const { return mEnabledLeftRight; }
+
+         /**
           * Set the default rest rotation (orientation) in degrees of 
           * heading-pitch-roll to which the motion model should re-orient 
           * the target object, if ResetRotation has been set to TRUE.
@@ -202,6 +214,12 @@ namespace SimCore
          // Determines whether we working with the DOF or just the node and gets the rotation
          void SetTargetsRotation(const osg::Vec3 &newHpr);
          osg::Vec3 GetTargetsRotation() const;
+
+         // This function should only be used for unit tests.
+         // The test flag allows the unit tests to run without requiring
+         // the mouse to have focus on the window.
+         void SetTestMode( bool testMode ) { mTestMode = testMode; }
+         bool GetTestMode() const { return mTestMode; }
         
       private:
 
@@ -239,6 +257,12 @@ namespace SimCore
          // Reverses up/down rotation
          bool mReverseUpDown;
 
+         // Allow vertical rotation
+         bool mEnabledUpDown;
+
+         // Allow horizontal rotation
+         bool mEnabledLeftRight;
+
          // Max degrees the motion model can turn left and right
          // from the attach-to object's heading.
          // Values less than 0.0 mean no limit.
@@ -263,6 +287,8 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Components::ArticulationHelper> mArticHelper;
 
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
+
+         bool mTestMode;
 
    };
 }

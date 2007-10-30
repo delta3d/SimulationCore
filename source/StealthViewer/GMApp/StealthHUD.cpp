@@ -32,6 +32,7 @@
 #include <dtCore/globals.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/scene.h>
 
 #include <dtGame/binarylogstream.h>
 #include <dtGame/logtag.h>
@@ -44,6 +45,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/logcontroller.h>
 #include <dtGame/logstatus.h>
+
 
 #include <dtActors/taskactor.h>
 #include <dtActors/coordinateconfigactor.h>
@@ -269,7 +271,6 @@ namespace StealthGM
          Mouse Left Btn : Turn camera\n\
          Arrow Keys : Turn camera\n\
          +/- : Change camera speed\n\
-         ,/. : Cycle between entities\n\
          L : Attach/Detach from entity\n\
          F2 : Toggle HUD display\n\
          Insert : Toggle statistics";
@@ -380,12 +381,12 @@ namespace StealthGM
             // Playback State
             if (dtGame::LogStateEnumeration::LOGGER_STATE_IDLE == *mLastLogState )
             {
-               mSimTimeAndState->SetText1("IDLE");
+               mSimTimeAndState->SetText1("LIVE");
                mSimTimeAndState->GetText1().SetColor(0.1, 0.1, 0.5);
             }
             else if (dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK == *mLastLogState )
             {
-               mSimTimeAndState->SetText1("PLAY");
+               mSimTimeAndState->SetText1("REPLAY");
                mSimTimeAndState->GetText1().SetColor(0.1, 0.5, 0.1);
             }
             else // if (dtGame::LogStateEnumeration::LOGGER_STATE_RECORD == *mLastLogState )
@@ -393,9 +394,9 @@ namespace StealthGM
                mSimTimeAndState->SetText1("RECORD");
                mSimTimeAndState->GetText1().SetColor(0.5, 0.1, 0.1);
             }
-         }
-   
-         // Sim Time
+         } 
+
+         // Set the time control to the basic sim time 
          snprintf(clin, HUDCONTROLMAXTEXTSIZE, "%.2f", GetGameManager()->GetSimulationTime());
          mSimTimeAndState->SetText2( std::string(clin) );
    

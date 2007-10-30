@@ -11,7 +11,6 @@
  *
  * @author Chris Rodgers
  */
-
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -96,7 +95,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 
          // A window & camera are needed to allow terrain
          // to generate geometry.
-         mApp = new dtABC::Application;
+         mApp = new dtABC::Application("config.xml");
          mApp->GetWindow()->SetPosition(0, 0, 50, 50);
 
          mGM = new dtGame::GameManager(*mScene);
@@ -125,6 +124,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
 
          mMotionModel->SetEnabled(true);
+         mMotionModel->SetTestMode(true);
       }
       
       //////////////////////////////////////////////////////////////

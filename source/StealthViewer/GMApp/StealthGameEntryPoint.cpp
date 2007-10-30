@@ -27,6 +27,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/scene.h>
 
 #include <dtUtil/coordinates.h>
 
@@ -61,10 +62,12 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/HLAConnectionComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/ControlStateComponent.h>
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/MessageType.h>
+#include <SimCore/WeaponTypeEnum.h>
 
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
@@ -182,7 +185,7 @@ namespace StealthGM
          // TODO: this probably needs to be refactored, for the moment I just needed a tool to add which allows us to support NVGS
          SimCore::Tools::Tool* nvgs = new SimCore::Tools::Tool(mHudGUI->GetToolsWindow());
          inputComp->AddTool(*nvgs, SimCore::MessageType::NIGHT_VISION);
-         mHudGUI->AddToolButton("NightVision","F7",false);
+         mHudGUI->AddToolButton("NightVision","F7");
       }
    
       if( mHasCompass )
@@ -230,15 +233,6 @@ namespace StealthGM
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
    {
-      SimCore::Components::HLAConnectionComponent *hlaCC 
-         = dynamic_cast<SimCore::Components::HLAConnectionComponent*>(gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
-      if(hlaCC != NULL)
-      {
-         hlaCC->AddMap("DVTEPrototypes");
-         hlaCC->AddMap("DVTEMaterials");
-         hlaCC->AddMap("DVTEActors");
-      }
-
       SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup(gm);
    }
    
@@ -249,7 +243,9 @@ namespace StealthGM
       
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
-   
+
+      SimCore::BaseGameEntryPoint::OnStartup(app);
+
       // Add Input Component
       dtCore::RefPtr<StealthInputComponent> mInputComponent 
          = new StealthInputComponent(mEnableLogging, 
@@ -264,14 +260,6 @@ namespace StealthGM
       // the connection to the federation.
       StealthInputComponent* inputComp = mInputComponent.get();
    
-      SimCore::BaseGameEntryPoint::OnStartup(app);
-
-#ifdef NDEBUG
-      // Added by Eddie. End users for a stealth viewer don't care about 
-      // debugging stats
-      gameManager.DebugStatisticsTurnOff(false, true);
-#endif
-      
       // AAR logging
       if (mEnableLogging)
       {
@@ -306,7 +294,16 @@ namespace StealthGM
 
       mHudGUI->Initialize();
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
-   
+
+      // Control State Component (for swapping weapons on remote HMMWV vehicles)
+      dtCore::RefPtr<SimCore::Components::ControlStateComponent> controlsStateComp
+         = new SimCore::Components::ControlStateComponent;
+      gameManager.AddComponent(*controlsStateComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      std::vector<std::string>& weaponModelFileList = controlsStateComp->GetWeaponModelFileList();
+      SimCore::WeaponTypeEnum::GetModelFileUrlList( weaponModelFileList );
+
+
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.
       InitializeTools(*app.GetGameManager());
@@ -337,7 +334,11 @@ namespace StealthGM
       //this enables night vision
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent 
          = new SimCore::Components::RenderingSupportComponent();
-      renderingSupportComponent->SetEnableCullVisitor(false);
+      renderingSupportComponent->SetEnableCullVisitor(true);
+      renderingSupportComponent->GetCullVisitor()->SetEnablePhysics(false);
+      renderingSupportComponent->GetCullVisitor()->SetCullRadius(5000.0f);
+      renderingSupportComponent->GetCullVisitor()->SetFrameDelay(10.0f);
+
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 

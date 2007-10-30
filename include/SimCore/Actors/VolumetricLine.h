@@ -14,11 +14,16 @@
 #ifndef _VOLUMETRIC_LINE_H_
 #define _VOLUMETRIC_LINE_H_
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-
+#include <osg/Array>
+#include <osg/Geometry>
+#include <dtCore/refptr.h>
 #include <dtCore/transformable.h>
 
-#include <osg/Array>
+
 
 namespace SimCore
 {
@@ -33,6 +38,8 @@ namespace SimCore
             VolumetricLine( float lineLength, float lineThickness,
                const std::string& shaderName, const std::string& shaderGroup );
 
+            bool IsValid() const;
+
             void SetLength( float lineLength );
             float GetLength() const;
 
@@ -45,9 +52,9 @@ namespace SimCore
             virtual ~VolumetricLine() {}
 
          private:
-
-            osg::ref_ptr<osg::Vec3Array> mVerts;
-            osg::ref_ptr<osg::Vec4Array> mData;
+            dtCore::RefPtr<osg::Geometry>  mGeom;
+            dtCore::RefPtr<osg::Vec3Array> mVerts;
+            dtCore::RefPtr<osg::Vec4Array> mData;
       };
 
    }

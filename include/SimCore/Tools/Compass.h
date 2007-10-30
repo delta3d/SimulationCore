@@ -57,7 +57,9 @@ namespace SimCore
             void Enable(bool enable);
 
             /// Updates the azimuth display on the compass
-            void Update();
+            void Update( float timeDelta = 0.0f );
+            
+            float UpdateNeedle( float deltaTime, float heading );
 
             void InitLens( dtCore::DeltaDrawable& hudLayer );
 
@@ -72,6 +74,12 @@ namespace SimCore
             CEGUI::Window  *mAzimuthText;
             CEGUI::Window  *mAzimuthDegreesText;
             bool mUseMagneticNorth;
+            float mNeedleRotation;
+            float mNeedlePosition;
+            float mNeedleVelocity;
+            float mNeedleAcceleration;
+            float mNeedleTorque;
+            float mNeedleDragCoef;
 
             // Lens related references
             dtCore::RefPtr<osg::MatrixTransform> mLensOverlay;

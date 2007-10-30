@@ -37,6 +37,9 @@ namespace SimCore
 
             osgSim::DOFTransform* GetSteeringWheelDOF(const std::string& dofName);
 
+            bool HasLoadedDamageFiles() const {return mLoadedDamageFiles;}
+            void SetHasLoadedDamageFiles(bool value) {mLoadedDamageFiles = value;}
+
          protected:
 
             /// Destructor
@@ -44,7 +47,7 @@ namespace SimCore
 
          private:
             bool mVisible;
-
+            bool mLoadedDamageFiles;
       };
 
       class SIMCORE_EXPORT InteriorActorProxy : public PlatformActorProxy

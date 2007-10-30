@@ -39,11 +39,13 @@
 #include <SimCore/Tools/Binoculars.h>
 
 #include <dtUtil/fileutils.h>
+#include <dtUtil/stringutils.h>
 
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
 #include <dtCore/globals.h>
 #include <dtCore/isector.h>
+#include <dtCore/scene.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -61,6 +63,8 @@
 #include <dtGame/exceptionenum.h>
 
 #include <dtAnim/animationcomponent.h>
+#include <dtAnim/cal3ddatabase.h>
+#include <dtAnim/animnodebuilder.h>
 
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/hlacomponentconfig.h>
@@ -72,7 +76,6 @@
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 #include <osgUtil/RenderBin>
-#include <osg/Notify>//to squelch warnings
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
@@ -87,6 +90,9 @@ namespace SimCore
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_GMSTATS("GMStatisticsInterval");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
@@ -152,7 +158,7 @@ namespace SimCore
       parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource", "Name of the federation mapping resource file to load.");
       parser->getApplicationUsage()->addCommandLineOption("--aspectRatio", "The aspect ratio to use for the camera [1.33 or 1.6]");
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
-      parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
+      //parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
 
       std::string fedFileResource;
 
@@ -189,10 +195,10 @@ namespace SimCore
          mLingeringShotEffectSecs = 300.0f;
       }
 
-      if (!parser->read("--statisticsInterval", mStatisticsInterval))
-      {
-         mStatisticsInterval = 0;
-      }
+      //if (!parser->read("--statisticsInterval", mStatisticsInterval))
+      //{
+      //   mStatisticsInterval = 0;
+      //}
 
       if(!mIsUIRunning)
       {
@@ -290,8 +296,8 @@ namespace SimCore
       if(!mIsUIRunning)
       {
          //dtGame::GameManager &gameManager = *GetGameManager();
-         SimCore::Components::HLAConnectionComponent *hlaCC 
-            = dynamic_cast<SimCore::Components::HLAConnectionComponent *>(gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+         SimCore::Components::HLAConnectionComponent *hlaCC;
+         gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
          if(hlaCC != NULL)
          {
             const std::string fedMappingFile = dtDAL::Project::GetInstance().
@@ -455,33 +461,35 @@ namespace SimCore
    void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
    {
 
-      //tell OSG to keep it quite
-      osg::setNotifyLevel(osg::FATAL);
-
       AssignProjectContext(*app.GetGameManager());
       PreLoadMap();
       
       dtGame::GameManager &gameManager = *app.GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
-      
+       
       camera->GetSceneHandler()->GetSceneView()->
-         //setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+         setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
-         setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
-
-      //camera->GetSceneHandler()->GetSceneView()->
-      //   setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
-
-      camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
+         //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 
       camera->GetSceneHandler()->GetSceneView()->
-         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
-                             PLAYER_FAR_CLIP_PLANE);
+         setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
+      //camera->GetSceneHandler()->GetSceneView()->
+      //   setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING | 
+      //      osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING | 
+      //      osg::CullSettings::VIEW_FRUSTUM_SIDES_CULLING);
+      //camera->GetSceneHandler()->GetSceneView()->setSmallFeatureCullingPixelSize(250.0f);
+
+      //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
       camera->SetPerspective(60.0f, 60.0f,
                              PLAYER_NEAR_CLIP_PLANE, 
                              PLAYER_FAR_CLIP_PLANE);
+      camera->GetSceneHandler()->GetSceneView()->
+         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
+                             PLAYER_FAR_CLIP_PLANE);
+
 
       if(mAspectRatio == 0.0f)
       {
@@ -506,7 +514,7 @@ namespace SimCore
       RefPtr<Components::MunitionsComponent>               mMunitionsComp    = new Components::MunitionsComponent;
       RefPtr<Components::HLAConnectionComponent> hlacc                       = new Components::HLAConnectionComponent;
       RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
-      RefPtr<dtAnim::AnimationComponent>       animationComponent = new dtAnim::AnimationComponent;
+      RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
       
       gameManager.AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*hft, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -519,6 +527,22 @@ namespace SimCore
       gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      
+      std::string useGPUSkinning = gameManager.GetApplication().GetConfigPropertyValue(
+               CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
+
+      dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
+      
+      if (useGPUSkinning == "1" || useGPUSkinning == "true")
+      {
+         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
+         LOG_INFO("Using GPU Character Skinning");
+      }
+      else
+      {
+         nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateSoftware));
+         LOG_INFO("Using CPU Character Skinning");
+      }
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 
@@ -542,9 +566,26 @@ namespace SimCore
       hft->AddParameterTranslator( *munitionParamTranslator );
 
       // called virtual, will get ur overridden version first.
-      HLAConnectionComponentSetup(*app.GetGameManager());
+      HLAConnectionComponentSetup(gameManager);
 
-      gameManager.DebugStatisticsTurnOn(true, true, mStatisticsInterval);
+
+      // Turn on debug statistics if the option is set in the config.xml
+      // Note - this makes the --statisticsInterval option obsolete.
+      std::string statisticsIntervalOption;
+      statisticsIntervalOption = gameManager.GetApplication().GetConfigPropertyValue
+         (SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS, "0");
+      if (!statisticsIntervalOption.empty())
+      {
+         // Not error checking the value before calling ToFloat makes me nervous, but it seems to 
+         // handle the errors of 'abcd' or "" just fine.  
+         float interval = dtUtil::ToFloat(statisticsIntervalOption);
+         if (interval > 0.0 && interval < 9999.0)
+         {
+            gameManager.DebugStatisticsTurnOn(true, true, interval);
+            LOG_ALWAYS("Enabling GM Debug Statistics with interval[" + statisticsIntervalOption + 
+               "] because " + SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS + " was set in the config.xml.");
+         }
+      }
 
       // CURT - This conflicts with requirement request to make it a parameter but can't
       // support various munition types.

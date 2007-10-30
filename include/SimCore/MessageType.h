@@ -65,6 +65,8 @@ namespace SimCore
          static MessageType MAP;
          static MessageType NO_TOOL;
 
+         static MessageType CONTROL_STATE_CONFLICT;
+
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 
          static bool IsValidToolType(const dtGame::MessageType &type);

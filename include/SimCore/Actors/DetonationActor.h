@@ -195,6 +195,14 @@ namespace SimCore
             void SetPhysicsEnabled( bool usesPhysics ) { mUsesPhysics = usesPhysics; }
             bool IsPhysicsEnabled() const { return mUsesPhysics; }
 
+            /**
+             * Set the name of the light effect that is to be loaded for the detonation.
+             * @param lightName Name of the light effect as is defined in the light
+             *        prototype actor from a map file
+             */
+            void SetLightName( const std::string& lightName ) { mLightName = lightName; }
+            std::string GetLightName() const { return mLightName; }
+
             void SetMaterialCollidedWith(ViewerMaterialActor& material)
             {
                mCollidedMaterial = &material;
@@ -226,6 +234,9 @@ namespace SimCore
             /// Disables the rendering of smoke
             void StopRenderingSmoke();
 
+            ///adds a light for the explosion effect
+            void AddDynamicLight();
+
             dtCore::RefPtr<dtCore::ParticleSystem> mExplosionSystem, mSmokeSystem;
             dtCore::RefPtr<dtAudio::Sound> mSound;
             float mDelayTime;
@@ -235,6 +246,8 @@ namespace SimCore
             float mDeleteActorTimerSecs;
 
             bool mUsesPhysics;
+
+            std::string mLightName;
 
             dtCore::ObserverPtr<ViewerMaterialActor> mCollidedMaterial;
       };
