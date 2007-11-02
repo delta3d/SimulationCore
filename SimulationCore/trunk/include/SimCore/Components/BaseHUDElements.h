@@ -62,9 +62,11 @@ namespace SimCore
             static HUDAlignment RIGHT_CENTER;
             static HUDAlignment RIGHT_BOTTOM;
 
+            static HUDAlignment& ClassifyAlignment( CEGUI::Window& window );
+
             CEGUI::HorizontalAlignment GetAlignH() const { return mAlignH; }
             CEGUI::VerticalAlignment GetAlignV() const { return mAlignV; }
-
+            
          private:
             HUDAlignment(const std::string &name, 
                CEGUI::HorizontalAlignment alignH, CEGUI::VerticalAlignment alignV ) 
@@ -86,12 +88,15 @@ namespace SimCore
       class SIMCORE_EXPORT HUDElement : public dtCore::Base
       {
          public:
+            static const std::string DEFAULT_BLANK_TYPE;
             static const std::string DEFAULT_IMAGE_TYPE;
             static const std::string DEFAULT_TEXT_TYPE;
 
             // @param type The defined CEGUI window type
             // @name The name of this element
             HUDElement( const std::string& name, const std::string& type );
+
+            HUDElement( CEGUI::Window& window );
 
             CEGUI::Window* GetCEGUIWindow() { return mWindow; }
             const CEGUI::Window* GetCEGUIWindow() const { return mWindow; }
@@ -248,6 +253,7 @@ namespace SimCore
       {
       public:
          HUDToolbar( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
+         HUDToolbar( CEGUI::Window& window );
 
          void SetHorizontal( bool horizontal ) { mHorizontal = horizontal; }
          bool IsHorizontal() const { return mHorizontal; }
