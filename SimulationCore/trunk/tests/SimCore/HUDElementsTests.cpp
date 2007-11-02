@@ -349,11 +349,15 @@ void HUDElementsTests::TestHUDText()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDGroup()
 {
+   const std::string childName1("Child1");
+   const std::string childName2("Child2");
+   const std::string childName3("Child3");
+   const std::string childName4("Child4");
    dtCore::RefPtr<SimCore::Components::HUDGroup> group = new SimCore::Components::HUDGroup("TestGroup");
-   dtCore::RefPtr<SimCore::Components::HUDImage> child1 = new SimCore::Components::HUDImage("Child1");
-   dtCore::RefPtr<SimCore::Components::HUDImage> child2 = new SimCore::Components::HUDImage("Child2");
-   dtCore::RefPtr<SimCore::Components::HUDImage> child3 = new SimCore::Components::HUDImage("Child3");
-   dtCore::RefPtr<SimCore::Components::HUDImage> child4 = new SimCore::Components::HUDImage("Child4");
+   dtCore::RefPtr<SimCore::Components::HUDImage> child1 = new SimCore::Components::HUDImage(childName1);
+   dtCore::RefPtr<SimCore::Components::HUDImage> child2 = new SimCore::Components::HUDImage(childName2);
+   dtCore::RefPtr<SimCore::Components::HUDImage> child3 = new SimCore::Components::HUDImage(childName3);
+   dtCore::RefPtr<SimCore::Components::HUDImage> child4 = new SimCore::Components::HUDImage(childName4);
 
    // NOTE: Add and Remove may be changed to take references in the future.
    // A good bit of code uses the current interface so far.
@@ -368,11 +372,31 @@ void HUDElementsTests::TestHUDGroup()
    CPPUNIT_ASSERT_MESSAGE( "HUD Group should not increase child count when attempting to add a NULL pointer",
       group->GetTotalElements() == 0 );
 
+   // Test searching for CEGUI child windows that do not exist.
+   CPPUNIT_ASSERT( ! group->Has( childName1 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName2 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName3 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName4 ) );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == NULL );
+
    // Add all children
    group->Add( child1.get() );
    group->Add( child2.get() );
    group->Add( child3.get() );
    group->Add( child4.get() );
+
+   // Test searching for CEGUI child windows that have been added.
+   CPPUNIT_ASSERT( group->Has( childName1 ) );
+   CPPUNIT_ASSERT( group->Has( childName2 ) );
+   CPPUNIT_ASSERT( group->Has( childName3 ) );
+   CPPUNIT_ASSERT( group->Has( childName4 ) );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == child1->GetCEGUIWindow() );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == child2->GetCEGUIWindow() );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == child3->GetCEGUIWindow() );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == child4->GetCEGUIWindow() );
 
    // Capture the total in a variable for easier debugging
    int total = group->GetTotalElements();
@@ -422,6 +446,16 @@ void HUDElementsTests::TestHUDGroup()
    CPPUNIT_ASSERT_MESSAGE( "HUD Group should have removed child 3; no other children should remain",
       ! group->Has( *child3 )
       && total == 0 );
+
+   // Test searching for CEGUI child windows that should no longer be attached.
+   CPPUNIT_ASSERT( ! group->Has( childName1 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName2 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName3 ) );
+   CPPUNIT_ASSERT( ! group->Has( childName4 ) );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName1 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName2 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName3 ) == NULL );
+   CPPUNIT_ASSERT( group->GetCEGUIChild( childName4 ) == NULL );
 }
 
 //////////////////////////////////////////////////////////////

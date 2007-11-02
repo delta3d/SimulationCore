@@ -193,13 +193,20 @@ namespace SimCore
          public:
             HUDGroup( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
 
+            HUDGroup( CEGUI::Window& window );
+
             bool Add( HUDElement* child );
 
             bool Remove( HUDElement* child );
 
             bool Has( const HUDElement& child ) const;
 
+            bool Has( const std::string& childName ) const;
+
             unsigned int GetTotalElements() const;
+
+            CEGUI::Window* GetCEGUIChild( const std::string& childName, bool deepSearch = false );
+            const CEGUI::Window* GetCEGUIChild( const std::string& childName, bool deepSearch = false ) const;
 
          protected:
             virtual ~HUDGroup();

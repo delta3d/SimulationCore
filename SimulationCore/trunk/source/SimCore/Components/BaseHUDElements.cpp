@@ -433,6 +433,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      HUDGroup::HUDGroup( CEGUI::Window& window )
+         : HUDElement(window)
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       HUDGroup::~HUDGroup()
       {
          if( ! mChildRefs.empty() ) { mChildRefs.clear(); }
@@ -477,10 +483,47 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      bool HUDGroup::Has( const std::string& childName ) const
+      {
+         return mWindow->isChild( childName );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       unsigned int HUDGroup::GetTotalElements() const
       {
          return (unsigned int) mChildRefs.size();
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch )
+      {
+         if( mWindow->isChild( childName ) )
+         {
+            return mWindow->getChild( childName );
+         }
+
+         if( deepSearch )
+         {
+            // TODO:
+         }
+         return NULL;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch ) const
+      {
+         if( mWindow->isChild( childName ) )
+         {
+            return mWindow->getChild( childName );
+         }
+
+         if( deepSearch )
+         {
+            // TODO:
+         }
+         return NULL;
+      }
+
 
 
       //////////////////////////////////////////////////////////////////////////
