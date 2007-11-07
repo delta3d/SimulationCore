@@ -91,6 +91,7 @@ namespace SimCore
             static const std::string DEFAULT_BLANK_TYPE;
             static const std::string DEFAULT_IMAGE_TYPE;
             static const std::string DEFAULT_TEXT_TYPE;
+            static const std::string PROPERTY_IMAGE;
 
             // @param type The defined CEGUI window type
             // @name The name of this element
@@ -130,6 +131,12 @@ namespace SimCore
 
             bool IsAbsolutePosition() const { return mAbsPos; }
             bool IsAbsoluteSize() const { return mAbsSize; }
+
+            // Utility funtion
+            void SetCEGUIImage( CEGUI::Window& window, 
+               const std::string& imagesetName,
+               const std::string& imageName,
+               const std::string& imagePropertyName = HUDElement::PROPERTY_IMAGE );
 
          protected:
             virtual ~HUDElement();

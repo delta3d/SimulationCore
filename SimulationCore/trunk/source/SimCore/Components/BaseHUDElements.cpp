@@ -31,11 +31,6 @@ namespace SimCore
 {
    namespace Components
    {
-      const std::string HUDElement::DEFAULT_BLANK_TYPE("DefaultWindow");
-      const std::string HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
-      const std::string HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
-
-
       //////////////////////////////////////////////////////////////////////////
       // Base HUD Element Exceptions Code
       //////////////////////////////////////////////////////////////////////////
@@ -112,6 +107,12 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       // HUD Element Code
+      //////////////////////////////////////////////////////////////////////////
+      const std::string HUDElement::DEFAULT_BLANK_TYPE("DefaultWindow");
+      const std::string HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
+      const std::string HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
+      const std::string HUDElement::PROPERTY_IMAGE("Image");
+
       //////////////////////////////////////////////////////////////////////////
       HUDElement::HUDElement( const std::string& name, const std::string& type )
          : dtCore::Base( name ),
@@ -327,6 +328,16 @@ namespace SimCore
       void HUDElement::Show()
       {
          mWindow->show();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetCEGUIImage( CEGUI::Window& window, 
+         const std::string& imagesetName, const std::string& imageName,
+         const std::string& imagePropertyName )
+      {
+         std::stringstream ss;
+         ss << "set:" << imagesetName << " image:" << imageName;
+         window.setProperty( imagePropertyName, ss.str() );
       }
 
 
