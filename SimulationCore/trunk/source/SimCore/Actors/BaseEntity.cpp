@@ -258,6 +258,20 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetModelRotation), 
             PROPERTY_MODEL_ROTATION_DESC,
             BASE_ENTITY_GROUP));
+
+         static const std::string PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
+            PROPERTY_FIREPOWER_DISABLED,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetFirepowerDisabled),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::IsFirepowerDisabled),
+            "Determines if this entity has had its fire power disabled."));
+
+         static const std::string PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
+            PROPERTY_MOBILITY_DISABLED,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetMobilityDisabled),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::IsMobilityDisabled),
+            "Determines if this entity has had its mobility disabled."));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
