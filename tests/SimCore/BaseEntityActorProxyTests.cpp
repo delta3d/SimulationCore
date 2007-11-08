@@ -169,18 +169,6 @@ void BaseEntityActorProxyTests::TestPlatform()
    
    dtDAL::ActorProperty *prop = NULL;
    
-   prop = eap->GetProperty("Firepower Disabled");
-   CPPUNIT_ASSERT_MESSAGE("The firepower property should not be NULL", prop != NULL);
-   CPPUNIT_ASSERT_MESSAGE("The default value of \"Firepower Disabled\" should be false.", !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
-   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-
-   prop = eap->GetProperty("Mobility Disabled");
-   CPPUNIT_ASSERT_MESSAGE("The mobility property should not be NULL", prop != NULL);
-   CPPUNIT_ASSERT_MESSAGE("The default value of \"Mobility Disabled\" should be false.", !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
-   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-
    prop = eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
    CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
    std::stringstream textMessage;
@@ -217,16 +205,34 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    //make the actor 
    mGM->AddActor(eap, true, false);
 
+   dtDAL::ActorProperty *prop = NULL;
+   
+   prop = eap.GetProperty("Firepower Disabled");
+   CPPUNIT_ASSERT_MESSAGE("The firepower property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The default value of \"Firepower Disabled\" should be false.", 
+            !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
+   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
+   prop = eap.GetProperty("Mobility Disabled");
+   CPPUNIT_ASSERT_MESSAGE("The mobility property should not be NULL", prop != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The default value of \"Mobility Disabled\" should be false.", 
+            !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
+   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
    osg::Vec3 vec(5.0f, 5.0f, 5.0f);
-   dtDAL::ActorProperty *prop = eap.GetProperty("Angular Velocity Vector");
+   prop = eap.GetProperty("Angular Velocity Vector");
    CPPUNIT_ASSERT_MESSAGE("The angular velocity vector property should not be NULL", prop != NULL);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(vec);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", 
+            static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
    prop = eap.GetProperty("Last Known Translation");
    CPPUNIT_ASSERT_MESSAGE("The last known translation property should not be NULL", prop != NULL);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(vec);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", 
+            static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(osg::Vec3(0.0f, 0.0f, 0.0f));
 
    prop = eap.GetProperty("Last Known Rotation");

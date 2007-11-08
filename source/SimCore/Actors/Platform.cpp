@@ -133,20 +133,6 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray), 
             "The list of articulated parameters for modifying DOF's", ""));
 
-         static const std::string PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
-            PROPERTY_FIREPOWER_DISABLED,
-            dtDAL::MakeFunctor(e, &Platform::SetFirepowerDisabled),
-            dtDAL::MakeFunctorRet(e, &Platform::IsFirepowerDisabled),
-            "Determines if this entity has had its fire power disabled."));
-
-         static const std::string PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
-            PROPERTY_MOBILITY_DISABLED,
-            dtDAL::MakeFunctor(e, &Platform::SetMobilityDisabled),
-            dtDAL::MakeFunctorRet(e, &Platform::IsMobilityDisabled),
-            "Determines if this entity has had its mobility disabled."));
-
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
             PROPERTY_HEAD_LIGHTS_ENABLED,
             dtDAL::MakeFunctor(e, &Platform::SetHeadLightsEnabled),
