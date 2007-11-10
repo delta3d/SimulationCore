@@ -49,7 +49,7 @@ namespace dtAI
 
 namespace osg
 {
-   class Geode;
+   class Node;
 }
 
 //namespace dtAnim
@@ -236,7 +236,7 @@ namespace SimCore
             std::string mIdleAnimatableName;
             std::string mRunWalkAnimatableName;
 
-            dtCore::RefPtr<osg::Geode> mModelGeode;
+            dtCore::RefPtr<osg::Node> mModelNode;
             dtCore::RefPtr<dtAnim::AnimationHelper> mAnimationHelper;
 
             dtAI::PlannerHelper mPlannerHelper;
