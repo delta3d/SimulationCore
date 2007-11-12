@@ -87,7 +87,7 @@ namespace SimCore
             static const std::string DOF_NAME_WEAPON;
             static const std::string DOF_NAME_WEAPON_HOTSPOT;
 
-            static const unsigned VEHICLE_STATION_TYPE;
+            static const int VEHICLE_STATION_TYPE;
 
             ControlStateComponent( const std::string& name = DEFAULT_NAME );
 
