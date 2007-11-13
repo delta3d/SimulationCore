@@ -48,26 +48,6 @@ IMPLEMENT_ENUM(NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum);
 NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum::TWOD("2D");
 NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum::THREED("3D");
 
-struct particleSystemToSave
-{
-   float MinAngVeloc[3];
-   float MaxAngVeloc[3];
-   float MinVeloc[3];
-   float MaxVeloc[3];
-   float MinVelOT[3];
-   float MaxVelOT[3];
-   int   physicsType;
-   float Dimensions[3];
-   bool  selfInteracting;
-   float MinGravity[3]; 
-   float MaxGravity[3];
-   int   maxParticles;
-   float MinCoord[3];   
-   float MaxCoord[3];
-   float LengthOfStay;
-   bool  InfiniteSpawn; 
-};
-
 // could be done, not done - angular velocity over time...... wouldn't be hard.
 
 ////////////////////////////////////////////////////////////////////
@@ -114,60 +94,8 @@ NxAgeiaParticleSystemActor::~NxAgeiaParticleSystemActor()
 }
 
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaParticleSystemActor::LoadPhysicsParticleFile(const std::string& fileString)
-{
-   if(fileString.empty())
-   {
-      LOG_ERROR("File not found in LoadPhysicsParticleFile, nothing loaded");
-      return;
-   }
-
-   particleSystemToSave particle;
-   FILE* file = fopen(fileString.c_str(), "rb");
-   fread((void*)&particle, sizeof(particleSystemToSave),1, file);
-   fclose(file);
-
-   float Dimensions[3];
-   for(int i = 0 ; i < 3; i++)
-   {
-      //MinGravity[i] =particle.MinGravity[i]  ;
-      Dimensions[i] =particle.Dimensions[i]  ;
-      //MaxGravity[i] =particle.MaxGravity[i]  ;
-      mStartingAngularVelocityScaleMin[i]=particle.MinAngVeloc[i] ;
-      mStartingAngularVelocityScaleMax[i]=particle.MaxAngVeloc[i] ;
-      mStartingLinearVelocityScaleMin[i]   =particle.MinVeloc[i]    ;
-      mStartingLinearVelocityScaleMax[i]   =particle.MaxVeloc[i]    ;
-      mForceVectorMin[i]   =particle.MinVelOT[i]    ;
-      mForceVectorMax[i]   =particle.MaxVelOT[i]    ;
-      mStartingPositionRandMin[i]   =particle.MinCoord[i]    ;   
-      mStartingPositionRandMax[i]   =particle.MaxCoord[i]    ;
-   }
-
-   mPhysicsHelper->SetDimensions(osg::Vec3(Dimensions[0], Dimensions[1], Dimensions[2]));
-
-   mAmountofParticlesWeWantSpawned   = particle.maxParticles   ;
-   mParticleLengthOfStay   = particle.LengthOfStay   ;
-   mInfiniteParticleSystem  = particle.InfiniteSpawn  ;
-   mSelfInteracting= particle.selfInteracting ;
-
-   switch(particle.physicsType)
-   {
-   default:
-   case 1:
-      mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE);
-      break;
-
-   case 2:
-      mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::SPHERE);
-         break;
-
-   case 0:
-      mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CAPSULE);
-         break;
-   }
-}
-////////////////////////////////////////////////////////////////////
 void NxAgeiaParticleSystemActor::TickRemote(const dtGame::Message &tickMessage){}
+
 ////////////////////////////////////////////////////////////////////
 void NxAgeiaParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
 {
