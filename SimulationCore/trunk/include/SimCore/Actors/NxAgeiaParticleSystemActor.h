@@ -143,6 +143,8 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
 
    public:
 
+      void LoadPhysicsParticleFile(const std::string& fileString);
+
       /// turn it on or off from spawning...
       void ToggleEmitter(bool value) {mIsCurrentlyOn = value; mSystemsTimeTotalTimeLength = 0;}
       
