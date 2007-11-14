@@ -166,11 +166,11 @@ namespace StealthGM
    }
    
    ///////////////////////////////////////////////////////////////////////////
-   void StealthGameEntryPoint::InitializeTools(dtGame::GameManager &gm)
+   void StealthGameEntryPoint::InitializeTools()
    {
       // Check for enabled tools
       StealthInputComponent* inputComp = 
-         dynamic_cast<StealthInputComponent*>(gm.GetComponentByName(StealthInputComponent::DEFAULT_NAME));
+         dynamic_cast<StealthInputComponent*>(GetGameManager()->GetComponentByName(StealthInputComponent::DEFAULT_NAME));
    
       if( inputComp == NULL ) { return; }
    
@@ -223,28 +223,22 @@ namespace StealthGM
 //      }
    
    }
-   
-   ///////////////////////////////////////////////////////////////////////////
-   /*ObserverPtr<dtGame::GameManager> StealthGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
-   {
-      return BaseGameEntryPoint::CreateGameManager(scene);
-   }*/
 
    ///////////////////////////////////////////////////////////////////////////
-   void StealthGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
+   void StealthGameEntryPoint::HLAConnectionComponentSetup()
    {
-      SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup(gm);
+      SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup();
    }
    
    ///////////////////////////////////////////////////////////////////////////
-   void StealthGameEntryPoint::OnStartup(dtGame::GameApplication& app)
+   void StealthGameEntryPoint::OnStartup()
    {
-      dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
+      dtGame::GameManager &gameManager = *GetGameManager();
       
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
-
-      SimCore::BaseGameEntryPoint::OnStartup(app);
+   
+      SimCore::BaseGameEntryPoint::OnStartup();
 
       // Add Input Component
       dtCore::RefPtr<StealthInputComponent> mInputComponent 
@@ -306,7 +300,7 @@ namespace StealthGM
 
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.
-      InitializeTools(*app.GetGameManager());
+      InitializeTools();
    
       // Setup Stealth Actor (ie player and camera)
       //if (mStealth == NULL)
@@ -351,9 +345,9 @@ namespace StealthGM
       }
    }
 
-   void StealthGameEntryPoint::OnShutdown(dtGame::GameApplication &app)
+   void StealthGameEntryPoint::OnShutdown()
    {
-      dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
+      dtGame::GameManager &gameManager = *GetGameManager();
       dtHLAGM::HLAComponent* hft = 
          static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
       

@@ -490,11 +490,11 @@ namespace SimCore
    
             osg::MatrixTransform& transform = GetScaleMatrixTransform();
             transform.removeChildren(0, transform.getNumChildren());
-            mModelNode = NULL;
+            mModelGeode = NULL;
    
             if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
             {
-               mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
+               mModelGeode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateGeode(mAnimationHelper->GetModelWrapper());
                HandleModelDrawToggle(IsDrawingModel());
                
                //setup speed blends
@@ -554,8 +554,8 @@ namespace SimCore
          }
          else
          {
-            if (mModelNode.valid())
-               GetScaleMatrixTransform().addChild(mModelNode.get());
+            if (mModelGeode.valid())
+               GetScaleMatrixTransform().addChild(mModelGeode.get());
          }
       }
 

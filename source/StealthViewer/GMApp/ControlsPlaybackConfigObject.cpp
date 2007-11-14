@@ -55,7 +55,7 @@ namespace StealthGM
 
       if(mBeginPlayback)
       {
-         inputComponent->SetLogFileName(mInputFilename);
+         inputComponent->SetLogFileName(GetInputFilename());
          inputComponent->EnablePlayback();
          mBeginPlayback = false;
       }

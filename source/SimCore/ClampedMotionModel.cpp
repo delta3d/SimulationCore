@@ -56,8 +56,7 @@ namespace SimCore
       mLeftRightLimit(-1.0),
       mUpDownLimit(-1.0),
       mKeyboard(keyboard),
-      mDOF(NULL),
-      mTestMode(false)
+      mDOF(NULL)
    {
    }
 
@@ -69,10 +68,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe"
-         && (GetTarget() != NULL || GetTargetDOF() != NULL) 
-         && IsEnabled() 
-         && ( GetMouse()->GetHasFocus() || mTestMode ) )
+      if(data->message == "preframe" && (GetTarget() != NULL || GetTargetDOF() != NULL) && IsEnabled() && GetMouse()->GetHasFocus())
       {
          if( ! IsFreeLookHeld() )
          {
@@ -159,11 +155,8 @@ namespace SimCore
             if(setHPR)
             {
                hpr[2] = 0.0f;
-               SetTargetsRotation(hpr);   
-               if( ! mTestMode )
-               {
-                  GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
-               }
+               SetTargetsRotation(hpr);                  
+               GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Get the current change in orientation

@@ -124,7 +124,6 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
 
          mMotionModel->SetEnabled(true);
-         mMotionModel->SetTestMode(true);
       }
       
       //////////////////////////////////////////////////////////////

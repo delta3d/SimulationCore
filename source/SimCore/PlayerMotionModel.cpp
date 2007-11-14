@@ -33,7 +33,7 @@
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Components/PortalComponent.h>
 
-#include <SimCore/Actors/HumanWithPhysicsActor.h>
+#include <SimCore/Actors/NxAgeiaPlayerActor.h>
 #include <SimCore/Actors/Platform.h>
 
 namespace SimCore
@@ -146,7 +146,7 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
          // If physics, force the physics to update the player
-         SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
+         SimCore::Actors::NxAgeiaPlayerActor* player = dynamic_cast<SimCore::Actors::NxAgeiaPlayerActor*>(GetTarget());
          if(player != NULL)
          {
             // Get the new translation
@@ -168,7 +168,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    SimCore::Actors::Platform* PlayerMotionModel::CheckWithCloseToVehicle()
    {
-      SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
+      SimCore::Actors::NxAgeiaPlayerActor* player = dynamic_cast<SimCore::Actors::NxAgeiaPlayerActor*>(GetTarget());
       if(player != NULL)
       {
          SimCore::Components::PortalComponent* portalComponent; 

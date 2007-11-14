@@ -214,12 +214,6 @@ namespace SimCore
          // Determines whether we working with the DOF or just the node and gets the rotation
          void SetTargetsRotation(const osg::Vec3 &newHpr);
          osg::Vec3 GetTargetsRotation() const;
-
-         // This function should only be used for unit tests.
-         // The test flag allows the unit tests to run without requiring
-         // the mouse to have focus on the window.
-         void SetTestMode( bool testMode ) { mTestMode = testMode; }
-         bool GetTestMode() const { return mTestMode; }
         
       private:
 
@@ -287,8 +281,6 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Components::ArticulationHelper> mArticHelper;
 
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
-
-         bool mTestMode;
 
    };
 }

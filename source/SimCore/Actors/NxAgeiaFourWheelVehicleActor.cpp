@@ -490,13 +490,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
       {
-         if(fabs(startValue) < 0.01f && fabs(newValue) < 0.01f)
-            return 1.0;
+         if(abs(startValue) < 0.01f && abs(newValue) < 0.01f)
+            return 1;
 
          if(startValue == 0)
             startValue = 1.0f;
 
-         return fabs((((newValue - startValue) / startValue) * 100.0f));
+         return abs((((newValue - startValue) / startValue) * 100.0f));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -696,10 +696,7 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
 
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            AddProperty(toFillIn[i].get());
+         actor.GetPhysicsHelper()->BuildPropertyMap();
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 

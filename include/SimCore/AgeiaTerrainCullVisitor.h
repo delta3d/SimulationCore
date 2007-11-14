@@ -52,8 +52,8 @@ namespace SimCore
          virtual void apply(osg::Group& node);
 
          /// Set and Get For the land Actor
-         void SetLandActor(SimCore::Actors::NxAgeiaTerraPageLandActor* _land) {mLandActor = _land;}
-         SimCore::Actors::NxAgeiaTerraPageLandActor* GetLandActor() {return mLandActor.get();} 
+         void SetLandActor(NxAgeiaTerraPageLandActor* _land) {mLandActor = _land;}
+         NxAgeiaTerraPageLandActor* GetLandActor() {return mLandActor.get();} 
 
          /// Set and get for the terrain node
          void SetTerrainNode(osg::Transform* terrainNodeCheckAgainst){mTerrainNode = terrainNodeCheckAgainst;}
@@ -86,7 +86,7 @@ namespace SimCore
 
       private:
          /// we feed the terrain data through here, it loads the physics
-         dtCore::ObserverPtr<SimCore::Actors::NxAgeiaTerraPageLandActor>  mLandActor;
+         dtCore::ObserverPtr<NxAgeiaTerraPageLandActor>  mLandActor;
 
          /// this is the top level transform node of the terrain, for knowing when
          /// we are in the terrain
@@ -126,4 +126,3 @@ namespace SimCore
 } // namespace
 
 #endif
-

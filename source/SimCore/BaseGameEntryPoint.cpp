@@ -280,10 +280,10 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////
-   /*ObserverPtr<dtGame::GameManager> BaseGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
+   ObserverPtr<dtGame::GameManager> BaseGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
    {
       return dtGame::GameEntryPoint::CreateGameManager(scene);
-   }*/
+   }
 
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::InitializeComponents()
@@ -291,13 +291,14 @@ namespace SimCore
       //dtGame::GameManager &gameManager = *GetGameManager();
    }
 
-   void BaseGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
+   void BaseGameEntryPoint::HLAConnectionComponentSetup()
    {
       if(!mIsUIRunning)
       {
-         //dtGame::GameManager &gameManager = *GetGameManager();
+         dtGame::GameManager &gameManager = *GetGameManager();
          SimCore::Components::HLAConnectionComponent *hlaCC;
-         gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
+         gameManager.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
+
          if(hlaCC != NULL)
          {
             const std::string fedMappingFile = dtDAL::Project::GetInstance().
@@ -318,34 +319,34 @@ namespace SimCore
    }
    
    //////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtHLAGM::HLAComponent> BaseGameEntryPoint::CreateAndSetupHLAComponent(dtGame::GameManager &gm)
+   dtCore::RefPtr<dtHLAGM::HLAComponent> BaseGameEntryPoint::CreateAndSetupHLAComponent()
    {
-      //dtGame::GameManager& gameManager = *GetGameManager();
+      dtGame::GameManager& gameManager = *GetGameManager();
       
       dtCore::RefPtr<dtHLAGM::HLAComponent> hft = new dtHLAGM::HLAComponent;
       
       RefPtr<dtHLAGM::DDMCameraCalculatorGeographic> camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
+      camCalc->SetCamera(gameManager.GetApplication().GetCamera());
       camCalc->SetName("Ground");
       hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
       
       camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
+      camCalc->SetCamera(gameManager.GetApplication().GetCamera());
       camCalc->SetName("Air");
       hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
 
       camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
+      camCalc->SetCamera(gameManager.GetApplication().GetCamera());
       camCalc->SetName("Sea");
       hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
 
       camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
+      camCalc->SetCamera(gameManager.GetApplication().GetCamera());
       camCalc->SetName("Lifeform");
       hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
       
       camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
+      camCalc->SetCamera(gameManager.GetApplication().GetCamera());
       camCalc->SetName("Stealth");
       hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
 
@@ -374,14 +375,14 @@ namespace SimCore
       return hft;
    }
    
-   void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager &gm)
+   void BaseGameEntryPoint::AssignProjectContext()
    {
       dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
       std::string finalProjectPath;
 
       if (mProjectPath.empty())
       {
-         mProjectPath = gm.GetApplication().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
+         mProjectPath = GetGameManager()->GetApplication().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
       }
       
       if(!mProjectPath.empty())
@@ -458,13 +459,13 @@ namespace SimCore
    }
    
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
+   void BaseGameEntryPoint::OnStartup()
    {
 
-      AssignProjectContext(*app.GetGameManager());
+      AssignProjectContext();
       PreLoadMap();
       
-      dtGame::GameManager &gameManager = *app.GetGameManager();
+      dtGame::GameManager &gameManager = *GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
        
@@ -505,7 +506,7 @@ namespace SimCore
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
       
-      RefPtr<dtHLAGM::HLAComponent>            hft               = CreateAndSetupHLAComponent(*app.GetGameManager());
+      RefPtr<dtHLAGM::HLAComponent>            hft               = CreateAndSetupHLAComponent();
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
       RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
       RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
@@ -528,7 +529,7 @@ namespace SimCore
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
       
-      std::string useGPUSkinning = gameManager.GetApplication().GetConfigPropertyValue(
+      std::string useGPUSkinning = GetGameManager()->GetApplication().GetConfigPropertyValue(
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
       dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
@@ -566,13 +567,13 @@ namespace SimCore
       hft->AddParameterTranslator( *munitionParamTranslator );
 
       // called virtual, will get ur overridden version first.
-      HLAConnectionComponentSetup(gameManager);
+      HLAConnectionComponentSetup();
 
 
       // Turn on debug statistics if the option is set in the config.xml
       // Note - this makes the --statisticsInterval option obsolete.
       std::string statisticsIntervalOption;
-      statisticsIntervalOption = gameManager.GetApplication().GetConfigPropertyValue
+      statisticsIntervalOption = GetGameManager()->GetApplication().GetConfigPropertyValue
          (SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS, "0");
       if (!statisticsIntervalOption.empty())
       {

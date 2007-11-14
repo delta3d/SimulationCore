@@ -28,7 +28,7 @@
 #include <dtCore/scene.h>
 #include <dtDAL/enginepropertytypes.h>
 
-#include <osg/Matrix>
+#include <osg/matrix>
 
 namespace SimCore
 {
@@ -223,10 +223,7 @@ namespace SimCore
          PlatformActorProxy::BuildPropertyMap();
       #ifdef AGEIA_PHYSICS
          NxAgeiaRemoteKinematicActor* actor = dynamic_cast<NxAgeiaRemoteKinematicActor*> (GetActor());
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            AddProperty(toFillIn[i].get());
+         actor->GetPhysicsHelper()->BuildPropertyMap();
       #endif
       }
 

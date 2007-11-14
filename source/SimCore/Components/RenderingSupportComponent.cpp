@@ -621,11 +621,11 @@ namespace SimCore
          
          if(mCullVisitor->GetLandActor() == NULL)
          {
-            GetGameManager()->FindActorsByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, toFill);
-            SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+            GetGameManager()->FindActorsByName(NxAgeiaTerraPageLandActor::DEFAULT_NAME, toFill);
+            NxAgeiaTerraPageLandActor* landActor = NULL;
             if(!toFill.empty())
             {
-               landActor = dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor*>(toFill[0]->GetActor());
+               landActor = dynamic_cast<NxAgeiaTerraPageLandActor*>(toFill[0]->GetActor());
                mCullVisitor->SetLandActor(landActor);
             }
             toFill.clear();

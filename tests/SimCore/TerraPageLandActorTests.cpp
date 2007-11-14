@@ -97,25 +97,23 @@ void TerraPageLandActorTests::tearDown()
 void TerraPageLandActorTests::TestFunction()
 {
    renderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
-   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-   
-   // This method calls GetGameManager() so it needs to be added first
-   //CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
+   CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
 
    renderingSupportComponent->SetEnableCullVisitor(true);
-   //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    dtCore::System::GetInstance().Step();
 
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE, obj);
-   SimCore::Actors::NxAgeiaTerraPageLandActor* ourActor;
-   obj->GetActor(ourActor);
+   dtCore::RefPtr<NxAgeiaTerraPageLandActor> objActor = dynamic_cast<NxAgeiaTerraPageLandActor*>(obj->GetActor());
 
-   CPPUNIT_ASSERT(ourActor != NULL);
+   CPPUNIT_ASSERT(objActor.valid());
 
    dtCore::System::GetInstance().Step();
 
+   // Actor
+   NxAgeiaTerraPageLandActor* ourActor = objActor.get();
    CPPUNIT_ASSERT(ourActor->DEFAULT_NAME == "PhysX Terra Page Listener");
 #ifdef AGEIA_PHYSICS
    CPPUNIT_ASSERT(ourActor->GetPhysicsHelper() != NULL);

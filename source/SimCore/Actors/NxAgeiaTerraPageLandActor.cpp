@@ -24,101 +24,18 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/logcontroller.h>
 
-#ifdef AGEIA_PHYSICS
-
-#include <NxAgeiaWorldComponent.h>
-#include <SimCore/ModifiedStream.h>
-#include <NxCooking.h>
-
-namespace SimCore
-{
-   namespace Actors
-   {
+//namespace SimCore
+//{
+//   namespace Actors
+//   {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("PhysX Terra Page Listener");
+      const std::string &NxAgeiaTerraPageLandActor::DEFAULT_NAME = "PhysX Terra Page Listener";
 
-      
-      template< class T >
-      class DrawableTriangleVisitor : public osg::NodeVisitor
-      {
-         public:
+      #ifdef AGEIA_PHYSICS
 
-            //osg::TriangleFunctor<T> mFunctor;
-            std::vector<osg::TriangleFunctor<T> > mFunctor;
-            osg::ref_ptr<osg::Geode> legeode;
-
-            /**
-            * Constructor.
-            */
-            DrawableTriangleVisitor(NxAgeiaTerraPageLandActor& landActor) : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN),
-               mLandActor(landActor)
-            {
-               legeode = new osg::Geode();
-            }
-
-            /**
-            * Applies this visitor to a geode.
-            * @param node the geode to visit
-            */
-            virtual void apply(osg::Geode& node)
-            {
-               osg::TriangleFunctor<T> Temp;
-               int value[4];
-               int iter = 0;
-               for(unsigned int i=0;i<node.getNumDrawables();i++)
-               {
-                  osg::Drawable* d = node.getDrawable(i);
-
-                  if(d->supports(Temp))
-                  {
-                     osg::NodePath nodePath = getNodePath();
-                     Temp.mMatrix = osg::computeLocalToWorld(nodePath);
-
-                     osg::StateSet* tempStateSet = d->getStateSet();
-                     osg::ref_ptr<osg::IntArray> mOurList;
-                     if(tempStateSet != NULL)
-                        mOurList = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
-
-                     if(mOurList.valid()) 
-                     {
-                        if(mOurList->size())
-                        {
-                           iter = 0;
-                           std::vector<int>::iterator listiter = mOurList->begin();
-                           for(; listiter != mOurList->end(); ++listiter)
-                           {
-                              value[iter] = *listiter;
-                              ++iter;
-                           }
-
-                           // if general soil or roads, then we want to gather the triangles
-                           if(mLandActor.PassThisGeometry(value[0],value[1],value[2],value[3]))
-                           {
-                              d->accept(Temp);
-                           }
-                           // if it's a building, then we want them in this list
-                           //else if(mLandActor.LoadGeomAsGroup(value[0]))
-                           //{
-                           //   legeode->addDrawable(d);
-                           //}
-                           // what's left?  Probably vegetation, which gets ignored for now
-                           else 
-                           {
-                              //dtCore::RefPtr<osg::Geode> miniGeode = new osg::Geode();
-                              //miniGeode->addDrawable(d);
-                              //mLandActor.DetermineHowToLoadGeometry(value[0],value[1],value[2],value[3], miniGeode.get());
-                           }
-                        } // end ourlist size
-                     }
-                     else
-                        d->accept(Temp);
-                  }
-               }
-               mFunctor.push_back(Temp);
-            }
-         private:
-            NxAgeiaTerraPageLandActor& mLandActor;
-      };
+      #include <NxAgeiaWorldComponent.h>
+      #include <SimCore/ModifiedStream.h>
+      #include <NxCooking.h>
 
       //////////////////////////////////////////////////////////////////////
       // Node stuff
@@ -467,24 +384,18 @@ namespace SimCore
          }
 
          #else
-namespace SimCore
-{
-   namespace Actors
-   {
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("PhysX Terra Page Listener");
 
-      //////////////////////////////////////////////////////////////////////
-      NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy) 
-         : GameActor(proxy)
-      {
+         //////////////////////////////////////////////////////////////////////
+         NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy) 
+            : GameActor(proxy)
+         {
 
-      }
+         }
 
-      //////////////////////////////////////////////////////////////////////
-      NxAgeiaTerraPageLandActor::~NxAgeiaTerraPageLandActor(void)
-      {
-      }
+         //////////////////////////////////////////////////////////////////////
+         NxAgeiaTerraPageLandActor::~NxAgeiaTerraPageLandActor(void)
+         {
+         }
 
          #endif
 
@@ -505,10 +416,7 @@ namespace SimCore
 
             #ifdef AGEIA_PHYSICS
                NxAgeiaTerraPageLandActor &actor = static_cast<NxAgeiaTerraPageLandActor&>(GetGameActor());
-               std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-               actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-               for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-                  AddProperty(toFillIn[i].get());
+               actor.GetPhysicsHelper()->BuildPropertyMap();
             #endif
          }
 
@@ -534,6 +442,5 @@ namespace SimCore
             }
          }
 
-   } // namespace
-} // namespace
-
+   //} // namespace
+//} // namespace

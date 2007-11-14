@@ -62,21 +62,16 @@
 #include <dtGame/gameapplication.h>
 #include <dtGame/basemessages.h>
 
-#include <dtUtil/fileutils.h>
-
 #include <SimCore/Actors/TerrainActorProxy.h>
 
 #include <dtHLAGM/hlacomponent.h>
-
-#include <osgDB/FileNameUtils>
-
-#include <dtDAL/project.h>
 
 #ifdef AGEIA_PHYSICS
    #include <NxAgeiaWorldComponent.h>
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
    #include <NxAgeiaMaterialActor.h>
    #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+   #include <dtDAL/project.h>
 #endif
 
 using dtCore::RefPtr;
@@ -1407,29 +1402,7 @@ namespace StealthGM
    {
       if(mLogController.valid())
       {
-         std::string file = osgDB::getStrippedName(fileName);
-         dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(fileName);
-         
-         mLogController->RequestSetLogFile(file);
-         
-         dtGame::ServerLoggerComponent *serverComp = NULL;
-         GetGameManager()->GetComponentByName(dtGame::ServerLoggerComponent::DEFAULT_NAME, serverComp);
-         if(serverComp == NULL)
-         {
-            LOG_ERROR("ERROR: The ServerLoggerComponent was not found.");
-            return;
-         }
-         if(!info.path.empty())
-         {
-            LOG_DEBUG("Setting the record log directory to:" + info.path);
-            serverComp->SetLogDirectory(info.path);
-         }
-         else
-         {
-            LOG_DEBUG("Settings the record log directory to the current working directory. \
-                      This may or may not cause unpredictable behavior.");
-            serverComp->SetLogDirectory(".");
-         }
+         mLogController->RequestSetLogFile(fileName);
       }
    }
 
@@ -1441,7 +1414,7 @@ namespace StealthGM
       StealthHUD *hud = GetHUDComponent();
 
        if(firstPerson)
-       {
+      {
          if(!mAttachedMM.valid())
             return;
 
@@ -1493,7 +1466,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::EnableCameraCollision(bool enable)
    {
-      mCollideWithGround = enable;
+      mCollideWithGround = enable; 
 
       if(mStealthMM.valid())
          mStealthMM->SetCollideWithGround(mCollideWithGround);

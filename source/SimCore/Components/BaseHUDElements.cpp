@@ -31,6 +31,10 @@ namespace SimCore
 {
    namespace Components
    {
+      const std::string HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
+      const std::string HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
+
+
       //////////////////////////////////////////////////////////////////////////
       // Base HUD Element Exceptions Code
       //////////////////////////////////////////////////////////////////////////
@@ -61,58 +65,11 @@ namespace SimCore
          CEGUI::HA_RIGHT, CEGUI::VA_CENTRE);
       HUDAlignment HUDAlignment::RIGHT_BOTTOM("ALIGN RIGHT BOTTOM",
          CEGUI::HA_RIGHT, CEGUI::VA_BOTTOM);//*/
-
-      //////////////////////////////////////////////////////////////////////////
-      HUDAlignment& HUDAlignment::ClassifyAlignment( CEGUI::Window& window )
-      {
-         CEGUI::VerticalAlignment alignV = window.getVerticalAlignment();
-         switch( window.getHorizontalAlignment() )
-         {
-            case CEGUI::HA_RIGHT:
-            {
-               switch( alignV )
-               {
-                  case CEGUI::VA_BOTTOM: return HUDAlignment::RIGHT_BOTTOM;
-                  case CEGUI::VA_CENTRE: return HUDAlignment::RIGHT_CENTER;
-                  default:               return HUDAlignment::RIGHT_TOP;
-               }
-            }
-
-            case CEGUI::HA_CENTRE:
-            {
-               switch( alignV )
-               {
-                  case CEGUI::VA_BOTTOM: return HUDAlignment::CENTER_BOTTOM;
-                  case CEGUI::VA_CENTRE: return HUDAlignment::CENTER;
-                  default:               return HUDAlignment::CENTER_TOP;
-               }
-            }
-
-            default: // LEFT
-            {
-               switch( alignV )
-               {
-                  case CEGUI::VA_BOTTOM: return HUDAlignment::LEFT_BOTTOM;
-                  case CEGUI::VA_CENTRE: return HUDAlignment::LEFT_CENTER;
-                  default: break; // LEFT TOP. Break to allow a function-scope return statement.
-               }
-            }
-
-            // Default return. Avoids compile warnings.
-            return HUDAlignment::LEFT_TOP;
-         }
-      }
       
 
 
       //////////////////////////////////////////////////////////////////////////
       // HUD Element Code
-      //////////////////////////////////////////////////////////////////////////
-      const std::string HUDElement::DEFAULT_BLANK_TYPE("DefaultWindow");
-      const std::string HUDElement::DEFAULT_IMAGE_TYPE("WindowsLook/StaticImage");
-      const std::string HUDElement::DEFAULT_TEXT_TYPE("WindowsLook/StaticText");
-      const std::string HUDElement::PROPERTY_IMAGE("Image");
-
       //////////////////////////////////////////////////////////////////////////
       HUDElement::HUDElement( const std::string& name, const std::string& type )
          : dtCore::Base( name ),
@@ -131,16 +88,6 @@ namespace SimCore
             oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
             throw dtUtil::Exception(BaseHUDElementException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
          }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      HUDElement::HUDElement( CEGUI::Window& window )
-         : dtCore::Base(window.getName().c_str()),
-         mAlign(&HUDAlignment::ClassifyAlignment(window)),
-         mAbsPos(false),
-         mAbsSize(false)
-      {
-         mWindow = &window;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -330,16 +277,6 @@ namespace SimCore
          mWindow->show();
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetCEGUIImage( CEGUI::Window& window, 
-         const std::string& imagesetName, const std::string& imageName,
-         const std::string& imagePropertyName )
-      {
-         std::stringstream ss;
-         ss << "set:" << imagesetName << " image:" << imageName;
-         window.setProperty( imagePropertyName, ss.str() );
-      }
-
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -444,12 +381,6 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      HUDGroup::HUDGroup( CEGUI::Window& window )
-         : HUDElement(window)
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       HUDGroup::~HUDGroup()
       {
          if( ! mChildRefs.empty() ) { mChildRefs.clear(); }
@@ -494,47 +425,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDGroup::Has( const std::string& childName ) const
-      {
-         return mWindow->isChild( childName );
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       unsigned int HUDGroup::GetTotalElements() const
       {
          return (unsigned int) mChildRefs.size();
       }
-
-      //////////////////////////////////////////////////////////////////////////
-      CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch )
-      {
-         if( mWindow->isChild( childName ) )
-         {
-            return mWindow->getChild( childName );
-         }
-
-         if( deepSearch )
-         {
-            // TODO:
-         }
-         return NULL;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      const CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch ) const
-      {
-         if( mWindow->isChild( childName ) )
-         {
-            return mWindow->getChild( childName );
-         }
-
-         if( deepSearch )
-         {
-            // TODO:
-         }
-         return NULL;
-      }
-
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -952,16 +846,6 @@ namespace SimCore
       {
          SetProperty("FrameEnabled", "false");
          SetProperty("BackgroundEnabled", "false");
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      HUDToolbar::HUDToolbar( CEGUI::Window& window )
-         : HUDElement(window),
-         mHorizontal(true),
-         mStartSpace(0.0f),
-         mMidSpace(0.0f),
-         mEndSpace(0.0f)
-      {
       }
 
       //////////////////////////////////////////////////////////////////////////

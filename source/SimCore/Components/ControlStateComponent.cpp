@@ -57,7 +57,7 @@ namespace SimCore
       const std::string ControlStateComponent::DOF_NAME_WEAPON("dof_gun_01");
       const std::string ControlStateComponent::DOF_NAME_WEAPON_HOTSPOT("hotspot_01");
 
-      const int ControlStateComponent::VEHICLE_STATION_TYPE = -1;
+      const unsigned ControlStateComponent::VEHICLE_STATION_TYPE = -1;
 
       ////////////////////////////////////////////////////////////////////////////////
       ControlStateComponent::ControlStateComponent( const std::string& name )

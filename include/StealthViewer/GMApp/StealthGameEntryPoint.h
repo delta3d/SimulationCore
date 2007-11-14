@@ -75,26 +75,21 @@ namespace StealthGM
          virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
 
          /**
-          * Override the method to create the game manager.
-          */
-         //virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
-
-         /**
           * Called after all startup related code is run.
           * @param app the current application
           */
-         virtual void OnStartup(dtGame::GameApplication& app);
+         virtual void OnStartup();
 
-         virtual void OnShutdown(dtGame::GameApplication& app);
+         virtual void OnShutdown();
 
       protected:
          /**
           * Create and add enabled tools to the input component
           * and the HUD toolbar
           */
-         virtual void InitializeTools(dtGame::GameManager &gm);
+         virtual void InitializeTools();
 
-         virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
+         virtual void HLAConnectionComponentSetup();
 
       private:
          //dtCore::RefPtr<dtGame::DeadReckoningComponent> mDrComp;

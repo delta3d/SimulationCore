@@ -62,11 +62,9 @@ namespace SimCore
             static HUDAlignment RIGHT_CENTER;
             static HUDAlignment RIGHT_BOTTOM;
 
-            static HUDAlignment& ClassifyAlignment( CEGUI::Window& window );
-
             CEGUI::HorizontalAlignment GetAlignH() const { return mAlignH; }
             CEGUI::VerticalAlignment GetAlignV() const { return mAlignV; }
-            
+
          private:
             HUDAlignment(const std::string &name, 
                CEGUI::HorizontalAlignment alignH, CEGUI::VerticalAlignment alignV ) 
@@ -88,16 +86,12 @@ namespace SimCore
       class SIMCORE_EXPORT HUDElement : public dtCore::Base
       {
          public:
-            static const std::string DEFAULT_BLANK_TYPE;
             static const std::string DEFAULT_IMAGE_TYPE;
             static const std::string DEFAULT_TEXT_TYPE;
-            static const std::string PROPERTY_IMAGE;
 
             // @param type The defined CEGUI window type
             // @name The name of this element
             HUDElement( const std::string& name, const std::string& type );
-
-            HUDElement( CEGUI::Window& window );
 
             CEGUI::Window* GetCEGUIWindow() { return mWindow; }
             const CEGUI::Window* GetCEGUIWindow() const { return mWindow; }
@@ -131,12 +125,6 @@ namespace SimCore
 
             bool IsAbsolutePosition() const { return mAbsPos; }
             bool IsAbsoluteSize() const { return mAbsSize; }
-
-            // Utility funtion
-            void SetCEGUIImage( CEGUI::Window& window, 
-               const std::string& imagesetName,
-               const std::string& imageName,
-               const std::string& imagePropertyName = HUDElement::PROPERTY_IMAGE );
 
          protected:
             virtual ~HUDElement();
@@ -200,20 +188,13 @@ namespace SimCore
          public:
             HUDGroup( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
 
-            HUDGroup( CEGUI::Window& window );
-
             bool Add( HUDElement* child );
 
             bool Remove( HUDElement* child );
 
             bool Has( const HUDElement& child ) const;
 
-            bool Has( const std::string& childName ) const;
-
             unsigned int GetTotalElements() const;
-
-            CEGUI::Window* GetCEGUIChild( const std::string& childName, bool deepSearch = false );
-            const CEGUI::Window* GetCEGUIChild( const std::string& childName, bool deepSearch = false ) const;
 
          protected:
             virtual ~HUDGroup();
@@ -267,7 +248,6 @@ namespace SimCore
       {
       public:
          HUDToolbar( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
-         HUDToolbar( CEGUI::Window& window );
 
          void SetHorizontal( bool horizontal ) { mHorizontal = horizontal; }
          bool IsHorizontal() const { return mHorizontal; }

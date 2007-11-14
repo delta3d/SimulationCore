@@ -37,7 +37,6 @@
 #include <SimCore/Components/HLAConnectionComponent.h>
 
 #include <dtUtil/stringutils.h>
-#include <dtUtil/fileutils.h>
 
 #include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
@@ -632,28 +631,11 @@ namespace StealthQt
       if(msgFile.isEmpty())
          return;
 
-      dtUtil::FileUtils &instance = dtUtil::FileUtils::GetInstance();
-      if(!instance.FileExists(msgFile.toStdString()))
-      {
-         // The file selected does not exist. 
-         // So, create it and prompt if the create fails.
-         std::ofstream out(msgFile.toStdString().c_str());
-         if(!out.is_open())
-         {
-            QMessageBox::warning(this, tr("Error"), 
-                                 tr("An error occurred trying to create the \
-                                 file. Please select another file."), 
-                                 QMessageBox::Ok);
-            return;
-         }
-         out.close();
-      }
-
       std::string msg = osgDB::getStrippedName(msgFile.toStdString());
 
       if(!msg.empty())
       {
-         recordObject.SetOutputFilename(msgFile.toStdString());
+         recordObject.SetOutputFilename(msg);
 
          mUi->mRecordStartButton->setEnabled(true);
          mUi->mRecordFileLineEdit->setText(tr(msg.c_str()));
@@ -776,7 +758,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject = 
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      pbObject.SetInputFilename(msgFile.toStdString());
+      pbObject.SetInputFilename(msg);
 
       //EnablePlaybackButtons(true);
       mUi->mPlaybackPlayPushButton->setEnabled(true);
@@ -816,7 +798,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject = 
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      if(mUi->mPlaybackFileLineEdit->text().isEmpty())
+      if(pbObject.GetInputFilename().empty())
       {
          QMessageBox::warning(this, tr("Please select an input file"), 
             tr("Please select an input file that contains record data to playback"), 
@@ -830,17 +812,13 @@ namespace StealthQt
       if(mIsPlayingBack)
       {
          mUi->mPlaybackPlayPushButton->setText(tr("Stop"));
-         mUi->mPlaybackDurationLineEdit->setText("0");
-
          pbObject.BeginPlayback();
+         mUi->mPlaybackDurationLineEdit->setText("0");
          mDurationTimer.start();
       }
       else
       {
          mUi->mPlaybackPlayPushButton->setText(tr("Play"));
-         mUi->mSearchEntityTableWidget->clear();
-         mUi->mPlaybackTimeMarkersTextBox->clear();
-
          pbObject.EndPlayback();
          mDurationTimer.stop();
       }
