@@ -510,11 +510,22 @@ namespace SimCore
          void SetColor( float r, float g, float b, float a );
          void GetColor( osg::Vec4& outColor ) const;
 
+         void SetAlpha( float alpha );
+         float GetAlpha() const;
+
          virtual void SetVisible( bool visible );
          bool IsVisible() const { return mVisible; }
          virtual void Show();
          virtual void Hide();
 
+         osg::Geode* GetGeode();
+         const osg::Geode* GetGeode() const;
+
+         bool Has( HUDQuadElement& element ) const;
+         bool Add( HUDQuadElement& element, int index = -1 );
+         bool Remove( HUDQuadElement& element );
+
+         unsigned GetTotalChildren() const;
 
       protected:
          virtual ~HUDQuadElement();
@@ -530,6 +541,7 @@ namespace SimCore
          osg::ref_ptr<osg::Vec4Array> mColor;
          osg::ref_ptr<osg::MatrixTransform> mTrans;
          osg::ref_ptr<osg::Group> mRoot;
+         osg::ref_ptr<osg::Geode> mGeode;
 
          osg::Vec3 mPos;
       };
