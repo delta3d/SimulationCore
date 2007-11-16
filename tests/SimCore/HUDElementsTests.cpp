@@ -912,6 +912,9 @@ void HUDElementsTests::TestHUDQuadElement()
    osg::Vec4 testColor, outColor;
    float testRotate = 0.0f;
 
+   // Test geode access
+   CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have created geometry", quad->GetGeode() != NULL );
+
    // Test size
    testVec2.set( 0.5f, 0.2f );
    quad->SetSize( testVec2[0], testVec2[1] );
@@ -944,6 +947,11 @@ void HUDElementsTests::TestHUDQuadElement()
    CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have a new color",
       testVec3 == outVec3 );
 
+   // Test Alpha
+   CPPUNIT_ASSERT( quad->GetAlpha() == 1.0f );
+   quad->SetAlpha( 0.5f );
+   CPPUNIT_ASSERT( quad->GetAlpha() == 0.5f );
+
    // Test rotation
    CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have a default rotation of 0",
       testRotate == quad->GetRotation() );
@@ -969,6 +977,48 @@ void HUDElementsTests::TestHUDQuadElement()
    quad->SetVisible( true );
    CPPUNIT_ASSERT_MESSAGE( "HUD Quad should now be visible again",
       quad->IsVisible() );
+
+
+   // Test Addition of child quads
+   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child1 = new SimCore::Components::HUDQuadElement("Child1");
+   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child2 = new SimCore::Components::HUDQuadElement("Child2");
+   dtCore::RefPtr<SimCore::Components::HUDQuadElement> child3 = new SimCore::Components::HUDQuadElement("Child3");
+   // --- Ensure there are no children by default
+   CPPUNIT_ASSERT( quad->GetTotalChildren() == 0 );
+   CPPUNIT_ASSERT( ! quad->Has( *child1 ) );
+   CPPUNIT_ASSERT( ! quad->Has( *child2 ) );
+   CPPUNIT_ASSERT( ! quad->Has( *child3 ) );
+
+   // --- Add the children
+   CPPUNIT_ASSERT( quad->Add( *child1 ) );
+   CPPUNIT_ASSERT( quad->Add( *child2 ) );
+   CPPUNIT_ASSERT( quad->Add( *child3 ) );
+   CPPUNIT_ASSERT( quad->Has( *child1 ) );
+   CPPUNIT_ASSERT( quad->Has( *child2 ) );
+   CPPUNIT_ASSERT( quad->Has( *child3 ) );
+   CPPUNIT_ASSERT( quad->GetTotalChildren() == 3 );
+
+   // --- Adding self MUST fail!
+   CPPUNIT_ASSERT( ! quad->Add( *quad ) );
+   // --- Ensure adding the same children again fails
+   CPPUNIT_ASSERT( ! quad->Add( *child1 ) );
+   CPPUNIT_ASSERT( ! quad->Add( *child2 ) );
+   CPPUNIT_ASSERT( ! quad->Add( *child3 ) );
+   CPPUNIT_ASSERT( quad->GetTotalChildren() == 3 );
+
+
+   // Test Removal of child quads
+   CPPUNIT_ASSERT( quad->Remove( *child1 ) );
+   CPPUNIT_ASSERT( quad->Remove( *child2 ) );
+   CPPUNIT_ASSERT( quad->Remove( *child3 ) );
+   CPPUNIT_ASSERT( ! quad->Has( *child1 ) );
+   CPPUNIT_ASSERT( ! quad->Has( *child2 ) );
+   CPPUNIT_ASSERT( ! quad->Has( *child3 ) );
+   CPPUNIT_ASSERT( quad->GetTotalChildren() == 0 );
+   // --- Ensure removal fails for the children that were just removed previously.
+   CPPUNIT_ASSERT( ! quad->Remove( *child1 ) );
+   CPPUNIT_ASSERT( ! quad->Remove( *child2 ) );
+   CPPUNIT_ASSERT( ! quad->Remove( *child3 ) );
 }
 
 

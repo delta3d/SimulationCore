@@ -146,7 +146,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-         if( mWindow != NULL ) mWindow->destroy();
+//         if( mWindow != NULL ) mWindow->destroy();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1283,7 +1283,7 @@ namespace SimCore
          mRotation(0.0f)
       {
          mRoot = new osg::Group();
-         osg::Geode* geode = new osg::Geode();
+         mGeode = new osg::Geode();
 
          osg::Projection* projection = new osg::Projection;
          projection->setMatrix(osg::Matrix::ortho2D(0,1.0f,0,WIN_HEIGHT_RATIO));
@@ -1295,7 +1295,7 @@ namespace SimCore
          // Setup the node tree
          mRoot->addChild(projection);
          projection->addChild(mTrans.get());
-         mTrans->addChild( geode );
+         mTrans->addChild( mGeode.get() );
 
          // VERTICES
          mVerts = new osg::Vec3Array;
@@ -1369,8 +1369,8 @@ namespace SimCore
          geometry->setColorArray(mColor.get());
          geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-         geode->setStateSet(states);
-         geode->addDrawable(geometry);
+         mGeode->setStateSet(states);
+         mGeode->addDrawable(geometry);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1384,6 +1384,51 @@ namespace SimCore
                parent->removeChild( mRoot.get() );
             }
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDQuadElement::Has( HUDQuadElement& element ) const
+      {
+         return mRoot->getNumChildren() != mRoot->getChildIndex( element.mRoot.get() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDQuadElement::Add( HUDQuadElement& element, int index )
+      {
+         unsigned numChildren = mRoot->getNumChildren();
+         unsigned safeIndex = mRoot->getChildIndex( element.mRoot.get() );
+
+         // Avoid adding new child if it already exists
+         if( safeIndex != numChildren || &element == this )
+         {
+            return false;
+         }
+
+         // Modify the safe index
+         if( index < 0 || index >= int(numChildren) )
+         {
+            // Index was out of range and unsafe.
+            safeIndex = numChildren;
+         }
+         else
+         {
+            // User supplied index is safe.
+            safeIndex = unsigned(index);
+         }
+
+         return mRoot->insertChild( safeIndex, element.mRoot.get() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDQuadElement::Remove( HUDQuadElement& element )
+      {
+         return mRoot->removeChild( element.mRoot.get() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned HUDQuadElement::GetTotalChildren() const
+      {
+         return mRoot->getNumChildren() - 1; // -1 for the root's first main child 
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1486,6 +1531,19 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void HUDQuadElement::SetAlpha( float alpha )
+      {
+         mAlpha = alpha;
+         (*mColor)[0][3] = alpha;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float HUDQuadElement::GetAlpha() const
+      {
+         return mAlpha;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void HUDQuadElement::SetVisible( bool visible )
       {
          mVisible = visible;
@@ -1509,6 +1567,18 @@ namespace SimCore
       void HUDQuadElement::Hide()
       {
          SetVisible(false);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::Geode* HUDQuadElement::GetGeode()
+      {
+         return mGeode.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Geode* HUDQuadElement::GetGeode() const
+      {
+         return mGeode.get();
       }
 
    }
