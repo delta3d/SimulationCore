@@ -100,11 +100,6 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 
          mGM = new dtGame::GameManager(*mScene);
          mGM->SetApplication( *mApp );
-
-         mCamera = new dtCore::Camera();
-         mCamera->SetScene(mScene.get());
-         mCamera->SetWindow(mApp->GetWindow());
-
          mTarget = new dtCore::Transformable();
          mAttachable = new dtCore::Transformable();
 
@@ -115,7 +110,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 
          // Setup the transformable hierarchy
          mMotionModel->SetTarget( mAttachable.get() );
-         mAttachable->AddChild( mCamera.get() );
+         mAttachable->AddChild( mApp->GetCamera() );
          mTarget->AddChild( mAttachable.get() );
 
          dtCore::System::GetInstance().Config();
@@ -136,9 +131,6 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
             mScene->RemoveAllDrawables();
          }
          mScene = NULL;
-         mCamera->SetScene(NULL);
-         mCamera->SetWindow(NULL);
-         mCamera = NULL;
 
          mGM->DeleteAllActors(true);
          mGM = NULL;
@@ -309,7 +301,6 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       dtCore::RefPtr<dtCore::Scene> mScene;
       dtCore::RefPtr<dtCore::Transformable> mTarget;
       dtCore::RefPtr<dtCore::Transformable> mAttachable;
-      dtCore::RefPtr<dtCore::Camera> mCamera;
       dtCore::RefPtr<dtABC::Application> mApp;
 };
 

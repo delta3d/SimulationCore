@@ -50,11 +50,13 @@ namespace SimCore
          mElevationText(NULL),
          mCamera(&camera),
          mOverlay(NULL),
-         mOriginalHFOV(camera.GetHorizontalFov()),
-         mOriginalVFOV(camera.GetVerticalFov()),
+         // TODO-UPGRADE /////////////////////////////////
+         mOriginalHFOV(1.0f/*camera.GetHorizontalFov()*/),
+         mOriginalVFOV(1.0f/*camera.GetVerticalFov()*/),
+         /////////////////////////////////////////////////
          mOriginalNear(NEAR_CLIPPING_PLANE),
          mOriginalFar(FAR_CLIPPING_PLANE),
-         mOriginalLODScale(camera.GetSceneHandler()->GetSceneView()->getLODScale()),
+         mOriginalLODScale(camera.GetOSGCamera()->getLODScale()),
          mIsDynamicZooming(false), 
          mZoomFactor(7.0f)
  	   {
@@ -76,10 +78,11 @@ namespace SimCore
             mRecticle->setProperty("BackgroundEnabled", "false");
             mRecticle->setProperty("FrameEnabled", "false");
 
-            if(mCamera->GetAspectRatio() < 1.47)
+            // TODO-UPGRADE
+            /*if(mCamera->GetAspectRatio() < 1.47)
                mRecticle->setProperty("Image", "set:Binoculars4.3 image:Binoculars4.3");
             else
-               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5");
+               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5"); */
             mOverlay->addChildWindow(mRecticle);
 
             if(!isLRF)
@@ -155,7 +158,7 @@ namespace SimCore
          else
          {
             mOverlay->hide();
-            mCamera->GetSceneHandler()->GetSceneView()->setLODScale(mOriginalLODScale);
+            mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
             mCamera->SetPerspective(mOriginalHFOV, mOriginalVFOV, mOriginalNear, mOriginalFar);
          }
       }
@@ -189,8 +192,11 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         float vfov = mCamera->GetVerticalFov();
-         float hfov = mCamera->GetHorizontalFov();
+         // TODO-UPGRADE
+         ///////////////////////////////////////////
+         float vfov = 1.0f;//mCamera->GetVerticalFov();
+         float hfov = 1.0f;//mCamera->GetHorizontalFov();
+         ///////////////////////////////////////////
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -225,6 +231,8 @@ namespace SimCore
          // Check to see if we are already zoomed in
          if(vfov == mOriginalVFOV && hfov == mOriginalHFOV)
          {
+            // TODO-UPGRADE
+            /*
             if(mCamera->GetAspectRatio() < 1.47)
             {
                vfov /= (mZoomFactor *= 1.135f);
@@ -235,13 +243,14 @@ namespace SimCore
                vfov /= (mZoomFactor *= 1.103f);
                hfov /= (mZoomFactor *= 1.103f);
             }
+            */
          }
           else
             return;
 
-         mOriginalLODScale = mCamera->GetSceneHandler()->GetSceneView()->getLODScale();
+         mOriginalLODScale = mCamera->GetOSGCamera()->getLODScale();
          float newZoom = (1.0f / mZoomFactor) * mOriginalLODScale;
-         mCamera->GetSceneHandler()->GetSceneView()->setLODScale(newZoom);
+         mCamera->GetOSGCamera()->setLODScale(newZoom);
          mCamera->SetPerspective(hfov, vfov, NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
       }
 
@@ -256,8 +265,11 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         float vfov = mCamera->GetVerticalFov();
-         float hfov = mCamera->GetHorizontalFov();
+         // TODO-UPGRADE
+         ///////////////////////////////////////////
+         float vfov = 1.0f;//mCamera->GetVerticalFov();
+         float hfov = 1.0f;//mCamera->GetHorizontalFov();
+         ///////////////////////////////////////////
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -283,7 +295,7 @@ namespace SimCore
          else
             return;
 
-         mCamera->GetSceneHandler()->GetSceneView()->setLODScale(mOriginalLODScale);
+         mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
          mCamera->SetPerspective(hfov, vfov, NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
       }
 

@@ -183,7 +183,9 @@ namespace SimCore
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
          GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
-         GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->setSceneData(mSceneRoot.get());
+         // TODO-UPGRADE ///////////////////////////////////////////////////////////////////////////////
+         //GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getOs->setSceneData(mSceneRoot.get());
+         ///////////////////////////////////////////////////////////////////////////////////////////////
 
          mSceneRoot->addChild(mNVGSRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
@@ -197,6 +199,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
       {        
+         // TODO-UPGRADE 
+         /*
          osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView();
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
@@ -209,6 +213,7 @@ namespace SimCore
          sceneView->setCullingMode(flags);
 
          sceneView->setCullVisitor(mCullVisitor.get());
+         */
       }
 
 
@@ -391,7 +396,7 @@ namespace SimCore
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
          osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
    
-         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetCamera()->getViewMatrix());
+         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getViewMatrix());
 
          osg::Matrix viewInverse;
          viewInverse.invert(mat);

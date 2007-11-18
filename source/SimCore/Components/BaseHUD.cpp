@@ -22,6 +22,8 @@
 #include <dtGUI/basescriptmodule.h>
 #include <dtUtil/fileutils.h>
 
+#include <dtABC/application.h>
+
 #include <SimCore/Components/BaseHUDElements.h>
 #include <osg/MatrixTransform>
 #include <osg/Matrix>
@@ -61,8 +63,9 @@ namespace SimCore
          mScriptModule(new dtGUI::ScriptModule()),
          mHUDState(&HUDState::MINIMAL)
       {
+         dtABC::Application &app = GetGameManager()->GetApplication();
          // Initialize CEGUI
-         mGUI = new dtGUI::CEUIDrawable(win,mScriptModule);
+         mGUI = new dtGUI::CEUIDrawable(win, app.GetKeyboard(), app.GetMouse(), mScriptModule);
 
          osg::StateSet* ss = mGUI->GetOSGNode()->getOrCreateStateSet();
          ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "DepthSortedBin");

@@ -201,7 +201,6 @@ namespace SimCore
             dtCore::RefPtr<dtGame::GameManager> mGM;
             dtCore::RefPtr<TestWeatherComponent> mWeatherComp;
             dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<dtCore::Camera> mCamera;
             dtCore::RefPtr<dtABC::Application> mApp;
 
             dtCore::RefPtr<Actors::IGEnvironmentActorProxy> mEnv;
@@ -232,9 +231,6 @@ namespace SimCore
             mMachineInfo = new dtGame::MachineInfo;
             mWeatherComp = new TestWeatherComponent;
 
-            mCamera = new dtCore::Camera();
-            mCamera->SetScene(scene.get());
-
             mGM->AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
             MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
 
@@ -252,9 +248,6 @@ namespace SimCore
       void WeatherComponentTests::tearDown()
       {
          dtCore::System::GetInstance().Stop();
-
-         mCamera->SetScene(NULL);
-         mCamera = NULL;
 
          mApp = NULL;
 

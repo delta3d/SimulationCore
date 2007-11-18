@@ -460,22 +460,16 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
    {
-
       AssignProjectContext(*app.GetGameManager());
       PreLoadMap();
       
       dtGame::GameManager &gameManager = *app.GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
-       
-      camera->GetSceneHandler()->GetSceneView()->
-         setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
-         //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
-         //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
-
-      camera->GetSceneHandler()->GetSceneView()->
-         setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
-      //camera->GetSceneHandler()->GetSceneView()->
+      camera->GetOSGCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+	   camera->GetOSGCamera()->setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
+      
+	   //camera->GetSceneHandler()->GetSceneView()->
       //   setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING | 
       //      osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING | 
       //      osg::CullSettings::VIEW_FRUSTUM_SIDES_CULLING);
@@ -486,19 +480,19 @@ namespace SimCore
       camera->SetPerspective(60.0f, 60.0f,
                              PLAYER_NEAR_CLIP_PLANE, 
                              PLAYER_FAR_CLIP_PLANE);
-      camera->GetSceneHandler()->GetSceneView()->
-         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
-                             PLAYER_FAR_CLIP_PLANE);
+      
+	   camera->GetOSGCamera()->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
-
-      if(mAspectRatio == 0.0f)
+	   if(mAspectRatio == 0.0f)
       {
-         double defaultAspectRatio = camera->GetAspectRatio();
-         camera->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
+         // TODO-UPGRADE
+         //double defaultAspectRatio = camera->GetAspectRatio();
+         //camera->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
       }
       else
       {
-         camera->SetAspectRatio(mAspectRatio);
+         // TODO-UPGRADE
+         //camera->SetAspectRatio(mAspectRatio);
       }
 
       camera->AddChild(dtAudio::AudioManager::GetListener());
@@ -546,7 +540,7 @@ namespace SimCore
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 
-      drComp->SetHighResGroundClampingRange(200.0f);
+      drComp->GetGroundClamper().SetHighResGroundClampingRange(200.0f);
 
       mWeatherComp->SetUpdatesEnabled(!mIsUIRunning);
       //mWeatherComp->SetUseEphemeris(mIsUIRunning);

@@ -58,15 +58,6 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          // Scene needs to exist before a window
          mScene = new dtCore::Scene();
 
-         // A window & camera are needed to allow terrain
-         // to generate geometry.
-         mWin = new dtCore::DeltaWin();
-         mWin->SetPosition(0, 0, 50, 50);
-
-         mCamera = new dtCore::Camera();
-         mCamera->SetScene(mScene.get());
-         mCamera->SetWindow(mWin.get());
-
          mTerrain = new dtCore::InfiniteTerrain( "Ground" );
          mTerrain->SetBuildDistance(1500.f);
          mTerrain->SetSegmentDivisions(64);
@@ -101,10 +92,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mTarget = NULL;
          mTerrain = NULL;
          mTerrainAlternate = NULL;
-         mCamera->SetScene(NULL);
-         mCamera->SetWindow(NULL);
-         mCamera = NULL;
-         mWin = NULL;
+        
          dtCore::System::GetInstance().Stop();
       }
       
@@ -232,9 +220,6 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrain;
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrainAlternate;
       dtCore::RefPtr<dtCore::Transformable> mTarget;
-      dtCore::RefPtr<dtCore::Camera> mCamera;
-      dtCore::RefPtr<dtCore::DeltaWin> mWin;
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StealthMotionModelTests);

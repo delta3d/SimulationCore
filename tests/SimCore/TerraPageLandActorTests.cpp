@@ -46,9 +46,6 @@ class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
      dtCore::RefPtr<dtUtil::Log> mLogger;
 
      dtCore::RefPtr<dtCore::Scene> mScene;
-     dtCore::RefPtr<dtCore::Camera> mCamera;
-     dtCore::RefPtr<dtCore::DeltaWin> mWin;
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TerraPageLandActorTests);
@@ -64,11 +61,7 @@ void TerraPageLandActorTests::setUp()
    mApplication = new dtABC::Application("config.xml");
 
    mScene = new dtCore::Scene();
-   mWin = new dtCore::DeltaWin();
-   mWin->SetPosition(0, 0, 50, 50);
-   mCamera = new dtCore::Camera();
-   mCamera->SetScene(mScene.get());
-   mCamera->SetWindow(mWin.get());
+   
    dtCore::System::GetInstance().Config();
   
    mGM = new dtGame::GameManager(*mScene.get());

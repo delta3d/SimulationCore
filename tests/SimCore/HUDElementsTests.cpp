@@ -142,7 +142,7 @@ void HUDElementsTests::setUp()
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication(*mApp);
 
-   mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow());
+   mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow(), mApp->GetKeyboard(), mApp->GetMouse());
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();

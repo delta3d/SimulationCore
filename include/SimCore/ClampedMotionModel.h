@@ -24,10 +24,10 @@
 
 #include <SimCore/Export.h>
 #include <SimCore/AttachedMotionModel.h>
+#include <SimCore/Components/ArticulationHelper.h>
+
 #include <dtCore/observerptr.h>
 #include <dtCore/mouse.h>
-#include <Producer/KeyboardMouse>
-#include <SimCore/Components/ArticulationHelper.h>
 
 #include <osgSim/DOFTransform>
 
@@ -168,8 +168,8 @@ namespace SimCore
          /**
           * Determines if a keyboard key must be held to cause this motion model to rotate
           */
-         void SetFreeLookKey( Producer::KeyboardKey key ) { mFreeLookKey = key; }
-         Producer::KeyboardKey GetFreeLookKey() const { return mFreeLookKey; }
+         void SetFreeLookKey( int key ) { mFreeLookKey = key; }
+         int GetFreeLookKey() const { return mFreeLookKey; }
 
          /**
           * Determines if a mouse button must be held to cause this motion model to rotate
@@ -224,7 +224,7 @@ namespace SimCore
       private:
 
          // The key that needs to be held to enable free-look
-         Producer::KeyboardKey mFreeLookKey;
+         int mFreeLookKey;
          dtCore::Mouse::MouseButton mFreeLookMouseButton;
 
          // Determines if a modifier keyboard key needs to be held to

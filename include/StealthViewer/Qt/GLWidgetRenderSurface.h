@@ -14,8 +14,6 @@
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QTimer>
 
-#include <Producer/Keyboard>
-
 namespace dtCore
 {
    class DeltaWin;
@@ -52,7 +50,7 @@ namespace StealthQt
          static QGLFormat GetDefaultGLFormat();
 
       private: 
-         Producer::KeyCharacter GetProducerKey(QKeyEvent& event) const;
+         int GetKey(QKeyEvent& event) const;
          
          void ConvertMouseXYFromWindowSpace(int x, int y, float& fx, float& fy) const;
          

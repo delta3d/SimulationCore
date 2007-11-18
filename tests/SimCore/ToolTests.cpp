@@ -99,7 +99,7 @@ void ToolTests::setUp()
       mGM->SetApplication(*mApp);
       dtCore::System::GetInstance().Step();
 
-      mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow());
+      mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow(), mApp->GetKeyboard(), mApp->GetMouse());
       SimCore::SetupCEGUI();
    }
    catch(const dtUtil::Exception &e) 

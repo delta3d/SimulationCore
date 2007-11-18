@@ -463,38 +463,40 @@ namespace StealthGM
       }
    }
    
-   bool StealthInputComponent::HandleKeyPressed(const dtCore::Keyboard* keyboard,
-                                          Producer::KeyboardKey key,
-                                          Producer::KeyCharacter character)
+   bool StealthInputComponent::HandleKeyPressed(const dtCore::Keyboard* keyboard, int key)
    {
    
       bool handled = true;
       switch(key)
       {
-         case Producer::Key_equal:
+         case '=':
          {
             ChangeFlyMotionModelSpeed(true);
          }
          break;
    
-         case Producer::Key_minus:
+         case '-':
          {
             ChangeFlyMotionModelSpeed(false);
          }
          break;
 
-         case Producer::Key_backslash:
-         case Producer::Key_Insert:
+         case '"\"':
+         case osgGA::GUIEventAdapter::KEY_Insert:
          {
             std::string developerMode;
             developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue
                (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
-            if (developerMode == "true" || developerMode == "1")
-               GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
+            if(developerMode == "true" || developerMode == "1")
+            {
+               // TODO-UPGRADE //////////////////////////////////////////////////////////
+               //GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
+               //////////////////////////////////////////////////////////////////////////
+            }
          }
          break;
    
-         case Producer::Key_9:
+         case '9':
          {
             dtCore::Transform xform;
             mStealthActor->GetTransform(xform);
@@ -505,19 +507,19 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_comma:
+         case ',':
          {
             Cycle(false, true);
          }
          break;
    
-         case Producer::Key_period:
+         case '.':
          {
             Cycle(true, true);
          }
          break;
    
-         case Producer::Key_P:
+         case 'p':
          {
             std::string developerMode;
             developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue("DeveloperMode");
@@ -526,7 +528,7 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_L:
+         case 'l':
          {
             RefPtr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             SimCore::AttachToActorMessage &atamsg = static_cast<SimCore::AttachToActorMessage&>(*msg);
@@ -546,19 +548,19 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_O:
+         case 'o':
          {
             IncrementTime(5);
          }
          break;
    
-         case Producer::Key_I:
+         case 'i':
          {
             IncrementTime(-5);
          }
          break;
    
-         case Producer::Key_M:
+         case 'm':
          {
             if(!mHasUI)
             {
@@ -571,30 +573,30 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_F1:
+         case osgGA::GUIEventAdapter::KEY_F1:
             HandleHelpPressed();
             break;
    
-         case Producer::Key_F2:
+         case osgGA::GUIEventAdapter::KEY_F2:
             if (GetHUDComponent() != NULL )
             {
                mHUDComponent->CycleToNextHUDState(); // already in help, so toggle it off
             }
             break;
 
-         case Producer::Key_F7:
+         case osgGA::GUIEventAdapter::KEY_F7:
             {
                ToggleTool(SimCore::MessageType::NIGHT_VISION);
             }
             break;
    
-         case Producer::Key_F8:
+         case osgGA::GUIEventAdapter::KEY_F8:
             {
                ToggleTool(SimCore::MessageType::COMPASS);
             }
             break;
    
-         case Producer::Key_F9:
+         case osgGA::GUIEventAdapter::KEY_F9:
             {
                if(GetTool(SimCore::MessageType::BINOCULARS)->GetPlayerActor() == NULL)
                {
@@ -605,26 +607,26 @@ namespace StealthGM
             }
             break;
    
-         case Producer::Key_F10:
+         case osgGA::GUIEventAdapter::KEY_F10:
             {
                ToggleTool(SimCore::MessageType::LASER_RANGE_FINDER);
             }
             break;
    
-         case Producer::Key_F11:
+         case osgGA::GUIEventAdapter::KEY_F11:
             {
                ToggleTool(SimCore::MessageType::GPS);
             }
             break;
    
-         case Producer::Key_F12:
+         case osgGA::GUIEventAdapter::KEY_F12:
             {
                //ToggleTool(SimCore::MessageType::MAP);
             }
             break;
    
-         case Producer::Key_Shift_L:
-         case Producer::Key_Shift_R:
+         case osgGA::GUIEventAdapter::KEY_Shift_L:
+         case osgGA::GUIEventAdapter::KEY_Shift_R:
             {
                if ( mStealthActor.valid() && !mStealthActor->IsRemote())
                {
@@ -644,7 +646,7 @@ namespace StealthGM
          /////////////////////////////////
    
          // STOP A RECORD OR PLAYBACK
-         case Producer::Key_1:
+         case '1':
          {
             if(!mHasUI)
             {
@@ -654,7 +656,7 @@ namespace StealthGM
          break;
    
          // RECORD
-         case Producer::Key_2:
+         case '2':
          {
             if(!mHasUI)
             {
@@ -664,7 +666,7 @@ namespace StealthGM
          break;
    
          // PLAYBACK
-         case Producer::Key_3:
+         case '3':
          {
             if(!mHasUI)
             {
@@ -674,7 +676,7 @@ namespace StealthGM
          break;
    
          // PAUSE THE PLAYBACK
-         case Producer::Key_6:
+         case '6':
          {
             if(!mHasUI)
             {
@@ -684,7 +686,7 @@ namespace StealthGM
          break;
    
          // SPEED CHANGES FOR AAR PLAYBACK - SLOWER
-         case Producer::Key_7:
+         case '7':
          {
             if(!mHasUI)
             {
@@ -694,7 +696,7 @@ namespace StealthGM
          break;
    
          // SPEED CHANGES FOR AAR PLAYBACK - FASTER
-         case Producer::Key_8:
+         case '8':
          {
             if(!mHasUI)
             {
@@ -703,7 +705,7 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_bracketleft:
+         case '[':
          {
             if(!mHasUI)
             {
@@ -712,7 +714,7 @@ namespace StealthGM
          }
          break;
    
-         case Producer::Key_bracketright:
+         case ']':
          {
             if(!mHasUI)
             {
@@ -723,7 +725,7 @@ namespace StealthGM
 
          // Escaping or quitting when launched from Qt is BAD. Set flag so these
          // won't be processed by the base class
-         case Producer::Key_Escape:
+         case osgGA::GUIEventAdapter::KEY_Escape:
          {
             if(mHasUI)
             {
@@ -732,12 +734,12 @@ namespace StealthGM
          }
          break;
 
-         case Producer::Key_X:
+         case 'x':
          {
             dtABC::Application &app = GetGameManager()->GetApplication();
 
-            if(app.GetKeyboard()->GetKeyState(Producer::Key_Alt_L) ||
-               app.GetKeyboard()->GetKeyState(Producer::Key_Alt_R))
+            if(app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_L) ||
+               app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_R))
             {
                if(mHasUI)
                {
@@ -754,7 +756,7 @@ namespace StealthGM
       }
    
       if(!handled)
-         return SimCore::Components::BaseInputComponent::HandleKeyPressed(keyboard, key, character);
+         return SimCore::Components::BaseInputComponent::HandleKeyPressed(keyboard, key);
       
       return handled;
    }

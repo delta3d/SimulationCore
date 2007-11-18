@@ -482,7 +482,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             
             CPPUNIT_ASSERT(BICscale == 1.0f);
 
-            bic->HandleKeyPressed(NULL, Producer::Key_Page_Up, Producer::KeyChar_Page_Up);
+            bic->HandleKeyPressed(NULL, osgGA::GUIEventAdapter::KEY_Page_Up);
             
             BICscale = bic->GetEntityMagnification();
 

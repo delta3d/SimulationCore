@@ -87,11 +87,15 @@ namespace StealthGM
       }
       // no weather component, so we update the clip planes by hand
       else
-         camera->SetPerspective(camera->GetHorizontalFov(), camera->GetVerticalFov(), 
-            GetNearClippingPlane(), GetFarClippingPlane());
+      {
+         // TODO-UPGRADE ////////////////////////////////////////////////////////////
+         //camera->SetPerspective(camera->GetHorizontalFov(), camera->GetVerticalFov(), 
+         //   GetNearClippingPlane(), GetFarClippingPlane());
+         ////////////////////////////////////////////////////////////////////////////
+      }
 
       // Updated the LOD scale
-      camera->GetSceneHandler()->GetSceneView()->setLODScale(GetLODScale());
+      camera->GetOSGCamera()->setLODScale(GetLODScale());
 
       if(mAttachProxy != NULL)
       {
