@@ -14,6 +14,8 @@
 
 #include <osgGA/GUIEventAdapter>
 
+#include <osgViewer/GraphicsWindow>
+
 namespace StealthQt
 {
    
@@ -134,7 +136,7 @@ namespace StealthQt
          { Qt::Key_Y,            'y', 'Y' },
          { Qt::Key_Z,            'z', 'Z' },
 
-         { Qt::Key_Backslash,    '"\"', '|' },
+         { Qt::Key_Backslash,    '\\', '|' }, 
 
          { Qt::Key_BracketLeft,  '[', '{' },
          { Qt::Key_BracketRight, ']', '}' },
@@ -143,7 +145,7 @@ namespace StealthQt
          { Qt::Key_Period,       '.', '>' },
          { Qt::Key_Slash,        '/', '?' }, 
          
-         //{ Qt::Key_Apostrophe,   '"'"' },
+         { Qt::Key_Apostrophe,   '\'' },
          //{ Qt::Key_Super_L,      },
          //{ Qt::Key_Super_R,      },
       };
@@ -160,9 +162,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void GLWidgetRenderSurface::resizeGL( int width, int height )
    {   
-      // TODO-UPGRADE
-      //mDeltaWin->GetRenderSurface()->setWindowRectangle(0, 0, width, height, false);
-      ////////////////////////////////
+      mDeltaWin->GetOsgViewerGraphicsWindow()->setWindowRectangle(0, 0, width, height);
       mCamera->GetOSGCamera()->setViewport(0, 0, width, height);
    }
 
@@ -214,15 +214,13 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void GLWidgetRenderSurface::keyPressEvent( QKeyEvent* event )
    {
-      // TODO-UPGRADE
-      //mDeltaWin->GetInputCallback()->keyPress(GetKey(*event));
+      mDeltaWin->GetOsgViewerGraphicsWindow()->getEventQueue()->keyPress(GetKey(*event));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void GLWidgetRenderSurface::keyReleaseEvent( QKeyEvent* event )
    {
-      // TODO-UPGRADE
-      //mDeltaWin->GetInputCallback()->keyRelease(GetKey(*event));
+      mDeltaWin->GetOsgViewerGraphicsWindow()->getEventQueue()->keyPress(GetKey(*event));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -251,8 +249,8 @@ namespace StealthQt
             button = 0; 
             break;
       }
-      // TODO-UPGRADE
-      //mDeltaWin->GetInputCallback()->buttonPress(x, y, button);
+   
+      mDeltaWin->GetOsgViewerGraphicsWindow()->getEventQueue()->mouseButtonPress(x, y, button);
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -279,8 +277,8 @@ namespace StealthQt
             button = 0; 
             break;
       }
-      // TODO-UPGRADE
-      //mDeltaWin->GetInputCallback()->buttonRelease(x, y, button);
+
+      mDeltaWin->GetOsgViewerGraphicsWindow()->getEventQueue()->mouseButtonPress(x, y, button);
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -288,8 +286,7 @@ namespace StealthQt
    {
       float x, y;
       ConvertMouseXYFromWindowSpace(event->x(), event->y(), x, y);
-      // TODO-UPGRADE
-      //mDeltaWin->GetInputCallback()->mouseMotion(x, y);
+      mDeltaWin->GetOsgViewerGraphicsWindow()->getEventQueue()->mouseMotion(x, y);
    }
 
    ///////////////////////////////////////////////////////////////////////////////
