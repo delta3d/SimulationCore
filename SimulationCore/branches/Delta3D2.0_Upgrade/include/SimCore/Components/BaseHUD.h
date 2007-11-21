@@ -114,6 +114,10 @@ namespace SimCore
 
          virtual void RegisterCallbacks();
 
+         void InitializeCEGUI();
+
+         virtual void OnEnteredWorld();
+
       private:
          dtCore::DeltaWin *mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
@@ -121,6 +125,8 @@ namespace SimCore
          dtGUI::BaseScriptModule* mScriptModule;
 
          HUDState *mHUDState;
+
+         std::string mSchemeFile;
       };
 
    }
