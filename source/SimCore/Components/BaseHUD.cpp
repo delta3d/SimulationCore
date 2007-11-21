@@ -61,39 +61,10 @@ namespace SimCore
          : dtGame::GMComponent(name),
          mWin(win),
          mScriptModule(new dtGUI::ScriptModule()),
-         mHUDState(&HUDState::MINIMAL)
+         mHUDState(&HUDState::MINIMAL), 
+         mSchemeFile(ceguiScheme)
       {
-         dtABC::Application &app = GetGameManager()->GetApplication();
-         // Initialize CEGUI
-         mGUI = new dtGUI::CEUIDrawable(win, app.GetKeyboard(), app.GetMouse(), mScriptModule);
-
-         osg::StateSet* ss = mGUI->GetOSGNode()->getOrCreateStateSet();
-         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "DepthSortedBin");
-
-         std::string path = dtCore::FindFileInPathList(ceguiScheme);
-         if(path.empty())
-         {
-            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,
-               "Failed to find the scheme file.", __FILE__, __LINE__);
-         }
-
-         std::string dir = path.substr(0, path.length() - (ceguiScheme.length() - 5));
-         dtUtil::FileUtils::GetInstance().PushDirectory(dir);
-         try
-         {
-            CEGUI::SchemeManager::getSingleton().loadScheme(path);
-         }
-         catch(CEGUI::Exception &e)
-         {
-            std::ostringstream oss;
-            oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
-            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
-         }
-         dtUtil::FileUtils::GetInstance().PopDirectory();
-
-         CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
-         mMainWindow = new HUDGroup("root","DefaultGUISheet");
-         CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
+         
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -105,6 +76,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BaseHUD::Initialize( unsigned int designedResWidth, unsigned int designedResHeight )
       {
+         InitializeCEGUI();
+
          dtCore::RefPtr<HUDGroup> hudOverlay = new HUDGroup( "HUDOverlay" );
          mMainWindow->Add( hudOverlay.get() );
          hudOverlay->SetPosition( 0.0f, 0.0f );
@@ -130,6 +103,41 @@ namespace SimCore
          }
       }
 
+      void BaseHUD::InitializeCEGUI()
+      {
+         dtABC::Application &app = GetGameManager()->GetApplication();
+         // Initialize CEGUI
+         mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
+
+         osg::StateSet* ss = mGUI->GetOSGNode()->getOrCreateStateSet();
+         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "DepthSortedBin");
+
+         std::string path = dtCore::FindFileInPathList(mSchemeFile);
+         if(path.empty())
+         {
+            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,
+               "Failed to find the scheme file.", __FILE__, __LINE__);
+         }
+
+         std::string dir = path.substr(0, path.length() - (mSchemeFile.length() - 5));
+         dtUtil::FileUtils::GetInstance().PushDirectory(dir);
+         try
+         {
+            CEGUI::SchemeManager::getSingleton().loadScheme(path);
+         }
+         catch(CEGUI::Exception &e)
+         {
+            std::ostringstream oss;
+            oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
+            throw dtUtil::Exception(BaseHUDException::INIT_ERROR,oss.str(), __FILE__, __LINE__);
+         }
+         dtUtil::FileUtils::GetInstance().PopDirectory();
+
+         CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
+         mMainWindow = new HUDGroup("root","DefaultGUISheet");
+         CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
+      }
+
       //////////////////////////////////////////////////////////////////////////
       void BaseHUD::RegisterCallbacks()
       {
@@ -143,6 +151,11 @@ namespace SimCore
          // 3) In later code (window setup), 
          //    map the callback functor identifier to a window event:
          // ceguiWindow->subscribeScriptedEvent(Checkbox::EventCheckStateChanged, "MyCallback" );
+      }
+
+      void BaseHUD::OnEnteredWorld()
+      {
+         //InitializeCEGUI();
       }
 
       //////////////////////////////////////////////////////////////////////////
