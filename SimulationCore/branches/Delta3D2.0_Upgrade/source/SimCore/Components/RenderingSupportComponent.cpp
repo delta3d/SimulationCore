@@ -201,7 +201,7 @@ namespace SimCore
       {        
          // TODO-UPGRADE 
          /*
-         osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView();
+         osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->GetSceneView();
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
 
@@ -212,8 +212,7 @@ namespace SimCore
          mCullVisitor->setCullingMode(flags);
          sceneView->setCullingMode(flags);
 
-         sceneView->setCullVisitor(mCullVisitor.get());
-         */
+         sceneView->setCullVisitor(mCullVisitor.get()); */
       }
 
 

@@ -88,10 +88,8 @@ namespace StealthGM
       // no weather component, so we update the clip planes by hand
       else
       {
-         // TODO-UPGRADE ////////////////////////////////////////////////////////////
-         //camera->SetPerspective(camera->GetHorizontalFov(), camera->GetVerticalFov(), 
-         //   GetNearClippingPlane(), GetFarClippingPlane());
-         ////////////////////////////////////////////////////////////////////////////
+         camera->SetPerspective(camera->GetHorizontalFov(), camera->GetVerticalFov(), 
+            GetNearClippingPlane(), GetFarClippingPlane());
       }
 
       // Updated the LOD scale

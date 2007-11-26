@@ -202,9 +202,7 @@ namespace SimCore
          {
             mPreviousNearClipPlane = newNearClip;
             mPreviousFarClipPlane = newFarClip;
-            // TODO-UPGRADE/////////////////////////////////////////////////////////////////////////////////////////////
-            camera->SetPerspective(1.0f, 1.0f /*camera->GetHorizontalFov(), camera->GetVerticalFov()*/, newNearClip, newFarClip);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            camera->SetPerspective(camera->GetHorizontalFov(), camera->GetVerticalFov(), newNearClip, newFarClip);
          }
 
          // Set the visibility on core env or ephemeris only if updates are

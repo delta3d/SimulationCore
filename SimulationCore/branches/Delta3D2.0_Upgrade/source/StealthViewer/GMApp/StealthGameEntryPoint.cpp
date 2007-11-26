@@ -190,8 +190,7 @@ namespace StealthGM
    
       if( mHasCompass )
       {
-         // TODO-UPGRADE
-         /*float aspectRatio = inputComp->GetGameManager()->GetApplication().GetCamera()->GetAspectRatio();
+         float aspectRatio = inputComp->GetGameManager()->GetApplication().GetCamera()->GetAspectRatio();
          SimCore::Tools::Compass* compass = new SimCore::Tools::Compass(mHudGUI->GetToolsWindow(), false, aspectRatio);
          compass->SetPlayerActor(mStealth.get());
          compass->InitLens( *mHudGUI->GetGUIDrawable() );
@@ -200,7 +199,6 @@ namespace StealthGM
             SimCore::MessageType::COMPASS
             );
          mHudGUI->AddToolButton("Compass","F8");
-         */
       }
       if( mHasBinoculars )
       {
