@@ -485,13 +485,11 @@ namespace SimCore
 
 	   if(mAspectRatio == 0.0f)
       {
-         // TODO-UPGRADE
-         //double defaultAspectRatio = camera->GetAspectRatio();
+         double defaultAspectRatio = camera->GetAspectRatio();
          //camera->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
       }
       else
       {
-         // TODO-UPGRADE
          //camera->SetAspectRatio(mAspectRatio);
       }
 

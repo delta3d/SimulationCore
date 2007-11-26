@@ -50,10 +50,8 @@ namespace SimCore
          mElevationText(NULL),
          mCamera(&camera),
          mOverlay(NULL),
-         // TODO-UPGRADE /////////////////////////////////
-         mOriginalHFOV(1.0f/*camera.GetHorizontalFov()*/),
-         mOriginalVFOV(1.0f/*camera.GetVerticalFov()*/),
-         /////////////////////////////////////////////////
+         mOriginalHFOV(camera.GetHorizontalFov()),
+         mOriginalVFOV(camera.GetVerticalFov()),
          mOriginalNear(NEAR_CLIPPING_PLANE),
          mOriginalFar(FAR_CLIPPING_PLANE),
          mOriginalLODScale(camera.GetOSGCamera()->getLODScale()),
@@ -78,11 +76,10 @@ namespace SimCore
             mRecticle->setProperty("BackgroundEnabled", "false");
             mRecticle->setProperty("FrameEnabled", "false");
 
-            // TODO-UPGRADE
-            /*if(mCamera->GetAspectRatio() < 1.47)
+            if(mCamera->GetAspectRatio() < 1.47)
                mRecticle->setProperty("Image", "set:Binoculars4.3 image:Binoculars4.3");
             else
-               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5"); */
+               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5"); 
             mOverlay->addChildWindow(mRecticle);
 
             if(!isLRF)
@@ -192,11 +189,8 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         // TODO-UPGRADE
-         ///////////////////////////////////////////
-         float vfov = 1.0f;//mCamera->GetVerticalFov();
-         float hfov = 1.0f;//mCamera->GetHorizontalFov();
-         ///////////////////////////////////////////
+         float vfov = mCamera->GetVerticalFov();
+         float hfov = mCamera->GetHorizontalFov();
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -231,8 +225,6 @@ namespace SimCore
          // Check to see if we are already zoomed in
          if(vfov == mOriginalVFOV && hfov == mOriginalHFOV)
          {
-            // TODO-UPGRADE
-            /*
             if(mCamera->GetAspectRatio() < 1.47)
             {
                vfov /= (mZoomFactor *= 1.135f);
@@ -243,7 +235,6 @@ namespace SimCore
                vfov /= (mZoomFactor *= 1.103f);
                hfov /= (mZoomFactor *= 1.103f);
             }
-            */
          }
           else
             return;
@@ -265,11 +256,8 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         // TODO-UPGRADE
-         ///////////////////////////////////////////
-         float vfov = 1.0f;//mCamera->GetVerticalFov();
-         float hfov = 1.0f;//mCamera->GetHorizontalFov();
-         ///////////////////////////////////////////
+         float vfov = mCamera->GetVerticalFov();
+         float hfov = mCamera->GetHorizontalFov();
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
