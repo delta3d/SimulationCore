@@ -20,9 +20,55 @@
 #include <dtDAL/librarymanager.h>
 #include <dtGame/gameapplication.h>
 
+#include <osgViewer/GraphicsWindow>
+
 #include <sstream>
 
 dtCore::RefPtr<dtGame::GameApplication> InitGameApp();
+
+class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemInterface
+{
+   public:
+      EmbeddedWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface):
+         mInterface(&oldInterface)
+      {
+      }
+      
+      virtual unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier = 
+         osg::GraphicsContext::ScreenIdentifier())
+      {
+         return mInterface->getNumScreens(screenIdentifier);
+      }
+
+      virtual void getScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
+               unsigned int& width, unsigned int& height)
+      {
+         mInterface->getScreenResolution(screenIdentifier, width, height);
+      }
+
+      virtual bool setScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
+               unsigned int width, unsigned int height)
+      {
+         return mInterface->setScreenResolution(screenIdentifier, width, height);
+      }
+
+      virtual bool setScreenRefreshRate(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
+               double refreshRate)
+      {
+         return mInterface->setScreenRefreshRate(screenIdentifier, refreshRate);
+      }
+
+      virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
+      {
+         return new osgViewer::GraphicsWindowEmbedded(traits);
+      }
+
+   protected:
+      virtual ~EmbeddedWindowSystemWrapper() {};
+   private:
+      dtCore::RefPtr<osg::GraphicsContext::WindowingSystemInterface> mInterface;
+};
+
 
 int main(int argc, char *argv[])
 {
@@ -69,7 +115,14 @@ int main(int argc, char *argv[])
 
    try
    {
-      dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
+      osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
+
+      if (winSys != NULL)
+      {
+         osg::GraphicsContext::setWindowingSystemInterface(new EmbeddedWindowSystemWrapper(*winSys));
+      }
+
+      //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
       //Construct the application... 
@@ -137,6 +190,7 @@ static char* appArgv[appArgc] =
    "--hasGPS",
    "--hasNightVis"
 };
+
 
 
 dtCore::RefPtr<dtGame::GameApplication> InitGameApp()

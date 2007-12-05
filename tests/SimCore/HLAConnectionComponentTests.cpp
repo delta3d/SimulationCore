@@ -36,6 +36,8 @@
 #include <SimCore/Components/HLAConnectionComponent.h>
 #include <SimCore/Components/HLACustomParameterTranslator.h>
 
+#include <UnitTestMain.h>
+
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -80,11 +82,11 @@ void HLAConnectionComponentTests::setUp()
    mTranslator->AddParameterTranslator( *new SimCore::Components::HLACustomParameterTranslator );
    mHLACC = new SimCore::Components::HLAConnectionComponent();
    
-   mApp = new dtABC::Application("config.xml");
-   //mApp->GetWindow()->SetPosition(0, 0, 50, 50);
+   // A window & camera are needed to allow terrain
+   // to generate geometry.
+   mApp = &GetGlobalApplication();
    
-   dtCore::Scene* scene = new dtCore::Scene();
-   mGameManager = new dtGame::GameManager(*scene);
+   mGameManager = new dtGame::GameManager(*mApp->GetScene());
    mGameManager->SetApplication(*mApp);
    SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
 } 

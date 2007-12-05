@@ -26,7 +26,10 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtABC/application.h>
+
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/map.h>
+
 #include <dtGame/gamemanager.h> 
 #include <dtGame/messagefactory.h> 
 #include <dtGame/exceptionenum.h>
@@ -46,7 +49,8 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/StealthActor.h>
 
-#include "TestComponent.h"
+#include <TestComponent.h>
+#include <UnitTestMain.h>
 
 using dtCore::RefPtr;
 
@@ -63,10 +67,10 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
       void setUp()
       {
-         mApp = new dtABC::Application("config.xml");
-         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-         mGM = new dtGame::GameManager(*new dtCore::Scene());
-         mGM->SetApplication(*mApp);
+         mApp = &GetGlobalApplication();
+
+         mGM = new dtGame::GameManager(*mApp->GetScene());
+         mGM->SetApplication( *mApp );
          RefPtr<SimCore::Components::ViewerNetworkPublishingComponent> rulesComp = new SimCore::Components::ViewerNetworkPublishingComponent;         
          mGM->AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::NORMAL);
          mTestComp = new TestComponent;
@@ -93,7 +97,11 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          
          mTestComp = NULL;
          mApp = NULL;
-         mGM->DeleteAllActors(true);
+         if (mGM.valid())
+         {
+            mGM->DeleteAllActors(true);
+         }
+         
          mGM = NULL;
       }
 

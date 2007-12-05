@@ -22,10 +22,15 @@
 #include <dtCore/logicalinputdevice.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
+
+#include <dtDAL/map.h>
+
 #include <SimCore/ClampedMotionModel.h>
 
 #include <osg/io_utils>
 #include <dtABC/application.h>
+
+#include <UnitTestMain.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
@@ -90,15 +95,11 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////
       void setUp()
       {
-         // Scene needs to exist before a window
-         mScene = new dtCore::Scene();
-
          // A window & camera are needed to allow terrain
          // to generate geometry.
-         mApp = new dtABC::Application("config.xml");
-         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
+         mApp = &GetGlobalApplication();
 
-         mGM = new dtGame::GameManager(*mScene);
+         mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication( *mApp );
          mTarget = new dtCore::Transformable();
          mAttachable = new dtCore::Transformable();
@@ -132,7 +133,10 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
          }
          mScene = NULL;
 
-         mGM->DeleteAllActors(true);
+         if (mGM.valid())
+         {
+            mGM->DeleteAllActors(true);
+         }
          mGM = NULL;
 
          mApp = NULL;

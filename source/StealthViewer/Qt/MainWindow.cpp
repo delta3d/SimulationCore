@@ -22,7 +22,8 @@
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
-#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
+#include <StealthViewer/Qt/OSGAdapterWidget.h>
+//#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 
@@ -56,6 +57,8 @@
 
 #include <osgDB/FileNameUtils>
 
+#include <osgViewer/GraphicsWindow>
+
 #ifdef KeyPress
    #undef KeyPress
 #endif
@@ -81,7 +84,15 @@ namespace StealthQt
       StealthViewerData::GetInstance().SetMainWindow(*this);
 
       QWidget* glParent = new QWidget(this);
-      GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
+
+      //GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
+
+      OSGAdapterWidget* oglWidget = new OSGAdapterWidget(glParent);
+      oglWidget->show();
+
+      oglWidget->SetGraphicsWindow(app.GetWindow()->GetOsgViewerGraphicsWindow());
+      oglWidget->GetGraphicsWindow().resized(0, 0, oglWidget->width(), oglWidget->height());
+
       QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
       hbLayout->setMargin(0);
       glParent->setLayout(hbLayout);

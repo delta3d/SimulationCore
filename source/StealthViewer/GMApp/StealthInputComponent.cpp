@@ -481,7 +481,7 @@ namespace StealthGM
          }
          break;
 
-         case '"\"':
+         case '\\':
          case osgGA::GUIEventAdapter::KEY_Insert:
          {
             std::string developerMode;
