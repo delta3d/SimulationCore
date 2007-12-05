@@ -50,6 +50,8 @@
 
 #include <osg/Notify>//to squelch warnings
 
+#include <osg/GraphicsContext>
+#include <osgViewer/Renderer>
 
 namespace SimCore
 {
@@ -199,9 +201,10 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
       {        
-         // TODO-UPGRADE 
-         /*
-         osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->GetSceneView();
+         osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
+         osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
+         osgUtil::SceneView* sceneView = renderer->getSceneView(0);
+         
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
 
@@ -211,8 +214,7 @@ namespace SimCore
          // auto sets the cull visitor but havent checked yet.
          mCullVisitor->setCullingMode(flags);
          sceneView->setCullingMode(flags);
-
-         sceneView->setCullVisitor(mCullVisitor.get()); */
+         sceneView->setCullVisitor(mCullVisitor.get());
       }
 
 
