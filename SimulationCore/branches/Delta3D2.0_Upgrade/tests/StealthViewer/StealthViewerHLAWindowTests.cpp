@@ -10,9 +10,12 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtGame/gamemanager.h>
 #include <dtABC/application.h>
 #include <QtGui/QApplication>
+
+#include <UnitTestMain.h>
 
 class SubHLAWindow : public StealthQt::HLAWindow
 {
@@ -77,9 +80,10 @@ void StealthViewerHLAWindowTests::setUp()
 
    mQApp = new QApplication(numParams, const_cast<char**>(&exe));
 
-   mApp = new dtABC::Application;
+   mApp = &GetGlobalApplication();
 
    mGM = new dtGame::GameManager(*mApp->GetScene());
+   mGM->SetApplication( *mApp );
 }
 
 void StealthViewerHLAWindowTests::tearDown()

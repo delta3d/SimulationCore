@@ -32,6 +32,7 @@
 #include <dtCore/deltawin.h>
 
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/macros.h>
@@ -47,6 +48,9 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
+
+#include <UnitTestMain.h>
+
 
 #ifdef DELTA_WIN32
    #include <Windows.h>
@@ -78,9 +82,9 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         mApp = new dtABC::Application("config.xml");
-         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-         mGM = new dtGame::GameManager(*new dtCore::Scene());
+         mApp = &GetGlobalApplication();
+         
+         mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication(*mApp);
          RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;
          mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);

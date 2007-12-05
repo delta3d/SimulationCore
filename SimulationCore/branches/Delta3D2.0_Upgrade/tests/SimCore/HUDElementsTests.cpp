@@ -20,6 +20,7 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
 #include <dtUtil/fileutils.h>
@@ -30,6 +31,7 @@
 #include <dtABC/application.h>
 
 #include <CEGUIUtils.h>
+#include <UnitTestMain.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
@@ -135,10 +137,8 @@ void HUDElementsTests::setupCEGUI()
 void HUDElementsTests::setUp()
 {
    // A window & camera are needed for GUI rendering
-   mApp = new dtABC::Application("config.xml");
-   mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-   mApp->Config();
-
+   mApp = &GetGlobalApplication();
+   
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication(*mApp);
 

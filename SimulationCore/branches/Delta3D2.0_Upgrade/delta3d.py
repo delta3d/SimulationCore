@@ -230,18 +230,17 @@ def TOOL_BUNDLE(env):
           elif env.GetLaunchDir() != env.get('prefix'):
              lib = envLib.Install( '$prefix/lib', builtlib )
              
-       incDirDict = { 'dtABC'       : 'dtABC',
+       incDirDict = { 'dtCore'      : 'dtCore',
+                      'dtABC'       : 'dtABC',
                       'dtAI'        : 'dtAI',
                       'dtActors'    : 'dtActors',
                       'dtAudio'     : 'dtAudio',
                       'dtAnim'      : 'dtAnim',
                       'dtChar'      : 'dtChar',
-                      'dtCore'      : 'dtCore',
                       'dtInputPLIB'  : 'dtInputPLIB',
                       'dtInputISense' : 'dtInputISense',
                       'dtDAL'       : 'dtDAL',
                       'dtDIS'       : 'dtDIS',
-                      'dtHLA'       : 'dtHLA',
                       'dtHLAGM'     : 'dtHLAGM',
                       'dtGUI'       : 'dtGUI',
                       'dtNet'       : 'dtNet',
@@ -399,7 +398,7 @@ def TOOL_BUNDLE(env):
               CPPDEFINES=['SIGSLOT_PURE_ISO', "LINUX"] )
          elif env['OS'] == 'darwin':      
             env.Append(CXXFLAGS=['-gdwarf-2', '-O0', '-pipe', '-mmacosx-version-min=10.4', '-isysroot', '/Developer/SDKs/MacOSX10.4u.sdk'], 
-              CPPDEFINES=['_DEBUG', '__USE_OSX_AGL_IMPLEMENTATION__', 'SIGSLOT_PURE_ISO'])#,
+              CPPDEFINES=['_DEBUG', 'SIGSLOT_PURE_ISO'])#,
             #LINKFLAGS=['-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk'] )
       else:
          print 'Build Configuration: Release'
@@ -443,9 +442,13 @@ def TOOL_BUNDLE(env):
       if env['OS'] == 'linux' :
         env.Append(CPPPATH=['/usr/X11R6/include','/usr/include','/usr/local/include'])
         
-        localCEGUIPath = '/usr/local/include/CEGUI'
-        if os.path.exists( localCEGUIPath ) and os.path.isdir( localCEGUIPath ) :
-           env.Append(CPPPATH=[localCEGUIPath])
+        globalCEGUIPath = '/usr/include/CEGUI'
+        if os.path.exists( globalCEGUIPath ) and os.path.isdir( globalCEGUIPath ) :
+           env.Append(CPPPATH=[globalCEGUIPath])
+        else:
+           localCEGUIPath = '/usr/local/include/CEGUI'
+           if os.path.exists( localCEGUIPath ) and os.path.isdir( localCEGUIPath ) :
+              env.Append(CPPPATH=[localCEGUIPath])
 
         if platform.architecture()[0] == '64bit':
            env.Append(LIBPATH=['/usr/X11R6/lib64','/usr/lib64','/usr/local/lib64'])
@@ -475,7 +478,6 @@ def TOOL_BUNDLE(env):
                  'dtInputISense'        : 'dtInputISense',
                  'dtDAL'                : 'dtDAL',
                  'dtDIS'                : 'dtDIS',
-                 'dtHLA'                : 'dtHLA',
                  'dtHLAGM'              : 'dtHLAGM',
                  'dtGUI'                : 'dtGUI',
                  'dtNet'                : 'dtNet',
@@ -500,12 +502,13 @@ def TOOL_BUNDLE(env):
                'CEGUIOpenGLRenderer' : 'OpenGLGUIRenderer_d',
                'osg'                 : 'osgd',
                'osgDB'               : 'osgDBd',
+               'osgGA'               : 'osgGAd',
                'osgUtil'             : 'osgUtild',
                'osgText'             : 'osgTextd',
                'osgSim'              : 'osgSimd',
                'osgFX'               : 'osgFXd',
                'osgParticle'         : 'osgParticled',
-               'Producer'            : 'Producerd',
+               'osgViewer'           : 'osgViewerd',
                'OpenThreads'         : 'OpenThreadsWin32d',
                'python'              : python_version,
                'cal3d'               : 'cal3d_d',
@@ -546,12 +549,13 @@ def TOOL_BUNDLE(env):
                'CEGUIOpenGLRenderer' : 'OpenGLGUIRenderer',
                'osg'                 : 'osg',
                'osgDB'               : 'osgDB',
+               'osgGA'               : 'osgGA',
                'osgUtil'             : 'osgUtil',
                'osgText'             : 'osgText',
                'osgSim'              : 'osgSim',
                'osgFX'               : 'osgFX',
                'osgParticle'         : 'osgParticle',
-               'Producer'            : 'Producer',
+               'osgViewer'           : 'osgViewer',
                'OpenThreads'         : 'OpenThreadsWin32',
                'python'              :  python_version,
                'cal3d'               : 'cal3d',
@@ -587,44 +591,85 @@ def TOOL_BUNDLE(env):
                }
          
       elif env['OS'] == 'linux' :
-         extLibs = { 
-            'CEGUIBase'           : 'CEGUIBase',
-            'CEGUIOpenGLRenderer' : 'CEGUIOpenGLRenderer',
-            'osg'                 : 'osg',
-            'osgDB'               : 'osgDB',
-            'osgUtil'             : 'osgUtil',
-            'osgText'             : 'osgText',
-            'osgSim'              : 'osgSim',
-            'osgFX'               : 'osgFX',
-            'osgParticle'         : 'osgParticle',
-            'Producer'            : 'Producer',
-            'python'              :  python_version,
-            'OpenThreads'         : 'OpenThreads',
-            'cal3d'               : 'cal3d',
-            'DIS'                 : 'DIS',
-            'fltk'                : 'fltk',
-            'gdal'                : 'gdal',
-            'gne'                 : 'gne',
-            'HawkNL'              : 'NL',
-            'isense'              : 'isense',
-            'openal'              : 'openal',
-            'alut'                : 'alut', 
-            'ode'                 : 'ode', 
-            'ul'                  : 'plibul', 
-            'js'                  : 'plibjs',  
-            'rvrutils'            : 'rvrutils',
-            'rcfgscript'          : 'rcfgscript', 
-            'rbody'               : 'rbody',
-            'xerces-c'            : 'xerces-c',
-            'Xxf86vm'             : 'Xxf86vm',
-            'uuid'                : 'uuid',
-            'opengl'              : 'GL',
-            'cppunit'             : 'cppunit',
-            'ncurses'             : 'ncurses',
-            'QtCore'              : 'QtCore',
-            'QtGui'               : 'QtGui',
-            'QtOpenGL'            : 'QtOpenGL'
-            
+        if mode == 'debug' :
+            extLibs = { 
+                'CEGUIBase'           : 'CEGUIBase',
+                'CEGUIOpenGLRenderer' : 'CEGUIOpenGLRenderer',
+                'osg'                 : 'osgd',
+                'osgDB'               : 'osgDBd',
+                'osgGA'               : 'osgGAd',
+                'osgUtil'             : 'osgUtild',
+                'osgText'             : 'osgTextd',
+                'osgSim'              : 'osgSimd',
+                'osgFX'               : 'osgFXd',
+                'osgParticle'         : 'osgParticled',
+                'osgViewer'           : 'osgViewerd',
+                'python'              :  python_version,
+                'OpenThreads'         : 'OpenThreadsd',
+                'cal3d'               : 'cal3d',
+                'DIS'                 : 'DIS',
+                'fltk'                : 'fltk',
+                'gdal'                : 'gdal',
+                'gne'                 : 'gne',
+                'HawkNL'              : 'NL',
+                'isense'              : 'isense',
+                'openal'              : 'openal',
+                'alut'                : 'alut', 
+                'ode'                 : 'ode', 
+                'ul'                  : 'plibul', 
+                'js'                  : 'plibjs',  
+                'rvrutils'            : 'rvrutils',
+               'rcfgscript'          : 'rcfgscript', 
+                 'rbody'               : 'rbody',
+                'xerces-c'            : 'xerces-c',
+                'Xxf86vm'             : 'Xxf86vm',
+                'uuid'                : 'uuid',
+                'opengl'              : 'GL',
+                'cppunit'             : 'cppunit',
+                'ncurses'             : 'ncurses',
+                'QtCore'              : 'QtCore',
+                'QtGui'               : 'QtGui',
+                'QtOpenGL'            : 'QtOpenGL'
+                }
+        else :
+            extLibs = { 
+                'CEGUIBase'           : 'CEGUIBase',
+                'CEGUIOpenGLRenderer' : 'CEGUIOpenGLRenderer',
+                'osg'                 : 'osg',
+                'osgDB'               : 'osgDB',
+                'osgGA'               : 'osgGA',
+                'osgUtil'             : 'osgUtil',
+                'osgText'             : 'osgText',
+                'osgSim'              : 'osgSim',
+                'osgFX'               : 'osgFX',
+                'osgParticle'         : 'osgParticle',
+                'osgViewer'           : 'osgViewer',
+                'python'              :  python_version,
+                'OpenThreads'         : 'OpenThreads',
+                'cal3d'               : 'cal3d',
+                'DIS'                 : 'DIS',
+                'fltk'                : 'fltk',
+                'gdal'                : 'gdal',
+                'gne'                 : 'gne',
+                'HawkNL'              : 'NL',
+                'isense'              : 'isense',
+                'openal'              : 'openal',
+                'alut'                : 'alut', 
+                'ode'                 : 'ode', 
+                'ul'                  : 'plibul', 
+                'js'                  : 'plibjs',  
+                'rvrutils'            : 'rvrutils',
+                'rcfgscript'          : 'rcfgscript', 
+                'rbody'               : 'rbody',
+                'xerces-c'            : 'xerces-c',
+                'Xxf86vm'             : 'Xxf86vm',
+                'uuid'                : 'uuid',
+                'opengl'              : 'GL',
+                'cppunit'             : 'cppunit',
+                'ncurses'             : 'ncurses',
+                'QtCore'              : 'QtCore',
+                'QtGui'               : 'QtGui',
+                'QtOpenGL'            : 'QtOpenGL'
             }
       elif env['OS'] == 'darwin' :
          extLibs = { 
@@ -632,12 +677,14 @@ def TOOL_BUNDLE(env):
             'CEGUIOpenGLRenderer' : 'CEGUIOpenGLRenderer',
             'osg'            : 'osg',
             'osgDB'          : 'osgDB',
+            'osgGA'          : 'osgGA', 
             'osgUtil'        : 'osgUtil',
             'osgText'        : 'osgText',
             'osgSim'         : 'osgSim',
             'osgFX'          : 'osgFX',
             'osgParticle'    : 'osgParticle',
-            'Producer'       : 'Producer',
+            'osgViewer'       : 'osgViewer',
+      #      'Producer'       : 'Producer',
       #      'python'         : python_version,
       #Default to the system level framework in OS X
             'python'         : 'Python',
@@ -764,7 +811,6 @@ def TOOL_BUNDLE(env):
    
       CheckLinkGroup([
          'OpenThreads',
-         'Producer',
          'opengl',
          'xerces-c',
          'gdal',
@@ -776,7 +822,9 @@ def TOOL_BUNDLE(env):
          'osgText',
          'osgSim',
          'osgFX',
-         'osgParticle'], 'osg', True)
+         'osgParticle',
+         'osgGA',
+         'osgViewer'], 'osg', True)
                
       CheckLinkGroup(['cal3d','rvrutils','rcfgscript','rbody'], 'rbody', True)
       CheckLinkGroup(['DIS'], 'DIS', True)

@@ -66,6 +66,7 @@ namespace SimCore
          static const std::string CONFIG_PROP_USE_GPU_CHARACTER_SKINNING;
          static const std::string CONFIG_PROP_DEVELOPERMODE;
          static const std::string CONFIG_PROP_GMSTATS;
+         static const std::string CONFIG_PROP_ASPECT_RATIO;
 
          /// Constructor
          BaseGameEntryPoint();
@@ -105,6 +106,14 @@ namespace SimCore
          /// if the UI is not enabled, will load the map specified on the command line.
          void PreLoadMap();
 
+         /**
+          * Reads the aspect ratio first from the command line setting, then from the config. Finally
+          * it will read the current window setting and asign the value to the closest of 1.33 or 1.6. 
+          * warning. setting to the aspect ratio to anything other than 1.33 or 1.6 will result
+          * in incorrect results for the binoculars and laser range finder.
+          */
+         void AssignAspectRatio(dtGame::GameApplication &app);
+         
          /// called virtual for loading specific maps
          virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
 
