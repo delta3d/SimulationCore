@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\StealthViewer\Qt\OSGAdapterWidget.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\StealthViewer\Qt\StealthViewerData.cpp"
 				>
 			</File>
@@ -249,6 +253,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\StealthViewer\Qt\NetworkWeatherSettings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\StealthViewer\Qt\OSGAdapterWidget.h"
 				>
 			</File>
 			<File
