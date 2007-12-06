@@ -33,6 +33,8 @@
 #include <osg/io_utils>
 #include <dtABC/application.h>
 
+#include <UnitTestMain.h>
+
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -56,13 +58,13 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          // Scene needs to exist before a window
-         mScene = new dtCore::Scene();
+         mScene = GetGlobalApplication().GetScene();
+         mScene->RemoveAllDrawables();
 
          mTerrain = new dtCore::InfiniteTerrain( "Ground" );
          mTerrain->SetBuildDistance(1500.f);
          mTerrain->SetSegmentDivisions(64);
 
-         mScene->SetName("Ground Scene");
          mScene->AddDrawable(mTerrain.get());
 
          mTarget = new dtCore::Transformable();
@@ -74,6 +76,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mMotionModel->SetCollideWithGround(true);
          mMotionModel->SetGroundClearance(1.0f);
          mMotionModel->SetMaximumFlySpeed(100.0f);
+         mMotionModel->SetCollidableGeometry(mTerrain.get());
 
          dtCore::System::GetInstance().Config();
 
@@ -98,7 +101,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       
       void TestProperties()
       {       
-         CPPUNIT_ASSERT( mMotionModel->GetScene().GetName() == "Ground Scene" );  
+         CPPUNIT_ASSERT( &mMotionModel->GetScene() == mScene );  
 
          mMotionModel->SetTarget( mTarget.get() );
          CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL );   
@@ -120,8 +123,6 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       void TestEndPosition()
       {
 
-         dtCore::System::GetInstance().Step();
-
          float elevation = mTerrain->GetHeight( 0.0f, 0.0f );
          osg::Vec3 cameraPos( 0.0f, 0.0f, elevation+100.0f );
 
@@ -129,6 +130,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          transform.SetTranslation(cameraPos);
          mTarget->SetTransform(transform, dtCore::Transformable::REL_CS);
 
+         dtCore::System::GetInstance().Step();
 
          for( int step = 0; step < 5; step++ )
          {

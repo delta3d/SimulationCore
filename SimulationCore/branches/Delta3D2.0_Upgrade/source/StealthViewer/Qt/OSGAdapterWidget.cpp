@@ -24,8 +24,6 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/GraphicsWindow>
 
-#include <OpenGL/OpenGL.h>
-#include <AGL/agl.h>
 #include <dtCore/system.h>
 
 OSGAdapterWidget::OSGAdapterWidget( QWidget * parent, const char * name, const QGLWidget * shareWidget, Qt::WindowFlags f):
