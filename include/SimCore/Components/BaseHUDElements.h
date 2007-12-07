@@ -132,7 +132,11 @@ namespace SimCore
             bool IsAbsolutePosition() const { return mAbsPos; }
             bool IsAbsoluteSize() const { return mAbsSize; }
 
-            // Utility funtion
+            // Override this if the element is complex and
+            // needs to update child elements
+            virtual void UpdateLayout() {}
+
+            // Utility function
             void SetCEGUIImage( CEGUI::Window& window, 
                const std::string& imagesetName,
                const std::string& imageName,
