@@ -153,7 +153,7 @@ namespace SimCore
          // ceguiWindow->subscribeScriptedEvent(Checkbox::EventCheckStateChanged, "MyCallback" );
       }
 
-      void BaseHUD::OnEnteredWorld()
+      void BaseHUD::OnAddedToGM()
       {
          //InitializeCEGUI();
       }
