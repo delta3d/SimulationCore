@@ -146,7 +146,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-//         if( mWindow != NULL ) mWindow->destroy();
+         if( mWindow != NULL )
+         {
+            mWindow->destroy();
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
