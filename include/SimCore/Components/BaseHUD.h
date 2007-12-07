@@ -116,7 +116,7 @@ namespace SimCore
 
          void InitializeCEGUI();
 
-         virtual void OnEnteredWorld();
+         virtual void OnAddedToGM();
 
       private:
          dtCore::DeltaWin *mWin;

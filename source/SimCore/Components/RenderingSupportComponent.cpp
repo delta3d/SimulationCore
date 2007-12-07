@@ -32,10 +32,14 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 #include <dtGame/actorupdatemessage.h>
+
 #include <dtABC/application.h>
+
 #include <dtCore/scene.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
+#include <dtCore/mouse.h>
+
 #include <dtDAL/enginepropertytypes.h>
 
 #include <dtUtil/noiseutility.h> 
@@ -185,8 +189,15 @@ namespace SimCore
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
          GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
-         // TODO-UPGRADE ///////////////////////////////////////////////////////////////////////////////
-         //GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getOs->setSceneData(mSceneRoot.get());
+         dtCore::View *view = GetGameManager()->GetApplication().GetMouse()->GetView();
+         if(view != NULL)
+         {
+            view->GetOsgViewerView()->setSceneData(mSceneRoot.get());
+         }
+         else
+         {
+            LOG_ERROR("The dtCore.View on the dtCore.Mouse is NULL. Cannot set the scene data.");
+         }
          ///////////////////////////////////////////////////////////////////////////////////////////////
 
          mSceneRoot->addChild(mNVGSRoot.get());
