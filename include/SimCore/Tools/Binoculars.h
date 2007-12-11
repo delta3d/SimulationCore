@@ -142,16 +142,10 @@ namespace SimCore
             dtCore::Camera* GetCamera() { return mCamera.get(); }
 
             /**
-             * Accessor to the original vfov
+             * Accessor to the original hfov
              * @return mOriginalVFOV
              */
             const float GetOriginalVFOV() const { return mOriginalVFOV; }
-
-            /**
-             * Accessor to the original hfov
-             * @return mOriginalHFOV
-             */
-            const float GetOriginalHFOV() const { return mOriginalHFOV; }
 
             /**
              * Accessor to the original lod scale
@@ -173,7 +167,6 @@ namespace SimCore
             // Farthest distance you can zoom
             static const unsigned int MAX_ZOOM_DISTANCE = 1000;
             // The original settings of the perspectives and LOD
-            const float mOriginalHFOV;
             const float mOriginalVFOV;
             float mOriginalNear;
             float mOriginalFar;

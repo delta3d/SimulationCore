@@ -34,38 +34,51 @@ namespace osgViewer
    class GraphicsWindow;
 }
 
-class OSGAdapterWidget : public QGLWidget
+namespace dtCore
 {
-   public:
+   class Camera;
+}
 
-      OSGAdapterWidget( QWidget * parent = NULL, const char * name = NULL, 
-               const QGLWidget * shareWidget = NULL, Qt::WindowFlags f = NULL );
+namespace StealthQt 
+{
 
-      virtual ~OSGAdapterWidget() {}
+   class OSGAdapterWidget : public QGLWidget
+   {
+      public:
 
-      osgViewer::GraphicsWindow& GetGraphicsWindow();
-      const osgViewer::GraphicsWindow& GetGraphicsWindow() const;
+         OSGAdapterWidget( QWidget * parent = NULL, const char * name = NULL, 
+                  const QGLWidget * shareWidget = NULL, Qt::WindowFlags f = NULL );
 
-      void SetGraphicsWindow(osgViewer::GraphicsWindow* newWindow);
-      //does the actual painting.
-      void ThreadedUpdateGL();
+         virtual ~OSGAdapterWidget() {}
 
-   protected:
-      
-      //does nothing.  this is called automatically at times by qt, but on the wrong thread.
-      virtual void paintGL();
+         osgViewer::GraphicsWindow& GetGraphicsWindow();
+         const osgViewer::GraphicsWindow& GetGraphicsWindow() const;
 
-      virtual void initializeGL();
+         void SetGraphicsWindow(osgViewer::GraphicsWindow* newWindow);
+         //does the actual painting.
 
-      virtual void resizeGL( int width, int height );
-      virtual void keyPressEvent( QKeyEvent* event );
-      virtual void keyReleaseEvent( QKeyEvent* event );
-      virtual void mousePressEvent( QMouseEvent* event );
-      virtual void mouseReleaseEvent( QMouseEvent* event );
-      virtual void mouseMoveEvent( QMouseEvent* event );
+         void SetCamera(dtCore::Camera* camera);
+         dtCore::Camera* GetCamera();
+         
+         void ThreadedUpdateGL();
 
-      dtCore::RefPtr<osgViewer::GraphicsWindow> mGraphicsWindow;
-      QTimer mTimer;
-};
+      protected:
 
+         //does nothing.  this is called automatically at times by qt, but on the wrong thread.
+         virtual void paintGL();
+
+         virtual void initializeGL();
+
+         virtual void resizeGL( int width, int height );
+         virtual void keyPressEvent( QKeyEvent* event );
+         virtual void keyReleaseEvent( QKeyEvent* event );
+         virtual void mousePressEvent( QMouseEvent* event );
+         virtual void mouseReleaseEvent( QMouseEvent* event );
+         virtual void mouseMoveEvent( QMouseEvent* event );
+
+         dtCore::RefPtr<osgViewer::GraphicsWindow> mGraphicsWindow;
+         dtCore::RefPtr<dtCore::Camera> mCamera;
+         QTimer mTimer;
+   };
+}
 #endif /*OSGADAPTERWIDGET_H_*/
