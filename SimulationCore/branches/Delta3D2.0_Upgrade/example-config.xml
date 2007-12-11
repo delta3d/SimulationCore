@@ -38,6 +38,7 @@ find it.  It shows an example set of values one may set
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <Property Name="DeveloperMode">true</Property>
       <Property Name="GMStatisticsInterval">0</Property>
+      <Property Name="AspectRatio">1.6</Property>
     </Properties>
 
 </Application>
