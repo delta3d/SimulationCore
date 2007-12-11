@@ -461,14 +461,16 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication &app)
    {
+      app.GetCamera()->SetProjectionResizePolicy(osg::Camera::FIXED);
+
       //The command line arg takes precidence, followed by the config file option.
       if(mAspectRatio == 0.0f)
       {
-         std::string aspectString = app.GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH, "1.6");
+         std::string aspectString = app.GetConfigPropertyValue(CONFIG_PROP_ASPECT_RATIO, "1.6");
 
          if (aspectString == "auto")
          {
-            //app.GetCamera()->SetAutoAspect(true);
+            app.GetCamera()->SetProjectionResizePolicy(osg::Camera::HORIZONTAL);
          }
          else
          {
@@ -476,19 +478,19 @@ namespace SimCore
             iss >> mAspectRatio;
             if (mAspectRatio == 0.0f)
             {
-               //double defaultAspectRatio = app.GetCamera()->GetAspectRatio();
-               //app.GetCamera()->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
+               double defaultAspectRatio = app.GetCamera()->GetAspectRatio();
+               app.GetCamera()->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
             }
             else
             {
-               //app.GetCamera()->SetAspectRatio(mAspectRatio);
+               app.GetCamera()->SetAspectRatio(mAspectRatio);
             }
          }
          
       }
       else
       {
-         //app.GetCamera()->SetAspectRatio(mAspectRatio);
+         app.GetCamera()->SetAspectRatio(mAspectRatio);
       }
    }
    
@@ -512,11 +514,14 @@ namespace SimCore
 
       //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
-      camera->SetPerspective(60.0f, 60.0f,
-                             PLAYER_NEAR_CLIP_PLANE, 
-                             PLAYER_FAR_CLIP_PLANE);
+      osg::Camera* cam = camera->GetOSGCamera();
+
+      cam->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
       
-	   camera->GetOSGCamera()->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
+      camera->SetPerspective(60.0f, 1.6,
+                             PLAYER_NEAR_CLIP_PLANE,
+                             PLAYER_FAR_CLIP_PLANE);
+
       AssignAspectRatio(app);
 
 	   camera->AddChild(dtAudio::AudioManager::GetListener());

@@ -18,55 +18,21 @@
 #include <dtAudio/audiomanager.h>
 #include <dtDAL/project.h>
 #include <dtDAL/librarymanager.h>
-#include <dtGame/gameapplication.h>
-
-#include <osgViewer/GraphicsWindow>
 
 #include <sstream>
 
-dtCore::RefPtr<dtGame::GameApplication> InitGameApp();
-
-class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemInterface
+const int appArgc = 13;
+static char* appArgv[appArgc] = 
 {
-   public:
-      EmbeddedWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface):
-         mInterface(&oldInterface)
-      {
-      }
-      
-      virtual unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier = 
-         osg::GraphicsContext::ScreenIdentifier())
-      {
-         return mInterface->getNumScreens(screenIdentifier);
-      }
-
-      virtual void getScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
-               unsigned int& width, unsigned int& height)
-      {
-         mInterface->getScreenResolution(screenIdentifier, width, height);
-      }
-
-      virtual bool setScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
-               unsigned int width, unsigned int height)
-      {
-         return mInterface->setScreenResolution(screenIdentifier, width, height);
-      }
-
-      virtual bool setScreenRefreshRate(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
-               double refreshRate)
-      {
-         return mInterface->setScreenRefreshRate(screenIdentifier, refreshRate);
-      }
-
-      virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
-      {
-         return new osgViewer::GraphicsWindowEmbedded(traits);
-      }
-
-   protected:
-      virtual ~EmbeddedWindowSystemWrapper() {};
-   private:
-      dtCore::RefPtr<osg::GraphicsContext::WindowingSystemInterface> mInterface;
+   "GameStart",
+   "--UI", "1",
+   "--statisticsInterval", "30",
+   "--enableLogging", "1",
+   "--enablePlayback", "1",
+   "--hasBinos", 
+   "--hasCompass",  
+   "--hasGPS",
+   "--hasNightVis"
 };
 
 
@@ -115,20 +81,12 @@ int main(int argc, char *argv[])
 
    try
    {
-      osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
-
-      if (winSys != NULL)
-      {
-         osg::GraphicsContext::setWindowingSystemInterface(new EmbeddedWindowSystemWrapper(*winSys));
-      }
-
       //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
       //Construct the application... 
-      dtCore::RefPtr<dtGame::GameApplication> gameApp = InitGameApp();
-      StealthQt::MainWindow mainWindow(*gameApp);
-      mainWindow.show();
+      std::string appLibName("StealthGMApp");
+      StealthQt::MainWindow mainWindow(appArgc, appArgv, appLibName);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
@@ -177,27 +135,3 @@ int main(int argc, char *argv[])
     return result;
 }
 
-const int appArgc = 13;
-static char* appArgv[appArgc] = 
-{
-   "GameStart",
-   "--UI", "1",
-   "--statisticsInterval", "30",
-   "--enableLogging", "1",
-   "--enablePlayback", "1",
-   "--hasBinos", 
-   "--hasCompass",  
-   "--hasGPS",
-   "--hasNightVis"
-};
-
-
-
-dtCore::RefPtr<dtGame::GameApplication> InitGameApp()
-{
-   std::string appLibName("StealthGMApp");
-   dtCore::RefPtr<dtGame::GameApplication> gameApp = new dtGame::GameApplication(appArgc, appArgv);
-   gameApp->SetGameLibraryName(appLibName);
-
-   return gameApp;
-}
