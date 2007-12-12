@@ -22,10 +22,10 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <dtABC/application.h>
 #include <SimCore/AgeiaTerrainCullVisitor.h>
 
 #include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
 {

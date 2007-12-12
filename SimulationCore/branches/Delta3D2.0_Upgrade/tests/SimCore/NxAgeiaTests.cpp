@@ -29,7 +29,10 @@
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 
-const std::string &AGEIA_REGISTRY = "dtAgeiaPhysX";
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
+static const std::string AGEIA_REGISTRY = "dtAgeiaPhysX";
 
 using namespace dtAgeiaPhysX;
 
@@ -69,7 +72,7 @@ void NxAgeiaTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
 
-   mGM = new dtGame::GameManager(*new dtCore::Scene());
+   mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    mGM->LoadActorRegistry(AGEIA_REGISTRY);
 
    dtCore::System::GetInstance().Step();

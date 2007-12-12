@@ -20,6 +20,11 @@ namespace dtGame
    class LogKeyframe;
 }
 
+namespace dtQt
+{
+   class OSGAdapterWidget;
+}
+
 namespace Ui
 {
    class MainWindow;
@@ -33,7 +38,6 @@ class QListWidgetItem;
 
 namespace StealthQt 
 {
-   class OSGAdapterWidget;
    
    /**
     * This class is the main window of the application.  It contains the menu bar,
@@ -302,7 +306,7 @@ namespace StealthQt
          
       private:
 
-         void InitGameApp(OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
+         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
                   const std::string& appLibName);
 
          /**

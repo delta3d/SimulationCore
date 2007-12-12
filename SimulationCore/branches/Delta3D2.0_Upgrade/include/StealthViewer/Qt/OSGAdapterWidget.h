@@ -26,6 +26,7 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QApplication>
 #include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLContext>
 
 #include <dtCore/refptr.h>
 
@@ -34,42 +35,43 @@ namespace osgViewer
    class GraphicsWindow;
 }
 
-namespace dtCore
-{
-   class Camera;
-}
-
-namespace StealthQt 
+namespace dtQt
 {
 
    class OSGAdapterWidget : public QGLWidget
    {
+      Q_OBJECT
+
       public:
 
-         OSGAdapterWidget( QWidget * parent = NULL, const char * name = NULL, 
+         OSGAdapterWidget(bool drawOnSeparateThread,  QWidget * parent = NULL, 
                   const QGLWidget * shareWidget = NULL, Qt::WindowFlags f = NULL );
 
-         virtual ~OSGAdapterWidget() {}
+         virtual ~OSGAdapterWidget();
 
          osgViewer::GraphicsWindow& GetGraphicsWindow();
          const osgViewer::GraphicsWindow& GetGraphicsWindow() const;
 
-         void SetGraphicsWindow(osgViewer::GraphicsWindow* newWindow);
-         //does the actual painting.
+         void SetGraphicsWindow(osgViewer::GraphicsWindow& newWindow);
 
-         void SetCamera(dtCore::Camera* camera);
-         dtCore::Camera* GetCamera();
-         
+         void ThreadedInitializeGL();
+         void ThreadedMakeCurrent();
+
+      public slots:
+         //does the actual painting.
          void ThreadedUpdateGL();
 
       protected:
 
-         //does nothing.  this is called automatically at times by qt, but on the wrong thread.
+         //This draws, but only if .
          virtual void paintGL();
+         void paintGLImpl();
 
          virtual void initializeGL();
 
          virtual void resizeGL( int width, int height );
+         void resizeGLImpl(int width, int height);
+
          virtual void keyPressEvent( QKeyEvent* event );
          virtual void keyReleaseEvent( QKeyEvent* event );
          virtual void mousePressEvent( QMouseEvent* event );
@@ -77,8 +79,13 @@ namespace StealthQt
          virtual void mouseMoveEvent( QMouseEvent* event );
 
          dtCore::RefPtr<osgViewer::GraphicsWindow> mGraphicsWindow;
-         dtCore::RefPtr<dtCore::Camera> mCamera;
+
          QTimer mTimer;
+
+         QGLContext* mThreadGLContext;
+         bool mDrawOnSeparateThread;
+         volatile bool mDoResize;
+
    };
 }
 #endif /*OSGADAPTERWIDGET_H_*/

@@ -46,6 +46,9 @@
 
 #include <osg/Vec3>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -103,8 +106,7 @@ namespace SimCore
          try
          {
             dtCore::System::GetInstance().Start();
-            RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-            mGM = new dtGame::GameManager(*scene);
+            mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
       
             mMachineInfo = new dtGame::MachineInfo;
 

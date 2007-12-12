@@ -32,6 +32,7 @@
 
 #include <CEGUIUtils.h>
 #include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>

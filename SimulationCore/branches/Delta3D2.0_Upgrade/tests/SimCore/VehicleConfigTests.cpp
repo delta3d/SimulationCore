@@ -19,6 +19,9 @@
 
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 class VehicleConfigTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(VehicleConfigTests);
@@ -50,7 +53,7 @@ void VehicleConfigTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
 
-   mGM = new dtGame::GameManager(*new dtCore::Scene());
+   mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
 
    dtCore::System::GetInstance().Step();
 
