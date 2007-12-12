@@ -46,6 +46,9 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/HLACustomParameterTranslator.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 using dtCore::RefPtr;
 
 class TestHLAComponent;
@@ -85,7 +88,7 @@ void HLATests::setUp()
 {
    try 
    {
-      RefPtr<dtCore::Scene> scene = new dtCore::Scene();
+      RefPtr<dtCore::Scene> scene = GetGlobalApplication().GetScene();
       mGameManager = new dtGame::GameManager(*scene);
       SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
       

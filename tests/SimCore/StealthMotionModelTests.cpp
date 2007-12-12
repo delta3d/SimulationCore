@@ -66,8 +66,9 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mTerrain->SetSegmentDivisions(64);
 
          mScene->AddDrawable(mTerrain.get());
-
+         
          mTarget = new dtCore::Transformable();
+         mScene->AddDrawable(mTarget.get());
 
          mMotionModel = new SimCore::StealthMotionModel();
          mMotionModel->SetScene(*mScene);

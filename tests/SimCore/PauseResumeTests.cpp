@@ -30,6 +30,9 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BaseEntity.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -79,8 +82,7 @@ void PauseResumeTests::setUp()
    try
    {
       dtCore::System::GetInstance().Start();
-      RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-      mGM = new dtGame::GameManager(*scene);
+      mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
       mMachineInfo = new dtGame::MachineInfo;
    }
    catch (const dtUtil::Exception& ex)

@@ -47,7 +47,8 @@
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
 
-//#include "TestComponent.h"
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 #ifdef DELTA_WIN32
    #include <Windows.h>
@@ -89,7 +90,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
          dtCore::System::GetInstance().Start();
-         mGM = new dtGame::GameManager(*new dtCore::Scene());
+         mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
          
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, mHumanAP);
       }

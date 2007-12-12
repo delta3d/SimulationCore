@@ -23,7 +23,6 @@
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/OSGAdapterWidget.h>
-//#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 
@@ -127,7 +126,8 @@ namespace StealthQt
 
       //GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
 
-      OSGAdapterWidget* oglWidget = new OSGAdapterWidget(glParent);
+      dtQt::OSGAdapterWidget* oglWidget = new dtQt::OSGAdapterWidget(false, glParent);
+      oglWidget->setFocusPolicy(Qt::StrongFocus);
 
       QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
       hbLayout->setMargin(0);
@@ -312,7 +312,7 @@ namespace StealthQt
       ReconnectToHLA();
    }
 
-   void MainWindow::InitGameApp(OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
+   void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
             const std::string& appLibName)
    {
       ///Reset the windowing system for osg to use 
@@ -325,8 +325,7 @@ namespace StealthQt
 
       mApp = new dtGame::GameApplication(appArgc, appArgv);
       mApp->SetGameLibraryName(appLibName);
-      oglWidget.SetGraphicsWindow(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
-      oglWidget.SetCamera(mApp->GetCamera());
+      oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
       //hack to make sure the opengl context stuff gets resized to fit the window
       oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
       mApp->Config();

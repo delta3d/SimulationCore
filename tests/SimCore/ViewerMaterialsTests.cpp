@@ -18,6 +18,9 @@
 #include <SimCore/Actors/ViewerMaterialActor.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ViewerMaterialsTests);
@@ -36,7 +39,7 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().Start();
 
-         mGM = new dtGame::GameManager(*new dtCore::Scene());
+         mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
               
          dtCore::System::GetInstance().Step();
 

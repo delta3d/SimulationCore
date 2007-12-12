@@ -57,7 +57,9 @@
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
 
-#include "TestComponent.h"
+#include <TestComponent.h>
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
@@ -129,7 +131,7 @@ void BaseEntityActorProxyTests::setUp()
 {
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
-   mGM = new dtGame::GameManager(*new dtCore::Scene());
+   mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    
    mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
    mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
