@@ -53,7 +53,7 @@
 
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
-#include <osg/Matrixd>;
+#include <osg/Matrixd>
 
 #include <osgDB/FileNameUtils>
 
