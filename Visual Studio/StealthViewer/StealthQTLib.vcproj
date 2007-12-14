@@ -174,10 +174,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\StealthViewer\Qt\GLWidgetRenderSurface.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\StealthViewer\Qt\HLAOptions.cpp"
 				>
 			</File>
@@ -343,6 +339,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\StealthViewer\Qt\moc\moc_MapSelectDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\StealthViewer\Qt\moc\moc_OSGAdapterWidget.cpp"
 				>
 			</File>
 			<File

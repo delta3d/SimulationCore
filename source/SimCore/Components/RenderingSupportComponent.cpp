@@ -188,9 +188,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
+         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());//mDeltaScene.get());
          
-         dtCore::View *view = GetGameManager()->GetApplication().GetView();
+         /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
          {
             view->GetOsgViewerView()->setSceneData(mSceneRoot.get());
@@ -199,7 +199,7 @@ namespace SimCore
          else
          {
             LOG_ERROR("The dtCore.View on the application is NULL. Cannot set the scene data.");
-         }
+         }*/
          ///////////////////////////////////////////////////////////////////////////////////////////////
 
          mSceneRoot->addChild(mNVGSRoot.get());
