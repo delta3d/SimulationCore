@@ -45,7 +45,7 @@
 #include <dtUtil/noiseutility.h> 
 #include <dtUtil/log.h>
 
-#include <osg/CameraNode>
+#include <osg/Camera>
 #include <osg/Geode>
 #include <osg/Texture>
 #include <osg/Depth>
@@ -149,8 +149,8 @@ namespace SimCore
          , mEnableNVGS(false)
          , mDeltaScene(new osg::Group())
          , mSceneRoot(new osg::Group())
-         , mGUIRoot(new osg::CameraNode())
-         , mNVGSRoot(new osg::CameraNode())
+         , mGUIRoot(new osg::Camera())
+         , mNVGSRoot(new osg::Camera())
          , mNVGS(0)
          , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
@@ -189,23 +189,25 @@ namespace SimCore
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
          GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
-         dtCore::View *view = GetGameManager()->GetApplication().GetMouse()->GetView();
+         
+         dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
          {
             view->GetOsgViewerView()->setSceneData(mSceneRoot.get());
+            view->GetOsgViewerView()->assignSceneDataToCameras();
          }
          else
          {
-            LOG_ERROR("The dtCore.View on the dtCore.Mouse is NULL. Cannot set the scene data.");
+            LOG_ERROR("The dtCore.View on the application is NULL. Cannot set the scene data.");
          }
          ///////////////////////////////////////////////////////////////////////////////////////////////
 
          mSceneRoot->addChild(mNVGSRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
-         mSceneRoot->addChild(mDeltaScene.get());                 
+         mSceneRoot->addChild(mDeltaScene.get());
                   
-         mNVGSRoot->setRenderOrder(osg::CameraNode::NESTED_RENDER);      
-         mGUIRoot->setRenderOrder(osg::CameraNode::POST_RENDER);
+         mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
+         mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
       }
 
@@ -243,7 +245,9 @@ namespace SimCore
             mEnableNVGS = pEnable;
             if(mEnableNVGS)
             {
-               //tell OSG to keep it quite
+               //This is really bad.  It FORCES the notify level.  This is bad for debugging.
+               
+               //tell OSG to keep it quiet
                osg::setNotifyLevel(osg::FATAL);
             }
             else
