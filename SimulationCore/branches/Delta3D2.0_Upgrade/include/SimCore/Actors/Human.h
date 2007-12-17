@@ -218,6 +218,20 @@ namespace SimCore
 
             /// This exists for the sake of the unit tests.
             const dtAI::Planner::OperatorList& GetCurrentPlan();
+
+            /**
+             * Sets the maximum amount of time per iteration the planner 
+             * can use to try and generate an animation sequence
+             * @param time The new time to use
+             */
+            void SetMaxTimePerIteration(double time) { mMaxTimePerIteration = time; }
+
+            /**
+             * Returns the maximum amount of time to take generating 
+             * animation sequences
+             * @return mMaxTimePerIteration
+             */
+            double GetMaxTimePerIteration() const { return mMaxTimePerIteration; }
             
             /*virtual*/ void OnEnteredWorld();
             /*virtual*/ void TickRemote(const dtGame::Message& tickRemote);
@@ -252,6 +266,8 @@ namespace SimCore
             float mFullRunVelocity;
             
             dtUtil::Log& mLogger;
+
+            double mMaxTimePerIteration;
       };
 
       class SIMCORE_EXPORT BasicStanceState: public dtAI::IStateVariable
