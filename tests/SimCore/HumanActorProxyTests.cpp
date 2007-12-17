@@ -210,6 +210,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
+         human->SetMaxTimePerIteration(0.35);
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
@@ -234,6 +235,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
          human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
+
+         human->SetMaxTimePerIteration(0.35);
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
