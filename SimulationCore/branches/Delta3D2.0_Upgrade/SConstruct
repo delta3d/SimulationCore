@@ -202,8 +202,6 @@ if OS == 'windows' :
       env['dtLibs']['SimViewerCore'] = 'SimViewerCored'
       env['dtLibs']['StealthGMApp'] = 'StealthGMAppd'
       env['dtLibs']['StealthQt'] = 'StealthQtd'
-      env['extLibs']['osgGA'] = 'osgGAd'
-      env['extLibs']['osgProducer'] = 'osgProducerd'
       env['extLibs']['osgEphemeris'] = 'osgEphemerisd'
       if env.get('ageia') != 0 :
          env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysXd'
@@ -215,8 +213,6 @@ if OS == 'windows' :
       env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
       env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
       env['dtLibs']['StealthQt'] = 'StealthQt'
-      env['extLibs']['osgGA'] = 'osgGA'
-      env['extLibs']['osgProducer'] = 'osgProducer'
       env['extLibs']['osgEphemeris'] = 'osgEphemeris'
       if env.get('ageia') != 0 :
          env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysX'
@@ -229,8 +225,6 @@ else :
    env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
    env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
    env['dtLibs']['StealthQt'] = 'StealthQt'
-   env['extLibs']['osgGA'] = 'osgGA'
-   env['extLibs']['osgProducer'] = 'osgProducer'
    env['extLibs']['osgEphemeris'] = 'osgEphemeris'
    if env.get('ageia') != 0 :
       env['dtLibs']['dtAgeiaPhysX'] = 'dtAgeiaPhysX'
