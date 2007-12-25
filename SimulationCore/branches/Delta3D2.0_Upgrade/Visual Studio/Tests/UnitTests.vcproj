@@ -345,6 +345,10 @@
 				RelativePath="..\..\tests\include\TestComponent.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\tests\include\UnitTestMain.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
