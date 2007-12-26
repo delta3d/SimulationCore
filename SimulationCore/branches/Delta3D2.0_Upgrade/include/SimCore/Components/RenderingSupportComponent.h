@@ -210,6 +210,10 @@ namespace SimCore
             static const int RENDER_BIN_MINIMAP           = 25;
 
          private:
+
+            /// Private helper method to Init CSM properly
+            void InitializeCSM();
+
             bool mEnableDynamicLights;
             bool mEnableCullVisitor;
             bool mEnableNVGS;
