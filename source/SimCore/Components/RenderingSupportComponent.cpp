@@ -41,6 +41,7 @@
 #include <dtCore/mouse.h>
 
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/project.h>
 
 #include <dtUtil/noiseutility.h> 
 #include <dtUtil/log.h>
@@ -157,13 +158,14 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::~RenderingSupportComponent(void)
+      RenderingSupportComponent::~RenderingSupportComponent()
       {
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnAddedToGM()
       {
+         InitializeCSM();
          InitializeFrameBuffer();
 
          //we we are setup to use the cullvisitor then initialize it
@@ -665,6 +667,34 @@ namespace SimCore
          GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
          mCullVisitor->SetCameraTransform(cameraTransform.GetTranslation());
          return true;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::InitializeCSM()
+      {
+         char *csmData = getenv("CSM_DATA");
+         if(csmData == NULL)
+         {
+            std::string csmPath = dtDAL::Project::GetInstance().GetContext();
+            for(size_t i = 0; i < csmPath.size(); i++)
+            {
+               if(csmPath[i] == '\\')
+               {
+                  csmPath[i] = '/';
+               }
+            }
+
+            csmPath += "/CSM/data";
+
+   #ifdef DELTA_WIN32
+            std::string val = "CSM_DATA=";
+            val += csmPath;
+            _putenv(val.c_str());
+   #else
+            setenv("CSM_DATA", csmPath.c_str(), 0);
+   #endif
+
+         }
       }
 
    } // end entity namespace.
