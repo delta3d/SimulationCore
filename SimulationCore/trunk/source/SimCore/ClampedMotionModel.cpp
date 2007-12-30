@@ -41,7 +41,7 @@ namespace SimCore
    ClampedMotionModel::ClampedMotionModel(dtCore::Keyboard* keyboard,
                                     dtCore::Mouse* mouse) 
       : AttachedMotionModel(keyboard,mouse),
-      mFreeLookKey(Producer::Key_Control_L),
+      mFreeLookKey(osgGA::GUIEventAdapter::KEY_Control_L),
       mFreeLookMouseButton(dtCore::Mouse::RightButton),
       mFreeLookByKey(false),
       mFreeLookByMouseButton(false),

@@ -47,7 +47,8 @@
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
 
-//#include "TestComponent.h"
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 #ifdef DELTA_WIN32
    #include <Windows.h>
@@ -89,7 +90,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       {
          dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
          dtCore::System::GetInstance().Start();
-         mGM = new dtGame::GameManager(*new dtCore::Scene());
+         mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
          
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, mHumanAP);
       }
@@ -209,8 +210,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
 
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
+         human->SetMaxTimePerIteration(0.35);
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         bool value = human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(value);
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -234,6 +237,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
 
+         human->SetMaxTimePerIteration(0.45);
+
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
@@ -243,7 +248,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         bool value = human->GenerateNewAnimationSequence();
+         CPPUNIT_ASSERT(value);
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -335,6 +341,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
+
+         human->SetMaxTimePerIteration(0.45);
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();

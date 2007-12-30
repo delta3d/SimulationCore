@@ -51,10 +51,6 @@ namespace dtCore
    class DeltaDrawable;
    class Transformable;
 }
-namespace osg
-{
-   class CameraNode;
-}
 
 namespace SimCore
 {
@@ -214,13 +210,17 @@ namespace SimCore
             static const int RENDER_BIN_MINIMAP           = 25;
 
          private:
+
+            /// Private helper method to Init CSM properly
+            void InitializeCSM();
+
             bool mEnableDynamicLights;
             bool mEnableCullVisitor;
             bool mEnableNVGS;
             dtCore::RefPtr<osg::Group> mDeltaScene;
             dtCore::RefPtr<osg::Group> mSceneRoot;
-            dtCore::RefPtr<osg::CameraNode> mGUIRoot;
-            dtCore::RefPtr<osg::CameraNode> mNVGSRoot;
+            dtCore::RefPtr<osg::Camera> mGUIRoot;
+            dtCore::RefPtr<osg::Camera> mNVGSRoot;
             dtCore::RefPtr<RenderFeature> mNVGS;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
 

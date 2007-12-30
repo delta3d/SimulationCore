@@ -18,11 +18,23 @@
 #include <dtAudio/audiomanager.h>
 #include <dtDAL/project.h>
 #include <dtDAL/librarymanager.h>
-#include <dtGame/gameapplication.h>
 
 #include <sstream>
 
-dtCore::RefPtr<dtGame::GameApplication> InitGameApp();
+const int appArgc = 13;
+static char* appArgv[appArgc] = 
+{
+   "GameStart",
+   "--UI", "1",
+   "--statisticsInterval", "30",
+   "--enableLogging", "1",
+   "--enablePlayback", "1",
+   "--hasBinos", 
+   "--hasCompass",  
+   "--hasGPS",
+   "--hasNightVis"
+};
+
 
 int main(int argc, char *argv[])
 {
@@ -69,13 +81,12 @@ int main(int argc, char *argv[])
 
    try
    {
-      dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
+      //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
       //Construct the application... 
-      dtCore::RefPtr<dtGame::GameApplication> gameApp = InitGameApp();
-      StealthQt::MainWindow mainWindow(*gameApp);
-      mainWindow.show();
+      std::string appLibName("StealthGMApp");
+      StealthQt::MainWindow mainWindow(appArgc, appArgv, appLibName);
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
@@ -124,26 +135,3 @@ int main(int argc, char *argv[])
     return result;
 }
 
-const int appArgc = 13;
-static char* appArgv[appArgc] = 
-{
-   "GameStart",
-   "--UI", "1",
-   "--statisticsInterval", "30",
-   "--enableLogging", "1",
-   "--enablePlayback", "1",
-   "--hasBinos", 
-   "--hasCompass",  
-   "--hasGPS",
-   "--hasNightVis"
-};
-
-
-dtCore::RefPtr<dtGame::GameApplication> InitGameApp()
-{
-   std::string appLibName("StealthGMApp");
-   dtCore::RefPtr<dtGame::GameApplication> gameApp = new dtGame::GameApplication(appArgc, appArgv);
-   gameApp->SetGameLibraryName(appLibName);
-
-   return gameApp;
-}

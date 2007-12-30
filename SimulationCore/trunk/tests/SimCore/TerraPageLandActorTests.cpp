@@ -1,6 +1,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtDAL/datatype.h>
 #include <dtGame/gamemanager.h> 
 
@@ -21,8 +22,10 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <dtABC/application.h>
 #include <SimCore/AgeiaTerrainCullVisitor.h>
+
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
 {
@@ -42,13 +45,8 @@ class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
    private:
      dtCore::RefPtr<dtGame::GameManager> mGM;
      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent;
-     dtCore::RefPtr<dtABC::Application> mApplication;
+     dtCore::RefPtr<dtABC::Application> mApp;
      dtCore::RefPtr<dtUtil::Log> mLogger;
-
-     dtCore::RefPtr<dtCore::Scene> mScene;
-     dtCore::RefPtr<dtCore::Camera> mCamera;
-     dtCore::RefPtr<dtCore::DeltaWin> mWin;
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TerraPageLandActorTests);
@@ -61,18 +59,12 @@ void TerraPageLandActorTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
    
-   mApplication = new dtABC::Application("config.xml");
+   mApp = &GetGlobalApplication();
 
-   mScene = new dtCore::Scene();
-   mWin = new dtCore::DeltaWin();
-   mWin->SetPosition(0, 0, 50, 50);
-   mCamera = new dtCore::Camera();
-   mCamera->SetScene(mScene.get());
-   mCamera->SetWindow(mWin.get());
+   mGM = new dtGame::GameManager(*mApp->GetScene());
+   mGM->SetApplication( *mApp );
+ 
    dtCore::System::GetInstance().Config();
-  
-   mGM = new dtGame::GameManager(*mScene.get());
-   mGM->SetApplication(*mApplication.get());
    dtCore::System::GetInstance().Step();
 
    SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
@@ -86,11 +78,15 @@ void TerraPageLandActorTests::tearDown()
   
    dtCore::System::GetInstance().Stop();
 
-   mGM->GetApplication().Quit();
-   mGM->DeleteAllActors(true);
+   if (mGM.valid())
+   {
+      mGM->GetApplication().Quit();
+      mGM->DeleteAllActors(true);
+   }
+
    mGM = NULL;
 
-   mApplication = NULL;
+   mApp = NULL;
 }
 
 /////////////////////////////////////////////////////////

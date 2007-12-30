@@ -292,8 +292,9 @@ namespace StealthGM
                                StealthHUD::DEFAULT_NAME, 
                                mIsUIRunning);
 
-      mHudGUI->Initialize();
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      mHudGUI->Initialize();
 
       // Control State Component (for swapping weapons on remote HMMWV vehicles)
       dtCore::RefPtr<SimCore::Components::ControlStateComponent> controlsStateComp

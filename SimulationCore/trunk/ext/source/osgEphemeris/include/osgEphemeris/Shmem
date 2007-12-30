@@ -1,0 +1,64 @@
+/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
+ *
+ * This library is open source and may be redistributed and/or modified under
+ * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * OpenSceneGraph Public License for more details.
+*/
+#ifndef __SHMEM_DEF
+#define __SHMEM_DEF
+
+#include <string>
+#include <malloc.h>
+
+/** \class Shmem
+    \brief A shared memory super class.
+
+    Shmem defines a new() operator that attaches to a shared memory segment
+    existing as a memory mapped file.  The name of the file is speicified in 
+    a parameter to the new() operator.  Classes deriving from Shmem and using
+    the parameter based new() operator, will be allocated as a shared memory
+    mapped file.  Contents of classes or structs drived from Shmem will 
+    survive process restart and even system reboot.
+    */
+
+class Shmem 
+{
+    public :
+        /**
+          Default Constructor 
+          */
+	    Shmem( void ) {}
+        /** 
+          Default Destructor
+          */
+	    ~Shmem( void ) {}
+
+        /**
+          new() operator.
+          \param size - Standard size parameter for a C++ new() operator.  Corresponds
+                        to the size of the data being allocated.
+          \param filename - Name of the file to map to memory in shared space.  This is
+                        the name of a file on the file system.  If it does not exist, it
+                        will be created and sized appropriately.
+          */
+
+	    void *operator new( size_t size, const std::string & filename );
+	    void operator delete( void*, const std::string & filename );
+        /**
+          Detaches from shared memory segment, but does not destroy the memory mapped file.
+          */
+	    void operator delete( void * );
+
+    private :
+        void *start;
+    	size_t length;
+};
+
+
+#endif

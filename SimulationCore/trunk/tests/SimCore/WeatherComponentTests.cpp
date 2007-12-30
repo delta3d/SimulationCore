@@ -12,9 +12,12 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
+
 #include <dtABC/application.h>
+
 #include <dtActors/basicenvironmentactorproxy.h>
 #include <dtActors/engineactorregistry.h>
+
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
@@ -22,20 +25,26 @@
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
 #include <dtCore/deltawin.h>
+
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
+
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/messageparameter.h>
+
 #include <dtUtil/exception.h>
+
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
+#include <UnitTestMain.h>
 
 #ifdef DELTA_WIN32
 #include <Windows.h>
@@ -201,7 +210,6 @@ namespace SimCore
             dtCore::RefPtr<dtGame::GameManager> mGM;
             dtCore::RefPtr<TestWeatherComponent> mWeatherComp;
             dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<dtCore::Camera> mCamera;
             dtCore::RefPtr<dtABC::Application> mApp;
 
             dtCore::RefPtr<Actors::IGEnvironmentActorProxy> mEnv;
@@ -221,19 +229,13 @@ namespace SimCore
          {
             dtCore::System::GetInstance().Start();
             
-            dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-            
-            mApp = new dtABC::Application("config.xml");
-            mApp->GetWindow()->SetPosition(0, 0, 50, 50);
+            mApp = &GetGlobalApplication();
 
-            mGM = new dtGame::GameManager(*scene);
-            mGM->SetApplication(*mApp);
+            mGM = new dtGame::GameManager(*mApp->GetScene());
+            mGM->SetApplication( *mApp );
 
             mMachineInfo = new dtGame::MachineInfo;
             mWeatherComp = new TestWeatherComponent;
-
-            mCamera = new dtCore::Camera();
-            mCamera->SetScene(scene.get());
 
             mGM->AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
             MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
@@ -253,13 +255,13 @@ namespace SimCore
       {
          dtCore::System::GetInstance().Stop();
 
-         mCamera->SetScene(NULL);
-         mCamera = NULL;
-
          mApp = NULL;
 
-         mGM->DeleteAllActors(true);
-
+         if (mGM.valid())
+         {
+            mGM->DeleteAllActors(true);
+         }
+         
          mGM = NULL;
          mMachineInfo = NULL;
       }

@@ -93,6 +93,7 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
    const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
    const std::string BaseGameEntryPoint::CONFIG_PROP_GMSTATS("GMStatisticsInterval");
+   const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
@@ -187,7 +188,7 @@ namespace SimCore
 
       if (!parser->read("--aspectRatio", mAspectRatio))
       {
-         mAspectRatio = 1.6f;
+         mAspectRatio = 0.0f;
       }
 
       if (!parser->read("--lingeringShotSecs", mLingeringShotEffectSecs))
@@ -458,6 +459,42 @@ namespace SimCore
    }
    
    //////////////////////////////////////////////////////////////////////////
+   void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication &app)
+   {
+      app.GetCamera()->SetProjectionResizePolicy(osg::Camera::FIXED);
+
+      //The command line arg takes precidence, followed by the config file option.
+      if(mAspectRatio == 0.0f)
+      {
+         std::string aspectString = app.GetConfigPropertyValue(CONFIG_PROP_ASPECT_RATIO, "1.6");
+
+         if (aspectString == "auto")
+         {
+            app.GetCamera()->SetProjectionResizePolicy(osg::Camera::HORIZONTAL);
+         }
+         else
+         {
+            std::istringstream iss(aspectString);
+            iss >> mAspectRatio;
+            if (mAspectRatio == 0.0f)
+            {
+               double defaultAspectRatio = app.GetCamera()->GetAspectRatio();
+               app.GetCamera()->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
+            }
+            else
+            {
+               app.GetCamera()->SetAspectRatio(mAspectRatio);
+            }
+         }
+         
+      }
+      else
+      {
+         app.GetCamera()->SetAspectRatio(mAspectRatio);
+      }
+   }
+   
+   //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
    {
 
@@ -468,13 +505,13 @@ namespace SimCore
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
        
-      camera->GetSceneHandler()->GetSceneView()->
-         setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+      osg::Camera* cam = camera->GetOSGCamera();
+
+      cam->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
          //setComputeNearFarMode(osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 
-      camera->GetSceneHandler()->GetSceneView()->
-         setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
+      cam->setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
       //camera->GetSceneHandler()->GetSceneView()->
       //   setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING | 
       //      osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING | 
@@ -483,25 +520,14 @@ namespace SimCore
 
       //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
-      camera->SetPerspective(60.0f, 60.0f,
-                             PLAYER_NEAR_CLIP_PLANE, 
+      cam->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
+      
+      camera->SetPerspective(60.0f, 1.6,
+                             PLAYER_NEAR_CLIP_PLANE,
                              PLAYER_FAR_CLIP_PLANE);
-      camera->GetSceneHandler()->GetSceneView()->
-         setNearFarRatio(PLAYER_NEAR_CLIP_PLANE /
-                             PLAYER_FAR_CLIP_PLANE);
+      AssignAspectRatio(app);
 
-
-      if(mAspectRatio == 0.0f)
-      {
-         double defaultAspectRatio = camera->GetAspectRatio();
-         camera->SetAspectRatio(defaultAspectRatio < 1.47 ? 1.33 : 1.6);
-      }
-      else
-      {
-         camera->SetAspectRatio(mAspectRatio);
-      }
-
-      camera->AddChild(dtAudio::AudioManager::GetListener());
+	   camera->AddChild(dtAudio::AudioManager::GetListener());
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
       
@@ -546,7 +572,7 @@ namespace SimCore
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 
-      drComp->SetHighResGroundClampingRange(200.0f);
+      drComp->GetGroundClamper().SetHighResGroundClampingRange(200.0f);
 
       mWeatherComp->SetUpdatesEnabled(!mIsUIRunning);
       //mWeatherComp->SetUseEphemeris(mIsUIRunning);

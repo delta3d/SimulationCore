@@ -85,8 +85,8 @@ namespace SimCore
             );
 
          mArrowKeysLeftRightMapping = new dtCore::ButtonsToAxis(
-            keyboard->GetButton(Producer::Key_Left),
-            keyboard->GetButton(Producer::Key_Right)
+            keyboard->GetButton(osgGA::GUIEventAdapter::KEY_Left),
+            keyboard->GetButton(osgGA::GUIEventAdapter::KEY_Right)
          );
          dtCore::Axis* arrowKeysLeftAndRight = mDefaultInputDevice->AddAxis(
             "arrow keys left/right",
@@ -94,8 +94,8 @@ namespace SimCore
          );
 
          mArrowKeysUpDownMapping = new dtCore::ButtonsToAxis(
-            keyboard->GetButton(Producer::Key_Up),
-            keyboard->GetButton(Producer::Key_Down)
+            keyboard->GetButton(osgGA::GUIEventAdapter::KEY_Up),
+            keyboard->GetButton(osgGA::GUIEventAdapter::KEY_Down)
          );
          
          dtCore::Axis* arrowKeysUpAndDown = mDefaultInputDevice->AddAxis(

@@ -22,7 +22,7 @@
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
-#include <StealthViewer/Qt/GLWidgetRenderSurface.h>
+#include <StealthViewer/Qt/OSGAdapterWidget.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 
@@ -53,23 +53,65 @@
 
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
+#include <osg/Matrixd>
 
 #include <osgDB/FileNameUtils>
 
-#ifdef KeyPress
-   #undef KeyPress
-#endif
+#include <osgViewer/GraphicsWindow>
+
+
+class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemInterface
+{
+   public:
+      EmbeddedWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface):
+         mInterface(&oldInterface)
+      {
+      }
+      
+      virtual unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier = 
+         osg::GraphicsContext::ScreenIdentifier())
+      {
+         return mInterface->getNumScreens(screenIdentifier);
+      }
+
+      virtual void getScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
+               unsigned int& width, unsigned int& height)
+      {
+         mInterface->getScreenResolution(screenIdentifier, width, height);
+      }
+
+      virtual bool setScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier, 
+               unsigned int width, unsigned int height)
+      {
+         return mInterface->setScreenResolution(screenIdentifier, width, height);
+      }
+
+      virtual bool setScreenRefreshRate(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
+               double refreshRate)
+      {
+         return mInterface->setScreenRefreshRate(screenIdentifier, refreshRate);
+      }
+
+      virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
+      {
+         return new osgViewer::GraphicsWindowEmbedded(traits);
+      }
+
+   protected:
+      virtual ~EmbeddedWindowSystemWrapper() {};
+   private:
+      dtCore::RefPtr<osg::GraphicsContext::WindowingSystemInterface> mInterface;
+};
+
 
 namespace StealthQt
 {
    ///////////////////////////////////////////////////////////////////////////////
-   MainWindow::MainWindow(dtGame::GameApplication& app):
+   MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName):
       mUi(new Ui::MainWindow),
-      mFirstShow(true),
       mIsPlaybackMode(false),
       mIsRecording(false),
       mIsPlayingBack(false),
-      mApp(&app), 
       mIsConnectedToHLA(false), 
       mDoubleValidator(new QDoubleValidator(0, 10000, 5, this)), 
       mShowMissingEntityInfoErrorMessage(true)
@@ -81,7 +123,12 @@ namespace StealthQt
       StealthViewerData::GetInstance().SetMainWindow(*this);
 
       QWidget* glParent = new QWidget(this);
-      GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
+
+      //GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
+
+      dtQt::OSGAdapterWidget* oglWidget = new dtQt::OSGAdapterWidget(false, glParent);
+      oglWidget->setFocusPolicy(Qt::StrongFocus);
+
       QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
       hbLayout->setMargin(0);
       glParent->setLayout(hbLayout);
@@ -250,8 +297,40 @@ namespace StealthQt
 
       // Disable full screen
       mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
+
+      UpdateUIFromPreferences();
+
+      show();
+
+      InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
+
+      AddConfigObjectsToViewerComponent();
+      StealthViewerData::GetInstance().GetSettings().LoadPreferences();
+      
+      ConnectSigSlots();
+
+      ReconnectToHLA();
    }
 
+   void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
+            const std::string& appLibName)
+   {
+      ///Reset the windowing system for osg to use 
+      osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
+
+      if (winSys != NULL)
+      {
+         osg::GraphicsContext::setWindowingSystemInterface(new EmbeddedWindowSystemWrapper(*winSys));
+      }
+
+      mApp = new dtGame::GameApplication(appArgc, appArgv);
+      mApp->SetGameLibraryName(appLibName);
+      oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+      //hack to make sure the opengl context stuff gets resized to fit the window
+      oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
+      mApp->Config();
+   }
+   
    MainWindow::~MainWindow()
    {
       delete mUi;
@@ -285,23 +364,6 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::showEvent(QShowEvent* event)
    {
-      //We have to check this because this event happens when the window is minimized
-      //and brought back.
-      if(mFirstShow)
-      {
-         mApp->Config();
-         
-         AddConfigObjectsToViewerComponent();
-         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
-         UpdateUIFromPreferences();
-         
-         ConnectSigSlots();
-
-         ReconnectToHLA();
-        
-         mFirstShow = false;
-      }
-
       mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
       mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
       mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());

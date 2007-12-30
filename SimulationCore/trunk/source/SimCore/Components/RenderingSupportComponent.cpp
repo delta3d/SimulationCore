@@ -32,16 +32,21 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 #include <dtGame/actorupdatemessage.h>
+
 #include <dtABC/application.h>
+
 #include <dtCore/scene.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
+#include <dtCore/mouse.h>
+
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/project.h>
 
 #include <dtUtil/noiseutility.h> 
 #include <dtUtil/log.h>
 
-#include <osg/CameraNode>
+#include <osg/Camera>
 #include <osg/Geode>
 #include <osg/Texture>
 #include <osg/Depth>
@@ -50,6 +55,8 @@
 
 #include <osg/Notify>//to squelch warnings
 
+#include <osg/GraphicsContext>
+#include <osgViewer/Renderer>
 
 namespace SimCore
 {
@@ -143,21 +150,22 @@ namespace SimCore
          , mEnableNVGS(false)
          , mDeltaScene(new osg::Group())
          , mSceneRoot(new osg::Group())
-         , mGUIRoot(new osg::CameraNode())
-         , mNVGSRoot(new osg::CameraNode())
+         , mGUIRoot(new osg::Camera())
+         , mNVGSRoot(new osg::Camera())
          , mNVGS(0)
          , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::~RenderingSupportComponent(void)
+      RenderingSupportComponent::~RenderingSupportComponent()
       {
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnAddedToGM()
       {
+         InitializeCSM();
          InitializeFrameBuffer();
 
          //we we are setup to use the cullvisitor then initialize it
@@ -182,22 +190,36 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mDeltaScene.get());
-         GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->setSceneData(mSceneRoot.get());
+         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());//mDeltaScene.get());
+         
+         /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
+         if(view != NULL)
+         {
+            view->GetOsgViewerView()->setSceneData(mSceneRoot.get());
+            view->GetOsgViewerView()->assignSceneDataToCameras();
+         }
+         else
+         {
+            LOG_ERROR("The dtCore.View on the application is NULL. Cannot set the scene data.");
+         }*/
+         ///////////////////////////////////////////////////////////////////////////////////////////////
 
          mSceneRoot->addChild(mNVGSRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
-         mSceneRoot->addChild(mDeltaScene.get());                 
+         mSceneRoot->addChild(mDeltaScene.get());
                   
-         mNVGSRoot->setRenderOrder(osg::CameraNode::NESTED_RENDER);      
-         mGUIRoot->setRenderOrder(osg::CameraNode::POST_RENDER);
+         mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
+         mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
       {        
-         osgUtil::SceneView* sceneView = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView();
+         osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
+         osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
+         osgUtil::SceneView* sceneView = renderer->getSceneView(0);
+         
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
 
@@ -207,7 +229,6 @@ namespace SimCore
          // auto sets the cull visitor but havent checked yet.
          mCullVisitor->setCullingMode(flags);
          sceneView->setCullingMode(flags);
-
          sceneView->setCullVisitor(mCullVisitor.get());
       }
 
@@ -226,7 +247,9 @@ namespace SimCore
             mEnableNVGS = pEnable;
             if(mEnableNVGS)
             {
-               //tell OSG to keep it quite
+               //This is really bad.  It FORCES the notify level.  This is bad for debugging.
+               
+               //tell OSG to keep it quiet
                osg::setNotifyLevel(osg::FATAL);
             }
             else
@@ -391,7 +414,7 @@ namespace SimCore
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
          osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
    
-         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetCamera()->getViewMatrix());
+         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getViewMatrix());
 
          osg::Matrix viewInverse;
          viewInverse.invert(mat);
@@ -644,6 +667,34 @@ namespace SimCore
          GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
          mCullVisitor->SetCameraTransform(cameraTransform.GetTranslation());
          return true;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::InitializeCSM()
+      {
+         char *csmData = getenv("CSM_DATA");
+         if(csmData == NULL)
+         {
+            std::string csmPath = dtDAL::Project::GetInstance().GetContext();
+            for(size_t i = 0; i < csmPath.size(); i++)
+            {
+               if(csmPath[i] == '\\')
+               {
+                  csmPath[i] = '/';
+               }
+            }
+
+            csmPath += "/CSM/data";
+
+   #ifdef DELTA_WIN32
+            std::string val = "CSM_DATA=";
+            val += csmPath;
+            _putenv(val.c_str());
+   #else
+            setenv("CSM_DATA", csmPath.c_str(), 0);
+   #endif
+
+         }
       }
 
    } // end entity namespace.

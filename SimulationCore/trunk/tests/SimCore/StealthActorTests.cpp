@@ -35,6 +35,7 @@
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
@@ -47,7 +48,8 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
-#include "TestComponent.h"
+#include <UnitTestMain.h>
+#include <TestComponent.h>
 
 #if defined (WIN32) || defined (_WIN32) || defined (__WIN32__)
    #include <Windows.h>
@@ -72,10 +74,10 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
          dtCore::System::GetInstance().Start();
-         mApp = new dtABC::Application("config.xml");
-         mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-         mGM = new dtGame::GameManager(*new dtCore::Scene);
-         mGM->SetApplication(*mApp);
+         mApp = &GetGlobalApplication();
+
+         mGM = new dtGame::GameManager(*mApp->GetScene());
+         mGM->SetApplication( *mApp );
          mDeadReckoningComponent = new dtGame::DeadReckoningComponent("DeadReckoningComponent");
          mTestComponent = new TestComponent();
          mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);

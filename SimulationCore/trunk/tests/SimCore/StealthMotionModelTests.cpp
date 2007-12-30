@@ -33,6 +33,8 @@
 #include <osg/io_utils>
 #include <dtABC/application.h>
 
+#include <UnitTestMain.h>
+
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -55,34 +57,25 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
       void setUp()
       {
-         // Scene needs to exist before a window
-         mScene = new dtCore::Scene();
-
-         // A window & camera are needed to allow terrain
-         // to generate geometry.
-         mWin = new dtCore::DeltaWin();
-         mWin->SetPosition(0, 0, 50, 50);
-
-         mCamera = new dtCore::Camera();
-         mCamera->SetScene(mScene.get());
-         mCamera->SetWindow(mWin.get());
-
          mTerrain = new dtCore::InfiniteTerrain( "Ground" );
          mTerrain->SetBuildDistance(1500.f);
          mTerrain->SetSegmentDivisions(64);
 
-         mScene->SetName("Ground Scene");
-         mScene->AddDrawable(mTerrain.get());
+         mApp = &GetGlobalApplication();
 
+         mApp->GetScene()->AddDrawable(mTerrain.get());
+         
          mTarget = new dtCore::Transformable();
+         mApp->GetScene()->AddDrawable(mTarget.get());
 
          mMotionModel = new SimCore::StealthMotionModel();
-         mMotionModel->SetScene(*mScene);
+         mMotionModel->SetScene(*mApp->GetScene());
          mMotionModel->SetEnabled(true); 
          mMotionModel->SetTarget( mTarget.get() );
          mMotionModel->SetCollideWithGround(true);
          mMotionModel->SetGroundClearance(1.0f);
          mMotionModel->SetMaximumFlySpeed(100.0f);
+         mMotionModel->SetCollidableGeometry(mTerrain.get());
 
          dtCore::System::GetInstance().Config();
 
@@ -92,25 +85,18 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       
       void tearDown()
       {
+         mApp = NULL;
          mMotionModel = NULL;
-         if(mScene.valid())
-         {
-            mScene->RemoveAllDrawables();
-         }
-         mScene = NULL;
          mTarget = NULL;
          mTerrain = NULL;
          mTerrainAlternate = NULL;
-         mCamera->SetScene(NULL);
-         mCamera->SetWindow(NULL);
-         mCamera = NULL;
-         mWin = NULL;
+         
          dtCore::System::GetInstance().Stop();
       }
       
       void TestProperties()
       {       
-         CPPUNIT_ASSERT( mMotionModel->GetScene().GetName() == "Ground Scene" );  
+         CPPUNIT_ASSERT( &mMotionModel->GetScene() == mApp->GetScene() );  
 
          mMotionModel->SetTarget( mTarget.get() );
          CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL );   
@@ -132,8 +118,6 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       void TestEndPosition()
       {
 
-         dtCore::System::GetInstance().Step();
-
          float elevation = mTerrain->GetHeight( 0.0f, 0.0f );
          osg::Vec3 cameraPos( 0.0f, 0.0f, elevation+100.0f );
 
@@ -141,6 +125,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          transform.SetTranslation(cameraPos);
          mTarget->SetTransform(transform, dtCore::Transformable::REL_CS);
 
+         dtCore::System::GetInstance().Step();
 
          for( int step = 0; step < 5; step++ )
          {
@@ -173,7 +158,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mTerrainAlternate->SetBuildDistance(1000.f);
          mTerrainAlternate->SetSegmentDivisions(32);
          mTerrainAlternate->SetVerticalScale(3.0f);
-         mScene->AddDrawable(mTerrainAlternate.get());
+         mApp->GetScene()->AddDrawable(mTerrainAlternate.get());
          dtCore::System::GetInstance().Step();
 
 
@@ -227,14 +212,12 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
 
    private:
+
       dtCore::RefPtr<SimCore::StealthMotionModel> mMotionModel;
-      dtCore::RefPtr<dtCore::Scene> mScene;
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrain;
       dtCore::RefPtr<dtCore::InfiniteTerrain> mTerrainAlternate;
       dtCore::RefPtr<dtCore::Transformable> mTarget;
-      dtCore::RefPtr<dtCore::Camera> mCamera;
-      dtCore::RefPtr<dtCore::DeltaWin> mWin;
-
+      dtCore::RefPtr<dtABC::Application> mApp;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StealthMotionModelTests);

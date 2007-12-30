@@ -48,6 +48,9 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/HLACustomParameterTranslator.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 #ifdef DELTA_WIN32
    #include <Windows.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
@@ -88,7 +91,7 @@ void HLAConfigTests::setUp()
    logger = &dtUtil::Log::GetInstance(logName);
    mTranslator = new dtHLAGM::HLAComponent();
    mTranslator->AddParameterTranslator( *new SimCore::Components::HLACustomParameterTranslator );
-   dtCore::Scene* scene = new dtCore::Scene();
+   dtCore::Scene* scene = GetGlobalApplication().GetScene();
    mGameManager = new dtGame::GameManager(*scene);
    SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
 } 
