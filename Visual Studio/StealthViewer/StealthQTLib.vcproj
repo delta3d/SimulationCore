@@ -174,10 +174,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\StealthViewer\Qt\GLWidgetRenderSurface.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\source\StealthViewer\Qt\HLAOptions.cpp"
 				>
 			</File>
@@ -195,6 +191,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\StealthViewer\Qt\NetworkWeatherSettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\StealthViewer\Qt\OSGAdapterWidget.cpp"
 				>
 			</File>
 			<File
@@ -249,6 +249,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\StealthViewer\Qt\NetworkWeatherSettings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\StealthViewer\Qt\OSGAdapterWidget.h"
 				>
 			</File>
 			<File
@@ -335,6 +339,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\StealthViewer\Qt\moc\moc_MapSelectDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\StealthViewer\Qt\moc\moc_OSGAdapterWidget.cpp"
 				>
 			</File>
 			<File

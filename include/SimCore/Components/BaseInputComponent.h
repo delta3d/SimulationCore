@@ -131,39 +131,30 @@ namespace SimCore
              *
              * @param keyboard the source of the event
              * @param key the key pressed
-             * @param character the corresponding character
              */
-            virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard,
-               Producer::KeyboardKey key,
-               Producer::KeyCharacter character);
+            virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
             /**
              * Called when a key is released.
              *
              * @param keyboard the source of the event
              * @param key the key released
-             * @param character the corresponding character
              * @return true if this KeyboardListener handled the event. The
              * Keyboard calling this function is responsbile for using this
              * return value or not.
              */
-            virtual bool HandleKeyReleased(const dtCore::Keyboard* keyboard, 
-               Producer::KeyboardKey key,
-               Producer::KeyCharacter character );
+            virtual bool HandleKeyReleased(const dtCore::Keyboard* keyboard, int key);
 
             /**
              * Called when a key is typed.
              *
              * @param keyboard the source of the event
              * @param key the key typed
-             * @param character the corresponding character
              * @return true if this KeyboardListener handled the event. The
              * Keyboard calling this function is responsbile for using this
              * return value or not.
              */
-            virtual bool HandleKeyTyped(const dtCore::Keyboard* keyboard, 
-               Producer::KeyboardKey key,
-               Producer::KeyCharacter character ) { return false; }
+            virtual bool HandleKeyTyped(const dtCore::Keyboard* keyboard, int key) { return false; }
 
          protected:
 
@@ -190,11 +181,8 @@ namespace SimCore
              *
              * @param keyboard the source of the event
              * @param key the key pressed
-             * @param character the corresponding character
              */
-            virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard,
-               Producer::KeyboardKey key,
-               Producer::KeyCharacter character);
+            virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
             /**
              * KeyboardListener override
@@ -202,14 +190,11 @@ namespace SimCore
              *
              * @param keyboard the source of the event
              * @param key the key released
-             * @param character the corresponding character
              * @return true if this KeyboardListener handled the event. The
              * Keyboard calling this function is responsbile for using this
              * return value or not.
              */
-            virtual bool HandleKeyReleased(const dtCore::Keyboard* keyboard, 
-               Producer::KeyboardKey key,
-               Producer::KeyCharacter character ) { return false; }
+            virtual bool HandleKeyReleased(const dtCore::Keyboard* keyboard, int key) { return false; }
 
             /**
              * MouseListener override

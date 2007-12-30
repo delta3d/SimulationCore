@@ -29,6 +29,7 @@
 #include <dtCore/transformable.h>
 
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtDAL/resourcedescriptor.h>
 
 #include <dtGame/basemessages.h>
@@ -52,6 +53,8 @@
 #include <osgParticle/ModularProgram>
 #include <osgParticle/Operator>
 #include <osgParticle/ForceOperator>
+
+#include <UnitTestMain.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
 #include <Windows.h>
@@ -148,7 +151,6 @@ namespace SimCore
             dtCore::RefPtr<dtGame::GameManager> mGM;
             dtCore::RefPtr<TestParticleManagerComponent> mParticleComp;
             dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            dtCore::RefPtr<dtCore::Camera> mCamera;
             dtCore::RefPtr<dtABC::Application> mApp;
 
             dtCore::RefPtr<dtCore::ParticleSystem> mPS;
@@ -168,20 +170,12 @@ namespace SimCore
          {
             dtCore::System::GetInstance().Start();
 
-            dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-            
-            mApp = new dtABC::Application("config.xml");
-            mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-
-            mGM = new dtGame::GameManager(*scene);
+            mApp = &GetGlobalApplication();
+            mGM = new dtGame::GameManager(*mApp->GetScene());
             mGM->SetApplication(*mApp);
 
             mMachineInfo = new dtGame::MachineInfo;
             mParticleComp = new TestParticleManagerComponent;
-
-            mCamera = new dtCore::Camera();
-            mCamera->SetScene(scene.get());
-            mCamera->SetWindow(mApp->GetWindow());
 
             mGM->AddComponent(*mParticleComp, dtGame::GameManager::ComponentPriority::NORMAL);
             MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
@@ -197,12 +191,13 @@ namespace SimCore
       {
          dtCore::System::GetInstance().Stop();
 
-         mCamera->SetScene(NULL);
-         mCamera = NULL;
-
          mPS = NULL;
 
-         mGM->DeleteAllActors(true);
+         if (mGM.valid())
+         {
+            mGM->DeleteAllActors(true);
+         }
+         
          mGM = NULL;
          mApp = NULL;
          mMachineInfo = NULL;
@@ -229,7 +224,7 @@ namespace SimCore
          std::string path = project.GetContext() + "/" + 
             project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
          
-         CPPUNIT_ASSERT(!path.empty());
+         CPPUNIT_ASSERT(path != (project.GetContext() + "/"));
          
          CPPUNIT_ASSERT(ptr->LoadFile(path) != NULL);
 
@@ -243,6 +238,9 @@ namespace SimCore
             bool success = false;
 
             const std::list<dtCore::ParticleLayer>& layers = ptr->GetAllLayers();
+
+            CPPUNIT_ASSERT(!layers.empty());
+            
             const osgParticle::ParticleSystem& ps = layers.begin()->GetParticleSystem();
             unsigned int totalAttempts = 20;
             for( unsigned int attempt = 0; attempt < totalAttempts; ++attempt )

@@ -20,6 +20,11 @@ namespace dtGame
    class LogKeyframe;
 }
 
+namespace dtQt
+{
+   class OSGAdapterWidget;
+}
+
 namespace Ui
 {
    class MainWindow;
@@ -33,6 +38,7 @@ class QListWidgetItem;
 
 namespace StealthQt 
 {
+   
    /**
     * This class is the main window of the application.  It contains the menu bar,
     * toolbar, statusbar, and main UI interface.
@@ -47,7 +53,7 @@ namespace StealthQt
           * Constructor
           * @param app The game application to render.
           */
-         MainWindow(dtGame::GameApplication& app);
+         MainWindow(int appArgc, char* appArgv[], const std::string& appLibName);
 
          /// Destructor
          virtual ~MainWindow();
@@ -300,6 +306,9 @@ namespace StealthQt
          
       private:
 
+         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
+                  const std::string& appLibName);
+
          /**
           * Connects the signals and slots the main window needs.
           */
@@ -334,8 +343,6 @@ namespace StealthQt
           * Clears data on disconnect
           */
          void ClearData();
-
-         bool mFirstShow;
 
          bool mIsPlaybackMode;
 

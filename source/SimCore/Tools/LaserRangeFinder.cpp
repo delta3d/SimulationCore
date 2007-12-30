@@ -127,8 +127,8 @@ namespace SimCore
          else
          {
             mOverlay->hide();
-            GetCamera()->GetSceneHandler()->GetSceneView()->setLODScale(GetOriginalLODScale());
-            GetCamera()->SetPerspective(GetOriginalHFOV(), GetOriginalVFOV(), GetOriginalNear(), GetOriginalFar());
+            GetCamera()->GetOSGCamera()->setLODScale(GetOriginalLODScale());
+            GetCamera()->SetPerspective(GetOriginalVFOV(), GetCamera()->GetAspectRatio(), GetOriginalNear(), GetOriginalFar());
             //mIntersectionText->setText("");
             mElevationText->setText("");
          }

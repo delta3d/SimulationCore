@@ -31,25 +31,38 @@
 #include <cppunit/Test.h>
 #include <cppunit/TestFailure.h>
 #include <ctime>    // for clock()
-#include <dtCore/timer.h>
+
 #include <dtAudio/audiomanager.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
 
+#include <dtCore/timer.h>
+#include <dtCore/deltawin.h>
+
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtDAL/librarymanager.h>
+
+#include <dtABC/application.h>
 
 #include <dtGUI/ceuidrawable.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
-
 
 #include <sstream>
 #include <cmath>
 #include <stdexcept>
 
 static std::ostringstream mSlowTests;
+
+//this only LOOKS like a global variable, really.
+static dtCore::RefPtr<dtABC::Application> GlobalApplication;
+
+dtABC::Application& GetGlobalApplication()
+{
+   return *GlobalApplication;
+}
 
 class TimingListener : public CppUnit::TestListener
 {
@@ -133,7 +146,11 @@ int main (int argc, char* argv[])
    dtDAL::Project::GetInstance().SetContext(SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
 
    dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
-   
+
+   GlobalApplication = new dtABC::Application("config.xml");
+   GlobalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
+   GlobalApplication->Config();
+
    CPPUNIT_NS::TestResultCollector collectedResults;
 
    try
@@ -227,6 +244,8 @@ int main (int argc, char* argv[])
    {
       std::cerr << " <<< Exception occurred while running main.cpp for this unit test. No other info available >>> " << std::endl;
    }
+   
+   GlobalApplication = NULL;
    
    dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();

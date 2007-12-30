@@ -34,6 +34,7 @@
 #include <dtGame/basemessages.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
+#include <osgViewer/View>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
@@ -619,29 +620,29 @@ namespace SimCore
 
          if( ! IsMobilityDisabled() && GetHasDriver() )
          {
-            if (keyboard->GetKeyState(Producer::Key_W) || keyboard->GetKeyState(Producer::Key_Up))
+            if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
                GetPhysicsHelper()->ApplyAccel(GetMPH());
             }
-            else if (keyboard->GetKeyState(Producer::Key_S) || keyboard->GetKeyState(Producer::Key_Down))
+            else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
                GetPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
-            else if (!keyboard->GetKeyState(Producer::Key_space))
+            else if (!keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
                accelOrBrakePressedThisFrame = false;
             }
 
-            if(keyboard->GetKeyState(Producer::Key_space))
+            if(keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
                GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
-            if (keyboard->GetKeyState(Producer::Key_A) || keyboard->GetKeyState(Producer::Key_Left))
+            if (keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
             {
                GetPhysicsHelper()->SteerLeft(deltaTime);
             }
-            else if(keyboard->GetKeyState(Producer::Key_D) || keyboard->GetKeyState(Producer::Key_Right))
+            else if(keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
             {
                GetPhysicsHelper()->SteerRight(deltaTime);
             }

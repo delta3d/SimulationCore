@@ -100,19 +100,15 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      bool BaseKeyboardListener::HandleKeyPressed(const dtCore::Keyboard* keyboard,
-         Producer::KeyboardKey key,
-         Producer::KeyCharacter character)
+      bool BaseKeyboardListener::HandleKeyPressed(const dtCore::Keyboard* keyboard, int key)
       {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyPressed(keyboard, key, character);
+         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyPressed(keyboard, key);
       }
 
       ////////////////////////////////////////////////////////////////////
-      bool BaseKeyboardListener::HandleKeyReleased(const dtCore::Keyboard* keyboard,
-         Producer::KeyboardKey key,
-         Producer::KeyCharacter character)
+      bool BaseKeyboardListener::HandleKeyReleased(const dtCore::Keyboard* keyboard, int key)
       {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyReleased(keyboard, key, character);
+         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyReleased(keyboard, key);
       }
 
       const std::string BaseInputComponent::DEFAULT_NAME = "Input Component";
@@ -148,9 +144,12 @@ namespace SimCore
       void BaseInputComponent::SetListeners()
       {
          //enable the keyboard input.
-         dtCore::DeltaWin* win = GetGameManager()->GetApplication().GetWindow();
-         win->GetMouse()->AddMouseListener(mMouseListener.get());
-         win->GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
+         //dtCore::DeltaWin* win = GetGameManager()->GetApplication().GetWindow();
+         //win->GetMouse()->AddMouseListener(mMouseListener.get());
+         //win->GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
+         dtABC::Application &app = GetGameManager()->GetApplication();
+         app.GetMouse()->AddMouseListener(mMouseListener.get());
+         app.GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -184,7 +183,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::ChangeLODScale(bool down)
       {
-         float originalLODScale = GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->getLODScale();
+         float originalLODScale = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getLODScale();
          float newZoom = originalLODScale;
 
          if (down)
@@ -197,59 +196,57 @@ namespace SimCore
 
          mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,  "Setting the Level of Detail Scale to %f", newZoom);
 
-         GetGameManager()->GetApplication().GetCamera()->GetSceneHandler()->GetSceneView()->setLODScale(newZoom);
+         GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->setLODScale(newZoom);
       }
 
       ////////////////////////////////////////////////////////////////////
-      bool BaseInputComponent::HandleKeyPressed(const dtCore::Keyboard* keyboard,
-         Producer::KeyboardKey key,
-         Producer::KeyCharacter character)
+      bool BaseInputComponent::HandleKeyPressed(const dtCore::Keyboard* keyboard, int key)
       {
          bool handled = true;
          switch(key)
          {
-         case Producer::Key_X:
+         case 'x':
             {
                dtABC::Application& app = GetGameManager()->GetApplication();
 #ifndef __APPLE__               
-               if (app.GetKeyboard()->GetKeyState(Producer::Key_Alt_L) ||
-                  app.GetKeyboard()->GetKeyState(Producer::Key_Alt_R))
+               if (app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_L) ||
+                   app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_R))
 #endif
                   app.Quit();
                break;
             }
-         case Producer::Key_Escape:
+         case osgGA::GUIEventAdapter::KEY_Escape:
             {
                dtABC::Application& app = GetGameManager()->GetApplication();
                app.GetWindow()->SetFullScreenMode(!app.GetWindow()->GetFullScreenMode());
                break;
             }
 
-         case Producer::Key_Page_Up:
+         case osgGA::GUIEventAdapter::KEY_Page_Up:
             {
                SetEntityMagnification(mEntityMagnification * 2.0f);
                break;
             }
 
-         case Producer::Key_Page_Down:
+         case osgGA::GUIEventAdapter::KEY_Page_Down:
             {
                SetEntityMagnification(mEntityMagnification / 2.0f);
                break;
             }
 
-         case Producer::Key_F12:
+         case osgGA::GUIEventAdapter::KEY_F12:
             {
                ChangeWeatherType();
                break;
             }
 
-         case Producer::Key_Home:
+         case osgGA::GUIEventAdapter::KEY_Home:
             {
                ChangeLODScale(true);
                break;
             }
 
-         case Producer::Key_End:
+         case osgGA::GUIEventAdapter::KEY_End:
             {
                ChangeLODScale(false);
                break;

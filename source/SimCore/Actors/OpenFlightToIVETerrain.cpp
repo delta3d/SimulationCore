@@ -108,8 +108,10 @@ namespace SimCore
                //pPager->setTargetFrameRate(mPaging_Frame_Rate_Targeted);
                //pPager->setExpiryDelay(mPaging_ExpiringDelay);
                pPager->setMaximumNumOfObjectsToCompilePerFrame(mMaximumObjectsToCompile);
-               pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
-               pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
+               
+               // TODO-UPGRADE
+               //pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
+               //pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
 
                int tile_x =0 ,tile_y =0;
 

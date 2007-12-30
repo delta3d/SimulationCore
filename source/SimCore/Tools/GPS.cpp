@@ -20,11 +20,14 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <ostream>
+
 #include <SimCore/Tools/GPS.h>
-#include <dtUtil/log.h>
-#include <dtGame/exceptionenum.h>
-#include <dtUtil/coordinates.h>
 #include <SimCore/Actors/StealthActor.h>
+
+#include <dtGame/exceptionenum.h>
+
+#include <dtUtil/log.h>
+#include <dtUtil/coordinates.h>
 
 #ifdef None
 #undef None

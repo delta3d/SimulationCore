@@ -448,6 +448,7 @@ namespace SimCore
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
          , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::NO_WEAPON)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
+         , mMaxTimePerIteration(0.25)
       {
          SetDrawingModel(true);
       }
@@ -608,7 +609,7 @@ namespace SimCore
          mCurrentPlan.clear();
          mPlanner.Reset(&mPlannerHelper);
          
-         mPlanner.GetConfig().mMaxTimePerIteration = 0.25;
+         mPlanner.GetConfig().mMaxTimePerIteration = mMaxTimePerIteration;
          
          dtAI::Planner::PlannerResult result = mPlanner.GeneratePlan();
          if (result == dtAI::Planner::PLAN_FOUND)

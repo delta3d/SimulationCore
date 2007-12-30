@@ -105,7 +105,7 @@ class SIMCORE_EXPORT Projector : public osg::StateSet
 #ifdef OSG_USE_DOUBLE_MATRICES
     	    		glLoadMatrixd(_matrix.ptr());
 #else
-    	    		glLoadMatrixf(_matrix.ptr());
+    	    		glLoadMatrixf((float*)(_matrix.ptr()));
 #endif
     	    		osg::TexGen::apply(state);
     	    		glPopMatrix();

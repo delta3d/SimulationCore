@@ -33,11 +33,13 @@
 #include <dtCore/deltawin.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
+#include <dtDAL/map.h>
 #include <dtDAL/actortype.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Actors/PlayerActor.h>
 
 #include <CEGUIUtils.h>
+#include <UnitTestMain.h>
 
 using dtCore::RefPtr;
 
@@ -92,14 +94,14 @@ void ToolTests::setUp()
    try
    {
       dtCore::System::GetInstance().Start();
-      mApp = new dtABC::Application("config.xml");
-      mGM  = new dtGame::GameManager(*mApp->GetScene());
-      mApp->GetWindow()->SetPosition(0, 0, 50, 50);
-      mApp->Config();
-      mGM->SetApplication(*mApp);
+      mApp = &GetGlobalApplication();
+
+      mGM = new dtGame::GameManager(*mApp->GetScene());
+      mGM->SetApplication( *mApp );
+
       dtCore::System::GetInstance().Step();
 
-      mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow());
+      mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow(), mApp->GetKeyboard(), mApp->GetMouse());
       SimCore::SetupCEGUI();
    }
    catch(const dtUtil::Exception &e) 

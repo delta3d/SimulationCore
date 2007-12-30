@@ -70,7 +70,7 @@ if env['ENV'].has_key('QTDIR')  :
    if env['OS'] == 'linux' or env['OS'] == 'darwin':
       cppDefines += ['_REENTRANT']
       
-   libs = ['QtCore','QtGui','QtOpenGL','AGL', 'opengl', 'dtActors', 'dtDAL','dtGUI', 'dtAI','dtCore','dtUtil','dtAudio','dtChar','dtABC','dtGame','plibul','dtHLAGM','SimViewerCore'] + env['rtiLibs']
+   libs = ['QtCore','QtGui','QtOpenGL','AGL', 'opengl', 'dtActors', 'dtDAL','dtGUI', 'dtAI','dtCore','dtUtil','dtAudio','dtABC','dtGame','plibul','dtHLAGM','SimViewerCore'] + env['rtiLibs']
 
    uic_files = env.SGlob('ui/*.ui')
    uic_targets = []

@@ -63,9 +63,7 @@ namespace StealthGM
 
          void ProcessMessage(const dtGame::Message &message);
 
-         virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard,
-                                 Producer::KeyboardKey key, 
-                                 Producer::KeyCharacter character);
+         virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
          dtDAL::ActorProxy* GetTerrainActor();
 
