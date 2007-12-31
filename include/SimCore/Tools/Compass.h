@@ -32,6 +32,7 @@ namespace osg
 namespace dtCore
 {
    class DeltaDrawable;
+   class Camera;
 }
 
 namespace CEGUI
@@ -48,7 +49,9 @@ namespace SimCore
          public:
 
             /// Constructor
-            Compass(CEGUI::Window *mainWindow, bool useMagNorth = false, float aspectRatio = 1.6f);
+            Compass(CEGUI::Window *mainWindow, 
+                    bool useMagNorth = false, 
+                    float aspectRatio = 1.6f);
 
             /**
              * Enables/Disables the compass
@@ -85,6 +88,7 @@ namespace SimCore
             dtCore::RefPtr<osg::MatrixTransform> mLensOverlay;
             dtCore::RefPtr<osg::MatrixTransform> mDisk;
             dtCore::RefPtr<osg::Uniform> mLensFocus;
+            dtCore::ObserverPtr<dtCore::Camera> mCamera;
       };
    }
 }
