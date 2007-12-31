@@ -25,6 +25,7 @@
 #include <dtUtil/log.h>
 #include <dtUtil/coordinates.h>
 #include <dtCore/camera.h>
+#include <dtCore/deltawin.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/globals.h>
 #include <dtABC/application.h>
@@ -267,8 +268,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void Compass::InitLens( dtCore::DeltaDrawable& hudLayer )
       {
-         double windowWidth = 1920.0; // TODO: access the window for screen width
-         double windowHeight = 1200.0; // TODO: access the window for screen height
+         dtCore::DeltaWin::Resolution res = dtCore::DeltaWin::GetCurrentResolution();
+         double windowWidth = res.width;//1920.0; // TODO: access the window for screen width
+         double windowHeight = res.height;//1200.0; // TODO: access the window for screen height
 
          std::string lensaticNode("Textures/hud/compass/lensatic.osg");
          lensaticNode = dtCore::FindFileInPathList(lensaticNode);
