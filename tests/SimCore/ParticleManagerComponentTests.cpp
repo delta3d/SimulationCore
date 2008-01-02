@@ -68,6 +68,36 @@ namespace SimCore
 {
    namespace Components
    {
+      //////////////////////////////////////////////////////////////////////////
+      // PARTICLE LAYER REF CODE
+      //////////////////////////////////////////////////////////////////////////
+      class ParticleLayerRef : public dtCore::Base
+      {
+         public:
+            ParticleLayerRef( dtCore::ParticleLayer& layer )
+               : mGeode(&layer.GetGeode()),
+               mXform(&layer.GetEmitterTransform()),
+               mEmitter(&layer.GetModularEmitter()),
+               mParticles(&layer.GetParticleSystem())
+            {
+            }
+
+            const osg::Geode* GetGeode() const { return mGeode.get(); }
+            const osg::MatrixTransform* GetTransform() const { return mXform.get(); }
+            const osgParticle::ModularEmitter* GetEmitter() const { return mEmitter.get(); }
+            const osgParticle::ParticleSystem* GetParticleSystem() const { return mParticles.get(); }
+
+         protected:
+            virtual ~ParticleLayerRef() {}
+
+         private:
+            dtCore::ObserverPtr<osg::Geode> mGeode;
+            dtCore::ObserverPtr<osg::MatrixTransform> mXform;
+            dtCore::ObserverPtr<osgParticle::ModularEmitter> mEmitter;
+            dtCore::ObserverPtr<osgParticle::ParticleSystem> mParticles;
+      };
+      
+
 
       //////////////////////////////////////////////////////////////////////////
       // Testable Sub-classed Component 
@@ -145,6 +175,10 @@ namespace SimCore
             void TestMessageProcessing();
             void TestForceOrientations();
 
+            typedef std::vector<dtCore::RefPtr<ParticleLayerRef> > ParticleLayerRefList;
+            void GetParticleLayerRefs( dtCore::ParticleSystem& particles, ParticleLayerRefList& outLayerRefs );
+            void SubTestParticleLayerRefs( const ParticleLayerRefList& layerRefs );
+
          protected:
          private:
 
@@ -154,6 +188,8 @@ namespace SimCore
             dtCore::RefPtr<dtABC::Application> mApp;
 
             dtCore::RefPtr<dtCore::ParticleSystem> mPS;
+            dtCore::RefPtr<dtCore::ParticleSystem> mPS2;
+            dtCore::RefPtr<dtCore::ParticleSystem> mPS3;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(ParticleManagerComponentTests);
@@ -192,6 +228,8 @@ namespace SimCore
          dtCore::System::GetInstance().Stop();
 
          mPS = NULL;
+         mPS2 = NULL;
+         mPS3 = NULL;
 
          if (mGM.valid())
          {
@@ -211,6 +249,13 @@ namespace SimCore
          msg->SetDeltaSimTime(timeDelta);
          msg->SetDeltaRealTime(timeDelta);
          mGM->SendMessage(*msg);
+
+         // NOTE: This call to sleep works with 40ms, but 50ms is being used in
+         // case other computers are slower at unit tests. The new OSG (2.2) has
+         // had some changes that affect the referencing of OSG particle systems.
+         // The change has needs extra processing time to clean up particle systems
+         // that have gone NULL.
+         SLEEP(50);
          dtCore::System::GetInstance().Step();
       }
 
@@ -245,9 +290,8 @@ namespace SimCore
             unsigned int totalAttempts = 20;
             for( unsigned int attempt = 0; attempt < totalAttempts; ++attempt )
             {
-               SLEEP(10);
                AdvanceTime(0.5f); // tick to generate some particles
-               //AdvanceTime(0.5f); // tick again to have some age and die/recycle (for good measure)
+               
                if( ps.numParticles() > 0 )
                {
                   success = true;
@@ -515,14 +559,24 @@ namespace SimCore
          // Advancement of time should allow the timer to cycle and send the tick messages.
 
          // Create the particle system with particles already ticked into existence.
-         dtCore::RefPtr<dtCore::ParticleSystem> ps2;
-         dtCore::RefPtr<dtCore::ParticleSystem> ps3;
          CreateParticleSystem(mPS,true);
-         CreateParticleSystem(ps2,true);
-         CreateParticleSystem(ps3,true);
+         CreateParticleSystem(mPS2,true);
+         CreateParticleSystem(mPS3,true);
          dtCore::UniqueId id1 = mPS->GetUniqueId();
-         dtCore::UniqueId id2 = ps2->GetUniqueId();
-         dtCore::UniqueId id3 = ps3->GetUniqueId();
+         dtCore::UniqueId id2 = mPS2->GetUniqueId();
+         dtCore::UniqueId id3 = mPS3->GetUniqueId();
+
+         AdvanceTime(0.5f);
+
+         // Get references to the particle layers to make sure they get deleted
+         // when the entire particle system is deleted.
+         ParticleLayerRefList layerRefs1;
+         ParticleLayerRefList layerRefs2;
+         ParticleLayerRefList layerRefs3;
+         GetParticleLayerRefs( *mPS, layerRefs1 );
+         GetParticleLayerRefs( *mPS2, layerRefs2 );
+         GetParticleLayerRefs( *mPS3, layerRefs3 );
+
 
          // Prepare a message that will simulate the update timer elapsing.
          dtCore::RefPtr<dtGame::TimerElapsedMessage> timerMsg;
@@ -531,8 +585,8 @@ namespace SimCore
 
          // Add a few particle systems (3) to the component
          mParticleComp->Register(*mPS);
-         mParticleComp->Register(*ps2);
-         mParticleComp->Register(*ps3);
+         mParticleComp->Register(*mPS2);
+         mParticleComp->Register(*mPS3);
 
          // Verify that each particle system has been added.
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should be registered.",
@@ -550,8 +604,9 @@ namespace SimCore
             totalParticles > 0 );
 
          // Send particle system delete messages out of order
-         RemoveParticlesFromScene(*ps2);
-         ps2 = NULL;
+         RemoveParticlesFromScene(*mPS2);
+         mPS2 = NULL;
+         SubTestParticleLayerRefs( layerRefs2 );
          mParticleComp->ProcessMessage(*timerMsg);
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should NOT be registered.",
             ! mParticleComp->HasRegistered(id2));
@@ -570,6 +625,7 @@ namespace SimCore
          // --- Remove another particle system
          RemoveParticlesFromScene(*mPS);
          mPS = NULL;
+         SubTestParticleLayerRefs( layerRefs1 );
          mParticleComp->ProcessMessage(*timerMsg);
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should NOT be registered.",
             ! mParticleComp->HasRegistered(id1));
@@ -584,8 +640,9 @@ namespace SimCore
          lastTotal = totalParticles;
 
          // --- Remove another particle system
-         RemoveParticlesFromScene(*ps3);
-         ps3 = NULL;
+         RemoveParticlesFromScene(*mPS3);
+         mPS3 = NULL;
+         SubTestParticleLayerRefs( layerRefs3 );
          mParticleComp->ProcessMessage(*timerMsg);
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 3 should be registered.",
             ! mParticleComp->HasRegistered(id3));
@@ -599,15 +656,15 @@ namespace SimCore
 
 
          // Re-add all particle systems.
-         CreateParticleSystem(mPS);
-         CreateParticleSystem(ps2);
-         CreateParticleSystem(ps3);
+         CreateParticleSystem(mPS,true);
+         CreateParticleSystem(mPS2,true);
+         CreateParticleSystem(mPS3,true);
          mParticleComp->Register(*mPS);
-         mParticleComp->Register(*ps2);
-         mParticleComp->Register(*ps3);
+         mParticleComp->Register(*mPS2);
+         mParticleComp->Register(*mPS3);
          id1 = mPS->GetUniqueId();
-         id2 = ps2->GetUniqueId();
-         id3 = ps3->GetUniqueId();
+         id2 = mPS2->GetUniqueId();
+         id3 = mPS3->GetUniqueId();
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should be registered.",
             mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should be registered.",
@@ -623,8 +680,8 @@ namespace SimCore
 
          // Verify that all particle systems have been removed.
          mPS = NULL;
-         ps2 = NULL;
-         ps3 = NULL;
+         mPS2 = NULL;
+         mPS3 = NULL;
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should NOT be registered.",
             ! mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should NOT be registered.",
@@ -641,15 +698,15 @@ namespace SimCore
 
 
          // Re-add all particle systems.
-         CreateParticleSystem(mPS);
-         CreateParticleSystem(ps2);
-         CreateParticleSystem(ps3);
+         CreateParticleSystem(mPS,true);
+         CreateParticleSystem(mPS2,true);
+         CreateParticleSystem(mPS3,true);
          mParticleComp->Register(*mPS);
-         mParticleComp->Register(*ps2);
-         mParticleComp->Register(*ps3);
+         mParticleComp->Register(*mPS2);
+         mParticleComp->Register(*mPS3);
          id1 = mPS->GetUniqueId();
-         id2 = ps2->GetUniqueId();
-         id3 = ps3->GetUniqueId();
+         id2 = mPS2->GetUniqueId();
+         id3 = mPS3->GetUniqueId();
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should be registered.",
             mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should be registered.",
@@ -665,15 +722,15 @@ namespace SimCore
          // the user of this component.
 
          // Re-add all particle systems.
-         CreateParticleSystem(mPS);
-         CreateParticleSystem(ps2);
-         CreateParticleSystem(ps3);
+         CreateParticleSystem(mPS,true);
+         CreateParticleSystem(mPS2,true);
+         CreateParticleSystem(mPS3,true);
          mParticleComp->Register(*mPS);
-         mParticleComp->Register(*ps2);
-         mParticleComp->Register(*ps3);
+         mParticleComp->Register(*mPS2);
+         mParticleComp->Register(*mPS3);
          id1 = mPS->GetUniqueId();
-         id2 = ps2->GetUniqueId();
-         id3 = ps3->GetUniqueId();
+         id2 = mPS2->GetUniqueId();
+         id3 = mPS3->GetUniqueId();
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should be registered.",
             mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should be registered.",
@@ -688,15 +745,14 @@ namespace SimCore
 
          // Verify that all particle systems have been removed.
          mPS = NULL;
-         ps2 = NULL;
-         ps3 = NULL;
+         mPS2 = NULL;
+         mPS3 = NULL;
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 1 should NOT be registered.",
             ! mParticleComp->HasRegistered(id1));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 2 should NOT be registered.",
             ! mParticleComp->HasRegistered(id2));
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 3 should NOT be registered.",
             ! mParticleComp->HasRegistered(id3));
-
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -774,6 +830,64 @@ namespace SimCore
             worlToLocalMtx3.preMult(globalForce) - worlToLocalMtx3.getTrans(), errorTolerance );
          SubTestLocalForceToWorldForce( localForce4, 
             worlToLocalMtx4.preMult(globalForce) - worlToLocalMtx4.getTrans(), errorTolerance );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void ParticleManagerComponentTests::GetParticleLayerRefs( dtCore::ParticleSystem& particles, ParticleLayerRefList& outLayerRefs )
+      {
+         std::list<dtCore::ParticleLayer>& layers = particles.GetAllLayers();
+         std::list<dtCore::ParticleLayer>::iterator curLayer = layers.begin();
+         for( ; curLayer != layers.end(); ++curLayer )
+         {
+            outLayerRefs.push_back( new ParticleLayerRef( *curLayer ) );
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void ParticleManagerComponentTests::SubTestParticleLayerRefs( const ParticleLayerRefList& layerRefs )
+      {
+         ParticleLayerRefList::const_iterator curLayerRef = layerRefs.begin();
+         for( unsigned curLayerIndex = 0;
+            curLayerRef != layerRefs.end();
+            ++curLayerRef, ++curLayerIndex )
+         {
+            std::vector<const osg::Referenced*> layerNodes;
+            layerNodes.push_back( (*curLayerRef)->GetGeode() );
+            layerNodes.push_back( (*curLayerRef)->GetParticleSystem() ); // Not a Node like the rest.
+            layerNodes.push_back( (*curLayerRef)->GetEmitter() );
+            layerNodes.push_back( (*curLayerRef)->GetTransform() );
+
+            std::vector<const osg::Referenced*>::const_iterator curNode = layerNodes.begin();
+            for( ; curNode != layerNodes.end(); ++curNode )
+            {
+               unsigned parentCount = 0;
+               unsigned refCount = 0;
+               std::string nodeName;
+
+               if( *curNode != NULL )
+               {
+                  const osg::Node* node = dynamic_cast<const osg::Node*>(*curNode);
+                  if( node != NULL )
+                  {
+                     nodeName = node->className();
+                     parentCount = node->getNumParents();
+                  }
+                  else
+                  {
+                     nodeName = "ParticleSystem";
+                  }
+                  refCount = (*curNode)->referenceCount();
+               }
+
+               std::stringstream ss;
+               ss << "ParticleLayer[" << curLayerIndex << "] should have a NULL "
+                  << nodeName << " but has:\n\tRef Count =\t"
+                  << refCount << "\n\tParent Count = \t"
+                  << parentCount << std::endl;
+               CPPUNIT_ASSERT_MESSAGE( ss.str(), *curNode == NULL );
+            }
+
+         }
       }
 
    }

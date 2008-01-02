@@ -80,14 +80,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       bool ParticleInfo::Update()
       {
+         if( ! mRef.valid() )
+         {
+            return false;
+         }
+
          // NOTE: the following comment block is the old code used for
          // a single observer to a Delta3D ParticleSystem. For some reason
          // the particles system does not register the observer. For now
          // this ParticleInfo holds observers to the individual OSG
          // particle systems contained by each Delta ParticleSystem layer.
 
-         /*if( ! mRef.valid() ) { return false; }
-
+         /*
          std::list<dtCore::ParticleLayer> &layers = mRef->GetAllLayers();
 
          // 100 is being used instead of max integer value.
@@ -161,13 +165,12 @@ namespace SimCore
             mAttrFlags.mEnableWind = false;
          }
 
-         //mRef = &particles;
          mLayerRefs.clear();
          std::list<dtCore::ParticleLayer>& layers = particles.GetAllLayers();
          std::list<dtCore::ParticleLayer>::iterator itor = layers.begin();
          for( ; itor != layers.end(); ++itor )
          {
-            dtCore::ObserverPtr<osgParticle::ParticleSystem> ref = &itor->GetParticleSystem();
+            osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
             mLayerRefs.push_back(ref);
 
             //attaching a shader to the particle, one for emmisive particles the other for non emmisive
