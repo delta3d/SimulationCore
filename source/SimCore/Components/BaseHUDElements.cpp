@@ -1549,7 +1549,7 @@ namespace SimCore
          mVisible = visible;
          if( mVisible )
          {
-            GetOSGNode()->setNodeMask(0xFFFFFFFF);
+            GetOSGNode()->setNodeMask(1);
          }
          else
          {
