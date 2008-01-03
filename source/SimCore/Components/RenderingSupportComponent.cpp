@@ -191,7 +191,7 @@ namespace SimCore
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
          GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());//mDeltaScene.get());
-         
+
          /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
          {

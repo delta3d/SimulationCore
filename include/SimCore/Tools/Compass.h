@@ -23,6 +23,7 @@
 
 #include <SimCore/Tools/Tool.h>
 #include <dtCore/refptr.h>
+#include <dtCore/observerptr.h>
 
 namespace osg
 {
