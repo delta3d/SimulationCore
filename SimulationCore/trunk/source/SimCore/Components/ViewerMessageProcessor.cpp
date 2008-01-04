@@ -42,8 +42,6 @@
 
 #include <dtActors/coordinateconfigactor.h>
 
-#include <dtHLAGM/hlacomponent.h>
-
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
 
@@ -86,14 +84,6 @@ namespace SimCore
             dtAnim::AnimationComponent *animComp;
             gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
-            dtHLAGM::HLAComponent *hft;
-            gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME, hft);
-
-            if(hft == NULL)
-            {
-               LOG_ERROR("Failed to find a HLAComponent in the GameManager");
-            }
-
             std::vector<dtDAL::ActorProxy*> toFill;
             gameManager.FindActorsByName("Terrain", toFill);
             dtDAL::ActorProxy* terrainProxy = NULL;
@@ -117,28 +107,6 @@ namespace SimCore
             else
             {
                LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
-            }
-
-            actors.clear();
-            const dtDAL::ActorType *type = gameManager.FindActorType("dtutil", "Coordinate Config");
-            gameManager.FindActorsByType(*type, actors);
-            if(actors.empty())
-            {
-               LOG_ERROR("No coordinate config actor was found in the map: " + mapNames[0]);
-            }
-            else
-            {
-               RefPtr<dtDAL::ActorProxy> coords = actors[0];
-               RefPtr<dtActors::CoordinateConfigActor> ccActor = dynamic_cast<dtActors::CoordinateConfigActor*>(coords->GetActor());
-               if(ccActor.valid())
-               {
-                  if(hft != NULL)
-                     hft->GetCoordinateConverter() = ccActor->GetCoordinateConverter();
-               }
-               else
-               {
-                   LOG_WARNING("No Coordinate Config Actor found.  Unable to set coordinate translation properties.");
-               }  
             }
          }
 

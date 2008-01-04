@@ -11,7 +11,7 @@
  * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/IGExceptionEnum.h>
 
 #include <dtHLAGM/hlacomponentconfig.h>
@@ -28,7 +28,7 @@
 
 namespace SimCore
 {
-   namespace Components
+   namespace HLA
    {
       IMPLEMENT_ENUM(HLAConnectionComponent::ConnectionState);
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED("NOT_CONNECTED");

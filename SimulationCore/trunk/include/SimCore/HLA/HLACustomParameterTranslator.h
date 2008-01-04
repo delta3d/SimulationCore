@@ -20,11 +20,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <SimCore/Export.h>
+#include <SimCore/HLA/Export.h>
 #include <dtCore/observerptr.h>
 #include <dtHLAGM/parametertranslator.h>
 #include <SimCore/Components/MunitionsComponent.h>
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,12 +48,12 @@ namespace dtHLAGM
 
 namespace SimCore
 {   
-   namespace Components
+   namespace HLA
    {
-      //////////////////////////////////////////////////////////////////////////
-      // DVTE ATTRIBUTE TYPE
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT HLACustomAttributeType : public dtHLAGM::AttributeType
+      /**
+       * @brief Sim Core additionl attribute types.
+       */
+      class SIMCORE_HLA_EXPORT HLACustomAttributeType : public dtHLAGM::AttributeType
       {
          DECLARE_ENUM(HLACustomAttributeType);
 
@@ -76,11 +75,10 @@ namespace SimCore
       };
 
 
-
-      //////////////////////////////////////////////////////////////////////////
-      // DVTE PARAMETER TRANSLATOR
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT HLACustomParameterTranslator : public dtHLAGM::ParameterTranslator
+      /**
+       * @brief Sim Core additional parameter translator
+       */
+      class SIMCORE_HLA_EXPORT HLACustomParameterTranslator : public dtHLAGM::ParameterTranslator
       {
          public:
             HLACustomParameterTranslator();
@@ -124,8 +122,8 @@ namespace SimCore
             // This function allows the translator access to the table that
             // maps munition names to the munition DIS identifiers.
             // The table is loaded and managed by the MunitionsComponent.
-            void SetMunitionTypeTable( MunitionTypeTable* table ) { mMunitionTypeTable = table; }
-            const MunitionTypeTable* GetMunitionTypeTable() const { return mMunitionTypeTable.get(); }
+            void SetMunitionTypeTable( SimCore::Components::MunitionTypeTable* table ) { mMunitionTypeTable = table; }
+            const SimCore::Components::MunitionTypeTable* GetMunitionTypeTable() const { return mMunitionTypeTable.get(); }
 
          protected:
             dtUtil::Log* mLogger;
@@ -138,7 +136,7 @@ namespace SimCore
             // that map munition names to their network DIS identifiers.
             // This translator will use this table to convert munition names
             // to and from binary DIS identifiers.
-            dtCore::ObserverPtr<MunitionTypeTable> mMunitionTypeTable;
+            dtCore::ObserverPtr<SimCore::Components::MunitionTypeTable> mMunitionTypeTable;
 
       };
 

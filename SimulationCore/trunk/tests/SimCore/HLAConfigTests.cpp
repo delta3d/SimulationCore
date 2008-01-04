@@ -46,7 +46,7 @@
 
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/MunitionsComponent.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
+#include <SimCore/HLA/HLACustomParameterTranslator.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -90,7 +90,7 @@ void HLAConfigTests::setUp()
    //dtUtil::Log::GetInstance("hlafomconfigxml.cpp").SetLogLevel(dtUtil::Log::LOG_DEBUG);
    logger = &dtUtil::Log::GetInstance(logName);
    mTranslator = new dtHLAGM::HLAComponent();
-   mTranslator->AddParameterTranslator( *new SimCore::Components::HLACustomParameterTranslator );
+   mTranslator->AddParameterTranslator( *new SimCore::HLA::HLACustomParameterTranslator );
    dtCore::Scene* scene = GetGlobalApplication().GetScene();
    mGameManager = new dtGame::GameManager(*scene);
    SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());

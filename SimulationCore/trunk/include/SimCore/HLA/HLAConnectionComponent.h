@@ -14,7 +14,7 @@
 
 #include <dtUtil/enumeration.h>
 
-#include <SimCore/Export.h>
+#include <SimCore/HLA/Export.h>
 #include <vector>
 
 namespace dtHLAGM
@@ -24,13 +24,13 @@ namespace dtHLAGM
 
 namespace SimCore
 {
-   namespace Components
+   namespace HLA
    {
-      class SIMCORE_EXPORT HLAConnectionComponent : public dtGame::GMComponent
+      class SIMCORE_HLA_EXPORT HLAConnectionComponent : public dtGame::GMComponent
       {
          public:
 
-             class SIMCORE_EXPORT ConnectionState : public dtUtil::Enumeration
+             class SIMCORE_HLA_EXPORT ConnectionState : public dtUtil::Enumeration
              {
                 DECLARE_ENUM(ConnectionState);
 

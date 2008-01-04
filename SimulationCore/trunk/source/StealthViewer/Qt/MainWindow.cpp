@@ -34,7 +34,7 @@
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
-#include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
 
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
@@ -1761,11 +1761,11 @@ namespace StealthQt
 
    void MainWindow::OnHLAErrorTimerElapsed()
    {
-      SimCore::Components::HLAConnectionComponent *comp = 
-         static_cast<SimCore::Components::HLAConnectionComponent*>
-         (mApp->GetGameManager()->GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+      SimCore::HLA::HLAConnectionComponent *comp = 
+         static_cast<SimCore::HLA::HLAConnectionComponent*>
+         (mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
-      if(comp->GetConnectionState() == SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_ERROR)
+      if(comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
          QMessageBox::critical(this, tr("Error"), 
                                tr("An error occured while connecting to HLA. ") + 

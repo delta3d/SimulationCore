@@ -44,7 +44,7 @@
 #include <dtCore/scene.h>
 
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
+#include <SimCore/HLA/HLACustomParameterTranslator.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -119,7 +119,7 @@ void HLATests::TestHLAConnection()
    {
       mGameManager->AddComponent(*thisHLAComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
-      thisHLAComponent->AddParameterTranslator(*new SimCore::Components::HLACustomParameterTranslator());
+      thisHLAComponent->AddParameterTranslator(*new SimCore::HLA::HLACustomParameterTranslator());
       config.LoadConfiguration(*thisHLAComponent, "Federations/HLAMapping.xml");
    }
    catch (const dtUtil::Exception& ex)

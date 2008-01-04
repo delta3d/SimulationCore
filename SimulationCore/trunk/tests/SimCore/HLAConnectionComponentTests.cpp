@@ -33,8 +33,8 @@
 #include <dtHLAGM/hlacomponentconfig.h>
 
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLACustomParameterTranslator.h>
 
 #include <UnitTestMain.h>
 
@@ -63,7 +63,7 @@ class HLAConnectionComponentTests : public CPPUNIT_NS::TestFixture
    private:
       dtUtil::Log* logger;
       RefPtr<dtHLAGM::HLAComponent> mTranslator;
-      RefPtr<SimCore::Components::HLAConnectionComponent> mHLACC;
+      RefPtr<SimCore::HLA::HLAConnectionComponent> mHLACC;
       RefPtr<dtGame::GameManager> mGameManager;
       RefPtr<dtABC::Application> mApp;
 };
@@ -79,8 +79,8 @@ void HLAConnectionComponentTests::setUp()
    //dtUtil::Log::GetInstance("hlafomconfigxml.cpp").SetLogLevel(dtUtil::Log::LOG_DEBUG);
    logger = &dtUtil::Log::GetInstance(logName);
    mTranslator = new dtHLAGM::HLAComponent();
-   mTranslator->AddParameterTranslator( *new SimCore::Components::HLACustomParameterTranslator );
-   mHLACC = new SimCore::Components::HLAConnectionComponent();
+   mTranslator->AddParameterTranslator( *new SimCore::HLA::HLACustomParameterTranslator );
+   mHLACC = new SimCore::HLA::HLAConnectionComponent();
    
    // A window & camera are needed to allow terrain
    // to generate geometry.
@@ -108,11 +108,11 @@ void HLAConnectionComponentTests::TestAdditionalMaps()
       mGameManager->AddComponent(*mHLACC, dtGame::GameManager::ComponentPriority::NORMAL);
       
       
-      mApp->SetConfigPropertyValue(SimCore::Components::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "1", 
+      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "1", 
                "Map1");
-      mApp->SetConfigPropertyValue(SimCore::Components::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2", 
+      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2", 
                "Map2");
-      mApp->SetConfigPropertyValue(SimCore::Components::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "3", 
+      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "3", 
                "Map3");
 
       std::vector<std::string> toFill;
@@ -123,7 +123,7 @@ void HLAConnectionComponentTests::TestAdditionalMaps()
       CPPUNIT_ASSERT_EQUAL(std::string("Map2"), toFill[1]);
       CPPUNIT_ASSERT_EQUAL(std::string("Map3"), toFill[2]);
 
-      mApp->SetConfigPropertyValue(SimCore::Components::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2",
+      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2",
                "");
 
       toFill.clear();

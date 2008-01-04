@@ -13,7 +13,7 @@ namespace dtGame
 
 namespace SimCore
 {
-   namespace Components
+   namespace HLA
    {
       class HLAConnectionComponent;
    }
@@ -93,7 +93,7 @@ namespace StealthQt
 
          bool mIsConnected;
 
-         SimCore::Components::HLAConnectionComponent *mHLAComp;
+         SimCore::HLA::HLAConnectionComponent *mHLAComp;
 
          QString mCurrentConnectionName;
 

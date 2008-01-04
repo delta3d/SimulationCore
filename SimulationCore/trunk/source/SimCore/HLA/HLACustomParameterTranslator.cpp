@@ -27,12 +27,13 @@
 #include <dtUtil/log.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
 #include <SimCore/Components/MunitionsComponent.h>
+
+#include <SimCore/HLA/HLACustomParameterTranslator.h>
 
 namespace SimCore
 {
-   namespace Components
+   namespace HLA
    {
       //////////////////////////////////////////////////////////////////////////
       // Attribute Type Code

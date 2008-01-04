@@ -20,7 +20,7 @@ if env['ENV'].has_key('QTDIR')  :
    StealthGMAppSrc = env.SGlob('GMApp/*.cpp')
 
    StealthGMAppDeps = ['dtActors', 'dtCore', 'dtABC', 'dtUtil', 'dtDAL', 'dtGame', 'dtHLAGM', 
-	'SimViewerCore', 'dtGUI'] + env['rtiLibs']
+	'SimViewerCore', 'SimCoreHLA', 'dtGUI'] + env['rtiLibs']
 
    StealthGMAppDefines = []
    if env['OS'] == 'windows':
@@ -70,7 +70,8 @@ if env['ENV'].has_key('QTDIR')  :
    if env['OS'] == 'linux' or env['OS'] == 'darwin':
       cppDefines += ['_REENTRANT']
       
-   libs = ['QtCore','QtGui','QtOpenGL','AGL', 'opengl', 'dtActors', 'dtDAL','dtGUI', 'dtAI','dtCore','dtUtil','dtAudio','dtABC','dtGame','plibul','dtHLAGM','SimViewerCore'] + env['rtiLibs']
+   libs = ['QtCore','QtGui','QtOpenGL','AGL', 'opengl', 'dtActors', 'dtDAL','dtGUI', 'dtAI','dtCore',
+           'dtUtil','dtAudio','dtABC','dtGame','plibul','dtHLAGM','SimViewerCore', 'SimCoreHLA'] + env['rtiLibs']
 
    uic_files = env.SGlob('ui/*.ui')
    uic_targets = []

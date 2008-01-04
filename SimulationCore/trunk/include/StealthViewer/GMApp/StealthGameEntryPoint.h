@@ -23,7 +23,7 @@
 
 #include <dtUtil/exception.h>
 #include <dtCore/refptr.h>
-#include <SimCore/BaseGameEntryPoint.h>
+#include <SimCore/HLA/BaseHLAGameEntryPoint.h>
 #include <StealthViewer/GMApp/Export.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -62,7 +62,7 @@ namespace StealthGM
 {
    class StealthInputComponent;
 
-   class STEALTH_GAME_EXPORT StealthGameEntryPoint: public SimCore::BaseGameEntryPoint
+   class STEALTH_GAME_EXPORT StealthGameEntryPoint: public SimCore::HLA::BaseHLAGameEntryPoint
    {
       public:
          StealthGameEntryPoint();
@@ -85,7 +85,7 @@ namespace StealthGM
           */
          virtual void OnStartup(dtGame::GameApplication& app);
 
-         virtual void OnShutdown(dtGame::GameApplication& app);
+         //virtual void OnShutdown(dtGame::GameApplication& app);
 
       protected:
          /**
