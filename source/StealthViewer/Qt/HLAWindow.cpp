@@ -17,7 +17,7 @@
 #include <dtDAL/resourcedescriptor.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/macros.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
 
 #ifdef DELTA_WIN32
    bool caseSensitive = false;
@@ -51,8 +51,8 @@ namespace StealthQt
       mUi->mNetworkListWidget->addItems(toDisplay);
 
       mHLAComp = 
-         static_cast<SimCore::Components::HLAConnectionComponent*>
-         (gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+         static_cast<SimCore::HLA::HLAConnectionComponent*>
+         (gm.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
       mUi->mConnectPushButton->setEnabled(!mIsConnected && mUi->mNetworkListWidget->currentItem() != NULL);
       mUi->mDisconnectPushButton->setEnabled(mIsConnected);
@@ -99,7 +99,7 @@ namespace StealthQt
       if(mHLAComp != NULL)
       {
          if(mHLAComp->GetConnectionState() == 
-            SimCore::Components::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
+            SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
          {
             OnDisconnect();
 

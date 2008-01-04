@@ -200,6 +200,7 @@ if env.get('ageia') != 0 :
 if OS == 'windows' :
    if env['mode'] == 'debug' :
       env['dtLibs']['SimViewerCore'] = 'SimViewerCored'
+      env['dtLibs']['SimCoreHLA'] = 'SimCoreHLAd'
       env['dtLibs']['StealthGMApp'] = 'StealthGMAppd'
       env['dtLibs']['StealthQt'] = 'StealthQtd'
       env['extLibs']['osgEphemeris'] = 'osgEphemerisd'
@@ -211,6 +212,7 @@ if OS == 'windows' :
          env['extLibs']['PhysXLoader'] = 'PhysXLoader'
    else:
       env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
+      env['dtLibs']['SimCoreHLA'] = 'SimCoreHLA'
       env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
       env['dtLibs']['StealthQt'] = 'StealthQt'
       env['extLibs']['osgEphemeris'] = 'osgEphemeris'
@@ -223,6 +225,7 @@ if OS == 'windows' :
       
 else :
    env['dtLibs']['SimViewerCore'] = 'SimViewerCore'
+   env['dtLibs']['SimCoreHLA'] = 'SimCoreHLA'
    env['dtLibs']['StealthGMApp'] = 'StealthGMApp'
    env['dtLibs']['StealthQt'] = 'StealthQt'
    env['extLibs']['osgEphemeris'] = 'osgEphemeris'

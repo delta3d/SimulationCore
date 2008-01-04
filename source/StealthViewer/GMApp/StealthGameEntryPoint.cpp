@@ -60,7 +60,6 @@
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/ControlStateComponent.h>
 #include <SimCore/Tools/GPS.h>
@@ -68,6 +67,8 @@
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/WeaponTypeEnum.h>
+
+#include <SimCore/HLA/HLAConnectionComponent.h>
 
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
@@ -162,7 +163,7 @@ namespace StealthGM
          mHasMap = true;
       }
    
-      SimCore::BaseGameEntryPoint::Initialize(app, argc, argv);
+      SimCore::HLA::BaseHLAGameEntryPoint::Initialize(app, argc, argv);
    }
    
    ///////////////////////////////////////////////////////////////////////////
@@ -233,7 +234,7 @@ namespace StealthGM
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
    {
-      SimCore::BaseGameEntryPoint::HLAConnectionComponentSetup(gm);
+      SimCore::HLA::BaseHLAGameEntryPoint::HLAConnectionComponentSetup(gm);
    }
    
    ///////////////////////////////////////////////////////////////////////////
@@ -244,14 +245,14 @@ namespace StealthGM
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
 
-      SimCore::BaseGameEntryPoint::OnStartup(app);
+      SimCore::HLA::BaseHLAGameEntryPoint::OnStartup(app);
 
       // Add Input Component
       dtCore::RefPtr<StealthInputComponent> mInputComponent 
          = new StealthInputComponent(mEnableLogging, 
                                              mEnablePlayback, 
                                              StealthInputComponent::DEFAULT_NAME, 
-                                             mIsUIRunning);
+                                             IsUIRunning());
 
       gameManager.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
@@ -290,7 +291,7 @@ namespace StealthGM
       mHudGUI = new StealthHUD(gameManager.GetApplication().GetWindow(), 
                                mLogController.get(), 
                                StealthHUD::DEFAULT_NAME, 
-                               mIsUIRunning);
+                               IsUIRunning());
 
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
 
@@ -342,23 +343,15 @@ namespace StealthGM
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-
-      if(!mIsUIRunning)
+      if(!IsUIRunning())
       {
+         const std::string fedFile = dtDAL::Project::GetInstance().
+            GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
          // Capture HLA connection parameters for the input component to use later in record/playback 
          // state swapping. Transitions to IDLE should join the federation; PLAYBACK should leave
          // the connection to the federation.
-         inputComp->SetConnectionParameters(mFederationExecutionName, mFedFileName, "VFST Stealth Viewer");
+         inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName);
       }
    }
 
-   void StealthGameEntryPoint::OnShutdown(dtGame::GameApplication &app)
-   {
-      dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
-      dtHLAGM::HLAComponent* hft = 
-         static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
-      
-      gameManager.RemoveComponent(*hft);
-      hft = NULL;
-   }
 }

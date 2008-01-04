@@ -29,7 +29,7 @@ for suite in suites:
    sources[suite] += mainSources  
 
 deps = ['cppunit', 'dtCore', 'dtAnim', 'dtUtil', 'dtDAL', 'dtGame', 'dtABC',
-   'SimViewerCore', 'dtHLAGM', 'dtGUI', 'CEGUIBase' ]
+   'SimViewerCore', 'SimCoreHLA', 'dtHLAGM', 'dtGUI', 'CEGUIBase' ]
 
 
 if 'qt4' in env['TOOLS'] :

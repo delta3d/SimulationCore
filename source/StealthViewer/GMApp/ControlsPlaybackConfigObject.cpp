@@ -13,7 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
 
 namespace StealthGM
 {
@@ -39,19 +39,15 @@ namespace StealthGM
       if(!IsUpdated())
          return;
 
-      dtGame::GMComponent *component = 
-         gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
-
-      StealthInputComponent *inputComponent = 
-         static_cast<StealthInputComponent*>(component);
+      StealthInputComponent *inputComponent;
+      gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME, inputComponent);
 
       // Shouldn't happen, but better safe than sorry
       if(inputComponent == NULL)
          return;
 
-      component = gameManager.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME);
-      SimCore::Components::HLAConnectionComponent *hlaComp = 
-         static_cast<SimCore::Components::HLAConnectionComponent*>(component);
+      SimCore::HLA::HLAConnectionComponent *hlaComp;
+      gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaComp);
 
       if(mBeginPlayback)
       {

@@ -21,7 +21,6 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Messages.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
 
 #include <dtCore/scene.h>
 

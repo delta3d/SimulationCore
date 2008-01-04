@@ -35,11 +35,6 @@ namespace dtGame
    class GameApplication;
 }
 
-namespace dtHLAGM
-{
-   class HLAComponent;
-}
-
 namespace dtDAL
 {
    class ActorProxy;
@@ -81,24 +76,22 @@ namespace SimCore
          virtual void Initialize(dtGame::GameApplication& app, int argc, char **argv);
 
          /**
-          * Override the method to create the game manager.
-          */
-         //virtual dtCore::ObserverPtr<dtGame::GameManager> CreateGameManager(dtCore::Scene& scene);
-
-         /**
           * Called after all startup related code is run.
           * @param gameManager The game manager to init
           */
          virtual void OnStartup(dtGame::GameApplication &app);
 
+         /// May be overridden to allow subclassed to add components
+         virtual void InitializeComponents(dtGame::GameManager &gm) = 0;
+
          /// called from external to 'end' the parser so anyone can
          /// mess with the parser wherever they need and not tied into
          /// an exact way of calling the parser shutdown.
+
          virtual void FinalizeParser();
 
-         /// Initialize the components of the class
-         virtual void InitializeComponents();
-
+         bool IsUIRunning() { return mIsUIRunning; }
+         
       protected:
          
          /// reads the values of command line parameters and config options set the project context
@@ -114,11 +107,6 @@ namespace SimCore
           */
          void AssignAspectRatio(dtGame::GameApplication &app);
          
-         /// called virtual for loading specific maps
-         virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
-
-         /// creates and configures the HLA Component.
-         virtual dtCore::RefPtr<dtHLAGM::HLAComponent> CreateAndSetupHLAComponent(dtGame::GameManager &gm);
 
          /// Destructor
          virtual ~BaseGameEntryPoint();
@@ -130,18 +118,15 @@ namespace SimCore
          dtCore::RefPtr<dtDAL::ActorProxy> terrainActor;
 
          std::string mMapName;
-         std::string mFederationExecutionName;
-         std::string mFederateName;
-         std::string mFedFileResource;
-         std::string mFedFileName;
-         std::string mFedMappingFileName;
          std::string mProjectPath;
          float mAspectRatio;
          float mLingeringShotEffectSecs;
          //int mStatisticsInterval;
          osg::Vec3 mStartPos;
-         bool mIsUIRunning;
          bool mMissingRequiredCommandLineOption;
+         
+      private:
+         bool mIsUIRunning;
    };
 }
 #endif

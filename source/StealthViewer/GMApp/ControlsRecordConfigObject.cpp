@@ -16,11 +16,11 @@
 #include <dtGame/serverloggercomponent.h>
 #include <dtGame/logcontroller.h>
 #include <dtGame/logkeyframe.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
+#include <SimCore/HLA/HLAConnectionComponent.h>
 
 namespace StealthGM
 {
-   ControlsRecordConfigObject::ControlsRecordConfigObject() : 
+   ControlsRecordConfigObject::ControlsRecordConfigObject() :
       mShowAdvancedOptions(false), 
       mStartRecording(false), 
       mStopRecording(false), 
@@ -93,14 +93,13 @@ namespace StealthGM
       {
          if(!inputComponent->IsConnected())
          {
-            SimCore::Components::HLAConnectionComponent &hlaConnectComp = 
-               static_cast<SimCore::Components::HLAConnectionComponent&>
-               (*gameManager.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME));
+            SimCore::HLA::HLAConnectionComponent* hlaConnectComp;
+            gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaConnectComp);
 
-            inputComponent->SetConnectionParameters(hlaConnectComp.GetFedEx(), 
-                                                    hlaConnectComp.GetFedFile(), 
-                                                    hlaConnectComp.GetFedName(), 
-                                                    hlaConnectComp.GetRidFile());
+            inputComponent->SetConnectionParameters(hlaConnectComp->GetFedEx(), 
+                                                    hlaConnectComp->GetFedFile(), 
+                                                    hlaConnectComp->GetFedName(), 
+                                                    hlaConnectComp->GetRidFile());
             inputComponent->JoinFederation();
          }
          mJoinFederation = false;

@@ -29,8 +29,6 @@
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/HLACustomParameterTranslator.h>
-#include <SimCore/Components/HLAConnectionComponent.h>
 
 #include <SimCore/Components/ViewerMaterialComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -66,11 +64,6 @@
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
 
-#include <dtHLAGM/hlacomponent.h>
-#include <dtHLAGM/hlacomponentconfig.h>
-#include <dtHLAGM/ddmcameracalculatorgeographic.h>
-#include <dtHLAGM/ddmmultienumeratedcalculator.h>
-
 #include <dtActors/basicenvironmentactorproxy.h>
 
 #include <osg/ArgumentParser>
@@ -98,8 +91,8 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() : 
       parser(NULL), 
-      mIsUIRunning(false),
-      mMissingRequiredCommandLineOption(false)
+      mMissingRequiredCommandLineOption(false),
+      mIsUIRunning(false)
    {
    }
 
@@ -154,9 +147,6 @@ namespace SimCore
       parser->getApplicationUsage()->addCommandLineOption("--UI", "Specify this to disable old functionality in favor of the UI");
       parser->getApplicationUsage()->addCommandLineOption("--projectPath", "The path (either relative or absolute) to the project context you wish to use. This defaults to the current working directory.");
       parser->getApplicationUsage()->addCommandLineOption("--mapName", "The name of the map to load in. This must be a map that is located within the project path specified");
-      parser->getApplicationUsage()->addCommandLineOption("--federationExecutionName", "Name of the federation execution to use");
-      parser->getApplicationUsage()->addCommandLineOption("--fedFileName", "Name of the federation file to use");
-      parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource", "Name of the federation mapping resource file to load.");
       parser->getApplicationUsage()->addCommandLineOption("--aspectRatio", "The aspect ratio to use for the camera [1.33 or 1.6]");
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
       //parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
@@ -205,31 +195,8 @@ namespace SimCore
       {
          if (!parser->read("--mapName", mMapName))
          {
-            std::cout << "Please specify the map file to be used with the --mapName option.\n";
+            std::cerr << "Please specify the map file to be used with the --mapName option.\n";
             mMissingRequiredCommandLineOption = true;
-         }
-
-         if (!parser->read("--federationExecutionName", mFederationExecutionName))
-         {
-            std::cout << "Please specify the name of the federation execution to use with the --federationExecutionName option.\n";
-            mMissingRequiredCommandLineOption = true;
-         }
-
-         if (!parser->read("--fedFileName", mFedFileResource))
-         {
-            std::cout << "Please specify the name of the federation file name to use with the --fedFileName option\n";
-            mMissingRequiredCommandLineOption = true;
-         }
-
-         if (!parser->read("--fedMappingFileResource", mFedMappingFileName))
-         {
-            std::cout << "Please specify the name of the mapping file to use with federation file " << fedFileResource << '\n';
-            mMissingRequiredCommandLineOption = true;
-         }
-
-         if(!parser->read("--federateName", mFederateName))
-         {
-            mFederateName = "VFST Stealth Viewer";
          }
       }
 
@@ -267,114 +234,20 @@ namespace SimCore
       parser->reportRemainingOptionsAsUnrecognized();
       if (parser->errors())
       {
-         parser->writeErrorMessages(std::cout);
+         parser->writeErrorMessages(std::cerr);
          throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
             "Command Line Error.", __FILE__, __LINE__);
       }
 
       if (mMissingRequiredCommandLineOption)
       {
-         parser->getApplicationUsage()->write(std::cout);
+         parser->getApplicationUsage()->write(std::cerr);
          throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
             "Command Line Error.", __FILE__, __LINE__);
       }
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   /*ObserverPtr<dtGame::GameManager> BaseGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
-   {
-      return dtGame::GameEntryPoint::CreateGameManager(scene);
-   }*/
 
-   //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::InitializeComponents()
-   {
-      //dtGame::GameManager &gameManager = *GetGameManager();
-   }
-
-   void BaseGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
-   {
-      if(!mIsUIRunning)
-      {
-         //dtGame::GameManager &gameManager = *GetGameManager();
-         SimCore::Components::HLAConnectionComponent *hlaCC;
-         gm.GetComponentByName(SimCore::Components::HLAConnectionComponent::DEFAULT_NAME, hlaCC);
-         if(hlaCC != NULL)
-         {
-            const std::string fedMappingFile = dtDAL::Project::GetInstance().
-               GetResourcePath(dtDAL::ResourceDescriptor(mFedMappingFileName, mFedMappingFileName));
-            const std::string fedFile = dtDAL::Project::GetInstance().
-               GetResourcePath(dtDAL::ResourceDescriptor(mFedFileName, mFedFileName));
-
-            hlaCC->AddMap(mMapName);
-            hlaCC->SetConfigFile(fedMappingFile);
-            hlaCC->SetFedEx(mFederationExecutionName);
-            hlaCC->SetFedName(mFederateName);
-            hlaCC->SetFedFile(fedFile);
-
-            // loads all maps
-            hlaCC->Connect();
-         }
-      }
-   }
-   
-   //////////////////////////////////////////////////////////////////////////
-   dtCore::RefPtr<dtHLAGM::HLAComponent> BaseGameEntryPoint::CreateAndSetupHLAComponent(dtGame::GameManager &gm)
-   {
-      //dtGame::GameManager& gameManager = *GetGameManager();
-      
-      dtCore::RefPtr<dtHLAGM::HLAComponent> hft = new dtHLAGM::HLAComponent;
-      
-      RefPtr<dtHLAGM::DDMCameraCalculatorGeographic> camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
-      camCalc->SetName("Ground");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-      
-      camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
-      camCalc->SetName("Air");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-
-      camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
-      camCalc->SetName("Sea");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-
-      camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
-      camCalc->SetName("Lifeform");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-      
-      camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
-      camCalc->SetCamera(gm.GetApplication().GetCamera());
-      camCalc->SetName("Stealth");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-
-      RefPtr<dtHLAGM::DDMMultiEnumeratedCalculator> multiCalc;
-
-      multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
-      multiCalc->SetName("Fire");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-
-      multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
-      multiCalc->SetName("Detonation");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-
-      multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
-      multiCalc->SetName("AmbientEnvironment");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-
-      multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
-      multiCalc->SetName("TimeQuery");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-
-      multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
-      multiCalc->SetName("TimeValue");
-      hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-      
-      return hft;
-   }
-   
    void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager &gm)
    {
       dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
@@ -449,12 +322,6 @@ namespace SimCore
             throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                oss.str(), __FILE__, __LINE__);
          }
-         dtDAL::ResourceDescriptor rd(mFedFileResource, mFedFileResource);
-         mFedFileName = dtDAL::Project::GetInstance().GetResourcePath(rd);
-
-         if (mFedFileName.empty())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-               "Federation .fed file named " + mFedFileName + " was not found.  Aborting.", __FILE__, __LINE__);
       }
    }
    
@@ -531,29 +398,24 @@ namespace SimCore
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
       
-      RefPtr<dtHLAGM::HLAComponent>            hft               = CreateAndSetupHLAComponent(*app.GetGameManager());
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
       RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
       RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
       RefPtr<Components::ParticleManagerComponent>         mParticleComp     = new Components::ParticleManagerComponent;
-      RefPtr<Components::WeatherComponent>                 mWeatherComp      = new Components::WeatherComponent;
-      RefPtr<Components::MunitionsComponent>               mMunitionsComp    = new Components::MunitionsComponent;
-      RefPtr<Components::HLAConnectionComponent> hlacc                       = new Components::HLAConnectionComponent;
+      RefPtr<Components::WeatherComponent>                 weatherComp       = new Components::WeatherComponent;
+      RefPtr<Components::MunitionsComponent>               munitionsComp     = new Components::MunitionsComponent;
       RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
       RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
       
-      gameManager.AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
-      gameManager.AddComponent(*hft, dtGame::GameManager::ComponentPriority::NORMAL);
+      gameManager.AddComponent(*weatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::HIGHER);
       gameManager.AddComponent(*mTimedDeleterComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*mParticleComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*viewerMaterialComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-      gameManager.AddComponent(*mMunitionsComp, dtGame::GameManager::ComponentPriority::NORMAL);
-      gameManager.AddComponent(*hlacc, dtGame::GameManager::ComponentPriority::NORMAL);
+      gameManager.AddComponent(*munitionsComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      
       std::string useGPUSkinning = gameManager.GetApplication().GetConfigPropertyValue(
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
@@ -574,26 +436,15 @@ namespace SimCore
 
       drComp->GetGroundClamper().SetHighResGroundClampingRange(200.0f);
 
-      mWeatherComp->SetUpdatesEnabled(!mIsUIRunning);
-      //mWeatherComp->SetUseEphemeris(mIsUIRunning);
-      mWeatherComp->SetNearFarClipPlanes( PLAYER_NEAR_CLIP_PLANE, PLAYER_FAR_CLIP_PLANE );
-      //mWeatherComp->SetUseEphemeris(true);
-      mWeatherComp->UpdateFog();
+      weatherComp->SetUpdatesEnabled(!mIsUIRunning);
+      //WeatherComp->SetUseEphemeris(mIsUIRunning);
+      weatherComp->SetNearFarClipPlanes( PLAYER_NEAR_CLIP_PLANE, PLAYER_FAR_CLIP_PLANE );
+      //WeatherComp->SetUseEphemeris(true);
+      weatherComp->UpdateFog();
 
-      mMunitionsComp->LoadMunitionTypeTable( "MunitionTypesMap" );
+      munitionsComp->LoadMunitionTypeTable( "MunitionTypesMap" );
 
-      // Create a munition specific parameter translator
-      dtCore::RefPtr<Components::HLACustomParameterTranslator> munitionParamTranslator 
-         = new Components::HLACustomParameterTranslator;
-      // Allow the translator access to the table that maps
-      // munition DIS identifiers to the munition names.
-      munitionParamTranslator->SetMunitionTypeTable( mMunitionsComp->GetMunitionTypeTable() );
-      // Enable the HLA component to translate MUNITION_TYPE parameters from network.
-      hft->AddParameterTranslator( *munitionParamTranslator );
-
-      // called virtual, will get ur overridden version first.
-      HLAConnectionComponentSetup(gameManager);
-
+      InitializeComponents(gameManager);
 
       // Turn on debug statistics if the option is set in the config.xml
       // Note - this makes the --statisticsInterval option obsolete.
