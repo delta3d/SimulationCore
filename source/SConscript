@@ -11,23 +11,27 @@ Import('*')
 srcs = [env.SGlob('SimCore/*.cpp')] + [env.SGlob('SimCore/Actors/*.cpp')] + [env.SGlob('SimCore/Tools/*.cpp')] + [env.SGlob('SimCore/Components/*.cpp')]
 
 deps = [ 'osgGA', 'osgViewer', 'OpenThreads', 'xerces-c', 'cal3d', 'osgDB', 'osgParticle', 
-        'osgText', 'osgFX', 'osgSim', 'osg', 'osgUtil', 'rbody', 'rvrutils', 'rcfgscript', 'gdal', 'dtGui',
+        'osgText', 'osgFX', 'osgSim', 'osg', 'osgUtil', 'gdal', 'dtGui',
         'dtAudio', 'dtCore', 'dtAnim',  'dtUtil', 'dtDAL', 'dtGame', 'dtAI', 'dtActors', 
-        'dtABC', 'dtHLAGM', 'dtGUI', 'CEGUIBase', 'CEGUIOpenGLRenderer', 'opengl', 'osgEphemeris' ] 
+        'dtABC', 'dtGUI', 'CEGUIBase', 'CEGUIOpenGLRenderer', 'opengl', 'osgEphemeris' ] 
 
 defines = []
+definesHLA = []
+
 if env.get('ageia') != 0 :
    deps += ['dtAgeiaPhysX', 'NxCooking', 'NxCharacter', 'NxExtensions', 'PhysXLoader']
    defines += ['AGEIA_PHYSICS']
+   definesHLA += ['AGEIA_PHYSICS']
 
 if env['OS'] == 'windows':
    defines += ['SIMCORE_LIBRARY', 'NOMINMAX']
+   definesHLA += ['SIMCORE_HLA_LIBRARY', 'NOMINMAX']
 
 env.BuildLib('SimViewerCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
 
 SimCoreHLASrcs = [env.SGlob('SimCore/HLA/*.cpp')]
 
-env.BuildLib('SimCoreHLA', SimCoreHLASrcs, deps + env['rtiLibs'] + [ 'SimViewerCore' ], defines, 
-   prefixHeader='include/prefix/SimCorePrefix.h')
+env.BuildLib('SimCoreHLA', SimCoreHLASrcs, deps + ['dtHLAGM', 'SimViewerCore' ]+ env['rtiLibs'], 
+             defines, prefixHeader='include/prefix/SimCorePrefix.h')
 
 SConscript(dirs = ["StealthViewer"], duplicate = 0)
