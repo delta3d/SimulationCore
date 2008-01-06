@@ -67,7 +67,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-
 				AdditionalDependencies="dtGUId.lib dtABCd.lib dtDALd.lib dtUtild.lib dtCored.lib dtGamed.lib dtAudiod.lib dtActorsd.lib dtHLAGMd.lib osgUtild.lib osgd.lib osgDBd.lib osgGAd.lib osgTextd.lib CEGUIBase_d.lib xerces-c_2D.lib osgSimd.lib osgParticled.lib openGL32.lib PhysXLoader.lib dtAgeiaPhysXd.lib osgEphemerisd.lib dtAnimd.lib dtAId.lib osgViewerd.lib"
 				OutputFile="../../bin/SimViewerCored.dll"
 				LinkIncremental="2"
@@ -458,14 +457,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\SimCore\Components\HLAConnectionComponent.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\SimCore\Components\HLACustomParameterTranslator.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\SimCore\Components\MunitionDamage.cpp"
 					>
 				</File>
@@ -801,14 +792,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Components\DefaultArticulationHelper.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\SimCore\Components\HLAConnectionComponent.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\SimCore\Components\HLACustomParameterTranslator.h"
 					>
 				</File>
 				<File
