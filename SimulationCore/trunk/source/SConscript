@@ -27,11 +27,11 @@ if env['OS'] == 'windows':
    defines += ['SIMCORE_LIBRARY', 'NOMINMAX']
    definesHLA += ['SIMCORE_HLA_LIBRARY', 'NOMINMAX']
 
-env.BuildLib('SimViewerCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
+env.BuildLib('SimCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
 
 SimCoreHLASrcs = [env.SGlob('SimCore/HLA/*.cpp')]
 
-env.BuildLib('SimCoreHLA', SimCoreHLASrcs, deps + ['dtHLAGM', 'SimViewerCore' ]+ env['rtiLibs'], 
+env.BuildLib('SimCoreHLA', SimCoreHLASrcs, deps + ['dtHLAGM', 'SimCore' ]+ env['rtiLibs'], 
              defines, prefixHeader='include/prefix/SimCorePrefix.h')
 
 SConscript(dirs = ["StealthViewer"], duplicate = 0)

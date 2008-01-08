@@ -132,6 +132,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BaseHLAGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
       {
+         BaseClass::Initialize(app, argc, argv);
+
          if(parser == NULL)
             parser = new osg::ArgumentParser(&argc, argv);
 
@@ -169,9 +171,6 @@ namespace SimCore
                mFederateName = "Stealth Viewer";
             }
          }
-
-         BaseClass::Initialize(app, argc, argv);
-
       }
 
       void BaseHLAGameEntryPoint::InitializeComponents(dtGame::GameManager &gm)

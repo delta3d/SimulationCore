@@ -17,7 +17,7 @@
             <version></version>
         </library>
         <library>
-            <name>SimViewerCore</name>
+            <name>SimCore</name>
             <version></version>
         </library>
     </libraries>

@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtABCd.lib dtActorsd.lib dtAudiod.lib dtUtild.lib dtCored.lib dtDALd.lib dtGamed.lib dtGUId.lib dtHLAGMd.lib osgd.lib osgDBd.lib CEGUIBase_d.lib SimViewerCored.lib dtAgeiaPhysXd.lib"
+				AdditionalDependencies="dtABCd.lib dtActorsd.lib dtAudiod.lib dtUtild.lib dtCored.lib dtDALd.lib dtGamed.lib dtGUId.lib dtHLAGMd.lib osgd.lib osgDBd.lib CEGUIBase_d.lib SimCored.lib SimCoreHLAd.lib dtAgeiaPhysXd.lib"
 				OutputFile="../../bin/StealthGMAppd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);$(EXTERNAL_LIB);$(DT_AGEIA_LIB)"
@@ -146,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtABC.lib dtActors.lib dtAudio.lib dtUtil.lib dtCore.lib dtDAL.lib dtGame.lib dtGUI.lib dtHLAGM.lib osg.lib osgDB.lib CEGUIBase.lib SimViewerCore.lib dtAgeiaPhysX.lib"
+				AdditionalDependencies="dtABC.lib dtActors.lib dtAudio.lib dtUtil.lib dtCore.lib dtDAL.lib dtGame.lib dtGUI.lib dtHLAGM.lib osg.lib osgDB.lib CEGUIBase.lib SimCore.lib SimCoreHLA.lib dtAgeiaPhysX.lib"
 				OutputFile="../../bin/StealthGMApp.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(AGEIA_LIB);$(EXTERNAL_LIB);$(DT_AGEIA_LIB)"
