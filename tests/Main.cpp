@@ -112,7 +112,7 @@ int main (int argc, char* argv[])
    if (argc > 1)
       singleSuiteName = argv[1];
    if (argc > 2)
-      singleTestName = argv[2];
+      singleTestName = argv[2]; 
 
    // We need to change our directory based on the executable
    dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);

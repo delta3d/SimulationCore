@@ -18,6 +18,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <string>
 #include <osg/Endian>
+
 #include <dtCore/scene.h>
 #include <dtHLAGM/onetoonemapping.h>
 #include <dtHLAGM/distypes.h>

@@ -19,6 +19,7 @@
  * @author David Guthrie
  */
 
+#include <SimCore/Export.h>
 #include <dtUtil/enumeration.h>
 
  namespace SimCore
@@ -26,7 +27,7 @@
    /**
     * @brief class holding types of exceptions used in the Image Generator namespace.
     */
-   class IGExceptionEnum : public dtUtil::Enumeration
+   class SIMCORE_EXPORT IGExceptionEnum : public dtUtil::Enumeration
    {
       DECLARE_ENUM(IGExceptionEnum);
       public:

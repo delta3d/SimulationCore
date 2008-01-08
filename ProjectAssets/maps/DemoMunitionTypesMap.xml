@@ -13,7 +13,7 @@
     </header>
     <libraries>
         <library>
-            <name>SimViewerCore</name>
+            <name>SimCore</name>
             <version></version>
         </library>
     </libraries>

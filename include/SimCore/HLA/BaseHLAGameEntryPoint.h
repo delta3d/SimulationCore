@@ -24,10 +24,8 @@ namespace dtHLAGM
 
 namespace SimCore
 {
-
    namespace HLA
    {
-
       class SIMCORE_HLA_EXPORT BaseHLAGameEntryPoint : public SimCore::BaseGameEntryPoint
       {
          public:

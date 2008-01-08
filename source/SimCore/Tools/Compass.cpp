@@ -164,7 +164,7 @@ namespace SimCore
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
-            {
+            { 
                osg::Matrix rotation;
 
                //just to test
@@ -290,7 +290,7 @@ namespace SimCore
          }
          else
          {
-            std::stringstream ss;
+            std::ostringstream ss;
             ss << "Compass::InitLens: unable to load node file \"" << lensaticNode << "\"." << std::endl;
             LOG_ERROR(ss.str());
          }
@@ -313,7 +313,7 @@ namespace SimCore
          }
 
          double dAspect = windowWidth/windowHeight;
-         double dScale = (1.0/(120.0))*.8*1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
+         double dScale = (1.0/(120.0))*.8;//*1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
          //1.0/(m_fHFOV*M_PI/180.0*1000.0); //360.0 * 120.0/(2.0*M_PI*1000.0); // FOV = 120m @ 1km ~= 6.875deg
          trans.makeScale(dScale,dScale,dScale);
          trans.setTrans(0.5*dAspect, 0.27/dAspect, 0.0);

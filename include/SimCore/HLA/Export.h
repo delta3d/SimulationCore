@@ -32,7 +32,7 @@
 #  ifdef SIMCORE_HLA_LIBRARY
 #    define SIMCORE_HLA_EXPORT __declspec(dllexport)
 #  else
-#     define SIMCORE_HLA_mEXPORT __declspec(dllimport)
+#     define SIMCORE_HLA_EXPORT __declspec(dllimport)
 #  endif
 #else
 #  define SIMCORE_HLA_EXPORT

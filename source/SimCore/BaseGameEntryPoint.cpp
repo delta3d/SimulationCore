@@ -79,7 +79,7 @@ namespace SimCore
    const float BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE = 0.1f;
    const float BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE  = 10000.0f;
 
-   const std::string BaseGameEntryPoint::LIBRARY_NAME("SimViewerCore");
+   const std::string BaseGameEntryPoint::LIBRARY_NAME("SimCore");
    const std::string BaseGameEntryPoint::PROJECT_CONTEXT_DIR("ProjectAssets");
 
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");

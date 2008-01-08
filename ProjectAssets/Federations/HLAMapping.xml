@@ -16,7 +16,7 @@
 
     <libraries>
       <actorLibrary>
-        <name>SimViewerCore</name>
+        <name>SimCore</name>
         <version>1.0</version>
       </actorLibrary>
     </libraries>

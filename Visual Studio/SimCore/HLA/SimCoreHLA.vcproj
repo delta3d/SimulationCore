@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="StealthQtExe"
-	ProjectGUID="{DA433154-6881-4B72-961A-7C95A85B729A}"
-	RootNamespace="StealthQtExe"
+	Name="SimCoreHLA"
+	ProjectGUID="{E46D8C6F-0656-4A2E-AAB4-680E76C539AB}"
+	RootNamespace="SimCoreHLA"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -19,9 +19,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
-			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
+			ConfigurationType="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,17 +40,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../../ext/include/win32;$(QTDIR)/include;../../include/StealthViewer;../../include/StealthViewer/Qt"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_NOAUTOLIBMSG;"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../../include;"
+				PreprocessorDefinitions="WIN32;_DEBUG;SIMCORE_HLA_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				DisableSpecificWarnings="4311;4312;"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -64,13 +61,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtABCd.lib dtActorsd.lib dtAudiod.lib dtUtild.lib dtCored.lib dtDALd.lib dtGamed.lib dtHLAGMd.lib osgd.lib osgDBd.lib osgUtild.lib osgGAd.lib osgViewerd.lib QtCored4.lib QtGUId4.lib Qtmaind.lib QtOpenGLd4.lib StealthQtLibd.lib StealthGMAppd.lib opengl32.lib SimCored.lib SimCoreHLAd.lib"
-				OutputFile="../../bin/StealthQtd.exe"
+				AdditionalDependencies="dtABCd.lib dtCored.lib dtDALd.lib dtGamed.lib dtHLAGMd.lib dtUtild.lib dtActorsd.lib SimCored.lib librti13d.lib osgd.lib"
+				OutputFile="../../../bin/SimCoreHLAd.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(QTDIR)/lib;"
+				AdditionalLibraryDirectories="$(DELTA_LIB);../../../lib;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/StealthQtExe.pdb"
-				SubSystem="1"
+				SubSystem="2"
+				ImportLibrary="../../../lib/SimCoreHLAd.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -100,11 +97,11 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -124,16 +121,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="$(DELTA_INC);../../include;../../../ext/include/win32;$(QTDIR)/include;../../apps/StealthViewer/include;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;"
+				AdditionalIncludeDirectories="$(DELTA_INC);../../../include;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;SIMCORE_HLA_LIBRARY;NOMINMAX;_NOAUTOLIBMSG;$(NOINHERIT)"
 				StringPooling="true"
 				RuntimeLibrary="2"
-				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
-				DisableSpecificWarnings="4311;4312;"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -146,14 +141,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dtABC.lib dtActors.lib dtAudio.lib dtUtil.lib dtCore.lib dtDAL.lib dtGame.lib dtHLAGM.lib osg.lib osgDB.lib osgUtil.lib osgGA.lib osgViewer.lib QtCore4.lib QtGUI4.lib Qtmain.lib QtOpenGL4.lib StealthQtLib.lib StealthGMApp.lib SimCore.lib SimCoreHLA.lib opengl32.lib"
-				OutputFile="../../bin/StealthQt.exe"
+				AdditionalDependencies="dtABC.lib dtCore.lib dtDAL.lib dtGame.lib dtHLAGM.lib dtUtil.lib dtActors.lib SimCore.lib librti13.lib osg.lib"
+				OutputFile="../../../bin/SimCoreHLA.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(DELTA_LIB);../../lib;$(QTDIR)/lib;"
-				GenerateDebugInformation="false"
-				SubSystem="1"
+				AdditionalLibraryDirectories="$(DELTA_LIB);../../../lib;"
+				GenerateDebugInformation="true"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ImportLibrary="../../../lib/SimCoreHLA.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -187,11 +183,19 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\source\StealthViewer\main.cpp"
+				RelativePath="..\..\..\source\SimCore\HLA\BaseHLAGameEntryPoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\source\SimCore\HLA\HLAConnectionComponent.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\source\SimCore\HLA\HLACustomParameterTranslator.cpp"
 				>
 			</File>
 		</Filter>
@@ -200,10 +204,26 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\..\include\SimCore\HLA\BaseHLAGameEntryPoint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\SimCore\HLA\Export.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\SimCore\HLA\HLAConnectionComponent.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\SimCore\HLA\HLACustomParameterTranslator.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
