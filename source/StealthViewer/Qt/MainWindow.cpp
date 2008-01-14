@@ -298,14 +298,11 @@ namespace StealthQt
       // Disable full screen
       mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
 
-      UpdateUIFromPreferences();
-
       show();
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
 
       AddConfigObjectsToViewerComponent();
-      StealthViewerData::GetInstance().GetSettings().LoadPreferences();
       
       ConnectSigSlots();
 
@@ -367,6 +364,9 @@ namespace StealthQt
       mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
       mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
       mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());
+
+	  StealthViewerData::GetInstance().GetSettings().LoadPreferences();
+	  UpdateUIFromPreferences();
    }
     
    ///////////////////////////////////////////////////////////////////////////////
@@ -1377,8 +1377,7 @@ namespace StealthQt
 
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
-      mUi->mGeneralFarClippingPlaneLineEdit->setText(
-         QString::number(genConfig.GetFarClippingPlane()));
+      mUi->mGeneralFarClippingPlaneLineEdit->setText(QString::number(genConfig.GetFarClippingPlane()));
 
       mUi->mGeneralLODScaleLineEdit->setText(QString::number(genConfig.GetLODScale()));
       

@@ -230,7 +230,7 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    CPPUNIT_ASSERT_EQUAL(true, toolsConfig->GetShowBinocularImage());
    CPPUNIT_ASSERT_EQUAL(true, toolsConfig->GetShowDistanceToObject());
    CPPUNIT_ASSERT_EQUAL(7.0f, toolsConfig->GetMagnification());
-   CPPUNIT_ASSERT_EQUAL(false, toolsConfig->GetAutoAttachOnSelection());
+   CPPUNIT_ASSERT_EQUAL(true, toolsConfig->GetAutoAttachOnSelection());
 
    toolsConfig->SetShowBinocularImage(false);
    CPPUNIT_ASSERT_EQUAL(false, toolsConfig->GetShowBinocularImage());
