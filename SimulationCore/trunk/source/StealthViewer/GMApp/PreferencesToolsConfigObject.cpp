@@ -35,7 +35,7 @@ namespace StealthGM
       mShowDistanceToObject(true),
       mShowElevationOfObject(true),
       mMagnification(7.0f),
-      mAutoAttachOnSelection(false),
+      mAutoAttachOnSelection(true),
       mHighlightEntities(false),
       mShowCallSigns(false)
    {
