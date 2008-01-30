@@ -37,11 +37,13 @@ namespace SimCore
          SetClassName("SimCore::Actors::PlayerActor");
       }
 
+      //////////////////////////////////////////////////////////////////////////
       PlayerActorProxy::~PlayerActorProxy()
       {
 
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void PlayerActorProxy::BuildPropertyMap()
       {
          StealthActorProxy::BuildPropertyMap();
@@ -52,6 +54,7 @@ namespace SimCore
             "Sets the currently enabled tool on the player"));
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void PlayerActorProxy::BuildInvokables()
       {
          PlayerActor &pa = static_cast<PlayerActor&>(GetGameActor());
@@ -78,10 +81,12 @@ namespace SimCore
          SetAttachAsThirdPerson(false);
       }
 
+      //////////////////////////////////////////////////////////////////////////
       PlayerActor::~PlayerActor()
       {
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void PlayerActor::EnableTool(const dtGame::Message &msg)
       {
          if (!SimCore::MessageType::IsValidToolType(msg.GetMessageType()))
@@ -94,11 +99,13 @@ namespace SimCore
          SetEnabledTool(tm.IsEnabled() ? static_cast<SimCore::MessageType&>(type) : SimCore::MessageType::NO_TOOL);
       }
 
+      //////////////////////////////////////////////////////////////////////////
       SimCore::MessageType& PlayerActor::GetEnabledTool() const
       {
          return *mActiveTool;
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void PlayerActor::SetEnabledTool(SimCore::MessageType &tool)
       {
          mActiveTool = &tool;

@@ -54,7 +54,9 @@
 
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/NECCBoatActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
+#include <SimCore/Actors/oceanwater.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -109,8 +111,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE(new dtDAL::ActorType("LM_OpenFlightTerrain", "DVTETerrain"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::OCEAN_WATER_ACTOR_TYPE(new dtDAL::ActorType("OceanWaterActorType", "Effects"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels"));
       
-
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -154,6 +157,7 @@ namespace SimCore
          mActorFactory->RegisterType<FlareActorProxy>(FLARE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<OceanWaterActorProxy>(OCEAN_WATER_ACTOR_TYPE.get());
 
 #ifdef AGEIA_PHYSICS
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
@@ -171,6 +175,7 @@ namespace SimCore
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
 
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity", 
