@@ -2147,7 +2147,8 @@ namespace SimCore
             const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0).getDrawable();
             if( drawable != NULL && drawable->getStateSet() != NULL)
             {
-               osg::ref_ptr<const osg::IntArray> mOurList = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
+               RefPtr<const osg::IntArray> mOurList 
+                  = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
                if( mOurList.valid() ) 
                {
                   if( ! mOurList->empty() )
@@ -2202,11 +2203,13 @@ namespace SimCore
          da->SetTransform(xform, dtCore::Transformable::REL_CS);
 
          SimCore::Components::ViewerMaterialComponent* materialComponent;
-         GetGameManager()->GetComponentByName(SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
+         GetGameManager()->GetComponentByName(
+               SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
          
          if(materialComponent != NULL)
          {
-            SimCore::Actors::ViewerMaterialActor& viewerMaterial = materialComponent->CreateOrChangeMaterialByFID(fidID);
+            SimCore::Actors::ViewerMaterialActor& viewerMaterial 
+               = materialComponent->CreateOrChangeMaterialByFID(fidID);
             da->SetMaterialCollidedWith(viewerMaterial);
          }
 

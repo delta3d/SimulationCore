@@ -166,7 +166,10 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::OnEnteredWorld()
          {
-            dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent;
+            GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
+            if (worldComponent != NULL)
+               worldComponent->RegisterAgeiaHelper(*mPhysicsHelper);
             mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          }
 
