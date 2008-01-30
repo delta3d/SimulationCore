@@ -33,16 +33,16 @@ LIBNAME = osgEphemeris
 
 include $(DWMAKE)/makerules
 
-moon_images.cpp: $(MOON_IMAGES) $(TOPDIR)/bin/$(OSARCH)/makeMoonImages
-	$(TOPDIR)/bin/$(OSARCH)/makeMoonImages $(MOON_IMAGES) > $@ 
+#moon_images.cpp: $(MOON_IMAGES) $(TOPDIR)/bin/$(OSARCH)/makeMoonImages
+#	$(TOPDIR)/bin/$(OSARCH)/makeMoonImages $(MOON_IMAGES) > $@ 
 
 
 $(TOPDIR)/bin/$(OSARCH)/makeMoonImages:
 	cd $(THISDIR)/../MakeMoonImages; make
 
 
-sun_image.cpp: $(SUN_IMAGE) $(TOPDIR)/bin/$(OSARCH)/makeSunImage
-	$(TOPDIR)/bin/$(OSARCH)/makeSunImage $(SUN_IMAGE) > $@ 
+#sun_image.cpp: $(SUN_IMAGE) $(TOPDIR)/bin/$(OSARCH)/makeSunImage
+#	$(TOPDIR)/bin/$(OSARCH)/makeSunImage $(SUN_IMAGE) > $@ 
 
 $(TOPDIR)/bin/$(OSARCH)/makeSunImage: 
 	cd $(THISDIR)/../MakeSunImage; make

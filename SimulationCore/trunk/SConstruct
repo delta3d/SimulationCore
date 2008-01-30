@@ -131,7 +131,7 @@ tools.append(delta3d.TOOL_BUNDLE)
 optCache = 'options.cache'
 opts = Options(optCache)
 opts.AddOptions(EnumOption('mode','Build as either debug or release','debug',allowed_values = ('debug','release'),map = {},ignorecase = 1), 
-		PackageOption('rti', 'RTI installation directory', 'no'), PackageOption('ageia', 'Ageia PhysX', 'no'))
+		PackageOption('rti', 'RTI installation directory', 'no'), BoolOption('ageia', 'Ageia PhysX', 'no'))
 
 def CommaConverter( value ) :
    return value.split(',')
@@ -195,6 +195,8 @@ env['additionalLibsOrder'] = [ 'osgGA', 'osgProducer', 'osgEphemeris' ]
 
 if env.get('ageia') != 0 :
    env['additionalLibsOrder'] += [ 'NxCooking', 'NxCharacter', 'NxExtensions', 'PhysXLoader' ]
+   if OS == 'linux':
+      env.Append(CPPDEFINES = ['NX_DISABLE_FLUIDS'])
 	
 
 if OS == 'windows' :
