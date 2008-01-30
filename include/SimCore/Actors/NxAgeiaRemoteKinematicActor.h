@@ -40,7 +40,7 @@ namespace SimCore
                                                          public VehicleInterface
       #else
       class SIMCORE_EXPORT NxAgeiaRemoteKinematicActor : public Platform, 
-                                                      public VehicleInterface
+                                                         public VehicleInterface
       #endif
       {
          public:

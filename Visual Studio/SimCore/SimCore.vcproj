@@ -349,6 +349,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\SimCore\Actors\NECCBoatActor.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\SimCore\Actors\NxAgeiaFourWheelVehicleActor.cpp"
 					>
 				</File>
@@ -366,6 +370,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\SimCore\Actors\NxAgeiaTerraPageLandActor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\SimCore\Actors\oceanwater.cpp"
 					>
 				</File>
 				<File
@@ -683,6 +691,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\SimCore\Actors\NECCBoatActor.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\SimCore\Actors\NxAgeiaFourWheelVehicleActor.h"
 					>
 				</File>
@@ -700,6 +712,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\SimCore\Actors\NxAgeiaTerraPageLandActor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\SimCore\Actors\oceanwater.h"
 					>
 				</File>
 				<File
