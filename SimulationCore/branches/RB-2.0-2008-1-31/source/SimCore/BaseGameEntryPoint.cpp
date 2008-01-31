@@ -389,7 +389,7 @@ namespace SimCore
 
       cam->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
       
-      camera->SetPerspective(60.0f, 1.6,
+      camera->SetPerspectiveParams(60.0f, 1.6,
                              PLAYER_NEAR_CLIP_PLANE,
                              PLAYER_FAR_CLIP_PLANE);
       AssignAspectRatio(app);

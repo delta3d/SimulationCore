@@ -268,8 +268,6 @@ namespace SimCore
          TimeSetBy set = eNONE;
          int year =0 ,month=0 ,day=0 ,hour=0 ,minute=0 ,sec=0 ;
         
-         dtGame::IEnvGameActor* envActor = NULL;
-         dtGame::IEnvGameActorProxy *ap = GetGameManager()->GetEnvironmentActor();
          SimCore::Components::WeatherComponent* weatherComp;
          GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
          SimCore::Actors::DayTimeActor* dayTimeActor = NULL;

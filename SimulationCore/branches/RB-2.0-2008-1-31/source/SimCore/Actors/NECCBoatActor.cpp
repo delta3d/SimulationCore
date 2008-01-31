@@ -50,12 +50,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       NECCBoatActor ::NECCBoatActor(PlatformActorProxy &proxy) 
          : Platform(proxy)
-      , mHasDriver(false)
-      , mNotifyFullUpdate(true)
-      , mNotifyPartialUpdate(true)
       , mVehicleMPH(0.0f)
       , mVehicleMaxMPH(60.0f)
       , mVehicleMaxReverseMPH(-20.0f)
+      , mHasDriver(false)
+      , mNotifyFullUpdate(true)
+      , mNotifyPartialUpdate(true)
       {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
@@ -70,13 +70,13 @@ namespace SimCore
          {
             mSndVehicleIdleLoop->Stop();
             RemoveChild(mSndVehicleIdleLoop.get());
-            dtAudio::Sound *sound = mSndVehicleIdleLoop.release();
+            mSndVehicleIdleLoop.release();
          }
          if(mSndIgnition.valid())
          {
             mSndIgnition->Stop();
             RemoveChild(mSndIgnition.get());
-            dtAudio::Sound *sound = mSndIgnition.release();
+            mSndIgnition.release();
          }
          
          if(!IsRemote() && mVehiclesPortal.valid() )
@@ -281,8 +281,6 @@ namespace SimCore
          float velocityDiff = (velocityVec - linearVelocity).length();
          bool velocityNearZero = linearVelocity.length() < 0.1;
          bool changedVelocity = velocityDiff > 0.2 || (velocityNearZero && velocityVec.length() > 0.1 );
-
-         bool changedTurning = false;
 
          if( changedTrans || changedOrient || changedVelocity )
          {

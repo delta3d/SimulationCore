@@ -156,7 +156,7 @@ namespace SimCore
          {
             mOverlay->hide();
             mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-            mCamera->SetPerspective(mOriginalVFOV, mCamera->GetAspectRatio(), mOriginalNear, mOriginalFar);
+            mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), mOriginalNear, mOriginalFar);
          }
       }
 

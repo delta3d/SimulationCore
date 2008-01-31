@@ -24,7 +24,7 @@
 
 #include <SimCore/Export.h>
 
-#include <NxAgeiaFourWheelVehiclePhysicsHelper.h>
+#include <NxAgeiaPrimitivePhysicsHelper.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 
