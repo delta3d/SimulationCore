@@ -1,0 +1,58 @@
+# Build script for the unit tests.
+import glob
+import sys
+
+# Import the variables defined in the global SConstruct build script.
+Import ('*')
+
+#there will be one program per test dir here plus an all tests.
+#To add a new one, add a new one, simply put the directory 
+#in this list, put your test cpp files in with the names "*tests.cpp"
+#and the files will be added to both allTests and to a test just
+#for the new set of files.
+suites = ['SimCore', 'tools', 'HLA']
+
+if 'qt4' in env['TOOLS'] :
+	suites += ['StealthViewer']
+	
+
+sources = {}
+mainSources = glob.glob('*.cpp')
+sources['all'] = mainSources + []
+
+for suite in suites:
+   #get the sources for each program
+   sources[suite] = glob.glob(suite + '/*Tests.cpp')
+   #add the sources to the allTests program
+   sources['all'] += sources[suite]
+   #add the "main" source files.
+   sources[suite] += mainSources  
+
+deps = ['cppunit', 'dtCore', 'dtAnim', 'dtUtil', 'dtDAL', 'dtGame', 'dtABC',
+   'SimViewerCore', 'SimCoreHLA', 'dtHLAGM', 'dtGUI', 'CEGUIBase' ]
+
+
+if 'qt4' in env['TOOLS'] :
+	deps += ['StealthGMApp', 'StealthQt', 'QtCore', 'QtGui', 'QtOpenGL', 'OpenGL', 'AGL']
+         
+result = 'true'
+
+#create all the program names base on the sets of sources.
+
+envCopy = env.Copy()
+envCopy.Append(CPPPATH = [ "include" ])
+
+if 'qt4' in env['TOOLS'] :
+	# Environment settings for Qt
+	qtdir = envCopy['QTDIR']
+
+	if envCopy['OS'] != 'darwin':
+            envCopy.Append(CPPPATH = [qtdir + '/include'] )
+  
+app = envCopy.BuildProgram('allTests', sources['all'], deps, prefixHeader='include/prefix/SimCorePrefix.h')
+
+if (app == '[]') :
+   result = 'false'
+   errorLog.write("Failed to build test program " + programs[prog] + ".\n")
+
+Return('result')
