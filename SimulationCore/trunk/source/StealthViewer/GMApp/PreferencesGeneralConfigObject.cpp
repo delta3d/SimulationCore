@@ -94,13 +94,8 @@ namespace StealthGM
       // no weather component, so we update the clip planes by hand
       else
       {
-#if DELTA_VERSION_MAJOR >= 2
-         camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(), 
-            GetNearClippingPlane(), GetFarClippingPlane());
-#else
          camera->SetPerspective(camera->GetVerticalFov(), camera->GetAspectRatio(), 
             GetNearClippingPlane(), GetFarClippingPlane());
-#endif
       }
 
       // Updated the LOD scale

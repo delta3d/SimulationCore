@@ -203,15 +203,9 @@ namespace SimCore
             mPreviousNearClipPlane = newNearClip;
             mPreviousFarClipPlane = newFarClip;
 
-#if DELTA_VERSION_MAJOR >= 2
-            camera->SetPerspectiveParams(camera->GetVerticalFov(), 
-                                         camera->GetAspectRatio(), 
-                                         newNearClip, newFarClip);
-#else
             camera->SetPerspective(camera->GetVerticalFov(), 
                                    camera->GetAspectRatio(), 
                                    newNearClip, newFarClip);
-#endif
          }
 
          // Set the visibility on core env or ephemeris only if updates are
