@@ -396,6 +396,13 @@ namespace SimCore
          float amountChange = 0.5f;
          float glmat[16];
          NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
+
+         if(physxObj == NULL)
+         {
+            LOG_ERROR("No physics object on the hmmwv, no doing dead reckoning");
+            return;
+         }
+
          NxMat33 rotation = physxObj->getGlobalOrientation();
          rotation.getColumnMajorStride4(glmat);
          glmat[12] = physxObj->getGlobalPosition()[0];
@@ -449,23 +456,6 @@ namespace SimCore
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
             mNotifyFullUpdate = true; 
-            //GetGameActorProxy().NotifyFullActorUpdate();
-
-            //DEBUG:
-            /*if( changedTrans )
-            {
-               std::cout << "GlobalTrans:" << nxVecTemp[0] << "," << nxVecTemp[1] << "," << nxVecTemp[2]
-                  << "\n\tDR:" << translationVec[0] << "," << translationVec[1] << "," << translationVec[2] << "\n" << std::endl;
-            }
-            else if( changedOrient )
-            {
-               std::cout << "GlobalOrient:" << globalOrientation << "\n\tDR:" << orientationVec << "\n" << std::endl;
-            }
-            else if( changedVelocity )
-            {
-               std::cout << "Velocity:" << linearVelocity << "\n\tDR:" << velocityVec 
-                  << "\n\tChange:" << velocityDiff << "\n" << std::endl;
-            }*/
          }
          else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
          {
@@ -513,11 +503,15 @@ namespace SimCore
          osg::Matrix rot = GetMatrixNode()->getMatrix();
          
          NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
-         toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
-         toFillIn->setGlobalOrientation(
-            NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
-                     NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
-                     NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
+         if(toFillIn != NULL)
+         {
+            toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
+            toFillIn->setGlobalOrientation(
+               NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
+                        NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
+                        NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
+         }
+
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

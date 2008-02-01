@@ -24,7 +24,7 @@
 
 #include <SimCore/Export.h>
 
-#include <NxAgeiaFourWheelVehiclePhysicsHelper.h>
+#include <NxAgeiaPrimitivePhysicsHelper.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 
@@ -108,11 +108,13 @@ namespace SimCore
             void SetSound_effect_ignition(const std::string& value){SOUND_EFFECT_IGNITION=value;}     
             void SetSound_effect_vehicle_loop(const std::string& value){SOUND_EFFECT_VEHICLE_LOOP=value;} 
             void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
+            void SetSound_Effect_Horn(const std::string& value) {SOUND_EFFECT_HORN_SOUND = value;}
             virtual void SetHasDriver( bool hasDriver )           { mHasDriver = hasDriver; }
                
-            const std::string& GetSound_effect_ignition() {return SOUND_EFFECT_IGNITION;}     
-            const std::string& GetSound_effect_vehicle_loop(){return SOUND_EFFECT_VEHICLE_LOOP;} 
-            const std::string& GetSound_effect_collision_hit(){return SOUND_EFFECT_COLLISION_HIT;}
+            std::string GetSound_effect_ignition() const {return SOUND_EFFECT_IGNITION;}     
+            std::string GetSound_effect_vehicle_loop() const {return SOUND_EFFECT_VEHICLE_LOOP;} 
+            std::string GetSound_effect_collision_hit() const {return SOUND_EFFECT_COLLISION_HIT;}
+            std::string GetSound_Effect_Horn() const {return SOUND_EFFECT_HORN_SOUND;}
             virtual bool GetHasDriver() const       { return mHasDriver; }
            
          // Private vars
@@ -125,6 +127,7 @@ namespace SimCore
             dtCore::RefPtr<dtAudio::Sound> mSndIgnition;
             dtCore::RefPtr<dtAudio::Sound> mSndVehicleIdleLoop;
             dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+            dtCore::RefPtr<dtAudio::Sound> mSndHorn;
             ///////////////////////////////////////////////////
 
             ///////////////////////////////////////////////////
@@ -132,6 +135,7 @@ namespace SimCore
             std::string SOUND_EFFECT_IGNITION;     /// What is the filepath / string of the sound effect
             std::string SOUND_EFFECT_VEHICLE_LOOP; /// What is the filepath / string of the sound effect
             std::string SOUND_EFFECT_COLLISION_HIT;/// What is the filepath / string of the sound effect
+            std::string SOUND_EFFECT_HORN_SOUND;
             ///////////////////////////////////////////////////
 
             /// current speed of the vehicle.
