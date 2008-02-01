@@ -29,12 +29,10 @@
 #include <osg/Vec3>
 #include <osg/Vec4>
 
-#include <dtDAL/plugin_export.h>
-#include <dtDAL/actorproxy.h>
+#include <SimCore/Export.h>
 
-//#include <dtDAL/plugin_export.h>
 #include <dtCore/refptr.h>
-#include <dtCore/deltadrawable.h>
+#include <dtGame/gameactor.h>
 
 namespace SimCore
 {
