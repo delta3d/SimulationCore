@@ -745,7 +745,7 @@ namespace SimCore
       void HUDMeter::SetValue( float current, float maxValue, float minValue )
       {
          mValue = current > maxValue ? maxValue : current < minValue ? minValue : current;
-         maxValue = fabs(maxValue-minValue);
+         maxValue = std::abs(maxValue-minValue);
          if( mUnits > 0.0f )
          {
             float unitSize = maxValue/mUnits;

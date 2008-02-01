@@ -455,7 +455,7 @@ static double findIncidentLength( double alpha )
     double B = asin( b * sin(A)/a );
     double C = osg::PI - (A + B);
 
-    if( fabs(sin(A)) < E)
+    if( std::abs(sin(A)) < E)
         c = ATMOSPHERE_DEPTH;
     else
         c = a * sin(C)/sin(A);

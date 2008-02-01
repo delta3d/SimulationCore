@@ -83,7 +83,7 @@ using dtCore::RefPtr;
 
 namespace StealthGM
 {
-   const std::string &StealthInputComponent::DEFAULT_NAME = "Input Component";
+   const std::string StealthInputComponent::DEFAULT_NAME = "Input Component";
 
    StealthInputComponent::StealthInputComponent(bool enableLogging,
                                                 bool enablePlayback, 
@@ -489,9 +489,7 @@ namespace StealthGM
                (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
             if(developerMode == "true" || developerMode == "1")
             {
-               // TODO-UPGRADE //////////////////////////////////////////////////////////
-               //GetGameManager()->GetApplication().GetCamera()->SetNextStatisticsType();
-               //////////////////////////////////////////////////////////////////////////
+               GetGameManager()->GetApplication().SetNextStatisticsType();
             }
          }
          break;

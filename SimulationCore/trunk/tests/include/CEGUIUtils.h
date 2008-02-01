@@ -24,7 +24,16 @@ namespace SimCore
 
       std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
       dtUtil::FileUtils::GetInstance().PushDirectory(dir);
-      CEGUI::SchemeManager::getSingleton().loadScheme(path);
+      try
+      {
+         CEGUI::SchemeManager::getSingleton().loadScheme(path);
+      }
+      catch(CEGUI::Exception &e)
+      {
+         std::ostringstream oss;
+         oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
+         throw dtUtil::Exception(oss.str(), __FILE__, __LINE__);
+      }
       dtUtil::FileUtils::GetInstance().PopDirectory();
 
       //CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();

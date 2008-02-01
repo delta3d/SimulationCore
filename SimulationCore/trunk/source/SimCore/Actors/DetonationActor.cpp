@@ -468,7 +468,7 @@ namespace SimCore
          osg::Vec3 detonationPos = xform.GetTranslation();
 
          float distance = 
-            sqrtf(fabs((position[0] - detonationPos[0]) * (position[0] - detonationPos[0]) +
+            sqrtf(std::abs((position[0] - detonationPos[0]) * (position[0] - detonationPos[0]) +
                        (position[1] - detonationPos[1]) * (position[1] - detonationPos[1]) +
                        (position[2] - detonationPos[2]) * (position[2] - detonationPos[2])));
 

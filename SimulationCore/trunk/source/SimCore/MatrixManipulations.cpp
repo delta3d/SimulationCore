@@ -63,9 +63,9 @@ namespace SimCore
                //       THIS CODE WILL DO ROTATION FROM ACTOR SENT IN                    //
                ////////////////////////////////////////////////////////////////////////////
                osg::Vec2 clampVec = ourMouse->GetPosition();
-               if(fabs(clampVec[0]) < 0.01f)
+               if(std::abs(clampVec[0]) < 0.01f)
                   clampVec[0] = 0.0f;
-               if(fabs(clampVec[1]) < 0.01f)
+               if(std::abs(clampVec[1]) < 0.01f)
                   clampVec[1] = 0.0f;
 
                clampVec[1] *= -1;

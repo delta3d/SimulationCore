@@ -370,9 +370,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       bool CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
       {
-         return fabs(op1.x() - op2.x()) < epsilon
-            && fabs(op1.y() - op2.y()) < epsilon
-            && fabs(op1.z() - op2.z()) < epsilon;
+         return std::abs(op1.x() - op2.x()) < epsilon
+            && std::abs(op1.y() - op2.y()) < epsilon
+            && std::abs(op1.z() - op2.z()) < epsilon;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -479,13 +479,13 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NxAgeiaFourWheelVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
       {
-         if(fabs(startValue) < 0.01f && fabs(newValue) < 0.01f)
+         if(std::abs(startValue) < 0.01f && std::abs(newValue) < 0.01f)
             return 1.0;
 
          if(startValue == 0)
             startValue = 1.0f;
 
-         return fabs((((newValue - startValue) / startValue) * 100.0f));
+         return std::abs((((newValue - startValue) / startValue) * 100.0f));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

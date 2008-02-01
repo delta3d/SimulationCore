@@ -179,17 +179,19 @@ namespace SimCore
          const SimCore::Actors::MunitionTypeActor* closestType = NULL;
          unsigned int matchLevel = 0;
          unsigned int curMatchLevel = 0;
-         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter 
-            = mOrderedList.begin();
+         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >::const_iterator iter, iterEnd;
+         iter = mOrderedList.begin();
+         iterEnd = mOrderedList.end();
 
          // Iterate through DIS levels
-         for( ; iter != mOrderedList.end(); ++iter )
+         for( ; iter != iterEnd; ++iter )
          {
+            SimCore::Actors::MunitionTypeActor& mta = **iter;
             // Match current level
-            curMatchLevel = dis.GetDegreeOfMatch( (*iter)->GetDISIdentifier() );
+            curMatchLevel = dis.GetDegreeOfMatch( mta.GetDISIdentifier() );
 
             // Return immediately if this is a full match
-            if( curMatchLevel == 7 ) { return iter->get(); }
+            if( curMatchLevel == 7 ) { return &mta; }
 
             // Capture the first closest match
             if( matchLevel <= curMatchLevel ) // "=" has been put in for a just-in-case situation, though it should not be necessary
@@ -198,9 +200,9 @@ namespace SimCore
 
                // Only capture a close match if the current munition's DIS
                // has a zero for the next
-               if( (*iter)->GetDISIdentifier().GetNumber( matchLevel ) == 0 )
+               if( mta.GetDISIdentifier().GetNumber( matchLevel ) == 0 )
                {
-                  closestType = iter->get();
+                  closestType = &mta;
                }
             }
             // If match level is decreasing, no further checks will produce a higher match.
@@ -217,6 +219,9 @@ namespace SimCore
          {
             std::ostringstream ss;
             ss << "Could not find a munition that matches DIS " << dis.ToString();
+            if (closestType != NULL)
+               ss << "closest is " << closestType->GetDISIdentifierString();
+               
             LOG_WARNING( ss.str() );
             return NULL;
          }

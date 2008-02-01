@@ -233,7 +233,7 @@ void StarField::setSunAltitude( double sunAltitude )
     {
         unsigned char *ptr = image->data();
 
-        double alpha = sunAltitude > 0.0 ? 0.0 : fabs(sunAltitude/10.0);
+        double alpha = sunAltitude > 0.0 ? 0.0 : std::abs(sunAltitude/10.0);
 
         // Transparent stars to see the right color for the dark part of the moon.
         if( alpha > 1.0 )
@@ -252,7 +252,7 @@ void StarField::setSunAltitude( double sunAltitude )
     }
 #endif
 
-    float alpha = sunAltitude > 0.0 ? 0.0 : fabs(sunAltitude/10.0);
+    float alpha = sunAltitude > 0.0 ? 0.0 : std::abs(sunAltitude/10.0);
     if( alpha > 1.0 ) 
         alpha = 1.0;
     _starAlpha->set( alpha );
