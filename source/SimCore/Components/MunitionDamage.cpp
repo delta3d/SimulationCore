@@ -234,7 +234,7 @@ namespace SimCore
             angle = trajectoryNormal * osg::Vec3(0.0f,0.0f,1.0f);
             // Turn dot product to an angle measured in degrees;
             // the constant 57.29578 converts radians to degrees.
-            angle = asinf( fabs( angle ) ) * 57.29578f;
+            angle = asinf( std::abs( angle ) ) * 57.29578f;
          }
          else // Use max range since this might be a mine munition
          {
@@ -243,9 +243,9 @@ namespace SimCore
 
          float diff1, diff2, diff3;
          diff1 = diff2 = diff3 = 360.0f; // default to a failing value
-         if(mRange1_3.valid()) { diff1 = fabs( mRange1_3->GetAngleOfFall() - angle ); }
-         if(mRange2_3.valid()) { diff2 = fabs( mRange2_3->GetAngleOfFall() - angle ); }
-         if(mRangeMax.valid()) { diff3 = fabs( mRangeMax->GetAngleOfFall() - angle ); }
+         if(mRange1_3.valid()) { diff1 = std::abs( mRange1_3->GetAngleOfFall() - angle ); }
+         if(mRange2_3.valid()) { diff2 = std::abs( mRange2_3->GetAngleOfFall() - angle ); }
+         if(mRangeMax.valid()) { diff3 = std::abs( mRangeMax->GetAngleOfFall() - angle ); }
 
          int range = (diff1 < diff2 && diff1 < diff3) ? 1 :
                      (diff2 < diff1 && diff2 < diff3) ? 2 : 3;

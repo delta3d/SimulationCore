@@ -191,7 +191,7 @@ env.Append(LIBPATH = ['#lib', '#ext/lib/' + sys.platform] + delta_lib)
 
 conf = env.CreateConf(errorLog)
 
-env['additionalLibsOrder'] = [ 'osgGA', 'osgProducer', 'osgEphemeris' ]
+env['additionalLibsOrder'] = [ 'osgEphemeris' ]
 
 if env.get('ageia') != 0 :
    env['additionalLibsOrder'] += [ 'NxCooking', 'NxCharacter', 'NxExtensions', 'PhysXLoader' ]

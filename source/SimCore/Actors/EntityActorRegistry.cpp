@@ -50,11 +50,11 @@
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
    #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
    #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
+   #include <SimCore/Actors/NECCBoatActor.h>
 #endif
 
 #include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
-#include <SimCore/Actors/NECCBoatActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <SimCore/Actors/oceanwater.h>
 
@@ -163,8 +163,10 @@ namespace SimCore
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaMunitionsPSysActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
+         mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #else
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #endif
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
@@ -175,7 +177,6 @@ namespace SimCore
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
 
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity", 

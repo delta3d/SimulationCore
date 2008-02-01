@@ -839,7 +839,7 @@ namespace SimCore
          mPreviousSpeed = (current + mPreviousSpeed) * 0.5f;
 
          if( (int)mLastReadout != (int)mPreviousSpeed 
-            && fabs(mPreviousSpeed-mLastReadout) > 0.5f )
+            && std::abs(mPreviousSpeed-mLastReadout) > 0.5f )
          {
             mLastReadout = mPreviousSpeed;
          }
@@ -849,7 +849,7 @@ namespace SimCore
          mText->SetText( ss.str() );
 
          current = current > max ? max : current < min ? min : current;
-         max = fabs(max-min);
+         max = std::abs(max-min);
          current = max != 0.0f ? current/max : 0.0f;
          // This meter uses left handed rotation
          mNeedle->SetRotation( (1.0f-current)*3.141593f );

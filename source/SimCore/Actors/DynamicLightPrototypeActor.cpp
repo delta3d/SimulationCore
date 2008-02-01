@@ -56,6 +56,11 @@ namespace SimCore
 
       }
 
+      void DynamicLightPrototypeProxy::CreateActor()
+      {
+         SetActor(*new DynamicLightPrototypeActor(*this)); 
+      }
+
       //////////////////////////////////////////////////////////
       void DynamicLightPrototypeProxy::BuildPropertyMap()
       {
@@ -155,6 +160,7 @@ namespace SimCore
          mAutoDeleteLightOnTargetNull(true),
          mDynamicLightType(&DynamicLightType::UNKNOWN)
       {
+         SetName("DynamicLightPrototype");
       }
 
       //////////////////////////////////////////////////////////

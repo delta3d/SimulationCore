@@ -132,8 +132,8 @@ namespace SimCore
 
             };
 
-            static const std::string& DEFAULT_NAME;
-            static const std::string& DEFAULT_LIGHT_NAME;
+            static const std::string DEFAULT_NAME;
+            static const std::string DEFAULT_LIGHT_NAME;
 
             /// Constructor
             RenderingSupportComponent(const std::string &name = DEFAULT_NAME);

@@ -83,9 +83,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       bool CompareVectorsPlayer( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
       {
-         return fabs(op1.x() - op2.x()) < epsilon
-            && fabs(op1.y() - op2.y()) < epsilon
-            && fabs(op1.z() - op2.z()) < epsilon;
+         return std::abs(op1.x() - op2.x()) < epsilon
+            && std::abs(op1.y() - op2.y()) < epsilon
+            && std::abs(op1.z() - op2.z()) < epsilon;
       }
 
       ////////////////////////////////////////////////////////////

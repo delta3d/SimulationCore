@@ -160,11 +160,14 @@ namespace SimCore
       {
       public:
 
+         //The classname set in the proxy.  This is mainly used for ActorActorProperties
+         static const std::string DYNAMIC_LIGHT_PROTOTYPE_CLASSNAME;
+
          /// Constructor
          DynamicLightPrototypeProxy();
 
          /// Creates the actor
-         void CreateActor() { SetActor(*new DynamicLightPrototypeActor(*this)); }
+         void CreateActor();
 
          /// Adds the properties associated with this actor
          virtual void BuildPropertyMap();
