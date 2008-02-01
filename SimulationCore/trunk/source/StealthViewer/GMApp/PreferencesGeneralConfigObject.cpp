@@ -13,13 +13,19 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
+
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/WeatherComponent.h>
+
 #include <dtGame/gamemanager.h>
+
 #include <dtCore/camera.h>
+
 #include <dtABC/application.h>
+
+#include <dtUtil/version.h>
  
 namespace StealthGM
 {
@@ -88,8 +94,13 @@ namespace StealthGM
       // no weather component, so we update the clip planes by hand
       else
       {
+#if DELTA_VERSION_MAJOR >= 2
          camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(), 
             GetNearClippingPlane(), GetFarClippingPlane());
+#else
+         camera->SetPerspective(camera->GetVerticalFov(), camera->GetAspectRatio(), 
+            GetNearClippingPlane(), GetFarClippingPlane());
+#endif
       }
 
       // Updated the LOD scale
