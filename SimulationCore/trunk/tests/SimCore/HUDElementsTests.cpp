@@ -30,9 +30,7 @@
 #include <osg/io_utils>
 #include <dtABC/application.h>
 
-#include <CEGUIUtils.h>
 #include <UnitTestMain.h>
-#include <dtABC/application.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
    #include <Windows.h>
@@ -128,10 +126,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HUDElementsTests);
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setupCEGUI()
 {
-   SimCore::SetupCEGUI();
    mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
    CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
-   SLEEP(250);
+   //SLEEP(200);
 }
 
 //////////////////////////////////////////////////////////////
@@ -143,7 +140,8 @@ void HUDElementsTests::setUp()
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication(*mApp);
 
-   mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow(), mApp->GetKeyboard(), mApp->GetMouse());
+   mGUI = &GetGlobalCEGUIDrawable();
+   mApp->GetScene()->AddDrawable(mGUI.get());
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
@@ -160,10 +158,11 @@ void HUDElementsTests::tearDown()
       mGM->DeleteAllActors(true);
    
    mMainGUIWindow = NULL;
-   if(mGUI.valid())
-      mGUI->ShutdownGUI();
    
    mGM = NULL;
+   if (mApp.valid() && mGUI.valid())
+      mApp->GetScene()->RemoveDrawable( mGUI.get() );
+
    mGUI = NULL;
    mApp = NULL;
 }

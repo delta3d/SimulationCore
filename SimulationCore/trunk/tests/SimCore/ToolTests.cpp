@@ -30,6 +30,7 @@
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/system.h>
+#include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
@@ -38,8 +39,13 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Actors/PlayerActor.h>
 
-#include <CEGUIUtils.h>
 #include <UnitTestMain.h>
+
+#ifdef None
+#undef None
+#endif
+#include <CEGUI.h>
+
 
 using dtCore::RefPtr;
 
@@ -101,8 +107,7 @@ void ToolTests::setUp()
 
       dtCore::System::GetInstance().Step();
 
-      mGUI = new dtGUI::CEUIDrawable(mApp->GetWindow(), mApp->GetKeyboard(), mApp->GetMouse());
-      SimCore::SetupCEGUI();
+      mGUI = &GetGlobalCEGUIDrawable();
    }
    catch(const dtUtil::Exception &e) 
    {
@@ -132,15 +137,15 @@ void ToolTests::tearDown()
       dtCore::System::GetInstance().Stop();
       mGM->DeleteAllActors(true);
    }
-   if (mGUI.valid())
-   {
-      mGUI->ShutdownGUI();
-   }
    
-   mApp         = NULL;
-   mGM          = NULL;
-   mGUI         = NULL;
+   mGM = NULL;
    mPlayerActor = NULL;
+
+   if (mApp.valid() && mGUI.valid())
+      mApp->GetScene()->RemoveDrawable( mGUI.get() );
+
+   mGUI = NULL;
+   mApp = NULL;
 }
 
 void ToolTests::TestBinoculars()
@@ -151,7 +156,7 @@ void ToolTests::TestBinoculars()
       binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), NULL);
       binos->SetPlayerActor(mPlayerActor.get()); 
    }
-   catch(CEGUI::Exception &e) 
+   catch(const CEGUI::Exception &e) 
    {
       CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
    }
