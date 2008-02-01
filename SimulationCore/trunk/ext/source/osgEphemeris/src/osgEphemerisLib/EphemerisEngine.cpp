@@ -268,7 +268,7 @@ void EphemerisEngine::_getAnomaly( double ma, double s, double &nu, double &ea)
         for (;;) 
         {
             dla = fea-(s*sin(fea))-m;
-            if (std::abs(dla)<1e-6)
+            if (fabs(dla)<1e-6)
                 break;
             dla /= 1-(s*cos(fea));
             fea -= dla;
@@ -279,7 +279,7 @@ void EphemerisEngine::_getAnomaly( double ma, double s, double &nu, double &ea)
     {
       /* hyperbolic */
         double corr = 1;
-        while (std::abs(corr) > 0.000001) 
+        while (fabs(corr) > 0.000001) 
         {
             corr = (m - s * sinh(fea) + fea) / (s*cosh(fea) - 1);
             fea += corr;
