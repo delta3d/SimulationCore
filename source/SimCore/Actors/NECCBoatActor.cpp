@@ -78,6 +78,13 @@ namespace SimCore
             RemoveChild(mSndIgnition.get());
             dtAudio::Sound *sound = mSndIgnition.release();
          }
+
+         if(mSndHorn.valid())
+         {
+            mSndHorn->Stop();
+            RemoveChild(mSndHorn.get());
+            dtAudio::Sound *sound = mSndHorn.release();
+         }
          
          if(!IsRemote() && mVehiclesPortal.valid() )
          {
@@ -114,6 +121,19 @@ namespace SimCore
             AddChild(mSndVehicleIdleLoop.get());
             dtCore::Transform xform;
             mSndVehicleIdleLoop->SetTransform(xform, dtCore::Transformable::REL_CS);
+         }
+
+         if(SOUND_EFFECT_HORN_SOUND != "")
+         {
+            mSndHorn= dtAudio::AudioManager::GetInstance().NewSound();
+            mSndHorn->LoadFile(SOUND_EFFECT_HORN_SOUND.c_str());
+            mSndHorn->ListenerRelative(false);
+            mSndHorn->SetLooping(false);
+            mSndHorn->SetMinDistance(8.0f);
+            mSndHorn->SetMaxDistance(35.0f);
+            AddChild(mSndHorn.get());
+            dtCore::Transform xform;
+            mSndHorn->SetTransform(xform, dtCore::Transformable::REL_CS);
          }
 
          dtCore::Transform ourTransform;
@@ -153,19 +173,20 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
-         GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
+         if(GetPhysicsHelper()->GetPhysXObject() != NULL)
+            GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::TickLocal(const dtGame::Message &tickMessage)
       {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
-         if(physicsObject == NULL)
-         {
-            // should probably throw an exception
-            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
-            return;
-         }
+         //NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         //if(physicsObject == NULL)
+         //{
+         //   // should probably throw an exception
+         //   LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
+         //   return;
+         //}
 
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
@@ -231,6 +252,12 @@ namespace SimCore
          if(mTimesASecondYouCanSendOutAnUpdate == 0)
          {
             LOG_ERROR("Not sending out dead reckoning, the mTimesASecondYouCanSendOutAnUpdate is set to 0");
+            return;
+         }
+
+         if(mPhysicsHelper->GetPhysXObject() == NULL)
+         {
+            LOG_WARNING("PhysX object null in update dead reckoning not sending out!");
             return;
          }
 
@@ -345,11 +372,15 @@ namespace SimCore
          osg::Matrix rot = GetMatrixNode()->getMatrix();
          
          NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
-         toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
-         toFillIn->setGlobalOrientation(
-            NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
-                     NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
-                     NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
+
+         if(toFillIn != NULL)
+         {
+            toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
+            toFillIn->setGlobalOrientation(
+               NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
+                        NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
+                        NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -464,6 +495,11 @@ namespace SimCore
 
             if(keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
+               if(mSndHorn.valid())
+               {
+                  if(mSndHorn->IsPlaying() == false)
+                     mSndHorn->Play();
+               }
                //GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
@@ -508,7 +544,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       NECCBoatActorProxy::NECCBoatActorProxy()
       {
-         SetClassName("NxAgeiaFourWheeledVehicleActor");
+         SetClassName("NECCBoatActorProxy");
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -538,6 +574,11 @@ namespace SimCore
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor, 
             &NECCBoatActor::SetSound_effect_collision_hit),
+            "What is the filepath / string of the sound effect", SOUND_GROUP));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
+            "SOUND_EFFECT_HORN_SOUND", "SFX Horn Path", dtDAL::MakeFunctor(actor, 
+            &NECCBoatActor::SetSound_Effect_Horn),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
       }
 

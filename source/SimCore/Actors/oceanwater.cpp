@@ -77,6 +77,7 @@ namespace SimCore
 
          if (!GetShaderGroup().empty())
             SetShaderGroup(GetShaderGroup());
+
       }
 
       //////////////////////////////////////////////////////////////////////////
