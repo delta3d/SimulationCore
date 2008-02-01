@@ -158,7 +158,7 @@ double CelestialBody::sgCalcEccAnom(double M, double e)
         do
         {
              E1 = E0 - (E0 - e * sin(E0) - M) / (1 - e *cos(E0));
-             diff = std::abs(E0 - E1);
+             diff = fabs(E0 - E1);
              E0 = E1;
         } while (diff > epsilon );
         return E0;
@@ -494,7 +494,7 @@ void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
     g = atan (tan(gclat) / cos ((HA / 3.8197186)));
 
     rightAscension = geoRa - mpar * rho * cos(gclat) * sin(HA) / cos (geoDec);
-    if (std::abs(lat) > 0) 
+    if (fabs(lat) > 0) 
     {
         declination = geoDec - mpar * rho * sin (gclat) * sin (g - geoDec) / sin(g);
     } 
@@ -706,7 +706,7 @@ void Saturn::updatePosition(double mjd, Sun *ourSun)
         double B = asin (sin(declination) * cos(ir) - 
                  cos(declination) * sin(ir) *
                  sin(rightAscension - Nr));
-        double ring_magn = -2.6 * sin(std::abs(B)) + 1.2 * pow(sin(B), 2);
+        double ring_magn = -2.6 * sin(fabs(B)) + 1.2 * pow(sin(B), 2);
         magnitude = -9.0 + 5*log10(r*R) + 0.044 * FV + ring_magn;
 }
 
