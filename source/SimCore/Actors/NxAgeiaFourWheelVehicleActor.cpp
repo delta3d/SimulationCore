@@ -50,11 +50,11 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       NxAgeiaFourWheelVehicleActor ::NxAgeiaFourWheelVehicleActor(PlatformActorProxy &proxy) 
          : Platform(proxy)
+      , mLastGearChange(FIRST_GEAR)
       , SOUND_BRAKE_SQUEAL_AMOUNT(0.0f)     
       , SOUND_GEAR_CHANGE_LOW(0.0f)         
       , SOUND_GEAR_CHANGE_MEDIUM(0.0f)      
       , SOUND_GEAR_CHANGE_HIGH(0.0f)        
-      , mLastGearChange(FIRST_GEAR)
       , mHasDriver(false)
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
@@ -72,25 +72,25 @@ namespace SimCore
          {
             mSndBrake->Stop();
             RemoveChild(mSndBrake.get());
-            dtAudio::Sound *sound = mSndBrake.release();
+            mSndBrake.release();
          }
          if(mSndVehicleIdleLoop.valid())
          {
             mSndVehicleIdleLoop->Stop();
             RemoveChild(mSndVehicleIdleLoop.get());
-            dtAudio::Sound *sound = mSndVehicleIdleLoop.release();
+            mSndVehicleIdleLoop.release();
          }
          if(mSndIgnition.valid())
          {
             mSndIgnition->Stop();
             RemoveChild(mSndIgnition.get());
-            dtAudio::Sound *sound = mSndIgnition.release();
+            mSndIgnition.release();
          }
          if(mSndAcceleration.valid())
          {
             mSndAcceleration->Stop();
             RemoveChild(mSndAcceleration.get());
-            dtAudio::Sound *sound = mSndAcceleration.release();
+            mSndAcceleration.release();
          }
          
          if(!IsRemote() && mVehiclesPortal.valid() )
@@ -429,7 +429,7 @@ namespace SimCore
          bool changedTrans = CompareVectors(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
          bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 3, 3.0f);
 
-         const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
+         //const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
          const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetVelocityVector();
 
          osg::Vec3 AngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
@@ -438,8 +438,6 @@ namespace SimCore
          float velocityDiff = (velocityVec - linearVelocity).length();
          bool velocityNearZero = linearVelocity.length() < 0.1;
          bool changedVelocity = velocityDiff > 0.2 || (velocityNearZero && velocityVec.length() > 0.1 );
-
-         bool changedTurning = false;
 
          if( changedTrans || changedOrient || changedVelocity )
          {

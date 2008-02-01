@@ -44,16 +44,19 @@
 #include <dtCore/shaderparameter.h>
 #include <dtCore/shaderparamfloat.h>
 
+#include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
+
 namespace SimCore
 {
    namespace Actors
    {
       //////////////////////////////////////////////////////////////////////////
       OceanWater::OceanWater(dtGame::GameActorProxy& proxy) : dtGame::GameActor(proxy)
+         , mWaterHeight(0.0f)
          , mElapsedTime(0.0f)
          , mDeltaTime(0.0f)
          , mWaterSpeed(1.0f/20.f)
-         , mWaterHeight(0.0f)
       {
          mCenter.set(0.0f, 0.0f);
          mSize.set(100.0f, 100.0f);
@@ -275,11 +278,15 @@ namespace SimCore
          RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
          if (IsRemote())
+         {
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
-            dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+                  dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+         }
          else
+         {
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, 
-            dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+                  dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+         }
 
          GameActorProxy::OnEnteredWorld();
       }

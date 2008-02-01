@@ -88,7 +88,7 @@ namespace StealthGM
       // no weather component, so we update the clip planes by hand
       else
       {
-         camera->SetPerspective(camera->GetVerticalFov(), camera->GetAspectRatio(), 
+         camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(), 
             GetNearClippingPlane(), GetFarClippingPlane());
       }
 
