@@ -39,6 +39,7 @@
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/globals.h>
 
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
@@ -47,6 +48,7 @@
 #include <dtABC/application.h>
 
 #include <dtGUI/ceuidrawable.h>
+#include <dtGUI/scriptmodule.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
 
@@ -54,15 +56,18 @@
 #include <cmath>
 #include <stdexcept>
 
+#ifdef None
+#undef None
+#endif
+#include <CEGUI.h>
+
 static std::ostringstream mSlowTests;
 
-//this only LOOKS like a global variable, really.
 static dtCore::RefPtr<dtABC::Application> GlobalApplication;
+static dtCore::RefPtr<dtGUI::CEUIDrawable> GlobalGUI;
 
-dtABC::Application& GetGlobalApplication()
-{
-   return *GlobalApplication;
-}
+dtABC::Application& GetGlobalApplication() { return *GlobalApplication; }
+dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable() { return *GlobalGUI; }
 
 class TimingListener : public CppUnit::TestListener
 {
@@ -101,6 +106,37 @@ class TimingListener : public CppUnit::TestListener
        bool mFailure;
 };
  
+void SetupCEGUI(dtABC::Application& app)
+{
+   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
+
+   GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(), 
+            app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
+
+   std::string path = dtCore::FindFileInPathList(guiScheme);
+   if(path.empty())
+   {
+      throw dtUtil::Exception("Failed to find the scheme file.",
+         __FILE__, __LINE__);
+   }
+
+   std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
+   dtUtil::FileUtils::GetInstance().PushDirectory(dir);
+   try
+   {
+      CEGUI::SchemeManager::getSingleton().loadScheme(path);
+   }
+   catch (const CEGUI::Exception& ex)
+   {
+      //make sure the directory gets popped if it fails.
+      dtUtil::FileUtils::GetInstance().PopDirectory();
+      std::ostringstream ss;
+      ss << ex.getMessage();
+      LOG_ERROR(ss.str());
+      throw;
+   }
+   dtUtil::FileUtils::GetInstance().PopDirectory();
+}
 
 int main (int argc, char* argv[])
 {
@@ -143,13 +179,27 @@ int main (int argc, char* argv[])
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
-   dtDAL::Project::GetInstance().SetContext(SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
-
    dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
 
    GlobalApplication = new dtABC::Application("config.xml");
    GlobalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
    GlobalApplication->Config();
+
+   try
+   {
+      dtDAL::Project::GetInstance().SetContext(SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
+      SetupCEGUI(*GlobalApplication);
+   }
+   catch(const dtUtil::Exception& ex)
+   {
+      LOG_ERROR(ex.ToString());
+      return 1;
+   }
+   catch(const CEGUI::Exception& ex)
+   {
+      //already printed.
+      return 1;
+   }
 
    CPPUNIT_NS::TestResultCollector collectedResults;
 
@@ -246,6 +296,8 @@ int main (int argc, char* argv[])
    }
    
    GlobalApplication = NULL;
+   GlobalGUI->ShutdownGUI();
+   GlobalGUI = NULL;
    
    dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
