@@ -395,8 +395,8 @@ namespace SimCore
          glmat[13] = physxObj->getGlobalPosition()[1];
          glmat[14] = physxObj->getGlobalPosition()[2];
          glmat[15] = 1.0f;
-         //float zoffset = 0.0;
-         float zoffset = 1.1;
+         float zoffset = 0.0;
+         //float zoffset = 1.1;
          osg::Matrix currentMatrix(glmat);
          osg::Vec3 globalOrientation;
          dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
