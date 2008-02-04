@@ -138,6 +138,9 @@ namespace SimCore
             std::string SOUND_EFFECT_HORN_SOUND;
             ///////////////////////////////////////////////////
 
+            // kept here so we can play with the forces directly.
+            NxWheelShape* mWheels[3];
+
             /// current speed of the vehicle.
             float mVehicleMPH;
 
@@ -146,6 +149,9 @@ namespace SimCore
 
             /// The max reverse mph you can go 
             float mVehicleMaxReverseMPH;     
+
+            // for the front wheel
+            float mCurrentSteeringAngle;
 
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
@@ -179,6 +185,8 @@ namespace SimCore
 
             /// utility function for the UpdatedeadReckoning function
             float GetPercentageChangeDifference(float startValue, float newValue);
+
+            void CreateBoatVehicle();
       };
 
       class SIMCORE_EXPORT NECCBoatActorProxy : public PlatformActorProxy

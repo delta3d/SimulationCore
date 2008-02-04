@@ -33,13 +33,20 @@
 
 #include <dtCore/refptr.h>
 #include <dtGame/gameactor.h>
+#include <NxAgeiaPrimitivePhysicsHelper.h>
 
 namespace SimCore
 {
    namespace Actors
    {
+#ifdef AGEIA_PHYSICS
+      //////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT OceanWater: public dtGame::GameActor,
+                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface
+#else
       //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT OceanWater: public dtGame::GameActor
+#endif
       {
          public:
 
@@ -63,12 +70,7 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
-            //void Init(const osg::Vec2& pCenter, const osg::Vec2& pSize, const osg::Vec2& pResolution, float pHeight);
-            
             void Update(double dt);
-
-            /*void SetWaterColor(const osg::Vec3& pColor);
-            osg::Vec3 GetWaterColor(){return mWaterColorVec;};*/
 
             void SetCenter(const osg::Vec2& pCenter){mCenter = pCenter;}
             osg::Vec2 GetCenter(){return mCenter;}
@@ -81,49 +83,66 @@ namespace SimCore
 
             void SetHeight(float pHeight){mWaterHeight = pHeight;}
             float GetHeight(){return mWaterHeight;}
+            
+#ifdef AGEIA_PHYSICS
 
-            //void Reset(){Init(mCenter, mSize, mResolution, mWaterHeight);};
+            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
+            virtual void AgeiaPrePhysicsUpdate()
+            {
+               dtCore::Transform ourTransform;
+               GetTransform(ourTransform);
+               osg::Matrix *rot = &ourTransform.GetRotation();
 
-           /* void SetLightPos(const osg::Vec3& pLightPos);
-            void SetEyePos(const osg::Vec3& pEyePos);*/
+               NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
+               if(toFillIn != NULL)
+               {
+                  toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2]));
+                  toFillIn->setGlobalOrientation(
+                     NxMat33( NxVec3(rot->operator ()(0,0), rot->operator ()(0,1), rot->operator ()(0,2)),
+                     -NxVec3(rot->operator ()(1,0), rot->operator ()(1,1), rot->operator ()(1,2)),
+                     NxVec3(rot->operator ()(2,0), rot->operator ()(2,1), rot->operator ()(2,2))));
+               }
+            }
 
-            /*const osg::Node* GetOSGNode() const{ return mNode.get();};
-            osg::Node* GetOSGNode() { return mNode.get();};*/
+            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
+            virtual void AgeiaPostPhysicsUpdate(){}
+
+            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+               NxActor& ourSelf, NxActor& whatWeHit){}
+
+            // You would have to make a new raycast to get this report,
+            // so no flag associated with it.
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+               const NxActor& whatWeHit){}
+
+            // returns the physics helper for use
+            dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+#endif
 
          protected:
             virtual ~OceanWater(){}
 
          private:
 
-            //void CreateNodes();
+#ifdef AGEIA_PHYSICS
+            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
+#endif
+
             void CreateGeometry();
 
-            osg::Vec2                                 mSize;
-            osg::Vec2                                 mResolution;
-            osg::Vec2                                 mTexShift;
-            osg::Vec3                                 mWater;
-            osg::Vec2                                 mCenter;
-            //osg::Vec3                                 mWaterColorVec;
-            float                                     mWaterHeight; 
-            float                                     mElapsedTime;
-            float                                     mDeltaTime;
-            float                                     mWaterSpeed;
+            osg::Vec2 mSize;
+            osg::Vec2 mResolution;
+            osg::Vec2 mTexShift;
+            osg::Vec3 mWater;
+            osg::Vec2 mCenter;
+            float     mWaterHeight; 
+            float     mElapsedTime;
+            float     mDeltaTime;
+            float     mWaterSpeed;
 
-            dtCore::RefPtr<osg::Geometry>                     mGeometry;
-            dtCore::RefPtr<osg::Geode>		                    mGeode;
-
-            //dtCore::RefPtr<osg::PositionAttitudeTransform>    mXform; 
-            /*dtCore::RefPtr<osg::Uniform>                      mLightPos; 
-            dtCore::RefPtr<osg::Uniform>                      mEyePos;
-            dtCore::RefPtr<osg::Uniform>                      mTexInc;
-            dtCore::RefPtr<osg::Uniform>                      mTexIncPrev;
-            dtCore::RefPtr<osg::Uniform>                      mWaterColor;
-            dtCore::RefPtr<osg::Uniform>                      mBlend;
-            dtCore::RefPtr<osg::Uniform>                      mTextureRepeat;*/
-
-            //dtCore::RefPtr<osg::Program>                      mProg; 
-            //dtCore::RefPtr<osg::Group> mNode;
-
+            dtCore::RefPtr<osg::Geometry> mGeometry;
+            dtCore::RefPtr<osg::Geode>	   mGeode;
       };
 
       //////////////////////////////////////////////////////////////////////////

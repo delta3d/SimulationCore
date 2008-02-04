@@ -44,6 +44,8 @@
 #include <dtCore/shaderparameter.h>
 #include <dtCore/shaderparamfloat.h>
 
+#include <NxAgeiaWorldComponent.h>
+
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 
@@ -58,6 +60,10 @@ namespace SimCore
          , mDeltaTime(0.0f)
          , mWaterSpeed(1.0f/20.f)
       {
+#ifdef AGEIA_PHYSICS
+         mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
+         mPhysicsHelper->SetBaseInterfaceClass(this);
+#endif
          mCenter.set(0.0f, 0.0f);
          mSize.set(100.0f, 100.0f);
          mResolution.set(50.0f, 50.0f);
@@ -67,6 +73,35 @@ namespace SimCore
       void OceanWater::OnEnteredWorld()
       {
          GameActor::OnEnteredWorld();
+
+#ifdef AGEIA_PHYSICS
+
+         // make it in a different group
+
+         // load box collision
+         
+         // make it kinematic
+
+         mPhysicsHelper->SetIsKinematic(true);
+         mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE);
+         mPhysicsHelper->SetDimensions(osg::Vec3(mSize[0], mSize[1], 1));
+         mPhysicsHelper->SetCollisionGroup(23);
+         mPhysicsHelper->SetAgeiaMass(5000);
+
+         NxMat34 sendInMatrix;
+         sendInMatrix.id();
+         mPhysicsHelper->InitializePrimitive(NULL, sendInMatrix);
+         
+         mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
+         mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+
+         dtGame::GMComponent *comp = 
+            GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
+         if(comp != NULL)
+         {
+            static_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(comp)->RegisterAgeiaHelper(*mPhysicsHelper.get());
+         }
+#endif
 
          mGeode = new osg::Geode();
 
@@ -80,7 +115,6 @@ namespace SimCore
 
          if (!GetShaderGroup().empty())
             SetShaderGroup(GetShaderGroup());
-
       }
 
       //////////////////////////////////////////////////////////////////////////
