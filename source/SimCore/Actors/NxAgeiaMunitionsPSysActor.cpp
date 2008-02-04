@@ -185,7 +185,8 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          // Make sure we DO hit hte terrain appropriatelys
          MunitionRaycastReport myReport((mWeapon.valid() ? mWeapon->GetOwner() : NULL));
          //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0) | (1 << 30) | (1 << 31));
+         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, 
+            (1 << 0) | (1 << 23) | (1 << 26) | (1 << 30) | (1 << 31) );
          if(numHits > 0 && myReport.mGotAHit)
          {
             if (myReport.mClosestHit.distance <= length)
@@ -210,35 +211,35 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          // NOTE - If we didn't get a valid hit above and return, then we check the terrain
          //else 
          //{
-            std::vector<dtDAL::ActorProxy*> toFill;
-            GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
-            dtDAL::ActorProxy* terrainNode = NULL;
-            if(!toFill.empty())
-               terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
+            //std::vector<dtDAL::ActorProxy*> toFill;
+            //GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
+            //dtDAL::ActorProxy* terrainNode = NULL;
+            //if(!toFill.empty())
+            //   terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
 
-            osg::Vec3 hp;
-            dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
-            iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
-            iSector->SetQueryRoot(terrainNode->GetActor());
-            dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-            SingleISector.SetSectorAsLineSegment(lastposition, currentPosition);
-            if( iSector->Update(osg::Vec3(0,0,0), true) )
-            {
-               if( SingleISector.GetNumberOfHits() > 0 ) 
-               {
-                  SingleISector.GetHitPoint(hp);
-                  particleToCheck.FlagToDelete();
-                  dtAgeiaPhysX::ContactReport report;
-                  osg::Vec3 hitNormal;
-                  SingleISector.GetHitPointNormal(hitNormal);
-                  report.nxVec3crContactNormal =NxVec3(hitNormal[0],hitNormal[1],hitNormal[2]);
-                  
-                  NxVec3 contactPoint(hp[0], hp[1], hp[2]);
-                  report.lsContactPoints.push_back(contactPoint);
-                  mWeapon->ReceiveContactReport( report, NULL); //terrainNode);
-                  return true;
-               }
-            }
+            //osg::Vec3 hp;
+            //dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
+            //iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
+            //iSector->SetQueryRoot(terrainNode->GetActor());
+            //dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
+            //SingleISector.SetSectorAsLineSegment(lastposition, currentPosition);
+            //if( iSector->Update(osg::Vec3(0,0,0), true) )
+            //{
+            //   if( SingleISector.GetNumberOfHits() > 0 ) 
+            //   {
+            //      SingleISector.GetHitPoint(hp);
+            //      particleToCheck.FlagToDelete();
+            //      dtAgeiaPhysX::ContactReport report;
+            //      osg::Vec3 hitNormal;
+            //      SingleISector.GetHitPointNormal(hitNormal);
+            //      report.nxVec3crContactNormal =NxVec3(hitNormal[0],hitNormal[1],hitNormal[2]);
+            //      
+            //      NxVec3 contactPoint(hp[0], hp[1], hp[2]);
+            //      report.lsContactPoints.push_back(contactPoint);
+            //      mWeapon->ReceiveContactReport( report, NULL); //terrainNode);
+            //      return true;
+            //   }
+            //}
          //}         
       }
 

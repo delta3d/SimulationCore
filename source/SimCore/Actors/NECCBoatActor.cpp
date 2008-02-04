@@ -42,6 +42,7 @@
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/PortalActor.h>
+#include <Vehicles/NxWheelDesc.h>
 
 namespace SimCore
 {
@@ -53,10 +54,15 @@ namespace SimCore
       , mVehicleMPH(0.0f)
       , mVehicleMaxMPH(60.0f)
       , mVehicleMaxReverseMPH(-20.0f)
+      , mCurrentSteeringAngle(0)
       , mHasDriver(false)
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
       {
+         mWheels[0] = NULL;
+         mWheels[1] = NULL;
+         mWheels[2] = NULL;
+
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
          mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
@@ -140,15 +146,10 @@ namespace SimCore
          GetTransform(ourTransform);
 
          // Create Physics model here!
-
-         //GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,1.1));
-         //GetPhysicsHelper()->CreateVehicle(ourTransform, GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel, !IsRemote());
-         //GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
-
+         CreateBoatVehicle();
+         
          if(!IsRemote())
          {
-            //GetPhysicsHelper()->TurnObjectsGravityOff("Default");
-
             GetGameActorProxy().GetGameManager()->CreateActor(
                *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
@@ -156,39 +157,158 @@ namespace SimCore
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
+            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_NORMAL);
+         }
+         else
+         {
+            mPhysicsHelper->SetObjectAsKinematic();
+            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          }
 
-         GetPhysicsHelper()->SetObjectAsKinematic();
-         GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
+         mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
 
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>
             (GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+      }
 
-         if(IsRemote()) 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void NECCBoatActor::CreateBoatVehicle()
+      {
+         // change matrix at top or down below, but its only made in ident currently
+         dtCore::Transform ourTransform, lastTransform;
+         GetTransform(ourTransform);
+         
+         NxMat34 sendInMatrix;
+         sendInMatrix.id();
+
+         SetTransform(lastTransform);
+
+         mPhysicsHelper->SetCollisionGroup(26);
+         mPhysicsHelper->SetIsKinematic(false);
+         mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
+         mPhysicsHelper->InitializePrimitive(GetOSGNode(), sendInMatrix);
+         NxActor* actor = mPhysicsHelper->GetPhysXObject();
+
+         SetTransform(ourTransform);
+
+         if(actor == NULL)
          {
-            GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+            // should prob throw an exception
+            return;
          }
+
+         NxMaterialIndex materialIndex = 0;
+
+         //////////////////////////////////////////////
+         //Find the material, or make a new one
+         std::string NameofMaterial = "WheelWithFrictionMaterial";
+         dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent = 
+            dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
+         if(worldComponent != NULL)
+         {
+            worldComponent->RegisterMaterial(NameofMaterial, 0.75f, 0.5f, 0.2f);
+            materialIndex = worldComponent->GetMaterialIndex(NameofMaterial, "Default", true);
+         }
+
+         NxVec3 positions[3];
+         positions[0].set(0, 3, 0);
+         positions[1].set(3, -5, 0);
+         positions[2].set(-3, -5, 0);
+       
+         // fill in all the data for the wheel
+         for(int i = 0 ; i < 3 ; ++i)
+         {
+            positions[i].set(positions[i].x, 
+                             positions[i].y, 
+                             positions[i].z);
+
+            NxWheelShapeDesc wheelShapeDesc;
+            wheelShapeDesc.materialIndex = materialIndex;
+            wheelShapeDesc.localPose.t = positions[i];
+            wheelShapeDesc.group = 26;
+
+            /*
+               wheelDesc.wheelApproximation  = 10;
+               wheelDesc.wheelRadius         = 0.5;
+               wheelDesc.wheelWidth          = 0.3;  // 0.1
+               wheelDesc.wheelSuspension     = 1.0;  
+               wheelDesc.springRestitution   = 100;
+               wheelDesc.springDamping       = 0.5;
+               wheelDesc.springBias          = 0;  
+               wheelDesc.maxBrakeForce       = 1;
+               
+               NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF | NX_WF_ACCELERATED | 
+               NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT
+            */
+
+            NxReal mWheelSuspensionAmount = 1.5f;
+            NxReal mWheelSizeRadius       = 0.75f;
+            NxReal mWheelSpringRestitution= 9000;
+            NxReal mWheelSpringDamping    = 0.5;
+            NxReal mWheelSpringBias       = 0;
+            NxReal mWheelInverseMass      = 0.1f;
+
+            NxReal heightModifier                  = ((mWheelSuspensionAmount + mWheelSizeRadius) / mWheelSuspensionAmount);
+            wheelShapeDesc.suspension.spring       = mWheelSpringRestitution*heightModifier;
+            wheelShapeDesc.suspension.damper       = mWheelSpringDamping*heightModifier;
+            wheelShapeDesc.suspension.targetValue  = mWheelSpringBias*heightModifier;
+            wheelShapeDesc.radius                  = mWheelSizeRadius;
+            wheelShapeDesc.suspensionTravel        = mWheelSuspensionAmount; 
+            wheelShapeDesc.inverseWheelMass        = mWheelInverseMass;	
+
+            mWheels[i] = static_cast<NxWheelShape*>(actor->createShape(wheelShapeDesc));
+            
+            if(mWheels[i] != NULL)
+            {
+               mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF 
+               | NX_WF_ACCELERATED | NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT);
+
+               NxMat33 orient;
+               orient.setRow(0, NxVec3(1,0,0));
+               orient.setRow(1, NxVec3(0,0,-1));
+               orient.setRow(2, NxVec3(0,1,0));
+
+               NxMat33 mat = mWheels[i]->getGlobalOrientation();
+               mat = orient*mat;
+               mWheels[i]->setGlobalOrientation(mat);
+            }
+            else
+            {
+               // throw exception
+            }
+         } 
+
+         actor->setCMassOffsetLocalPosition(NxVec3(0,-1,-1));
+
+         actor->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0],
+                                  ourTransform.GetTranslation()[1],
+                                  ourTransform.GetTranslation()[2]));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
-         if(GetPhysicsHelper()->GetPhysXObject() != NULL)
-            GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
+         //if(GetPhysicsHelper()->GetPhysXObject() != NULL)
+         //   GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::TickLocal(const dtGame::Message &tickMessage)
       {
-         //NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
-         //if(physicsObject == NULL)
-         //{
-         //   // should probably throw an exception
-         //   LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
-         //   return;
-         //}
+         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         if(physicsObject == NULL)
+         {
+            // should probably throw an exception
+            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
+            return;
+         }
 
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+
+         if(physicsObject->isSleeping())   physicsObject->wakeUp(1e30);
+
+         // check and see if we are intersection with land, if so, we need to slow down drastically to no 
+         // movement left for the player.
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          //                                          Update everything else                                      //
@@ -222,16 +342,12 @@ namespace SimCore
             float maxpitchBend   = 1.5f;
             float pitchBend      = 1.0f;
             
-            pitchBend = minpitchBend + (mVehicleMPH / mVehicleMaxMPH * (maxpitchBend - minpitchBend));
+            pitchBend = minpitchBend + ((GetMPH() / mVehicleMaxMPH) * (maxpitchBend - minpitchBend));
 
             if(pitchBend > maxpitchBend)
                pitchBend = maxpitchBend;
 
             mSndVehicleIdleLoop->SetPitch(pitchBend);
-         }
-         else if(GetMPH() < -1 )
-         {
-            mSndVehicleIdleLoop->SetPitch(1.0f + (-GetMPH() * .005));
          }
          else
             mSndVehicleIdleLoop->SetPitch(1.0f);
@@ -476,18 +592,41 @@ namespace SimCore
          bool steeredThisFrame = true;
          bool accelOrBrakePressedThisFrame = true;
 
+         if(mWheels[0] == NULL || mWheels[1] == NULL || mWheels[2] == NULL )
+            // log warning / throw exception
+            return;
+
+         static int CURRENT_DRIVING_FORCE_FOR_BOAT = 0;
+
          if( ! IsMobilityDisabled() && GetHasDriver() )
          {
             if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
+               ++CURRENT_DRIVING_FORCE_FOR_BOAT;
+               mWheels[0]->setBrakeTorque(0);
+               mWheels[1]->setBrakeTorque(0);
+               mWheels[2]->setBrakeTorque(0);
+
                //GetPhysicsHelper()->ApplyAccel(GetMPH());
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
+               --CURRENT_DRIVING_FORCE_FOR_BOAT;
+               mWheels[0]->setBrakeTorque(0);
+               mWheels[1]->setBrakeTorque(0);
+               mWheels[2]->setBrakeTorque(0);
+
                //GetPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
-            else if (!keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
+            else if (keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_L))
             {
+               CURRENT_DRIVING_FORCE_FOR_BOAT = 0;
+               mWheels[1]->setMotorTorque(0);
+               mWheels[2]->setMotorTorque(0);
+               mWheels[0]->setBrakeTorque(500);
+               mWheels[1]->setBrakeTorque(500);
+               mWheels[2]->setBrakeTorque(500);
+
                //accelOrBrakePressedThisFrame = false;
             }
 
@@ -501,18 +640,42 @@ namespace SimCore
                //GetPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
+            NxReal mWheelTurnRadiusPerUpdate = 0.03f;
+            NxReal mWheelTurnRadiusTurnBackPerUpdate = 0.015f;
+            NxReal mWheelTurnRadius = 45.0f;
+
             if (keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
             {
+               if(mCurrentSteeringAngle * (180/osg::PI) < 0)
+                  mCurrentSteeringAngle += NxPi*mWheelTurnRadiusPerUpdate*deltaTime*3;
+               else
+                  mCurrentSteeringAngle += NxPi*mWheelTurnRadiusPerUpdate*deltaTime;
+
+               if(mCurrentSteeringAngle * (180/osg::PI) > mWheelTurnRadius)
+                  mCurrentSteeringAngle = mWheelTurnRadius/(180/osg::PI);
                //GetPhysicsHelper()->SteerLeft(deltaTime);
             }
             else if(keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
             {
+               if(mCurrentSteeringAngle * (180/osg::PI) > 0)
+                  mCurrentSteeringAngle -= NxPi*mWheelTurnRadiusPerUpdate*deltaTime*3;
+               else
+                  mCurrentSteeringAngle -= NxPi*mWheelTurnRadiusPerUpdate*deltaTime;
+
+               if(mCurrentSteeringAngle * (180/osg::PI) < -mWheelTurnRadius)
+                  mCurrentSteeringAngle = -mWheelTurnRadius/(180/osg::PI);
                //GetPhysicsHelper()->SteerRight(deltaTime);
             }
             else
             {
+               if(mCurrentSteeringAngle >  NxPi*mWheelTurnRadiusTurnBackPerUpdate)
+                  mCurrentSteeringAngle -= NxPi*mWheelTurnRadiusTurnBackPerUpdate;
+               else if(mCurrentSteeringAngle <  -NxPi*mWheelTurnRadiusTurnBackPerUpdate)
+                  mCurrentSteeringAngle += NxPi*mWheelTurnRadiusTurnBackPerUpdate;
+               else
+                  mCurrentSteeringAngle = 0;
                //steeredThisFrame = false;
-            }
+            } 
          }
          else
          {
@@ -520,6 +683,28 @@ namespace SimCore
             //accelOrBrakePressedThisFrame = true;
             //GetPhysicsHelper()->ApplyBrake(deltaTime);
          }
+
+         if(GetMPH() > mVehicleMaxMPH && CURRENT_DRIVING_FORCE_FOR_BOAT > 0)
+         {
+            --CURRENT_DRIVING_FORCE_FOR_BOAT;
+            CURRENT_DRIVING_FORCE_FOR_BOAT *= -1;
+         }
+
+         else if(-GetMPH() < mVehicleMaxReverseMPH && CURRENT_DRIVING_FORCE_FOR_BOAT < 0)
+         {
+            ++CURRENT_DRIVING_FORCE_FOR_BOAT;
+            CURRENT_DRIVING_FORCE_FOR_BOAT *= -1;
+         }
+
+        /* if(CURRENT_DRIVING_FORCE_FOR_BOAT < mVehicleMaxReverseMPH)
+            CURRENT_DRIVING_FORCE_FOR_BOAT = mVehicleMaxReverseMPH;
+         else if(CURRENT_DRIVING_FORCE_FOR_BOAT > mVehicleMaxMPH)
+            CURRENT_DRIVING_FORCE_FOR_BOAT = mVehicleMaxMPH;*/
+
+         mWheels[0]->setSteerAngle(mCurrentSteeringAngle);
+         mWheels[1]->setMotorTorque(-CURRENT_DRIVING_FORCE_FOR_BOAT);
+         mWheels[2]->setMotorTorque(-CURRENT_DRIVING_FORCE_FOR_BOAT);
+
          //GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
       }
 
