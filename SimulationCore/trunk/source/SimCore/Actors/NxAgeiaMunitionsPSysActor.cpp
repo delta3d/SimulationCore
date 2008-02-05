@@ -57,6 +57,64 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// This class is used to prevent a collision with our selves.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+   class MunitionRaycastReport : public NxUserRaycastReport
+   {
+      public:
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         MunitionRaycastReport(/*NxActor *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
+            //, mOurActor(actor)
+            , mGotAHit(false)
+            , mOwnerActor(ownerActor)
+            , mClosestHitsHelper(NULL)
+         {
+         }
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         virtual ~MunitionRaycastReport(){}
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         virtual bool onHit(const NxRaycastHit& hit)
+         {
+            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+               (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
+
+            dtCore::DeltaDrawable *hitTarget = NULL;
+
+            if(physicsHelper != NULL)
+            {
+               // null checked up above in the return
+               hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
+            }
+
+            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
+            // whatever hit we get.  Otherwise, we check the owner drawables
+            if (mOwnerActor == NULL || hitTarget != mOwnerActor 
+               // So we dont want to return false if collision is off, this onHit is called for
+               // every hit along the line, and returning false tells it to stop the raycast
+               // report, its amazing how rereading the sdk can help so much :(
+               &&  hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == false)
+            {
+               if (!mGotAHit || mClosestHit.distance > hit.distance)
+               {
+                  mClosestHitsHelper = physicsHelper;
+                  mGotAHit = true;
+                  mClosestHit = hit;
+               }
+            }
+
+            return true;
+         }	
+
+      public:
+         bool mGotAHit;
+         NxRaycastHit mClosestHit;
+         dtCore::DeltaDrawable *mOwnerActor;
+         dtAgeiaPhysX::NxAgeiaPhysicsHelper* mClosestHitsHelper;
+   };
+
    MunitionsPhysicsParticle::MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut, float InverseDeletionAlphaTime, float alphaInTime)
     : PhysicsParticle(name, ParticleLengthOfTimeOut, InverseDeletionAlphaTime, alphaInTime)
     , mIsTracer(renderComp!=NULL)
