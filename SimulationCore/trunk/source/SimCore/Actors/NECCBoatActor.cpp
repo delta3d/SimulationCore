@@ -43,11 +43,71 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <Vehicles/NxWheelDesc.h>
+#include <NxMat34.h>
 
 namespace SimCore
 {
    namespace Actors
    {
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      // This class is used to prevent a collision with our selves.
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+      class BoatToLandReport : public NxUserRaycastReport
+      {
+      public:
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         BoatToLandReport(/*NxActor *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
+            //, mOurActor(actor)
+            , mGotAHit(false)
+            , mOwnerActor(ownerActor)
+            , mClosestHitsHelper(NULL)
+         {
+         }
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         virtual ~BoatToLandReport(){}
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+         virtual bool onHit(const NxRaycastHit& hit)
+         {
+            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+               (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
+
+            dtCore::DeltaDrawable *hitTarget = NULL;
+
+            if(physicsHelper != NULL)
+            {
+               // null checked up above in the return
+               hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
+            }
+
+            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
+            // whatever hit we get.  Otherwise, we check the owner drawables
+            if (mOwnerActor == NULL || hitTarget != mOwnerActor 
+               // So we dont want to return false if collision is off, this onHit is called for
+               // every hit along the line, and returning false tells it to stop the raycast
+               // report, its amazing how rereading the sdk can help so much :(
+               &&  hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == false)
+            {
+               if (!mGotAHit || mClosestHit.distance > hit.distance)
+               {
+                  mClosestHitsHelper = physicsHelper;
+                  mGotAHit = true;
+                  mClosestHit = hit;
+               }
+            }
+
+            return true;
+         }	
+
+      public:
+         bool mGotAHit;
+         NxRaycastHit mClosestHit;
+         dtCore::DeltaDrawable *mOwnerActor;
+         dtAgeiaPhysX::NxAgeiaPhysicsHelper* mClosestHitsHelper;
+      };
+
       ///////////////////////////////////////////////////////////////////////////////////
       NECCBoatActor ::NECCBoatActor(PlatformActorProxy &proxy) 
          : Platform(proxy)
@@ -58,6 +118,10 @@ namespace SimCore
       , mHasDriver(false)
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
+      , mBobbingTimer(0)
+      , mDegreesDifference(0)
+      , mBobbingUp(true)
+      , mMaxBobbingTimeAmount(0.5f)
       {
          mWheels[0] = NULL;
          mWheels[1] = NULL;
@@ -157,7 +221,7 @@ namespace SimCore
             portal->SetPortalName(GetName());
             portal->SetIsOpen(true);
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
-            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_NORMAL);
+            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_NORMAL | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          }
          else
          {
@@ -244,9 +308,9 @@ namespace SimCore
             NxReal mWheelSuspensionAmount = 1.5f;
             NxReal mWheelSizeRadius       = 0.75f;
             NxReal mWheelSpringRestitution= 9000;
-            NxReal mWheelSpringDamping    = 0.5;
+            NxReal mWheelSpringDamping    = 10;
             NxReal mWheelSpringBias       = 0;
-            NxReal mWheelInverseMass      = 0.1f;
+            NxReal mWheelInverseMass      = 0.075f;
 
             NxReal heightModifier                  = ((mWheelSuspensionAmount + mWheelSizeRadius) / mWheelSuspensionAmount);
             wheelShapeDesc.suspension.spring       = mWheelSpringRestitution*heightModifier;
@@ -278,11 +342,12 @@ namespace SimCore
             }
          } 
 
-         actor->setCMassOffsetLocalPosition(NxVec3(0,-1,-1));
+         //actor->raiseBodyFlag(NX_BF_FROZEN_ROT_Y);
+         actor->setCMassOffsetLocalPosition(NxVec3(0,-1, -3));
 
          actor->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0],
-                                  ourTransform.GetTranslation()[1],
-                                  ourTransform.GetTranslation()[2]));
+                                         ourTransform.GetTranslation()[1],
+                                         ourTransform.GetTranslation()[2]));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -304,6 +369,22 @@ namespace SimCore
          }
 
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         
+         if(mBobbingUp)
+            mBobbingTimer += ElapsedTime;
+         else
+            mBobbingTimer -= ElapsedTime;
+
+         if(mBobbingTimer > mMaxBobbingTimeAmount)
+         {
+            mBobbingUp = false;
+            mBobbingTimer = mMaxBobbingTimeAmount;
+         }
+         else if(mBobbingTimer < -mMaxBobbingTimeAmount)
+         {
+            mBobbingUp = true;
+            mBobbingTimer = -mMaxBobbingTimeAmount;
+         }
 
          if(physicsObject->isSleeping())   physicsObject->wakeUp(1e30);
 
@@ -317,6 +398,8 @@ namespace SimCore
          UpdateRotationDOFS(ElapsedTime, true);
          UpdateSoundEffects(ElapsedTime);
          UpdateDeadReckoning(ElapsedTime);
+
+         CheckForGroundCollision();
 
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
@@ -498,7 +581,53 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NECCBoatActor::AgeiaPostPhysicsUpdate(){}
+      void NECCBoatActor::AgeiaPostPhysicsUpdate()
+      {
+         mPhysicsHelper->SetTransform();
+
+         dtCore::Transform ourTransform;
+         GetTransform(ourTransform);
+
+         // this will make the vehicle orientate left / right
+         if(mWheels[0] != NULL)
+         {
+            NxReal value = mWheels[0]->getSteerAngle();
+            osg::Matrix ourMatrix = ourTransform.GetRotation();
+
+            osg::Vec3 hpr;
+            dtUtil::MatrixUtil::MatrixToHpr(hpr, ourMatrix);
+            hpr[2] = -value * 57.2957795;
+            dtUtil::MatrixUtil::HprToMatrix(ourMatrix, hpr);
+
+            ourTransform.SetRotation(ourMatrix);
+         }
+
+         // this will make the vehicle orientate forward / backwards
+         NxReal value = GetMPH();
+         if(value > mVehicleMaxMPH)
+            value = mVehicleMaxMPH;
+
+         osg::Matrix ourMatrix = ourTransform.GetRotation();
+
+         float mphScale = (value / mVehicleMaxMPH);
+         
+         // to prevent a divide by 0
+         if(mphScale == 0)
+            mphScale += 0.001f;
+
+         // calculate our bobbing
+         mDegreesDifference = (mphScale * MAX_BOBBING_AMOUNT) * (mBobbingTimer / mMaxBobbingTimeAmount);
+
+         osg::Vec3 hpr;
+         dtUtil::MatrixUtil::MatrixToHpr(hpr, ourMatrix);
+         hpr[1] = mphScale * (8 - mDegreesDifference);
+         dtUtil::MatrixUtil::HprToMatrix(ourMatrix, hpr);
+
+         ourTransform.SetRotation(ourMatrix);
+
+         SetTransform(ourTransform);
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& 
          contactReport, NxActor& ourSelf, NxActor& whatWeHit)
@@ -565,8 +694,24 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::ResetVehicle()
       {
-         // TODO Change physical location
-         //GetPhysicsHelper()->ResetVehicle();
+         NxMat34 ourMatrix;
+         ourMatrix.t = NxVec3(71815, 42518, 804);
+         ourMatrix.M = NxMat33();
+         ourMatrix.M.id();
+         GetPhysicsHelper()->GetPhysXObject()->setGlobalPosition(ourMatrix.t);
+         GetPhysicsHelper()->GetPhysXObject()->setGlobalOrientation(ourMatrix.M);
+         
+         // reset forces.
+         GetPhysicsHelper()->ResetForces();
+
+         for(int i = 0 ; i < 3; ++i)
+         {
+            if(mWheels[i] != NULL)
+            {
+               mWheels[i]->setBrakeTorque(0);
+               mWheels[i]->setMotorTorque(0);
+            }
+         }
          
          if(mSndIgnition != NULL)
          {
@@ -602,7 +747,8 @@ namespace SimCore
          {
             if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
-               ++CURRENT_DRIVING_FORCE_FOR_BOAT;
+               CURRENT_DRIVING_FORCE_FOR_BOAT = 200;
+               //++CURRENT_DRIVING_FORCE_FOR_BOAT;
                mWheels[0]->setBrakeTorque(0);
                mWheels[1]->setBrakeTorque(0);
                mWheels[2]->setBrakeTorque(0);
@@ -611,7 +757,8 @@ namespace SimCore
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
-               --CURRENT_DRIVING_FORCE_FOR_BOAT;
+               CURRENT_DRIVING_FORCE_FOR_BOAT = -200;
+               //--CURRENT_DRIVING_FORCE_FOR_BOAT;
                mWheels[0]->setBrakeTorque(0);
                mWheels[1]->setBrakeTorque(0);
                mWheels[2]->setBrakeTorque(0);
@@ -686,13 +833,11 @@ namespace SimCore
 
          if(GetMPH() > mVehicleMaxMPH && CURRENT_DRIVING_FORCE_FOR_BOAT > 0)
          {
-            --CURRENT_DRIVING_FORCE_FOR_BOAT;
             CURRENT_DRIVING_FORCE_FOR_BOAT *= -1;
          }
 
          else if(-GetMPH() < mVehicleMaxReverseMPH && CURRENT_DRIVING_FORCE_FOR_BOAT < 0)
          {
-            ++CURRENT_DRIVING_FORCE_FOR_BOAT;
             CURRENT_DRIVING_FORCE_FOR_BOAT *= -1;
          }
 
@@ -720,6 +865,35 @@ namespace SimCore
       void NECCBoatActor::RepositionVehicle(float deltaTime)
       {
          //GetPhysicsHelper()->RepositionVehicle(deltaTime);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void NECCBoatActor::CheckForGroundCollision()
+      {
+         // we could probably play a dirt sound effect if we hit the dirt.
+         //
+         //
+
+         NxRay ourRay;
+         ourRay.orig = GetPhysicsHelper()->GetPhysXObject()->getGlobalPosition();
+         ourRay.dir = NxVec3(0,0,-1);
+         NxRaycastHit   mOurHit;
+
+         // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
+         // Make sure we DO hit hte terrain appropriatelys
+         BoatToLandReport myReport(this);
+         //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
+         NxU32 numHits = GetPhysicsHelper()->GetPhysXObject()->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, 
+            (1 << 0) | (1 << 23) | (1 << 26) | (1 << 30) | (1 << 31) );
+         if(numHits > 0 && myReport.mGotAHit)
+         {
+            if(myReport.mClosestHit.shape->getGroup() == 0)
+            {
+               mWheels[0]->setBrakeTorque(500);
+               mWheels[1]->setBrakeTorque(500);
+               mWheels[2]->setBrakeTorque(500);
+            }
+         }
       }
 
       //////////////////////////////////////////////////////////////////////
