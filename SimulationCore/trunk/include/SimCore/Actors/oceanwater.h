@@ -87,25 +87,10 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
 
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate()
-            {
-               dtCore::Transform ourTransform;
-               GetTransform(ourTransform);
-               osg::Matrix *rot = &ourTransform.GetRotation();
-
-               NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
-               if(toFillIn != NULL)
-               {
-                  toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2]));
-                  toFillIn->setGlobalOrientation(
-                     NxMat33( NxVec3(rot->operator ()(0,0), rot->operator ()(0,1), rot->operator ()(0,2)),
-                     -NxVec3(rot->operator ()(1,0), rot->operator ()(1,1), rot->operator ()(1,2)),
-                     NxVec3(rot->operator ()(2,0), rot->operator ()(2,1), rot->operator ()(2,2))));
-               }
-            }
+            virtual void AgeiaPrePhysicsUpdate();         
 
             /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate(){}
+            virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
             virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 

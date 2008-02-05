@@ -58,7 +58,7 @@ namespace SimCore
          , mWaterHeight(0.0f)
          , mElapsedTime(0.0f)
          , mDeltaTime(0.0f)
-         , mWaterSpeed(1.0f/20.f)
+         , mWaterSpeed(1.0f/40.f)
       {
 #ifdef AGEIA_PHYSICS
          mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
@@ -70,9 +70,34 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void OceanWater::AgeiaPrePhysicsUpdate()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void OceanWater::AgeiaPostPhysicsUpdate()
+      {
+        /* mPhysicsHelper->SetTransform();
+
+         dtCore::Transform ourTransform;
+         GetTransform(ourTransform);
+         
+         osg::Vec3 ourTran = ourTransform.GetTranslation();
+         ourTran[2] = mWaterHeight + 2.8;
+
+         ourTransform.SetTranslation(ourTran);
+
+         SetTransform(ourTransform);*/
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void OceanWater::OnEnteredWorld()
       {
          GameActor::OnEnteredWorld();
+
+         dtCore::Transform ourTransform;
+         ourTransform.SetTranslation(osg::Vec3( (-mSize[0] / 2.0) + mCenter[0], (-mSize[1] / 2.0) + mCenter[1], mWaterHeight));
+         SetTransform(ourTransform);
 
 #ifdef AGEIA_PHYSICS
 
@@ -95,6 +120,12 @@ namespace SimCore
          mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
+         NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
+         toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2] - 2.8));
+         NxMat33 idMat;
+         idMat.id();
+         toFillIn->setGlobalOrientation(idMat);
+
          dtGame::GMComponent *comp = 
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
          if(comp != NULL)
@@ -104,10 +135,6 @@ namespace SimCore
 #endif
 
          mGeode = new osg::Geode();
-
-         dtCore::Transform ourtransform;
-         ourtransform.SetTranslation(osg::Vec3( (-mSize[0] / 2.0) + mCenter[0], (-mSize[1] / 2.0) + mCenter[1], mWaterHeight));
-         SetTransform(ourtransform);
 
          CreateGeometry();
 
