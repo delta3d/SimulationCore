@@ -153,6 +153,11 @@ namespace SimCore
             // for the front wheel
             float mCurrentSteeringAngle;
 
+            // so we have a bob up and down while moving.
+            float mBobbingTimer;
+            float mDegreesDifference;
+            bool mBobbingUp;
+
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
             dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
@@ -187,6 +192,10 @@ namespace SimCore
             float GetPercentageChangeDifference(float startValue, float newValue);
 
             void CreateBoatVehicle();
+            void CheckForGroundCollision();
+
+            static const int MAX_BOBBING_AMOUNT = 2;
+            const float mMaxBobbingTimeAmount;
       };
 
       class SIMCORE_EXPORT NECCBoatActorProxy : public PlatformActorProxy
