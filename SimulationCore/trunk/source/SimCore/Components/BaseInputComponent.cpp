@@ -1,6 +1,6 @@
-/*
-* Delta3D Open Source Game and Simulation Engine
-* Copyright (C) 2005, BMH Associates, Inc.
+/* -*-c++-*-
+* Simulation Core
+* Copyright 2007-2008, Alion Science and Technology
 *
 * This library is free software; you can redistribute it and/or modify it under
 * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,6 +16,8 @@
 * along with this library; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
+* This software was developed by Alion Science and Technology Corporation under
+* circumstances in which the U. S. Government may have rights in the software.
 * @author William E. Johnson II
 */
 #include <prefix/SimCorePrefix-src.h>
