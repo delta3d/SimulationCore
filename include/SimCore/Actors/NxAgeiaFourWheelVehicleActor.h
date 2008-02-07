@@ -121,6 +121,7 @@ namespace SimCore
             void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
             void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
             virtual void SetHasDriver( bool hasDriver )           { mHasDriver = hasDriver; }
+            void SetPerformAboveGroundSafetyCheck( bool enable )  { mPerformAboveGroundSafetyCheck = enable; }
                
             float  GetSound_brake_squeal_amount()   {return SOUND_BRAKE_SQUEAL_AMOUNT;}    
             float  GetSound_gear_change_low()       {return SOUND_GEAR_CHANGE_LOW;}
@@ -132,7 +133,8 @@ namespace SimCore
             const std::string& GetSound_effect_acceleration(){return SOUND_EFFECT_ACCELERATION;} 
             const std::string& GetSound_effect_collision_hit(){return SOUND_EFFECT_COLLISION_HIT;}
             virtual bool GetHasDriver() const       { return mHasDriver; }
-           
+            bool GetPerformAboveGroundSafetyCheck() const  { return mPerformAboveGroundSafetyCheck;}
+
          // Private vars
          private:
             
@@ -184,6 +186,10 @@ namespace SimCore
             // Should this vehicle send a full actor update when asked?
             bool mNotifyFullUpdate;
             bool mNotifyPartialUpdate;
+
+            /// Should the physics coll. det. fail, this will keep the vehicle above ground
+            /// at the cost of some runtime performance.
+            bool mPerformAboveGroundSafetyCheck;
 
             /// Called internally to update the dofs for the wheels to match ageias wheel counterpoints
             void UpdateRotationDOFS(float deltaTime, bool insideVehicle);

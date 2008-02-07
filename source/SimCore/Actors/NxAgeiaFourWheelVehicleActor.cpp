@@ -60,6 +60,7 @@ namespace SimCore
       , mHasDriver(false)
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
+      , mPerformAboveGroundSafetyCheck(true)
       {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
@@ -229,7 +230,10 @@ namespace SimCore
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
          // Check to see if we are currently up under the earth, if so, snap them back up.
-         KeepAboveGround(physicsObject);
+         if (GetPerformAboveGroundSafetyCheck() == true)
+         {
+            KeepAboveGround(physicsObject);
+         }
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          //                                          Update everything else                                      //
@@ -749,6 +753,13 @@ namespace SimCore
             "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor, 
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
+
+         AddProperty(new dtDAL::BooleanActorProperty("PERFORM_ABOVE_GROUND_SAFETY_CHECK",
+            "Perform above ground safety check",
+            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor::SetPerformAboveGroundSafetyCheck),
+            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor::GetPerformAboveGroundSafetyCheck),
+            "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
+            VEH_GROUP));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
