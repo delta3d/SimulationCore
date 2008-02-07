@@ -130,7 +130,7 @@ namespace SimCore
          if(path.empty())
          {
             throw dtUtil::Exception(BaseHUDException::INIT_ERROR,
-               "Failed to find the scheme file.", __FILE__, __LINE__);
+               "Failed to find the scheme file : " + mSchemeFile, __FILE__, __LINE__);
          }
 
          std::string dir = path.substr(0, path.length() - (mSchemeFile.length() - 5));
