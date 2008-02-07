@@ -199,6 +199,10 @@ namespace SimCore
 
             /// utility function for the UpdatedeadReckoning function
             float GetPercentageChangeDifference(float startValue, float newValue);
+
+            /// Check if the supplied NxActor is below ground, if so, move it above ground
+            void KeepAboveGround( NxActor* physicsObject );
+
       };
 
       class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActorProxy : public PlatformActorProxy

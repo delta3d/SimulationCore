@@ -228,48 +228,8 @@ namespace SimCore
 
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
-         /////////////////////////////////////////////////////////////////////////////////////
-         // CHeck to see if we are currently up under the earth, if so, snap them back up.
-         bool underearth = false;
-         std::vector<dtDAL::ActorProxy*> toFill;
-         GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
-         dtDAL::ActorProxy* terrainNode = NULL;
-         if(!toFill.empty())
-            terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-
-         NxVec3 position = physicsObject->getGlobalPosition();
-
-         osg::Vec3 hp;
-         dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
-         iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
-         iSector->SetQueryRoot(terrainNode->GetActor());
-         dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-         osg::Vec3 pos( position.x, position.y, position.z );
-         osg::Vec3 endPos = pos;
-         pos[2] += 100; 
-         endPos[2] -= 100;
-         float offsettodo = 5.0f;
-         SingleISector.SetSectorAsLineSegment(pos, endPos);
-         if( iSector->Update(osg::Vec3(0,0,0), true) )
-         {
-            if( SingleISector.GetNumberOfHits() > 0 ) 
-            {
-               SingleISector.GetHitPoint(hp);
-
-               if(position[2] + offsettodo < hp[2])
-               {
-                  underearth = true;
-               }
-            }
-         }
-
-         if(underearth)
-         {
-            physicsObject->setGlobalPosition(
-               NxVec3(position[0], position[1], hp[2] + offsettodo));
-         }
-         // end underearth check.
-         /////////////////////////////////////////////////////////////////////////////////////
+         // Check to see if we are currently up under the earth, if so, snap them back up.
+         KeepAboveGround(physicsObject);
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          //                                          Update everything else                                      //
@@ -673,6 +633,50 @@ namespace SimCore
       {
          GetPhysicsHelper()->RepositionVehicle(deltaTime);
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void NxAgeiaFourWheelVehicleActor::KeepAboveGround( NxActor* physicsObject )
+      {
+         bool underearth = false;
+         std::vector<dtDAL::ActorProxy*> toFill;
+         GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
+         dtDAL::ActorProxy* terrainNode = NULL;
+         if(!toFill.empty())
+            terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
+
+         NxVec3 position = physicsObject->getGlobalPosition();
+
+         osg::Vec3 hp;
+         dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
+         iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
+         iSector->SetQueryRoot(terrainNode->GetActor());
+         dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
+         osg::Vec3 pos( position.x, position.y, position.z );
+         osg::Vec3 endPos = pos;
+         pos[2] += 100; 
+         endPos[2] -= 100;
+         float offsettodo = 5.0f;
+         SingleISector.SetSectorAsLineSegment(pos, endPos);
+         if( iSector->Update(osg::Vec3(0,0,0), true) )
+         {
+            if( SingleISector.GetNumberOfHits() > 0 ) 
+            {
+               SingleISector.GetHitPoint(hp);
+
+               if(position[2] + offsettodo < hp[2])
+               {
+                  underearth = true;
+               }
+            }
+         }
+
+         if(underearth)
+         {
+            physicsObject->setGlobalPosition(
+               NxVec3(position[0], position[1], hp[2] + offsettodo));
+         }
+      }
+
 
       //////////////////////////////////////////////////////////////////////
       // PROXY
