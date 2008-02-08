@@ -24,6 +24,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/MunitionDamage.h>
 
+#include <cmath>
 namespace SimCore
 {
    namespace Components

@@ -26,6 +26,7 @@
 #include <SimCore/Components/StealthHUDElements.h>
 
 #include <dtUtil/log.h>
+#include <cmath>
 
 namespace SimCore
 {

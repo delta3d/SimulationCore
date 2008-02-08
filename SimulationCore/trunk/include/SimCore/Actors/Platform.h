@@ -186,6 +186,8 @@ namespace SimCore
 
             /// Get the node utility class for hotspots and dofs
             dtCore::NodeCollector*  GetNodeCollector();
+            /// Get the node utility class for hotspots and dofs
+            const dtCore::NodeCollector*  GetNodeCollector() const;
 
             /**
              * Called when this entity is added to the game manager.

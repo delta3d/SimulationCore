@@ -36,6 +36,8 @@
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 
+#include <cmath>
+
 namespace SimCore
 {
    namespace Components
