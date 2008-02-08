@@ -42,6 +42,8 @@
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 
+#include <cmath>
+
 namespace SimCore
 {
    namespace Actors

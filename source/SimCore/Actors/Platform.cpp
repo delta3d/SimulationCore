@@ -210,19 +210,25 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::LoadNonDamagedFile(const std::string &fileName)
       {
-         static_cast<Platform&>(GetGameActor()).LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
+         Platform* platform = NULL;
+         GetActor(platform);
+         platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::LoadDamagedFile(const std::string &fileName)
       {
-         static_cast<Platform&>(GetGameActor()).LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
+        Platform* platform = NULL;
+        GetActor(platform);
+        platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::LoadDestroyedFile(const std::string &fileName)
       {
-         static_cast<Platform&>(GetGameActor()).LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::DESTROYED);
+        Platform* platform = NULL;
+        GetActor(platform);
+        platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::DESTROYED);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -858,6 +864,12 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       dtCore::NodeCollector* Platform::GetNodeCollector() 
+      {
+         return mNodeCollector.get();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      const dtCore::NodeCollector* Platform::GetNodeCollector() const
       {
          return mNodeCollector.get();
       }
