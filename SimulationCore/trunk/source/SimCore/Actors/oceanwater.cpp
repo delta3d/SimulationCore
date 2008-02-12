@@ -46,10 +46,13 @@
 #include <dtCore/shaderparameter.h>
 #include <dtCore/shaderparamfloat.h>
 
-#include <NxAgeiaWorldComponent.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
+
+#ifdef AGEIA_PHYSICS
+#include <NxAgeiaWorldComponent.h>
+#endif
 
 namespace SimCore
 {
@@ -71,6 +74,7 @@ namespace SimCore
          mResolution.set(50.0f, 50.0f);
       }
 
+#ifdef AGEIA_PHYSICS
       //////////////////////////////////////////////////////////////////////////
       void OceanWater::AgeiaPrePhysicsUpdate()
       {
@@ -91,7 +95,7 @@ namespace SimCore
 
          SetTransform(ourTransform);*/
       }
-
+#endif
       //////////////////////////////////////////////////////////////////////////
       void OceanWater::OnEnteredWorld()
       {
