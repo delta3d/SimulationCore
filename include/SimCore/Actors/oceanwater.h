@@ -35,7 +35,9 @@
 
 #include <dtCore/refptr.h>
 #include <dtGame/gameactor.h>
+#ifdef AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
+#endif
 
 namespace SimCore
 {
@@ -75,21 +77,21 @@ namespace SimCore
             void Update(double dt);
 
             void SetCenter(const osg::Vec2& pCenter){mCenter = pCenter;}
-            osg::Vec2 GetCenter(){return mCenter;}
+            osg::Vec2 GetCenter() const {return mCenter;}
 
             void SetSize(const osg::Vec2& pSize){mSize = pSize;}
-            osg::Vec2 GetSize(){return mSize;};
+            osg::Vec2 GetSize() const {return mSize;};
 
             void SetResolution(const osg::Vec2& pRes){};
-            osg::Vec2 GetResolution(){return mResolution;}
+            osg::Vec2 GetResolution() const {return mResolution;}
 
             void SetHeight(float pHeight){mWaterHeight = pHeight;}
-            float GetHeight(){return mWaterHeight;}
-            
+            float GetHeight() const {return mWaterHeight;}
+
 #ifdef AGEIA_PHYSICS
 
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate();         
+            virtual void AgeiaPrePhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
             virtual void AgeiaPostPhysicsUpdate();
@@ -105,16 +107,14 @@ namespace SimCore
 
             // returns the physics helper for use
             dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+         private:
+            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
 #endif
 
          protected:
             virtual ~OceanWater(){}
 
          private:
-
-#ifdef AGEIA_PHYSICS
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
-#endif
 
             void CreateGeometry();
 
@@ -142,7 +142,6 @@ namespace SimCore
             //bool IsPlaceable() const { return false; }
 
             void OnEnteredWorld();
-           
          protected:
             virtual ~OceanWaterActorProxy(){}
 
