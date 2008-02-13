@@ -341,7 +341,7 @@ namespace StealthGM
       renderingSupportComponent->SetEnableCullVisitor(true);
       renderingSupportComponent->GetCullVisitor()->SetEnablePhysics(false);
       renderingSupportComponent->GetCullVisitor()->SetCullRadius(5000.0f);
-      renderingSupportComponent->GetCullVisitor()->SetFrameDelay(10.0f);
+      renderingSupportComponent->GetCullVisitor()->SetFrameDelay(10);
 
       gameManager.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 

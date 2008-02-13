@@ -88,7 +88,7 @@
             if(physicsHelper != NULL)
             {
                // null checked up above in the return
-               hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
+               hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
             }
 
             // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
@@ -260,7 +260,7 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
                //dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
                //   (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(mOurHit.shape->getActor().userData);
                if(myReport.mClosestHitsHelper != NULL) //physicsHelper != NULL)
-                  mWeapon->ReceiveContactReport( report, myReport.mClosestHitsHelper->GetPhysicsGameActorProxy());//physicsHelper->GetPhysicsGameActorProxy() );
+                  mWeapon->ReceiveContactReport( report, &myReport.mClosestHitsHelper->GetPhysicsGameActorProxy());//physicsHelper->GetPhysicsGameActorProxy() );
                else
                   mWeapon->ReceiveContactReport( report, NULL);
                return true;
