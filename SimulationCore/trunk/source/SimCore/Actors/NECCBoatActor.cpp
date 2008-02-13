@@ -81,7 +81,7 @@ namespace SimCore
             if(physicsHelper != NULL)
             {
                // null checked up above in the return
-               hitTarget = physicsHelper->GetPhysicsGameActorProxy()->GetActor();
+               hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
             }
 
             // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
@@ -117,12 +117,12 @@ namespace SimCore
       , mVehicleMaxMPH(60.0f)
       , mVehicleMaxReverseMPH(-20.0f)
       , mCurrentSteeringAngle(0)
-      , mHasDriver(false)
-      , mNotifyFullUpdate(true)
-      , mNotifyPartialUpdate(true)
       , mBobbingTimer(0)
       , mDegreesDifference(0)
       , mBobbingUp(true)
+      , mHasDriver(false)
+      , mNotifyFullUpdate(true)
+      , mNotifyPartialUpdate(true)
       , mMaxBobbingTimeAmount(0.5f)
       {
          mWheels[0] = NULL;
@@ -155,7 +155,7 @@ namespace SimCore
          {
             mSndHorn->Stop();
             RemoveChild(mSndHorn.get());
-            dtAudio::Sound *sound = mSndHorn.release();
+            mSndHorn.release();
          }
          
          if(!IsRemote() && mVehiclesPortal.valid() )
@@ -500,7 +500,6 @@ namespace SimCore
          bool changedTrans = CompareVectors(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
          bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 3, 3.0f);
 
-         const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
          const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetVelocityVector();
 
          osg::Vec3 AngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
@@ -736,9 +735,6 @@ namespace SimCore
          if(keyboard == NULL)
             return;
 
-         bool steeredThisFrame = true;
-         bool accelOrBrakePressedThisFrame = true;
-
          if(mWheels[0] == NULL || mWheels[1] == NULL || mWheels[2] == NULL )
             // log warning / throw exception
             return;
@@ -909,7 +905,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActorProxy::BuildPropertyMap()
       {
-         const std::string& VEH_GROUP   = "Vehicle Property Values";
          const std::string& SOUND_GROUP = "Sound Property Values";
 
          PlatformActorProxy::BuildPropertyMap();

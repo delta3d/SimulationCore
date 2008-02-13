@@ -160,7 +160,6 @@ namespace SimCore
             xform.GetRotation(h, p, r);
             if(mUseMagneticNorth)
                h += GetCoordinateConverter().GetMagneticNorthOffset();
-            unsigned int mils = dtUtil::Coordinates::DegreesToMils(h);
 
             h = float(UpdateNeedle(timeDelta,h+180.0f))-180.0f;
 

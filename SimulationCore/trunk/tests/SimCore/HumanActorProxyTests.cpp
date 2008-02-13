@@ -91,6 +91,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
          dtCore::System::GetInstance().Start();
          mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+         mGM->AddComponent(*new dtGame::DeadReckoningComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
          
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, mHumanAP);
       }

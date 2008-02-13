@@ -414,7 +414,7 @@ namespace SimCore
             NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
             if (physicsHelper != NULL)
             {
-               hitTarget = dynamic_cast<NxAgeiaFourWheelVehicleActor*>(physicsHelper->GetPhysicsGameActorProxy()->GetActor());
+               hitTarget = dynamic_cast<NxAgeiaFourWheelVehicleActor*>(physicsHelper->GetPhysicsGameActorProxy().GetActor());
                if(hitTarget != NULL)
                {
                   // we hit a vehicle lets do something with the character

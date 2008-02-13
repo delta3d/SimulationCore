@@ -450,9 +450,10 @@ namespace SimCore
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
          , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::NO_WEAPON)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
-         , mMaxTimePerIteration(0.25)
+         , mMaxTimePerIteration(0.5)
       {
          SetDrawingModel(true);
+         SetName("Human");
       }
       
       ////////////////////////////////////////////////////////////////////////////

@@ -441,7 +441,7 @@ namespace SimCore
             UpdateFog();
 
             // Change the Cloud Coverage
-            mEphemerisEnvironmentActor->ChangeClouds((atmosActor->GetCloudCoverage() / 10), 
+            mEphemerisEnvironmentActor->ChangeClouds(int(atmosActor->GetCloudCoverage() / 10), 
                                                       atmosActor->GetWindSpeedX(), 
                                                       atmosActor->GetWindSpeedY());
             // Change Wind
