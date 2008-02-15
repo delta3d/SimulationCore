@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<GUILayout>
+	<Window Name="MiniMapFrameWindow" Type="WindowsLook/FrameWindow">
+		<Property Name="EWSizingCursorImage" Value="set:WindowsLook image:MouseEsWeCursor"/>
+		<Property Name="NESWSizingCursorImage" Value="set:WindowsLook image:MouseNeSwCursor"/>
+		<Property Name="NSSizingCursorImage" Value="set:WindowsLook image:MouseNoSoCursor"/>
+		<Property Name="NWSESizingCursorImage" Value="set:WindowsLook image:MouseNwSeCursor"/>
+		<Property Name="Text" Value="MiniMap"/>
+		<Property Name="TitlebarEnabled" Value="True"/>
+		<Property Name="TitlebarFont" Value="Tahoma-12"/>
+		<Property Name="Alpha" Value="0.85"/>
+		<Property Name="UnifiedAreaRect" Value="{{0.200000,0.000000},{0.200000,0.000000},{0.800000,0.000000},{0.900000,0.000000}}"/>
+		<Property Name="UnifiedMinSize" Value="{{0.0,670},{0.0,404}}"/>
+		<Property Name="UnifiedMaxSize" Value="{{1.0,0.0},{1.0,0.0}}"/>
+		<Property Name="Visible" Value="True"/>
+		<Property Name="AlwaysOnTop" Value="True"/>
+		<Window Name="GTAToggle" Type="FOPCSimLook/ToggleButton">
+			<Property Name="Font" Value="Tahoma-8"/>
+			<Property Name="Text" Value="GTA"/>
+			<Property Name="UnifiedPosition" Value="{{0,10},{0,35}}"/>
+			<Property Name="UnifiedSize" Value="{{0,80},{0,40}}"/>
+		</Window>
+
+			
+    		<Window Name="PosRepGroup" Type="DefaultWindow">
+      			<Property Name="UnifiedAreaRect" Value="{{0.0,100},{0.0,25},{0,450},{0.0,80}}" />
+      			<Property Name="Visible" Value="False"/>
+			<Window Type="WindowsLook/StaticText">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="Pos."/>
+				<Property Name="UnifiedPosition" Value="{{0,0},{0,15}}"/>
+				<Property Name="TextColours" Value="tl:FF000000 tr:FF000000 bl:FF000000 br:FF000000" />
+				<Property Name="UnifiedSize" Value="{{0,80},{0,30}}"/>
+			</Window>			
+			<Window Type="WindowsLook/StaticText">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="Easting"/>
+				<Property Name="TextColours" Value="tl:FF000000 tr:FF000000 bl:FF000000 br:FF000000" />
+				<Property Name="UnifiedPosition" Value="{{0,80},{0,0}}"/>
+				<Property Name="UnifiedSize" Value="{{0,100},{0,25}}"/>
+			</Window>			
+			<Window Type="WindowsLook/Editbox">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="00000"/>
+				<Property Name="UnifiedPosition" Value="{{0,80},{0,25}}"/>
+				<Property Name="UnifiedSize" Value="{{0,100},{0,30}}"/>
+				<Property Name="ID" Value="100" />
+			        <Property Name="MaxTextLength" Value="5" />
+			        <Property Name="ValidationString" Value="\d*" />
+			</Window>			
+			<Window Type="WindowsLook/StaticText">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="Northing"/>
+				<Property Name="TextColours" Value="tl:FF000000 tr:FF000000 bl:FF000000 br:FF000000" />
+				<Property Name="UnifiedPosition" Value="{{0,180},{0,0}}"/>
+				<Property Name="UnifiedSize" Value="{{0,100},{0,25}}"/>
+			</Window>			
+			<Window Type="WindowsLook/Editbox">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="00000"/>
+				<Property Name="UnifiedPosition" Value="{{0,180},{0,25}}"/>
+				<Property Name="UnifiedSize" Value="{{0,100},{0,30}}"/>
+				<Property Name="ID" Value="101" />
+			        <Property Name="MaxTextLength" Value="5" />
+			        <Property Name="ValidationString" Value="\d*" />
+			</Window>			
+			<Window Type="WindowsLook/Button">
+				<Property Name="Font" Value="Tahoma-8"/>
+				<Property Name="Text" Value="K"/>
+				<Property Name="UnifiedPosition" Value="{{0,290},{0,15}}"/>
+				<Property Name="UnifiedSize" Value="{{0,25},{0,25}}"/>
+				<Property Name="ID" Value="102" />
+			</Window>			
+		</Window>
+
+		<!-- ZOOM Controls -->
+    <Window Name="MiniMapZoomSlider" Type="WindowsLook/VerticalScrollbar">
+      <Property Name="UnifiedPosition" Value="{{1.0,-42},{0,80}}"/>
+      <Property Name="UnifiedSize" Value="{{0,22},{0,220}}"/>
+      <Property Name="PageSize" Value="0.1"/>
+      <Property Name="StepSize" Value="0.1"/>
+      <Property Name="DocumentSize" Value="1.0"/>
+    </Window>
+		<!-- END ZOOM Controls -->
+		<Window Name="MiniMapHolder" Type="WindowsLook/StaticImage">
+			<Property Name="UnifiedPosition" Value="{{0,10},{0,80}}"/>
+			<Property Name="UnifiedSize" Value="{{1.0,-62},{1.0,-190}}"/>
+			<Property Name="BackgroundEnabled" Value="False"/>
+			<Property Name="FrameEnabled" Value="True"/>
+			<Property Name="Visible" Value="False"/>
+		</Window>
+		<Window Name="GMAngle" Type="WindowsLook/StaticText">
+			<Property Name="Font" Value="Tahoma-8"/>
+			<Property Name="Text" Value=""/>
+			<Property Name="BackgroundEnabled" Value="False"/>
+			<Property Name="FrameEnabled" Value="False"/>
+			<Property Name="UnifiedPosition" Value="{{0,10},{1.0,-105}}"/>
+			<Property Name="UnifiedSize" Value="{{1.0,-10},{0.0,95}}"/>
+		</Window>
+
+	</Window>
+</GUILayout>
