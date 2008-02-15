@@ -195,7 +195,7 @@ int main (int argc, char* argv[])
       LOG_ERROR(ex.ToString());
       return 1;
    }
-   catch(const CEGUI::Exception& ex)
+   catch(const CEGUI::Exception& e)
    {
       //already printed.
       return 1;
