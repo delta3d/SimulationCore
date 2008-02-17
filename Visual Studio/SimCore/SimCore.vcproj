@@ -539,6 +539,14 @@
 				<File
 					RelativePath="..\..\source\SimCore\Tools\LaserRangeFinder.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/Zm126"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\SimCore\Tools\Tool.cpp"
