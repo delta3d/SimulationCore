@@ -304,7 +304,7 @@ namespace StealthGM
    void StealthHUD::TickHUD()
    {
       int x(0), y(0), w(0), h(0);
-      GetMainDeltaWindow()->GetPosition(&x, &y, &w, &h);
+      GetMainDeltaWindow()->GetPosition(x, y, w, h);
    //   float curYPos;
    
       // update the compass
