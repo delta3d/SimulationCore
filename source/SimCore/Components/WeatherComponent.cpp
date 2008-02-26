@@ -48,7 +48,6 @@
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-
 #include <SimCore/Tools/Binoculars.h>
 
 #include <osg/Depth>
@@ -93,6 +92,24 @@ namespace SimCore
       WeatherComponent::~WeatherComponent()
       {
       }
+
+      //////////////////////////////////////////////////////////
+      /*void WeatherComponent::BuildPropertyMap()
+      {
+         dtGame::GMComponent::BuildPropertyMap();
+
+         const std::string GROUPNAME = "Weather Component Values";
+
+         AddProperty(new dtDAL::DoubleActorProperty("Base Elevation","Base Elevation",
+            dtDAL::MakeFunctor(*this,&WeatherComponent::SetBaseElevation),
+            dtDAL::MakeFunctorRet(*this,&WeatherComponent::GetBaseElevation),
+            "", GROUPNAME));
+
+         AddProperty(new dtDAL::DoubleActorProperty("Max Visibility","Max Visibility",
+            dtDAL::MakeFunctor(*this,&WeatherComponent::SetMaxVisibility),
+            dtDAL::MakeFunctorRet(*this,&WeatherComponent::GetMaxVisibility),
+            "", GROUPNAME));
+      }*/
 
       //////////////////////////////////////////////////////////
       void WeatherComponent::Clear()
@@ -212,9 +229,9 @@ namespace SimCore
             mPreviousNearClipPlane = newNearClip;
             mPreviousFarClipPlane = newFarClip;
 
-            camera->SetPerspective(camera->GetVerticalFov(), 
-                                   camera->GetAspectRatio(), 
-                                   newNearClip, newFarClip);
+            camera->SetPerspectiveParams(camera->GetVerticalFov(), 
+                                         camera->GetAspectRatio(), 
+                                         newNearClip, newFarClip);
          }
 
          // Set the visibility on core env or ephemeris only if updates are

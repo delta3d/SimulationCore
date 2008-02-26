@@ -158,7 +158,7 @@ namespace SimCore
          {
             mOverlay->hide();
             mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-            mCamera->SetPerspective(mOriginalVFOV, mCamera->GetAspectRatio(), mOriginalNear, mOriginalFar);
+            mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), mOriginalNear, mOriginalFar);
          }
       }
 
@@ -192,7 +192,6 @@ namespace SimCore
          }
 
          float vfov = mCamera->GetVerticalFov();
-         float hfov = mCamera->GetHorizontalFov();
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -214,7 +213,6 @@ namespace SimCore
                if((vfov / mZoomFactor) > MAX_ZOOM_DISTANCE)
                {
                   vfov /= mZoomFactor;
-                  hfov /= mZoomFactor;
                }
                else
                {
@@ -225,15 +223,15 @@ namespace SimCore
          }
 
          // Check to see if we are already zoomed in
-         if(hfov == mOriginalVFOV)
+         if(vfov == mOriginalVFOV)
          {
             if(mCamera->GetAspectRatio() < 1.47)
             {
-               hfov /= (mZoomFactor *= 1.135f);
+               vfov /= (mZoomFactor *= 1.135f);
             }
             else
             {
-               hfov /= (mZoomFactor *= 1.103f);
+               vfov /= (mZoomFactor *= 1.103f);
             }
          }
           else
@@ -243,7 +241,8 @@ namespace SimCore
          float newZoom = (1.0f / mZoomFactor) * mOriginalLODScale;
          
          mCamera->GetOSGCamera()->setLODScale(newZoom);
-         mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+         //mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+         mCamera->SetPerspectiveParams(vfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
       }
 
       void Binoculars::ZoomOut()
@@ -258,14 +257,13 @@ namespace SimCore
          }
 
          float vfov = mCamera->GetVerticalFov();
-         float hfov = mCamera->GetHorizontalFov();
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
          {
-            if(hfov * mZoomFactor < mOriginalVFOV)
+            if(vfov* mZoomFactor < mOriginalVFOV)
             {
-               hfov *= mZoomFactor;
+               vfov *= mZoomFactor;
             }
             else
             {
@@ -275,15 +273,15 @@ namespace SimCore
          }
 
          // Check to see if we are zoomed out already
-         if(hfov != mOriginalVFOV)
+         if(vfov != mOriginalVFOV)
          {
-            hfov *= mZoomFactor;
+            vfov *= mZoomFactor;
          }
          else
             return;
 
          mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-         mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+         mCamera->SetPerspectiveParams(vfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
       }
 
       void Binoculars::Update(dtCore::DeltaDrawable &terrain)
