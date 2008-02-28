@@ -1329,9 +1329,11 @@ namespace SimCore
          SimCore::Actors::DetonationActor& detActor = static_cast<SimCore::Actors::DetonationActor&>(dap->GetGameActor());
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The detonation actor should have 0 lingering shot seconds.",0.0f, detActor.GetLingeringSmokeSecs());
          detActor.GetTransform(xform);
-//         CPPUNIT_ASSERT_MESSAGE("The entity should be quite a bit lower than it's start position because of clamping.", xform.GetTranslation().z() < (tankLocation.z() + 10.0f));
-         CPPUNIT_ASSERT_EQUAL_MESSAGE("X position should be the same", tankLocation.x(), xform.GetTranslation().x());
-         CPPUNIT_ASSERT_MESSAGE("Y position should be the same", osg::equivalent(tankLocation.y(), xform.GetTranslation().y(), 0.000001f));
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
+         //         CPPUNIT_ASSERT_MESSAGE("The entity should be quite a bit lower than it's start position because of clamping.", xform.GetTranslation().z() < (tankLocation.z() + 10.0f));
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("X position should be the same", tankLocation.x(), pos.x());
+         CPPUNIT_ASSERT_MESSAGE("Y position should be the same", osg::equivalent(tankLocation.y(), pos.y(), 0.000001f));
       }
 
       //////////////////////////////////////////////////////////////////////////

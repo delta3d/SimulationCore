@@ -348,8 +348,11 @@ namespace SimCore
       {
          dtCore::Transform xform;
          GetTransform( xform );
-         xform.SetTranslation( xform.GetTranslation() + offset );
-         SetPosition( xform.GetTranslation() );
+         osg::Vec3 trans;
+         xform.GetTranslation(trans);
+         trans += offset;
+         xform.SetTranslation( trans );
+         SetPosition( trans );
       }
 
       ////////////////////////////////////////////////////////////

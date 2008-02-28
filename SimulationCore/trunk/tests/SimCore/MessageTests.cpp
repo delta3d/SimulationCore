@@ -343,9 +343,10 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             playerActor->GetTransform(newTransform);
             t80Actor->GetTransform(tankTransform);
 
-            osg::Vec3 playerPos = originalTransform.GetTranslation(), 
-                      newPos    = newTransform.GetTranslation(),
-                      tankPos   = tankTransform.GetTranslation();
+            osg::Vec3 playerPos, newPos, tankPos;
+            originalTransform.GetTranslation(playerPos); 
+            newTransform.GetTranslation(newPos);
+            tankTransform.GetTranslation(tankPos);
             
             //Checking the X and Y for now because the Z position is not the same.  It's up some.
             CPPUNIT_ASSERT_MESSAGE("The player X position should equal the tank position", newPos.x() == tankPos.x());
@@ -417,7 +418,8 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT_MESSAGE("The player should no longer be attached to the T80", playerActor->GetParent() == NULL);
             dtCore::Transform xform;
             playerActor->GetTransform(xform, dtCore::Transformable::ABS_CS);
-            osg::Vec3 playerPos = xform.GetTranslation();
+            osg::Vec3 playerPos;
+            xform.GetTranslation(playerPos);
             
             CPPUNIT_ASSERT_MESSAGE("The player's position should not have changed", 
                dtUtil::Equivalent(playerPos, tankPos, 0.001f));

@@ -37,7 +37,11 @@
 #     define SIMCORE_HLA_EXPORT __declspec(dllimport)
 #  endif
 #else
-#  define SIMCORE_HLA_EXPORT
+#   ifdef SIMCORE_HLA_LIBRARY
+#      define SIMCORE_HLA_EXPORT __attribute__ ((visibility("default")))
+#   else
+#      define SIMCORE_HLA_EXPORT
+#   endif 
 #endif
 
 #endif

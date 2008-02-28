@@ -581,7 +581,8 @@ namespace SimCore
          // Get the location of this weapon
          dtCore::Transform xform;
          GetTransform( xform );
-         osg::Vec3 thisPos = xform.GetTranslation();
+         osg::Vec3 thisPos;
+         xform.GetTranslation(thisPos);
 
          // Address the message to the targeted entity
 
@@ -661,7 +662,9 @@ namespace SimCore
             // RelativeDetonationLocation
             dtCore::Transform xform;
             target->GetTransform( xform );
-            msg->SetRelativeDetonationLocation( location - xform.GetTranslation() );
+            osg::Vec3 targetTrans;
+            xform.GetTranslation(targetTrans);
+            msg->SetRelativeDetonationLocation( location - targetTrans);
          }
 
          // Optional Parameters:

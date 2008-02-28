@@ -142,9 +142,10 @@ namespace SimCore
             if(actor != NULL)
             {
                /*static_cast<dtGame::GameActor*>(proxy->GetActor())->*/actor->GetTransform(transformForTempDrawable);
-               
-               osg::Vec3 relPos = position - transformForTempDrawable.GetTranslation();
-               float distSquared = relPos[0] * relPos[0] + relPos[1] * relPos[1] + relPos[2] * relPos[2];
+               osg::Vec3 relPos;
+               transformForTempDrawable.GetTranslation(relPos);
+               relPos = position - relPos;
+               float distSquared = relPos.length2();
                float minDist = radius + radius;
                if(distSquared <= minDist * minDist)
                {

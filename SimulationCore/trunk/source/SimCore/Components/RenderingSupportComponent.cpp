@@ -468,8 +468,7 @@ namespace SimCore
          {
             dtCore::Transform xform;
             dl->mTarget->GetTransform(xform);
-
-            dl->mPosition = xform.GetTranslation();
+            xform.GetTranslation(dl->mPosition);
          }
       }
 
@@ -599,9 +598,10 @@ namespace SimCore
          //update uniforms by finding the closest lights to the camera
          dtCore::Transform trans;
          GetGameManager()->GetApplication().GetCamera()->GetTransform(trans);
-
+         osg::Vec3 pos;
+         trans.GetTranslation(pos);
          //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
-         std::sort(mLights.begin(), mLights.end(), funcCompareLights(trans.GetTranslation()));
+         std::sort(mLights.begin(), mLights.end(), funcCompareLights(pos));
 
          unsigned count = 0;
          for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3;)
@@ -667,7 +667,9 @@ namespace SimCore
 
          dtCore::Transform cameraTransform;
          GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
-         mCullVisitor->SetCameraTransform(cameraTransform.GetTranslation());
+         osg::Vec3 pos;
+         cameraTransform.GetTranslation(pos);
+         mCullVisitor->SetCameraTransform(pos);
          return true;
       }
 
