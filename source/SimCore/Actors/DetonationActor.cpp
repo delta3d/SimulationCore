@@ -365,7 +365,11 @@ namespace SimCore
             dtCore::Transform xform;
             mSound->GetTransform(xform);
 
-            xform.SetLookAt(xform.GetTranslation(), cform.GetTranslation(), osg::Vec3(0.0f, 0.0f, 1.0f));//ur position, what u look at,up vector 001
+            osg::Vec3 trans;
+            xform.GetTranslation(trans);
+            osg::Vec3 childTrans;
+            cform.GetTranslation(childTrans);
+            xform.SetLookAt(trans, childTrans, osg::Vec3(0.0f, 0.0f, 1.0f));//ur position, what u look at,up vector 001
             mSound->SetTransform(xform);
             //////////////////////////////////////////////
             mSound->Play();
@@ -469,7 +473,8 @@ namespace SimCore
       {
          dtCore::Transform xform;
          GetTransform(xform);
-         osg::Vec3 detonationPos = xform.GetTranslation();
+         osg::Vec3 detonationPos;
+         xform.GetTranslation(detonationPos);
 
          float distance = 
             sqrtf(std::abs((position[0] - detonationPos[0]) * (position[0] - detonationPos[0]) +

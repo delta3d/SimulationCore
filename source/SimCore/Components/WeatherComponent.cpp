@@ -300,7 +300,9 @@ namespace SimCore
             {
                dtCore::Transform positionTransform;
                GetGameManager()->GetApplication().GetCamera()->GetTransform(positionTransform);
-               mEphemerisEnvironmentActor->SetSkyDomesCenter(positionTransform.GetTranslation());
+               osg::Vec3 pos;
+               positionTransform.GetTranslation(pos);
+               mEphemerisEnvironmentActor->SetSkyDomesCenter(pos);
             }
 
             return;

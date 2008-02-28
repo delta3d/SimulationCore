@@ -500,7 +500,8 @@ namespace StealthGM
          {
             dtCore::Transform xform;
             mStealthActor->GetTransform(xform);
-            osg::Vec3 pos = xform.GetTranslation();
+            osg::Vec3 pos;
+            xform.GetTranslation(pos);
             std::ostringstream oss;
             oss << "The player's position is: " << pos << '\n';
             LOG_ALWAYS(oss.str());

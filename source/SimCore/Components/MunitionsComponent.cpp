@@ -663,10 +663,11 @@ namespace SimCore
          mSoundStartTime = 0.0f;
          if( mSound.valid() )
          {
-            dtCore::Transform xform;
-            mSound->GetTransform( xform );
-
-            mSoundStartTime = CalculateSoundDelayTime( xform.GetTranslation(), listenerPosition );
+            dtCore::Transform soundXform;
+            mSound->GetTransform( soundXform );
+            osg::Vec3 soundPos;
+            soundXform.GetTranslation(soundPos);
+            mSoundStartTime = CalculateSoundDelayTime(soundPos , listenerPosition );
          }
       }
 
@@ -1984,10 +1985,11 @@ namespace SimCore
             // be attenuated when created in 3D space.
             dtCore::Transform playerXform;
             GetGameManager()->GetApplication().GetCamera()->GetTransform(playerXform);
-
+            osg::Vec3 playerPos;
+            playerXform.GetTranslation(playerPos);
             // Initiate the weapon effect
             mEffectsManager->ApplyWeaponEffect( 
-               *entity, bestDof, *effects, playerXform.GetTranslation() );
+               *entity, bestDof, *effects, playerPos );
          }
 
          // Place tracers into the scene
@@ -2233,7 +2235,9 @@ namespace SimCore
          {
             dtCore::Transform xform;
             mPlayer->GetTransform(xform);
-            da->CalculateDelayTime(xform.GetTranslation());
+            osg::Vec3 playerPos;
+            xform.GetTranslation(playerPos);
+            da->CalculateDelayTime(playerPos);
          }  
 
          // Set properties on the detonation actor

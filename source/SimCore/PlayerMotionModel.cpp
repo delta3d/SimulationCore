@@ -140,19 +140,18 @@ namespace SimCore
          dtCore::Transform transform;
          // Get the position before the motion model update happens
          GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
-         position = transform.GetTranslation();
+         transform.GetTranslation(position);
 
          // Update the player
          dtCore::FPSMotionModel::OnMessage(data);
 
-#ifdef AGEIA_PHYSICS
          // If physics, force the physics to update the player
          SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
          if(player != NULL)
          {
             // Get the new translation
             GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
-            movement = transform.GetTranslation();
+            transform.GetTranslation(movement);
 
             // Set back to the old translation
             transform.SetTranslation(position);
@@ -162,7 +161,6 @@ namespace SimCore
             // Physics update on the player
             player->SetMovementTransform(movement);
          }
-#endif
       }
    }
 
@@ -183,7 +181,7 @@ namespace SimCore
                dtCore::Transform transform;
                osg::Vec3 position;
                GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
-               position = transform.GetTranslation();
+               transform.GetTranslation(position);
                std::vector<dtGame::GameActorProxy*> toFillIn;
                portalComponent->FindPortalsInRange(position, 3.0f, toFillIn);
                if(toFillIn.size())

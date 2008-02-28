@@ -472,8 +472,11 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    osg::Vec3 smallMovement(0.1f, 0.3f, 0.4f);
    
    dtCore::Transform xform;
+   osg::Vec3 pos;
    entityActor.GetTransform(xform, dtCore::Transformable::REL_CS);
-   xform.SetTranslation(xform.GetTranslation() + smallMovement);
+
+   xform.GetTranslation(pos);
+   xform.SetTranslation(pos + smallMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::System::GetInstance().Step();
@@ -483,7 +486,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
 
    osg::Vec3 largeMovement(200.0f, 345.0f, 657.0f);
-   xform.SetTranslation(xform.GetTranslation() + largeMovement);
+   xform.SetTranslation(pos + largeMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
    dtCore::System::GetInstance().Step();
@@ -496,7 +499,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    std::ostringstream ss;
    ss << "The translation was large. It should have sent an update.  New position is: " 
-      << xform.GetTranslation();
+      << pos;
    
    CPPUNIT_ASSERT_MESSAGE(ss.str(),
                           update1.valid());

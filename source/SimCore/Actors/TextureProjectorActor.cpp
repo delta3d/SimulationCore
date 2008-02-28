@@ -94,10 +94,11 @@ namespace SimCore
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
          osg::Matrix ourMatrix;
-         osg::Vec3 position;
-         ourTransform.GetTranslation(position);
-         position[2] -= 10;
-         ourTransform.SetLookAt(ourTransform.GetTranslation(), position, osg::Vec3(0,0,1));
+         osg::Vec3 currentPos, lookAtPos;
+         ourTransform.GetTranslation(lookAtPos);
+         lookAtPos[2] -= 10;
+         ourTransform.GetTranslation(currentPos);
+         ourTransform.SetLookAt(currentPos, lookAtPos, osg::Vec3(0,0,1));
          ourTransform.Get(ourMatrix);
          
          osg::ref_ptr<osg::Texture2D> tex    = new osg::Texture2D;

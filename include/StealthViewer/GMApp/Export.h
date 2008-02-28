@@ -38,7 +38,11 @@
 #    define STEALTH_GAME_EXPORT __declspec(dllimport)
 #  endif
 #else
-#  define STEALTH_GAME_EXPORT
+#   ifdef STEALTH_GAME_LIBRARY
+#      define STEALTH_GAME_EXPORT __attribute__ ((visibility("default")))
+#   else
+#      define STEALTH_GAME_EXPORT
+#   endif 
 #endif
 
 #endif

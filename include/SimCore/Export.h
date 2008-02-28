@@ -37,7 +37,11 @@
 #     define SIMCORE_EXPORT __declspec(dllimport)
 #  endif
 #else
-#  define SIMCORE_EXPORT
+#   ifdef SIMCORE_LIBRARY
+#      define SIMCORE_EXPORT __attribute__ ((visibility("default")))
+#   else
+#      define SIMCORE_EXPORT
+#   endif 
 #endif
 
 #endif

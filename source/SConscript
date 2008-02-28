@@ -23,9 +23,9 @@ if env.get('ageia') != 0 :
    defines += ['AGEIA_PHYSICS']
    definesHLA += ['AGEIA_PHYSICS']
 
-if env['OS'] == 'windows':
-   defines += ['SIMCORE_LIBRARY', 'NOMINMAX']
-   definesHLA += ['SIMCORE_HLA_LIBRARY', 'NOMINMAX']
+#if env['OS'] == 'windows':
+defines += ['SIMCORE_LIBRARY']
+definesHLA += ['SIMCORE_HLA_LIBRARY']
 
 env.BuildLib('SimCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
 

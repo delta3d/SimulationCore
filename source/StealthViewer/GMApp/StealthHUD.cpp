@@ -312,7 +312,8 @@ namespace StealthGM
       {
          dtCore::Transform xform;
          mMotionModel->GetTarget()->GetTransform(xform);
-         const osg::Vec3& pos = xform.GetTranslation();//mMotionModel->GetPosition();
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
          osg::Vec3 hpr;
          xform.GetRotation(hpr);
 

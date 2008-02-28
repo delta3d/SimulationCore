@@ -106,10 +106,8 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         RemoveProperty(dtDAL::TransformableActorProxy::PROPERTY_SCALE);
-         
          static const std::string BASE_ENTITY_GROUP("Base Entity");
-         
+
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownTranslation),
@@ -403,7 +401,9 @@ namespace SimCore
 
             dtCore::Transform xform;
             GetTransform(xform);
-            SetLastKnownTranslation(xform.GetTranslation());
+            osg::Vec3 pos;
+            xform.GetTranslation(pos);
+            SetLastKnownTranslation(pos);
             osg::Vec3 rot;
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
@@ -643,7 +643,11 @@ namespace SimCore
                mEngineSmokeSystem = new dtCore::ParticleSystem;
 
             mEngineSmokeSystem->LoadFile(mEngineSmokeSystemFile, true);
-            mEngineSmokeSystem->SetTransform(dtCore::Transform(mEngineSmokePosition[0], mEngineSmokePosition[1], mEngineSmokePosition[2], 0, 0, 0, .25f, .24f, .25f), dtCore::Transformable::REL_CS);
+            dtCore::Transform xform;
+            xform.MakeScale(osg::Vec3d(0.25, 0.24, 0.25));
+            xform.SetTranslation(mEngineSmokePosition);
+
+            mEngineSmokeSystem->SetTransform(xform, dtCore::Transformable::REL_CS);
             mEngineSmokeSystem->SetEnabled(enable);
             mEngineSmokeOn = enable;
          }
@@ -769,7 +773,8 @@ namespace SimCore
          GetTransform(xform);
          osg::Vec3 rot;
          xform.GetRotation(rot);
-         osg::Vec3 pos(xform.GetTranslation());
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
 
          if (mTimeUntilNextUpdate <= 0.0f)
          {
@@ -878,7 +883,7 @@ namespace SimCore
          {
             newScale[i] = mDefaultScale[i] * mScaleMagnification[i]; 
          } 
-         xform.SetScale(newScale);
+         xform.Rescale(newScale);
          osg::Matrix m;
          xform.Get(m);
          mScaleMatrixNode->setMatrix(m);
@@ -890,7 +895,7 @@ namespace SimCore
          dtCore::Transform xform;
          xform.Set(mScaleMatrixNode->getMatrix());
          osg::Vec3 currentScale;
-         xform.GetScale(currentScale);
+         xform.CalcScale(currentScale);
          return currentScale;
       } 
 

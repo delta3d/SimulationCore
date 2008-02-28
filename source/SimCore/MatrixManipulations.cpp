@@ -292,13 +292,13 @@ namespace SimCore
 
                // Obtain the camera position
                osg::Vec3 xyz, hpr;
-               xyz = camera2.GetTranslation();
+               camera2.GetTranslation(xyz);
                // Ensure isector ray is in the correct
                // position, orientation and length.
                osg::Vec3 vec( 0.0f, 0.0f, 1.0f );
                float isectorSpan = 20;
                mIsector->Reset();
-               mIsector->SetStartPosition( osg::Vec3(camera2.GetTranslation()[0], camera2.GetTranslation()[1], camera2.GetTranslation()[2]) + osg::Vec3(0.0f,0.0f,-isectorSpan) );
+               mIsector->SetStartPosition( osg::Vec3(xyz[0], xyz[1], xyz[2]) + osg::Vec3(0.0f,0.0f,-isectorSpan) );
                mIsector->SetDirection( vec );
                mIsector->SetLength( isectorSpan * 2.0f );
 
@@ -319,8 +319,7 @@ namespace SimCore
                      //set our new position/rotation
                      xyz[2] = hitPt[2];
                      camera2.SetTranslation(xyz);  
-                     camera2.SetLookAt(camera2.GetTranslation()[0], camera2.GetTranslation()[1], camera2.GetTranslation()[2], 
-                                       originalPosition[0], originalPosition[1], originalPosition[2],0,0,1);
+                     camera2.SetLookAt(xyz, originalPosition, osg::Vec3(0,0,1));
                   }
                }
 

@@ -816,12 +816,12 @@ namespace SimCore
 
          GetTransform(ourTransform);
          GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);
-         
+
          osg::Vec3 ourXYZ, cameraXYZ;
 
-         ourXYZ = ourTransform.GetTranslation();
-         cameraXYZ = cameraTransform.GetTranslation();
-         
+         ourTransform.GetTranslation(ourXYZ);
+         cameraTransform.GetTranslation(cameraXYZ);
+
          osg::Vec3 distanceVector = ourXYZ - cameraXYZ;
          float distanceFormula = distanceVector.length2();
          if( (mMaxIdleSoundDistance * mMaxIdleSoundDistance ) <  distanceFormula)
