@@ -238,7 +238,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
 
-         human->SetMaxTimePerIteration(0.45);
+         human->SetMaxTimePerIteration(0.5);
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
