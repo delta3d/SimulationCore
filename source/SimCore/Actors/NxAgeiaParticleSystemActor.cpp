@@ -206,10 +206,15 @@ void NxAgeiaParticleSystemActor::AddParticle()
    dtCore::Transform ourTransform;
    ourTransform.Set(GetMatrixNode()->getMatrix());
    osg::Vec4 ourTranslation;
-   ourTranslation[0] = ourTransform.GetTranslation()[0];
-   ourTranslation[1] = ourTransform.GetTranslation()[1];
-   ourTranslation[2] = ourTransform.GetTranslation()[2];
-   osg::Matrix ourRotationMatrix = ourTransform.GetRotation();
+   osg::Vec3 xyz;
+   ourTransform.GetTranslation(xyz);
+
+   ourTranslation[0] = xyz[0];
+   ourTranslation[1] = xyz[1];
+   ourTranslation[2] = xyz[2];
+   osg::Matrix ourRotationMatrix; 
+   ourTransform.GetRotation(ourRotationMatrix);
+   
    NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
 
    osg::Vec4 positionRandMax;

@@ -147,7 +147,8 @@ namespace SimCore
          {
             dtCore::Transform ourTransform, zeroTransform;
             GetTransform(ourTransform);
-            osg::Matrix rot = ourTransform.GetRotation();
+            osg::Matrix rot; 
+            ourTransform.GetRotation(rot);
             rot.invert(rot);
 
             NxMat34 sendInMatrix(NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
@@ -194,16 +195,20 @@ namespace SimCore
          {
             dtCore::Transform ourTransform;
             GetTransform(ourTransform);
-            osg::Matrix *rot = &ourTransform.GetRotation();
+            osg::Matrix rot;
+            ourTransform.GetRotation(rot);
 
             NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
             if(toFillIn != NULL)
             {
-               toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2]));
+               osg::Vec3 translation;
+               ourTransform.GetTranslation(translation);
+
+               toFillIn->setGlobalPosition(NxVec3(translation[0], translation[1], translation[2]));
                toFillIn->setGlobalOrientation(
-                  NxMat33( NxVec3(rot->operator ()(0,0), rot->operator ()(0,1), rot->operator ()(0,2)),
-                           -NxVec3(rot->operator ()(1,0), rot->operator ()(1,1), rot->operator ()(1,2)),
-                           NxVec3(rot->operator ()(2,0), rot->operator ()(2,1), rot->operator ()(2,2))));
+                  NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
+                           -NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
+                           NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
             }
          }
       }

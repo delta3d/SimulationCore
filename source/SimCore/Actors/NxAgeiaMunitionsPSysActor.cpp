@@ -348,14 +348,17 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    dtCore::Transform ourTransform;
    GetTransform(ourTransform);
    
-   _particle->SetLastPosition(ourTransform.GetTranslation());
+   osg::Vec3 xyz;
+   ourTransform.GetTranslation(xyz);
 
+   _particle->SetLastPosition(xyz);
 
    osg::Vec4 ourTranslation;
-   ourTranslation[0] = ourTransform.GetTranslation()[0];
-   ourTranslation[1] = ourTransform.GetTranslation()[1];
-   ourTranslation[2] = ourTransform.GetTranslation()[2];
-   osg::Matrix ourRotationMatrix = ourTransform.GetRotation();
+   ourTranslation[0] = xyz[0];
+   ourTranslation[1] = xyz[1];
+   ourTranslation[2] = xyz[2];
+   osg::Matrix ourRotationMatrix;
+   ourTransform.GetRotation(ourRotationMatrix);
    NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
 
    osg::Vec4 positionRandMax;
