@@ -347,9 +347,11 @@ namespace SimCore
          //actor->raiseBodyFlag(NX_BF_FROZEN_ROT_Y);
          actor->setCMassOffsetLocalPosition(NxVec3(0,-1, -3));
 
-         actor->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0],
-                                         ourTransform.GetTranslation()[1],
-                                         ourTransform.GetTranslation()[2]));
+         osg::Vec3 xyz;
+         ourTransform.GetTranslation(xyz);
+         actor->setGlobalPosition(NxVec3(xyz[0],
+                                         xyz[1],
+                                         xyz[2]));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -593,7 +595,8 @@ namespace SimCore
          if(mWheels[0] != NULL)
          {
             NxReal value = mWheels[0]->getSteerAngle();
-            osg::Matrix ourMatrix = ourTransform.GetRotation();
+            osg::Matrix ourMatrix; 
+            ourTransform.GetRotation(ourMatrix);
 
             osg::Vec3 hpr;
             dtUtil::MatrixUtil::MatrixToHpr(hpr, ourMatrix);
@@ -608,7 +611,8 @@ namespace SimCore
          if(value > mVehicleMaxMPH)
             value = mVehicleMaxMPH;
 
-         osg::Matrix ourMatrix = ourTransform.GetRotation();
+         osg::Matrix ourMatrix;
+         ourTransform.GetRotation(ourMatrix);
 
          float mphScale = (value / mVehicleMaxMPH);
          

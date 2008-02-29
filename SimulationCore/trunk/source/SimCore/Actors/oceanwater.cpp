@@ -127,7 +127,9 @@ namespace SimCore
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
          NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
-         toFillIn->setGlobalPosition(NxVec3(ourTransform.GetTranslation()[0], ourTransform.GetTranslation()[1], ourTransform.GetTranslation()[2] - 2.8));
+         osg::Vec3 translation;
+         ourTransform.GetTranslation(translation);
+         toFillIn->setGlobalPosition(NxVec3(translation[0], translation[1], translation[2] - 2.8));
          NxMat33 idMat;
          idMat.id();
          toFillIn->setGlobalOrientation(idMat);
