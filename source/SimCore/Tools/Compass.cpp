@@ -57,7 +57,7 @@ namespace SimCore
    namespace Tools
    {
       //////////////////////////////////////////////////////////////////////////
-      Compass::Compass(CEGUI::Window *mainWindow, bool useMagNorth, float aspectRatio) :
+      Compass::Compass(CEGUI::Window *mainWindow, dtCore::Camera& camera, bool useMagNorth, float aspectRatio) :
          Tool(mainWindow),
          mOverlay(NULL),
          mAzimuthText(NULL),
@@ -67,7 +67,8 @@ namespace SimCore
          mNeedleVelocity(0.0f),
          mNeedleAcceleration(0.0f),
          mNeedleTorque(2.0f),
-         mNeedleDragCoef(0.9f)
+         mNeedleDragCoef(0.9f),
+         mCamera(&camera)
       {
          try
          {
@@ -177,6 +178,7 @@ namespace SimCore
                float xVal = cos(osg::DegreesToRadians(h+90))*.375f+.5f;
                float yVal = sin(osg::DegreesToRadians(-h+90))*.375f+.5f;
                osg::Vec2f foc (xVal, yVal);
+               printf("Setting focus to %f %f\n", xVal, yVal);
                mLensFocus->set(foc);
             }
             // --- LOCKHEED CODE --- END --- //
@@ -314,7 +316,9 @@ namespace SimCore
                dialNV._foundNodes.front().get());
          }
 
-         float horizontalFOV = dtABC::Application::GetInstance(0)->GetCamera()->GetHorizontalFov();
+         float horizontalFOV = 1.0f;
+         if(mCamera != NULL)
+            horizontalFOV = mCamera->GetHorizontalFov();
 
          double dAspect = windowWidth/windowHeight;
          //double dScale = (1.0/(120.0))*.8;//*1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
