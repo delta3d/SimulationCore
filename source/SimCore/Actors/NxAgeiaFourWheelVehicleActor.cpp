@@ -380,8 +380,8 @@ namespace SimCore
          osg::Matrix currentMatrix(glmat);
          osg::Vec3 globalOrientation;
          dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
-         osg::Vec3 nxVecTemp;
-         nxVecTemp.set(physxObj->getGlobalPosition().x, physxObj->getGlobalPosition().y, physxObj->getGlobalPosition().z + zoffset);
+         osg::Vec3 physTranslationVec;
+         physTranslationVec.set(physxObj->getGlobalPosition().x, physxObj->getGlobalPosition().y, physxObj->getGlobalPosition().z + zoffset);
 
          // A full update may not be required. Prevent any further network updates.
          // Let the following code determine if this vehicle should be flagged
@@ -389,33 +389,33 @@ namespace SimCore
          mNotifyFullUpdate = false;
          mNotifyPartialUpdate = false;
 
-         const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
-         const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
+         const osg::Vec3 &drTranslationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
+         const osg::Vec3 &drOrientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
 
-         bool changedTrans = CompareVectors(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
-         bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 3, 3.0f);
+         bool changedTrans = CompareVectors(physTranslationVec, drTranslationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(physTranslationVec, translationVec, 3, amountChange);
+         bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, drOrientationVec, 3, 3.0f);
 
-         //const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
-         const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetVelocityVector();
+         //const osg::Vec3 &drAngularVelocity = GetDeadReckoningHelper().GetAngularVelocityVector();
+         const osg::Vec3 &drLinearVelocity = GetDeadReckoningHelper().GetVelocityVector();
 
-         osg::Vec3 AngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
-         osg::Vec3 linearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
+         osg::Vec3 physAngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
+         osg::Vec3 physLinearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
 
-         float velocityDiff = (velocityVec - linearVelocity).length();
-         bool velocityNearZero = linearVelocity.length() < 0.1;
-         bool changedVelocity = velocityDiff > 0.2 || (velocityNearZero && velocityVec.length() > 0.1 );
+         float linearVelocityDiff = (drLinearVelocity - physLinearVelocity).length();
+         bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
+         bool changedVelocity = linearVelocityDiff > 0.2 || (physVelocityNearZero && drLinearVelocity.length() > 0.1 );
 
          if( changedTrans || changedOrient || changedVelocity )
          {
-            SetLastKnownTranslation(nxVecTemp);
+            SetLastKnownTranslation(physTranslationVec);
             SetLastKnownRotation(globalOrientation);
-            SetAngularVelocityVector(AngularVelocity);
+            SetAngularVelocityVector(physAngularVelocity);
 
-            if( velocityNearZero )
+            if( physVelocityNearZero )
             {
-               linearVelocity.set(0.0,0.0,0.0);
+               physLinearVelocity.set(0.0,0.0,0.0);
             }
-            SetVelocityVector(linearVelocity);
+            SetVelocityVector(physLinearVelocity);
 
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
