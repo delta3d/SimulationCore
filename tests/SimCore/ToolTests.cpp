@@ -196,7 +196,7 @@ void ToolTests::TestCompass()
    RefPtr<SimCore::Tools::Compass> compass;
    try
    {
-      compass = new SimCore::Tools::Compass(NULL, 0.0f); 
+      compass = new SimCore::Tools::Compass(NULL, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f); 
       compass->SetPlayerActor(mPlayerActor.get()); 
    }
    catch(CEGUI::Exception &e) 
