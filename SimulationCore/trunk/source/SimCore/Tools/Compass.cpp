@@ -166,6 +166,7 @@ namespace SimCore
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
             { 
+               //printf("Disk is valid\n");
                osg::Matrix rotation;
 
                //just to test
@@ -313,9 +314,12 @@ namespace SimCore
                dialNV._foundNodes.front().get());
          }
 
+         float horizontalFOV = dtABC::Application::GetInstance(0)->GetCamera()->GetHorizontalFov();
+
          double dAspect = windowWidth/windowHeight;
-         double dScale = (1.0/(120.0))*.8;//*1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
+         //double dScale = (1.0/(120.0))*.8;//*1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
          //1.0/(m_fHFOV*M_PI/180.0*1000.0); //360.0 * 120.0/(2.0*M_PI*1000.0); // FOV = 120m @ 1km ~= 6.875deg
+         double dScale = 1.0/(horizontalFOV*M_PI/180.0*1000.0)*1.43;
          trans.makeScale(dScale,dScale,dScale);
          trans.setTrans(0.5*dAspect, 0.27/dAspect, 0.0);
 
@@ -355,7 +359,7 @@ namespace SimCore
          projection->setMatrix(
             osg::Matrix::ortho2D(
             0,
-            windowWidth/windowHeight,
+            dAspect/*windowWidth/windowHeight*/,
             0,
             1.0));
 
