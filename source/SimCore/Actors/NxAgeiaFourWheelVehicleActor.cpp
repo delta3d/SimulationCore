@@ -395,27 +395,42 @@ namespace SimCore
          bool changedTrans = CompareVectors(physTranslationVec, drTranslationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(physTranslationVec, translationVec, 3, amountChange);
          bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, drOrientationVec, 3, 3.0f);
 
-         //const osg::Vec3 &drAngularVelocity = GetDeadReckoningHelper().GetAngularVelocityVector();
+         const osg::Vec3 &drAngularVelocity = GetDeadReckoningHelper().GetAngularVelocityVector();
          const osg::Vec3 &drLinearVelocity = GetDeadReckoningHelper().GetVelocityVector();
 
-         osg::Vec3 physAngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
-         osg::Vec3 physLinearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
+         const osg::Vec3 physAngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
+         const osg::Vec3 physLinearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
 
          float linearVelocityDiff = (drLinearVelocity - physLinearVelocity).length();
          bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
-         bool changedVelocity = linearVelocityDiff > 0.2 || (physVelocityNearZero && drLinearVelocity.length() > 0.1 );
+         bool changedLinearVelocity = linearVelocityDiff > 0.2 || (physVelocityNearZero && drLinearVelocity.length() > 0.1 );
 
-         if( changedTrans || changedOrient || changedVelocity )
+         float angularVelocityDiff = (drAngularVelocity - physAngularVelocity).length();
+         bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
+         bool changedAngularVelocity = angularVelocityDiff > 0.2 || (physAngularVelocityNearZero && drAngularVelocity.length() > 0.1 );
+
+         if( changedTrans || changedOrient || changedLinearVelocity || changedAngularVelocity)
          {
             SetLastKnownTranslation(physTranslationVec);
             SetLastKnownRotation(globalOrientation);
-            SetAngularVelocityVector(physAngularVelocity);
 
             if( physVelocityNearZero )
             {
-               physLinearVelocity.set(0.0,0.0,0.0);
+               SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
             }
-            SetVelocityVector(physLinearVelocity);
+            else
+            {
+               SetVelocityVector(physLinearVelocity);
+            }
+
+            if ( physAngularVelocityNearZero )
+            {
+               SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+            }
+            else
+            {
+               SetAngularVelocityVector(physAngularVelocity);
+            }
 
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
@@ -466,6 +481,7 @@ namespace SimCore
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
          
+
          NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
          if(toFillIn != NULL)
          {
