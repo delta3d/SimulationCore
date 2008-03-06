@@ -53,6 +53,7 @@ namespace SimCore
 
             /// Constructor
             Compass(CEGUI::Window *mainWindow, 
+                     dtCore::Camera& camera,
                     bool useMagNorth = false, 
                     float aspectRatio = 1.6f);
 
