@@ -195,7 +195,7 @@ namespace StealthGM
       {
          dtCore::Camera *camera = inputComp->GetGameManager()->GetApplication().GetCamera(); 
          float aspectRatio = camera->GetAspectRatio();
-         SimCore::Tools::Compass* compass = new SimCore::Tools::Compass(mHudGUI->GetToolsWindow(), false, aspectRatio);         compass->SetPlayerActor(mStealth.get());
+         SimCore::Tools::Compass* compass = new SimCore::Tools::Compass(mHudGUI->GetToolsWindow(), *inputComp->GetGameManager()->GetApplication().GetCamera(), false, aspectRatio);         compass->SetPlayerActor(mStealth.get());
          compass->InitLens( *mHudGUI->GetGUIDrawable() );
          inputComp->AddTool(
             *compass,
