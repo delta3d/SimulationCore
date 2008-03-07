@@ -1,0 +1,37 @@
+# Build script for the src directory
+import os
+
+Import('*')
+
+#modules = []
+
+#for module in modules :
+#	SConscript(dirs = [module], build_dir = os.path.join( module, 'linux-g++-'+mode ), duplicate = 0)
+
+srcs = [env.SGlob('SimCore/*.cpp')] + [env.SGlob('SimCore/Actors/*.cpp')] + [env.SGlob('SimCore/Tools/*.cpp')] + [env.SGlob('SimCore/Components/*.cpp')]
+
+deps = [ 'osgGA', 'osgViewer', 'OpenThreads', 'xerces-c', 'cal3d', 'osgDB', 'osgParticle', 
+        'osgText', 'osgFX', 'osgSim', 'osg', 'osgUtil', 'gdal', 'dtGui',
+        'dtAudio', 'dtCore', 'dtAnim',  'dtUtil', 'dtDAL', 'dtGame', 'dtAI', 'dtActors', 
+        'dtABC', 'dtGUI', 'CEGUIBase', 'CEGUIOpenGLRenderer', 'opengl', 'osgEphemeris' ] 
+
+defines = []
+definesHLA = []
+
+if env.get('ageia') != 0 :
+   deps += ['dtAgeiaPhysX', 'NxCooking', 'NxCharacter', 'NxExtensions', 'PhysXLoader']
+   defines += ['AGEIA_PHYSICS']
+   definesHLA += ['AGEIA_PHYSICS']
+
+#if env['OS'] == 'windows':
+defines += ['SIMCORE_LIBRARY']
+definesHLA += ['SIMCORE_HLA_LIBRARY']
+
+env.BuildLib('SimCore', srcs, deps, defines, prefixHeader='include/prefix/SimCorePrefix.h')
+
+SimCoreHLASrcs = [env.SGlob('SimCore/HLA/*.cpp')]
+
+env.BuildLib('SimCoreHLA', SimCoreHLASrcs, deps + ['dtHLAGM', 'SimCore' ]+ env['rtiLibs'], 
+             defines, prefixHeader='include/prefix/SimCorePrefix.h')
+
+SConscript(dirs = ["StealthViewer"], duplicate = 0)

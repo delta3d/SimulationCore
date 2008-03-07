@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="ToggleButton" Imagefile="MiniMap/gui/FO/gui/buttons_toggle.tga" NativeHorzRes="118" NativeVertRes="164" AutoScaled="true">
+   <Image Name="Normal" XPos="0" YPos="0" Width="59" Height="41" />
+   <Image Name="Hover" XPos="0" YPos="41" Width="59" Height="41" />
+   <Image Name="Pushed" XPos="0" YPos="82" Width="59" Height="41" />
+   <Image Name="Disabled" XPos="0" YPos="123" Width="59" Height="41" />
+   <Image Name="Normal_Selected" XPos="59" YPos="0" Width="59" Height="41" />
+   <Image Name="Hover_Selected" XPos="59" YPos="41" Width="59" Height="41" />
+   <Image Name="Pushed_Selected" XPos="59" YPos="82" Width="59" Height="41" />
+   <Image Name="Disabled_Selected" XPos="59" YPos="123" Width="59" Height="41" />
+</Imageset>
