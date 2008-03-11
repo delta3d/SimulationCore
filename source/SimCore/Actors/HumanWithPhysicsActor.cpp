@@ -299,6 +299,7 @@ namespace SimCore
          // and should be applied to all values of the displacement vector, 
          // not just the Z
          displacementVector.z = gravity[2];//-9.8f;
+         //displacementVector.z = 0.0;
   
          //printf("%f %f %f\n", displacementVector.x, displacementVector.y, displacementVector.z);
 
@@ -342,7 +343,8 @@ namespace SimCore
 
          if(!IsRemote())
          {
-            mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
+            if (mPhysicsHelper->GetActor() != NULL)
+               mPhysicsHelper->GetActor()->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
          }
 #endif
       }
