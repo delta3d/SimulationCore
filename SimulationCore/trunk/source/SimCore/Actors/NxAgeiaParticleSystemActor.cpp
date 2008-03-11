@@ -56,37 +56,36 @@ NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum NxAgeiaParticleSystemActor::Two
 NxAgeiaParticleSystemActor::NxAgeiaParticleSystemActor(dtGame::GameActorProxy &proxy) : dtGame::GameActor(proxy)
 , mParticleEnumForObjectType(&NxAgeiaParticleSystemActor::TwoDOrThreeDTypeEnum::THREED)
 , mSpawnerParticleTimer(0.0f)
+, mParticleEmitterRateMin(0.05f) // NI
+, mParticleEmitterRateMax(0.05f) // NI
+, mParticleLengthOfStay(60.0f)
+, mStaticObjectsTimeLength(60.0f) // this is for the particle system not each particle.... keep dont delete although it seems its used twice.
+, mParticleFadeInAmount(0.0f)
+, mParticleFadeOutInverseDeletion(3.0f)
+, mSystemsTimeTotalTimeLength(0.0f)
+, mAmountofParticlesWeWantSpawned(300)
+, mAmountOfParticlesThatHaveSpawnedTotal(0)
+, mInfiniteParticleSystem(true)
+, mObjectsStayStatic(false)
+, mObjectsStayStaticWhenHit(true)
+, mGravityEnabled(true)
+, mApplyForces(false)
+, mSelfInteracting(false)
+, mHitOutParticleLimitDontSpawnAnymore(false)
+, mIsCurrentlyOn(false)
+, mStartingPositionRandMin(0,0,0)
+, mStartingPositionRandMax(0,0,0)
+, mParentsWorldRelativeVelocityVector(0,0,0)
 , mStartingLinearVelocityScaleMin(0,0,0)
 , mStartingLinearVelocityScaleMax(0,0,0)
 , mStartingLinearVelocityScaleInnerConeCap(0,0,0) // NI, TODO
-, mStartingPositionRandMax(0,0,0)
-, mStartingPositionRandMin(0,0,0)
 , mStartingAngularVelocityScaleMin(0,0,0)
 , mStartingAngularVelocityScaleMax(0,0,0)
 , mForceVectorMin(0,0,0)
 , mForceVectorMax(0,0,0)
-, mAmountOfParticlesThatHaveSpawnedTotal(0)
-, mParticleFadeOutInverseDeletion(3.0f)
-, mParticleFadeInAmount(0)
-, mParticleLengthOfStay(60.0f)
-, mStaticObjectsTimeLength(60) // this is for the particle system not each particle.... keep dont delete although it seems its used twice.
-, mGravityEnabled(true)
-, mApplyForces(false)
-, mSelfInteracting(false)
-, mAmountofParticlesWeWantSpawned(300)
-, mInfiniteParticleSystem(true)
-, mHitOutParticleLimitDontSpawnAnymore(false)
-, mIsCurrentlyOn(false)
-, mSystemsTimeTotalTimeLength(0.0f)
-, mParentsWorldRelativeVelocityVector(0,0,0)
-, mObjectsStayStaticWhenHit(true)
-, mObjectsStayStatic(false)
 {
    mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
    mPhysicsHelper->SetBaseInterfaceClass(this);
-
-   mParticleEmitterRateMin = 0.05f; // NI
-   mParticleEmitterRateMax = 0.05f; // NI
 }
 
 ////////////////////////////////////////////////////////////////////

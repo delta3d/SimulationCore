@@ -219,15 +219,15 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
       unsigned int            mAmountOfParticlesThatHaveSpawnedTotal;
       bool                    mInfiniteParticleSystem;
       bool                    mObjectsStayStatic;
+      bool                    mObjectsStayStaticWhenHit;
       bool                    mGravityEnabled;
       bool                    mApplyForces;
       bool                    mSelfInteracting;
       bool                    mHitOutParticleLimitDontSpawnAnymore;
       bool                    mIsCurrentlyOn;
-      bool                    mObjectsStayStaticWhenHit;
       osg::Vec3               mStartingPositionRandMin;
-      osg::Vec3               mParentsWorldRelativeVelocityVector;
       osg::Vec3               mStartingPositionRandMax;
+      osg::Vec3               mParentsWorldRelativeVelocityVector;
       osg::Vec3               mStartingLinearVelocityScaleMin;
       osg::Vec3               mStartingLinearVelocityScaleMax;
       osg::Vec3               mStartingLinearVelocityScaleInnerConeCap;
