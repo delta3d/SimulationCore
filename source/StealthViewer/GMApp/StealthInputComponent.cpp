@@ -471,13 +471,13 @@ namespace StealthGM
       bool handled = true;
       switch(key)
       {
-         case osgGA::GUIEventAdapter::KEY_KP_Add:
+         case '=':
          {
             ChangeFlyMotionModelSpeed(true);
          }
          break;
    
-         case osgGA::GUIEventAdapter::KEY_KP_Subtract:
+         case '-':
          {
             ChangeFlyMotionModelSpeed(false);
          }
