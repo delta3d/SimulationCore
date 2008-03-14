@@ -355,6 +355,12 @@ namespace SimCore
              */
             osg::Vec3 GetAngularVelocityVector() const;
 
+
+            void SetFrozen(bool frozen);
+
+            bool GetFrozen() const;
+
+
             /**
              * @return true if no ground following should be performed on this actor.
              */
@@ -590,6 +596,7 @@ namespace SimCore
             bool mIsPlayerAttached;
             bool mDisabledFirepower;
             bool mDisabledMobility;
+            bool mIsFrozen;
 
             unsigned mFireLightID;
 

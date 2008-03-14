@@ -133,6 +133,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetAngularVelocityVector),
             "Sets the acceleration vector of this BaseEntity", BASE_ENTITY_GROUP));
 
+         AddProperty(new dtDAL::BooleanActorProperty("Frozen", "Frozen",
+            dtDAL::MakeFunctor(e, &BaseEntity::SetFrozen),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetFrozen),
+            "Is the entity Frozen", BASE_ENTITY_GROUP));
+
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
@@ -363,6 +368,7 @@ namespace SimCore
          mIsPlayerAttached(false),
          mDisabledFirepower(false),
          mDisabledMobility(false),
+         mIsFrozen(false),
          mFireLightID(0)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
@@ -918,6 +924,16 @@ namespace SimCore
          xform.Set(mScaleMatrixNode->getMatrix());
          xform.GetRotation(result);
          return result;
+      }
+
+      void BaseEntity::SetFrozen( bool frozen )
+      {
+         mIsFrozen = frozen;
+      }
+
+      bool BaseEntity::GetFrozen() const
+      {
+         return mIsFrozen;
       }
    }
 
