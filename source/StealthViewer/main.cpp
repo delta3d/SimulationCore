@@ -38,7 +38,7 @@
 
 #include <sstream>
 
-const int appArgc = 13;
+const int appArgc = 9;
 static char* appArgv[appArgc] = 
 {
    "GameStart",
@@ -46,12 +46,7 @@ static char* appArgv[appArgc] =
    "--statisticsInterval", "30",
    "--enableLogging", "1",
    "--enablePlayback", "1",
-   "--hasBinos", 
-   "--hasCompass",  
-   "--hasGPS",
-   "--hasNightVis"
 };
-
 
 int main(int argc, char *argv[])
 {
