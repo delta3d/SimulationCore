@@ -96,6 +96,12 @@ namespace StealthGM
       delete entryPoint;
    }
 
+   const std::string StealthGameEntryPoint::CONFIG_HAS_BINOCS("HasBinocs");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_COMPASS("HasCompass");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_GPS("HasGPS");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION("HasNightVision");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL("HasMapTool");
+
    ///////////////////////////////////////////////////////////////////////////
    StealthGameEntryPoint::StealthGameEntryPoint() :
       mEnableLogging(false),
@@ -169,8 +175,27 @@ namespace StealthGM
    }
    
    ///////////////////////////////////////////////////////////////////////////
+   static void ReadBoolConfigProperty(const std::string& name, bool& value, dtABC::Application& app)
+   {
+      std::string stringValue;
+      stringValue = app.GetConfigPropertyValue(name);
+      if (!stringValue.empty())
+      {
+         value = dtUtil::ToType<bool>(stringValue);
+      }
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::InitializeTools(dtGame::GameManager &gm)
    {
+
+      dtABC::Application& app = gm.GetApplication();
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_BINOCS, mHasBinoculars, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_COMPASS, mHasCompass, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_GPS, mHasGPS, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL, mHasMap, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION, mHasNightVis, app);
+
       // Check for enabled tools
       StealthInputComponent* inputComp = 
          dynamic_cast<StealthInputComponent*>(gm.GetComponentByName(StealthInputComponent::DEFAULT_NAME));
@@ -203,6 +228,7 @@ namespace StealthGM
             );
          mHudGUI->AddToolButton("Compass","F8");
       }
+
       if( mHasBinoculars )
       {
          SimCore::Tools::Binoculars *binos = 
@@ -307,11 +333,10 @@ namespace StealthGM
       std::vector<std::string>& weaponModelFileList = controlsStateComp->GetWeaponModelFileList();
       SimCore::WeaponTypeEnum::GetModelFileUrlList( weaponModelFileList );
 
-
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.
       InitializeTools(*app.GetGameManager());
-   
+
       // Setup Stealth Actor (ie player and camera)
       //if (mStealth == NULL)
       //{
