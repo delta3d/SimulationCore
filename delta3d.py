@@ -130,7 +130,7 @@ def TOOL_BUNDLE(env):
                                 LIBS = addToLibs, LINKFLAGS = addToLink + extraLinkFlags )
     
        if env['OS'] == 'darwin' and buildAppBundle:
-          envProg ['VERSION_NUM'] = "1.2.0"
+          envProg ['VERSION_NUM'] = "2.0.0"
           envProg ['VERSION_NAME'] = name + '.app'
           bundle = envProg.MakeBundle ('#Applications/' + name + '.app', target,
                                   'old.delta3d.' + name,
@@ -389,7 +389,7 @@ def TOOL_BUNDLE(env):
          errorLog.write('Build Configuration: Debug\n\n')
          
          if env['OS'] == 'windows':
-            env.Append( CPPDEFINES = ['WIN32', '_DEBUG', '_NOAUTOLIBMSG'],
+            env.Append( CPPDEFINES = ['WIN32', 'NOMINMAX', '_DEBUG', '_NOAUTOLIBMSG'],
                         CXXFLAGS = ['/EHsc', '/GR', '/MDd' ], #synchronous exception handling (c-?), run-time type info, multi-threaded debug dll
                         LINKFLAGS = ['/NODEFAULTLIB:LIBCMTD', '/NODEFAULTLIB:LIBCD'] ) 
          elif env['OS'] == 'linux':      
@@ -405,7 +405,7 @@ def TOOL_BUNDLE(env):
          errorLog.write('Build Configuration: Release\n\n')
          
          if env['OS'] == 'windows':
-           env.Append( CPPDEFINES = ['WIN32', 'NDEBUG', '_NOAUTOLIBMSG'],
+           env.Append( CPPDEFINES = ['WIN32', 'NOMINMAX', 'NDEBUG', '_NOAUTOLIBMSG'],
                     CXXFLAGS = ['/EHsc', '/GR', '/MD', '/Ox'], #synchronous exception handling (c-?), run-time type info, multi-threaded dll
                     LINKFLAGS = ['/NODEFAULTLIB:LIBCMT', '/NODEFAULTLIB:LIBC'] )  
          elif env['OS'] == 'linux':
@@ -430,12 +430,12 @@ def TOOL_BUNDLE(env):
       elif env['OS'] == 'linux' or env['OS'] == 'darwin':
          if env['CC'].find('gcc') >= 0 or env['CXX'].find('g++') >= 0:
             env.Append(CXXFLAGS=['-Wall'])
-            if env.has_key('CCVERSION') :
-               if int( env['CCVERSION'][:1] ) >= 4 :
-                  env.Append(CXXFLAGS=['-ftree-vectorize'])
-            if env.has_key('CXXVERSION') :
-               if int( env['CXXVERSION'][:1] ) >= 4 :
-                  env.Append(CXXFLAGS=['-ftree-vectorize'])
+            #if env.has_key('CCVERSION') :
+            #   if int( env['CCVERSION'][:1] ) >= 4 :
+                  #env.Append(CXXFLAGS=['-ftree-vectorize', '-fvisibility=hidden'])
+            #if env.has_key('CXXVERSION') :
+               #if int( env['CXXVERSION'][:1] ) >= 4 :
+                  #env.Append(CXXFLAGS=['-ftree-vectorize', '-fvisibility=hidden'])
          if env['CXX'].find('g++') >= 0:
             env.Append(CXXFLAGS=['-Wno-non-virtual-dtor'])
 
@@ -654,12 +654,14 @@ def TOOL_BUNDLE(env):
             'gdal'           : 'gdal',
             'gne'            : 'gne',
             'HawkNL'         : 'NL',
-      #      'isense'         : 'isense', # broken on intel
+            'isense'         : 'isense',
             'openal'         : 'OpenAL', 
-      #      'alut'           : 'alut',  # OSX is still on a static alut     
+      #      'alut'           : 'alut',  # OSX is still on a built-in alut     
             'ode'            : 'ode', 
             'ul'             : 'plibul', 
             'js'             : 'plibjs',  
+            'rvrutils'       : 'rvrutils',
+            'rcfgscript'     : 'rcfgscript', 
             'rbody'          : 'rbody',
             'xerces-c'       : 'Xerces',
             'opengl'         : 'OpenGL',
@@ -813,20 +815,24 @@ def TOOL_BUNDLE(env):
 
       
       if not env.GetOption('clean') :
+
+         deltaRoot='#'
+         if env['ENV'].has_key('DELTA_ROOT'):
+            deltaRoot = env['ENV']['DELTA_ROOT'] + '/'
          
-         foundnlH = CheckHeader('nl.h', ['/usr/include/hawknl','#ext/inc', '#ext/inc/NL', '#ext/inc/nl', '/usr/local/include/hawknl'])
+         foundnlH = CheckHeader('nl.h', ['/usr/include/hawknl', deltaRoot + 'ext/inc', deltaRoot + 'ext/inc/NL', deltaRoot + 'ext/inc/nl', '/usr/local/include/hawknl'])
 
          if not foundnlH: 
             print "nl.h was not found, aborting."
             env.Exit(1)
 
-         foundGdalH = CheckHeader('gdal.h', ['/usr/include/gdal','#ext/inc/gdal', '/Library/Frameworks/gdal.framework/Headers'])
+         foundGdalH = CheckHeader('gdal.h', ['/usr/include/gdal', deltaRoot + 'ext/inc/gdal', '/Library/Frameworks/gdal.framework/Headers'])
          
          if not foundGdalH: 
             print "gdal.h was not found, aborting."
             env.Exit(1)
 
-         foundCEGUIH = CheckHeader('CEGUIBase.h', ['/usr/include/CEGUI','#ext/inc/CEGUI', '/Library/Frameworks/CEGUI.framework/Headers'])
+         foundCEGUIH = CheckHeader('CEGUIBase.h', ['/usr/include/CEGUI', deltaRoot + 'ext/inc/CEGUI', '/Library/Frameworks/CEGUI.framework/Headers'])
          
          if not foundCEGUIH: 
             print "CEGUIBase.h was not found, aborting."
