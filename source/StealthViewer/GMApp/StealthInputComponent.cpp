@@ -487,7 +487,7 @@ namespace StealthGM
          case osgGA::GUIEventAdapter::KEY_Insert:
          {
             std::string developerMode;
-            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue
+            developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue
                (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
             if(developerMode == "true" || developerMode == "1")
             {
@@ -523,7 +523,7 @@ namespace StealthGM
          case 'p':
          {
             std::string developerMode;
-            developerMode = GetGameManager()->GetApplication().GetConfigPropertyValue("DeveloperMode");
+            developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
             if (developerMode == "true" || developerMode == "1")
                ToggleEntityShaders();
          }

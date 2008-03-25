@@ -175,10 +175,10 @@ namespace StealthGM
    }
    
    ///////////////////////////////////////////////////////////////////////////
-   static void ReadBoolConfigProperty(const std::string& name, bool& value, dtABC::Application& app)
+   static void ReadBoolConfigProperty(const std::string& name, bool& value, dtUtil::ConfigProperties& config)
    {
       std::string stringValue;
-      stringValue = app.GetConfigPropertyValue(name);
+      stringValue = config.GetConfigPropertyValue(name);
       if (!stringValue.empty())
       {
          value = dtUtil::ToType<bool>(stringValue);
