@@ -257,7 +257,7 @@ namespace SimCore
 
       if (mProjectPath.empty())
       {
-         mProjectPath = gm.GetApplication().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
+         mProjectPath = gm.GetConfiguration().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
       }
       
       if(!mProjectPath.empty())
@@ -418,7 +418,7 @@ namespace SimCore
       gameManager.AddComponent(*munitionsComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*animationComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      std::string useGPUSkinning = gameManager.GetApplication().GetConfigPropertyValue(
+      std::string useGPUSkinning = gameManager.GetConfiguration().GetConfigPropertyValue(
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
       dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
@@ -451,7 +451,7 @@ namespace SimCore
       // Turn on debug statistics if the option is set in the config.xml
       // Note - this makes the --statisticsInterval option obsolete.
       std::string statisticsIntervalOption;
-      statisticsIntervalOption = gameManager.GetApplication().GetConfigPropertyValue
+      statisticsIntervalOption = gameManager.GetConfiguration().GetConfigPropertyValue
          (SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS, "0");
       if (!statisticsIntervalOption.empty())
       {

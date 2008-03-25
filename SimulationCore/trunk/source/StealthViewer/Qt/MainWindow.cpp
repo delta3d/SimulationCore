@@ -325,6 +325,7 @@ namespace StealthQt
       ReconnectToHLA();
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
             const std::string& appLibName)
    {
@@ -344,6 +345,7 @@ namespace StealthQt
       mApp->Config();
    }
    
+   ///////////////////////////////////////////////////////////////////
    MainWindow::~MainWindow()
    {
       delete mUi;
@@ -1788,8 +1790,18 @@ namespace StealthQt
                                tr("and ensure they are correct."), 
                                QMessageBox::Ok);
       }
+      else if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
+      {
+         //fire the timer again if it's still running.
+         mHLAErrorTimer.start();
+      }
+      else if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
+      {
+         // cause the custom time to be updated.
+         OnTimeOfDayChanged(mUi->mCustomTimeEdit->time());
+      }
    }
-
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::PopulateEntityInfoWindow(bool notUsed)
    {
       QTableWidgetItem *currentItem = mUi->mSearchEntityTableWidget->currentItem();
@@ -1799,6 +1811,7 @@ namespace StealthQt
       PopulateEntityInfoWindow(currentItem);
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::PopulateEntityInfoWindow(QTableWidgetItem *currentItem)
    {
       unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
@@ -1854,11 +1867,13 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnPlaybackTimeMarkerSelected(const QString &text)
    {
       mUi->mPlaybackJumpToTimeMarkerPushButton->setEnabled(!text.isEmpty());
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnGenericTickTimerElapsed()
    {
       StealthGM::PreferencesEnvironmentConfigObject &envConfig = 
@@ -1873,6 +1888,7 @@ namespace StealthQt
       mUi->mWeatherLineEdit->setText(tr(envConfig.GetPrecipitationAsString().c_str()));
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::ReconnectToHLA()
    {
       // Support passing in the connection name on the command line
@@ -1932,6 +1948,7 @@ namespace StealthQt
       window.SetConnectionValues(connectionProps);
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnRefreshEntityInfoTimerElapsed()
    {
       if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
@@ -2003,6 +2020,7 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
    {
       bool isChecked = (state == Qt::Checked);
@@ -2011,6 +2029,7 @@ namespace StealthQt
       StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(isChecked);
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
    {
       if(item != NULL)
@@ -2019,6 +2038,7 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::ClearData()
    {
       // Search table results
