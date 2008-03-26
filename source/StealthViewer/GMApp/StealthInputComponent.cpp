@@ -599,7 +599,8 @@ namespace StealthGM
    
          case osgGA::GUIEventAdapter::KEY_F9:
             {
-               if(GetTool(SimCore::MessageType::BINOCULARS)->GetPlayerActor() == NULL)
+               SimCore::Tools::Tool* tool = GetTool(SimCore::MessageType::BINOCULARS);
+               if(tool != NULL && tool->GetPlayerActor() == NULL)
                {
                   GetTool(SimCore::MessageType::BINOCULARS)->SetPlayerActor(mStealthActor.get());
                }
@@ -1246,17 +1247,23 @@ namespace StealthGM
             {
                mAttachedMM->SetMaximumMouseTurnSpeed(200.0);
                mAttachedMM->SetKeyboardTurnSpeed(10.0);
+               
+               mStealthMM->SetMaximumTurnSpeed(90.0f/7.0f);
             }
             else
             {
                mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
                mAttachedMM->SetKeyboardTurnSpeed(70.0f);
+
+               mStealthMM->SetMaximumTurnSpeed(90.0f);
             }
          }
          else
          {
             mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
             mAttachedMM->SetKeyboardTurnSpeed(70.0f);
+
+            mStealthMM->SetMaximumTurnSpeed(90.0f);
          }
       }
    }
