@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>896</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -89,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -212,6 +212,19 @@
                   <property name="toolTip" >
                    <string>Selects first or third person attach mode. </string>
                   </property>
+                  <property name="currentIndex" >
+                   <number>1</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>First Person</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Third Person</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                </layout>
@@ -260,6 +273,34 @@
                   <property name="toolTip" >
                    <string>Select one of the preset performance options of customize your own. </string>
                   </property>
+                  <property name="currentIndex" >
+                   <number>2</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>Best Graphics</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Better Graphics</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Better Speed</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Best Speed</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                </layout>
@@ -363,9 +404,6 @@
                    <property name="text" >
                     <string>Near Clipping Plane</string>
                    </property>
-                   <property name="buddy" >
-                    <cstring>mGeneralNearClippingPlaneLineEdit</cstring>
-                   </property>
                   </widget>
                  </item>
                  <item row="2" column="0" >
@@ -373,23 +411,125 @@
                    <property name="text" >
                     <string>Far Clipping Plane</string>
                    </property>
-                   <property name="buddy" >
-                    <cstring>mGeneralFarClippingPlaneLineEdit</cstring>
-                   </property>
                   </widget>
                  </item>
                  <item row="1" column="1" >
-                  <widget class="QLineEdit" name="mGeneralNearClippingPlaneLineEdit" >
-                   <property name="toolTip" >
-                    <string>The distance at which the camera will cull near geometry</string>
+                  <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
+                   <property name="currentIndex" >
+                    <number>0</number>
                    </property>
+                   <item>
+                    <property name="text" >
+                     <string>0.05</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.1</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.25</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.5</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>5</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>10</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>100</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="2" column="1" >
-                  <widget class="QLineEdit" name="mGeneralFarClippingPlaneLineEdit" >
-                   <property name="toolTip" >
-                    <string>The distance at which the camera will cull far geometry</string>
+                  <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
+                   <property name="currentIndex" >
+                    <number>5</number>
                    </property>
+                   <item>
+                    <property name="text" >
+                     <string>1000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>5000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>8000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>10000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>11000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>12000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>15000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>18000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>20000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>25000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>30000</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -726,6 +866,31 @@
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
+                   <item>
+                    <property name="text" >
+                     <string>Clear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Custom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Fair</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Foggy</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Rainy</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="1" column="0" >
@@ -736,7 +901,28 @@
                   </widget>
                  </item>
                  <item row="1" column="1" >
-                  <widget class="QComboBox" name="mTimeComboBox" />
+                  <widget class="QComboBox" name="mTimeComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Dawn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Day</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Dusk</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Night</string>
+                    </property>
+                   </item>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -798,7 +984,33 @@
                   </widget>
                  </item>
                  <item row="2" column="1" >
-                  <widget class="QComboBox" name="mCustomCloudCoverComboBox" />
+                  <widget class="QComboBox" name="mCustomCloudCoverComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Clear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Few</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Scattered</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Broken</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Overcast</string>
+                    </property>
+                   </item>
+                  </widget>
                  </item>
                  <item row="0" column="0" >
                   <widget class="QLabel" name="mCustomTimeLabel" >
@@ -808,7 +1020,33 @@
                   </widget>
                  </item>
                  <item row="1" column="1" >
-                  <widget class="QComboBox" name="mCustomVisibilityComboBox" />
+                  <widget class="QComboBox" name="mCustomVisibilityComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Unlimited</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Far</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Moderate</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Limited</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Close</string>
+                    </property>
+                   </item>
+                  </widget>
                  </item>
                  <item row="1" column="0" >
                   <widget class="QLabel" name="mCustomVisibilityLabel" >
@@ -952,6 +1190,21 @@
                   <property name="toolTip" >
                    <string>Select the coordinate system to be used. This is a global change. </string>
                   </property>
+                  <item>
+                   <property name="text" >
+                    <string>MGRS</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Raw XYZ</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Lat Lon</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                </layout>
@@ -1352,6 +1605,39 @@
                    <property name="toolTip" >
                     <string>The force of the entity or entities to search for. </string>
                    </property>
+                   <property name="currentIndex" >
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>OTHER</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>FRIENDLY</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>OPPOSING</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>NEUTRAL</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>INSURGENT</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Any</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="2" column="1" >
@@ -1359,6 +1645,29 @@
                    <property name="toolTip" >
                     <string>The damage state of the entity or entities to search for. </string>
                    </property>
+                   <property name="currentIndex" >
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>No Damage</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Moderate Damage</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Destroyed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Any</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item row="2" column="0" >
@@ -2400,6 +2709,54 @@
                    <property name="toolTip" >
                     <string>Changes the speed of the scenario.</string>
                    </property>
+                   <property name="currentIndex" >
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>0.1x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.25x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.5x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1.5x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>4.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>8.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>16.0x</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>

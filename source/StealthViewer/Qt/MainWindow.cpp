@@ -157,17 +157,6 @@ namespace StealthQt
       mUi->mSearchCallSignLineEdit->installEventFilter(this);
       mUi->mSearchEntityTableWidget->installEventFilter(this);
 
-      mUi->mGeneralAttachModeComboBox->addItem(tr("First Person"));
-      mUi->mGeneralAttachModeComboBox->addItem(tr("Third Person"));
-      mUi->mGeneralAttachModeComboBox->setCurrentIndex(1);
-
-      mUi->mGeneralPerformanceComboBox->addItem(tr("Best Graphics"));
-      mUi->mGeneralPerformanceComboBox->addItem(tr("Better Graphics"));
-      mUi->mGeneralPerformanceComboBox->addItem(tr("Default"));
-      mUi->mGeneralPerformanceComboBox->addItem(tr("Better Speed"));
-      mUi->mGeneralPerformanceComboBox->addItem(tr("Best Speed"));
-      mUi->mGeneralPerformanceComboBox->setCurrentIndex(2);
-
       mUi->mGeneralAdvancedPerformanceOptionsGroupBox->hide();
       mUi->mRecordTimeMarkersGroupBox->hide();
       mUi->mPlaybackTimeMarkersGroupBox->hide();
@@ -191,61 +180,6 @@ namespace StealthQt
       mUi->mThemedSettingsGroupBox->hide();
       mUi->mCustomSettingsGroupBox->hide();
       mUi->mPlaybackOptionsGroupBox->hide();
-
-      mUi->mThemeComboBox->addItem(tr("Clear"));
-      mUi->mThemeComboBox->addItem(tr("Custom"));
-      mUi->mThemeComboBox->addItem(tr("Fair"));
-      mUi->mThemeComboBox->addItem(tr("Foggy"));
-      mUi->mThemeComboBox->addItem(tr("Rainy"));
-
-      mUi->mTimeComboBox->addItem(tr("Dawn"));
-      mUi->mTimeComboBox->addItem(tr("Day"));
-      mUi->mTimeComboBox->addItem(tr("Dusk"));
-      mUi->mTimeComboBox->addItem(tr("Night"));
-
-      mUi->mCustomVisibilityComboBox->addItem(tr("Unlimited"));
-      mUi->mCustomVisibilityComboBox->addItem(tr("Far"));
-      mUi->mCustomVisibilityComboBox->addItem(tr("Moderate"));
-      mUi->mCustomVisibilityComboBox->addItem(tr("Limited"));
-      mUi->mCustomVisibilityComboBox->addItem(tr("Close"));
-
-      mUi->mCustomCloudCoverComboBox->addItem(tr("Clear"));
-      mUi->mCustomCloudCoverComboBox->addItem(tr("Few"));
-      mUi->mCustomCloudCoverComboBox->addItem(tr("Scattered"));
-      mUi->mCustomCloudCoverComboBox->addItem(tr("Broken"));
-      mUi->mCustomCloudCoverComboBox->addItem(tr("Overcast"));
-
-      mUi->mToolsCoordinateSystemComboBox->addItem(tr("MGRS"));
-      mUi->mToolsCoordinateSystemComboBox->addItem(tr("Raw XYZ"));
-      mUi->mToolsCoordinateSystemComboBox->addItem(tr("Lat Lon"));
-
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("0.1x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("0.25x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("0.5x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("1.0x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("1.5x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("2.0x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("4.0x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("8.0x"));
-      mUi->mPlaybackPlaybackSpeedComboBox->addItem(tr("16.0x"));
-
-      mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(3);
-
-      mUi->mSearchForceComboBox->addItem(tr("OTHER"));
-      mUi->mSearchForceComboBox->addItem(tr("FRIENDLY"));
-      mUi->mSearchForceComboBox->addItem(tr("OPPOSING"));
-      mUi->mSearchForceComboBox->addItem(tr("NEUTRAL"));
-      mUi->mSearchForceComboBox->addItem(tr("INSURGENT"));
-      mUi->mSearchForceComboBox->addItem(tr("Any"));
-
-      mUi->mSearchForceComboBox->setCurrentIndex(5);
-
-      mUi->mSearchDamageStateComboBox->addItem(tr("No Damage"));
-      mUi->mSearchDamageStateComboBox->addItem(tr("Moderate Damage"));
-      mUi->mSearchDamageStateComboBox->addItem(tr("Destroyed"));
-      mUi->mSearchDamageStateComboBox->addItem(tr("Any"));
-
-      mUi->mSearchDamageStateComboBox->setCurrentIndex(3);
 
       // Cannot start up in record mode
       mUi->mRecordStartButton->setEnabled(false);
@@ -297,9 +231,7 @@ namespace StealthQt
          //setIconSize(QSize(32, 32));
       }
 
-      mUi->mGeneralNearClippingPlaneLineEdit->setValidator(mDoubleValidator);
       mUi->mGeneralLODScaleLineEdit->setValidator(mDoubleValidator);
-      mUi->mGeneralFarClippingPlaneLineEdit->setValidator(mDoubleValidator);
 
       mUi->mControlsTabWidget->setUsesScrollButtons(true);
 
@@ -471,10 +403,10 @@ namespace StealthQt
       connect(mUi->mGeneralLODScaleLineEdit,              SIGNAL(textChanged(const QString&)), 
               this,                                       SLOT(OnLODScaleChanged(const QString&)));
 
-      connect(mUi->mGeneralNearClippingPlaneLineEdit, SIGNAL(textChanged(const QString&)), 
+      connect(mUi->mGeneralNearClippingPlaneComboBox, SIGNAL(currentIndexChanged(const QString&)), 
               this,                                   SLOT(OnNearClippingPlaneChanged(const QString&)));
 
-      connect(mUi->mGeneralFarClippingPlaneLineEdit,  SIGNAL(textChanged(const QString&)), 
+      connect(mUi->mGeneralFarClippingPlaneComboBox,  SIGNAL(currentIndexChanged(const QString&)), 
               this,                                   SLOT(OnFarClipplingPlaneChanged(const QString&)));
 
       connect(mUi->mGeneralShowAdvancedOptionsCheckBox, SIGNAL(stateChanged(int)), 
@@ -1395,12 +1327,19 @@ namespace StealthQt
 
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
-      mUi->mGeneralFarClippingPlaneLineEdit->setText(QString::number(genConfig.GetFarClippingPlane()));
+      int index = mUi->mGeneralFarClippingPlaneComboBox->findText(QString::number(genConfig.GetFarClippingPlane()));
+      if (index >= 0)
+      {
+         mUi->mGeneralFarClippingPlaneComboBox->setCurrentIndex(index);
+      }
+
+      index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(genConfig.GetNearClippingPlane()));
+      if (index >= 0)
+      {
+         mUi->mGeneralNearClippingPlaneComboBox->setCurrentIndex(index);
+      }
 
       mUi->mGeneralLODScaleLineEdit->setText(QString::number(genConfig.GetLODScale()));
-      
-      mUi->mGeneralNearClippingPlaneLineEdit->setText(
-         QString::number(genConfig.GetNearClippingPlane()));
 
       if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS)
       {
