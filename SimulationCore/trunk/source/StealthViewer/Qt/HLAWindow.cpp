@@ -112,25 +112,29 @@ namespace StealthQt
 
    void HLAWindow::OnConnect(bool checked)
    {
-      if(mHLAComp != NULL)
+      if( mHLAComp == NULL )
       {
-         if(mHLAComp->GetConnectionState() == 
-            SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTED)
-         {
-            OnDisconnect();
+         QMessageBox::warning(this, tr("Error"),
+            tr("Cannot connect to network because HLA component was not initialized."), QMessageBox::Ok);
+         return;
+      }
 
-            // If the disconnect from current federation message box 
-            // is picked to cancel, this flag will be set to true
-            // in which case we need to leave this method.
-            
-            // This is done since OnDisconnect is a SLOT, it's return value 
-            // CANNOT be changed to mismatch the SIGNAL prototype. 
-            if(mCancelConnectProcess)
-            {
-               // Make sure to flip this back to false
-               mCancelConnectProcess = false;
-               return;
-            }
+      if( mHLAComp->GetConnectionState() == 
+         SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTED )
+      {
+         OnDisconnect();
+
+         // If the disconnect from current federation message box 
+         // is picked to cancel, this flag will be set to true
+         // in which case we need to leave this method.
+         
+         // This is done since OnDisconnect is a SLOT, it's return value 
+         // CANNOT be changed to mismatch the SIGNAL prototype. 
+         if(mCancelConnectProcess)
+         {
+            // Make sure to flip this back to false
+            mCancelConnectProcess = false;
+            return;
          }
       }
 
@@ -154,8 +158,8 @@ namespace StealthQt
 
       mIsConnected = true;
 
-      mUi->mDisconnectPushButton->setEnabled(true);
-      mUi->mConnectPushButton->setEnabled(false);
+      mUi->mDisconnectPushButton->setEnabled( mIsConnected );
+      mUi->mConnectPushButton->setEnabled( ! mIsConnected );
 
       // connect to federation
       OnClose();

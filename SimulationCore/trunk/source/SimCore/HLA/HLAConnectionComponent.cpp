@@ -32,6 +32,8 @@
 #include <dtActors/coordinateconfigactor.h>
 #include <dtABC/application.h>
 
+#include <dtDAL/project.h>
+
 #include <dtUtil/stringutils.h>
 
 #include <sstream>
@@ -154,32 +156,65 @@ namespace SimCore
             throw dtUtil::Exception( 
                "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
          }
+
+
+         // Determine if the specified map is valid.
+         const std::string& mapName = mMapNames[0];
+         typedef std::set<std::string> MapNameList;
+         const MapNameList& names = dtDAL::Project::GetInstance().GetMapNames();
+         if( names.find( mMapNames[0] ) == names.end() )
+         {
+            mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
+
+            std::ostringstream oss;
+            oss << "Cannot connect to network because \"" << mMapNames[0]
+            << "\" is not a valid map name." << std::endl;
+
+            // Avoid trying to reconnect to the failing map name.
+            mMapNames.clear();
+
+            throw dtUtil::Exception( oss.str(),
+               __FUNCTION__, __LINE__ );
+         }
          
 
+         // Get the other map names used in loading prototypes
+         // and other application data.
          std::vector<std::string> values;
          GetAdditionalMaps(values);
 
          mMapNames.insert(mMapNames.end(), values.begin(), values.end());
 
-         GetGameManager()->ChangeMapSet(mMapNames, false, true);
-         mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
+         try{
+            GetGameManager()->ChangeMapSet(mMapNames, false, true);
+            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
+         }
+         catch(const dtUtil::Exception &e)
+         {
+            e.LogException(dtUtil::Log::LOG_ERROR);
+            mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
+            throw e;
+         }
       }
 
       void HLAConnectionComponent::Disconnect()
       {
-         GetGameManager()->CloseCurrentMap();
-         mMapNames.clear();
-         dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
-         try
+         if( mState == &ConnectionState::STATE_CONNECTED )
          {
-            hlaComp.LeaveFederationExecution();
-         }
-         catch (const dtUtil::Exception& ex)
-         {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
-         }
+            GetGameManager()->CloseCurrentMap();
+            mMapNames.clear();
+            dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
+            try
+            {
+               hlaComp.LeaveFederationExecution();
+            }
+            catch (const dtUtil::Exception& ex)
+            {
+               ex.LogException(dtUtil::Log::LOG_ERROR);
+            }
 
-         mState = &ConnectionState::STATE_NOT_CONNECTED;
+            mState = &ConnectionState::STATE_NOT_CONNECTED;
+         }
       }
    }
 }
