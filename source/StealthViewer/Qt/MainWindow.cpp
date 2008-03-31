@@ -287,8 +287,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnHLAWindowActionTriggered()
    {
-      dtGame::GMComponent *comp = 
-         mApp->GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME);
+      dtHLAGM::HLAComponent* comp = dynamic_cast<dtHLAGM::HLAComponent*>
+         (mApp->GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
 
       if(comp == NULL)
       {
@@ -297,6 +297,7 @@ namespace StealthQt
             __FILE__, __LINE__);
       }
 
+      mIsConnectedToHLA = comp->IsConnectedToFederation();
       HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToHLA, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToHLA(QString)), this, SLOT(OnConnectToHLA(QString)));
