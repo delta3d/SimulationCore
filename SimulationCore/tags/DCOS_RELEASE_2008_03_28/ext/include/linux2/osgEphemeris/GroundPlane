@@ -1,0 +1,38 @@
+/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
+ *
+ * This library is open source and may be redistributed and/or modified under
+ * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * OpenSceneGraph Public License for more details.
+*/
+#ifndef OSG_EPHEMERIS_GROUND_PLANE_DEF
+#define OSG_EPHEMERIS_GROUND_PLANE_DEF
+
+#include <osg/Geode>
+#include <osg/Geometry>
+
+namespace osgEphemeris {
+
+    /** \class GroundPlane
+        \brief A geometric model of the ground plane at elevation 0.
+        */
+
+class GroundPlane: public osg::Geode
+{
+    public:
+        /** 
+          Constructor.
+          \param radius - the radius of the ground plane.  This should 
+                          correspond with the radius of the SkyDome
+        */
+        GroundPlane( double radius );
+};
+
+}
+
+#endif

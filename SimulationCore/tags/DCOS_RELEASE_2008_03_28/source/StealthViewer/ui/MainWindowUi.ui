@@ -1,0 +1,3282 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>896</width>
+    <height>1027</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MainWindow</string>
+  </property>
+  <property name="dockNestingEnabled" >
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget" />
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>896</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="mMenuWindow" >
+    <property name="title" >
+     <string>Window</string>
+    </property>
+    <addaction name="mActionFullScreen" />
+    <addaction name="mActionShowControls" />
+    <addaction name="mActionShowPreferences" />
+    <addaction name="mActionShowEntityInfo" />
+   </widget>
+   <widget class="QMenu" name="mMenuNetwork" >
+    <property name="title" >
+     <string>Network</string>
+    </property>
+    <addaction name="mActionHLAConnections" />
+   </widget>
+   <addaction name="mMenuWindow" />
+   <addaction name="mMenuNetwork" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QDockWidget" name="mPreferencesDockWidget" >
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle" >
+    <string>Preferences</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2" >
+    <layout class="QVBoxLayout" >
+     <property name="spacing" >
+      <number>1</number>
+     </property>
+     <property name="leftMargin" >
+      <number>1</number>
+     </property>
+     <property name="topMargin" >
+      <number>1</number>
+     </property>
+     <property name="rightMargin" >
+      <number>1</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="QTabWidget" name="mPreferencesTabWidget" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="tabPosition" >
+        <enum>QTabWidget::North</enum>
+       </property>
+       <property name="tabShape" >
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex" >
+        <number>2</number>
+       </property>
+       <property name="elideMode" >
+        <enum>Qt::ElideRight</enum>
+       </property>
+       <property name="usesScrollButtons" >
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="mPreferencesGeneralTab" >
+        <property name="accessibleName" >
+         <string>General</string>
+        </property>
+        <attribute name="title" >
+         <string>General</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" >
+           <property name="spacing" >
+            <number>6</number>
+           </property>
+           <property name="leftMargin" >
+            <number>0</number>
+           </property>
+           <property name="topMargin" >
+            <number>0</number>
+           </property>
+           <property name="rightMargin" >
+            <number>0</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBox" >
+             <property name="title" >
+              <string>Options</string>
+             </property>
+             <layout class="QVBoxLayout" >
+              <property name="spacing" >
+               <number>4</number>
+              </property>
+              <property name="leftMargin" >
+               <number>6</number>
+              </property>
+              <property name="topMargin" >
+               <number>6</number>
+              </property>
+              <property name="rightMargin" >
+               <number>6</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>6</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="mGeneralEnableCameraCollisionCheckBox" >
+                <property name="toolTip" >
+                 <string>Selecting this will prevent the camera from going under the earth.</string>
+                </property>
+                <property name="text" >
+                 <string>Keep Camera Above Ground</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="mGeneralAttachModeLabel" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text" >
+                   <string>Attach Mode</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mGeneralAttachModeComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="mGeneralAttachModeComboBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                    <horstretch>1</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip" >
+                   <string>Selects first or third person attach mode. </string>
+                  </property>
+                  <property name="currentIndex" >
+                   <number>1</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>First Person</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Third Person</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="mGeneralPerformaceLabel" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text" >
+                   <string>Performance</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mGeneralPerformanceComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="mGeneralPerformanceComboBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                    <horstretch>1</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip" >
+                   <string>Select one of the preset performance options of customize your own. </string>
+                  </property>
+                  <property name="currentIndex" >
+                   <number>2</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>Best Graphics</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Better Graphics</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Better Speed</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Best Speed</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="mGeneralShowAdvancedOptionsCheckBox" >
+                <property name="text" >
+                 <string>Show Advanced Options</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QWidget" native="1" name="widget_5" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>10</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>0</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QGroupBox" name="mGeneralAdvancedPerformanceOptionsGroupBox" >
+              <property name="title" >
+               <string>Advanced Performance Options</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>4</number>
+               </property>
+               <property name="leftMargin" >
+                <number>6</number>
+               </property>
+               <property name="topMargin" >
+                <number>6</number>
+               </property>
+               <property name="rightMargin" >
+                <number>6</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>6</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" >
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="verticalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <item row="0" column="0" >
+                  <widget class="QLabel" name="mGeneralLODScaleLabel" >
+                   <property name="text" >
+                    <string>LOD Scale</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mGeneralLODScaleLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" >
+                  <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
+                   <property name="toolTip" >
+                    <string>This is the scale value for level of detail</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" >
+                  <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
+                   <property name="text" >
+                    <string>Near Clipping Plane</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" >
+                  <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
+                   <property name="text" >
+                    <string>Far Clipping Plane</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" >
+                  <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
+                   <property name="currentIndex" >
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>0.05</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.1</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.25</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.5</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>5</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>10</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>100</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" >
+                  <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
+                   <property name="currentIndex" >
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>1000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>5000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>8000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>10000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>11000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>12000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>15000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>18000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>20000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>25000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>30000</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mPreferencesEnvironmentTab" >
+        <attribute name="title" >
+         <string>Environment</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" >
+           <property name="spacing" >
+            <number>6</number>
+           </property>
+           <property name="leftMargin" >
+            <number>0</number>
+           </property>
+           <property name="topMargin" >
+            <number>0</number>
+           </property>
+           <property name="rightMargin" >
+            <number>0</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="mWeatherGroupBox" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title" >
+              <string>Weather Options</string>
+             </property>
+             <layout class="QVBoxLayout" >
+              <property name="spacing" >
+               <number>6</number>
+              </property>
+              <property name="leftMargin" >
+               <number>9</number>
+              </property>
+              <property name="topMargin" >
+               <number>9</number>
+              </property>
+              <property name="rightMargin" >
+               <number>9</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>9</number>
+              </property>
+              <item>
+               <layout class="QVBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QRadioButton" name="mWeatherUseNetworkSettingsRadioButton" >
+                  <property name="text" >
+                   <string>Use Network Settings</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="mWeatherThemedRadioButton" >
+                  <property name="text" >
+                   <string>Themed</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="mWeatherCustomRadioButton" >
+                  <property name="text" >
+                   <string>Custom</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QWidget" native="1" name="widget_6" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>10</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>0</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QGroupBox" name="mNetSetGroupBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title" >
+               <string>Network Settings</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>9</number>
+               </property>
+               <property name="topMargin" >
+                <number>9</number>
+               </property>
+               <property name="rightMargin" >
+                <number>9</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>9</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" >
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="verticalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <item row="0" column="1" >
+                  <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
+                   <property name="toolTip" >
+                    <string>The time of the network of the current network connection</string>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                   <property name="maximumDate" >
+                    <date>
+                     <year>2000</year>
+                     <month>1</month>
+                     <day>1</day>
+                    </date>
+                   </property>
+                   <property name="displayFormat" >
+                    <string>hh:mm</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" >
+                  <widget class="QLabel" name="mVisibilityLabel_2" >
+                   <property name="text" >
+                    <string>Visibility</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" >
+                  <widget class="QLineEdit" name="mWeatherLineEdit" >
+                   <property name="toolTip" >
+                    <string>The weather of the network of the current network connection</string>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" >
+                  <widget class="QLabel" name="mNetworkTimeLabel_2" >
+                   <property name="text" >
+                    <string>Network Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" >
+                  <widget class="QLabel" name="mWeatherLabel_2" >
+                   <property name="text" >
+                    <string>Weather</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" >
+                  <widget class="QLineEdit" name="mVisibilityLineEdit" >
+                   <property name="toolTip" >
+                    <string>The visibility of the network of the current network connection</string>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="mThemedSettingsGroupBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title" >
+               <string>Themed Settings</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>9</number>
+               </property>
+               <property name="topMargin" >
+                <number>9</number>
+               </property>
+               <property name="rightMargin" >
+                <number>9</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>9</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" >
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="verticalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <item row="0" column="0" >
+                  <widget class="QLabel" name="mThemeLabel" >
+                   <property name="text" >
+                    <string>Theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" >
+                  <widget class="QComboBox" name="mThemeComboBox" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>Clear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Custom</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Fair</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Foggy</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Rainy</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" >
+                  <widget class="QLabel" name="mTimeLabel" >
+                   <property name="text" >
+                    <string>Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" >
+                  <widget class="QComboBox" name="mTimeComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Dawn</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Day</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Dusk</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Night</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="mCustomSettingsGroupBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title" >
+               <string>Custom Settings</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>9</number>
+               </property>
+               <property name="topMargin" >
+                <number>9</number>
+               </property>
+               <property name="rightMargin" >
+                <number>9</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>9</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" >
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="verticalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <item row="2" column="0" >
+                  <widget class="QLabel" name="mCustomCloudCoverLabel" >
+                   <property name="text" >
+                    <string>Cloud Cover</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" >
+                  <widget class="QComboBox" name="mCustomCloudCoverComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Clear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Few</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Scattered</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Broken</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Overcast</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" >
+                  <widget class="QLabel" name="mCustomTimeLabel" >
+                   <property name="text" >
+                    <string>Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" >
+                  <widget class="QComboBox" name="mCustomVisibilityComboBox" >
+                   <item>
+                    <property name="text" >
+                     <string>Unlimited</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Far</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Moderate</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Limited</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Close</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" >
+                  <widget class="QLabel" name="mCustomVisibilityLabel" >
+                   <property name="text" >
+                    <string>Visibility</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" >
+                  <widget class="QTimeEdit" name="mCustomTimeEdit" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="wrapping" >
+                    <bool>true</bool>
+                   </property>
+                   <property name="buttonSymbols" >
+                    <enum>QAbstractSpinBox::PlusMinus</enum>
+                   </property>
+                   <property name="accelerated" >
+                    <bool>true</bool>
+                   </property>
+                   <property name="calendarPopup" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mPreferencesToolsTab" >
+        <attribute name="title" >
+         <string>Tools</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="mToolsGeneralGroupBox" >
+           <property name="title" >
+            <string>General</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" >
+              <property name="spacing" >
+               <number>6</number>
+              </property>
+              <property name="leftMargin" >
+               <number>0</number>
+              </property>
+              <property name="topMargin" >
+               <number>0</number>
+              </property>
+              <property name="rightMargin" >
+               <number>0</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>0</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="mToolsCoordinateSystemLabel" >
+                  <property name="text" >
+                   <string>Coordinate System</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mToolsCoordinateSystemComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="mToolsCoordinateSystemComboBox" >
+                  <property name="toolTip" >
+                   <string>Select the coordinate system to be used. This is a global change. </string>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>MGRS</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Raw XYZ</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Lat Lon</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mToolsBinocularGroupBox" >
+           <property name="title" >
+            <string>Binoculars</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" >
+              <property name="spacing" >
+               <number>6</number>
+              </property>
+              <property name="leftMargin" >
+               <number>0</number>
+              </property>
+              <property name="topMargin" >
+               <number>0</number>
+              </property>
+              <property name="rightMargin" >
+               <number>0</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>0</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QCheckBox" name="mToolsShowBinocularImageCheckBox" >
+                  <property name="toolTip" >
+                   <string>Selects whether or not to render the binocular reticle. </string>
+                  </property>
+                  <property name="text" >
+                   <string>Show Binocular Image</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="mToolsShowDistanceToObjectCheckBox" >
+                <property name="toolTip" >
+                 <string>Select to show the distance to the object in front of the camera's eyepoint. </string>
+                </property>
+                <property name="text" >
+                 <string>Show Distance to Object</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
+                <property name="toolTip" >
+                 <string>Select this to print the elevation of the object being viewed by binoculars</string>
+                </property>
+                <property name="text" >
+                 <string>Show Elevation of Object</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" >
+                <property name="spacing" >
+                 <number>6</number>
+                </property>
+                <property name="leftMargin" >
+                 <number>0</number>
+                </property>
+                <property name="topMargin" >
+                 <number>0</number>
+                </property>
+                <property name="rightMargin" >
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin" >
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="mToolsMagnificationLabel" >
+                  <property name="toolTip" >
+                   <string>Select the magnification of the binoculars. The greater the magnification, the farther in they zoom. 7x is miliary standard issue. </string>
+                  </property>
+                  <property name="text" >
+                   <string>Magnification</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mToolsMagnificationSpinBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
+                  <property name="toolTip" >
+                   <string>This selects the magnification of the binoculars</string>
+                  </property>
+                  <property name="buttonSymbols" >
+                   <enum>QAbstractSpinBox::PlusMinus</enum>
+                  </property>
+                  <property name="specialValueText" >
+                   <string>x</string>
+                  </property>
+                  <property name="suffix" >
+                   <string>x</string>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>25</number>
+                  </property>
+                  <property name="value" >
+                   <number>7</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mToolsSelectionGroupBox" >
+           <property name="title" >
+            <string>Selection</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" >
+              <property name="spacing" >
+               <number>6</number>
+              </property>
+              <property name="leftMargin" >
+               <number>0</number>
+              </property>
+              <property name="topMargin" >
+               <number>0</number>
+              </property>
+              <property name="rightMargin" >
+               <number>0</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
+                <property name="toolTip" >
+                 <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
+                </property>
+                <property name="text" >
+                 <string>Automatically Attach on Selection</string>
+                </property>
+                <property name="checked" >
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="mControlsDockWidget" >
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="floating" >
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle" >
+    <string>Controls</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3" >
+    <layout class="QVBoxLayout" >
+     <property name="spacing" >
+      <number>1</number>
+     </property>
+     <property name="leftMargin" >
+      <number>1</number>
+     </property>
+     <property name="topMargin" >
+      <number>1</number>
+     </property>
+     <property name="rightMargin" >
+      <number>1</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="QTabWidget" name="mControlsTabWidget" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="tabShape" >
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex" >
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="mControlsSearchTab" >
+        <attribute name="title" >
+         <string>Search</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="mSearchOptionsGroupBox" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Minimum" hsizetype="Expanding" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Search Options</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <widget class="QWidget" native="1" name="verticalLayout_500" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>0</number>
+               </property>
+               <property name="topMargin" >
+                <number>0</number>
+               </property>
+               <property name="rightMargin" >
+                <number>0</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" >
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="horizontalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="verticalSpacing" >
+                  <number>6</number>
+                 </property>
+                 <item row="0" column="0" >
+                  <widget class="QLabel" name="mSearchCallSignLabel" >
+                   <property name="text" >
+                    <string>Call Sign</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mSearchCallSignLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" >
+                  <widget class="QLabel" name="mSearchForceLabel" >
+                   <property name="text" >
+                    <string>Force</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mSearchForceComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" >
+                  <widget class="QComboBox" name="mSearchForceComboBox" >
+                   <property name="toolTip" >
+                    <string>The force of the entity or entities to search for. </string>
+                   </property>
+                   <property name="currentIndex" >
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>OTHER</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>FRIENDLY</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>OPPOSING</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>NEUTRAL</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>INSURGENT</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Any</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" >
+                  <widget class="QComboBox" name="mSearchDamageStateComboBox" >
+                   <property name="toolTip" >
+                    <string>The damage state of the entity or entities to search for. </string>
+                   </property>
+                   <property name="currentIndex" >
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>No Damage</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Moderate Damage</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Destroyed</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>Any</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" >
+                  <widget class="QLabel" name="mSearchDamageStateLabel" >
+                   <property name="text" >
+                    <string>Damage State</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mSearchDamageStateComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1" >
+                  <widget class="QLineEdit" name="mSearchCallSignLineEdit" >
+                   <property name="toolTip" >
+                    <string>The call sign of the entity or entities to search for. </string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="mSearchSearchPushButton" >
+                   <property name="text" >
+                    <string>Search</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mSearchEntitiesGroupBox" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>10</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Entities</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <widget class="QWidget" native="1" name="verticalLayout_" >
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>0</number>
+               </property>
+               <property name="topMargin" >
+                <number>0</number>
+               </property>
+               <property name="rightMargin" >
+                <number>0</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QWidget" native="1" name="verticalLayout_6" >
+                 <layout class="QVBoxLayout" >
+                  <property name="spacing" >
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin" >
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <layout class="QHBoxLayout" >
+                    <property name="spacing" >
+                     <number>6</number>
+                    </property>
+                    <property name="leftMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin" >
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QTableWidget" name="mSearchEntityTableWidget" >
+                      <property name="sizePolicy" >
+                       <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="toolTip" >
+                       <string>Double click a cellor press the Info button for the entity's info.</string>
+                      </property>
+                      <property name="alternatingRowColors" >
+                       <bool>true</bool>
+                      </property>
+                      <property name="selectionMode" >
+                       <enum>QAbstractItemView::SingleSelection</enum>
+                      </property>
+                      <property name="selectionBehavior" >
+                       <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="sortingEnabled" >
+                       <bool>true</bool>
+                      </property>
+                      <property name="rowCount" >
+                       <number>100</number>
+                      </property>
+                      <property name="columnCount" >
+                       <number>3</number>
+                      </property>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <row/>
+                      <column/>
+                      <column/>
+                      <column/>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" >
+                    <property name="spacing" >
+                     <number>6</number>
+                    </property>
+                    <property name="leftMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin" >
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin" >
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <spacer>
+                      <property name="orientation" >
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" >
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="mSearchAttachPushButton" >
+                      <property name="toolTip" >
+                       <string>Attach to the currently selected entity.</string>
+                      </property>
+                      <property name="text" >
+                       <string>Attach</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="mSearchInfoPushButton" >
+                      <property name="toolTip" >
+                       <string>Display information about the currently selected entity. </string>
+                      </property>
+                      <property name="text" >
+                       <string>Info</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer>
+                      <property name="orientation" >
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" >
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mControlsRecordTab" >
+        <attribute name="title" >
+         <string>Record</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="mRecordOptionsGroupBox" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Options</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>4</number>
+            </property>
+            <property name="leftMargin" >
+             <number>6</number>
+            </property>
+            <property name="topMargin" >
+             <number>6</number>
+            </property>
+            <property name="rightMargin" >
+             <number>6</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>6</number>
+            </property>
+            <item>
+             <widget class="QWidget" native="1" name="mOptionsVerticalLayout" >
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>0</number>
+               </property>
+               <property name="topMargin" >
+                <number>0</number>
+               </property>
+               <property name="rightMargin" >
+                <number>0</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="mRecordStartButton" >
+                   <property name="toolTip" >
+                    <string>Start recording from present moment in the scenario. </string>
+                   </property>
+                   <property name="text" >
+                    <string>Start</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="mRecordDurationLabel" >
+                   <property name="text" >
+                    <string>Duration</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="mRecordDurationLineEdit" >
+                   <property name="enabled" >
+                    <bool>true</bool>
+                   </property>
+                   <property name="alignment" >
+                    <set>Qt::AlignRight</set>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="mRecordFileLabel" >
+                   <property name="text" >
+                    <string>File</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mRecordFileLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="mRecordFileLineEdit" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip" >
+                    <string>The output file to write data to.</string>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mRecordFilePushButton" >
+                   <property name="text" >
+                    <string>...</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="mRecordShowAdvancedOptionsCheckBox" >
+                 <property name="text" >
+                  <string>Show Advanced Options</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" native="1" name="widget_4" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>10</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>0</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QGroupBox" name="mRecordTimeMarkersGroupBox" >
+              <property name="minimumSize" >
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="title" >
+               <string>Time Markers</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>4</number>
+               </property>
+               <property name="leftMargin" >
+                <number>6</number>
+               </property>
+               <property name="topMargin" >
+                <number>6</number>
+               </property>
+               <property name="rightMargin" >
+                <number>6</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>6</number>
+               </property>
+               <item>
+                <widget class="QListWidget" name="mRecordTimeMarkersLineTextBox" >
+                 <property name="toolTip" >
+                  <string>Current time markers added to the scenario. </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="mRecordAddTimeMarkerButton" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize" >
+                    <size>
+                     <width>0</width>
+                     <height>11</height>
+                    </size>
+                   </property>
+                   <property name="toolTip" >
+                    <string>Adds a time marker at the current moment in simulation time. </string>
+                   </property>
+                   <property name="text" >
+                    <string>Add Time Marker</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QWidget" native="1" name="horizontalLayout" >
+                 <layout class="QHBoxLayout" >
+                  <property name="spacing" >
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin" >
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin" >
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QCheckBox" name="mRecordAutomaticTimeMarkersCheckBox" >
+                    <property name="toolTip" >
+                     <string>Add a time marker every minute specified in the box to the right. </string>
+                    </property>
+                    <property name="text" >
+                     <string>Auto Time Markers</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="mRecordAutomaticTimeMarkersSpinBox" >
+                    <property name="sizePolicy" >
+                     <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="buttonSymbols" >
+                     <enum>QAbstractSpinBox::PlusMinus</enum>
+                    </property>
+                    <property name="specialValueText" >
+                     <string> min</string>
+                    </property>
+                    <property name="suffix" >
+                     <string> min(s)</string>
+                    </property>
+                    <property name="maximum" >
+                     <number>30</number>
+                    </property>
+                    <property name="value" >
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mControlsPlaybackTab" >
+        <attribute name="title" >
+         <string>Playback</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" >
+           <property name="spacing" >
+            <number>6</number>
+           </property>
+           <property name="leftMargin" >
+            <number>0</number>
+           </property>
+           <property name="topMargin" >
+            <number>0</number>
+           </property>
+           <property name="rightMargin" >
+            <number>0</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" >
+             <property name="spacing" >
+              <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
+             </property>
+             <item>
+              <spacer>
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" >
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="mPlaybackSwitchToPlaybackModePushButton" >
+               <property name="toolTip" >
+                <string>Switch to playback mode. This will disconnect you from the federation and </string>
+               </property>
+               <property name="text" >
+                <string>Switch to Playback Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" >
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QWidget" native="1" name="widget_2" >
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>0</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QGroupBox" name="mPlaybackOptionsGroupBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title" >
+               <string>Options</string>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>9</number>
+               </property>
+               <property name="topMargin" >
+                <number>9</number>
+               </property>
+               <property name="rightMargin" >
+                <number>9</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>9</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="mPlaybackFileLabel" >
+                   <property name="text" >
+                    <string>File</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mRecordFileLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="mPlaybackFileLineEdit" >
+                   <property name="toolTip" >
+                    <string>The input file. This is the file that you wish to play back.</string>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mPlaybackFilePushButton" >
+                   <property name="text" >
+                    <string>...</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mPlaybackStartOverPushButton" >
+                   <property name="toolTip" >
+                    <string>Restarts the playback of the scenario</string>
+                   </property>
+                   <property name="text" >
+                    <string>|&lt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mPlaybackJumpToPrevTimeMarkerPushButton" >
+                   <property name="toolTip" >
+                    <string>Jumps to the previous time marker</string>
+                   </property>
+                   <property name="text" >
+                    <string>&lt;&lt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mPlaybackPlayPushButton" >
+                   <property name="toolTip" >
+                    <string>Plays the current scenario</string>
+                   </property>
+                   <property name="text" >
+                    <string>Play</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="mPlaybackJumpToNextTimeMarkerPushButton" >
+                   <property name="toolTip" >
+                    <string>Jumps to the next time marker. </string>
+                   </property>
+                   <property name="text" >
+                    <string>>></string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer>
+                   <property name="orientation" >
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" >
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" >
+                 <property name="spacing" >
+                  <number>6</number>
+                 </property>
+                 <property name="leftMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin" >
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin" >
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="mPlaybackPlaybackSpeedLabel" >
+                   <property name="text" >
+                    <string>Speed</string>
+                   </property>
+                   <property name="buddy" >
+                    <cstring>mPlaybackPlaybackSpeedComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="mPlaybackPlaybackSpeedComboBox" >
+                   <property name="toolTip" >
+                    <string>Changes the speed of the scenario.</string>
+                   </property>
+                   <property name="currentIndex" >
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <property name="text" >
+                     <string>0.1x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.25x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>0.5x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>1.5x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>2.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>4.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>8.0x</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text" >
+                     <string>16.0x</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="mPlaybackDurationLabel" >
+                   <property name="text" >
+                    <string>Duration</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="mPlaybackDurationLineEdit" >
+                   <property name="alignment" >
+                    <set>Qt::AlignRight</set>
+                   </property>
+                   <property name="readOnly" >
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="mPlaybackShowAdvancedOptionsCheckBox" >
+                 <property name="toolTip" >
+                  <string/>
+                 </property>
+                 <property name="text" >
+                  <string>Show Advanced Options</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" native="1" name="widget" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>10</verstretch>
+            </sizepolicy>
+           </property>
+           <layout class="QVBoxLayout" >
+            <property name="spacing" >
+             <number>0</number>
+            </property>
+            <property name="leftMargin" >
+             <number>0</number>
+            </property>
+            <property name="topMargin" >
+             <number>0</number>
+            </property>
+            <property name="rightMargin" >
+             <number>0</number>
+            </property>
+            <property name="bottomMargin" >
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QWidget" native="1" name="widget_3" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>10</verstretch>
+               </sizepolicy>
+              </property>
+              <layout class="QVBoxLayout" >
+               <property name="spacing" >
+                <number>0</number>
+               </property>
+               <property name="leftMargin" >
+                <number>0</number>
+               </property>
+               <property name="topMargin" >
+                <number>0</number>
+               </property>
+               <property name="rightMargin" >
+                <number>0</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QGroupBox" name="mPlaybackTimeMarkersGroupBox" >
+                 <property name="sizePolicy" >
+                  <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title" >
+                  <string>Time Markers</string>
+                 </property>
+                 <layout class="QVBoxLayout" >
+                  <property name="spacing" >
+                   <number>4</number>
+                  </property>
+                  <property name="leftMargin" >
+                   <number>6</number>
+                  </property>
+                  <property name="topMargin" >
+                   <number>6</number>
+                  </property>
+                  <property name="rightMargin" >
+                   <number>6</number>
+                  </property>
+                  <property name="bottomMargin" >
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QListWidget" name="mPlaybackTimeMarkersTextBox" >
+                    <property name="toolTip" >
+                     <string>Currently existing time markers in the scenario. </string>
+                    </property>
+                    <property name="layoutMode" >
+                     <enum>QListView::Batched</enum>
+                    </property>
+                    <property name="batchSize" >
+                     <number>1000</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" native="1" name="horizontalLayout_5" >
+                    <layout class="QHBoxLayout" >
+                     <property name="spacing" >
+                      <number>6</number>
+                     </property>
+                     <property name="leftMargin" >
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin" >
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin" >
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin" >
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <spacer>
+                       <property name="orientation" >
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" >
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="mPlaybackJumpToTimeMarkerPushButton" >
+                       <property name="toolTip" >
+                        <string>Go to the currently selected time marker. </string>
+                       </property>
+                       <property name="text" >
+                        <string>Jump to Time Marker</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer>
+                       <property name="orientation" >
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" >
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mControlsCameraTab" >
+        <attribute name="title" >
+         <string>Camera</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="mControlsCameraImageLabel" >
+           <property name="text" >
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="mEntityInfoDockWidget" >
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+     <horstretch>1</horstretch>
+     <verstretch>1</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="features" >
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Entity Info</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents" >
+    <property name="sizePolicy" >
+     <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+      <horstretch>1</horstretch>
+      <verstretch>1</verstretch>
+     </sizepolicy>
+    </property>
+    <layout class="QVBoxLayout" >
+     <property name="spacing" >
+      <number>1</number>
+     </property>
+     <property name="leftMargin" >
+      <number>1</number>
+     </property>
+     <property name="topMargin" >
+      <number>1</number>
+     </property>
+     <property name="rightMargin" >
+      <number>1</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="QGroupBox" name="mEntityInfoGroupBox" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title" >
+        <string>Info</string>
+       </property>
+       <layout class="QHBoxLayout" >
+        <property name="spacing" >
+         <number>4</number>
+        </property>
+        <property name="leftMargin" >
+         <number>6</number>
+        </property>
+        <property name="topMargin" >
+         <number>6</number>
+        </property>
+        <property name="rightMargin" >
+         <number>6</number>
+        </property>
+        <property name="bottomMargin" >
+         <number>6</number>
+        </property>
+        <item>
+         <widget class="QWidget" native="1" name="gridLayout_2" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QGridLayout" >
+           <property name="leftMargin" >
+            <number>0</number>
+           </property>
+           <property name="topMargin" >
+            <number>0</number>
+           </property>
+           <property name="rightMargin" >
+            <number>0</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>0</number>
+           </property>
+           <property name="horizontalSpacing" >
+            <number>6</number>
+           </property>
+           <property name="verticalSpacing" >
+            <number>6</number>
+           </property>
+           <item row="3" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoForceLineEdit" >
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" >
+            <widget class="QLabel" name="mEntityInfoForceLabel" >
+             <property name="text" >
+              <string>Force</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoForceLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" >
+            <widget class="QLabel" name="mEntityInfoLastUpdateTimeLabel" >
+             <property name="text" >
+              <string>Last Update Time</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoLastUpdateTimeLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" >
+            <widget class="QLineEdit" name="mDamageStateLineEdit" >
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" >
+            <widget class="QLabel" name="mEntityInfoCallSignLabel" >
+             <property name="text" >
+              <string>Call Sign</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoCallSignLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoRotationLineEdit" >
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoCallSignLineEdit" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" >
+            <widget class="QLabel" name="mEntityInfoRotationLabel" >
+             <property name="text" >
+              <string>Rotation</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoRotationLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoPositionLineEdit" >
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" >
+            <widget class="QLabel" name="mEntityInfoDamageStateLabel" >
+             <property name="text" >
+              <string>Damage State</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mDamageStateLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" >
+            <widget class="QLabel" name="mEntityInfoPositionLabel" >
+             <property name="text" >
+              <string>Position</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoPositionLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2" >
+            <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
+             <property name="text" >
+              <string>Auto Refresh</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionWindow" >
+   <property name="text" >
+    <string>Window</string>
+   </property>
+  </action>
+  <action name="mActionHLAConnections" >
+   <property name="text" >
+    <string>Connect ...</string>
+   </property>
+  </action>
+  <action name="mActionFullScreen" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Full Screen</string>
+   </property>
+  </action>
+  <action name="mActionShowControls" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Controls</string>
+   </property>
+  </action>
+  <action name="mActionShowPreferences" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Preferences UI</string>
+   </property>
+  </action>
+  <action name="mActionShowEntityInfo" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Entity Info UI</string>
+   </property>
+  </action>
+ </widget>
+ <tabstops>
+  <tabstop>mPreferencesTabWidget</tabstop>
+  <tabstop>mWeatherUseNetworkSettingsRadioButton</tabstop>
+  <tabstop>mWeatherThemedRadioButton</tabstop>
+  <tabstop>mWeatherCustomRadioButton</tabstop>
+  <tabstop>mToolsCoordinateSystemComboBox</tabstop>
+  <tabstop>mToolsShowBinocularImageCheckBox</tabstop>
+  <tabstop>mToolsShowDistanceToObjectCheckBox</tabstop>
+  <tabstop>mToolsMagnificationSpinBox</tabstop>
+  <tabstop>mToolsAutoAttachOnSelectionCheckBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
