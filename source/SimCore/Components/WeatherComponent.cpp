@@ -403,6 +403,13 @@ namespace SimCore
                      //                  geoOffset[1] = geoOffset[1]/360.0f*24.0f+0.5; // 0.5 to round up
                      mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
                                                                            geoOffset[1]);
+
+                     if(mDayTime.valid())
+                     {
+                        Actors::DayTimeActor* timeActor = 
+                           static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
+                        timeActor->CalcPrimeMeridianHourOffset(geoOffset[0], geoOffset[1]);
+                     }
                   }
                }
             }
