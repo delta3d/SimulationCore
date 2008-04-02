@@ -61,6 +61,8 @@ namespace SimCore
          void SetPrimeMeridianHourOffset( int hourOffset );
          int GetPrimeMeridianHourOffset() const { return mPrimeMeridianHourOffset; }
 
+         void CalcPrimeMeridianHourOffset(float lattitude, float longitude);
+
       protected:
 
          /// Destructor
