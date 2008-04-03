@@ -172,6 +172,7 @@ namespace SimCore
             CPPUNIT_TEST(TestProperties); // This will also call tests for the Atmosphere & DayTime actors.
             CPPUNIT_TEST(TestMessageProcessing);
             CPPUNIT_TEST(TestUpdateEnabling);
+            CPPUNIT_TEST(TestDayTimeActor);
 
          CPPUNIT_TEST_SUITE_END();
 
@@ -377,6 +378,26 @@ namespace SimCore
          CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 8 );
          CPPUNIT_ASSERT_MESSAGE("Positive hour offsetting should wrap around and remain between 0 and 23",
             actor->GetHour() == 2 ); // ( 24 + 18 + 8 ) % 24
+
+
+         //testing calculate prime meridian offset
+         actor->CalcPrimeMeridianHourOffset(0,0);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 0 );
+
+         actor->CalcPrimeMeridianHourOffset(0,-15);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == -1 );
+
+         actor->CalcPrimeMeridianHourOffset(0,150);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 10 );
+
+         actor->CalcPrimeMeridianHourOffset(0,-150);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == -10 );
+
+         actor->CalcPrimeMeridianHourOffset(0,-7.5);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == -1 );
+
+         actor->CalcPrimeMeridianHourOffset(0,7.5);
+         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 1);
       }
 
       //////////////////////////////////////////////////////////////
