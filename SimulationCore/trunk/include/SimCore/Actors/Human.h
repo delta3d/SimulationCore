@@ -65,7 +65,7 @@ namespace SimCore
    {
       class HumanOperator;
       class WalkRunBlend;
-      
+
       class SIMCORE_EXPORT BasicStanceEnum : public dtUtil::Enumeration
       {
             DECLARE_ENUM(BasicStanceEnum);
@@ -82,7 +82,7 @@ namespace SimCore
       {
          public:
             typedef std::map<std::string, dtAI::Operator* > NameOperMap;
-            
+
             static const std::string ANIM_STAND_READY;
             static const std::string ANIM_STAND_DEPLOYED;
             static const std::string ANIM_WALK_READY;
@@ -107,7 +107,7 @@ namespace SimCore
             static const std::string ANIM_DEAD_PRONE;
             static const std::string OPER_DEPLOYED_TO_READY;
             static const std::string OPER_READY_TO_DEPLOYED;
-            
+
             AnimationOperators(dtAI::PlannerHelper& plannerHelper, dtAnim::AnimationHelper& animHelper);
             ~AnimationOperators();
 
@@ -126,11 +126,12 @@ namespace SimCore
             typedef BaseEntityActorProxy BaseClass;
 
             static const std::string PROPERTY_SKELETAL_MESH;
+            static const std::string PROPERTY_WEAPON_MESH;
             static const std::string PROPERTY_STANCE;
             static const std::string PROPERTY_PRIMARY_WEAPON_STATE;
             static const std::string PROPERTY_MIN_RUN_VELOCITY;
             static const std::string PROPERTY_FULL_RUN_VELOCITY;
-            
+
             class SIMCORE_EXPORT StanceEnum : public dtUtil::Enumeration
             {
                   DECLARE_ENUM(StanceEnum);
@@ -149,7 +150,7 @@ namespace SimCore
                   static StanceEnum SQUATTING;
                   static StanceEnum CROUCHING;
                   static StanceEnum WADING;
-                  
+
                   BasicStanceEnum& GetAssocBasicStanceEnum();
                private:
                   StanceEnum(const std::string& name, BasicStanceEnum& assocBasicStance);
@@ -193,24 +194,24 @@ namespace SimCore
             static const std::string STATE_MOVING;
             static const std::string STATE_TRANSITION;
             static const std::string STATE_SHOT;
-            
+
             Human(dtGame::GameActorProxy& proxy);
-            
+
             /// Changes the file name used for the skeletal mesh
             void SetSkeletalMeshFile(const std::string& fileName);
             /// @return the file name used for the skeletal mesh
             const std::string& GetSkeletalMeshFile();
-            
+
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
             /// @return the human's stance 
             HumanActorProxy::StanceEnum& GetStance() const;
-            
+
             /// Changes the human's first weapon state
             void SetPrimaryWeaponState(HumanActorProxy::WeaponStateEnum& weaponState);
             /// @return the human's first weapon state 
             HumanActorProxy::WeaponStateEnum& GetPrimaryWeaponState() const;
-            
+
             /// When the state is updated, this is called internally to update the plan.
             bool GenerateNewAnimationSequence();
             /// Actually runs the planner update.
@@ -234,7 +235,12 @@ namespace SimCore
              * @return mMaxTimePerIteration
              */
             double GetMaxTimePerIteration() const { return mMaxTimePerIteration; }
-            
+
+            /// @return the numeric id of the weapon mesh within the skeletal mesh.
+            std::string GetWeaponMeshName() const { return mWeaponMeshName; }
+            /// Sets the numeric id of the weapon mesh within the skeletal mesh.
+            void SetWeaponMeshName(const std::string& meshName) { mWeaponMeshName = meshName; }
+
             /*virtual*/ void OnEnteredWorld();
             /*virtual*/ void TickRemote(const dtGame::Message& tickRemote);
             /*virtual*/ void TickLocal(const dtGame::Message& tickLocal);
@@ -246,11 +252,13 @@ namespace SimCore
             void SetupPlannerHelper();
             float GetRemainingCost(const dtAI::WorldState* pWS) const;
             bool IsDesiredState(const dtAI::WorldState* pWS) const;
-            
+            void UpdateWeapon();
+
          private:
             std::string mSkeletalMeshFileName;
             std::string mIdleAnimatableName;
             std::string mRunWalkAnimatableName;
+            std::string mWeaponMeshName;
 
             dtCore::RefPtr<osg::Node> mModelNode;
             dtCore::RefPtr<dtAnim::AnimationHelper> mAnimationHelper;
@@ -258,15 +266,15 @@ namespace SimCore
             dtAI::PlannerHelper mPlannerHelper;
             dtAI::Planner mPlanner;
             dtAI::Planner::OperatorList mCurrentPlan;
-            
+
             AnimationOperators mAnimOperators;
-            
+
             HumanActorProxy::StanceEnum* mStance;
             HumanActorProxy::WeaponStateEnum* mPrimaryWeaponStateEnum;
-            
+
             float mMinRunVelocity;
             float mFullRunVelocity;
-            
+
             dtUtil::Log& mLogger;
 
             double mMaxTimePerIteration;
@@ -299,7 +307,7 @@ namespace SimCore
       {
          public:
             typedef HumanActorProxy::WeaponStateEnum EnumValueType;
-            
+
             WeaponState();
             ~WeaponState();
 
@@ -307,8 +315,7 @@ namespace SimCore
 
             HumanActorProxy::WeaponStateEnum& GetValue() const { return GetWeaponStateEnum(); }
             void SetValue(HumanActorProxy::WeaponStateEnum& pWeaponState){ SetWeaponStateEnum(pWeaponState); }
-                        
-            
+
             HumanActorProxy::WeaponStateEnum& GetWeaponStateEnum() const;
             void SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum& newWeaponStateEnum);
 
