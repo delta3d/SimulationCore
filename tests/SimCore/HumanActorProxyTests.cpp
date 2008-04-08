@@ -81,6 +81,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanShotProne);
       CPPUNIT_TEST(TestPlanShotCrouching);
       CPPUNIT_TEST(TestStartup);
+      CPPUNIT_TEST(TestPrimaryWeapon);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -98,12 +99,33 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
       void tearDown()
       {
+         mHumanAP = NULL;
+
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
             mGM = NULL;
          }
          dtCore::System::GetInstance().Stop();
+      }
+
+      void TestPrimaryWeapon()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+
+         dtDAL::StringActorProperty* meshNameProp;
+         mHumanAP->GetProperty(SimCore::Actors::HumanActorProxy::PROPERTY_WEAPON_MESH, meshNameProp);
+         CPPUNIT_ASSERT(meshNameProp != NULL);
+
+         CPPUNIT_ASSERT_EQUAL(std::string("PrimaryWeapon"), meshNameProp->GetValue());
+         CPPUNIT_ASSERT_EQUAL(std::string("PrimaryWeapon"), human->GetWeaponMeshName());
+
+         std::string newValue("poo");
+         meshNameProp->SetValue(newValue);
+
+         CPPUNIT_ASSERT_EQUAL(newValue, meshNameProp->GetValue());
+         CPPUNIT_ASSERT_EQUAL(newValue, human->GetWeaponMeshName());
       }
 
       void TestPlanReadyToDeployed()
@@ -117,16 +139,16 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
                2U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY, (*iter)->GetName());

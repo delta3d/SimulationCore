@@ -368,16 +368,16 @@ namespace StealthQt
 
       connect(mUi->mPlaybackStartOverPushButton, SIGNAL(clicked(bool)), 
               this,                              SLOT(OnPlaybackRestartButtonClicked(bool)));
-      
+
       connect(mUi->mPlaybackJumpToPrevTimeMarkerPushButton, SIGNAL(clicked(bool)), 
               this,                                         SLOT(OnPlaybackJumpToPrevTimeMarkerButtonClicked(bool)));
-     
+
       connect(mUi->mPlaybackPlayPushButton, SIGNAL(clicked(bool)), 
               this,                         SLOT(OnPlaybackPlayButtonClicked(bool)));
 
       connect(mUi->mPlaybackJumpToNextTimeMarkerPushButton, SIGNAL(clicked(bool)), 
               this,                                         SLOT(OnPlaybackJumpToNextTimeMarkerButtonClicked(bool)));
-      
+
       connect(mUi->mPlaybackShowAdvancedOptionsCheckBox, SIGNAL(stateChanged(int)), 
               this,                                      SLOT(OnShowAdvancedPlaybackOptionsChanged(int)));
 

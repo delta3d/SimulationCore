@@ -343,6 +343,7 @@ namespace SimCore
       }
 
       const std::string HumanActorProxy::PROPERTY_SKELETAL_MESH("Skeletal Mesh");
+      const std::string HumanActorProxy::PROPERTY_WEAPON_MESH("Primary Weapon Mesh Name");
       const std::string HumanActorProxy::PROPERTY_STANCE("Stance");
       const std::string HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
       const std::string HumanActorProxy::PROPERTY_MIN_RUN_VELOCITY("Minimum Run Velocity");
@@ -352,21 +353,21 @@ namespace SimCore
       {
          SetClassName("SimCore::Actors::Human");
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       HumanActorProxy::~HumanActorProxy()
       {
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void HumanActorProxy::BuildPropertyMap()
       {
          BaseClass::BuildPropertyMap();
-         
+
          Human& human = static_cast<Human&>(GetGameActor());
-         
+
          static const std::string HUMAN_GROUP("Human");
-         
+
          RemoveProperty(BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT);
          RemoveProperty(BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT);
 
@@ -392,6 +393,14 @@ namespace SimCore
                dtDAL::MakeFunctor(human, &Human::SetPrimaryWeaponState),
                dtDAL::MakeFunctorRet(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
+
+         static const std::string PROPERTY_WEAPON_MESH_DESC
+            ("The name of the mesh in the skeletal mesh that refers to the weapon");
+         AddProperty(new dtDAL::StringActorProperty(
+               PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH, 
+               dtDAL::MakeFunctor(human, &Human::SetWeaponMeshName),
+               dtDAL::MakeFunctorRet(human, &Human::GetWeaponMeshName),
+               PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
 
 //         static const std::string PROPERTY_MIN_RUN_VELOCITY_DESC
 //            ("The Minimum velocity at which the human will begin running");
@@ -441,6 +450,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       Human::Human(dtGame::GameActorProxy& proxy) 
          : BaseEntity(proxy)
+         , mWeaponMeshName("PrimaryWeapon")
          , mAnimationHelper(new dtAnim::AnimationHelper)
          , mPlannerHelper(
                dtAI::PlannerHelper::RemainingCostFunctor(this, &Human::GetRemainingCost),
@@ -481,7 +491,7 @@ namespace SimCore
          //Setting transition to true will make the planner generate the correct initial animation.
          initialState.AddState(STATE_TRANSITION,   new dtAI::StateVariable(true));
          initialState.AddState(STATE_SHOT,         new dtAI::StateVariable(false));
-         
+
          mPlannerHelper.SetCurrentState(initialState);
       }
       
@@ -499,8 +509,9 @@ namespace SimCore
             if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
+
                HandleModelDrawToggle(IsDrawingModel());
-               
+
                //setup speed blends
                WalkRunBlend* walkRunReady = new WalkRunBlend(this);
                WalkRunBlend* walkRunDeployed = new WalkRunBlend(this);
@@ -537,7 +548,7 @@ namespace SimCore
                //initialize helper
                SetupPlannerHelper();
                UpdatePlanAndAnimations();
-               
+               UpdateWeapon();
             }
          }
       }
@@ -657,6 +668,41 @@ namespace SimCore
       void Human::SetPrimaryWeaponState(HumanActorProxy::WeaponStateEnum& weaponState)
       {
          mPrimaryWeaponStateEnum = &weaponState;
+         UpdateWeapon();
+      }
+
+      void Human::UpdateWeapon()
+      {
+         /// No weapon mesh was set.
+         if (GetWeaponMeshName().empty())
+            return;
+         
+         dtAnim::Cal3DModelWrapper* wrapper = mAnimationHelper->GetModelWrapper();
+
+         //Can't update if the wrapper is NULL.
+         if (wrapper == NULL)
+            return;
+         
+         //get all data for the meshes and emit
+         for (int meshID=0; meshID < wrapper->GetCoreMeshCount(); meshID++)
+         {
+            const std::string& nameToSend = wrapper->GetCoreMeshName(meshID);
+            if (nameToSend == GetWeaponMeshName())
+            {
+               bool visibleWeapon = *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION
+                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED;
+
+               if (visibleWeapon)
+               {
+                  wrapper->ShowMesh(meshID);
+               }
+               else
+               {
+                  wrapper->HideMesh(meshID);
+               }
+               break;
+            }
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////
