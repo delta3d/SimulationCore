@@ -206,9 +206,10 @@ void NxAgeiaTests::TestFunction()
    const std::string &SceneNameOne = "LollerzSkates";
    const std::string &SceneNameTwo = "TehMomWhichIsTeaguez";
    const std::string &SceneNameThr = "RoflCopterz";
-   component->CreateScene(SceneNameOne, NxSceneDesc(), false);
-   component->CreateScene(SceneNameTwo, NxSceneDesc(), false);
-   component->CreateScene(SceneNameThr, NxSceneDesc(), false);
+   NxSceneDesc desc;
+   component->CreateScene(SceneNameOne, desc, false);
+   component->CreateScene(SceneNameTwo, desc, false);
+   component->CreateScene(SceneNameThr, desc, false);
 
    //component->CalculatePhysics(1/60.0f);
 

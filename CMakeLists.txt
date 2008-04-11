@@ -61,16 +61,19 @@ IF(UNIX)
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-non-virtual-dtor")
 ENDIF(UNIX)
-        
+
+# PhysX needs this.
+IF (${CMAKE_SYSTEM} MATCHES "Linux")
+    ADD_DEFINITIONS(-DLINUX -DNX_DISABLE_FLUIDS)
+ENDIF (${CMAKE_SYSTEM} MATCHES "Linux")
+
 IF(WIN32)
     ADD_DEFINITIONS(-D_SCL_SECURE_NO_WARNINGS)
     ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE)
     #needed for net plugin
     SET (SimulationCore_SOCKET_LIBS wsock32)
-    # Both Cygwin and Msys need -DNOMINMAX ???
-    IF(UNIX)
-        ADD_DEFINITIONS(-DNOMINMAX)
-    ENDIF(UNIX)
+    
+    ADD_DEFINITIONS(-DNOMINMAX)
 ########################################################################################################
 # the foolowing options are MSVC specific,
 # the first SimulationCore_MSVC_VERSIONED_DLL activate a custom build-time layout that should allow to run examples and application 
@@ -151,8 +154,9 @@ ENDIF(BUILD_HLA)
 
 IF (USE_PHYSX)
    FIND_PACKAGE(PhysX REQUIRED)
+   FIND_PACKAGE(DTPhysX REQUIRED)
    
-   INCLUDE_DIRECTORIES( ${PHYSX_INCLUDE_DIR} )
+   INCLUDE_DIRECTORIES( ${PHYSX_INCLUDES} ${DTPHYSX_INCLUDE_DIR} )
    
    ADD_DEFINITIONS(-DAGEIA_PHYSICS)
 
