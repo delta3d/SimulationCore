@@ -55,7 +55,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy &proxy) : 
+      HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy &proxy) :
          Human(proxy)
       , mAcceptInput(false)
       , mNotifyChangePosition(false)

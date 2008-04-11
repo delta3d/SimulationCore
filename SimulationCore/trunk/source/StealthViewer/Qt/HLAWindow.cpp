@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  */
 #include <StealthViewer/Qt/HLAWindow.h>
-#include <StealthViewer/Qt/ui_HLAWindowUi.h>
+#include <ui_HLAWindowUi.h>
 #include <StealthViewer/Qt/HLAOptions.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
@@ -84,12 +84,20 @@ namespace StealthQt
       mUi->mReconnectOnStartupCheckBox->setChecked(connect);
    }
 
+   //////////////////////////////////////////////////////////////
    HLAWindow::~HLAWindow()
    {
       delete mUi;
       mUi = NULL;
    }
 
+   //////////////////////////////////////////////////////////////
+   QListWidget* HLAWindow::GetNetworkListWidget()
+   {
+      return mUi->mNetworkListWidget;
+   }
+
+   //////////////////////////////////////////////////////////////
    void HLAWindow::ConnectSlots()
    {
       connect(mUi->mConnectPushButton,    SIGNAL(clicked(bool)), this, SLOT(OnConnect(bool)));
@@ -100,16 +108,17 @@ namespace StealthQt
       connect(mUi->mDeletePushButton,     SIGNAL(clicked(bool)), this, SLOT(OnDelete(bool)));
    
       connect(mUi->mNetworkListWidget, 
-              SIGNAL(currentTextChanged(const QString&)), 
+              SIGNAL(currentTextChanged(const QString&)),
               this, 
               SLOT(OnCurrentTextChanged(const QString&)));
 
-      connect(&StealthViewerData::GetInstance().GetSettings(), 
+      connect(&StealthViewerData::GetInstance().GetSettings(),
                SIGNAL(ItemDeleted(QString)), 
                this, 
                SLOT(OnListItemDeleted(QString)));
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnConnect(bool checked)
    {
       if( mHLAComp == NULL )
@@ -167,6 +176,7 @@ namespace StealthQt
       accept();
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnDisconnect(bool checked)
    {
       // Check to see if we are connected first
@@ -205,6 +215,7 @@ namespace StealthQt
       }
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnClose(bool checked)
    {
       // Write the reconnect property to the settings file
@@ -218,6 +229,7 @@ namespace StealthQt
       close();
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnNew(bool checked)
    {
       HLAOptions options(this);
@@ -230,6 +242,7 @@ namespace StealthQt
       }
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnEdit(bool checked)
    {
       QListWidgetItem *currentItem = mUi->mNetworkListWidget->currentItem();
@@ -253,6 +266,7 @@ namespace StealthQt
       }
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnDelete(bool checked)
    {
       int result = 
@@ -276,6 +290,7 @@ namespace StealthQt
       settings.RemoveConnection(currentItem->text());
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnListItemDeleted(QString name)
    {
       mUi->mNetworkListWidget->clear();
@@ -283,6 +298,7 @@ namespace StealthQt
       mUi->mNetworkListWidget->addItems(settings.GetConnectionNames());
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::SetConnectionValues(QStringList &properties)
    {
       try
@@ -330,6 +346,7 @@ namespace StealthQt
       }      
    }
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnCurrentTextChanged(const QString &str)
    {
       mUi->mConnectPushButton->setEnabled(!str.isEmpty() && !mIsConnected);
@@ -338,6 +355,7 @@ namespace StealthQt
       mUi->mDeletePushButton->setEnabled(!str.isEmpty() && !mIsConnected);
    } 
 
+   //////////////////////////////////////////////////////////////
    void HLAWindow::OnListItemActivated(QListWidgetItem *item)
    {
       if(item != NULL)

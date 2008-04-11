@@ -21,6 +21,7 @@
  * @author Eddie Johnson
  */
 #include <QtGui/QDialog>
+#include <QtGui/QListWidget>
 
 namespace dtGame
 {
@@ -64,6 +65,9 @@ namespace StealthQt
 
          /// Connects to HLA
          void SetConnectionValues(QStringList &properties);
+
+         /// This exists mainly for the unit tests;
+         QListWidget* GetNetworkListWidget();
 
       signals:
 
