@@ -6,7 +6,6 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/HLAOptions.h>
-#include <StealthViewer/Qt/ui_HLAOptionsUi.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
 #include <dtCore/globals.h>

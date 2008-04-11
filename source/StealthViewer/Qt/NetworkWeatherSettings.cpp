@@ -21,7 +21,7 @@
 * @author Eddie Johnson
 */
 #include <StealthViewer/Qt/NetworkWeatherSettings.h>
-#include <StealthViewer/Qt/ui_NetworkWeatherSettingsUi.h>
+#include <ui_NetworkWeatherSettingsUi.h>
 
 namespace StealthQt
 {

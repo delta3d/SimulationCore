@@ -23,7 +23,7 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/MainWindow.h>
-#include <StealthViewer/Qt/ui_MainWindowUi.h>
+#include <ui_MainWindowUi.h>
 
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>

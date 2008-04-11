@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  */
 #include <StealthViewer/Qt/MapSelectDialog.h>
-#include <StealthViewer/Qt/ui_MapSelectDialogUi.h>
+#include <ui_MapSelectDialogUi.h>
 #include <dtDAL/project.h>
 
 namespace StealthQt

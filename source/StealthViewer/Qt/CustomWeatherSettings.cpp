@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  */
 #include <StealthViewer/Qt/CustomWeatherSettings.h>
-#include <StealthViewer/Qt/ui_CustomWeatherSettingsUi.h>
+#include <ui_CustomWeatherSettingsUi.h>
 
 namespace StealthQt
 {

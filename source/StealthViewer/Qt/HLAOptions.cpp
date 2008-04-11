@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  */
 #include <StealthViewer/Qt/HLAOptions.h>
-#include <StealthViewer/Qt/ui_HLAOptionsUi.h>
+#include <ui_HLAOptionsUi.h>
 #include <StealthViewer/Qt/MapSelectDialog.h>
 #include <StealthViewer/Qt/FederationFileResourceBrowser.h>
 #include <StealthViewer/Qt/StealthViewerData.h>

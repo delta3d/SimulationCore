@@ -1,0 +1,34 @@
+SET(LIB_NAME ${STEALTHQT_LIBRARY})
+
+INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR} ${RTIS_INCLUDE_DIR})
+
+SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/StealthViewer/Qt)
+SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/Qt)
+SET(UI_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/ui)
+
+file(GLOB UI_FILES "${UI_PATH}/*.ui")
+file(GLOB LIB_PUBLIC_HEADERS "${HEADER_PATH}/*.h")
+file(GLOB LIB_SOURCES "*.cpp")
+
+list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
+
+qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
+qt4_wrap_ui(UIC_HEADERS ${UI_FILES})
+
+#The ui files are output here, so it must be included.
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+ADD_LIBRARY(${LIB_NAME} STATIC
+    ${LIB_PUBLIC_HEADERS}
+    ${UIC_HEADERS}
+    ${LIB_SOURCES}
+    ${MOC_SOURCES}
+)
+    
+INCLUDE(ModuleInstall OPTIONAL)
+
+#little hack to get the .dll into /bin and .lib into /lib
+IF (MSVC)
+  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "/../../../../bin/")
+  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES IMPORT_PREFIX "../")
+ENDIF (MSVC)
