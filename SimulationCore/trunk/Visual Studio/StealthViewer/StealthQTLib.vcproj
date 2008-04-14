@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../../ext/include/win32;../../include/"
+				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../include/StealthViewer/Qt;../../../ext/include/win32;../../include/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="$(DELTA_INC);$(QTDIR)\include;../../include;../../../ext/include/win32;../../apps/StealthViewer/include;"
+				AdditionalIncludeDirectories="$(DELTA_INC);&quot;$(QTDIR)\include&quot;;../../include;../../include/StealthViewer/Qt;../../../ext/include/win32;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_NOAUTOLIBMSG;NOMINMAX;"
 				StringPooling="true"
 				RuntimeLibrary="2"
