@@ -677,13 +677,13 @@ namespace SimCore
          /// No weapon mesh was set.
          if (GetWeaponMeshName().empty())
             return;
-         
+
          dtAnim::Cal3DModelWrapper* wrapper = mAnimationHelper->GetModelWrapper();
 
          //Can't update if the wrapper is NULL.
          if (wrapper == NULL)
             return;
-         
+
          //get all data for the meshes and emit
          for (int meshID=0; meshID < wrapper->GetCoreMeshCount(); meshID++)
          {
@@ -733,27 +733,27 @@ namespace SimCore
          //dead is the same as the damage state being equal to destroyed.
          if (deadState->Get() != (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED))
             return false;
-         
+
          //If we are dead, ignore any other changes.  Just let's be dead, shall we :-)
          if (deadState->Get() && GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
             return true;
 
          const BasicStanceState* stanceState;
          pWS->GetState(STATE_BASIC_STANCE, stanceState);
-         
+
          if (stanceState->GetStance() != mStance->GetAssocBasicStanceEnum())
             return false;
-            
+
          const WeaponState* weaponState;
          pWS->GetState(STATE_WEAPON, weaponState);
-         
+
          HumanActorProxy::WeaponStateEnum* effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::FIRING_POSITION;
          if (*mPrimaryWeaponStateEnum != HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
             effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::DEPLOYED;
-         
+
          if (weaponState->GetWeaponStateEnum() != *effectiveWeaponState)
             return false;
-         
+
          const dtAI::StateVariable* movingState;
          pWS->GetState(STATE_MOVING, movingState);
 
@@ -831,7 +831,7 @@ namespace SimCore
             ss << "sequence " << count;
             ++count;
             generatedSequence->SetName(ss.str());
-            
+
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
                mLogger.LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
@@ -854,7 +854,7 @@ namespace SimCore
                      dtAnim::AnimationChannel* animChannel = dynamic_cast<dtAnim::AnimationChannel*>(newAnim.get());
                      if (animChannel != NULL)
                      {
-                        
+
                         float duration = animChannel->GetAnimation()->GetDuration();
                         accumulatedStartTime += (duration - blendTime);
                         animChannel->SetMaxDuration(duration);
