@@ -9,27 +9,23 @@
 #
 # Created by David Guthrie. 
 
-FIND_PATH(SIMULATIONCORE_INCLUDE_DIR dtCore/dt.h
-    ${SIMULATIONCORE_DIR}/include
-    $ENV{SIMCORE_ROOT}/inc
-    $ENV{SIMCORE_INC}
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /usr/local/include
-    /usr/include
-    /sw/include # Fink
-    /opt/local/include # DarwinPorts
-    /opt/csw/include # Blastwave
-    /opt/include
-    [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlFIND_DT_LIBRARY\\Control\\Session\ Manager\\Environment;DELTA_ROOT]/inc
-    /usr/freeware/include
+FIND_PATH(SIMULATIONCORE_INCLUDE_DIR SimCore/Export.h
+    ${CMAKE_SOURCE_DIR}/include
 )
 
-FIND_PATH( SIMULATIONCORE_EXT_DIR inc
-    ${SIMULATIONCORE_DIR}/ext
-    $ENV{SIMCORE_ROOT}/ext
+FIND_FILE( SIMULATIONCORE_EXT_DIR include
+    ${CMAKE_SOURCE_DIR}/ext
 )
 
+IF (WIN32)
+   set(SIMULATIONCORE_EXT_DIR ${SIMULATIONCORE_EXT_DIR}/win32)
+ELSE (WIN32)
+   IF (APPLE)
+      set(SIMULATIONCORE_EXT_DIR ${SIMULATIONCORE_EXT_DIR}/darwin)
+   ELSE (APPLE)
+      set(SIMULATIONCORE_EXT_DIR ${SIMULATIONCORE_EXT_DIR}/linux2)
+   ENDIF (APPLE)
+ENDIF (WIN32)
 
 SET(SIMCORE_LIBRARY SimCore)
 SET(SIMCOREHLA_LIBRARY SimCoreHLA)
