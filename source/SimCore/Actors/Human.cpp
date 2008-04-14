@@ -671,6 +671,7 @@ namespace SimCore
          UpdateWeapon();
       }
 
+      ////////////////////////////////////////////////////////////////////////////
       void Human::UpdateWeapon()
       {
          /// No weapon mesh was set.
