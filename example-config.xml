@@ -39,9 +39,16 @@ find it.  It shows an example set of values one may set
       <Property Name="DeveloperMode">true</Property>
       <Property Name="GMStatisticsInterval">0</Property>
       <Property Name="AspectRatio">1.6</Property>
+
       <Property Name="System.SimFrameRate">60</Property>
       <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
       <Property Name="System.UseFixedTimeStep">false</Property>
+
+      <Property Name="HasBinocs">true</Property>
+      <Property Name="HasCompass">false</Property>
+      <Property Name="HasGPS">false</Property>
+      <Property Name="HasNightVision">false</Property>
+      <Property Name="HasMapTool">false</Property>
     </Properties>
 
 </Application>
