@@ -123,6 +123,11 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
 namespace StealthQt
 {
    ///////////////////////////////////////////////////////////////////////////////
+   static const std::string WINDOW_TITLE( "Stealth Viewer" );
+   static const std::string WINDOW_TITLE_MODE_PLAYBACK( StealthQt::WINDOW_TITLE + " [Playback Mode]" );
+   static const std::string WINDOW_TITLE_MODE_RECORD( StealthQt::WINDOW_TITLE + " [Record Mode]" );
+
+   ///////////////////////////////////////////////////////////////////////////////
    MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName):
       mUi(new Ui::MainWindow),
       mIsPlaybackMode(false),
@@ -196,7 +201,7 @@ namespace StealthQt
       // Cannot start up in playback mode either
       EnablePlaybackButtons(false);
 
-      setWindowTitle(tr("Stealth Viewer"));
+      setWindowTitle(tr(StealthQt::WINDOW_TITLE.c_str()));
 
       mUi->mRecordDurationLineEdit->setText("0");
       mUi->mPlaybackDurationLineEdit->setText("0");
@@ -628,9 +633,18 @@ namespace StealthQt
          mDurationTimer.stop();
       }
 
+      mUi->mControlsPlaybackTab->setEnabled( ! mIsRecording );
       mUi->mRecordAddTimeMarkerButton->setEnabled(mIsRecording);
       mUi->mRecordAutomaticTimeMarkersCheckBox->setEnabled(mIsRecording);
       mUi->mRecordAutomaticTimeMarkersSpinBox->setEnabled(mIsRecording);
+
+      // Prevent network connection changes if in record mode.
+      mUi->mMenuNetwork->setEnabled( ! mIsRecording );
+
+      // Change the window title to indicate record mode.
+      const std::string& title = mIsRecording
+         ? StealthQt::WINDOW_TITLE_MODE_RECORD : StealthQt::WINDOW_TITLE;
+      setWindowTitle(tr(title.c_str()));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -766,13 +780,21 @@ namespace StealthQt
       {
          //if(recConfig.GetIsRecording())
          {
-            recConfig.StopRecording();
+            //recConfig.StopRecording();
          }
       }
 
       // Restore default state. Exited without clicking Stop
       if(mIsPlayingBack)
          OnPlaybackPlayButtonClicked();
+
+      // Prevent network connection changes if in playback mode.
+      mUi->mMenuNetwork->setEnabled( ! mIsPlaybackMode );
+
+      // Change the window title to indicate playback mode.
+      const std::string& title = mIsPlaybackMode
+         ? StealthQt::WINDOW_TITLE_MODE_PLAYBACK : StealthQt::WINDOW_TITLE;
+      setWindowTitle(tr(title.c_str()));
    }
 
    ///////////////////////////////////////////////////////////////////////////////
