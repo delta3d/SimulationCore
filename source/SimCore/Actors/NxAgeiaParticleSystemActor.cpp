@@ -380,8 +380,11 @@ void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
    dtCore::RefPtr<osg::Node> cachedOriginalNode;
    dtCore::RefPtr<osg::Node> copiedNode;
    if (!SimCore::Actors::IGActor::LoadFileStatic(resourceFile, cachedOriginalNode, copiedNode, true))
-      throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
-      std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile, __FILE__, __LINE__);
+   {
+      /*throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+      std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile, __FILE__, __LINE__);*/
+      LOG_WARNING(std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile);
+   }
 
    // Add the child to our transformable's group node
    osg::Group* g = particle.mObj->GetOSGNode()->asGroup();
