@@ -29,6 +29,7 @@
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/datetime.h>
 
 #include <dtCore/object.h>
 #include <dtCore/globals.h>
@@ -374,8 +375,6 @@ namespace StealthGM
    
       if(GetHUDState() != SimCore::Components::HUDState::HELP)
       {
-         char clin[HUDCONTROLMAXTEXTSIZE]; // general buffer to print
-   
          if( mLogController.valid() 
             && mLastLogState != &mLogController->GetLastKnownStatus().GetStateEnum() )
          {
@@ -400,9 +399,9 @@ namespace StealthGM
          } 
 
          // Set the time control to the basic sim time 
-         snprintf(clin, HUDCONTROLMAXTEXTSIZE, "%.2f", GetGameManager()->GetSimulationTime());
-         mSimTimeAndState->SetText2( std::string(clin) );
-   
+         mSimTimeAndState->SetText2( 
+            dtUtil::DateTime::ToString(GetGameManager()->GetSimulationClockTime() / 1000000, 
+            dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT) );
    
          UpdateHighDetailData();
       }
