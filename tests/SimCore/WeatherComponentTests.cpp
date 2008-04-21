@@ -339,10 +339,6 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("Time zone offset should have a new value",
             actor->GetPrimeMeridianHourOffset() == -5 );
 
-         // --- Verify the effect on the contained hour value
-         CPPUNIT_ASSERT_MESSAGE("Hour should now be 13", 
-            actor->GetHour() == 13 );
-
          // Test setting the SAME Greenwich Mean Time with while figuring in the time zone offset.
          // The following time stamp value was captured from a weather server.
          // 1166207083 == Fri Dec 15 18:24:43 2006
@@ -355,7 +351,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("Day should still be the 15", 
             actor->GetDay() == 15 );
          CPPUNIT_ASSERT_MESSAGE("Hour should still be 13", 
-            actor->GetHour() == 13 );
+            actor->GetHour() == 18 );
          CPPUNIT_ASSERT_MESSAGE("Minute should still be 24", 
             actor->GetMinute() == 24 );
          CPPUNIT_ASSERT_MESSAGE("Second should still be 43", 
@@ -366,18 +362,6 @@ namespace SimCore
          actor->SetPrimeMeridianHourOffset( 0 );
          CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 0 );
          CPPUNIT_ASSERT_MESSAGE("Original hour should still be maintained by the DayTimeActor", actor->GetHour() == 18 );
-
-         // --- Test Negative Offsetting
-         actor->SetPrimeMeridianHourOffset( -21 ); // one would expect -21 to offset hour 18 to hour -3.
-         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == -21 );
-         CPPUNIT_ASSERT_MESSAGE("Negative hour offsetting should wrap around and remain between 0 and 23",
-            actor->GetHour() == 21 ); // ( 24 + 18 - 21 ) % 24
-
-         // --- Test Positive Offsetting
-         actor->SetPrimeMeridianHourOffset( 8 ); // one would expect 8 to offset hour 18 to hour 26.
-         CPPUNIT_ASSERT( actor->GetPrimeMeridianHourOffset() == 8 );
-         CPPUNIT_ASSERT_MESSAGE("Positive hour offsetting should wrap around and remain between 0 and 23",
-            actor->GetHour() == 2 ); // ( 24 + 18 + 8 ) % 24
 
       }
 
