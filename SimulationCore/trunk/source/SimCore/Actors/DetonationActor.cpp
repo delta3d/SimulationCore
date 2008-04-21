@@ -398,7 +398,6 @@ namespace SimCore
             "Failed to create the detonation sound pointer", __FILE__, __LINE__);
 
          mSound->LoadFile(fileName.c_str());
-         mSound->ListenerRelative(true);
          AddChild(mSound.get());
          dtCore::Transform xform;
          mSound->SetTransform(xform, dtCore::Transformable::REL_CS);
