@@ -616,6 +616,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\SimCore\SimCoreVersion.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\SimCore\StealthMotionModel.h"
 				>
 			</File>

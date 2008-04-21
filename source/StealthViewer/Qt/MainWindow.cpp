@@ -51,6 +51,7 @@
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
+#include <SimCore/SimCoreVersion.h>
 
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
@@ -123,7 +124,8 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
 namespace StealthQt
 {
    ///////////////////////////////////////////////////////////////////////////////
-   static const std::string WINDOW_TITLE( "Stealth Viewer" );
+   static std::string WINDOW_TITLE_VERSION("[Unknown]");
+   static const std::string WINDOW_TITLE( "Stealth Viewer");
    static const std::string WINDOW_TITLE_MODE_PLAYBACK( StealthQt::WINDOW_TITLE + " [Playback Mode]" );
    static const std::string WINDOW_TITLE_MODE_RECORD( StealthQt::WINDOW_TITLE + " [Record Mode]" );
 
@@ -201,7 +203,12 @@ namespace StealthQt
       // Cannot start up in playback mode either
       EnablePlaybackButtons(false);
 
-      setWindowTitle(tr(StealthQt::WINDOW_TITLE.c_str()));
+      WINDOW_TITLE_VERSION = " - [Rev " + SimCore::SIMCORE_SVN_REVISION;
+      if (!SimCore::SIMCORE_SVN_DATE.empty())
+         WINDOW_TITLE_VERSION += ", " + SimCore::SIMCORE_SVN_DATE.substr(0, 10);
+      WINDOW_TITLE_VERSION += "] ";
+      std::string WinTitle(StealthQt::WINDOW_TITLE + WINDOW_TITLE_VERSION);
+      setWindowTitle(tr(WinTitle.c_str()));
 
       mUi->mRecordDurationLineEdit->setText("0");
       mUi->mPlaybackDurationLineEdit->setText("0");
@@ -643,7 +650,8 @@ namespace StealthQt
 
       // Change the window title to indicate record mode.
       const std::string& title = mIsRecording
-         ? StealthQt::WINDOW_TITLE_MODE_RECORD : StealthQt::WINDOW_TITLE;
+         ? StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION + StealthQt::WINDOW_TITLE_MODE_RECORD : 
+           StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION;
       setWindowTitle(tr(title.c_str()));
    }
 
