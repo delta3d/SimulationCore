@@ -28,6 +28,7 @@
 #include <ctime>
 #include <dtCore/environment.h>
 #include <osgEphemeris/EphemerisModel>
+#include <dtUtil/datetime.h>
 
 namespace osg
 {
@@ -88,11 +89,10 @@ namespace SimCore
 
          virtual bool IsCloudPlaneEnabled() const;
 
-         virtual void SetTimeAndDate( const int year, const int month, const int day, 
-            const int hour, const int minute, const int second );
+         const dtUtil::DateTime& GetDateTime() const;
+         void SetDateTime(const dtUtil::DateTime& dateTime);
 
-         virtual void GetTimeAndDate( int& year, int& month, int& day, 
-            int& hour, int& minute, int& second ) const;
+         void SetTimeFromSystem();
 
          //Turn the Fog on and off on the environment
          void EnableFog(bool enable);
@@ -128,20 +128,6 @@ namespace SimCore
          void SetVisibility( float distance );
          float GetVisibility ();
 
-         // Sets the time and date from a string
-         // @param timeAndDate The string to parse
-         void SetTimeAndDateString( const std::string& timeAndDate );
-
-         // Gets the time and date in a string format
-         // @return The time and date
-         std::string GetTimeAndDateString() const;
-
-         // Gets the current time and date in a string format
-         // @return The time and date, as based on real world time
-         std::string GetCurrentTimeAndDateString() const;
-
-         bool SetTimeAndDate( std::istringstream& iss );
-
          void SetLatitudeAndLongitude( float latitude, float longitude );
 
          osgEphemeris::Sphere* GetFogSphere() {return mFogSphere.get();}
@@ -154,12 +140,20 @@ namespace SimCore
          // @return The number of the Cloud texture file that is currently being used.
          int GetCloudCoverage() const;
 
+         void SetTimeAndDateString( const std::string &timeAndDate );
+         bool SetTimeAndDate( std::istringstream& iss );
+
+         std::string GetTimeAndDateString() const;
+
       protected:
 
          // Destructor
          virtual ~IGEnvironmentActor();
 
          void SetupCloudPlanes();   
+
+         //this function is called when the time on the dtCore::Environment changes
+         virtual void OnTimeChanged();
       
       private:
 

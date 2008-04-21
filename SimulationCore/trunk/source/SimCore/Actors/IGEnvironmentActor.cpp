@@ -26,6 +26,7 @@
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
+#include <SimCore/Actors/DayTimeActor.h>
 
 #include <dtABC/application.h>
 #include <dtCore/cloudplane.h>
@@ -33,6 +34,7 @@
 #include <dtCore/shadermanager.h>
 #include <dtCore/environment.h>
 #include <dtCore/camera.h>
+#include <dtCore/system.h>
 #include <dtCore/nodecollector.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/log.h>
@@ -49,7 +51,6 @@
 
 #include <osgEphemeris/EphemerisData>
 
-#include <ctime>
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -345,50 +346,38 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetTimeAndDate( const int iyear, const int imonth, const int iday, 
-         const int ihour, const int iminute, const int isecond )
+      const dtUtil::DateTime& IGEnvironmentActor::GetDateTime() const
       {
-         //printf("Hour = %d\n", hour);
-         //printf("Minute = %d\n", minute);
+         return mEnvironment->GetDateTime();
+      }
 
-         // Why do primitive parameters have const on them? It is flat out useless.
-         int year = iyear;
-         int month = imonth;
-         int day = iday;
-         int hour = ihour;
-         int minute = iminute;
-         int second = isecond;
-
-         if ((year <= -1) || (month <= -1) || (day <= -1) ||
-            (hour <= -1) || (minute <= -1) || (second <= -1) || mCurrTime <= 0 )
-         {
-            mCurrTime = time(NULL);//dtCore::GetGMT(year-1900, month-1, day, hour, minute, second);
-            tm* expandedTime = gmtime( &mCurrTime );
-            if( expandedTime != NULL )
-            {
-               year = expandedTime->tm_year+1900;
-               month = expandedTime->tm_mon+1;
-               day = expandedTime->tm_mday;
-               hour = expandedTime->tm_hour;
-               minute = expandedTime->tm_min;
-               second = expandedTime->tm_sec;
-            }
-         }
-
-         // Time being set by GetGMT might have failed mCurrTime is < 0.
-         if( mCurrTime < 0 ) { mCurrTime = 0; }
-
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetDateTime(const dtUtil::DateTime& dt)
+      {
          dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_DEBUG, __FILE__, "Sim time set to:%s",
-            asctime( localtime(&mCurrTime) ) );
+            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT));
          
-         mEphemerisModel->setAutoDateTime( false );
+         mEnvironment->SetDateTime(dt);                  
 
-         osgEphemeris::EphemerisData *data = mEphemerisModel->getEphemerisData();
+         OnTimeChanged();
+      }
 
-         //set the environment time here to?
-         mEnvironment->SetDateTime(year, month, day, hour, minute, second);                  
-         mEnvironment->Update(999.99f); //passing a large number will force an update
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetTimeFromSystem()
+      {
+         dtCore::Timer_t t = dtCore::System::GetInstance().GetSimulationClockTime();
+         dtUtil::DateTime dt = GetDateTime();
+         dt.SetTime(t / 1000000.0);
+         mEnvironment->SetDateTime(dt);
 
+         OnTimeChanged();
+      }
+
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::OnTimeChanged()
+      {
+         //when the time changes the fog color changes as well so we must update
+         //the fog color on our "FogSphere"
          osg::Vec3 fogColor;         
          mEnvironment->GetModFogColor(fogColor);
          SetFogColor(fogColor);
@@ -398,31 +387,19 @@ namespace SimCore
 
          mFogSphere->setStateSet(fogSphereStates);
 
+         //update the ephemeris with the proper time
+         mEphemerisModel->setAutoDateTime( false );
 
-         data->dateTime.setYear( year ); // DateTime uses _actual_ year (not since 1900)
-         data->dateTime.setMonth( month );    // DateTime numbers months from 1 to 12, not 0 to 11
-         data->dateTime.setDayOfMonth( day ); // DateTime numbers days from 1 to 31, not 0 to 30
-         data->dateTime.setHour( hour );
-         data->dateTime.setMinute( minute );
-         data->dateTime.setSecond( second );
-      }
+         osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
 
-      /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::GetTimeAndDate( int& year, int& month, int& day, 
-         int& hour, int& minute, int& second ) const
-      {
-         if( mCurrTime < 0 )
-         {
-            year = month = day = hour = minute = second = 0;
-            return;
-         }
-         struct tm *tmp = localtime(&mCurrTime);
-         year     = tmp->tm_year+1900;
-         month    = tmp->tm_mon+1;
-         day      = tmp->tm_mday;
-         hour     = tmp->tm_hour;
-         minute   = tmp->tm_min;
-         second   = tmp->tm_sec;
+         dtUtil::DateTime dt(GetDateTime().GetTime());
+
+         ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
+         ephem->dateTime.setMonth(dt.GetMonth());    // DateTime numbers months from 1 to 12, not 0 to 11
+         ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
+         ephem->dateTime.setHour(dt.GetHour());
+         ephem->dateTime.setMinute(dt.GetMinute());
+         ephem->dateTime.setSecond(dt.GetSecond());
       }
 
       /////////////////////////////////////////////////////////////
@@ -508,7 +485,7 @@ namespace SimCore
       }
 
 
-      /////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetTimeAndDateString( const std::string &timeAndDate )
       {
          if(timeAndDate.empty())
@@ -525,53 +502,10 @@ namespace SimCore
          }
       }
 
-      /////////////////////////////////////////////////////////////
-      std::string IGEnvironmentActor::GetTimeAndDateString() const
-      {
-         std::ostringstream oss;
-         int year, month, day, hour, min, sec;
-         GetTimeAndDate(year, month, day, hour, min, sec);
-         oss << year << '-';
-         if(month < 10)
-            oss << '0' << month << '-';
-         else
-            oss << month << '-';
-
-         if(day < 10)
-            oss << '0' << day << 'T';
-         else
-            oss << day << 'T';
-
-         if(hour < 10)
-            oss << '0' << hour << ':';
-         else
-            oss << hour << ':';
-
-         if(min < 10)
-            oss << '0' << min << ':';
-         else
-            oss << min << ':';
-
-         if(sec < 10)
-            oss << '0' << sec;
-         else
-            oss << sec;
-
-         return oss.str();
-      }
-
-      /////////////////////////////////////////////////////////////
-      std::string IGEnvironmentActor::GetCurrentTimeAndDateString() const
-      {
-         time_t currentTime;
-         time(&currentTime);
-         return dtUtil::TimeAsUTC(currentTime);
-      }
-
-      /////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////
       bool IGEnvironmentActor::SetTimeAndDate( std::istringstream& iss )
       {
-         int year, month, day, hour, min, sec;
+         unsigned year, month, day, hour, min, sec;
          char delimeter;
 
          iss >> year;
@@ -607,8 +541,18 @@ namespace SimCore
          iss >> sec;
          if( iss.fail() ) { return false; }
 
-         IGEnvironmentActor::SetTimeAndDate(year, month, day, hour, min, sec);
+         dtUtil::DateTime dt;
+         dt.SetTime(year, month, day, hour, min, sec);
+
+         SetDateTime(dt);
          return true;
+      }
+
+      std::string IGEnvironmentActor::GetTimeAndDateString() const
+      {
+         dtUtil::DateTime dt;
+         dt.SetToLocalTime();
+         return dt.ToString();
       }
 
 

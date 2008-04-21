@@ -80,13 +80,6 @@ namespace SimCore
          mPrimeMeridianHourOffset = hourOffset;
       }
 
-      void DayTimeActor::CalcPrimeMeridianHourOffset(float lattitude, float longitude)
-      {
-         float offset = 7.5f;
-         if(longitude < 0.0f) offset = -offset;
-         mPrimeMeridianHourOffset = (longitude + offset) / 15.0f;
-      }
-
       //////////////////////////////////////////////////////////
       // Proxy code
       //////////////////////////////////////////////////////////

@@ -36,6 +36,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/environment.h>
 #include <dtCore/isector.h>
+#include <dtCore/system.h>
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -136,16 +137,7 @@ namespace SimCore
          if( dayTimeActor != NULL )
          {
             time_t timeStamp = time(NULL);
-            tm* currTime = localtime( &timeStamp );
-            if( currTime != NULL )
-            {
-               dayTimeActor->SetYear( currTime->tm_year );
-               dayTimeActor->SetMonth( currTime->tm_mon );
-               dayTimeActor->SetDay( currTime->tm_mday );
-               dayTimeActor->SetHour( currTime->tm_hour );
-               dayTimeActor->SetMinute( currTime->tm_min );
-               dayTimeActor->SetSecond( currTime->tm_sec );
-            }
+            dayTimeActor->SetTime(timeStamp);
             GetGameManager()->AddActor(*mDayTime,false,false);
          }
       }
@@ -303,6 +295,8 @@ namespace SimCore
                osg::Vec3 pos;
                positionTransform.GetTranslation(pos);
                mEphemerisEnvironmentActor->SetSkyDomesCenter(pos);
+               
+               //mEphemerisEnvironmentActor->SetTimeFromSystem();               
             }
 
             return;
@@ -370,7 +364,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::UpdateDayTime()
       {
-         if(!mUpdatesEnabled || !mEphemerisEnvironmentActor.valid())
+         if(!mEphemerisEnvironmentActor.valid())
             return;
 
          // Update the time of day
@@ -404,12 +398,9 @@ namespace SimCore
                      mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
                                                                            geoOffset[1]);
 
-                     if(mDayTime.valid())
-                     {
-                        Actors::DayTimeActor* timeActor = 
-                           static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
-                        timeActor->CalcPrimeMeridianHourOffset(geoOffset[0], geoOffset[1]);
-                     }
+                     dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+                     dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
+                     mEphemerisEnvironmentActor->SetDateTime(dt);
                   }
                }
             }
@@ -425,20 +416,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::UpdateDateAndTime()
       {
-         if(!mDayTime.valid())
+         if(!mUpdatesEnabled || !mDayTime.valid() || !mEphemerisEnvironmentActor.valid())
             return;
 
          Actors::DayTimeActor* timeActor = 
-            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
+            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());         
 
-         // Change the environment time
-         mEphemerisEnvironmentActor->SetTimeAndDate(
-            timeActor->GetYear()+1900,
-            timeActor->GetMonth()+1,
-            timeActor->GetDay(),
-            timeActor->GetHour(),
-            timeActor->GetMinute(),
-            timeActor->GetSecond());
+         dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+         dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
+         dt.SetTime(timeActor->GetTime());
+
+         dtCore::System::GetInstance().SetSimulationClockTime(dt.GetGMTTime() * 1000000);
+         mEphemerisEnvironmentActor->SetTimeFromSystem();   
       }
 
       //////////////////////////////////////////////////////////

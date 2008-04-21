@@ -286,7 +286,7 @@ namespace SimCore
 
                   sec = dayTimeActor->GetSecond();
                   minute = dayTimeActor->GetMinute(); 
-                  hour = dayTimeActor->GetHour() - dayTimeActor->GetPrimeMeridianHourOffset();
+                  hour = dayTimeActor->GetHour();
                   day = dayTimeActor->GetDay();
                   month = dayTimeActor->GetMonth();
                   year = dayTimeActor->GetYear()+1900;
