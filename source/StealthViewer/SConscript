@@ -107,7 +107,7 @@ if env['ENV'].has_key('QTDIR')  :
          
       target = parts[len(parts)-1][:-2]
          
-      env['QT4_MOCFROMHFLAGS'] =['-Iapps/StealthViewer/include']
+      env['QT4_MOCFROMHFLAGS'] =['-Iinclude/StealthViewer/Qt']
       moc_targets.append(env.Moc4(target=target, source=currHeader))
 
    initialSources = env.SGlob('Qt/*.cpp')
@@ -122,16 +122,17 @@ if env['ENV'].has_key('QTDIR')  :
       if env['MSVS']['VERSION'] < 8.0 :
          libSources += env.RES( '#apps\StealthViewer\StealthQt.rc' )
 
+   env.Append(CPPPATH = ['#include/StealthViewer/Qt'])
    staticLib = env.BuildLib('StealthQt', libSources, [], extraDefines = cppDefines, prefixHeader = 'include/prefix/StealthQtPrefix.h', staticLib = True)
    app = env.BuildProgram('StealthQt', ['main.cpp'], libs + [ 'StealthQt', 'StealthGMApp' ], extraDefines = cppDefines, prefixHeader = 'include/prefix/StealthQtPrefix.h')
 
-   result = True      
+   result = True
    if (app == '[]') :
       result = 'false'
    else :
       result = 'true'
-   
+
    if (result == 'false') :
       errorLog.write("Failed to build the Stealth Viewer Application.\n")
-   
+
    Return('result')
