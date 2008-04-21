@@ -296,7 +296,7 @@ namespace SimCore
                positionTransform.GetTranslation(pos);
                mEphemerisEnvironmentActor->SetSkyDomesCenter(pos);
                
-               //mEphemerisEnvironmentActor->SetTimeFromSystem();               
+               mEphemerisEnvironmentActor->SetTimeFromSystem();               
             }
 
             return;
@@ -427,7 +427,7 @@ namespace SimCore
          dt.SetTime(timeActor->GetTime());
 
          dtCore::System::GetInstance().SetSimulationClockTime(dt.GetGMTTime() * 1000000);
-         mEphemerisEnvironmentActor->SetTimeFromSystem();   
+         //mEphemerisEnvironmentActor->SetTimeFromSystem();   
       }
 
       //////////////////////////////////////////////////////////
