@@ -28,8 +28,9 @@
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 
 #include <dtUtil/mathdefines.h>
-
+#include <dtCore/system.h>
 #include <dtGame/gamemanager.h>
+#include <dtUtil/datetime.h>
 
 namespace StealthGM
 {
@@ -71,6 +72,7 @@ namespace StealthGM
       SimCore::Components::WeatherComponent &weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*component);
       SimCore::Actors::UniformAtmosphereActorProxy *atmosphereProxy = weatherComp.GetAtmosphereActor();
       SimCore::Actors::DayTimeActorProxy *dayTimeProxy = weatherComp.GetDayTimeActor();
+      SimCore::Actors::IGEnvironmentActor *igEnv = weatherComp.GetEphemerisEnvironment();
 
       // Special case
       // If we are in network mode, our values need to be set from the 
@@ -84,9 +86,15 @@ namespace StealthGM
             SimCore::Actors::DayTimeActor &dayActor = 
                static_cast<SimCore::Actors::DayTimeActor&>(dayTimeProxy->GetGameActor());
 
-            mNetworkHour    = dayActor.GetHour();
-            mNetworkMinute  = dayActor.GetMinute();
-            mNetworkSeconds = dayActor.GetSecond();
+
+            if(igEnv != NULL)
+            {
+               dtUtil::DateTime dt = igEnv->GetDateTime();
+
+               mNetworkHour    = dt.GetHour();
+               mNetworkMinute  = dt.GetMinute();
+               mNetworkSeconds = dt.GetSecond();
+            }           
          }
 
          // Visibility and weather (precipitation)
@@ -105,25 +113,19 @@ namespace StealthGM
       if(!IsUpdated())
          return;
 
-      SimCore::Actors::IGEnvironmentActor *igEnv = weatherComp.GetEphemerisEnvironment();
 
       // Turn updates in the component off or on 
-      weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());
+      weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());      
 
-      if(igEnv != NULL)
+      if(igEnv != NULL && GetUseCustomSettings())
       {
-         if(GetUseCustomSettings())
-         {
-            int year, mon, day, hour, min, sec;
-            igEnv->GetTimeAndDate(year, mon, day, hour, min, sec);
+         dtUtil::DateTime dt = igEnv->GetDateTime();
+         dt.SetHour(mCustomHour);
+         dt.SetMinute(mCustomMinute);
+         dt.SetSecond(mCustomSeconds);
 
-            if(year >= 2038) 
-               year = 2030;
-            else if(year <= 1970) 
-               year = 1971;
-
-            igEnv->SetTimeAndDate(year, mon, day, mCustomHour, mCustomMinute, mCustomSeconds);
-         }
+         dtCore::System::GetInstance().SetSimulationClockTime(dt.GetTime() * 1000000);
+         igEnv->SetTimeFromSystem();
       }
       
       SetIsUpdated(false);

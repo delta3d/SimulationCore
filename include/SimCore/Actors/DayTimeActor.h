@@ -46,7 +46,7 @@ namespace SimCore
 
          int GetSecond() const { return mExpandedTime.tm_sec; }
          int GetMinute() const { return mExpandedTime.tm_min; }
-         int GetHour() const { return (24+mExpandedTime.tm_hour+mPrimeMeridianHourOffset)%24; }
+         int GetHour() const { return (24+mExpandedTime.tm_hour)%24; }
          int GetDay() const { return mExpandedTime.tm_mday; }
          int GetMonth() const { return mExpandedTime.tm_mon; }
          int GetYear() const { return mExpandedTime.tm_year; }
@@ -60,8 +60,6 @@ namespace SimCore
 
          void SetPrimeMeridianHourOffset( int hourOffset );
          int GetPrimeMeridianHourOffset() const { return mPrimeMeridianHourOffset; }
-
-         void CalcPrimeMeridianHourOffset(float lattitude, float longitude);
 
       protected:
 

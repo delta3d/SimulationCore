@@ -97,7 +97,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;&quot;$(TargetPath)&quot;"
+				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -181,7 +181,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;../../bin;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT) &#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA) &#x0D;&#x0A;&quot;$(TargetPath)&quot;"
+				CommandLine="set PATH=$(PATH);$(DELTA_ROOT)\bin;$(DELTA_ROOT)\ext\bin;../../bin;&#x0D;&#x0A;set DELTA_ROOT=$(DELTA_ROOT)&#x0D;&#x0A;set DELTA_DATA=$(DELTA_DATA)&#x0D;&#x0A;&quot;$(TargetPath)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -219,14 +219,6 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\SimCore\GameAppComponentTests.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\SimCore\HLAConfigTests.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\SimCore\HLATests.cpp"
 				>
 			</File>
 			<File
