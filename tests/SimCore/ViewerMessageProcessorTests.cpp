@@ -243,7 +243,7 @@ namespace SimCore
          // The math is seems mystical here, but 47 should be the value in seconds because the
          // the average latencey based on the send and receive times should say we should add 2 seconds
          // to the clock to make it sync up.
-         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(47), dtCore::Timer_t(mGM->GetSimulationClockTime() / 1e6L)); 
+         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(47), dtCore::Timer_t(mGM->GetSimulationTime() / 1e6L)); 
          CPPUNIT_ASSERT(!mGM->IsPaused());
 
          /// The processor currently takes all time-sync messages.
@@ -279,7 +279,7 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          // this is 51 because the time latency was 2 seconds but with a scale of 3.
-         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(51), dtCore::Timer_t(mGM->GetSimulationClockTime() / 1e6L)); 
+         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(51), dtCore::Timer_t(mGM->GetSimulationTime() / 1e6L)); 
          
          CPPUNIT_ASSERT_EQUAL_MESSAGE("After handling a time value message, the scale on the gm should have been set to match.", 
                timeValue->GetTimeScale(), mGM->GetTimeScale());
@@ -300,7 +300,7 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          // this is 45 because the message send 45 and the time does not pass when paused.
-         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(45), dtCore::Timer_t(mGM->GetSimulationClockTime() / 1e6L)); 
+         CPPUNIT_ASSERT_EQUAL(dtCore::Timer_t(45), dtCore::Timer_t(mGM->GetSimulationTime() / 1e6L)); 
          
          CPPUNIT_ASSERT(mGM->IsPaused());
       }
