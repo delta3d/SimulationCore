@@ -126,8 +126,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    static std::string WINDOW_TITLE_VERSION("[Unknown]");
    static const std::string WINDOW_TITLE( "Stealth Viewer");
-   static const std::string WINDOW_TITLE_MODE_PLAYBACK( StealthQt::WINDOW_TITLE + " [Playback Mode]" );
-   static const std::string WINDOW_TITLE_MODE_RECORD( StealthQt::WINDOW_TITLE + " [Record Mode]" );
+   static const std::string WINDOW_TITLE_MODE_PLAYBACK( " [Playback Mode]" );
+   static const std::string WINDOW_TITLE_MODE_RECORD( " [Record Mode]" );
 
    ///////////////////////////////////////////////////////////////////////////////
    MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName):
@@ -801,7 +801,8 @@ namespace StealthQt
 
       // Change the window title to indicate playback mode.
       const std::string& title = mIsPlaybackMode
-         ? StealthQt::WINDOW_TITLE_MODE_PLAYBACK : StealthQt::WINDOW_TITLE;
+         ? StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION + StealthQt::WINDOW_TITLE_MODE_PLAYBACK : 
+           StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION;
       setWindowTitle(tr(title.c_str()));
    }
 
