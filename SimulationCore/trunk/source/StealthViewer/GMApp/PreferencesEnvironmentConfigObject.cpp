@@ -125,7 +125,7 @@ namespace StealthGM
          dt.SetSecond(mCustomSeconds);
 
          dtCore::System::GetInstance().SetSimulationClockTime(dt.GetTime() * 1000000);
-         igEnv->SetTimeFromSystem();
+         //igEnv->SetTimeFromSystem();
       }
       
       SetIsUpdated(false);
