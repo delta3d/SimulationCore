@@ -47,23 +47,26 @@
 #    to use Link Directories.
 #
 
-SET(PHYSX_INCLUDE_PATH_DESCRIPTION "The Base directory containing the PhysX include files. E.g /usr/include/PhysX/2.8.0 or C:\\PhysX\\2.8.0")
+SET(PHYSX_INCLUDE_PATH_DESCRIPTION "The Base directory containing the PhysX include files. E.g /usr/include/PhysX/2.8.0 or C:/Program\ Files/Ageia\ Technologies/SDK/2.8.0")
 
 SET(PHYSX_DIR_MESSAGE "Set the PHYSX_INCLUDE_DIR cmake cache entry to the ${PHYSX_INCLUDE_PATH_DESCRIPTION}")
 
 SET(PHYSX_DIR_SEARCH $ENV{PHYSX_INC})
 
-SET(PHYSX_DIR_SEARCH
-  ${PHYSX_DIR_SEARCH}
-  $ENV{DELTA_ROOT}/ext/inc
-  /usr/include/PhysX
-)
-
-# Add in some path suffixes. These will have to be updated whenever a new Boost version comes out.
 SET(VERSION_SUFFIX_FOR_PATH
    v2.8.0
    v2.7.3
    v2.7.2
+)
+
+# Add in some path suffixes. These will have to be updated whenever a new Boost version comes out.
+
+SET(PHYSX_DIR_SEARCH
+  ${PHYSX_DIR_SEARCH}
+  ${DELTA3D_EXT_DIR}/inc
+  /usr/include/PhysX
+  "C:/Program Files/AGEIA Technologies/AGEIA PhysX SDK"
+  "C:/Program Files/AGEIA Technologies/SDK"
 )
 
 #
@@ -136,9 +139,11 @@ SET(PHYSX_LIB_DIR_SEARCH $ENV{PHYSX_LIB})
 
 SET(PHYSX_LIB_DIR_SEARCH
    ${PHYSX_LIB_DIR_SEARCH}
-   $ENV{DELTA_ROOT}/ext/lib
+   ${DELTA_DIR}/ext/lib
    /usr/lib/PhysX
+   ${PHYSX_BASE_INCLUDE_DIR}/lib/Win32
 )
+
 FIND_FILE(PHYSX_LIBRARY_DIR NAMES ${VERSION_SUFFIX_FOR_PATH} PATHS
 
   # Look in other places.
@@ -147,6 +152,12 @@ FIND_FILE(PHYSX_LIBRARY_DIR NAMES ${VERSION_SUFFIX_FOR_PATH} PATHS
   # Help the user find it if we cannot.
   DOC "Set PHYSX_LIB_DIR_SEARCH to set the base path to search for PhysX versions."
 )
+
+# If we didn't find version number directory, just set the search path and let the library finder
+# sort it out.
+IF (NOT PHYSX_LIBRARY_DIR)
+   SET(PHYSX_LIBRARY_DIR ${PHYSX_LIB_DIR_SEARCH})
+ENDIF (NOT PHYSX_LIBRARY_DIR)
 
 MACRO(FIND_PHYSX_LIBRARY MYLIBRARY MYLIBRARYNAME)
 
@@ -162,7 +173,6 @@ MACRO(FIND_PHYSX_LIBRARY MYLIBRARY MYLIBRARYNAME)
         /opt/local/lib
         /opt/csw/lib
         /opt/lib
-        [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session\ Manager\\Environment;PLIB_ROOT]/lib
         /usr/freeware/lib64
     )
 	
@@ -179,7 +189,7 @@ FIND_PHYSX_LIBRARY(PHYSX_CHARACTER_LIBRARY "${PHYSX_LIBCHARACTER_LIST}")
 FIND_PHYSX_LIBRARY(PHYSX_LOADER_LIBRARY "${PHYSX_LIBLOADER_LIST}")
 
 IF (WIN32)
-   FIND_PHYSX_LIBRARY(PHYSX_EXTENSIONS_LIBRARY "${PHYSX_LIBEXTENSIONS_LIST}")
+   #FIND_PHYSX_LIBRARY(PHYSX_EXTENSIONS_LIBRARY "${PHYSX_LIBEXTENSIONS_LIST}")
 ELSE (WIN32)
    FIND_PHYSX_LIBRARY(PHYSX_CORE_LIBRARY "${PHYSX_LIBCORE_LIST}")
 ENDIF (WIN32)

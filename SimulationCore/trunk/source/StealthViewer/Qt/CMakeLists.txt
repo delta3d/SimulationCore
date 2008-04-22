@@ -16,7 +16,8 @@ qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
 qt4_wrap_ui(UIC_HEADERS ${UI_FILES})
 
 #The ui files are output here, so it must be included.
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR})
+
 
 ADD_LIBRARY(${LIB_NAME} STATIC
     ${LIB_PUBLIC_HEADERS}
@@ -29,6 +30,6 @@ INCLUDE(ModuleInstall OPTIONAL)
 
 #little hack to get the .dll into /bin and .lib into /lib
 IF (MSVC)
-  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "/../../../../bin/")
+  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "/../../lib/")
   SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES IMPORT_PREFIX "../")
 ENDIF (MSVC)
