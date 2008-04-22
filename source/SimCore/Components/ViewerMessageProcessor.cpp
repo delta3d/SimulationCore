@@ -240,7 +240,7 @@ namespace SimCore
          }
          
          dtCore::Timer_t newTime = dtCore::Timer_t(tvMsg.GetSynchronizedTime() + timeOffset);
-         GetGameManager()->ChangeTimeSettings(double(newTime) * 1000.0, timeScale, GetGameManager()->GetSimulationClockTime());
+         GetGameManager()->ChangeTimeSettings(double(newTime) / 1000.0, timeScale, GetGameManager()->GetSimulationClockTime());
          GetGameManager()->SetPaused(tvMsg.IsPaused());
          
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
