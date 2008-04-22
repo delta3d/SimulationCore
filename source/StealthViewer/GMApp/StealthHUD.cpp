@@ -381,7 +381,12 @@ namespace StealthGM
             mLastLogState = &mLogController->GetLastKnownStatus().GetStateEnum();
    
             // Playback State
-            if (dtGame::LogStateEnumeration::LOGGER_STATE_IDLE == *mLastLogState )
+            if (GetGameManager()->IsPaused()) 
+            {
+               mSimTimeAndState->SetText1("PAUSED");
+               mSimTimeAndState->GetText1().SetColor(0.2, 0.2, 0.7);
+            }
+            else if (dtGame::LogStateEnumeration::LOGGER_STATE_IDLE == *mLastLogState )
             {
                mSimTimeAndState->SetText1("LIVE");
                mSimTimeAndState->GetText1().SetColor(0.1, 0.1, 0.5);
