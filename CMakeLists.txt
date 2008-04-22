@@ -70,10 +70,7 @@ IF(WIN32)
     ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE)
     #needed for net plugin
     SET (SimulationCore_SOCKET_LIBS wsock32)
-    # Both Cygwin and Msys need -DNOMINMAX ???
-    IF(UNIX)
-        ADD_DEFINITIONS(-DNOMINMAX)
-    ENDIF(UNIX)
+    ADD_DEFINITIONS(-DNOMINMAX)
 ########################################################################################################
 # the foolowing options are MSVC specific,
 # the first SimulationCore_MSVC_VERSIONED_DLL activate a custom build-time layout that should allow to run examples and application 
@@ -173,7 +170,6 @@ INCLUDE_DIRECTORIES(
     ${OPENGL_INCLUDE_DIR}
     ${OPENTHREADS_INCLUDE_DIR}
     ${OSG_INCLUDE_DIR}
-    ${OSGEPHEMERIS_INCLUDE_DIR}
     ${CAL3D_INCLUDE_DIR}
     ${CEGUI_INCLUDE_DIR}
     ${ODE_INCLUDE_DIR}

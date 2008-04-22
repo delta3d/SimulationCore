@@ -10,25 +10,29 @@
 #
 # Created by David Guthrie. 
 
-FIND_PATH(DELTA3D_INCLUDE_DIR dtCore/dt.h
-    ${DELTA3D_DIR}/include
-    $ENV{DELTA_ROOT}/inc
+FIND_PATH(DELTA_DIR inc/dtCore/dt.h
+    PATHS
+    ${CMAKE_SOURCE_DIR}/../delta3d
+    $ENV{DELTA_ROOT}
     $ENV{DELTA_INC}
     ~/Library/Frameworks
     /Library/Frameworks
-    /usr/local/include
-    /usr/include
-    /sw/include # Fink
-    /opt/local/include # DarwinPorts
-    /opt/csw/include # Blastwave
-    /opt/include
-    [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlFIND_DT_LIBRARY\\Control\\Session\ Manager\\Environment;DELTA_ROOT]/inc
+    /usr/local
+    /usr
+    /sw # Fink
+    /opt/local # DarwinPorts
+    /opt/csw # Blastwave
+    /opt
+    [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControl\\Control\\Session\ Manager\\Environment;DELTA_ROOT]
     /usr/freeware/include
 )
 
+FIND_PATH(DELTA3D_INCLUDE_DIR dtCore/dt.h
+    ${DELTA_DIR}/inc
+)
+
 FIND_PATH( DELTA3D_EXT_DIR inc
-    ${DELTA3D_DIR}/ext
-    $ENV{DELTA_ROOT}/ext
+    ${DELTA_DIR}/ext
 )
 
 MACRO(FIND_DT_LIBRARY MYLIBRARY MYLIBRARYNAMES)
@@ -36,7 +40,7 @@ MACRO(FIND_DT_LIBRARY MYLIBRARY MYLIBRARYNAMES)
     FIND_LIBRARY(${MYLIBRARY}
         NAMES ${MYLIBRARYNAMES}
         PATHS
-        $ENV{DELTA_ROOT}/lib
+        ${DELTA_DIR}/lib
         $ENV{DELTA_LIB}
         ~/Library/Frameworks
         /Library/Frameworks
@@ -46,7 +50,7 @@ MACRO(FIND_DT_LIBRARY MYLIBRARY MYLIBRARYNAMES)
         /opt/local/lib
         /opt/csw/lib
         /opt/lib
-        [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlFIND_DT_LIBRARY\\Control\\Session\ Manager\\Environment;OSG_ROOT]/lib
+        [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControl\\Control\\Session\ Manager\\Environment;DELTA_ROOT]/lib
         /usr/freeware/lib64
     )
 
