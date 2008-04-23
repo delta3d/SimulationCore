@@ -191,13 +191,9 @@ double DateTime::getModifiedJulianDate() const
 
     // Get GMT first
     struct tm gmt = _tm;
-#ifdef __APPLE__
-    gmt.tm_sec += gmt.tm_gmtoff;
-#else
-    tzset();
-    gmt.tm_sec += timezone;
-#endif
-    mktime(&gmt);
+    //tzset();
+    //gmt.tm_sec += timezone;
+    //mktime(&gmt);
 
     double day   =  (double)(gmt.tm_mday) +           // Day
                     (double(gmt.tm_hour)/24.0) +      // hour
@@ -245,13 +241,9 @@ DateTime DateTime::getGMT() const
 {
     struct tm gmt = _tm;
 
-#ifdef __APPLE__
-    gmt.tm_sec += gmt.tm_gmtoff;
-#else
-    tzset();
-    gmt.tm_sec += timezone;
-#endif
-    mktime(&gmt);
+    //tzset();
+    //gmt.tm_sec += timezone;
+    //mktime(&gmt);
 
     return DateTime(gmt);
 }

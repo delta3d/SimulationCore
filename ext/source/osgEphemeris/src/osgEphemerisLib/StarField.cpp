@@ -132,9 +132,9 @@ class UPCB : public osg::NodeCallback
             osgUtil::CullVisitor *cv = dynamic_cast<osgUtil::CullVisitor *>(nv);
             if( cv != 0L )
             {
-               osg::Matrixf *m = (osg::Matrixf*)cv->getModelViewMatrix();
+                osg::Matrixf m = (cv->getModelViewMatrix() == NULL) ? osg::Matrixf() : *cv->getModelViewMatrix();
                 osg::Matrixf mi;
-                mi.invert(*m);
+                mi.invert(m);
 
                 //a += osg::PI/180.0;
                 //mi = osg::Matrix::rotate( a, 1, 0, 0 );
