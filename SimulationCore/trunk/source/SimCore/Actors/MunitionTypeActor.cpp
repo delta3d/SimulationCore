@@ -79,18 +79,35 @@ namespace SimCore
       {
          std::vector<std::string> tokens;
          dtUtil::StringTokenizer<dtUtil::IsSpace>::tokenize( tokens, disValues );
-         unsigned int numTokens = tokens.size();
 
-         switch( numTokens )
+         // Zero out all values to make ready for the new parsed values.
+         Set(0,0,0,0,0,0,0);
+
+         std::vector<std::string>::iterator curToken = tokens.begin();
+         std::vector<std::string>::iterator endTokenList = tokens.end();
+         unsigned char value = 0;
+         size_t numTokens = tokens.size();
+         for( size_t loop = 0; curToken != endTokenList; ++loop, ++curToken )
          {
-         case 7: mExtra = (unsigned char) atoi(tokens[6].c_str()); 
-         case 6: mSpecific = (unsigned char) atoi(tokens[5].c_str()); 
-         case 5: mSubcategory = (unsigned char) atoi(tokens[4].c_str()); 
-         case 4: mCategory = (unsigned char) atoi(tokens[3].c_str()); 
-         case 3: mCountry = (unsigned short) atoi(tokens[2].c_str()); 
-         case 2: mDomain = (unsigned char) atoi(tokens[1].c_str()); 
-         case 1: mKind = (unsigned char) atoi(tokens[0].c_str()); 
-         default: break;
+            value = (unsigned char) atoi(curToken->c_str());
+            switch( loop )
+            {
+               case 6: mExtra = value; 
+                  break;
+               case 5: mSpecific = value;
+                  break;
+               case 4: mSubcategory = value;
+                  break;
+               case 3: mCategory = value;
+                  break;
+               case 2: mCountry = value;
+                  break;
+               case 1: mDomain = value;
+                  break;
+               case 0: mKind = value;
+                  break;
+               default: break;
+            }
          }
       }
 

@@ -414,6 +414,36 @@ namespace SimCore
          CPPUNIT_ASSERT( ! (dis == dis2) );
          CPPUNIT_ASSERT( dis.GetDegreeOfMatch( dis2 ) == 0 );
 
+         // Test conversion from string with less tokens.
+         dis2.SetByString( "11 12 13 14" );
+         CPPUNIT_ASSERT( dis2.GetKind() == 11 );
+         CPPUNIT_ASSERT( dis2.GetDomain() == 12 );
+         CPPUNIT_ASSERT( dis2.GetCountry() == 13 );
+         CPPUNIT_ASSERT( dis2.GetCategory() == 14 );
+         CPPUNIT_ASSERT( dis2.GetSubcategory() == 0 );
+         CPPUNIT_ASSERT( dis2.GetSpecific() == 0 );
+         CPPUNIT_ASSERT( dis2.GetExtra() == 0 );
+
+         // Test conversion from string with more tokens.
+         dis2.SetByString( "1 2 3 4 5 6 7 8 9" );
+         CPPUNIT_ASSERT( dis2.GetKind() == 1 );
+         CPPUNIT_ASSERT( dis2.GetDomain() == 2 );
+         CPPUNIT_ASSERT( dis2.GetCountry() == 3 );
+         CPPUNIT_ASSERT( dis2.GetCategory() == 4 );
+         CPPUNIT_ASSERT( dis2.GetSubcategory() == 5 );
+         CPPUNIT_ASSERT( dis2.GetSpecific() == 6 );
+         CPPUNIT_ASSERT( dis2.GetExtra() == 7 );
+
+         // Test conversion from string with bad tokens.
+         dis2.SetByString( "11 Bad!@# 13 Bad$%^1 15 2Bad&*( 17 Bad)_+3 9" );
+         CPPUNIT_ASSERT( dis2.GetKind() == 11 );
+         CPPUNIT_ASSERT( dis2.GetDomain() == 0 );
+         CPPUNIT_ASSERT( dis2.GetCountry() == 13 );
+         CPPUNIT_ASSERT( dis2.GetCategory() == 0 );
+         CPPUNIT_ASSERT( dis2.GetSubcategory() == 15 );
+         CPPUNIT_ASSERT( dis2.GetSpecific() == 2 ); // tokens starting with numbers result to a value of the first number.
+         CPPUNIT_ASSERT( dis2.GetExtra() == 17 );
+
          // Test conversion FROM string
          dis2.SetByString( "10 9 8 7 6 5 4" );
          CPPUNIT_ASSERT( dis2.GetKind() == 10 );
