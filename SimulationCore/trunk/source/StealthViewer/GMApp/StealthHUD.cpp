@@ -375,33 +375,31 @@ namespace StealthGM
    
       if(GetHUDState() != SimCore::Components::HUDState::HELP)
       {
-         if( mLogController.valid() 
-            && mLastLogState != &mLogController->GetLastKnownStatus().GetStateEnum() )
+         // Log - CMM - I removed this check in order to account for 'paused' which can happen at any time
+         //if( mLogController.valid() && mLastLogState != &mLogController->GetLastKnownStatus().GetStateEnum() ) {
+         mLastLogState = &mLogController->GetLastKnownStatus().GetStateEnum();
+
+         // Playback State
+         if (GetGameManager()->IsPaused()) 
          {
-            mLastLogState = &mLogController->GetLastKnownStatus().GetStateEnum();
-   
-            // Playback State
-            if (GetGameManager()->IsPaused()) 
-            {
-               mSimTimeAndState->SetText1("PAUSED");
-               mSimTimeAndState->GetText1().SetColor(0.2, 0.2, 0.7);
-            }
-            else if (dtGame::LogStateEnumeration::LOGGER_STATE_IDLE == *mLastLogState )
-            {
-               mSimTimeAndState->SetText1("LIVE");
-               mSimTimeAndState->GetText1().SetColor(0.1, 0.1, 0.5);
-            }
-            else if (dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK == *mLastLogState )
-            {
-               mSimTimeAndState->SetText1("REPLAY");
-               mSimTimeAndState->GetText1().SetColor(0.1, 0.5, 0.1);
-            }
-            else // if (dtGame::LogStateEnumeration::LOGGER_STATE_RECORD == *mLastLogState )
-            {
-               mSimTimeAndState->SetText1("RECORD");
-               mSimTimeAndState->GetText1().SetColor(0.5, 0.1, 0.1);
-            }
-         } 
+            mSimTimeAndState->SetText1("PAUSED");
+            mSimTimeAndState->GetText1().SetColor(0.2, 0.2, 0.7);
+         }
+         else if (dtGame::LogStateEnumeration::LOGGER_STATE_IDLE == *mLastLogState )
+         {
+            mSimTimeAndState->SetText1("LIVE");
+            mSimTimeAndState->GetText1().SetColor(0.1, 0.1, 0.5);
+         }
+         else if (dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK == *mLastLogState )
+         {
+            mSimTimeAndState->SetText1("REPLAY");
+            mSimTimeAndState->GetText1().SetColor(0.1, 0.5, 0.1);
+         }
+         else // if (dtGame::LogStateEnumeration::LOGGER_STATE_RECORD == *mLastLogState )
+         {
+            mSimTimeAndState->SetText1("RECORD");
+            mSimTimeAndState->GetText1().SetColor(0.5, 0.1, 0.1);
+         }
 
          // Set the time control to the basic sim time 
          mSimTimeAndState->SetText2( 
