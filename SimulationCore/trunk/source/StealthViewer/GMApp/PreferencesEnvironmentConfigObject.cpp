@@ -83,10 +83,6 @@ namespace StealthGM
          // Network time
          if(dayTimeProxy != NULL)
          {
-            SimCore::Actors::DayTimeActor &dayActor = 
-               static_cast<SimCore::Actors::DayTimeActor&>(dayTimeProxy->GetGameActor());
-
-
             if(igEnv != NULL)
             {
                dtUtil::DateTime dt = igEnv->GetDateTime();

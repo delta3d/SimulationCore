@@ -185,7 +185,7 @@ namespace SimCore
                float xVal = cos(osg::DegreesToRadians(h+90))*.375f+.5f;
                float yVal = sin(osg::DegreesToRadians(-h+90))*.375f+.5f;
                osg::Vec2f foc (xVal, yVal);
-               bool resultValue = mLensFocus->set(foc);
+               mLensFocus->set(foc);
             }
             // --- LOCKHEED CODE --- END --- //
          }
