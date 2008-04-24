@@ -108,7 +108,7 @@ std::string StarField::_vertexShaderProgram =
     "varying vec4 starColor;"
     "void main()"
     "{"
-    "    starColor = gl_Color.a - 1.0 + starAlpha;"
+    "    starColor = vec4(gl_Color.a - 1.0 + starAlpha);"
     "    gl_PointSize = pointSize;"
     "    gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;"
     "    gl_Position = ftransform();"
