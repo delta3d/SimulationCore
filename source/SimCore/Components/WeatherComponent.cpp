@@ -387,10 +387,8 @@ namespace SimCore
                   osg::Vec3d geoOffset;
                   if(coordConfigActor != NULL)
                   {
-                     dtUtil::Coordinates coords = const_cast<dtUtil::Coordinates&> (coordConfigActor->GetCoordinates());
-                     coordConfigActor->SetIncomingCoordinateType(
-                        const_cast<dtUtil::IncomingCoordinateType&>
-                        (dtUtil::IncomingCoordinateType::GEODETIC));
+                     dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
+                     coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
                      geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
 
                      // Adjust the time. Convert the degrees to hours
