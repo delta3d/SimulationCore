@@ -392,7 +392,7 @@ namespace SimCore
 
          osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
 
-         dtUtil::DateTime dt(GetDateTime().GetTime());
+         dtUtil::DateTime dt(GetDateTime().GetGMTTime());
 
          ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
          ephem->dateTime.setMonth(dt.GetMonth());    // DateTime numbers months from 1 to 12, not 0 to 11
