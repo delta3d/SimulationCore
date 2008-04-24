@@ -458,7 +458,7 @@ namespace SimCore
                )
          , mAnimOperators(mPlannerHelper, *mAnimationHelper)
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
-         , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::NO_WEAPON)
+         , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::DEPLOYED)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
          , mMaxTimePerIteration(0.5)
       {
