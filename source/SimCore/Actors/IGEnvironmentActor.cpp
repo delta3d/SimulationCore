@@ -355,9 +355,9 @@ namespace SimCore
       void IGEnvironmentActor::SetDateTime(const dtUtil::DateTime& dt)
       {
          dtUtil::Log::GetInstance().LogMessage(dtUtil::Log::LOG_DEBUG, __FILE__, "Sim time set to:%s",
-            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT));
-         
-         mEnvironment->SetDateTime(dt);                  
+            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
+
+         mEnvironment->SetDateTime(dt);
 
          OnTimeChanged();
       }
@@ -378,7 +378,7 @@ namespace SimCore
       {
          //when the time changes the fog color changes as well so we must update
          //the fog color on our "FogSphere"
-         osg::Vec3 fogColor;         
+         osg::Vec3 fogColor;
          mEnvironment->GetModFogColor(fogColor);
          SetFogColor(fogColor);
 
