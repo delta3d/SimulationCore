@@ -295,8 +295,8 @@ namespace SimCore
                osg::Vec3 pos;
                positionTransform.GetTranslation(pos);
                mEphemerisEnvironmentActor->SetSkyDomesCenter(pos);
-               
-               mEphemerisEnvironmentActor->SetTimeFromSystem();               
+
+               mEphemerisEnvironmentActor->SetTimeFromSystem();
             }
 
             return;
@@ -418,14 +418,14 @@ namespace SimCore
             return;
 
          Actors::DayTimeActor* timeActor = 
-            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());         
+            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
 
          dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
          dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
          dt.SetTime(timeActor->GetTime());
 
-         dtCore::System::GetInstance().SetSimulationClockTime(dt.GetGMTTime() * 1000000);
-         //mEphemerisEnvironmentActor->SetTimeFromSystem();   
+         dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetGMTTime()) * 1000000);
+         //mEphemerisEnvironmentActor->SetTimeFromSystem();
       }
 
       //////////////////////////////////////////////////////////

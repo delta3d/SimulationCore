@@ -90,7 +90,7 @@ namespace StealthGM
                mNetworkHour    = dt.GetHour();
                mNetworkMinute  = dt.GetMinute();
                mNetworkSeconds = dt.GetSecond();
-            }           
+            }
          }
 
          // Visibility and weather (precipitation)
@@ -111,7 +111,7 @@ namespace StealthGM
 
 
       // Turn updates in the component off or on 
-      weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());      
+      weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());
 
       if(igEnv != NULL && GetUseCustomSettings())
       {
@@ -120,7 +120,7 @@ namespace StealthGM
          dt.SetMinute(mCustomMinute);
          dt.SetSecond(mCustomSeconds);
 
-         dtCore::System::GetInstance().SetSimulationClockTime(dt.GetTime() * 1000000);
+         dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
          //igEnv->SetTimeFromSystem();
       }
       
