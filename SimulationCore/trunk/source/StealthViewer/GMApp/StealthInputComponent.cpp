@@ -50,6 +50,7 @@
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/Tools/GPS.h>
+#include <SimCore/Components/TimedDeleterComponent.h>
 
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
@@ -1164,6 +1165,14 @@ namespace StealthGM
             //This is bad.  we can do this another way.
             //dtCore::System::GetInstance().Step();
          }
+
+         // Clear any munitions or particle effects that may have been around BEFORE we joined.
+         // This is necessary to stop problems with lingering effects during and after playback
+         SimCore::Components::TimedDeleterComponent *deleterComp = 
+            dynamic_cast<SimCore::Components::TimedDeleterComponent*> (GetGameManager()->
+            GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME)); 
+         if (deleterComp != NULL)
+            deleterComp->Clear();
    
          if( mHLA.valid() )
          {
@@ -1194,6 +1203,14 @@ namespace StealthGM
          // Attempt the disconnect from the network
          if( mHLA.valid() )
          {
+            // Clear any munitions or particle effects that may have been around BEFORE we joined.
+            // This is necessary to stop problems with lingering effects during and after playback
+            SimCore::Components::TimedDeleterComponent *deleterComp = 
+               dynamic_cast<SimCore::Components::TimedDeleterComponent*> (GetGameManager()->
+               GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME)); 
+            if (deleterComp != NULL)
+               deleterComp->Clear();
+
             mHLA->LeaveFederationExecution();
          }
          else

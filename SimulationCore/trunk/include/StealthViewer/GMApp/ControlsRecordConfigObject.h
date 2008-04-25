@@ -114,6 +114,7 @@ namespace StealthGM
           */
          void JoinFederation() { mJoinFederation = true; SetIsUpdated(true); }
 
+
       protected:
 
          /// Destructor
@@ -131,5 +132,7 @@ namespace StealthGM
          bool mIsRecording;
          bool mDisconnect;
          bool mJoinFederation;
+         bool mRequestKeyFrameUpdate;
+         double mLastRequestTime;
    }; 
 }

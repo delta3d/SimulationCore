@@ -41,6 +41,7 @@
 
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/TimedDeleterComponent.h>
 
 #include <cmath>
 
@@ -101,7 +102,7 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty("Lingering Shot Seconds", "Lingering Shot Seconds", 
             dtDAL::MakeFunctor(da, &DetonationActor::SetLingeringSmokeSecs), 
             dtDAL::MakeFunctorRet(da, &DetonationActor::GetLingeringSmokeSecs), 
-            "Sets the number of seconds that smoke will linger around an impact area"));
+            "Sets the number of seconds that smoke will linger around after the explosion effect"));
 
          AddProperty(new dtDAL::FloatActorProperty("Explosion Timer Seconds", "Explosion Timer Seconds", 
             dtDAL::MakeFunctor(da, &DetonationActor::SetExplosionTimerSecs), 
@@ -147,6 +148,7 @@ namespace SimCore
          DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
          float time = da.GetDelayTime();
          GetGameManager()->SetTimer("PlayDetonationSoundTimer", this, time);
+
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -167,6 +169,9 @@ namespace SimCore
             {
                static_cast<DetonationActor&>(GetGameActor()).StopRenderingSmoke();
             } 
+            /*
+            // The Delete Actor is no longer valid because everything is handled via the TimerDeleteComponent
+            // which is registered on entering the world.
             else if(timeMsg.GetTimerName() == "DeleteActor")
             {
                DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
@@ -183,6 +188,7 @@ namespace SimCore
 
                GetGameManager()->DeleteActor(*this);
             }
+            */
             else
                LOG_ERROR("Received a timer message of the correct type, but wrong name");
          }
@@ -234,7 +240,7 @@ namespace SimCore
          GetGameManager()->ClearTimer("PlayDetonationSoundTimer", this);
          GetGameManager()->ClearTimer("ExplosionRendered", this);
          GetGameManager()->ClearTimer("SmokeRendered", this);
-         GetGameManager()->ClearTimer("DeleteActor", this);
+         //GetGameManager()->ClearTimer("DeleteActor", this);
       }
 
       //////////////////////////////////////////////////////////////
@@ -349,6 +355,13 @@ namespace SimCore
          ///////////////////////////////////////////////////////////////////////
 
          RenderDetonation();
+
+         // Register to delete after X time to make sure the detonation goes away when it should.
+         SimCore::Components::TimedDeleterComponent* renderComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::TimedDeleterComponent::DEFAULT_NAME,renderComp);
+         if (renderComp != NULL)
+            renderComp->AddId(GetUniqueId(), mRenderExplosionTimerSecs + 
+               mLingeringSmokeSecs + mDeleteActorTimerSecs);
       }
 
       ///////////////////////////////////////////////////////////////////////
@@ -454,17 +467,17 @@ namespace SimCore
             
             GetGameActorProxy().GetGameManager()->SetTimer("SmokeRendered", &GetGameActorProxy(), mLingeringSmokeSecs);
          }
-		   else 
-		   {
-	         GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
-		   }
+		   //else 
+		   //{
+	         //GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
+		   //}
       }
 
       ///////////////////////////////////////////////////////////////////////
       void DetonationActor::StopRenderingSmoke()
       {
          mSmokeSystem->SetEnabled(false);
-         GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
+         //GetGameActorProxy().GetGameManager()->SetTimer("DeleteActor", &GetGameActorProxy(), mDeleteActorTimerSecs);
       }
 
       ///////////////////////////////////////////////////////////////////////

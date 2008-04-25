@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  * @author David Guthrie
+ * @author Curtiss Murphy
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <QtGui/QApplication>
@@ -55,6 +56,7 @@
 
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
+#include <dtUtil/datetime.h>
 
 #include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
@@ -135,6 +137,7 @@ namespace StealthQt
       mIsPlaybackMode(false),
       mIsRecording(false),
       mIsPlayingBack(false),
+      mRecordingStartTime(0.0),
       mIsConnectedToHLA(false), 
       mDoubleValidator(new QDoubleValidator(0, 10000, 5, this)), 
       mShowMissingEntityInfoErrorMessage(true)
@@ -632,6 +635,8 @@ namespace StealthQt
          mUi->mRecordStartButton->setText(tr("Stop"));
          mUi->mRecordDurationLineEdit->setText("0");
          mDurationTimer.start();
+         mRecordingStartTime = mApp->GetGameManager()->GetSimulationTime();
+         mRecordingStopTime = mApp->GetGameManager()->GetSimulationTime();
       }
       else
       {
@@ -1731,19 +1736,33 @@ namespace StealthQt
    void MainWindow::OnDurationTimerElapsed()
    {
       dtGame::GameManager &gm = *mApp->GetGameManager();
-      double simtime = gm.GetSimulationTime();
-      
-      if(mIsRecording)
+      double curSimtime = gm.GetSimulationTime();
+      mRecordingStopTime = curSimtime;
+
+      if (mIsRecording || mIsPlayingBack)
       {
-         mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
-      }
-      else if(mIsPlayingBack)
-      {
-         mUi->mPlaybackDurationLineEdit->setText(!gm.IsPaused() ? QString::number(simtime): tr("Paused"));
-      }
-      else
-      {
-         // Do nothing
+         if(mIsRecording)
+         {
+            std::string duration = dtUtil::DateTime::ToString(time_t(mRecordingStopTime - mRecordingStartTime), 
+               dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT); 
+
+            //mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString(duration.c_str()): tr("Paused"));
+            mUi->mRecordDurationLineEdit->setText(QString(duration.c_str()));
+         }
+         else if(mIsPlayingBack)
+         {
+            // Get the log controller
+            dtGame::GMComponent *component = gm.GetComponentByName(dtGame::LogController::DEFAULT_NAME);
+            if (component == NULL)
+               return ; // Shouldn't happen, but just to be safe.
+            dtGame::LogController &logController = static_cast<dtGame::LogController&>(*component);
+
+            double durationTime = logController.GetLastKnownStatus().GetCurrentRecordDuration();
+            std::string duration = dtUtil::DateTime::ToString(time_t(durationTime), 
+               dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT); 
+            //// QString::number(duration)  ... !gm.IsPaused() ? QString(duration.c_str()): tr("Paused")
+            mUi->mPlaybackDurationLineEdit->setText(QString(duration.c_str()));
+         }
       }
    }
 

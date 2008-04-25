@@ -224,11 +224,13 @@ namespace SimCore
             // to delete all actors anyway.
             Clear();
          }
-         // Restarts or time changes will have accelerate the deletion
+         // Restarts will have accelerate the deletion
          // of registered deletable actors. Otherwise, actors might not
-         // be deleted depending on the implementation of the cutom application.
+         // be deleted depending on the implementation of the custom application.
+         // If we are in a playback, then we want to delete these temporary objects. This is necessary
+         // to prevent long-lingering smoke effects to just hang around if we jump back and forth.
          else if( message.GetMessageType() == dtGame::MessageType::INFO_RESTARTED
-            || message.GetMessageType() == dtGame::MessageType::INFO_TIME_CHANGED )
+            || message.GetMessageType() == dtGame::MessageType::LOG_COMMAND_BEGIN_LOADKEYFRAME_TRANS )
          {
             Reset();
          }
