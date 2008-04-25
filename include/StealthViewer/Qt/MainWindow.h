@@ -350,6 +350,9 @@ namespace StealthQt
 
          bool mIsPlayingBack;
 
+         double mRecordingStartTime;
+         double mRecordingStopTime; 
+
          QString mCurrentConnectionName;
 
          QTimer mDurationTimer;

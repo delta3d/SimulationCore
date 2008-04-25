@@ -52,6 +52,7 @@
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
+#include <SimCore/Components/TimedDeleterComponent.h>
 
 #include <dtDAL/transformableactorproxy.h>
 
@@ -119,6 +120,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
 
       RefPtr<dtGame::GameManager> mGM;
       RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
+      RefPtr<SimCore::Components::TimedDeleterComponent> mTimerDeleterComponent;
 
 #ifdef AGEIA_PHYSICS
       RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> mWorldComp;
@@ -141,11 +143,16 @@ void BaseEntityActorProxyTests::setUp()
    mGM->AddComponent(*mWorldComp, dtGame::GameManager::ComponentPriority::NORMAL);
 #endif
 
+   // add the deleter component so the detonation actor can register itself to be deleted.
+   mTimerDeleterComponent = new SimCore::Components::TimedDeleterComponent();
+   mGM->AddComponent(*mTimerDeleterComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+
 }
 
 void BaseEntityActorProxyTests::tearDown()
 {
    mDeadReckoningComponent = NULL;
+   mTimerDeleterComponent = NULL;
 
 #ifdef AGEIA_PHYSICS
    mWorldComp = NULL;

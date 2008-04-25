@@ -442,12 +442,13 @@ namespace SimCore
             (int)mDeleterComp->GetIdCount() == maxActors-2 );
 
          // Test TIME_CAHNGED message
-         CreateTestActors(mTestActors,maxActors);
-         RegisterActorIds(mTestActors);
-         msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_TIME_CHANGED);
-         mDeleterComp->ProcessMessage(*msg);
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
-            mDeleterComp->GetIdCount() == 0 );
+         // This is no longer the correct behavior. Timers do not get deleted when the time changes.
+         //CreateTestActors(mTestActors,maxActors);
+         //RegisterActorIds(mTestActors);
+         //msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_TIME_CHANGED);
+         //mDeleterComp->ProcessMessage(*msg);
+         //CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         //   mDeleterComp->GetIdCount() == 0 );
 
          // Test MAP_LOAD message
          CreateTestActors(mTestActors,maxActors);
