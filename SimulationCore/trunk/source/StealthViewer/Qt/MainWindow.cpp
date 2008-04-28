@@ -327,12 +327,18 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::showEvent(QShowEvent* event)
    {
-      mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
-      mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
-      mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());
-
-	  StealthViewerData::GetInstance().GetSettings().LoadPreferences();
-	  UpdateUIFromPreferences();
+      // The first, initial show event is not spontaneous because Qt sends it when the window is
+      // made visible.  Minimizing or otherwise hiding windows and bringing them back can cause
+      // spontaneous show events, which we don't want.
+      if (!event->spontaneous())
+      {
+         mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
+         mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
+         mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());
+   
+         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
+         UpdateUIFromPreferences();
+      }
    }
     
    ///////////////////////////////////////////////////////////////////////////////
