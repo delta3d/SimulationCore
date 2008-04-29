@@ -234,5 +234,13 @@ namespace SimCore
       {
          AttachOrDetachActor(dtCore::UniqueId(""));
       }
+
+      //////////////////////////////////////////////////////////////////////////////
+      bool StealthActor::IsAttachedToActor()
+      {
+         BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
+         return (entityParent != NULL);
+      }
+
    }
 }

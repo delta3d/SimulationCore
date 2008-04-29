@@ -257,6 +257,11 @@ namespace SimCore
 
             virtual void OnAddedToGM();
 
+            // provide an access for the stealth actor. This is used by the Stealth Viewer to check the status of the stealth camera.
+            // DO NOT HOLD ONTO THIS MEMORY
+            SimCore::Actors::StealthActor* GetStealthActor() { return mStealthActor.get(); }
+
+
          protected:
             //Cycles the weather type based on the predefined types in the basic environment actor
             void ChangeWeatherType();

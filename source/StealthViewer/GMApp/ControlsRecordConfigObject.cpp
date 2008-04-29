@@ -18,7 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson, Curtiss Murphy
+ * @author Eddie Johnson
+ * @author Curtiss Murphy
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>

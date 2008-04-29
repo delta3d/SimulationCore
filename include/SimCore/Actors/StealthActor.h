@@ -64,6 +64,9 @@ namespace SimCore
             void Detach(const dtGame::Message &msg);
             void UpdateFromParent(const dtGame::Message &msg);
 
+            // Returns true if we think we are attached to something.
+            bool IsAttachedToActor();
+
          protected:
 
             /// Destructor

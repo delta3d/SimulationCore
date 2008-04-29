@@ -19,11 +19,13 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
+ * @author Curtiss Murphy
  */
 #ifndef _PREFERENCES_GENERAL_CONFIG_OBJECT_H_
 #define _PREFERENCES_GENERAL_CONFIG_OBJECT_H_
 
 #include <dtUtil/enumeration.h>
+#include <dtCore/refptr.h>
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
@@ -35,6 +37,9 @@ namespace dtGame
 
 namespace StealthGM
 {
+   class StealthInputComponent;
+
+
    class STEALTH_GAME_EXPORT PreferencesGeneralConfigObject : public ConfigurationObjectInterface
    {
       public:
@@ -186,6 +191,17 @@ namespace StealthGM
          void AttachToActor(const dtGame::GameActorProxy &proxy) { mAttachProxy = &proxy; SetIsUpdated(true); }
       
          /**
+          * Tells the Stealth Actor to detach - sends an attach with a NULL actor.
+          */
+         void DetachFromActor() { mDetachFromActor = true; SetIsUpdated(true); }
+
+         /**
+          * Checks to see if the stealth actor is currently attached.
+          * @return true if the stealth actor is attached.
+          */
+         bool IsStealthActorCurrentlyAttached();
+
+         /**
           * Sets connecting to a federation on startup
           * @param enable True to connect, false to start ordinarily
           * @param name The name of the connection
@@ -244,6 +260,9 @@ namespace StealthGM
          bool mReconnectOnStartup;
          std::string mStartupConnectionName;
          bool mAutoRefreshEntityInfo;
+         bool mDetachFromActor; 
+         dtCore::RefPtr<StealthInputComponent> mInputComponent;
+
    };
 }
 #endif

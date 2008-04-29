@@ -61,6 +61,8 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
 #include <dtCore/globals.h>
+#include <dtCore/transformable.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/actorproperty.h>
 
@@ -270,6 +272,10 @@ namespace StealthQt
       ConnectSigSlots();
 
       ReconnectToHLA();
+
+      // hide the last update time fields until it can be useful (see comment in UpdateEntityInfoData())
+      mUi->mEntityInfoLastUpdateTimeLineEdit->hide();
+      mUi->mEntityInfoLastUpdateTimeLabel->hide();
    }
 
    ///////////////////////////////////////////////////////////////////
@@ -487,6 +493,9 @@ namespace StealthQt
 
       connect(mUi->mSearchAttachPushButton, SIGNAL(clicked(bool)), 
               this,                         SLOT(OnEntitySearchAttachButtonClicked(bool)));
+
+      connect(mUi->mSearchDetachPushButton, SIGNAL(clicked(bool)), 
+              this,                         SLOT(OnEntitySearchDetachButtonClicked(bool)));
 
       connect(mUi->mEntityInfoAutoRefreshCheckBox, SIGNAL(stateChanged(int)), 
               this,                                SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
@@ -1018,6 +1027,13 @@ namespace StealthQt
       }
 
       mUi->mSearchEntityTableWidget->setSortingEnabled(true);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnEntitySearchDetachButtonClicked(bool checked)
+   {
+      mUi->mSearchDetachPushButton->setEnabled(false); // disable immediately, although it will get enabled/disabled in the 1 second timer
+      StealthViewerData::GetInstance().GetGeneralConfigObject().DetachFromActor();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1820,27 +1836,9 @@ namespace StealthQt
       dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
       if(proxy != NULL)
       {
-         osg::Vec3 pos = proxy->GetTranslation(), 
-                   rot = proxy->GetRotation();
+         UpdateEntityInfoData(proxy);
 
-         std::ostringstream oss;
-         oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
-
-         mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
-         mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
-         oss.str("");
-
-         oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
-
-         mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
-
-         mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
-         mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
-
-         double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
-
-         mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime));
-
+         // This is the special case. See also OnRefreshEntityInfoTimerElapsed() for similar code and explanation.
          if(mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
          {
             StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(*proxy);
@@ -1848,18 +1846,7 @@ namespace StealthQt
       }
       else
       {
-         if(mShowMissingEntityInfoErrorMessage)
-         {
-            QString message = 
-               tr("Could not find info for the actor named: ") + 
-               currentItem->text() + 
-               tr(" because this actor has been removed from the scenario. Please select another actor");
-
-            QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
-         
-            if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
-               mShowMissingEntityInfoErrorMessage = false;
-         }
+         ShowEntityErrorMessage(currentItem);
       }
    }
 
@@ -1947,6 +1934,11 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::OnRefreshEntityInfoTimerElapsed()
    {
+      // In addition to refreshing the entity, we also update the 'Detach' button.
+      bool attached = StealthViewerData::GetInstance().GetGeneralConfigObject().IsStealthActorCurrentlyAttached();
+      mUi->mSearchDetachPushButton->setEnabled(attached);
+
+      // Now, update the entity info window
       if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
       {
          // Nasty duplicated code.
@@ -1977,42 +1969,86 @@ namespace StealthQt
          dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
          if(proxy != NULL)
          {
-            osg::Vec3 pos = proxy->GetTranslation(), 
-               rot = proxy->GetRotation();
-
-            std::ostringstream oss;
-            oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
-
-            mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
-            mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
-            oss.str("");
-
-            oss << "H:" << rot[0] << " P:" << rot[1] << " R:" << rot[2];
-
-            mUi->mEntityInfoRotationLineEdit->setText(tr(oss.str().c_str()));
-
-            mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
-            mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
-
-            double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
-
-            mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime));
+            UpdateEntityInfoData(proxy);
          }
          else
          {
-            if(mShowMissingEntityInfoErrorMessage)
-            {
-               if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
-                  mShowMissingEntityInfoErrorMessage = false;
-
-               QString message = 
-                  tr("Could not find info for the actor named: ") + 
-                  currentItem->text() + 
-                  tr(" because this actor has been removed from the scenario. Please select another actor");
-
-               QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
-            }
+            ShowEntityErrorMessage(currentItem);
          }
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::ShowEntityErrorMessage(QTableWidgetItem *currentItem)
+   {
+      if(mShowMissingEntityInfoErrorMessage)
+      {
+         if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+            mShowMissingEntityInfoErrorMessage = false;
+
+         QString message = 
+            tr("Could not find info for the actor named: ") + 
+            ((currentItem == NULL) ? tr("Unknown") : currentItem->text()) + 
+            tr(" because this actor has been removed from the scenario. Please select another actor");
+
+         QMessageBox::warning(this, tr("Error finding info for actor"), message, QMessageBox::Ok);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy *proxy)
+   {
+      if(proxy != NULL)
+      {
+         // Decided not to use proxy->GetTranslation and proxy->GetRotation() based on David's 
+         // recommendation that GetRotation is screwy and will be refactored at some point because
+         // it changes the HPR order to RHP.
+         const dtCore::Transformable *t = static_cast<const dtCore::Transformable*>(proxy->GetActor());
+         dtCore::Transform trans;
+         t->GetTransform(trans, dtCore::Transformable::REL_CS);
+         osg::Vec3 pos;
+         trans.GetTranslation(pos);
+         osg::Vec3 rot;
+         trans.GetRotation(rot);
+         //osg::Vec3 pos = proxy->GetTranslation(), rot = proxy->GetRotation();
+
+         std::ostringstream oss;
+         oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
+
+         mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
+         mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
+
+         // compute degrees with 2 decimal places. Internally, degrees are 180 (turn left) to 
+         // 0 (straight) to -180 (turn right). That's backwards for humans. So convert to positive.
+         // Heading
+         float heading = 360.0f - ((rot[0] < 0.0f) ? rot[0] + 360.0f : rot[0]); // convert to positive 
+         heading = ((int)(heading * 100)) / 100.0f; // truncate to 2 decimal places
+         oss.str("");
+         oss << heading;
+         mUi->mEntityInfoRotHeadEdit->setText(tr(oss.str().c_str()));
+         // Pitch
+         float pitch = 360.0f - ((rot[1] < 0.0f) ? rot[1] + 360.0f : rot[1]); // convert to positive 
+         pitch = ((int)(pitch * 100)) / 100.0f; // truncate to 2 decimal places
+         oss.str("");
+         oss << pitch;
+         mUi->mEntityInfoRotPitchEdit->setText(tr(oss.str().c_str()));
+         // Roll
+         float roll = 360.0f - ((rot[2] < 0.0f) ? rot[2] + 360.0f : rot[2]); // convert to positive 
+         roll = ((int)(roll * 100)) / 100.0f; // truncate to 2 decimal places
+         oss.str("");
+         oss << roll;
+         mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
+
+         mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
+         mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
+
+         // we hide the last update time now, since in reality, we can't use this field. The last update time
+         // is really the last time that the entity trans or rotation was changed. But, if the entity is sitting 
+         // still, the last update time is never changed. This is further complicated when the sim time changes
+         // after joining a federation, making this time something like 370000 seconds. It's just not helpful[
+         //double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
+         //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime) + tr(" seconds ago"));
+
       }
    }
 
@@ -2043,8 +2079,10 @@ namespace StealthQt
       // Entity Info window
       mUi->mEntityInfoCallSignLineEdit->setText(tr(""));
       mUi->mEntityInfoForceLineEdit->setText(tr(""));
-      mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr(""));
+      //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr("")); // hidden for now.
       mUi->mEntityInfoPositionLineEdit->setText(tr(""));
-      mUi->mEntityInfoRotationLineEdit->setText(tr(""));
+      mUi->mEntityInfoRotHeadEdit->setText(tr(""));
+      mUi->mEntityInfoRotPitchEdit->setText(tr(""));
+      mUi->mEntityInfoRotRollEdit->setText(tr(""));
    }
 }
