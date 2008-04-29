@@ -459,8 +459,7 @@ namespace StealthGM
          } 
          else 
          {
-            LOG_ALWAYS("Logging is enabled - beginning RECORD using automatic keyframes.");
-            mLogController->RequestSetAutoKeyframeInterval(20.0f);
+            LOG_ALWAYS("Logging is enabled - beginning RECORD.");
             mLogController->RequestChangeStateToRecord();
          }
       }
@@ -795,7 +794,6 @@ namespace StealthGM
          if(mLogController->GetLastKnownStatus().GetStateEnum() 
             == dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
          {
-            mLogController->RequestSetAutoKeyframeInterval(20.0f);
             mLogController->RequestChangeStateToRecord();
          }
          else if(mLogController->GetLastKnownStatus().GetStateEnum() 

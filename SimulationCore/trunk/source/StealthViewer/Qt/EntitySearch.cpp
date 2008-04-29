@@ -19,10 +19,12 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
+ * @author Curtiss Murphy
  */
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtCore/system.h>
 
 namespace StealthQt
 {
@@ -90,10 +92,13 @@ namespace StealthQt
          return 0.0;
 
       const dtGame::DeadReckoningHelper& drhelp = entity->GetDeadReckoningHelper();
-      
+
       double lastTransUpdate = drhelp.GetLastTranslationUpdatedTime();
       double lastRotUpdate   = drhelp.GetLastRotationUpdatedTime();
+      double mostRecentUpdate = (lastTransUpdate > lastRotUpdate) ? lastTransUpdate : lastRotUpdate;
+      double timePassedSinceUpdate = dtCore::System::GetInstance().GetSimulationTime() - mostRecentUpdate;
+      timePassedSinceUpdate = (timePassedSinceUpdate < 0.0) ? 0.0 : timePassedSinceUpdate; // neg could happen and looks wierd.
 
-      return (lastTransUpdate > lastRotUpdate) ? lastTransUpdate : lastRotUpdate;
+      return timePassedSinceUpdate;
    }
 }

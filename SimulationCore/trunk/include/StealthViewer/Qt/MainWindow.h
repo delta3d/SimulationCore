@@ -4,6 +4,7 @@
  *
  * @author Eddie Johnson
  * @author David Guthrie
+ * @author Curtiss Murphy
  */
 #ifndef DELTA_MAIN_WINDOW
 #define DELTA_MAIN_WINDOW
@@ -166,6 +167,9 @@ namespace StealthQt
 
          // Called when the search is initiated
          void OnEntitySearchSearchButtonClicked(bool checked = false);
+
+         // Called when Detach is pressed - detach from the entity.
+         void OnEntitySearchDetachButtonClicked(bool checked = false);
 
          // Called when the attach button is clicked
          void OnEntitySearchAttachButtonClicked(bool checked = false);
@@ -343,6 +347,17 @@ namespace StealthQt
           * Clears data on disconnect
           */
          void ClearData();
+
+         /**
+          * Shows an error that occured while updating the entity info window. Made into a method cause it's called from several places
+          */
+         void ShowEntityErrorMessage(QTableWidgetItem *currentItem);
+
+         /**
+          * Updates the data fields of the Entity Info window. Made into a method cause it's called from several places
+          */
+         void UpdateEntityInfoData(dtGame::GameActorProxy *proxy);
+
 
          bool mIsPlaybackMode;
 

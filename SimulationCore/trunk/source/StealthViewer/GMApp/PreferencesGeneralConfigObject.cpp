@@ -19,6 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
+ * @author Curtiss Murphy
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
@@ -60,7 +61,9 @@ namespace StealthGM
       mShowAdvancedOptions(false), 
       mAttachProxy(NULL), 
       mReconnectOnStartup(true), 
-      mAutoRefreshEntityInfo(false)
+      mAutoRefreshEntityInfo(false),
+      mDetachFromActor(false),
+      mInputComponent(NULL)
    {
 
    }
@@ -77,17 +80,15 @@ namespace StealthGM
 
       dtGame::GMComponent *component = 
          gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
-
-      StealthInputComponent *inputComponent = 
-         static_cast<StealthInputComponent*>(component);
+      mInputComponent = static_cast<StealthInputComponent*>(component);
 
       // Update attach mode
-      inputComponent->ChangeMotionModels(GetAttachMode() == AttachMode::FIRST_PERSON);
+      mInputComponent->ChangeMotionModels(GetAttachMode() == AttachMode::FIRST_PERSON);
 
       // Update performance
 
       // Update motion model
-      inputComponent->EnableCameraCollision(GetEnableCameraCollision());
+      mInputComponent->EnableCameraCollision(GetEnableCameraCollision());
 
       // Update rendering options
       dtCore::Camera *camera = gameManager.GetApplication().GetCamera();
@@ -111,9 +112,9 @@ namespace StealthGM
       // Updated the LOD scale
       camera->GetOSGCamera()->setLODScale(GetLODScale());
 
-      if(mAttachProxy != NULL)
+      if(mAttachProxy != NULL && mInputComponent->GetStealthActor() != NULL)
       {
-         if(mAttachProxy->GetId() == inputComponent->GetStealthActor().GetUniqueId())
+         if(mAttachProxy->GetId() == mInputComponent->GetStealthActor()->GetUniqueId())
          {
             LOG_ERROR("The stealth actor cannot attach to itself.");
          }
@@ -125,7 +126,7 @@ namespace StealthGM
             SimCore::AttachToActorMessage &ataMsg = 
                static_cast<SimCore::AttachToActorMessage&>(*msg);
 
-            ataMsg.SetAboutActorId(inputComponent->GetStealthActor().GetUniqueId());
+            ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
             ataMsg.SetAttachToActor(mAttachProxy->GetId());
 
             gameManager.SendMessage(ataMsg);
@@ -134,7 +135,34 @@ namespace StealthGM
          mAttachProxy = NULL;
       }
 
+      // DETACH - Send an attach message with no actor
+      if (mDetachFromActor && mInputComponent->GetStealthActor() != NULL) 
+      {
+         dtCore::RefPtr<dtGame::Message> msg = 
+            gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
+         SimCore::AttachToActorMessage &ataMsg = static_cast<SimCore::AttachToActorMessage&>(*msg);
+         ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
+         ataMsg.SetAttachToActor(dtCore::UniqueId(""));
+
+         gameManager.SendMessage(ataMsg);
+
+         mDetachFromActor = false;
+      }
+
       SetIsUpdated(false);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool PreferencesGeneralConfigObject::IsStealthActorCurrentlyAttached()
+   {
+      bool result = false;
+
+      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != NULL)
+      {
+         result = mInputComponent->GetStealthActor()->IsAttachedToActor();
+      }
+
+      return result;
    }
 
    void PreferencesGeneralConfigObject::SetAttachMode(const std::string &mode)

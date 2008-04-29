@@ -113,8 +113,6 @@ namespace StealthGM
 
          void EnableCameraCollision(bool enable);
 
-         SimCore::Actors::StealthActor& GetStealthActor() { return *mStealthActor; }
-
          virtual void OnAddedToGM();
 
          void GotoFirstKeyframe();

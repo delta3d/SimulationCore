@@ -15,14 +15,28 @@
   <property name="dockNestingEnabled" >
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="centralwidget" />
+  <widget class="QWidget" name="centralwidget" >
+   <widget class="QLineEdit" name="mEntityInfoRotationLineEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>660</y>
+      <width>220</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>0</y>
      <width>896</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -1996,10 +2010,20 @@
                     <item>
                      <widget class="QPushButton" name="mSearchAttachPushButton" >
                       <property name="toolTip" >
-                       <string>Attach to the currently selected entity.</string>
+                       <string>Attach to the currently selected entity - causes the camera to follow the entity as it moves.</string>
                       </property>
                       <property name="text" >
                        <string>Attach</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="mSearchDetachPushButton" >
+                      <property name="toolTip" >
+                       <string>Detach the camera so that it no longer moves with the curren tentity.</string>
+                      </property>
+                      <property name="text" >
+                       <string>Detach</string>
                       </property>
                      </widget>
                     </item>
@@ -3097,10 +3121,7 @@
            <item row="5" column="0" >
             <widget class="QLabel" name="mEntityInfoLastUpdateTimeLabel" >
              <property name="text" >
-              <string>Last Update Time</string>
-             </property>
-             <property name="buddy" >
-              <cstring>mEntityInfoLastUpdateTimeLineEdit</cstring>
+              <string>Last Update</string>
              </property>
             </widget>
            </item>
@@ -3121,13 +3142,6 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1" >
-            <widget class="QLineEdit" name="mEntityInfoRotationLineEdit" >
-             <property name="readOnly" >
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1" >
             <widget class="QLineEdit" name="mEntityInfoCallSignLineEdit" >
              <property name="sizePolicy" >
@@ -3145,9 +3159,6 @@
             <widget class="QLabel" name="mEntityInfoRotationLabel" >
              <property name="text" >
               <string>Rotation</string>
-             </property>
-             <property name="buddy" >
-              <cstring>mEntityInfoRotationLineEdit</cstring>
              </property>
             </widget>
            </item>
@@ -3178,17 +3189,75 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1" >
-            <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
-             <property name="readOnly" >
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="6" column="0" colspan="2" >
             <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
              <property name="text" >
               <string>Auto Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" >
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLabel" name="mEntityInfoRot_HeadLabel" >
+               <property name="text" >
+                <string>H:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoRotHeadEdit" >
+               <property name="toolTip" >
+                <string>The heading of the entity (in degrees)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoRot_PitchLabel" >
+               <property name="text" >
+                <string>P:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoRotPitchEdit" >
+               <property name="toolTip" >
+                <string>The pitch of the entity (in degrees)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoRot_RollLabel" >
+               <property name="text" >
+                <string>R:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoRotRollEdit" >
+               <property name="toolTip" >
+                <string>The roll of the entity (in degrees)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="5" column="1" >
+            <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
+             <property name="toolTip" >
+              <string>The amount of time that has passed since this entity was updated on the network.</string>
+             </property>
+             <property name="readOnly" >
+              <bool>true</bool>
              </property>
             </widget>
            </item>
