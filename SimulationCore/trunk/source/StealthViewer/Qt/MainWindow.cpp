@@ -23,6 +23,10 @@
  * @author Curtiss Murphy
  */
 #include <prefix/SimCorePrefix-src.h>
+
+// This has to be above the QT includes because 'emit' conflicts
+#include <SimCore/Actors/BaseEntity.h>
+
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QVBoxLayout>
@@ -76,10 +80,12 @@
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 #include <osg/Matrixd>
+#include <osg/Math>
 
 #include <osgDB/FileNameUtils>
 
 #include <osgViewer/GraphicsWindow>
+#include <cmath>
 
 
 class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemInterface
@@ -279,7 +285,6 @@ namespace StealthQt
       mUi->mEntityInfoLastUpdateTimeLabel->hide();
 
       // At startup, we have to hide 2 of the 3 position sections of Entity Info.
-      // curt
       ShowOrHideEntityInfoPositionFields(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS);
    }
 
@@ -2003,7 +2008,6 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy *proxy)
    {
-      // curt
       StealthGM::PreferencesToolsConfigObject &toolsConfig = 
          StealthViewerData::GetInstance().GetToolsConfigObject();
       const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system = toolsConfig.GetCoordinateSystem();
@@ -2068,26 +2072,48 @@ namespace StealthQt
          mUi->mEntityInfoPosZEdit->setText(tr(oss.str().c_str()));
 
 
-         // compute degrees with 2 decimal places. Internally, degrees are 180 (turn left) to 
-         // 0 (straight) to -180 (turn right). That's backwards for humans. So convert to positive.
          // Heading
-         float heading = 360.0f - ((rot[0] < 0.0f) ? rot[0] + 360.0f : rot[0]); // convert to positive 
-         heading = ((int)(heading * 100)) / 100.0f; // truncate to 2 decimal places
+         float heading = ComputeHumanReadableDirection((float) rot[0]);
          oss.str("");
          oss << heading;
          mUi->mEntityInfoRotHeadEdit->setText(tr(oss.str().c_str()));
          // Pitch
-         float pitch = 360.0f - ((rot[1] < 0.0f) ? rot[1] + 360.0f : rot[1]); // convert to positive 
-         pitch = ((int)(pitch * 100)) / 100.0f; // truncate to 2 decimal places
+         float pitch = ComputeHumanReadableDirection((float) rot[1]);
          oss.str("");
          oss << pitch;
          mUi->mEntityInfoRotPitchEdit->setText(tr(oss.str().c_str()));
          // Roll
-         float roll = 360.0f - ((rot[2] < 0.0f) ? rot[2] + 360.0f : rot[2]); // convert to positive 
-         roll = ((int)(roll * 100)) / 100.0f; // truncate to 2 decimal places
+         float roll = ComputeHumanReadableDirection((float) rot[2]);
          oss.str("");
          oss << roll;
          mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
+
+         // Calculate the directional speed from the entities velocity
+         SimCore::Actors::BaseEntity *entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy->GetActor());
+         if (entity != NULL)
+         {
+            osg::Vec3 velocity = entity->GetVelocityVector(); 
+            // speed is distance of velocity. Then, convert from m/s to MPH
+            float speed = 2.237 * sqrt((float)(velocity[0] * velocity[0]) + 
+               (float)(velocity[1] * velocity[1]) + (float)(velocity[2] * velocity[2]));
+            speed = ((int)(speed * 100)) / 100.0f; // truncate to 2 decimal places
+            oss.str("");
+            oss << speed << " MPH";
+            mUi->mEntityInfoSpeed->setText(tr(oss.str().c_str()));
+
+            // compute the direction of movement
+            float direction = atan2(-(float)velocity[0], (float) velocity[1]);
+            direction = osg::RadiansToDegrees(direction);
+            direction = ComputeHumanReadableDirection(direction);
+            oss.str("");
+            oss << direction;
+            mUi->mEntityInfoSpeedDir->setText(tr(oss.str().c_str()));
+         }
+         else 
+         {
+            mUi->mEntityInfoSpeed->setText(tr(""));
+            mUi->mEntityInfoSpeedDir->setText(tr(""));
+         }
 
          mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
          mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
@@ -2170,6 +2196,20 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
+   float MainWindow::ComputeHumanReadableDirection(float flippedOrientation)
+   {
+      float result = flippedOrientation;
+
+      // convert to positive 
+      result = 360.0f - ((result < 0.0f) ? result + 360.0f : result);
+      // remove the occasional 360
+      result = (result >= 360.0) ? result - 360.0 : result;
+      result = ((int)(result * 100)) / 100.0f; // truncate to 2 decimal places
+
+      return result;
+   }
+   
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
    {
       bool isChecked = (state == Qt::Checked);
@@ -2195,6 +2235,8 @@ namespace StealthQt
 
       // Entity Info window
       mUi->mEntityInfoCallSignLineEdit->setText(tr(""));
+      mUi->mEntityInfoSpeed->setText(tr(""));
+      mUi->mEntityInfoSpeedDir->setText(tr(""));
 
       mUi->mEntityInfoForceLineEdit->setText(tr(""));
       //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr("")); // hidden for now.

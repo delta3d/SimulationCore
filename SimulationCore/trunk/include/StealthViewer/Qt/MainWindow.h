@@ -365,6 +365,13 @@ namespace StealthQt
           */
          void ShowOrHideEntityInfoPositionFields(const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system);
 
+         /**
+          * Compute a human readable degree with only 2 decimal places. Internally, degrees 
+          * are 180 (turn left) to 0 (straight) to -180 (turn right). That's backwards who 
+          * expect it to be like a compass from 0 to 360. So swap the negative and adjust it.
+          */
+         float ComputeHumanReadableDirection(float flippedOrientation);
+
 
          bool mIsPlaybackMode;
 
