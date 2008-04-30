@@ -91,7 +91,7 @@ namespace StealthGM
     * status information like AAR state (record, playback, idle), sim time,
     * speed factor, num messages, and other help info etc...
     */
-   class StealthHUD : public SimCore::Components::BaseHUD
+   class STEALTH_GAME_EXPORT StealthHUD : public SimCore::Components::BaseHUD
    {
    public:
       //default component name.

@@ -50,6 +50,7 @@
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/SimCoreVersion.h>
@@ -276,6 +277,10 @@ namespace StealthQt
       // hide the last update time fields until it can be useful (see comment in UpdateEntityInfoData())
       mUi->mEntityInfoLastUpdateTimeLineEdit->hide();
       mUi->mEntityInfoLastUpdateTimeLabel->hide();
+
+      // At startup, we have to hide 2 of the 3 position sections of Entity Info.
+      // curt
+      ShowOrHideEntityInfoPositionFields(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS);
    }
 
    ///////////////////////////////////////////////////////////////////
@@ -1998,8 +2003,27 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy *proxy)
    {
+      // curt
+      StealthGM::PreferencesToolsConfigObject &toolsConfig = 
+         StealthViewerData::GetInstance().GetToolsConfigObject();
+      const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system = toolsConfig.GetCoordinateSystem();
+
+      ShowOrHideEntityInfoPositionFields(system);
+
       if(proxy != NULL)
       {
+         std::ostringstream oss;
+         // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
+         StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
+            (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
+         if(hudComponent == NULL)
+         {
+            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+               "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
+               __FILE__, __LINE__);
+         }
+         dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
+
          // Decided not to use proxy->GetTranslation and proxy->GetRotation() based on David's 
          // recommendation that GetRotation is screwy and will be refactored at some point because
          // it changes the HPR order to RHP.
@@ -2012,11 +2036,37 @@ namespace StealthQt
          trans.GetRotation(rot);
          //osg::Vec3 pos = proxy->GetTranslation(), rot = proxy->GetRotation();
 
-         std::ostringstream oss;
-         oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
 
-         mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
-         mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
+         // For the 3 types of positions. We just go ahead and set all 3. It only happens once a 
+         // second and that way, if the user switches at any time, the data is already valid.
+         //mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
+         //oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
+
+         // Set the Lat Lon pos
+         //coordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
+         const osg::Vec3d& globePos = coordinateConverter.ConvertToRemoteTranslation(pos);
+         oss.str("");
+         oss << globePos[0];
+         mUi->mEntityInfoPosLatEdit->setText(tr(oss.str().c_str()));
+         oss.str("");
+         oss << globePos[1];
+         mUi->mEntityInfoPosLonEdit->setText(tr(oss.str().c_str()));
+
+         // Set the MGRS pos 
+         std::string milgrid = coordinateConverter.XYZToMGRS(pos);
+         mUi->mEntityInfoPositionMGRS->setText(tr(milgrid.c_str()));
+
+         // Set the XYZ Pos
+         oss.str("");
+         oss << pos[0];
+         mUi->mEntityInfoPosXEdit->setText(tr(oss.str().c_str()));
+         oss.str("");
+         oss << pos[1];
+         mUi->mEntityInfoPosYEdit->setText(tr(oss.str().c_str()));
+         oss.str("");
+         oss << pos[2];
+         mUi->mEntityInfoPosZEdit->setText(tr(oss.str().c_str()));
+
 
          // compute degrees with 2 decimal places. Internally, degrees are 180 (turn left) to 
          // 0 (straight) to -180 (turn right). That's backwards for humans. So convert to positive.
@@ -2039,6 +2089,7 @@ namespace StealthQt
          oss << roll;
          mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
 
+         mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
          mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
          mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
 
@@ -2048,6 +2099,72 @@ namespace StealthQt
          // after joining a federation, making this time something like 370000 seconds. It's just not helpful[
          //double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
          //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime) + tr(" seconds ago"));
+
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::ShowOrHideEntityInfoPositionFields(const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system)
+   {
+      if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
+      {
+         // Show the MGRS fields
+         mUi->mEntityInfoPositionMGRS->show();
+         mUi->mEntityInfoPositionLabel_MGRS->show();
+         // Hide the XYZ fields
+         mUi->mEntityInfoPositionLabel_XYZ->hide();
+         mUi->mEntityInfoPos_XLabel->hide();
+         mUi->mEntityInfoPosXEdit->hide();
+         mUi->mEntityInfoPos_YLabel->hide();
+         mUi->mEntityInfoPosYEdit->hide();
+         mUi->mEntityInfoPos_ZLabel->hide();
+         mUi->mEntityInfoPosZEdit->hide();
+         // Hide the Lat Lon fields
+         mUi->mEntityInfoPositionLabel_LatLon->hide();
+         mUi->mEntityInfoPos_LatLabel->hide();
+         mUi->mEntityInfoPosLatEdit->hide();
+         mUi->mEntityInfoPos_LonLabel->hide();
+         mUi->mEntityInfoPosLonEdit->hide();
+      }
+      else if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
+      {
+         // Hide the MGRS fields
+         mUi->mEntityInfoPositionMGRS->hide();
+         mUi->mEntityInfoPositionLabel_MGRS->hide();
+         // Show the XYZ fields
+         mUi->mEntityInfoPositionLabel_XYZ->hide();
+         mUi->mEntityInfoPos_XLabel->hide();
+         mUi->mEntityInfoPosXEdit->hide();
+         mUi->mEntityInfoPos_YLabel->hide();
+         mUi->mEntityInfoPosYEdit->hide();
+         mUi->mEntityInfoPos_ZLabel->hide();
+         mUi->mEntityInfoPosZEdit->hide();
+         // Hide the Lat Lon fields
+         mUi->mEntityInfoPositionLabel_LatLon->show();
+         mUi->mEntityInfoPos_LatLabel->show();
+         mUi->mEntityInfoPosLatEdit->show();
+         mUi->mEntityInfoPos_LonLabel->show();
+         mUi->mEntityInfoPosLonEdit->show();
+      }
+      else // if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ
+      {
+         // Hide the MGRS fields
+         mUi->mEntityInfoPositionMGRS->hide();
+         mUi->mEntityInfoPositionLabel_MGRS->hide();
+         // Show the XYZ fields
+         mUi->mEntityInfoPositionLabel_XYZ->show();
+         mUi->mEntityInfoPos_XLabel->show();
+         mUi->mEntityInfoPosXEdit->show();
+         mUi->mEntityInfoPos_YLabel->show();
+         mUi->mEntityInfoPosYEdit->show();
+         mUi->mEntityInfoPos_ZLabel->show();
+         mUi->mEntityInfoPosZEdit->show();
+         // Hide the Lat Lon fields
+         mUi->mEntityInfoPositionLabel_LatLon->hide();
+         mUi->mEntityInfoPos_LatLabel->hide();
+         mUi->mEntityInfoPosLatEdit->hide();
+         mUi->mEntityInfoPos_LonLabel->hide();
+         mUi->mEntityInfoPosLonEdit->hide();
 
       }
    }
@@ -2078,11 +2195,21 @@ namespace StealthQt
 
       // Entity Info window
       mUi->mEntityInfoCallSignLineEdit->setText(tr(""));
+
       mUi->mEntityInfoForceLineEdit->setText(tr(""));
       //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(tr("")); // hidden for now.
-      mUi->mEntityInfoPositionLineEdit->setText(tr(""));
       mUi->mEntityInfoRotHeadEdit->setText(tr(""));
       mUi->mEntityInfoRotPitchEdit->setText(tr(""));
       mUi->mEntityInfoRotRollEdit->setText(tr(""));
+
+      mUi->mEntityInfoPositionMGRS->setText(tr(""));
+      // Hide the XYZ fields
+      mUi->mEntityInfoPosXEdit->setText(tr(""));
+      mUi->mEntityInfoPosYEdit->setText(tr(""));
+      mUi->mEntityInfoPosZEdit->setText(tr(""));
+      // Hide the Lat Lon fields
+      mUi->mEntityInfoPosLatEdit->setText(tr(""));
+      mUi->mEntityInfoPosLonEdit->setText(tr(""));
+      //mUi->mEntityInfoPositionLineEdit->setText(tr("")); // replaced by the above fields
    }
 }
