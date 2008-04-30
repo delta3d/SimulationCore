@@ -3100,14 +3100,14 @@
            <property name="verticalSpacing" >
             <number>6</number>
            </property>
-           <item row="5" column="1" >
+           <item row="6" column="1" >
             <widget class="QLineEdit" name="mEntityInfoForceLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="5" column="0" >
+           <item row="6" column="0" >
             <widget class="QLabel" name="mEntityInfoForceLabel" >
              <property name="text" >
               <string>Force</string>
@@ -3117,14 +3117,14 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0" >
+           <item row="8" column="0" >
             <widget class="QLabel" name="mEntityInfoLastUpdateTimeLabel" >
              <property name="text" >
               <string>Last Update</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1" >
+           <item row="7" column="1" >
             <widget class="QLineEdit" name="mDamageStateLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
@@ -3171,7 +3171,7 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0" >
+           <item row="7" column="0" >
             <widget class="QLabel" name="mEntityInfoDamageStateLabel" >
              <property name="text" >
               <string>Damage State</string>
@@ -3191,7 +3191,7 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="0" colspan="2" >
+           <item row="9" column="0" colspan="2" >
             <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
              <property name="text" >
               <string>Auto Refresh</string>
@@ -3253,7 +3253,7 @@
              </item>
             </layout>
            </item>
-           <item row="7" column="1" >
+           <item row="8" column="1" >
             <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
              <property name="toolTip" >
               <string>The amount of time that has passed since this entity was updated on the network.</string>
@@ -3376,6 +3376,47 @@
              </item>
             </layout>
            </item>
+           <item row="5" column="0" >
+            <widget class="QLabel" name="mEntityInfoSpeedLabel" >
+             <property name="text" >
+              <string>Velocity</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoForceLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1" >
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoSpeed" >
+               <property name="toolTip" >
+                <string>The speed of the entity - estimated from the published velocity</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoSpeed_DirLabel" >
+               <property name="text" >
+                <string>Head:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoSpeedDir" >
+               <property name="toolTip" >
+                <string>The direction the entity is moving (in degrees) - estimated from the published velocity</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
         </item>
@@ -3405,7 +3446,10 @@
   </action>
   <action name="mActionHLAConnections" >
    <property name="text" >
-    <string>Connect ...</string>
+    <string>Connection ...</string>
+   </property>
+   <property name="toolTip" >
+    <string>Connect to, Disconnect from, or Edit Network Connections</string>
    </property>
   </action>
   <action name="mActionFullScreen" >
