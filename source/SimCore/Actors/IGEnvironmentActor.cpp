@@ -164,7 +164,11 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetLatitudeAndLongitude( float latitude, float longitude )
       {
+         //this updates the sky and sun colors
          mEphemerisModel->setLatitudeLongitude(latitude, longitude);
+
+         //this updates the fog color
+         mEnvironment->SetRefLatLong(osg::Vec2(latitude, longitude));
       }
 
       /////////////////////////////////////////////////////////////

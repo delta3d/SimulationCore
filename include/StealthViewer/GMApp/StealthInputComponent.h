@@ -163,10 +163,6 @@ namespace StealthGM
          bool mHasUI;
          bool mCollideWithGround;
 
-         // HACK: variables for hacking the ephemeris to update to the correct time of day
-         float mEnvUpdateTime;
-         int mEnvUpdateAttempts;
-
          // Ensures stealth actor persists between map changes.
          dtCore::RefPtr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;
    };

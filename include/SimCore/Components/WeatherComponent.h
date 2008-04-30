@@ -33,6 +33,7 @@
 #include <dtABC/weather.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <osgParticle/PrecipitationEffect>
+#include <SimCore/Actors/DayTimeActor.h>
 
 namespace osg
 {
@@ -186,6 +187,8 @@ namespace SimCore
             dtABC::Weather::VisibilityType ClassifyVisibility( const Actors::UniformAtmosphereActor& atmos );
             dtABC::Weather::TimePeriod ClassifyTimePeriod( unsigned int time_msec );
             dtABC::Weather::Season ClassifySeason( unsigned int time_msec );
+
+            void SetCoordinates();
             
             //this sets our state set on our root node to have the proper draw order and
             //prevent rendering of the snow within the vehicle
@@ -198,13 +201,10 @@ namespace SimCore
              * Helper method to help reduce some code
              */
             void AssignNewProxy(const dtCore::UniqueId &id);
-
-            /**
-             * Helper method to help reduce some code
-             */
-            void UpdateDateAndTime();
             
          private:
+
+
             bool   mAllowClipAjust;
             float  mPrecipStart;
             float  mNearClipPlane;
@@ -225,7 +225,7 @@ namespace SimCore
             dtABC::Weather::Season mLastSeason;
 
             dtCore::RefPtr<Actors::UniformAtmosphereActorProxy> mAtmosphere;
-            dtCore::RefPtr<Actors::DayTimeActorProxy> mDayTime;
+            dtCore::ObserverPtr<Actors::DayTimeActorProxy> mDayTime;
 
             // The Weather object is being referenced to gain access
             // to clouds. If it were not for this reason, the Environment

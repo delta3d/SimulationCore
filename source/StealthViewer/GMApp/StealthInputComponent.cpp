@@ -91,19 +91,17 @@ namespace StealthGM
    StealthInputComponent::StealthInputComponent(bool enableLogging,
                                                 bool enablePlayback, 
                                                 const std::string& name, 
-                                                bool hasUI) :
-      SimCore::Components::BaseInputComponent(name),
-      mCycleIndex(0),
-      mEnableLogging(enableLogging),
-      mEnablePlayback(enablePlayback), 
-      mWasConnected(false),
-      mReconnectOnIdle(true),
-      mTargetLogState(&dtGame::LogStateEnumeration::LOGGER_STATE_IDLE),
-      mFirstPersonAttachMode(true), 
-      mHasUI(hasUI), 
-      mCollideWithGround(true),
-      mEnvUpdateTime(0.0f),
-      mEnvUpdateAttempts(2)
+                                                bool hasUI)                                                 
+      : SimCore::Components::BaseInputComponent(name)
+      , mCycleIndex(0)
+      , mEnableLogging(enableLogging)
+      , mEnablePlayback(enablePlayback)
+      , mWasConnected(false)
+      , mReconnectOnIdle(true)
+      , mTargetLogState(&dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
+      , mFirstPersonAttachMode(true)
+      , mHasUI(hasUI)
+      , mCollideWithGround(true)
    {
       mLogger = &dtUtil::Log::GetInstance("StealthInputComponent.cpp");
       mMachineInfo = new dtGame::MachineInfo;
@@ -161,31 +159,6 @@ namespace StealthGM
          if(weatherComp != NULL && mStealthMM.valid())
          {
             weatherComp->SetViewElevation(mStealthMM->GetElevation());
-
-            // HACK: Force the time actor values to be applied to the ephemeris rendering.
-            // The ephemeris updating is suspected to be asynchronous--the probable cause
-            // for the time-of-day issue (sky does not match the time).
-            if( mEnvUpdateAttempts > 0 )
-            {
-               if( mEnvUpdateTime >= 2.0f ) // time for update
-               {
-                  if( (mEnvUpdateAttempts%2) == 1 ) // time back
-                  {
-                     IncrementTime(-5);
-                  }
-                  else // time forward
-                  {
-                     IncrementTime(5);
-                  }
-
-                  mEnvUpdateTime = 0.0f; // reset clock for another attempt
-                  --mEnvUpdateAttempts; // one attempt was burned
-               }
-               else // advance time toward next update
-               {
-                  mEnvUpdateTime += tick.GetDeltaRealTime();
-               }
-            }
          }
       }
 
