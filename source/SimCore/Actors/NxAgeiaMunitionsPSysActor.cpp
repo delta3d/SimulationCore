@@ -377,7 +377,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    if(!mSelfInteracting)
       collisionGroupToSendIn = mPhysicsHelper->GetCollisionGroup();
 
-   _particle->mObj = new dtCore::Object(_id.ToString().c_str());
+   _particle->mObj = new dtCore::Transformable(_id.ToString().c_str());
 
    bool orientDrawable = false;
 
@@ -393,7 +393,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          // Avoid adding another tracer geometry if this is a recycled particle.
          // NOTE: 1 child is for the model matrix node, used in preserving scale
          // but optimizing matrix transformations.
-         if( NULL != node && node->getNumChildren() <= 1 )
+         if( NULL != node && node->getNumChildren() == 0 )
          {
             dtCore::RefPtr<SimCore::Actors::VolumetricLine> line 
                = new SimCore::Actors::VolumetricLine( 20.0f, 0.5f, "VolumetricLines", "TracerGroup" );
