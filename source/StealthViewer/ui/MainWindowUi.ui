@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>896</width>
+    <width>1066</width>
     <height>1027</height>
    </rect>
   </property>
@@ -15,27 +15,13 @@
   <property name="dockNestingEnabled" >
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <widget class="QLineEdit" name="mEntityInfoRotationLineEdit" >
-    <property name="geometry" >
-     <rect>
-      <x>50</x>
-      <y>660</y>
-      <width>220</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="readOnly" >
-     <bool>true</bool>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralwidget" />
   <widget class="QMenuBar" name="menubar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>896</width>
+     <width>1066</width>
      <height>21</height>
     </rect>
    </property>
@@ -103,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>2</number>
+        <number>1</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -1081,13 +1067,26 @@
                     <bool>true</bool>
                    </property>
                    <property name="buttonSymbols" >
-                    <enum>QAbstractSpinBox::PlusMinus</enum>
+                    <enum>QAbstractSpinBox::UpDownArrows</enum>
                    </property>
                    <property name="accelerated" >
                     <bool>true</bool>
                    </property>
+                   <property name="correctionMode" >
+                    <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+                   </property>
+                   <property name="displayFormat" >
+                    <string>hh:mm:ss</string>
+                   </property>
                    <property name="calendarPopup" >
                     <bool>true</bool>
+                   </property>
+                   <property name="time" >
+                    <time>
+                     <hour>9</hour>
+                     <minute>0</minute>
+                     <second>0</second>
+                    </time>
                    </property>
                   </widget>
                  </item>
@@ -3101,14 +3100,14 @@
            <property name="verticalSpacing" >
             <number>6</number>
            </property>
-           <item row="3" column="1" >
+           <item row="5" column="1" >
             <widget class="QLineEdit" name="mEntityInfoForceLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="3" column="0" >
+           <item row="5" column="0" >
             <widget class="QLabel" name="mEntityInfoForceLabel" >
              <property name="text" >
               <string>Force</string>
@@ -3118,14 +3117,14 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0" >
+           <item row="7" column="0" >
             <widget class="QLabel" name="mEntityInfoLastUpdateTimeLabel" >
              <property name="text" >
               <string>Last Update</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1" >
+           <item row="6" column="1" >
             <widget class="QLineEdit" name="mDamageStateLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
@@ -3155,7 +3154,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0" >
+           <item row="4" column="0" >
             <widget class="QLabel" name="mEntityInfoRotationLabel" >
              <property name="text" >
               <string>Rotation</string>
@@ -3163,13 +3162,16 @@
             </widget>
            </item>
            <item row="1" column="1" >
-            <widget class="QLineEdit" name="mEntityInfoPositionLineEdit" >
+            <widget class="QLineEdit" name="mEntityInfoPositionMGRS" >
+             <property name="toolTip" >
+              <string>The MGRS position of the entity</string>
+             </property>
              <property name="readOnly" >
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="4" column="0" >
+           <item row="6" column="0" >
             <widget class="QLabel" name="mEntityInfoDamageStateLabel" >
              <property name="text" >
               <string>Damage State</string>
@@ -3180,23 +3182,23 @@
             </widget>
            </item>
            <item row="1" column="0" >
-            <widget class="QLabel" name="mEntityInfoPositionLabel" >
+            <widget class="QLabel" name="mEntityInfoPositionLabel_MGRS" >
              <property name="text" >
               <string>Position</string>
              </property>
              <property name="buddy" >
-              <cstring>mEntityInfoPositionLineEdit</cstring>
+              <cstring>mEntityInfoPositionMGRS</cstring>
              </property>
             </widget>
            </item>
-           <item row="6" column="0" colspan="2" >
+           <item row="8" column="0" colspan="2" >
             <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
              <property name="text" >
               <string>Auto Refresh</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1" >
+           <item row="4" column="1" >
             <layout class="QHBoxLayout" >
              <item>
               <widget class="QLabel" name="mEntityInfoRot_HeadLabel" >
@@ -3251,7 +3253,7 @@
              </item>
             </layout>
            </item>
-           <item row="5" column="1" >
+           <item row="7" column="1" >
             <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
              <property name="toolTip" >
               <string>The amount of time that has passed since this entity was updated on the network.</string>
@@ -3260,6 +3262,119 @@
               <bool>true</bool>
              </property>
             </widget>
+           </item>
+           <item row="2" column="0" >
+            <widget class="QLabel" name="mEntityInfoPositionLabel_LatLon" >
+             <property name="text" >
+              <string>Position</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoPositionMGRS</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" >
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLabel" name="mEntityInfoPos_LatLabel" >
+               <property name="text" >
+                <string>Lat:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoPosLatEdit" >
+               <property name="toolTip" >
+                <string>The Latitude of the entity (North-South)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoPos_LonLabel" >
+               <property name="text" >
+                <string>Lon:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoPosLonEdit" >
+               <property name="toolTip" >
+                <string>The longitude of the entity (East-West)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0" >
+            <widget class="QLabel" name="mEntityInfoPositionLabel_XYZ" >
+             <property name="text" >
+              <string>Position</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoPositionMGRS</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" >
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLabel" name="mEntityInfoPos_XLabel" >
+               <property name="text" >
+                <string>X:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoPosXEdit" >
+               <property name="toolTip" >
+                <string>The X position of the entity (meters in world coordinates)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoPos_YLabel" >
+               <property name="text" >
+                <string>Y:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoPosYEdit" >
+               <property name="toolTip" >
+                <string>The Y position of the entity (meters in world coordinates)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="mEntityInfoPos_ZLabel" >
+               <property name="text" >
+                <string>Z:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="mEntityInfoPosZEdit" >
+               <property name="toolTip" >
+                <string>The Z position of the entity (meters in world coordinates)</string>
+               </property>
+               <property name="readOnly" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

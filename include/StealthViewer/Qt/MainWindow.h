@@ -14,6 +14,7 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
 namespace dtGame
 {
@@ -357,6 +358,12 @@ namespace StealthQt
           * Updates the data fields of the Entity Info window. Made into a method cause it's called from several places
           */
          void UpdateEntityInfoData(dtGame::GameActorProxy *proxy);
+
+         /**
+          * There is only one of 3 coordinate systems active at any one time. Therefore, hide 2 of the 3 possible
+          * sets of data fields in the EntityInfo Window.  
+          */
+         void ShowOrHideEntityInfoPositionFields(const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system);
 
 
          bool mIsPlaybackMode;
