@@ -469,9 +469,6 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor", 
             mWeatherComp->GetAtmosphereActor() == NULL );
 
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should have a DayTimeActor since it is created in OnAddedToGM", 
-            mWeatherComp->GetDayTimeActor() != NULL );
-
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor", 
             mWeatherComp->GetEphemerisEnvironment() != NULL );
