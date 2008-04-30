@@ -46,7 +46,6 @@
 
 #include <dtUtil/mathdefines.h>
 
-#include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Tools/Binoculars.h>
@@ -132,14 +131,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::OnAddedToGM()
       {
-         GetGameManager()->CreateActor(*Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, mDayTime);
-         SimCore::Actors::DayTimeActor* dayTimeActor = dynamic_cast<SimCore::Actors::DayTimeActor*>(mDayTime->GetActor());
-         if( dayTimeActor != NULL )
-         {
-            time_t timeStamp = time(NULL);
-            dayTimeActor->SetTime(timeStamp);
-            GetGameManager()->AddActor(*mDayTime,false,false);
-         }
+
       }
 
       //////////////////////////////////////////////////////////
@@ -331,6 +323,7 @@ namespace SimCore
 
          else if( type == dtGame::MessageType::INFO_MAP_LOADED)
          {
+            SetCoordinates();
          }
 
          // Check for the environment object to see if it was loaded in the map file
@@ -370,62 +363,59 @@ namespace SimCore
          // Update the time of day
          if(mDayTime.valid())
          {
-            std::vector<dtDAL::ActorProxy*> actors;
-            const dtDAL::ActorType* type = GetGameManager()->FindActorType("dtutil", "Coordinate Config");
-            GetGameManager()->FindActorsByType(*type, actors);
-            if(!actors.empty())
+            SetCoordinates();
+            
+            if(mUpdatesEnabled)
             {
-               // Get the offset of time zones
-               dtActors::CoordinateConfigActorProxy *coordConfigActorProxy = dynamic_cast<dtActors::CoordinateConfigActorProxy*>(actors[0]);
-               if(coordConfigActorProxy != NULL)
-               {
-                  dtActors::CoordinateConfigActor *coordConfigActor
-                     = dynamic_cast<dtActors::CoordinateConfigActor*>
-                     (coordConfigActorProxy->GetActor());
+               Actors::DayTimeActor* timeActor = 
+                  static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());         
 
-                  // Compensate for the time zone
-                  osg::Vec3d geoOffset;
-                  if(coordConfigActor != NULL)
-                  {
-                     dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
-                     coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
-                     geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
+               dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+               dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
+               dt.SetTime(timeActor->GetTime());
 
-                     // Adjust the time. Convert the degrees to hours
-                     //                  geoOffset[1] = geoOffset[1]/360.0f*24.0f+0.5; // 0.5 to round up
-                     mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
-                                                                           geoOffset[1]);
-
-                     dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
-                     dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
-                     mEphemerisEnvironmentActor->SetDateTime(dt);
-                  }
-               }
+               dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetGMTTime()) * 1000000);
             }
          }
          else
          {
             LOG_WARNING("WeatherComponent has no time of day data");
-         }
-
-         UpdateDateAndTime();
+         }         
       }
 
-      //////////////////////////////////////////////////////////
-      void WeatherComponent::UpdateDateAndTime()
+
+      void WeatherComponent::SetCoordinates()
       {
-         if(!mUpdatesEnabled || !mDayTime.valid() || !mEphemerisEnvironmentActor.valid())
-            return;
+         std::vector<dtDAL::ActorProxy*> actors;
+         const dtDAL::ActorType* type = GetGameManager()->FindActorType("dtutil", "Coordinate Config");
+         GetGameManager()->FindActorsByType(*type, actors);
+         if(!actors.empty())
+         {
+            // Get the offset of time zones
+            dtActors::CoordinateConfigActorProxy *coordConfigActorProxy = dynamic_cast<dtActors::CoordinateConfigActorProxy*>(actors[0]);
+            if(coordConfigActorProxy != NULL)
+            {
+               dtActors::CoordinateConfigActor *coordConfigActor
+                  = dynamic_cast<dtActors::CoordinateConfigActor*>
+                  (coordConfigActorProxy->GetActor());
 
-         Actors::DayTimeActor* timeActor = 
-            static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
+               // Compensate for the time zone
+               osg::Vec3d geoOffset;
+               if(coordConfigActor != NULL)
+               {
+                  dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
+                  coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
+                  geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
 
-         dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
-         dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
-         dt.SetTime(timeActor->GetTime());
+                  mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
+                     geoOffset[1]);
 
-         dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetGMTTime()) * 1000000);
-         //mEphemerisEnvironmentActor->SetTimeFromSystem();
+                  dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+                  dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
+                  mEphemerisEnvironmentActor->SetDateTime(dt);
+               }
+            }
+         }
       }
 
       //////////////////////////////////////////////////////////

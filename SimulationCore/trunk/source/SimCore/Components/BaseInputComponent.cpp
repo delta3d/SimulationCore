@@ -32,6 +32,7 @@
 #include <dtCore/logicalinputdevice.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
+#include <dtCore/system.h>
 #include <dtCore/camera.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/coordinates.h>
@@ -265,96 +266,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::IncrementTime(const int minuteStep)
       {
-         enum TimeSetBy{ eNONE = 0, eWEATHER_COMP, eENVIRONMENT_ACTOR};
-
-         TimeSetBy set = eNONE;
-         int year =0 ,month=0 ,day=0 ,hour=0 ,minute=0 ,sec=0 ;
-        
-         SimCore::Components::WeatherComponent* weatherComp;
-         GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
-         SimCore::Actors::DayTimeActor* dayTimeActor = NULL;
-         
-         if( weatherComp != NULL ) 
-         { 
-            SimCore::Actors::DayTimeActorProxy* dayTimeActorProxy = weatherComp->GetDayTimeActor();
-            if(dayTimeActorProxy != NULL)
-            {
-               dayTimeActor = dynamic_cast<SimCore::Actors::DayTimeActor*>(dayTimeActorProxy->GetActor());
-               if(dayTimeActor != NULL)
-               {
-                  set = eWEATHER_COMP;
-
-                  sec = dayTimeActor->GetSecond();
-                  minute = dayTimeActor->GetMinute(); 
-                  hour = dayTimeActor->GetHour();
-                  day = dayTimeActor->GetDay();
-                  month = dayTimeActor->GetMonth();
-                  year = dayTimeActor->GetYear()+1900;
-
-                  // Ensure the hour value is valid after the compensation for
-                  // the Prime Meridian offset.
-                  if( hour < 0 ) { hour += 24; }
-                  hour %= 24;
-               }
-            }
-         }
-//         else if(ap != NULL)
-//         {
-//            ap->GetActor(envActor);
-//            if(envActor != NULL)
-//            {
-//               set = eENVIRONMENT_ACTOR;
-//               envActor->GetTimeAndDate(year,month,day,hour,minute,sec);
-//            }
-//         }
-
-         if(set != eNONE)
-         {            
-            // hack to work around an issue that sometimes, an HLA message will come in
-            // to set the time to something nutty, preventing us from changing the time up and down.
-            if(year >= 2038) 
-               year = 2030;
-            else if(year <= 1970) 
-               year = 1971;
-
-            minute += minuteStep;
-            if(minute <= 0)
-            {
-               minute += 60;
-               hour--;
-               if(hour < 0)
-                  hour = 23;
-            }
-
-            if(minute >= 60)
-            {
-               minute -= 60;
-               hour++;
-               if(hour >= 24)
-                  hour = 0;
-            }
-
-            std::ostringstream oss;
-            oss << "Setting Time " << hour << ":" << minute << ":" << sec << std::endl;
-            LOG_DEBUG(oss.str());        
-
-            if(set == eWEATHER_COMP)
-            {
-               dayTimeActor->SetYear(year-1900);
-               dayTimeActor->SetMonth(month);
-               dayTimeActor->SetDay(day);
-               dayTimeActor->SetHour(hour);
-               dayTimeActor->SetMinute(minute);
-               dayTimeActor->SetSecond(sec);
-
-               weatherComp->UpdateDayTime();
-            }
-//            else if(set == eENVIRONMENT_ACTOR)
-//            {
-//               envActor->SetTimeAndDate(year,month,day,hour,minute,sec);
-//            }
-         }
-
+         dtCore::System::GetInstance().SetSimulationClockTime(            //multiply by 60 to get into seconds and 1 million to get micro seconds
+            dtCore::System::GetInstance().GetSimulationClockTime() + dtCore::Timer_t(((minuteStep * 60) * 1000000)));
       }
 
       void BaseInputComponent::OnAddedToGM()
