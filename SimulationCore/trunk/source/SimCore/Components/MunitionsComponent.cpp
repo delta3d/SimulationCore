@@ -91,7 +91,10 @@ namespace SimCore
          if( ! newType.valid() ) { return false; }
 
          std::string munitionName( newType->GetName() );
-         if( HasMunitionType( munitionName ) ) { return false; }
+         if( HasMunitionType( munitionName ) )
+         {
+            return false;
+         }
 
          SimCore::Actors::MunitionTypeActor* actor = 
             dynamic_cast<SimCore::Actors::MunitionTypeActor*>(newType->GetActor());
@@ -1656,14 +1659,16 @@ namespace SimCore
             const DetonationMessage& detMessage = 
                dynamic_cast<const DetonationMessage&> (message);
 
+            const SimCore::Actors::MunitionTypeActor* munitionType
+               = GetMunition( detMessage.GetMunitionType(), GetDefaultMunitionName() );
+
             // Is this Direct Fire?
             if( ! message.GetAboutActorId().ToString().empty() )
             {
                DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
                if( helper != NULL )
                {
-                  helper->ProcessDetonationMessage( detMessage, 
-                     mMunitionTypeTable->GetMunitionType( detMessage.GetMunitionType() ), true );
+                  helper->ProcessDetonationMessage( detMessage, munitionType, true );
                }
             }
             else // this is Indirect Fire
@@ -1673,18 +1678,31 @@ namespace SimCore
 
                for( ; iter != mIdToHelperMap.end(); ++iter )
                {
-                  iter->second->ProcessDetonationMessage( detMessage, 
-                     mMunitionTypeTable->GetMunitionType( detMessage.GetMunitionType() ), false );
+                  iter->second->ProcessDetonationMessage( detMessage, munitionType, false );
                }
             }
 
             // Create the particle systems and sound effects
-            ApplyDetonationEffects( detMessage );
+            if( munitionType != NULL )
+            {
+               ApplyDetonationEffects( detMessage, *munitionType );
+            }
+            else
+            {
+               std::ostringstream oss;
+               oss << "Detonation munition \"" << detMessage.GetMunitionType()
+                  << "\" could not be found nor the default munition \""
+                  << GetDefaultMunitionName() << "\"" << std::endl;
+               LOG_ERROR(oss.str());
+            }
          }
          else if( type == SimCore::MessageType::SHOT_FIRED )
          {
             const ShotFiredMessage& shotMessage = 
                dynamic_cast<const ShotFiredMessage&> (message);
+
+            const SimCore::Actors::MunitionTypeActor* munitionType
+               = GetMunition( shotMessage.GetMunitionType(), GetDefaultMunitionName() );
 
             DamageHelper* helper = NULL;
             // Is this Direct Fire?
@@ -1693,8 +1711,7 @@ namespace SimCore
                helper = GetHelperByEntityId( message.GetAboutActorId() );
                if( helper != NULL )
                {
-                  helper->ProcessShotMessage( shotMessage, 
-                     mMunitionTypeTable->GetMunitionType( shotMessage.GetMunitionType() ), true );
+                  helper->ProcessShotMessage( shotMessage, munitionType, true );
                }
             }
             else // this is Indirect Fire
@@ -1704,15 +1721,25 @@ namespace SimCore
 
                for( ; iter != mIdToHelperMap.end(); ++iter )
                {
-                  iter->second->ProcessShotMessage( shotMessage, 
-                     mMunitionTypeTable->GetMunitionType( shotMessage.GetMunitionType() ), false );
+                  iter->second->ProcessShotMessage( shotMessage, munitionType, false );
                }
             }
 
             // Apply gun flash effects only to remote entities
             if(message.GetSource() != GetGameManager()->GetMachineInfo())
             {
-               ApplyShotfiredEffects( shotMessage );
+               if( munitionType != NULL )
+               {
+                  ApplyShotfiredEffects( shotMessage, *munitionType );
+               }
+               else
+               {
+                  std::ostringstream oss;
+                  oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
+                     << "\" could not be found nor the default munition \""
+                     << GetDefaultMunitionName() << "\"" << std::endl;
+                  LOG_ERROR(oss.str());
+               }
             }
          }
          // Capture the player
@@ -1847,36 +1874,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponent::ApplyShotfiredEffects( const ShotFiredMessage& message )
+      void MunitionsComponent::ApplyShotfiredEffects( const ShotFiredMessage& message,
+         const SimCore::Actors::MunitionTypeActor& munitionType )
       {
          const std::string& munitionName = message.GetMunitionType();
-         if ( munitionName.empty() )
-         {
-            LOG_WARNING("Ignoring munition with type UNKNOWN.");
-            return;
-         }
-
-         if( ! mMunitionTypeTable.valid() )
-         {
-            LOG_ERROR("Ignoring munition, no MunitionTypeTable exists.");
-            return;
-         }
-
-         // Obtain the closest matching registered munition type.
-         const SimCore::Actors::MunitionTypeActor* munitionType 
-            = mMunitionTypeTable->GetMunitionType( munitionName );
-
-         if( munitionType == NULL )
-         {
-            LOG_WARNING("Received a weapon fire with an invalid munition type. Ignoring");
-            return;
-         }
 
          // Get the munition effects info so that the detonation actor can be set
          // with relevant data.
-         const SimCore::Actors::MunitionEffectsInfoActor* effects = 
-            dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
-            (munitionType->GetEffectsInfoActor());
+         const SimCore::Actors::MunitionEffectsInfoActor* effects
+            = GetMunitionEffectsInfo( munitionType, "" );// NO DEFAULT EFFECT FOR NOW: GetDefaultMunitionName() );
 
          if( effects == NULL )
          {
@@ -1887,34 +1893,6 @@ namespace SimCore
             return;
          }
 
-/*         // Prepare a new detonation actor to be placed into the world.
-         RefPtr<SimCore::Actors::DetonationActorProxy> detProxy;
-         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DETONATION_ACTOR_TYPE, detProxy);
-         if( ! detProxy.valid() )
-         {
-            LOG_ERROR("Failed to create the detonation proxy");
-            return;
-         }
-         // Obtain the new detonation actor proxy's actor
-         SimCore::Actors::DetonationActor &da = static_cast<SimCore::Actors::DetonationActor&>(detProxy->GetGameActor());
-
-         // Pre-calculate the offset of sound based on the distance from the player.
-         if(mPlayer.valid())
-         {
-            dtCore::Transform xform;
-            mPlayer->GetTransform(xform);
-            da.CalculateDelayTime(xform.GetTranslation());
-         }
-
-         // Populate detonation actor with effects
-         std::string curValue = effects->GetFireSound();
-         if( ! curValue.empty() ) { da.LoadSoundFile( curValue ); }
-         curValue = effects->GetFireEffect();
-         if( ! curValue.empty() ) { da.LoadDetonationFile( curValue ); }
-
-         // Place the detonation actor into the scene
-         GetGameManager()->AddActor(da.GetGameActorProxy(), true, false);
-*/
          // Find the remote actor who sent the fire message so that flash and
          // sound effects can be applied to it.
          dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> proxy
@@ -1998,7 +1976,7 @@ namespace SimCore
 
             // Determine if enough rounds have been shot to justify production
             // of a new tracer effect.
-            int tracerFrequency = munitionType->GetTracerFrequency();
+            int tracerFrequency = munitionType.GetTracerFrequency();
 
             // If tracers are allowable...
             if( tracerFrequency > 0 )
@@ -2048,7 +2026,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponent::ApplyDetonationEffects( const DetonationMessage& message )
+      void MunitionsComponent::ApplyDetonationEffects( const DetonationMessage& message,
+         const SimCore::Actors::MunitionTypeActor& munitionType )
       {
          //Sort of a hack.  Detonations cannot be drawn if they come so quickly.
          double simTime = GetGameManager()->GetSimulationTime();
@@ -2061,33 +2040,11 @@ namespace SimCore
             mLastDetonationTime = simTime;
 
          const std::string& munitionName = message.GetMunitionType();
-         if ( munitionName.empty() )
-         {
-            LOG_WARNING("Ignoring munition with type UNKNOWN.");
-            return;
-         }
-
-         if( ! mMunitionTypeTable.valid() )
-         {
-            LOG_ERROR("Ignoring munition, no MunitionTypeTable exists.");
-            return;
-         }
-
-         // Obtain the closest matching registered munition type.
-         const SimCore::Actors::MunitionTypeActor* munitionType 
-            = mMunitionTypeTable->GetMunitionType( munitionName );
-
-         if( munitionType == NULL )
-         {
-            LOG_WARNING("Received a detonation with an invalid detonation munition type. Ignoring");
-            return;
-         }
 
          // Get the munition effects info so that the detonation actor can be set
          // with relevant data.
-         const SimCore::Actors::MunitionEffectsInfoActor* effects = 
-            dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
-            (munitionType->GetEffectsInfoActor());
+         const SimCore::Actors::MunitionEffectsInfoActor* effects
+            = GetMunitionEffectsInfo( munitionType, "" );// NO DEFAULT EFFECT FOR NOW: GetDefaultMunitionName() );
 
          if( effects == NULL )
          {
@@ -2290,8 +2247,8 @@ namespace SimCore
          da->SetLingeringSmokeSecs( effects->GetSmokeLifeTime() );
 
          // Determine if the detonation should have physics applied to its particles.
-         bool avoidPhysics = munitionType->GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_ROUND 
-            || munitionType->GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
+         bool avoidPhysics = munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_ROUND 
+            || munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
          da->SetPhysicsEnabled( ! avoidPhysics );
 
          // Prepare the reference light effect type
@@ -2330,6 +2287,84 @@ namespace SimCore
 
          return munitionType->GetDamageType();
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::SetDefaultMunitionName( const std::string& munitionName )
+      {
+         mDefaultMunitionName = munitionName;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& MunitionsComponent::GetDefaultMunitionName() const
+      {
+         return mDefaultMunitionName;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::MunitionTypeActor* MunitionsComponent::GetMunition(
+         const std::string& munitionName, const std::string& defaultMunitionName ) const
+      {
+         if( ! mMunitionTypeTable.valid() )
+         {
+            LOG_ERROR("Cannot acquire munition, no MunitionTypeTable exists.");
+            return NULL;
+         }
+
+         // Obtain the closest matching registered munition type.
+         const SimCore::Actors::MunitionTypeActor* munitionType 
+            = mMunitionTypeTable->GetMunitionType( munitionName );
+
+         if( munitionType == NULL )
+         {
+            // Attempt access to the specified default munition.
+            munitionType = mMunitionTypeTable->GetMunitionType( defaultMunitionName );
+
+            std::ostringstream oss;
+            oss << "Received a detonation with an invalid munition \""
+               << munitionName << "\". Attempting default munition \""
+               << defaultMunitionName << "\".\n\tDefault munition"
+               << (munitionType==NULL?"NOT found":"found") << std::endl;
+            LOG_WARNING( oss.str() );
+         }
+
+         return munitionType;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::MunitionEffectsInfoActor* MunitionsComponent::GetMunitionEffectsInfo(
+         const SimCore::Actors::MunitionTypeActor& munition, const std::string& defaultMunitionName ) const
+      {
+         // Get the munition effects info so that the detonation actor can be set
+         // with relevant data.
+         const SimCore::Actors::MunitionEffectsInfoActor* effects =
+            dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
+            (munition.GetEffectsInfoActor());
+
+         if( effects == NULL )
+         {
+            std::ostringstream oss;
+            oss << "Munition \"" << munition.GetName() << "\" has no effects assign to it."
+               << "\nAttempting to use default effects from default munition \""
+               << defaultMunitionName << "\"" << std::endl;
+
+            const SimCore::Actors::MunitionTypeActor* defaultMunitionType
+               = GetMunition( defaultMunitionName );
+            if( defaultMunitionType != NULL )
+            {
+               effects = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
+                  (defaultMunitionType->GetEffectsInfoActor());
+            }
+            else
+            {
+               oss << "Default munition not found." << std::endl;
+            }
+
+            LOG_ERROR( oss.str() );
+         }
+
+         return effects;
+      }
+
 
    }
 }

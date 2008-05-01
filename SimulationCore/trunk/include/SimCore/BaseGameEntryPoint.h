@@ -64,6 +64,8 @@ namespace SimCore
          static const std::string CONFIG_PROP_DEVELOPERMODE;
          static const std::string CONFIG_PROP_GMSTATS;
          static const std::string CONFIG_PROP_ASPECT_RATIO;
+         static const std::string CONFIG_PROP_MUNITION_MAP;
+         static const std::string CONFIG_PROP_MUNITION_DEFAULT;
 
          /// Constructor
          BaseGameEntryPoint();

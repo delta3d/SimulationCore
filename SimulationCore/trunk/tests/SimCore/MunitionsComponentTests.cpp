@@ -139,6 +139,7 @@ namespace SimCore
          CPPUNIT_TEST(TestMunitionTypeTableProperties);
          CPPUNIT_TEST(TestDamageHelperProperties);
          CPPUNIT_TEST(TestMunitionsComponentProperties);
+         CPPUNIT_TEST(TestDefaultMunition);
          CPPUNIT_TEST(TestMessageProcessing);
          CPPUNIT_TEST(TestMunitionConfigLoading);
          CPPUNIT_TEST(TestMunitionEffectsInfoActorProperties);
@@ -176,6 +177,7 @@ namespace SimCore
             void TestMunitionTypeTableProperties();
             void TestDamageHelperProperties();
             void TestMunitionsComponentProperties();
+            void TestDefaultMunition();
             void TestMessageProcessing();
             void TestMunitionConfigLoading();
             void TestMunitionEffectsInfoActorProperties();
@@ -1288,6 +1290,12 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName1 ) == NULL );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName2 ) == NULL );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName3 ) == NULL );
+
+         // Test default munition name property
+         std::string defaultMunitionName("Default");
+         CPPUNIT_ASSERT( mDamageComp->GetDefaultMunitionName().empty() );
+         mDamageComp->SetDefaultMunitionName( defaultMunitionName );
+         CPPUNIT_ASSERT( mDamageComp->GetDefaultMunitionName() == defaultMunitionName );
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1367,6 +1375,68 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponentTests::TestDefaultMunition()
+      {
+         mDamageComp->LoadMunitionTypeTable("MunitionTypesMap");
+
+         // Test Default Munition Feature
+         // --- Maintain a reference to at least one munition
+         const SimCore::Actors::MunitionTypeActor* grenadeMunition
+            = mDamageComp->GetMunition("Generic Grenade");
+         CPPUNIT_ASSERT( grenadeMunition != NULL );
+
+         // --- Pick a munition to act as a default and ensure it exists in the
+         //     munition map.
+         std::string defaultMunitionName("Generic Explosive");
+         const SimCore::Actors::MunitionTypeActor* defaultMunition
+            = mDamageComp->GetMunition(defaultMunitionName);
+         CPPUNIT_ASSERT( defaultMunition != NULL );
+
+         std::string fakeMunitionName("FAKE");
+         // Ensure a valid munition is returned.
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( grenadeMunition->GetName() ) == grenadeMunition );
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( grenadeMunition->GetName(), defaultMunitionName ) == grenadeMunition );
+         // Ensure a default munition is returned. 
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( fakeMunitionName, defaultMunitionName ) == defaultMunition );
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( defaultMunitionName ) == defaultMunition );
+         // Ensure a bad default munition name for the second parameter does not
+         // compromise the return of a valid munition.
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( grenadeMunition->GetName(), defaultMunitionName ) == grenadeMunition );
+         // Ensure a bad munition names for both parameters causes the method to return NULL.
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( fakeMunitionName, fakeMunitionName ) == NULL );
+         CPPUNIT_ASSERT( mDamageComp->GetMunition( fakeMunitionName ) == NULL );
+
+
+         // Test accessing effects info with the similar method, GetMunitionEffectsInfo.
+         //
+         // --- Maintain a reference to the default effect info object so that it can be
+         //     compared with subsequent calls to GetMunitionEffectsInfo
+         const SimCore::Actors::MunitionEffectsInfoActor* defaultEffects
+            = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>(defaultMunition->GetEffectsInfoActor());
+         const SimCore::Actors::MunitionEffectsInfoActor* grenadeEffects
+            = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>(grenadeMunition->GetEffectsInfoActor());
+         CPPUNIT_ASSERT( defaultEffects != NULL );
+         CPPUNIT_ASSERT( grenadeEffects != NULL );
+
+         // --- Create an empty munition that has no effects info reference.
+         //     This will be used to test that GetMunitionEffectsInfo will
+         //     return the effects from the default munition.
+         dtCore::RefPtr<dtDAL::ActorProxy> proxy;
+         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
+         SimCore::Actors::MunitionTypeActor* emptyMunition = NULL;
+         proxy->GetActor( emptyMunition );
+         CPPUNIT_ASSERT( emptyMunition != NULL );
+         CPPUNIT_ASSERT( emptyMunition->GetEffectsInfoActor() == NULL );
+
+         // --- Perform the tests on GetMunitionEffectsInfo
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionEffectsInfo( *grenadeMunition, defaultMunitionName ) == grenadeEffects );
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionEffectsInfo( *emptyMunition, defaultMunitionName ) == defaultEffects );
+         // --- Test it with a non-existent default munition name
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionEffectsInfo( *grenadeMunition, fakeMunitionName ) == grenadeEffects );
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionEffectsInfo( *emptyMunition, fakeMunitionName ) == NULL );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestMessageProcessing()
       {
          // Chew up any messages that could cause problems.
@@ -1419,16 +1489,16 @@ namespace SimCore
          dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy> munitionTypeProxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, munitionTypeProxy );
          munitionTypeProxy->SetName( munitionName1 );
-         SimCore::Actors::MunitionTypeActor* munitionType1 = 
-            dynamic_cast<SimCore::Actors::MunitionTypeActor*> (munitionTypeProxy->GetActor());
+         SimCore::Actors::MunitionTypeActor* munitionType1 = NULL;
+         munitionTypeProxy->GetActor( munitionType1 );
          munitionType1->SetDamageType( damageName1 );
          munitionType1->SetFamily(SimCore::Actors::MunitionFamily::FAMILY_ROUND);
          CPPUNIT_ASSERT( typeTable->AddMunitionType( munitionTypeProxy ) );
 
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, munitionTypeProxy );
          munitionTypeProxy->SetName( munitionName2 );
-         SimCore::Actors::MunitionTypeActor* munitionType2 = 
-            dynamic_cast<SimCore::Actors::MunitionTypeActor*> (munitionTypeProxy->GetActor());
+         SimCore::Actors::MunitionTypeActor* munitionType2 = NULL;
+         munitionTypeProxy->GetActor( munitionType2 );
          munitionType2->SetDamageType( damageName2 );
          munitionType2->SetFamily(SimCore::Actors::MunitionFamily::FAMILY_GENERIC_EXPLOSIVE);
          CPPUNIT_ASSERT( typeTable->AddMunitionType( munitionTypeProxy ) );
