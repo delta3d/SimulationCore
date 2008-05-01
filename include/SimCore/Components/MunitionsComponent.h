@@ -685,9 +685,11 @@ namespace SimCore
 
             void SetDamage( SimCore::Actors::BaseEntity& entity, DamageType& damage );
             
-            void ApplyShotfiredEffects( const ShotFiredMessage& message );
+            void ApplyShotfiredEffects( const ShotFiredMessage& message,
+               const SimCore::Actors::MunitionTypeActor& munitionType );
 
-            void ApplyDetonationEffects( const DetonationMessage& message );
+            void ApplyDetonationEffects( const DetonationMessage& message,
+               const SimCore::Actors::MunitionTypeActor& munitionType );
 
             virtual void OnAddedToGM();
 
@@ -697,9 +699,31 @@ namespace SimCore
             // @return The name of the MunitionDamage that the MunitionTypeActor references.
             const std::string& GetMunitionDamageTypeName( const std::string& munitionTypeName ) const;
 
+            // Set the default munition that will be used in place of any detonations
+            // for which the associated munition is not found in the munition table.
+            // @param munitionName Name of the munition to use for the default detonation effect.
+            void SetDefaultMunitionName( const std::string& munitionName );
+            const std::string& GetDefaultMunitionName() const;
+
+            // Convenience method for directly retrieving a munition from the contained munition table.
+            // @param munitionName Name of the munition to be retrieved from the munition type table.
+            // @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
+            // @return the specified munition OR a default munition if default munition name has been specified
+            //         OR NULL if neither a match or a default could be found.
+            const SimCore::Actors::MunitionTypeActor* GetMunition(
+               const std::string& munitionName, const std::string& defaultMunitionName = "" ) const;
+
+            // Convenience method for directly retrieving munition effects info from the contained munition table.
+            // @param munition Munition with effects to be verified and returned.
+            // @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
+            // @return effects from the specified munition OR default munition effects if default munition name has been specified
+            //         OR NULL if neither munition has a valid effect nor a default could be found.
+            const SimCore::Actors::MunitionEffectsInfoActor* GetMunitionEffectsInfo(
+               const SimCore::Actors::MunitionTypeActor& munition, const std::string& defaultMunitionName = "" ) const;
+
          protected:
 
-            /// Destructor
+            // Destructor
             virtual ~MunitionsComponent();
 
             void SetMunitionTypeTable( dtCore::RefPtr<MunitionTypeTable>& table ) { mMunitionTypeTable = table.get(); }
@@ -711,6 +735,11 @@ namespace SimCore
             // The path to the munition config file that contains all the damage
             // tables to be loaded.
             std::string mMunitionConfigPath;
+
+            // The name of the default munition to be used in place of munition detonations
+            // that have not been defined in the munition table. This also points to the 
+            // default munition effects info object used to setup the detonation effect.
+            std::string mDefaultMunitionName;
 
             // This map holds onto all damages helpers. Each damage helper is mapped
             // to the entity's ID of the entity that is needing the damage help.
