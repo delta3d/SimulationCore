@@ -1662,29 +1662,30 @@ namespace SimCore
             const SimCore::Actors::MunitionTypeActor* munitionType
                = GetMunition( detMessage.GetMunitionType(), GetDefaultMunitionName() );
 
-            // Is this Direct Fire?
-            if( ! message.GetAboutActorId().ToString().empty() )
-            {
-               DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
-               if( helper != NULL )
-               {
-                  helper->ProcessDetonationMessage( detMessage, munitionType, true );
-               }
-            }
-            else // this is Indirect Fire
-            {
-               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
-                  mIdToHelperMap.begin();
-
-               for( ; iter != mIdToHelperMap.end(); ++iter )
-               {
-                  iter->second->ProcessDetonationMessage( detMessage, munitionType, false );
-               }
-            }
-
-            // Create the particle systems and sound effects
             if( munitionType != NULL )
             {
+               // Is this Direct Fire?
+               bool explosion = munitionType->GetFamily().IsExplosive();
+               if( ! explosion && ! message.GetAboutActorId().ToString().empty() )
+               {
+                  DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
+                  if( helper != NULL )
+                  {
+                     helper->ProcessDetonationMessage( detMessage, *munitionType, true );
+                  }
+               }
+               else // this is Indirect Fire
+               {
+                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
+                     mIdToHelperMap.begin();
+
+                  for( ; iter != mIdToHelperMap.end(); ++iter )
+                  {
+                     iter->second->ProcessDetonationMessage( detMessage, *munitionType, false );
+                  }
+               }
+
+               // Create the particle systems and sound effects
                ApplyDetonationEffects( detMessage, *munitionType );
             }
             else
@@ -1704,42 +1705,42 @@ namespace SimCore
             const SimCore::Actors::MunitionTypeActor* munitionType
                = GetMunition( shotMessage.GetMunitionType(), GetDefaultMunitionName() );
 
-            DamageHelper* helper = NULL;
-            // Is this Direct Fire?
-            if( ! message.GetAboutActorId().ToString().empty() )
+            if( munitionType != NULL )
             {
-               helper = GetHelperByEntityId( message.GetAboutActorId() );
-               if( helper != NULL )
+               DamageHelper* helper = NULL;
+               // Is this Direct Fire?
+               if( ! message.GetAboutActorId().ToString().empty() )
                {
-                  helper->ProcessShotMessage( shotMessage, munitionType, true );
+                  helper = GetHelperByEntityId( message.GetAboutActorId() );
+                  if( helper != NULL )
+                  {
+                     helper->ProcessShotMessage( shotMessage, *munitionType, true );
+                  }
                }
-            }
-            else // this is Indirect Fire
-            {
-               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
-                  mIdToHelperMap.begin();
-
-               for( ; iter != mIdToHelperMap.end(); ++iter )
+               else // this is Indirect Fire
                {
-                  iter->second->ProcessShotMessage( shotMessage, munitionType, false );
-               }
-            }
+                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
+                     mIdToHelperMap.begin();
 
-            // Apply gun flash effects only to remote entities
-            if(message.GetSource() != GetGameManager()->GetMachineInfo())
-            {
-               if( munitionType != NULL )
+                  for( ; iter != mIdToHelperMap.end(); ++iter )
+                  {
+                     iter->second->ProcessShotMessage( shotMessage, *munitionType, false );
+                  }
+               }
+
+               // Apply gun flash effects only to remote entities
+               if(message.GetSource() != GetGameManager()->GetMachineInfo())
                {
                   ApplyShotfiredEffects( shotMessage, *munitionType );
                }
-               else
-               {
-                  std::ostringstream oss;
-                  oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
-                     << "\" could not be found nor the default munition \""
-                     << GetDefaultMunitionName() << "\"" << std::endl;
-                  LOG_ERROR(oss.str());
-               }
+            }
+            else
+            {
+               std::ostringstream oss;
+               oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
+                  << "\" could not be found nor the default munition \""
+                  << GetDefaultMunitionName() << "\"" << std::endl;
+               LOG_ERROR(oss.str());
             }
          }
          // Capture the player

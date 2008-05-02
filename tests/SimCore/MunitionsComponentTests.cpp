@@ -143,6 +143,7 @@ namespace SimCore
          CPPUNIT_TEST(TestMessageProcessing);
          CPPUNIT_TEST(TestMunitionConfigLoading);
          CPPUNIT_TEST(TestMunitionEffectsInfoActorProperties);
+         CPPUNIT_TEST(TestMunitionFamilyProperties);
          CPPUNIT_TEST(TestMunitionTypeActorProperties);
          CPPUNIT_TEST(TestTracerEffectProperties);
          CPPUNIT_TEST(TestWeaponEffectProperties);
@@ -181,6 +182,7 @@ namespace SimCore
             void TestMessageProcessing();
             void TestMunitionConfigLoading();
             void TestMunitionEffectsInfoActorProperties();
+            void TestMunitionFamilyProperties();
             void TestMunitionTypeActorProperties();
             void TestTracerEffectProperties();
             void TestWeaponEffectProperties();
@@ -1883,6 +1885,18 @@ namespace SimCore
             effectsInfo->GetTracerLight().empty() );
          effectsInfo->SetTracerLight(lightName);
          CPPUNIT_ASSERT( effectsInfo->GetTracerLight() == lightName );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponentTests::TestMunitionFamilyProperties()
+      {
+         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN.IsExplosive() ); 
+         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_ROUND.IsExplosive() );  
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_EXPLOSIVE_ROUND.IsExplosive() ); 
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_GRENADE.IsExplosive() ); 
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_MINE.IsExplosive() ); 
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_MISSILE.IsExplosive() );
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_GENERIC_EXPLOSIVE.IsExplosive() );
       }
 
       //////////////////////////////////////////////////////////////////////////
