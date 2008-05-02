@@ -42,6 +42,14 @@ namespace SimCore
       MunitionFamily MunitionFamily::FAMILY_MISSILE("MISSILE");
       MunitionFamily MunitionFamily::FAMILY_GENERIC_EXPLOSIVE("GENERIC EXPLOSIVE");
 
+      //////////////////////////////////////////////////////////////////////////
+      bool MunitionFamily::IsExplosive() const
+      {
+         // Anything other than a round or UNKNOWN is treated as an explosive.
+         return this != &SimCore::Actors::MunitionFamily::FAMILY_ROUND 
+            && this != &SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
+      }
+
 
 
       //////////////////////////////////////////////////////////////////////////
