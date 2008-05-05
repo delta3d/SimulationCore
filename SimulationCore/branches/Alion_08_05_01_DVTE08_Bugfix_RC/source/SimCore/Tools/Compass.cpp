@@ -25,20 +25,15 @@
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
-#include <dtUtil/coordinates.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/deltadrawable.h>
 #include <dtCore/globals.h>
-#include <dtABC/application.h>
-#include <dtGame/gamemanager.h>
-#include <dtGame/gameactor.h>
-#include <dtGame/exceptionenum.h>
 
 #include <osg/Node>
 #include <osg/NodeVisitor>
 #include <osg/MatrixTransform>
 #include <osg/Program>
+#include <osg/Projection>
 #include <osg/Shader>
 #include <osg/StateSet>
 #include <osg/Uniform>
@@ -59,8 +54,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       Compass::Compass(CEGUI::Window *mainWindow, dtCore::Camera& camera, bool useMagNorth, float aspectRatio) :
          Tool(mainWindow),
-         //mOverlay(NULL),
-         //mAzimuthText(NULL),
          mUseMagneticNorth(useMagNorth),
          mNeedleRotation(0.0f),
          mNeedlePosition(0.0f),
@@ -70,70 +63,12 @@ namespace SimCore
          mNeedleDragCoef(0.9f),
          mCamera(&camera)
       {
-         //try
-         //{
-         //   CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
-         //   mOverlay            = wm->createWindow("WindowsLook/StaticImage", "compass_overlay");
-         //   mAzimuthText        = wm->createWindow("WindowsLook/StaticText", "azimuth_text");
-         //   mAzimuthDegreesText = wm->createWindow("WindowsLook/StaticText", "azimuth_degrees_text");
-
-         //   if(mainWindow != NULL)
-         //      mainWindow->addChildWindow(mOverlay);
-         //   mOverlay->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
-         //   mOverlay->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
-         //   mOverlay->setProperty("BackgroundEnabled", "false");
-         //   mOverlay->setProperty("FrameEnabled", "false");
-         //   
-         //   if(aspectRatio < 1.47)
-         //   {
-         //      mOverlay->setProperty("Image", "set:Compass4.3 image:Compass4.3");
-         //      mAzimuthText->setPosition(CEGUI::UVector2(cegui_reldim(0.461f), cegui_reldim(0.47f)));
-         //      mAzimuthDegreesText->setPosition(CEGUI::UVector2(cegui_reldim(0.461f), cegui_reldim(0.49f)));
-         //   }
-         //   else 
-         //   {
-         //      mOverlay->setProperty("Image", "set:Compass8.5 image:Compass8.5");
-         //      mAzimuthText->setPosition(CEGUI::UVector2(cegui_reldim(0.461f), cegui_reldim(0.47f)));
-         //      mAzimuthDegreesText->setPosition(CEGUI::UVector2(cegui_reldim(0.461f), cegui_reldim(0.49f)));
-         //   }
-
-         //   // Mils Display
-         //   mOverlay->addChildWindow(mAzimuthText);
-         //   mAzimuthText->setFont("DejaVuSans-10");
-         //   mAzimuthText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(0, 0, 0)));
-         //   mAzimuthText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
-         //   mAzimuthText->setProperty("FrameEnabled", "false");
-         //   mAzimuthText->setProperty("BackgroundEnabled", "false");
-         //   mAzimuthText->setHorizontalAlignment(CEGUI::HA_LEFT);
-
-         //   // Degrees Display
-         //   mOverlay->addChildWindow(mAzimuthDegreesText);
-         //   mAzimuthDegreesText->setFont("DejaVuSans-10");
-         //   mAzimuthDegreesText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 0, 0)));
-         //   mAzimuthDegreesText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
-         //   mAzimuthDegreesText->setProperty("FrameEnabled", "false");
-         //   mAzimuthDegreesText->setProperty("BackgroundEnabled", "false");
-         //   mAzimuthDegreesText->setHorizontalAlignment(CEGUI::HA_LEFT);
-         //}
-         //catch(CEGUI::Exception &e)
-         //{
-         //   std::ostringstream oss;
-         //   oss << "CEGUI exception caught: " << e.getMessage().c_str();
-         //   throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-         //      oss.str(), __FILE__, __LINE__);
-         //}
          Enable(false);
       }
 
       //////////////////////////////////////////////////////////////////////////
       Compass::~Compass()
       {
-         /*mOverlay->removeChildWindow(mAzimuthText);
-         mAzimuthText->destroy();
-         mAzimuthDegreesText->destroy();
-         if(mMainWindow != NULL)
-            mMainWindow->removeChildWindow(mOverlay);
-         mOverlay->destroy();*/
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -141,11 +76,9 @@ namespace SimCore
       {
          Tool::Enable(enable);
 
-         //IsEnabled() ? mOverlay->show() : mOverlay->hide();
-
-         if( mLensOverlay.valid() )
+         if( mCompassOverlay.valid() )
          {
-            mLensOverlay->setNodeMask(enable?0xFFFFFFFF:0);
+            mCompassOverlay->setNodeMask(enable?0xFFFFFFFF:0);
          }
       }
 
@@ -163,13 +96,6 @@ namespace SimCore
                h += GetCoordinateConverter().GetMagneticNorthOffset();
 
             h = float(UpdateNeedle(timeDelta,h+180.0f))-180.0f;
-
-            /*if(m_spCoverTransform.valid())
-            {
-               static bool specialEnable = true;
-               specialEnable = !specialEnable;
-               m_spCoverTransform->setNodeMask(specialEnable);
-            }*/
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
@@ -279,8 +205,8 @@ namespace SimCore
       void Compass::InitLens( dtCore::DeltaDrawable& hudLayer )
       {
          dtCore::DeltaWin::Resolution res = dtCore::DeltaWin::GetCurrentResolution();
-         double windowWidth = res.width;//1920.0; // TODO: access the window for screen width
-         double windowHeight = res.height;//1200.0; // TODO: access the window for screen height
+         double windowWidth = res.width;
+         double windowHeight = res.height;
 
          std::string lensaticNode("Textures/hud/compass/lensatic.osg");
          lensaticNode = dtCore::FindFileInPathList(lensaticNode);
@@ -292,8 +218,8 @@ namespace SimCore
          
          if( fileNode != NULL )
          {
-            mLensOverlay = dynamic_cast< osg::MatrixTransform* >(fileNode.get());
-            if( ! mLensOverlay.valid() )
+            mCompassOverlay = dynamic_cast< osg::MatrixTransform* >(fileNode.get());
+            if( ! mCompassOverlay.valid() )
             {
                LOG_ERROR("Compass::InitLens: unable to convert file node to an osg::MatrixTransform node.");
             }
@@ -305,7 +231,7 @@ namespace SimCore
             LOG_ERROR(ss.str());
          }
 
-         if( ! mLensOverlay.valid() )
+         if( ! mCompassOverlay.valid() )
          {
             LOG_ERROR("Compass::InitLens: lens overlay node was unable to be created.");
             return;
@@ -315,45 +241,24 @@ namespace SimCore
          osg::Matrix trans;
          FindNamedNodeVisitor dialNV("dial");
 
-         mLensOverlay->accept(dialNV);
+         mCompassOverlay->accept(dialNV);
          if(!dialNV._foundNodes.empty())
          {
             mDisk = dynamic_cast< osg::MatrixTransform* >(
                dialNV._foundNodes.front().get());
          }
 
-         /*FindNamedNodeVisitor coverNV("dial_mask");
-         mLensOverlay->accept(coverNV);
-
-         if(!coverNV._foundNodes.empty())
-         {
-            m_spCoverTransform = dynamic_cast< osg::MatrixTransform* >(
-               coverNV._foundNodes.front().get());
-         }
-
-         if(m_spCoverTransform == NULL)
-         {
-            printf("Bad cover\n");
-         }
-         else
-         {
-            printf("Found cover\n");
-            m_spCoverTransform->setNodeMask(0xFFFFFFFF);
-         }*/
-
          float horizontalFOV = 1.0f;
          if(mCamera != NULL)
             horizontalFOV = mCamera->GetHorizontalFov();
 
          double dAspect = windowWidth/windowHeight;
-         //double dScale = (1.0/(120.0))*.8 *1.43; // CR: I am not sure what the numbers stand for (1.43) was added to the equation.
-         //1.0/(m_fHFOV*M_PI/180.0*1000.0); //360.0 * 120.0/(2.0*M_PI*1000.0); // FOV = 120m @ 1km ~= 6.875deg
          double dScale = 1.0/(horizontalFOV*M_PI/180.0*60.0);
          trans.makeScale(dScale,dScale,dScale);
-         trans.setTrans(0.5*dAspect, 0.17/dAspect, 0.0);
+         trans.setTrans(0.5*dAspect, 0.17/dAspect, -1.0);
 
-         mLensOverlay->setMatrix(trans);
-         mLensOverlay->setNodeMask(0);
+         mCompassOverlay->setMatrix(trans);
+         mCompassOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
          std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.frag");
@@ -379,7 +284,7 @@ namespace SimCore
 
             //move the focus as we move the dial
             osg::Vec2f focus(0.5f,0.875f);
-            resultValue =  mLensFocus->set(focus);
+            mLensFocus->set(focus);
 
             states->addUniform(mLensFocus.get());
          }
@@ -389,7 +294,7 @@ namespace SimCore
          projection->setMatrix(
             osg::Matrix::ortho2D(
             0,
-            dAspect/*windowWidth/windowHeight*/,
+            dAspect,
             0,
             1.0));
 
@@ -401,12 +306,12 @@ namespace SimCore
 
          // Setup hierarchy
          // root <- proj <- view <- lens
-         viewABS->addChild(mLensOverlay.get());
+         viewABS->addChild(mCompassOverlay.get());
          projection->addChild(viewABS);
          hudLayer.GetOSGNode()->asGroup()->addChild(projection);
 
          // Ensure all node levels are renderable.
-         mLensOverlay->setNodeMask(IsEnabled()?0xFFFFFFFF:0);
+         mCompassOverlay->setNodeMask(IsEnabled()?0xFFFFFFFF:0);
          viewABS->setNodeMask(0xFFFFFFFF);
          projection->setNodeMask(0xFFFFFFFF);
       }
