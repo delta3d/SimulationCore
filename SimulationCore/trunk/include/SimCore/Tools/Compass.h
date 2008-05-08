@@ -77,9 +77,6 @@ namespace SimCore
 
          private:
 
-            /*CEGUI::Window *mOverlay;
-            CEGUI::Window  *mAzimuthText;
-            CEGUI::Window  *mAzimuthDegreesText;*/
             bool mUseMagneticNorth;
             float mNeedleRotation;
             float mNeedlePosition;
@@ -89,8 +86,7 @@ namespace SimCore
             float mNeedleDragCoef;
 
             // Lens related references
-            //dtCore::RefPtr<osg::MatrixTransform> m_spCoverTransform;
-            dtCore::RefPtr<osg::MatrixTransform> mLensOverlay;
+            dtCore::RefPtr<osg::MatrixTransform> mCompassOverlay;
             dtCore::RefPtr<osg::MatrixTransform> mDisk;
             dtCore::RefPtr<osg::Uniform> mLensFocus;
             dtCore::ObserverPtr<dtCore::Camera> mCamera;

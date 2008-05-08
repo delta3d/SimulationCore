@@ -32,6 +32,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/NxCollisionGroupEnum.h>
 
 #include <dtDAL/enginepropertytypes.h>
 
@@ -52,6 +53,8 @@
 #include <osg/Geode>
 #include <osg/MatrixTransform>
 #include <osg/PrimitiveSet>
+
+using namespace SimCore::NxCollisionGroup;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +207,6 @@ void NxAgeiaMunitionsPSysActor::TickLocal(const dtGame::Message &tickMessage)
 
       if((*iter)->ShouldBeRemoved())
       {
-         //mPhysicsHelper->ReleasePhysXObject((*iter)->GetName().c_str());
          RemoveParticle(*(*iter));
          std::list<dtCore::RefPtr<PhysicsParticle> >::iterator toDelete = iter;
          ++iter;
@@ -238,69 +240,39 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          NxRay ourRay;
          ourRay.orig = NxVec3(lastposition[0],lastposition[1],lastposition[2]);
          ourRay.dir = NxVec3(currentPosition[0] - lastposition[0], currentPosition[1] - lastposition[1],currentPosition[2] - lastposition[2]);
-         float length = ourRay.dir.normalize();
+         float rayLength = ourRay.dir.normalize();
          NxRaycastHit   mOurHit;
 
          // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
-         // Make sure we DO hit hte terrain appropriatelys
-         MunitionRaycastReport myReport((mWeapon.valid() ? mWeapon->GetOwner() : NULL));
-         //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, 
-            (1 << 0) | (1 << 23) | (1 << 26) | (1 << 30) | (1 << 31) );
+         // Make sure we DO hit the terrain appropriately.
+         MunitionRaycastReport myReport(NULL);//(mWeapon.valid() ? mWeapon->GetOwner() : NULL));
+         
+         // CR: Create the bit mask once rather than every time the method is called.
+         static const int GROUPS_FLAGS = 
+            (1 << GROUP_TERRAIN)
+            | (1 << GROUP_WATER) 
+            | (1 << GROUP_VEHICLE_WATER) 
+            | (1 << GROUP_HUMAN_LOCAL) 
+            | (1 << GROUP_HUMAN_REMOTE);
+         NxU32 numHits = ourActor->getScene().raycastAllShapes(
+            ourRay, myReport, NX_ALL_SHAPES, GROUPS_FLAGS );
          if(numHits > 0 && myReport.mGotAHit)
          {
-            if (myReport.mClosestHit.distance <= length)
-            //if(mOurHit.distance < length)
+            if (myReport.mClosestHit.distance <= rayLength)
             {
                particleToCheck.FlagToDelete();
                dtAgeiaPhysX::ContactReport report;
-               report.nxVec3crContactNormal = myReport.mClosestHit.worldNormal; //;mOurHit.worldNormal;
-               NxVec3 contactPoint(myReport.mClosestHit.worldImpact); //mOurHit.worldImpact);
+               report.nxVec3crContactNormal = myReport.mClosestHit.worldNormal;
+               NxVec3 contactPoint(myReport.mClosestHit.worldImpact);
                report.lsContactPoints.push_back(contactPoint);
-               //dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
-               //   (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(mOurHit.shape->getActor().userData);
-               if(myReport.mClosestHitsHelper != NULL) //physicsHelper != NULL)
-                  mWeapon->ReceiveContactReport( report, &myReport.mClosestHitsHelper->GetPhysicsGameActorProxy());//physicsHelper->GetPhysicsGameActorProxy() );
+
+               if(myReport.mClosestHitsHelper != NULL)
+                  mWeapon->ReceiveContactReport( report, &myReport.mClosestHitsHelper->GetPhysicsGameActorProxy());
                else
                   mWeapon->ReceiveContactReport( report, NULL);
                return true;
             }
-         }
-         // We didn't hit anything, but AGEIA doesn't hit the terrain yet.
-         // So, do our own ISector against the terrain. This is SOOOO haxor! OMGWTFBBQ!
-         // NOTE - If we didn't get a valid hit above and return, then we check the terrain
-         //else 
-         //{
-            //std::vector<dtDAL::ActorProxy*> toFill;
-            //GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
-            //dtDAL::ActorProxy* terrainNode = NULL;
-            //if(!toFill.empty())
-            //   terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-
-            //osg::Vec3 hp;
-            //dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
-            //iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
-            //iSector->SetQueryRoot(terrainNode->GetActor());
-            //dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-            //SingleISector.SetSectorAsLineSegment(lastposition, currentPosition);
-            //if( iSector->Update(osg::Vec3(0,0,0), true) )
-            //{
-            //   if( SingleISector.GetNumberOfHits() > 0 ) 
-            //   {
-            //      SingleISector.GetHitPoint(hp);
-            //      particleToCheck.FlagToDelete();
-            //      dtAgeiaPhysX::ContactReport report;
-            //      osg::Vec3 hitNormal;
-            //      SingleISector.GetHitPointNormal(hitNormal);
-            //      report.nxVec3crContactNormal =NxVec3(hitNormal[0],hitNormal[1],hitNormal[2]);
-            //      
-            //      NxVec3 contactPoint(hp[0], hp[1], hp[2]);
-            //      report.lsContactPoints.push_back(contactPoint);
-            //      mWeapon->ReceiveContactReport( report, NULL); //terrainNode);
-            //      return true;
-            //   }
-            //}
-         //}         
+         }         
       }
 
       particleToCheck.SetLastPosition( osg::Vec3(  ourActor->getGlobalPosition()[0], 

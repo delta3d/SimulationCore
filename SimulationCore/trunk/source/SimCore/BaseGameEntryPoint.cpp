@@ -71,6 +71,8 @@
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 #include <osgUtil/RenderBin>
+#include <osgViewer/View>
+#include <osgDB/DatabasePager>
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
@@ -174,7 +176,7 @@ namespace SimCore
       {
          mIsUIRunning = false;
       }
-      
+
       if (!parser->read("--projectPath", mProjectPath))
       {
          mProjectPath = "";
@@ -273,7 +275,7 @@ namespace SimCore
          else
          {
             LOG_INFO("The data directory " + mProjectPath + " was located in the current working directory.");
-            dtDAL::Project::GetInstance().SetContext(mProjectPath);   
+            dtDAL::Project::GetInstance().SetContext(mProjectPath);
          }
          finalProjectPath = mProjectPath;
       }

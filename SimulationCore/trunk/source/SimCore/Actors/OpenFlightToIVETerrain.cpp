@@ -53,8 +53,8 @@ namespace SimCore
          , mPaging_BaseName("flight%i_%i.ive")
          , mPaging_ExpiringDelay(30.0f)
          , mPaging_Frame_Rate_Targeted(30.0f)
-         , mPaging_Precompile(false)
-         , mMaximumObjectsToCompile(5) // used to be 1
+         , mPaging_Precompile(true)
+         , mMaximumObjectsToCompile(25) // used to be 1
          , mZOffsetForTerrain(100.0f)
          , mTerrainPath("Terrains/BaghdadFallujah/")
       {
