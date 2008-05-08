@@ -183,6 +183,10 @@ namespace SimCore
             bool mHasDriver;
 
             ///////////////////////////////////////////////////
+            // Was terrain currently found? Used for startup checks.
+            bool mHasFoundTerrain;
+
+            ///////////////////////////////////////////////////
             // Should this vehicle send a full actor update when asked?
             bool mNotifyFullUpdate;
             bool mNotifyPartialUpdate;
@@ -208,6 +212,21 @@ namespace SimCore
 
             /// Check if the supplied NxActor is below ground, if so, move it above ground
             void KeepAboveGround( NxActor* physicsObject );
+
+            /**
+             * Get the point on the PhysX terrain at the specified location.
+             * @param location Location in world space where a ray should be used
+             *        to find a PhysX terrain point.
+             * @param outPoint Point on the terrain where a ray has detected terrain.
+             * @return TRUE if terrain was detected.
+             */
+            bool GetTerrainPoint( const osg::Vec3& location, osg::Vec3& outPoint );
+
+            /**
+             * Checks for PhysX terrain and will turn on gravity if it is found.
+             * @return TRUE if terrain is found.
+             */
+            bool IsTerrainPresent();
 
       };
 
