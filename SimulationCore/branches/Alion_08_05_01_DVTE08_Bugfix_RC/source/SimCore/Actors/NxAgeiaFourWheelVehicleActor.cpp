@@ -24,6 +24,7 @@
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <NxAgeiaWorldComponent.h>
+#include <NxAgeiaRayCastReport.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -43,6 +44,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
+#include <SimCore/NxCollisionGroupEnum.h>
 
 namespace SimCore
 {
@@ -58,6 +60,7 @@ namespace SimCore
       , SOUND_GEAR_CHANGE_MEDIUM(0.0f)      
       , SOUND_GEAR_CHANGE_HIGH(0.0f)        
       , mHasDriver(false)
+      , mHasFoundTerrain(false)
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
       , mPerformAboveGroundSafetyCheck(true)
@@ -195,6 +198,52 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
+      bool NxAgeiaFourWheelVehicleActor::IsTerrainPresent()
+      {
+         // DEBUG: std::cout << "Terrain loaded." << std::endl;
+
+         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         if( physicsObject == NULL )
+         {
+            // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
+            return false;
+         }
+
+         // Check to see if we are currently up under the earth, if so, snap them back up.
+         osg::Vec3 terrainPoint;
+         NxVec3 pos = physicsObject->getGlobalPosition();
+         osg::Vec3 location( pos.x, pos.y, pos.z );
+
+         // DEBUG: std::cout << "\tAttempting detection at [" << location << "]...";
+
+         // If a point was detected on the terrain...
+         bool terrainDetected = GetTerrainPoint( location, terrainPoint );
+         if( terrainDetected )
+         {
+            // DEBUG: std::cout << "DETECTED!" << std::endl;
+
+            // ...and snap just above that point.
+            physicsObject->setGlobalPosition(
+               NxVec3( pos.x, pos.y, terrainPoint.z() + 5.0f ) );
+
+            // And turn gravity on if it is off...
+            if( physicsObject->readBodyFlag(NX_BF_DISABLE_GRAVITY) )
+            {
+               // DEBUG: std::cout << "\t\tTurning vehicle gravity ON.\n" << std::endl;
+
+               GetPhysicsHelper()->TurnObjectsGravityOn();
+            }
+         }
+         // DEBUG: 
+         /*else
+         {
+            std::cout << "NOT detected :(\n" << std::endl;
+         }*/
+
+         return terrainDetected;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
          GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
@@ -210,27 +259,16 @@ namespace SimCore
             return;
          }
 
-         if(physicsObject->readBodyFlag(NX_BF_DISABLE_GRAVITY))
-         {
-            std::vector<dtDAL::ActorProxy*> toFill;
-            GetGameActorProxy().GetGameManager()->FindActorsByClassName("NxAgeiaTerraPageLand", toFill);
-            if(toFill.size())
-            {
-               NxAgeiaTerraPageLandActor* landActor = dynamic_cast<NxAgeiaTerraPageLandActor*>((*toFill.begin())->GetActor());
-               if(landActor != NULL)
-               {
-                  if(landActor->HasSomethingBeenLoaded())
-                     GetPhysicsHelper()->TurnObjectsGravityOn("Default");
-               }
-            }
-         }
-
          if(physicsObject->isSleeping())   physicsObject->wakeUp(1e30);
 
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-
+         // Check if terrain is available. (For startup)
+         if( ! mHasFoundTerrain )
+         {
+            // Terrain has not been found. Check for it again.
+            mHasFoundTerrain = IsTerrainPresent();
+         }
          // Check to see if we are currently up under the earth, if so, snap them back up.
-         if (GetPerformAboveGroundSafetyCheck() == true)
+         else if( GetPerformAboveGroundSafetyCheck() == true)
          {
             KeepAboveGround(physicsObject);
          }
@@ -238,10 +276,11 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          //                                          Update everything else                                      //
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
-         UpdateVehicleTorquesAndAngles(ElapsedTime);
-         UpdateRotationDOFS(ElapsedTime, true);
-         UpdateSoundEffects(ElapsedTime);
-         UpdateDeadReckoning(ElapsedTime);
+         float elapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateVehicleTorquesAndAngles(elapsedTime);
+         UpdateRotationDOFS(elapsedTime, true);
+         UpdateSoundEffects(elapsedTime);
+         UpdateDeadReckoning(elapsedTime);
 
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
@@ -673,8 +712,8 @@ namespace SimCore
          dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
          osg::Vec3 pos( position.x, position.y, position.z );
          osg::Vec3 endPos = pos;
-         pos[2] += 100; 
-         endPos[2] -= 100;
+         pos[2] -= 100.0f; 
+         endPos[2] += 100.0f;
          float offsettodo = 5.0f;
          SingleISector.SetSectorAsLineSegment(pos, endPos);
          if( iSector->Update(osg::Vec3(0,0,0), true) )
@@ -695,6 +734,36 @@ namespace SimCore
             physicsObject->setGlobalPosition(
                NxVec3(position[0], position[1], hp[2] + offsettodo));
          }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      bool NxAgeiaFourWheelVehicleActor::GetTerrainPoint(
+         const osg::Vec3& location, osg::Vec3& outPoint )
+      {
+         NxActor* physxObject = GetPhysicsHelper()->GetPhysXObject();
+         if( physxObject == NULL )
+         {
+            return false;
+         }
+
+         NxRay ray;
+         ray.orig = NxVec3(location.x(),location.y(),location.z());
+         ray.orig.z += 10000.0f;
+         ray.dir = NxVec3(0.0f,0.0f,-1.0f);
+
+         // Create a raycast report that should ignore this vehicle.
+         dtAgeiaPhysX::SimpleRaycastReport report( this );
+         static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN);
+
+         NxU32 numHits = physxObject->getScene().raycastAllShapes(
+            ray, report, NX_ALL_SHAPES, GROUPS_FLAGS );
+
+         if( numHits > 0 && report.HasHit() )
+         {
+            report.GetClosestHit( outPoint );
+            return true;
+         } 
+         return false;
       }
 
 
