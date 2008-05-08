@@ -49,6 +49,8 @@ namespace SimCore
             static MunitionFamily FAMILY_MISSILE;
             static MunitionFamily FAMILY_GENERIC_EXPLOSIVE;
 
+            bool IsExplosive() const;
+
          private:
             MunitionFamily(const std::string &name) : dtUtil::Enumeration(name)
             {

@@ -109,9 +109,9 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::ProcessShotMessage( const ShotFiredMessage& message,
-         const SimCore::Actors::MunitionTypeActor* munition, bool directFire )
+         const SimCore::Actors::MunitionTypeActor& munition, bool directFire )
       {
-         if( ! mEntity.valid() || ! mTable.valid() || munition == NULL ) { return; }
+         if( ! mEntity.valid() || ! mTable.valid() ) { return; }
 
          // TODO: ShotFired processing. Currently efforts have been focused on detonations.
          // NOTE: This feature will involve more complex damage accumulation.
@@ -135,18 +135,18 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::ProcessDetonationMessage( const DetonationMessage& message, 
-         const SimCore::Actors::MunitionTypeActor* munition, bool directFire )
+         const SimCore::Actors::MunitionTypeActor& munition, bool directFire )
       {
-         if( ! mEntity.valid() || ! mTable.valid() || munition == NULL ) { return; }
+         if( ! mEntity.valid() || ! mTable.valid() ) { return; }
 
          // Accumulate damage if the munition allows for damage accumulation.
          // NOTE: DO NOT accumulate on none explosive rounds nor unknown munitions.
-         const SimCore::Actors::MunitionFamily* family = &munition->GetFamily();
-         if( ( family == &SimCore::Actors::MunitionFamily::FAMILY_ROUND 
-            || family == &SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN )
-            && ! directFire ) { return; }
+         if( ! munition.GetFamily().IsExplosive() && ! directFire )
+         {
+            return;
+         }
 
-         const MunitionDamage* munitionDamage = mTable->GetMunitionDamage( munition->GetDamageType() );
+         const MunitionDamage* munitionDamage = mTable->GetMunitionDamage( munition.GetDamageType() );
 
          if( munitionDamage == NULL )
          {
