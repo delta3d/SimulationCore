@@ -98,6 +98,8 @@ namespace SimCore
       const std::string BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
       const std::string BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
       const std::string BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
+      const std::string BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
+      const std::string BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
@@ -296,6 +298,20 @@ namespace SimCore
             dtDAL::MakeFunctor(e, &BaseEntity::SetMobilityDisabled),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsMobilityDisabled),
             "Determines if this entity has had its mobility disabled."));
+
+         AddProperty(new dtDAL::StringActorProperty(
+            PROPERTY_ENTITY_TYPE,
+            PROPERTY_ENTITY_TYPE,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetEntityType),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetEntityType),
+            "String property into which the Entity Type is captured", BASE_ENTITY_GROUP));
+
+         AddProperty(new dtDAL::StringActorProperty(
+            PROPERTY_MAPPING_NAME,
+            PROPERTY_MAPPING_NAME,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetMappingName),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetMappingName),
+            "String property into which the Object Mapping Name is captured", BASE_ENTITY_GROUP));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -383,6 +399,30 @@ namespace SimCore
       BaseEntity::~BaseEntity()
       {
          SetFlamesPresent(false);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetMappingName( const std::string& name )
+      {
+         mMappingName = name;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      std::string BaseEntity::GetMappingName() const
+      {
+         return mMappingName;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetEntityType( const std::string& entityType )
+      {
+         mEntityType = entityType;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      std::string BaseEntity::GetEntityType() const
+      {
+         return mEntityType;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

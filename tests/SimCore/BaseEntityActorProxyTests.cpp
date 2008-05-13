@@ -365,6 +365,18 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    static_cast<dtDAL::StringActorProperty*>(prop)->SetValue(munitionTableName);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::StringActorProperty*>(prop)->GetValue() == munitionTableName);
 
+   std::string testValue("This Is A Test String");
+   dtDAL::StringActorProperty* strProp = NULL;
+   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty("Entity Type As String"));
+   CPPUNIT_ASSERT_MESSAGE("The \"Entity Type As String\" property should not be NULL", strProp != NULL);
+   strProp->SetValue(testValue);
+   CPPUNIT_ASSERT( strProp->GetValue() == testValue );
+
+   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty("Object Mapping Name"));
+   CPPUNIT_ASSERT_MESSAGE("The \"Object Mapping Name\" property should not be NULL", strProp != NULL);
+   strProp->SetValue(testValue);
+   CPPUNIT_ASSERT( strProp->GetValue() == testValue );
+
    mGM->DeleteActor(eap);
    dtCore::System::GetInstance().Step();
 
