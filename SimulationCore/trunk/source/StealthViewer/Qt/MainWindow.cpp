@@ -149,7 +149,10 @@ namespace StealthQt
       mRecordingStartTime(0.0),
       mIsConnectedToHLA(false), 
       mDoubleValidator(new QDoubleValidator(0, 10000, 5, this)), 
-      mShowMissingEntityInfoErrorMessage(true)
+      mShowMissingEntityInfoErrorMessage(true), 
+      mPreviousCustomHour(-1),
+      mPreviousCustomMinute(-1),
+      mPreviousCustomSecond(-1)
    {
       mUi->setupUi(this);
       ConnectSlots();
@@ -1170,6 +1173,11 @@ namespace StealthQt
       StealthGM::PreferencesEnvironmentConfigObject &envConfig = 
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
+      // When we switch to custom, reset our previous settings back to none. 
+      mPreviousCustomHour = -1;
+      mPreviousCustomMinute = -1;
+      mPreviousCustomSecond = -1;
+
       mUi->mThemedSettingsGroupBox->hide();
       mUi->mCustomSettingsGroupBox->show();
       mUi->mNetSetGroupBox->hide();
@@ -1237,9 +1245,82 @@ namespace StealthQt
       StealthGM::PreferencesEnvironmentConfigObject &envConfig = 
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
-      envConfig.SetCustomHour(newTime.hour());
-      envConfig.SetCustomMinute(newTime.minute());
-      envConfig.SetCustomSecond(newTime.second());
+      int newHour = newTime.hour();
+      int newMinute = newTime.minute();
+      int newSecond = newTime.second();
+      bool timeChanged = false;
+
+      // if they changed the custom time before, and we are near a border, and we 
+      // just crossed over the border, then we want to increase/decrease our hours or minutes.
+      // This causes it to appear to 'wrap' the time. QT does not provide this on the time control.
+      if (mPreviousCustomHour != -1 && mPreviousCustomHour == newHour)
+      {
+         int minuteChange = AutoWrapTime(mPreviousCustomSecond, newSecond, 60, 4);
+         newMinute += minuteChange;
+         int hourChange = 0;
+
+         if (newMinute < 0) // seconds wrapped down
+         {
+            newMinute = 59; 
+            newHour -= 1;
+         }
+         else if (newMinute > 59) // seconds wrapped up
+         {
+            newMinute = 0;
+            newHour += 1;
+         }
+         else  // handle minutes wrapping
+         {
+            hourChange = AutoWrapTime(mPreviousCustomMinute, newMinute, 60, 4);
+            newHour += hourChange;
+         }
+
+         // correct hours
+         if (newHour > 23)
+            newHour = 0;
+         else if (newHour < 0)
+            newHour = 23;
+
+         // If we got any sort of wrap, then we have a time change.
+         if (minuteChange != 0 || hourChange != 0)
+            timeChanged = true;
+      }
+
+      envConfig.SetCustomHour(newHour);
+      envConfig.SetCustomMinute(newMinute);
+      envConfig.SetCustomSecond(newSecond);
+
+      // update our previous values for next time
+      mPreviousCustomHour = newHour;
+      mPreviousCustomMinute = newMinute;
+      mPreviousCustomSecond = newSecond;
+
+      // Make sure we update the QT control
+      // note, this will cause this method to be called again - IMMEDIATELY.
+      if (timeChanged)
+      {
+         QTime time(newHour, newMinute, newSecond);
+         mUi->mCustomTimeEdit->setTime(time);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   int MainWindow::AutoWrapTime(int previousTime, int newTime, int timeUnits, int timeThreshold)
+   {
+      // attempt to wrap time. Units is 60 for minutes/seconds. Threadhold is how far
+      // out you want to check, somewhere in the 3-6 range.
+      bool oldTimeCloseToTopUnit = (timeUnits - previousTime) < timeThreshold;
+      bool oldTimeCloseToZero = (previousTime < timeThreshold);
+      bool newTimeCloseToTopUnit = (timeUnits - newTime) < timeThreshold;
+      bool newTimeCloseToZero = (newTime < timeThreshold);
+      int result = 0;
+
+      if (oldTimeCloseToTopUnit && newTimeCloseToZero)
+         result += 1;
+      else if (oldTimeCloseToZero && newTimeCloseToTopUnit)
+         result -= 1;
+
+      return result;
    }
 
    ///////////////////////////////////////////////////////////////////////////////
