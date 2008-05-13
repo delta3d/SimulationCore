@@ -2199,6 +2199,16 @@ namespace StealthQt
          mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
          mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
          mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
+         
+         // NOTE: To avoid confusion.
+         // Entity Type will write to Entity Type ID line edit
+         // Mapping Name will write to Entity Type line edit.
+         const dtDAL::ActorProperty* param
+            = proxy->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE);
+         mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
+
+         param = proxy->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
+         mUi->mEntityTypeLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
 
          // we hide the last update time now, since in reality, we can't use this field. The last update time
          // is really the last time that the entity trans or rotation was changed. But, if the entity is sitting 
