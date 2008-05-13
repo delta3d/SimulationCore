@@ -61,6 +61,8 @@ namespace SimCore
             static const std::string PROPERTY_SCALE_MAGNIFICATION_FACTOR;
             static const std::string PROPERTY_MODEL_SCALE;
             static const std::string PROPERTY_MODEL_ROTATION;
+            static const std::string PROPERTY_ENTITY_TYPE;
+            static const std::string PROPERTY_MAPPING_NAME;
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
             {
@@ -510,6 +512,12 @@ namespace SimCore
             
             /// Getter for the time until next update value.  Used for testing
             float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
+
+            void SetMappingName( const std::string& name );
+            std::string GetMappingName() const;
+
+            void SetEntityType( const std::string& entityType );
+            std::string GetEntityType() const;
             
          protected:
             virtual ~BaseEntity();
@@ -599,6 +607,9 @@ namespace SimCore
             bool mIsFrozen;
 
             unsigned mFireLightID;
+
+            std::string mEntityType;
+            std::string mMappingName;
 
       };
 
