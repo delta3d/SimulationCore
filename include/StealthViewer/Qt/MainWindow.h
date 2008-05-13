@@ -372,6 +372,14 @@ namespace StealthQt
           */
          float ComputeHumanReadableDirection(float flippedOrientation);
 
+         /**
+          * This method is used by the custom clock to wrap both minutes and seconds when 
+          * the user is advancing the time a lot. TimeUnits should be 60. Threshold
+          * should be between 2 and 5. It returns -1 if it wrapped down, 0 if no change, 
+          * or +1 if it wrapped up. So, previous of 60 and new of 0 will return +1.
+          */
+         int AutoWrapTime(int previousTime, int newTime, int timeUnits, int timeThreshold);
+
 
          bool mIsPlaybackMode;
 
@@ -397,6 +405,12 @@ namespace StealthQt
          QDoubleValidator *mDoubleValidator;
 
          bool mShowMissingEntityInfoErrorMessage;
+
+         // These values hold the previous setting of the custom time control. Used 
+         // to help scroll the clock forward.
+         int mPreviousCustomHour;
+         int mPreviousCustomMinute;
+         int mPreviousCustomSecond;
    };
 }
 

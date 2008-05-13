@@ -460,6 +460,14 @@ namespace StealthQt
             StealthViewerData::GetInstance().GetMainWindow()->restoreGeometry(geometry);
          }
 
+         if(contains(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO))
+         {
+            bool enable = 
+               value(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO).toBool();
+
+            StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(enable);
+         }
+
       endGroup();
 
       LoadPreferencesGeneral();
@@ -536,14 +544,6 @@ namespace StealthQt
          }
 
          genConfig.SetReconnectOnStartup(connectValue, name.toStdString());
-
-         if(contains(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO))
-         {
-            bool enable = 
-               value(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO).toBool();
-
-            StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(enable);
-         }
 
       endGroup();
    }
