@@ -23,9 +23,17 @@
 #ifndef STEALTH_MOTION_MODEL_H_
 #define STEALTH_MOTION_MODEL_H_
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <dtCore/flymotionmodel.h>
 #include <SimCore/Export.h>
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FORWARD DECLARATIONS
+////////////////////////////////////////////////////////////////////////////////
 namespace dtCore
 {
    class Keyboard;
@@ -34,11 +42,20 @@ namespace dtCore
    class DeltaDrawable;
    class Isector;
 }
+
+
+
 namespace SimCore
 {
+   /////////////////////////////////////////////////////////////////////////////
+   // STEALTH MOTION MODEL CODE
+   /////////////////////////////////////////////////////////////////////////////
    class SIMCORE_EXPORT StealthMotionModel : public dtCore::FlyMotionModel
    {
       public:
+         static const float DEFAULT_GROUND_CLEARANCE; // Meters off surface
+         static const float DEFAULT_SPEED_LIMIT_MIN; // Meters per second
+         static const float DEFAULT_SPEED_LIMIT_MAX; // Meters per second
 
          /**
           * Constructor.
@@ -84,6 +101,7 @@ namespace SimCore
           * @return the active Scene
           */
          dtCore::Scene& GetScene();
+         const dtCore::Scene& GetScene() const;
 
          /**
           * Sets the only active collidable geometry, which is used for ground following.
@@ -111,8 +129,29 @@ namespace SimCore
           */
          virtual void OnMessage(MessageData *data);
 
+         /**
+          * @return HPR orientation set on the last call to OnMessage.
+          */
          const osg::Vec3& GetRotation() const { return mRotation; }
+
+         /**
+          * @return World position set on the last call to OnMessage.
+          */
          const osg::Vec3& GetPosition() const { return mPosition; }
+
+         /**
+          * Set the slowest speed that the motion model should move.
+          * @param speedLimit Meters per second
+          */
+         void SetFlySpeedLimitMin( float speedLimit );
+         float GetFlySpeedLimitMin() const;
+
+         /**
+          * Set the fastest speed that the motion model should move.
+          * @param speedLimit Meters per second
+          */
+         void SetFlySpeedLimitMax( float speedLimit );
+         float GetFlySpeedLimitMax() const;
 
       protected:
 
@@ -129,6 +168,16 @@ namespace SimCore
           * The metric distance the camera should stay away from terrain.
           */
          float mGroundClearance;
+
+         /**
+          * Slowest speed the motion model should move (meters per second).
+          */
+         float mSpeedLimitMin;
+
+         /**
+          * Fastest speed the motion model should move (meters per second).
+          */
+         float mSpeedLimitMax;
 
          /**
           * The elevation above sea level measured in meters.
