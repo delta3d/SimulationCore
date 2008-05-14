@@ -302,8 +302,8 @@ namespace SimCore
       ParticleManagerComponent::ParticleManagerComponent( const std::string& name )
          : dtGame::GMComponent(name),
          mGlobalParticleCount(0),
-         mUpdateEnabled(false),
-         mUpdateInterval(5.0),
+         mUpdateEnabled(true),
+         mUpdateInterval(3.0),
          mUpdateTimerName("ParticleMgrComp("+name+"):UpdateTimer")
       {
 
@@ -623,7 +623,9 @@ namespace SimCore
          // Force an update on particle infos if any were found to be invalid.
          if( forceInfoUpdate )
          {
-            UpdateParticleInfo();
+            // We no longer force this behavior because it causes a series of events for
+            // almost every munition that goes away, instead of acting as a batch every 3 seconds.
+            //UpdateParticleInfo();
          }
       }
 
