@@ -678,6 +678,9 @@ namespace StealthQt
       // Prevent network connection changes if in record mode.
       mUi->mMenuNetwork->setEnabled( ! mIsRecording );
 
+      // Prevent changing files when in record mode.
+      mUi->mRecordFilePushButton->setEnabled( ! mIsRecording );
+
       // Change the window title to indicate record mode.
       const std::string& title = mIsRecording
          ? StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION + StealthQt::WINDOW_TITLE_MODE_RECORD : 
@@ -922,6 +925,9 @@ namespace StealthQt
       mUi->mPlaybackStartOverPushButton->setEnabled(mIsPlayingBack);
       mUi->mPlaybackJumpToPrevTimeMarkerPushButton->setEnabled(mIsPlayingBack);
       mUi->mPlaybackJumpToNextTimeMarkerPushButton->setEnabled(mIsPlayingBack);
+
+      // Prevent changing files if a play back is in progress.
+      mUi->mPlaybackFilePushButton->setEnabled( ! mIsPlayingBack );
    }
 
    ///////////////////////////////////////////////////////////////////////////////
