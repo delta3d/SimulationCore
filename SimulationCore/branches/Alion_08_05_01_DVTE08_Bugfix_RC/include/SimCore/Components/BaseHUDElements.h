@@ -497,7 +497,7 @@ namespace SimCore
       class SIMCORE_EXPORT HUDQuadElement : public dtCore::DeltaDrawable
       {
       public:
-         static const unsigned int BIN_NUMBER = 11;
+         static const unsigned int BIN_NUMBER = 21;
          static const std::string BIN_NAME;
          static const float WIN_HEIGHT_RATIO;
 
