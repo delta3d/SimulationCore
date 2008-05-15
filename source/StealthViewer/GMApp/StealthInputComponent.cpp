@@ -810,7 +810,7 @@ namespace StealthGM
    void StealthInputComponent::ChangeFlyMotionModelSpeed(bool higher)
    {
       float val = mStealthMM->GetMaximumFlySpeed();
-      mStealthMM->SetMaximumFlySpeed(higher ? val * 2 : val / 2);
+      mStealthMM->SetMaximumFlySpeed(higher ? val * 1.5 : val / 1.5);
    }
    
    void StealthInputComponent::EnablePlayback()
