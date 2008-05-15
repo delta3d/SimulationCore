@@ -255,7 +255,7 @@ namespace SimCore
          double dAspect = windowWidth/windowHeight;
          double dScale = 1.0/(horizontalFOV*M_PI/180.0*60.0);
          trans.makeScale(dScale,dScale,dScale);
-         trans.setTrans(0.5*dAspect, 0.17/dAspect, -1.0);
+         trans.setTrans(0.5*dAspect, 0.17/dAspect, 0.0);
 
          mCompassOverlay->setMatrix(trans);
          mCompassOverlay->setNodeMask(0);
@@ -302,7 +302,8 @@ namespace SimCore
          osg::MatrixTransform *viewABS = new osg::MatrixTransform;
          viewABS->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
          viewABS->setMatrix(osg::Matrix::identity());
-         viewABS->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+         viewABS->getOrCreateStateSet()->setRenderBinDetails(
+            SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD-1, "RenderBin");
 
          // Setup hierarchy
          // root <- proj <- view <- lens
