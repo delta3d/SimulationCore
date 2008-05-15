@@ -395,7 +395,7 @@ namespace SimCore
             {
                std::ostringstream oss;
                oss << "Munition [" << dis << "] could NOT be found in munition table." << std::endl;
-               LOG_ERROR( oss.str() );
+               mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, oss.str().c_str() );
             }
          }
          // Incoming Control Type Array
