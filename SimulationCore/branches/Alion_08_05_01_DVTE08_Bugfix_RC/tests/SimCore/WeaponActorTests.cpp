@@ -41,6 +41,8 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
+#include "UnitTestMain.h"
+
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
 #endif
@@ -187,6 +189,7 @@ namespace SimCore
             dtCore::System::GetInstance().Start();
             dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
             mGM = new dtGame::GameManager(*scene);
+            mGM->SetApplication(GetGlobalApplication());
 
             mMachineInfo = new dtGame::MachineInfo;
 
