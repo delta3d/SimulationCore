@@ -44,7 +44,7 @@ namespace SimCore
    /////////////////////////////////////////////////////////////////////////////
    const float StealthMotionModel::DEFAULT_GROUND_CLEARANCE = 1.25f;
    const float StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN = 0.5f;
-   const float StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX = 2000.0f;
+   const float StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX = 6000.0f;
 
    /////////////////////////////////////////////////////////////////////////////
    StealthMotionModel::StealthMotionModel(
