@@ -24,7 +24,7 @@
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRayCastReport.h>
+#include <NxAgeiaRaycastReport.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
