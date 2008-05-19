@@ -324,6 +324,18 @@ namespace SimCore
          else if( type == dtGame::MessageType::INFO_MAP_LOADED)
          {
             SetCoordinates();
+
+            // This sets the time the very first time a map changes to NOON. Without this,
+            // the game ends up in some weird time zone offset from the current time clock. It's confusing.
+            dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+            dt.SetHour(12);
+            dt.SetMinute(0);
+            dt.SetSecond(0.0f);
+            mEphemerisEnvironmentActor->SetDateTime(dt);
+
+            dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
+            mEphemerisEnvironmentActor->SetTimeFromSystem();
+
          }
 
          // Check for the environment object to see if it was loaded in the map file
