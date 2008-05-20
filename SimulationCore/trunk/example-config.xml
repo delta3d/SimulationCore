@@ -43,6 +43,21 @@ find it.  It shows an example set of values one may set
       <Property Name="System.SimFrameRate">60</Property>
       <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
       <Property Name="System.UseFixedTimeStep">false</Property>
+      
+      <!-- 
+           These are left commented out, so the defaults for the terrain
+           data base pager are preserved.  The values shown here are not
+           necessarily the defaults.
+      -->
+      <!--
+      <Property Name="System.DatabasePager.PrecompileObjects">true</Property>
+      <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">4</Property>
+      <Property Name="System.DatabasePager.MinObjectCompileTime">0.001</Property>
+      <Property Name="System.DatabasePager.TargetFrameRate">100</Property>
+      <Property Name="System.DatabasePager.DrawablePolicy">DoNotModify</Property>
+      <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
+      <Property Name="System.DatabasePager.ExpiryDelay">1.0</Property>
+      -->
 
       <Property Name="HasBinocs">true</Property>
       <Property Name="HasCompass">false</Property>
