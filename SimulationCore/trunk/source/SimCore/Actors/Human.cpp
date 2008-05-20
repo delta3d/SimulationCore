@@ -342,12 +342,12 @@ namespace SimCore
          AddInstance(this);
       }
 
-      const std::string HumanActorProxy::PROPERTY_SKELETAL_MESH("Skeletal Mesh");
-      const std::string HumanActorProxy::PROPERTY_WEAPON_MESH("Primary Weapon Mesh Name");
-      const std::string HumanActorProxy::PROPERTY_STANCE("Stance");
-      const std::string HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
-      const std::string HumanActorProxy::PROPERTY_MIN_RUN_VELOCITY("Minimum Run Velocity");
-      const std::string HumanActorProxy::PROPERTY_FULL_RUN_VELOCITY("Full Run Velocity");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_SKELETAL_MESH("Skeletal Mesh");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_WEAPON_MESH("Primary Weapon Mesh Name");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_STANCE("Stance");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_MIN_RUN_VELOCITY("Minimum Run Velocity");
+      const dtUtil::RefString HumanActorProxy::PROPERTY_FULL_RUN_VELOCITY("Full Run Velocity");
       
       HumanActorProxy::HumanActorProxy()
       {
@@ -366,19 +366,19 @@ namespace SimCore
 
          Human& human = static_cast<Human&>(GetGameActor());
 
-         static const std::string HUMAN_GROUP("Human");
+         static const dtUtil::RefString HUMAN_GROUP("Human");
 
          RemoveProperty(BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT);
          RemoveProperty(BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT);
 
-         static const std::string PROPERTY_SKELETAL_MESH_DESC
+         static const dtUtil::RefString PROPERTY_SKELETAL_MESH_DESC
             ("The skeletal mesh file that defines the human's look and animation set.");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SKELETAL_MESH,
                PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH, 
                dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
                PROPERTY_SKELETAL_MESH_DESC, HUMAN_GROUP));
 
-         static const std::string PROPERTY_STANCE_DESC
+         static const dtUtil::RefString PROPERTY_STANCE_DESC
             ("The stance of the human.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>(
                PROPERTY_STANCE, PROPERTY_STANCE, 
@@ -386,7 +386,7 @@ namespace SimCore
                dtDAL::MakeFunctorRet(human, &Human::GetStance),
                PROPERTY_STANCE_DESC, HUMAN_GROUP));
 
-         static const std::string PROPERTY_PRIMARY_WEAPON_STATE_DESC
+         static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE_DESC
             ("The state/availability of the primary weapon.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
                PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE, 
@@ -394,7 +394,7 @@ namespace SimCore
                dtDAL::MakeFunctorRet(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
 
-         static const std::string PROPERTY_WEAPON_MESH_DESC
+         static const dtUtil::RefString PROPERTY_WEAPON_MESH_DESC
             ("The name of the mesh in the skeletal mesh that refers to the weapon");
          AddProperty(new dtDAL::StringActorProperty(
                PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH, 
@@ -402,7 +402,7 @@ namespace SimCore
                dtDAL::MakeFunctorRet(human, &Human::GetWeaponMeshName),
                PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
 
-//         static const std::string PROPERTY_MIN_RUN_VELOCITY_DESC
+//         static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY_DESC
 //            ("The Minimum velocity at which the human will begin running");
 //
 //         AddProperty(new dtDAL::FloatActorProperty(*this,
@@ -410,7 +410,7 @@ namespace SimCore
 //               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
 //               PROPERTY_MIN_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
-//         static const std::string PROPERTY_FULL_RUN_VELOCITY_DESC
+//         static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY_DESC
 //            ("The velocity at which the human will be fully running");
 //
 //         AddProperty(new dtDAL::FloatActorProperty(*this,

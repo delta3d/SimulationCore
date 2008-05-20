@@ -33,7 +33,6 @@
 #include <osg/Node>
 
 #include <osg/PagedLOD>
-#include <osgDB/DatabasePager>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
  
@@ -98,29 +97,17 @@ namespace SimCore
                /////////////////////////////////////////////////////////////////////
                // do loading here
                const std::string& currentTerrainPath = mTerrainPath;
-               
-               osgDB::DatabasePager* pPager =
-                  osgDB::Registry::instance()->getOrCreateDatabasePager();
-               pPager->setDoPreCompile(mPaging_Precompile);
 
                osgDB::ReaderWriter::Options* options = new osgDB::ReaderWriter::Options;
                options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
                osgDB::Registry::instance()->setOptions(options);
-
-               //pPager->setTargetFrameRate(mPaging_Frame_Rate_Targeted);
-               //pPager->setExpiryDelay(mPaging_ExpiringDelay);
-               pPager->setMaximumNumOfObjectsToCompilePerFrame(mMaximumObjectsToCompile);
-               
-               // TODO-UPGRADE
-               //pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
-               //pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
 
                int tile_x =0 ,tile_y =0;
 
                int pagingMaxXInt = int(mPaging_Max_X);
                int pagingMaxYInt = int(mPaging_Max_Y);
                mGroupNodeForTerrain = new osg::Group;
-               
+
                for(tile_x = int(mPaging_Min_X);tile_x <= pagingMaxXInt;tile_x++)
                {
                   for(tile_y = int(mPaging_Min_Y);tile_y <= pagingMaxYInt;tile_y++)
@@ -143,10 +130,6 @@ namespace SimCore
                   }
                }
 
-               //// Feed nodes into pager system
-               pPager->registerPagedLODs(mGroupNodeForTerrain.get());
-               pPager->setDoPreCompile(mPaging_Precompile);
-               /////////////////////////////////////////////////////////////////////
             }
 
             if (!GetShaderGroup().empty())

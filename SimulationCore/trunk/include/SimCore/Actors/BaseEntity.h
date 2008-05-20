@@ -45,24 +45,24 @@ namespace SimCore
          public:
             typedef dtGame::GameActorProxy BaseClass;
             
-            static const std::string PROPERTY_LAST_KNOWN_TRANSLATION;
-            static const std::string PROPERTY_LAST_KNOWN_ROTATION;
-            static const std::string PROPERTY_VELOCITY_VECTOR;
-            static const std::string PROPERTY_ACCELERATION_VECTOR;
-            static const std::string PROPERTY_ANGULAR_VELOCITY_VECTOR;
-            static const std::string PROPERTY_ENGINE_SMOKE_POSITION;
-            static const std::string PROPERTY_ENGINE_SMOKE_ON;
-            static const std::string PROPERTY_FLAMES_PRESENT;
-            static const std::string PROPERTY_SMOKE_PLUME_PRESENT;
-            static const std::string PROPERTY_ENGINE_POSITION;
-            static const std::string PROPERTY_FLYING;
-            static const std::string PROPERTY_DAMAGE_STATE;
-            static const std::string PROPERTY_DEFAULT_SCALE;
-            static const std::string PROPERTY_SCALE_MAGNIFICATION_FACTOR;
-            static const std::string PROPERTY_MODEL_SCALE;
-            static const std::string PROPERTY_MODEL_ROTATION;
-            static const std::string PROPERTY_ENTITY_TYPE;
-            static const std::string PROPERTY_MAPPING_NAME;
+            static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION;
+            static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION;
+            static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR;
+            static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR;
+            static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR;
+            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION;
+            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON;
+            static const dtUtil::RefString PROPERTY_FLAMES_PRESENT;
+            static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT;
+            static const dtUtil::RefString PROPERTY_ENGINE_POSITION;
+            static const dtUtil::RefString PROPERTY_FLYING;
+            static const dtUtil::RefString PROPERTY_DAMAGE_STATE;
+            static const dtUtil::RefString PROPERTY_DEFAULT_SCALE;
+            static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR;
+            static const dtUtil::RefString PROPERTY_MODEL_SCALE;
+            static const dtUtil::RefString PROPERTY_MODEL_ROTATION;
+            static const dtUtil::RefString PROPERTY_ENTITY_TYPE;
+            static const dtUtil::RefString PROPERTY_MAPPING_NAME;
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
             {
@@ -472,7 +472,7 @@ namespace SimCore
             osg::Vec3 GetScaleMagnification() const { return mScaleMagnification; }
 
             ///@return the model scale result of the default scale and magnification.
-            osg::Vec3 GetModelScale() const; 
+            osg::Vec3 GetModelScale() const;
 
             ///Changes the rotation on the model matrix
             void SetModelRotation(const osg::Vec3& hpr);
