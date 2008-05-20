@@ -82,7 +82,7 @@ namespace SimCore
          public:
             typedef BaseEntityActorProxy BaseClass;
 
-            static const std::string PROPERTY_HEAD_LIGHTS_ENABLED;
+            static const dtUtil::RefString PROPERTY_HEAD_LIGHTS_ENABLED;
             
             // Constructor
             PlatformActorProxy();
@@ -142,7 +142,7 @@ namespace SimCore
          public:
             typedef BaseEntity BaseClass;
 
-            static const std::string INVOKABLE_TICK_CONTROL_STATE;
+            static const dtUtil::RefString INVOKABLE_TICK_CONTROL_STATE;
             static const std::string DOF_NAME_HEAD_LIGHTS;
 
             /**

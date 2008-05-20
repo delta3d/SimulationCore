@@ -82,24 +82,24 @@ namespace SimCore
       }
 
 
-      const std::string BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION("Last Known Translation");
-      const std::string BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION("Last Known Rotation");
-      const std::string BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR("Velocity Vector");
-      const std::string BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR("Acceleration Vector");
-      const std::string BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
-      const std::string BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
-      const std::string BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
-      const std::string BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
-      const std::string BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
-      const std::string BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
-      const std::string BaseEntityActorProxy::PROPERTY_FLYING("Flying");
-      const std::string BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
-      const std::string BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE("Default Scale");
-      const std::string BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
-      const std::string BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
-      const std::string BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
-      const std::string BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
-      const std::string BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION("Last Known Translation");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION("Last Known Rotation");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR("Velocity Vector");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR("Acceleration Vector");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLYING("Flying");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE("Default Scale");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
@@ -108,7 +108,7 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         static const std::string BASE_ENTITY_GROUP("Base Entity");
+         static const dtUtil::RefString BASE_ENTITY_GROUP("Base Entity");
 
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
@@ -150,21 +150,21 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsEngineSmokeOn),
             "Enables engine smoke", BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
-         static const std::string PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
+         static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
+         static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, PROPERTY_FLAMES_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFlamesPresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlamesPresent),
             PROPERTY_FLAMES_PRESENT_DESC, BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_LABEL("Flames Present");
-         static const std::string PROPERTY_SMOKE_PLUME_PRESENT_DESC("Enables engine smoke");
+         static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT_LABEL("Flames Present");
+         static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT_DESC("Enables engine smoke");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, PROPERTY_SMOKE_PLUME_PRESENT_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetSmokePlumePresent),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsSmokePlumePresent),
             PROPERTY_SMOKE_PLUME_PRESENT_DESC, BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
+         static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
@@ -200,21 +200,21 @@ namespace SimCore
          rp->SetValue(&rdEngine);
          AddProperty(rp.get());
 
-         static const std::string PROPERTY_FLYING_DESC
+         static const dtUtil::RefString PROPERTY_FLYING_DESC
             ("Flags if the dead-reckoning code should not make this actor follow the ground as it moves.");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLYING, PROPERTY_FLYING,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFlying),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlying),
             PROPERTY_FLYING_DESC, BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_DRAWING_MODEL_DESC
+         static const dtUtil::RefString PROPERTY_DRAWING_MODEL_DESC
             ("Flags if this entity should draw it's model.  This is typically turned off if the entity has the player attached to it.");
          AddProperty(new dtDAL::BooleanActorProperty("DrawingModel", "Draw Model",
             dtDAL::MakeFunctor(e, &BaseEntity::SetDrawingModel),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsDrawingModel),
             PROPERTY_DRAWING_MODEL_DESC, BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_DAMAGE_STATE_DESC
+         static const dtUtil::RefString PROPERTY_DAMAGE_STATE_DESC
             ("Changes which model to show based on the level of damage.");
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::DamageStateEnum>(PROPERTY_DAMAGE_STATE, PROPERTY_DAMAGE_STATE,
             dtDAL::MakeFunctor(e, &BaseEntity::SetDamageState),
@@ -246,7 +246,7 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetMunitionDamageTableName),
             "The name of the munition damage table name found in Configs/MunitionsConfig.xml", BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_DEFAULT_SCALE_DESC
+         static const dtUtil::RefString PROPERTY_DEFAULT_SCALE_DESC
             ("Changes the desired base scale to make the model/geometry "
                   "of this model correct for the rendering.  Model Scale = Default * Magnification");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE, 
@@ -255,7 +255,7 @@ namespace SimCore
             PROPERTY_DEFAULT_SCALE_DESC,
             BASE_ENTITY_GROUP));
          
-         static const std::string PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC
+         static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC
             ("Changes the amount the geometry of the entity is magnified.  Model Scale = Default * Magnification");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_SCALE_MAGNIFICATION_FACTOR, PROPERTY_SCALE_MAGNIFICATION_FACTOR,
             dtDAL::MakeFunctor(e, &BaseEntity::SetScaleMagnification), 
@@ -263,7 +263,7 @@ namespace SimCore
             PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC,
             BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_MODEL_SCALE_DESC
+         static const dtUtil::RefString PROPERTY_MODEL_SCALE_DESC
             ("Returns the current scale of the model.  Model Scale = Default * Magnification");
          dtDAL::Vec3ActorProperty* modelScaleProp = new dtDAL::Vec3ActorProperty(
             PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE, 
@@ -276,7 +276,7 @@ namespace SimCore
 
          AddProperty(modelScaleProp);
 
-         static const std::string PROPERTY_MODEL_ROTATION_DESC
+         static const dtUtil::RefString PROPERTY_MODEL_ROTATION_DESC
             ("Model offset rotation HPR");
          AddProperty(new dtDAL::Vec3ActorProperty(
             PROPERTY_MODEL_ROTATION, PROPERTY_MODEL_ROTATION, 
@@ -285,14 +285,14 @@ namespace SimCore
             PROPERTY_MODEL_ROTATION_DESC,
             BASE_ENTITY_GROUP));
 
-         static const std::string PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
+         static const dtUtil::RefString PROPERTY_FIREPOWER_DISABLED("Firepower Disabled");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
             PROPERTY_FIREPOWER_DISABLED,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFirepowerDisabled),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsFirepowerDisabled),
             "Determines if this entity has had its fire power disabled."));
 
-         static const std::string PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
+         static const dtUtil::RefString PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
             PROPERTY_MOBILITY_DISABLED,
             dtDAL::MakeFunctor(e, &BaseEntity::SetMobilityDisabled),

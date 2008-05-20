@@ -72,7 +72,6 @@
 #include <osg/ApplicationUsage>
 #include <osgUtil/RenderBin>
 #include <osgViewer/View>
-#include <osgDB/DatabasePager>
 
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;

@@ -125,12 +125,12 @@ namespace SimCore
          public:
             typedef BaseEntityActorProxy BaseClass;
 
-            static const std::string PROPERTY_SKELETAL_MESH;
-            static const std::string PROPERTY_WEAPON_MESH;
-            static const std::string PROPERTY_STANCE;
-            static const std::string PROPERTY_PRIMARY_WEAPON_STATE;
-            static const std::string PROPERTY_MIN_RUN_VELOCITY;
-            static const std::string PROPERTY_FULL_RUN_VELOCITY;
+            static const dtUtil::RefString PROPERTY_SKELETAL_MESH;
+            static const dtUtil::RefString PROPERTY_WEAPON_MESH;
+            static const dtUtil::RefString PROPERTY_STANCE;
+            static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE;
+            static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY;
+            static const dtUtil::RefString PROPERTY_FULL_RUN_VELOCITY;
 
             class SIMCORE_EXPORT StanceEnum : public dtUtil::Enumeration
             {

@@ -75,12 +75,12 @@ namespace SimCore
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////////
-      const std::string Platform::INVOKABLE_TICK_CONTROL_STATE("TickControlState");
+      const dtUtil::RefString Platform::INVOKABLE_TICK_CONTROL_STATE("TickControlState");
 
       ////////////////////////////////////////////////////////////////////////////////////
       // Actor Proxy code
       ////////////////////////////////////////////////////////////////////////////////////
-      const std::string PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED("Head Lights Enabled");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED("Head Lights Enabled");
 
       ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
@@ -100,35 +100,35 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         static const std::string PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
+         static const dtUtil::RefString PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadNonDamagedFile),
             "This is the model for a non damaged actor"));
 
-         static const std::string PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
+         static const dtUtil::RefString PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DAMAGED_ACTOR,
             PROPERTY_MESH_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDamagedFile),
             "This is the model for a damaged actor"));
 
-         static const std::string PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
+         static const dtUtil::RefString PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DESTROYED_ACTOR,
             PROPERTY_MESH_DESTROYED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDestroyedFile),
             "This is the model for a destroyed actor"));
 
-         static const std::string PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
+         static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
             PROPERTY_MUZZLE_FLASH_POSITION,
             dtDAL::MakeFunctor(e, &Platform::SetMuzzleFlashPosition),
             dtDAL::MakeFunctorRet(e, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
          
-         static const std::string PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
+         static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
          AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
             PROPERTY_ARTICULATION_PARAM_ARRAY, 
             dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray), 
@@ -141,21 +141,21 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &Platform::IsHeadLightsEnabled),
             "Determines if the entity has it head lights on or not."));
 
-         static const std::string PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
+         static const dtUtil::RefString PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
             PROPERTY_SEAT_CONFIG_TABLE_NAME,
             dtDAL::MakeFunctor(e, &Platform::SetVehiclesSeatConfigActorName),
             dtDAL::MakeFunctorRet(e, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
-         static const std::string PROPERTY_ENTITY_TYPE("EntityType");
+         static const dtUtil::RefString PROPERTY_ENTITY_TYPE("EntityType");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
             PROPERTY_ENTITY_TYPE,
             dtDAL::MakeFunctor(e, &Platform::SetEntityType),
             dtDAL::MakeFunctorRet(e, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
 
-         static const std::string SOUND_PROPERTY_TYPE("Sounds");
+         static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
          AddProperty(new dtDAL::FloatActorProperty("MinDistanceIdleSound", "MinDistanceIdleSound",
             dtDAL::MakeFunctor(e, &Platform::SetMinDistanceIdleSound),
