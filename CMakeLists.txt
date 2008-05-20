@@ -11,6 +11,9 @@ ELSE(WIN32)
     ENDIF(APPLE)
 ENDIF(WIN32)
 
+if(COMMAND cmake_policy)
+   cmake_policy(SET CMP0003 OLD)
+endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
 
@@ -21,7 +24,7 @@ OPTION(USE_PHYSX "Enabled the building of Simulation Core with PhysX support" OF
 
 
 IF (WIN32)
-SET(CMAKE_DEBUG_POSTFIX  "d")
+   SET(CMAKE_DEBUG_POSTFIX  "d")
 ENDIF (WIN32)
 
 # We want to build SONAMES shared librariess
