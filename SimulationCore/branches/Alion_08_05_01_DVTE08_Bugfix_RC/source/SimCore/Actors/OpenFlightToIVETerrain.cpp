@@ -29,6 +29,10 @@
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
 
+// Curt test
+#include <dtCore/view.h>
+#include <dtABC/application.h>
+
 #include <osg/MatrixTransform>
 #include <osg/Node>
 
@@ -71,13 +75,19 @@ namespace SimCore
       {
          IGActor::AddedToScene(scene);
 
-         //Actually load the file, even if it's empty string so that if someone were to 
-         //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
-         //work.
-         if (mNeedToLoad)
+         if (GetGameActorProxy().GetGameManager() != NULL)
          {
-            LoadFile(mLoadedFile);
-            mNeedToLoad = false;
+            if (scene != NULL)
+            {
+               //Actually load the file, even if it's empty string so that if someone were to 
+               //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
+               //work.
+               if (mNeedToLoad)
+               {
+                  LoadFile(mLoadedFile);
+                  mNeedToLoad = false;
+               }
+            }
          }
       }
 
@@ -99,21 +109,19 @@ namespace SimCore
                // do loading here
                const std::string& currentTerrainPath = mTerrainPath;
                
-               osgDB::DatabasePager* pPager =
-                  osgDB::Registry::instance()->getOrCreateDatabasePager();
-               pPager->setDoPreCompile(mPaging_Precompile);
+               //osgDB::DatabasePager* pPager =
+               //   osgDB::Registry::instance()->getOrCreateDatabasePager();
+               osgDB::DatabasePager* pPager = GetGameActorProxy().GetGameManager()->GetApplication().
+                  GetView()->GetOsgViewerView()->getDatabasePager();
+               // CMM - The settings were moved from here. They are picked up as part of the config.xml now.
+               // These are done in either dtABC::Application.cpp. In the future, it will be in the dtCore::View.cpp
+               //pPager->setDoPreCompile(mPaging_Precompile);
 
                osgDB::ReaderWriter::Options* options = new osgDB::ReaderWriter::Options;
                options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
                osgDB::Registry::instance()->setOptions(options);
 
-               //pPager->setTargetFrameRate(mPaging_Frame_Rate_Targeted);
-               //pPager->setExpiryDelay(mPaging_ExpiringDelay);
-               pPager->setMaximumNumOfObjectsToCompilePerFrame(mMaximumObjectsToCompile);
-               
-               // TODO-UPGRADE
-               //pPager->setThreadPriorityDuringFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
-               //pPager->setThreadPriorityOutwithFrame(OpenThreads::Thread::THREAD_PRIORITY_NOMINAL);//HIGH);
+               //pPager->setMaximumNumOfObjectsToCompilePerFrame(mMaximumObjectsToCompile);               
 
                int tile_x =0 ,tile_y =0;
 
@@ -144,8 +152,9 @@ namespace SimCore
                }
 
                //// Feed nodes into pager system
+               // Note - this line is a workaround for a bug in dtCore::Scene that has already been fixed on the trunk.
+               // This line should NOT be needed.
                pPager->registerPagedLODs(mGroupNodeForTerrain.get());
-               pPager->setDoPreCompile(mPaging_Precompile);
                /////////////////////////////////////////////////////////////////////
             }
 
