@@ -245,7 +245,7 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
 
          // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
          // Make sure we DO hit the terrain appropriately.
-         MunitionRaycastReport myReport(NULL);//(mWeapon.valid() ? mWeapon->GetOwner() : NULL));
+         MunitionRaycastReport myReport(mWeapon.valid() ? mWeapon->GetOwner() : NULL);
          
          // CR: Create the bit mask once rather than every time the method is called.
          static const int GROUPS_FLAGS = 
