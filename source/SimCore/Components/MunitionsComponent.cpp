@@ -1418,7 +1418,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       MunitionsComponent::~MunitionsComponent()
       {
-         CleanupCreatedMunitionsQueue();
+         ClearCreatedMunitionsQueue();
          ClearRegisteredEntities();
          ClearTables();
          if( mMunitionTypeTable.valid() ) { mMunitionTypeTable->Clear(); }
