@@ -238,23 +238,6 @@ namespace StealthQt
       mHLAErrorTimer.setSingleShot(true);
 
       //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
-      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
-      if(!file.empty())
-      {
-         QPixmap pixmap(tr(file.c_str()));
-         mUi->mControlsCameraImageLabel->setPixmap(pixmap);
-         mUi->mControlsCameraImageLabel->setScaledContents(true);
-      }
-
-      const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
-      if(!iconFile.empty())
-      {
-         QIcon *icon = new QIcon;
-         icon->addPixmap(QPixmap(tr(iconFile.c_str())));
-         setWindowIcon(*icon);
-         //setIconSize(QSize(32, 32));
-      }
-
       mUi->mGeneralLODScaleLineEdit->setValidator(mDoubleValidator);
 
       mUi->mControlsTabWidget->setUsesScrollButtons(true);
@@ -273,6 +256,31 @@ namespace StealthQt
       show();
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
+
+      // Note, stuff dealing with the path has to be BELOW InitGameApp().
+      // NOTE - This image fails to load if you have a space in the path (like Program Files) 
+      // under QT 4.3.3. This works with version 4.3.0.
+      const std::string& file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
+      if(!file.empty())
+      {
+         QPixmap pixmap;
+         if (!pixmap.load(tr(file.c_str())))
+            LOG_ERROR("Couldn't load camera help image [" + file + "].");
+         mUi->mControlsCameraImageLabel->setPixmap(pixmap);
+         mUi->mControlsCameraImageLabel->setScaledContents(true);
+      }
+
+      const std::string& iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
+      if(!iconFile.empty())
+      {
+         QIcon *icon = new QIcon;
+         QPixmap pixmap;
+         if (!pixmap.load(tr(iconFile.c_str())))
+            LOG_ERROR("Couldn't load icon file [" + iconFile + "].");
+         icon->addPixmap(pixmap);
+         setWindowIcon(*icon);
+         //setIconSize(QSize(32, 32));
+      }
 
       AddConfigObjectsToViewerComponent();
       
