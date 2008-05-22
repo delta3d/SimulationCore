@@ -127,17 +127,14 @@
          </widget>
         </item>
         <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
+         <widget class="QPushButton" name="mDisconnectPushButton" >
+          <property name="toolTip" >
+           <string>Disconnect from the currently selected federation.</string>
           </property>
-          <property name="sizeHint" >
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
+          <property name="text" >
+           <string>Disconnect</string>
           </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </item>
@@ -165,16 +162,6 @@
       <property name="bottomMargin" >
        <number>9</number>
       </property>
-      <item>
-       <widget class="QPushButton" name="mDisconnectPushButton" >
-        <property name="toolTip" >
-         <string>Disconnect from the currently selected federation.</string>
-        </property>
-        <property name="text" >
-         <string>Disconnect</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QLineEdit" name="mCurrentFederationLineEdit" >
         <property name="toolTip" >
