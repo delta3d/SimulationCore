@@ -162,12 +162,12 @@ namespace SimCore
          const std::string& mapName = mMapNames[0];
          typedef std::set<std::string> MapNameList;
          const MapNameList& names = dtDAL::Project::GetInstance().GetMapNames();
-         if( names.find( mMapNames[0] ) == names.end() )
+         if( names.find( mapName ) == names.end() )
          {
             mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
             std::ostringstream oss;
-            oss << "Cannot connect to network because \"" << mMapNames[0]
+            oss << "Cannot connect to network because \"" << mapName
             << "\" is not a valid map name." << std::endl;
 
             // Avoid trying to reconnect to the failing map name.
@@ -185,15 +185,16 @@ namespace SimCore
 
          mMapNames.insert(mMapNames.end(), values.begin(), values.end());
 
-         try{
+         try
+         {
             GetGameManager()->ChangeMapSet(mMapNames, false, true);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
-         catch(const dtUtil::Exception &e)
+         catch(const dtUtil::Exception& e)
          {
             e.LogException(dtUtil::Log::LOG_ERROR);
             mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
-            throw e;
+            throw;
          }
       }
 
