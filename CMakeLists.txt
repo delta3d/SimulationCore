@@ -20,7 +20,8 @@ PROJECT(SimulationCore)
 ################################################################################
 # User Options
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
-OPTION(USE_PHYSX "Enabled the building of Simulation Core with PhysX support" OFF)
+OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" OFF)
+OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
 
 
 IF (WIN32)
@@ -128,6 +129,15 @@ IF (USE_PHYSX)
    LINK_DIRECTORIES( ${DTPHYSX_LIB_DIR} )
 
    ADD_DEFINITIONS(-DAGEIA_PHYSICS)
+ELSE (USE_PHYSX)
+   FIND_PACKAGE(DTPhysics REQUIRED)
+   #look for module loaders in dtPhysX CMakeModules
+   SET(CMAKE_MODULE_PATH "${DTPHYSICS_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
+
+   FIND_PACKAGE(Pal REQUIRED)
+
+   INCLUDE_DIRECTORIES( ${PAL_INCLUDES} ${DTPHYSICS_INCLUDE_DIR} )
+   LINK_DIRECTORIES( ${DTPHYSICS_LIB_DIR} )
 ENDIF (USE_PHYSX)
 
 FIND_PACKAGE(Delta3D REQUIRED)
@@ -259,6 +269,10 @@ SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING "(EXPERIMENTAL) You may 
 ADD_SUBDIRECTORY(ext/source)
 ADD_SUBDIRECTORY(source)
 ADD_SUBDIRECTORY(tests)
+
+if (BUILD_DEMOS)
+   ADD_SUBDIRECTORY(demos)
+endif (BUILD_DEMOS)
 
 # This is for an advanced option to give aggressive warnings 
 # under different compilers. If yours is not implemented, this option
