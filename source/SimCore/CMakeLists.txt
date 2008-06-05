@@ -75,6 +75,8 @@ LINK_WITH_VARIABLES(${LIB_NAME}
 											  CEGUI_LIBRARY
 											  CEGUIOPENGL_LIBRARY
 											  DTPHYSX_LIBRARY
+                                                                                          DTPHYSICS_LIBRARY
+                                                                                          PAL_LIBRARY
 											  )
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} 

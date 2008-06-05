@@ -74,8 +74,8 @@ namespace SimCore
          StealthActor &sa = static_cast<StealthActor&>(GetGameActor());
 
          AddProperty(new dtDAL::Vec3ActorProperty("Attach Offset", "Attach Offset", 
-             dtDAL::MakeFunctor(sa, &StealthActor::SetAttachOffset), 
-             dtDAL::MakeFunctorRet(sa, &StealthActor::GetAttachOffset),
+             dtDAL::Vec3ActorProperty::SetFuncType(&sa, &StealthActor::SetAttachOffset), 
+             dtDAL::Vec3ActorProperty::GetFuncType(&sa, &StealthActor::GetAttachOffset),
              "Property for the attach offset."));
       }
 

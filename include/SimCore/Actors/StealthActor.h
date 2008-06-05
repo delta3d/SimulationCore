@@ -55,7 +55,6 @@ namespace SimCore
 
             void SetAttachOffset( const osg::Vec3& offset ) { mAttachOffset = offset; }
             const osg::Vec3& GetAttachOffset() const { return mAttachOffset; }
-            osg::Vec3 GetAttachOffset() { return mAttachOffset; }
 
             /**
              * Invokable used to make this entity attach to another.

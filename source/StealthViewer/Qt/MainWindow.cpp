@@ -240,24 +240,6 @@ namespace StealthQt
       mHLAErrorTimer.setInterval(10000);
       mHLAErrorTimer.setSingleShot(true);
 
-      //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
-      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
-      if(!file.empty())
-      {
-         QPixmap pixmap(tr(file.c_str()));
-         mUi->mControlsCameraImageLabel->setPixmap(pixmap);
-         mUi->mControlsCameraImageLabel->setScaledContents(true);
-      }
-
-      const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
-      if(!iconFile.empty())
-      {
-         QIcon *icon = new QIcon;
-         icon->addPixmap(QPixmap(tr(iconFile.c_str())));
-         setWindowIcon(*icon);
-         //setIconSize(QSize(32, 32));
-      }
-
       mUi->mGeneralLODScaleLineEdit->setValidator(mDoubleValidator);
 
       mUi->mControlsTabWidget->setUsesScrollButtons(true);
@@ -276,6 +258,24 @@ namespace StealthQt
       show();
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
+
+      //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
+      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
+      if(!file.empty())
+      {
+         QPixmap pixmap(tr(file.c_str()));
+         mUi->mControlsCameraImageLabel->setPixmap(pixmap);
+         mUi->mControlsCameraImageLabel->setScaledContents(true);
+      }
+
+      const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
+      if(!iconFile.empty())
+      {
+         QIcon *icon = new QIcon;
+         icon->addPixmap(QPixmap(tr(iconFile.c_str())));
+         setWindowIcon(*icon);
+         //setIconSize(QSize(32, 32));
+      }
 
       AddConfigObjectsToViewerComponent();
       

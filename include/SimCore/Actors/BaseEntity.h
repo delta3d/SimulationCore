@@ -44,7 +44,7 @@ namespace SimCore
       {
          public:
             typedef dtGame::GameActorProxy BaseClass;
-            
+
             static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION;
             static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION;
             static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR;
@@ -52,6 +52,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR;
             static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION;
             static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON;
+            static const dtUtil::RefString PROPERTY_FROZEN;
             static const dtUtil::RefString PROPERTY_FLAMES_PRESENT;
             static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT;
             static const dtUtil::RefString PROPERTY_ENGINE_POSITION;
