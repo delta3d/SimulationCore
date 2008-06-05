@@ -35,10 +35,26 @@ IF (BUILD_HLA)
                     STEALTHQT_LIBRARY
                     QT_QTCORE_LIBRARY
                     QT_QTGUI_LIBRARY
-                    QT_QTOPENGL_LIBRARY)                                       
-ENDIF (BUILD_HLA)                                              
+                    QT_QTOPENGL_LIBRARY)
+ENDIF (BUILD_HLA)
 
 INCLUDE(ModuleInstall OPTIONAL)
 
 #We do want tests in bin.
-SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../bin/")
+IF (WIN32)
+SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../../bin/")
+ENDIF (WIN32)
+
+if (WIN32)
+#   ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
+#                        POST_BUILD
+#                        COMMAND "tests/runTests$(IntDir).bat"
+#                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#                        COMMENT Run the unit tests)
+else (WIN32)
+   ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
+                        POST_BUILD
+                        COMMAND ${CMAKE_BINARY_DIR}/bin/allTests
+                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                        COMMENT Run the unit tests)
+endif(WIN32)
