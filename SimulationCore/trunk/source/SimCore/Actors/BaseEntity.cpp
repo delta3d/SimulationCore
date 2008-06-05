@@ -40,7 +40,7 @@ namespace SimCore
 {
 
    namespace Actors
-   {      
+   {
       
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::DamageStateEnum);
@@ -89,6 +89,7 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FROZEN("Frozen");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
@@ -110,45 +111,55 @@ namespace SimCore
 
          static const dtUtil::RefString BASE_ENTITY_GROUP("Base Entity");
 
+         static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last know position of this BaseEntity");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownTranslation),
-            "Sets the last know position of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_LAST_KNOWN_TRANSLATION_DESC, BASE_ENTITY_GROUP));
 
+         static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION_DESC("Sets the last know rotation of this BaseEntity");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_ROTATION, PROPERTY_LAST_KNOWN_ROTATION,
             dtDAL::MakeFunctor(*this, &BaseEntityActorProxy::SetLastKnownRotation),
             dtDAL::MakeFunctorRet(*this, &BaseEntityActorProxy::GetLastKnownRotation),
-            "Sets the last known rotation of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_LAST_KNOWN_ROTATION_DESC, BASE_ENTITY_GROUP));
 
+         static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR_DESC("Sets the velocity vector of this BaseEntity");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_VELOCITY_VECTOR, PROPERTY_VELOCITY_VECTOR,
             dtDAL::MakeFunctor(e, &BaseEntity::SetVelocityVector),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetVelocityVector),
-            "Sets the velocity vector of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_VELOCITY_VECTOR_DESC, BASE_ENTITY_GROUP));
 
+         static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR_DESC("Sets the acceleration vector of this BaseEntity");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ACCELERATION_VECTOR, PROPERTY_ACCELERATION_VECTOR,
             dtDAL::MakeFunctor(e, &BaseEntity::SetAccelerationVector),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetAccelerationVector),
-            "Sets the acceleration vector of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_ACCELERATION_VECTOR_DESC, BASE_ENTITY_GROUP));
 
+         static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC("Sets the angular velocity vector of this BaseEntity");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ANGULAR_VELOCITY_VECTOR, PROPERTY_ANGULAR_VELOCITY_VECTOR,
             dtDAL::MakeFunctor(e, &BaseEntity::SetAngularVelocityVector),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetAngularVelocityVector),
-            "Sets the acceleration vector of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Frozen", "Frozen",
+         static const dtUtil::RefString PROPERTY_FROZEN_DESC("Whether or not the simulation of the entity is frozen.");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FROZEN, PROPERTY_FROZEN,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFrozen),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetFrozen),
-            "Is the entity Frozen", BASE_ENTITY_GROUP));
+            PROPERTY_FROZEN_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
+         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION_LABEL("Engine Smoke Position");
+         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION_DESC("Sets the engine smoke position of this BaseEntity");
+         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_SMOKE_POSITION, PROPERTY_ENGINE_SMOKE_POSITION_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
-            "Sets the engine smoke position of this BaseEntity", BASE_ENTITY_GROUP));
+            PROPERTY_ENGINE_SMOKE_POSITION_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_ENGINE_SMOKE_ON, "Engine Smoke On",
+         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON_LABEL("Engine Smoke On");
+         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON_DESC("Enables engine smoke");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_ENGINE_SMOKE_ON, PROPERTY_ENGINE_SMOKE_ON_LABEL,
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokeOn),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsEngineSmokeOn),
-            "Enables engine smoke", BASE_ENTITY_GROUP));
+            PROPERTY_ENGINE_SMOKE_ON_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
          static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
