@@ -521,10 +521,10 @@ namespace SimCore
       {
          // Test the component's update interval timer
          // --- Test default values
-         CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should have a default update interval of 5.0 seconds.",
-            mParticleComp->GetUpdateInterval() == 5.0f );
-         CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should have update timer disabled by default.",
-            ! mParticleComp->GetUpdateEnabled() );
+         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("ParticleManagerComponent should have a default update interval of 5.0 seconds.",
+                  3.0f, mParticleComp->GetUpdateInterval(), 1e-3f );
+         CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should have update timer enabled by default.",
+            mParticleComp->GetUpdateEnabled() );
 
          // --- Test enabling by boolean
          mParticleComp->SetUpdateEnabled(true);
@@ -537,8 +537,8 @@ namespace SimCore
          // --- Test enabling by time
          float interval = 0.25;
          mParticleComp->SetUpdateInterval(interval);
-         CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should have a NEW update interval of 0.25 seconds.",
-            mParticleComp->GetUpdateInterval() == interval );
+         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("ParticleManagerComponent should have a NEW update interval of 0.25 seconds.",
+                  interval, mParticleComp->GetUpdateInterval(), 1e-3f );
          CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should now be enabled after setting a valid update interval",
             mParticleComp->GetUpdateEnabled() );
 
