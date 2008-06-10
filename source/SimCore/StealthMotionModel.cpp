@@ -37,7 +37,7 @@ namespace SimCore
    StealthMotionModel::StealthMotionModel( dtCore::Keyboard* keyboard,
          dtCore::Mouse* mouse, 
          bool useSimTimeForSpeed )
-         : dtCore::FlyMotionModel( keyboard, mouse, useSimTimeForSpeed ),
+         : dtCore::FlyMotionModel( keyboard, mouse, dtCore::FlyMotionModel::OPTION_DEFAULT ),
          mCollideWithGround(false), mGroundClearance(1.25f),
          mScene(NULL), mIsector(NULL)
          {
