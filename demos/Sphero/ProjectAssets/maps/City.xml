@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
-        <name>Primitives</name>
+        <name>City</name>
         <description></description>
         <author></author>
         <comment></comment>
@@ -14,6 +14,10 @@
     <libraries>
         <library>
             <name>dtPhysics</name>
+            <version></version>
+        </library>
+        <library>
+            <name>Sphero</name>
             <version></version>
         </library>
     </libraries>
