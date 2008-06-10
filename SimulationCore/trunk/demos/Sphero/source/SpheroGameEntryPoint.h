@@ -21,7 +21,7 @@
 #ifndef PRIMITIVE_EXAMPLE_ENTRY_POINT
 #define PRIMITIVE_EXAMPLE_ENTRY_POINT
 
-#include "export.h"
+#include "SpheroExport.h"
 #include <SimCore/HLA/BaseHLAGameEntryPoint.h>
 
 namespace Sphero

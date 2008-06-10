@@ -113,7 +113,7 @@ namespace Sphero
    {
       BaseClass::OnAddedToGM();
       mMotionModel = new dtCore::FlyMotionModel(GetGameManager()->GetApplication().GetKeyboard(),
-               GetGameManager()->GetApplication().GetMouse(), false, true, true);
+               GetGameManager()->GetApplication().GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
    }
 
    //////////////////////////////////////////////////////////////

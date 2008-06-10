@@ -21,7 +21,7 @@
 #ifndef PRIMITIVE_EXAMPLE_INPUT_COMPONENT
 #define PRIMITIVE_EXAMPLE_INPUT_COMPONENT
 
-#include "export.h"
+#include "SpheroExport.h"
 #include <SimCore/Components/BaseInputComponent.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
