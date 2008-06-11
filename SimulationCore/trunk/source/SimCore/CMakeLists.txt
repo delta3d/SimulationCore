@@ -48,36 +48,36 @@ source_group("Source Files\\Tools" FILES ${LIB_SOURCES_3})
 source_group("Source Files\\Components" FILES ${LIB_SOURCES_4})
 
 LINK_WITH_VARIABLES(${LIB_NAME}
-											  DTUTIL_LIBRARY
-											  DTDAL_LIBRARY
-											  DTCORE_LIBRARY
-											  DTANIM_LIBRARY
-											  DTAI_LIBRARY
-											  DTABC_LIBRARY
-											  DTGAME_LIBRARY
-											  DTGUI_LIBRARY
-											  DTAUDIO_LIBRARY
-											  DTACTORS_LIBRARY
-											  OSG_LIBRARY
-											  OSGGA_LIBRARY
-											  OSGVIEWER_LIBRARY
-											  OSGUTIL_LIBRARY
-											  OSGFX_LIBRARY
-											  OSGSIM_LIBRARY
-											  OSGPARTICLE_LIBRARY
-											  OSGEPHEMERIS_LIBRARY
-											  OSGTEXT_LIBRARY
-											  GDAL_LIBRARY
-											  CAL3D_LIBRARY
-											  XERCES_LIBRARY
-											  OSGDB_LIBRARY
-											  OPENTHREADS_LIBRARY
-											  CEGUI_LIBRARY
-											  CEGUIOPENGL_LIBRARY
-											  DTPHYSX_LIBRARY
-                                                                                          DTPHYSICS_LIBRARY
-                                                                                          PAL_LIBRARY
-											  )
+                                   DTUTIL_LIBRARY
+                                   DTDAL_LIBRARY
+                                   DTCORE_LIBRARY
+                                   DTANIM_LIBRARY
+                                   DTAI_LIBRARY
+                                   DTABC_LIBRARY
+                                   DTGAME_LIBRARY
+                                   DTGUI_LIBRARY
+                                   DTAUDIO_LIBRARY
+                                   DTACTORS_LIBRARY
+                                   OSG_LIBRARY
+                                   OSGGA_LIBRARY
+                                   OSGVIEWER_LIBRARY
+                                   OSGUTIL_LIBRARY
+                                   OSGFX_LIBRARY
+                                   OSGSIM_LIBRARY
+                                   OSGPARTICLE_LIBRARY
+                                   OSGEPHEMERIS_LIBRARY
+                                   OSGTEXT_LIBRARY
+                                   GDAL_LIBRARY
+                                   CAL3D_LIBRARY
+                                   XERCES_LIBRARY
+                                   OSGDB_LIBRARY
+                                   OPENTHREADS_LIBRARY
+                                   CEGUI_LIBRARY
+                                   CEGUIOPENGL_LIBRARY
+                                   DTPHYSX_LIBRARY
+                                   DTPHYSICS_LIBRARY
+                                   PAL_LIBRARY
+                                   )
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} 
    ${OPENGL_LIBRARY}
