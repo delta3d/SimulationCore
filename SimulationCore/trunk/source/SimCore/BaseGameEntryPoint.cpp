@@ -88,7 +88,6 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_PROJECT_CONTEXT_PATH("ProjectPath");
    const std::string BaseGameEntryPoint::CONFIG_PROP_USE_GPU_CHARACTER_SKINNING("UseGPUCharacterSkinning");
    const std::string BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE("DeveloperMode");
-   const std::string BaseGameEntryPoint::CONFIG_PROP_GMSTATS("GMStatisticsInterval");
    const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_MAP("MunitionMap");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_DEFAULT("DefaultMunition");
@@ -130,9 +129,9 @@ namespace SimCore
          LOG_ERROR("The dynamic cast to an EnvironmentActor failed. The IEnvGameActorProxy has an invalid actor. Aborting.");
          gameManager.GetApplication().Quit();
       }
-   
+
       gameManager.SetEnvironmentActor(static_cast<dtGame::IEnvGameActorProxy*>(&envActor->GetGameActorProxy()));
-   
+
       envActor->SetTimeAndDate(2006, 5, 6, 12, 0, 0);
       envActor->EnableCloudPlane(true);
       envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
@@ -454,24 +453,6 @@ namespace SimCore
       munitionsComp->SetDefaultMunitionName( app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_DEFAULT, "") );
 
       InitializeComponents(gameManager);
-
-      // Turn on debug statistics if the option is set in the config.xml
-      // Note - this makes the --statisticsInterval option obsolete.
-      std::string statisticsIntervalOption;
-      statisticsIntervalOption = gameManager.GetConfiguration().GetConfigPropertyValue
-         (SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS, "0");
-      if (!statisticsIntervalOption.empty())
-      {
-         // Not error checking the value before calling ToFloat makes me nervous, but it seems to 
-         // handle the errors of 'abcd' or "" just fine.  
-         float interval = dtUtil::ToFloat(statisticsIntervalOption);
-         if (interval > 0.0 && interval < 9999.0)
-         {
-            gameManager.DebugStatisticsTurnOn(true, true, interval);
-            LOG_ALWAYS("Enabling GM Debug Statistics with interval[" + statisticsIntervalOption + 
-               "] because " + SimCore::BaseGameEntryPoint::CONFIG_PROP_GMSTATS + " was set in the config.xml.");
-         }
-      }
 
       // CURT - This conflicts with requirement request to make it a parameter but can't
       // support various munition types.
