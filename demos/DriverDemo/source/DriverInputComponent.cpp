@@ -234,7 +234,7 @@ namespace DriverDemo
             InitializePlayer( *stealthActor );
             InitializeSounds( *stealthActor );
    
-            DriverDemo::GameAppComponent* gameAppComponent;
+            /*DriverDemo::GameAppComponent* gameAppComponent;
             GetGameManager()->GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
             if(gameAppComponent != NULL)
             {
@@ -246,7 +246,7 @@ namespace DriverDemo
                   // DO WE REALLY NEED THIS????
                   AttachToVehicle( *vehicle );
                }
-            }
+            }*/
             
          }
       }

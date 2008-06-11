@@ -115,8 +115,7 @@ namespace DriverDemo
           * Constructs the class.
           */
          DriverHUD( dtCore::DeltaWin *win,
-            //const std::string& ceguiScheme = "CEGUI/schemes/DriverDemo.scheme",
-            const std::string& ceguiScheme = "CEGUI/schemes/DVTE.scheme",
+            const std::string& ceguiScheme = "CEGUI/schemes/DriverDemo.scheme",
             bool usePhysicsDemoMode = false );
    
          static const std::string DEFAULT_NAME;
