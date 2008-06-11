@@ -32,7 +32,7 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-static const std::string AGEIA_REGISTRY = "dtAgeiaPhysX";
+static const std::string AGEIA_REGISTRY = "dtPhysX";
 
 using namespace dtAgeiaPhysX;
 

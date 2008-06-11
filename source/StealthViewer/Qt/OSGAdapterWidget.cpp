@@ -196,7 +196,7 @@ namespace dtQt
    {
       if (mDoResize)
       {
-         mDoResize = NULL;
+         mDoResize = false;
          resizeGLImpl(width(), height());
       }
 
