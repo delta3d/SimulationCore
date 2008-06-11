@@ -22,6 +22,7 @@ PROJECT(SimulationCore)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" OFF)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
+OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
 
 
 IF (WIN32)

@@ -26,7 +26,7 @@ ADD_EXECUTABLE(${PROG_NAME}
 
 LINK_WITH_VARIABLES(${PROG_NAME}
                     SIMCORE_LIBRARY
-    					  CPPUNIT_LIBRARY)                                       
+                    CPPUNIT_LIBRARY)
 
 IF (BUILD_HLA)
     LINK_WITH_VARIABLES(${PROG_NAME}
@@ -45,16 +45,18 @@ IF (WIN32)
 SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../../bin/")
 ENDIF (WIN32)
 
-if (WIN32)
-#   ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
-#                        POST_BUILD
-#                        COMMAND "tests/runTests$(IntDir).bat"
-#                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#                        COMMENT Run the unit tests)
-else (WIN32)
-   ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
-                        POST_BUILD
-                        COMMAND ${CMAKE_BINARY_DIR}/bin/allTests
-                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                        COMMENT Run the unit tests)
-endif(WIN32)
+#This will automatically run the unit test executable upon successfull compile/link
+IF (AUTO_RUN_TESTS)
+  IF (WIN32)
+    ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
+                          POST_BUILD
+                          COMMAND "\"$(TargetPath)\""
+                          COMMENT "Run the unit tests")  
+  ELSE (WIN32)
+     ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
+                          POST_BUILD
+                          COMMAND ${CMAKE_BINARY_DIR}/bin/allTests
+                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                          COMMENT Run the unit tests)
+  ENDIF (WIN32)
+ENDIF (AUTO_RUN_TESTS)
