@@ -386,6 +386,9 @@ namespace SimCore
 
       void WeatherComponent::SetCoordinates()
       {
+         if(!mEphemerisEnvironmentActor.valid())
+            return;
+
          std::vector<dtDAL::ActorProxy*> actors;
          const dtDAL::ActorType* type = GetGameManager()->FindActorType("dtutil", "Coordinate Config");
          GetGameManager()->FindActorsByType(*type, actors);
