@@ -37,7 +37,7 @@ find it.  It shows an example set of values one may set
       <Property Name="AdditionalMap3">Global Actors</Property>
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <Property Name="DeveloperMode">true</Property>
-      <Property Name="GMStatisticsInterval">0</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
       <Property Name="AspectRatio">1.6</Property>
 
       <Property Name="System.SimFrameRate">60</Property>
