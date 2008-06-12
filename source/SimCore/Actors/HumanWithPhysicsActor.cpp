@@ -137,7 +137,7 @@ namespace SimCore
                }
             }
 
-            if(mPhysicsHelper->GetActor())
+            if(mPhysicsHelper->GetActor() != NULL)
             {
                float amountChange = GetMaxTranslationError();//0.5f;
                float glmat[16];

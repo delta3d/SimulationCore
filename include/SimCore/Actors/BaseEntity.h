@@ -140,8 +140,6 @@ namespace SimCore
          protected:
             virtual ~BaseEntityActorProxy();
             virtual void OnEnteredWorld();
-            ///This is a dummy method to make the readonly property work.
-            void SetModelScale(const osg::Vec3& newValue) {} 
          private:
       };
 
@@ -537,19 +535,21 @@ namespace SimCore
              *         of all other nodes, not the one returned by GetOSGNode().
              */
             const osg::MatrixTransform& GetScaleMatrixTransform() const;
-            
+
+            /**
+             * Must be implemented to allow turning off/on drawing whatever visual representation
+             * the subclass renders.
+             * @param draw true if the model should be drawn, false if not.
+             */
             virtual void HandleModelDrawToggle(bool draw) = 0;
 
             ///updates the scale of the model base on the default scale and magnification.
             void UpdateModelScale();
-            
-            //this was made public so the proxy could call it.. see above  -bga
-            //dtGame::DeadReckoningHelper& GetDeadReckoningHelper() {return *mDeadReckoningHelper.get();}
 
             void SetDeadReckoningHelper(dtGame::DeadReckoningHelper* pHelper);
-         
+
             void RegisterWithDeadReckoningComponent();
-            
+
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 

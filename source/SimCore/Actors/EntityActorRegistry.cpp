@@ -25,6 +25,7 @@
 
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/Human.h>
+#include <SimCore/Actors/PositionMarker.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/FireActor.h>
 #include <SimCore/Actors/LocalEffectActor.h>
@@ -75,6 +76,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PLAYER_ACTOR_TYPE(new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Detonation Actor", "Effects", "This actor represents a detonation"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE(new dtDAL::ActorType("Positon Marker", "Entity", "This represents a position report or a blip."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::TERRAIN_ACTOR_TYPE(new dtDAL::ActorType("Terrain", "DVTETerrain", "This actor is the terrain used in DVTE."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::INTERIOR_ACTOR_TYPE(new dtDAL::ActorType("Interior", "Vehicles", "This is an actor for generic vehicle interiors"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MISSILE_ACTOR_TYPE(new dtDAL::ActorType("Missile", "Munitions", "This is a generic actor for many possible missile-like objects"));
@@ -104,8 +106,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_CHARACTER_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
-      //RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_EMBARKABLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaEmbarkableVehicleActor", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
       
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
 
@@ -132,7 +133,7 @@ namespace SimCore
       EntityActorRegistry::EntityActorRegistry() :
          dtDAL::ActorPluginRegistry("This library will store some entity actors")
       {
-         dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+         //dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
       }
 
       ///////////////////////////////////////////////////////////////////////////
@@ -144,6 +145,7 @@ namespace SimCore
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DetonationActorProxy>(DETONATION_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PositionMarkerActorProxy>(POSITION_MARKER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<TerrainActorProxy>(TERRAIN_ACTOR_TYPE.get());
          mActorFactory->RegisterType<InteriorActorProxy>(INTERIOR_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MissileActorProxy>(MISSILE_ACTOR_TYPE.get());
@@ -170,7 +172,7 @@ namespace SimCore
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #endif
-         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(AGEIA_CHARACTER_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE.get());
 

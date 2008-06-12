@@ -112,17 +112,13 @@ void TerraPageLandActorTests::TestFunction()
 
    dtCore::System::GetInstance().Step();
 
-   CPPUNIT_ASSERT(ourActor->DEFAULT_NAME == "PhysX Terra Page Listener");
-#ifdef AGEIA_PHYSICS
    CPPUNIT_ASSERT(ourActor->GetPhysicsHelper() != NULL);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(957,0,0,0) == false);
    CPPUNIT_ASSERT(ourActor->PassThisGeometry(1,0,0,0) == true);
    CPPUNIT_ASSERT(ourActor->HasSomethingBeenLoaded() == false);
    CPPUNIT_ASSERT(ourActor->FinalizeTerrain(1) == false);
-#endif
 
    // component
-   CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME == "RenderingSupportComponent");
    CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == true);
 
    // this will remind the user they probably shouldnt have changed the values 

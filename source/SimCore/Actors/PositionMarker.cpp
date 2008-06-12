@@ -1,5 +1,8 @@
 #include <SimCore/Actors/PositionMarker.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <osg/Shape>
+#include <osg/ShapeDrawable>
+#include <osg/Geode>
 
 namespace SimCore
 {
@@ -14,6 +17,22 @@ namespace SimCore
          mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER),
          mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
       {
+         dtCore::RefPtr<osg::Sphere> sphere = new osg::Sphere(osg::Vec3(0.0, 0.0, 10.0), 5.0);
+         dtCore::RefPtr<osg::Box> box = new osg::Box(osg::Vec3(0.0, 0.0, 2.5), 25.0, 15.0, 5.0);
+         dtCore::RefPtr<osg::ShapeDrawable> sphereDrawable = new osg::ShapeDrawable(sphere.get());
+         dtCore::RefPtr<osg::ShapeDrawable> boxDrawable = new osg::ShapeDrawable(box.get());
+         dtCore::RefPtr<osg::Geode> geode = new osg::Geode();
+
+         geode->addDrawable(sphereDrawable.get());
+         geode->addDrawable(boxDrawable.get());
+         mSphere = sphereDrawable;
+         mBox = boxDrawable;
+         SetSphereColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
+         SetBoxColor(osg::Vec4(0.5, 1.0, 5.0, 0.4));
+         osg::Group* g = GetOSGNode()->asGroup();
+         g->addChild(geode.get());
+
+         //osg::StateSet* ss = g->getOrCreateStateSet();
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -88,6 +107,36 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetSphereColor(const osg::Vec4& vec)
+      {
+         mSphere->setColor(vec);
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetSphereColor()
+      {
+         return mSphere->getColor();
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetBoxColor(const osg::Vec4& vec)
+      {
+         mBox->setColor(vec);
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetBoxColor()
+      {
+         return mBox->getColor();
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::HandleModelDrawToggle(bool active)
+      {
+         
+      }
+
+      ////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////
       /////////////    Actor Proxy    ////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////
@@ -98,6 +147,8 @@ namespace SimCore
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE("Source Service");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_REPORT_TIME("Report Time");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ASSOCIATED_ENTITY("Associated Real Entity");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SPHERE_COLOR("Sphere Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_BOX_COLOR("Box Color");
 
       ////////////////////////////////////////////////////////////////////////
       PositionMarkerActorProxy::PositionMarkerActorProxy()
@@ -107,6 +158,17 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       PositionMarkerActorProxy::~PositionMarkerActorProxy()
       {
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void PositionMarkerActorProxy::CreateActor()
+      {
+         PositionMarker* marker = new PositionMarker(*this);
+         SetActor(*marker);
+
+         //we made a virtual function to create our dead reckoning helper so the helper
+         //could be changed by a subclass of entity.... bga
+         marker->InitDeadReckoningHelper();
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -151,8 +213,25 @@ namespace SimCore
          AddProperty(new dtDAL::ActorActorProperty(*this,
             PROPERTY_ASSOCIATED_ENTITY, PROPERTY_ASSOCIATED_ENTITY,
             dtDAL::ActorActorProperty::SetFuncType(this, &PositionMarkerActorProxy::SetAssociatedEntity),
+//          Why doesn't this work?
+//            dtDAL::ActorActorProperty::GetFuncType(pm, &PositionMarker::GetAssociatedEntity),
             dtDAL::ActorActorProperty::GetFuncType(this, &PositionMarkerActorProxy::GetAssociatedEntity),
             PROPERTY_ASSOCIATED_ENTITY_DESC, POSITION_MARKER_GROUP));
+
+         static const dtUtil::RefString PROPERTY_SPHERE_COLOR_DESC("The color of the sphere on the marker.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_SPHERE_COLOR, PROPERTY_SPHERE_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetSphereColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetSphereColor),
+                  PROPERTY_SPHERE_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
+         static const dtUtil::RefString PROPERTY_BOX_COLOR_DESC("The color of the box on the marker.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_BOX_COLOR, PROPERTY_BOX_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetBoxColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetBoxColor),
+                  PROPERTY_BOX_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
       }
 
       ////////////////////////////////////////////////////////////////////////

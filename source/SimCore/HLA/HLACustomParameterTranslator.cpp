@@ -389,6 +389,14 @@ namespace SimCore
 
             static_cast<dtGame::StringMessageParameter&>(parameter).SetValue(
                munitionType != NULL ? munitionType->GetName() : "" );
+
+            // Log an error if the type was not found
+            if( munitionType == NULL )
+            {
+               std::ostringstream oss;
+               oss << "Munition [" << dis << "] could NOT be found in munition table." << std::endl;
+               mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, oss.str().c_str() );
+            }
          }
          // Incoming Control Type Array
          else if( hlaType == HLACustomAttributeType::CONTINUOUS_CONTROL_ARRAY_TYPE

@@ -75,13 +75,6 @@
 
 #include <dtDAL/project.h>
 
-#ifdef AGEIA_PHYSICS
-   #include <NxAgeiaWorldComponent.h>
-   #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-   #include <NxAgeiaMaterialActor.h>
-   #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
-#endif
-
 using dtCore::RefPtr;
 
 namespace StealthGM
@@ -236,7 +229,7 @@ namespace StealthGM
             // create the fly motion model 
             if(!mStealthMM.valid())
             {
-               mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), false);
+               mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
                mStealthMM->SetCollideWithGround(mCollideWithGround);
             }            
             mStealthMM->SetTarget(mStealthActor.get());
@@ -810,7 +803,7 @@ namespace StealthGM
    void StealthInputComponent::ChangeFlyMotionModelSpeed(bool higher)
    {
       float val = mStealthMM->GetMaximumFlySpeed();
-      mStealthMM->SetMaximumFlySpeed(higher ? val * 2 : val / 2);
+      mStealthMM->SetMaximumFlySpeed(higher ? val * 1.5 : val / 1.5);
    }
    
    void StealthInputComponent::EnablePlayback()

@@ -61,7 +61,7 @@ namespace StealthGM
       mShowAdvancedOptions(false), 
       mAttachProxy(NULL), 
       mReconnectOnStartup(true), 
-      mAutoRefreshEntityInfo(false),
+      mAutoRefreshEntityInfo(true),
       mDetachFromActor(false),
       mInputComponent(NULL)
    {
