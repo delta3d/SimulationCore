@@ -39,7 +39,7 @@
 #    define DRIVER_DEMO_EXPORT __declspec(dllimport)
 #  endif
 #else
-#   ifdef GROUND_SIM_LIBDRIVER_DEMO_LIBRARYRARY
+#   ifdef DRIVER_DEMO_LIBRARY
 #      define DRIVER_DEMO_EXPORT __attribute__ ((visibility("default")))
 #   else
 #      define DRIVER_DEMO_EXPORT
