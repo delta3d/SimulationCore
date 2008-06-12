@@ -189,79 +189,77 @@ namespace SimCore
       void ViewerMessageProcessor::UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg)
       {
          const unsigned long MILLISECONDS_TO_USECONDS = 1000UL;
-         
+
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
          {
             std::string msgString;
             tvMsg.ToString(msgString);
             mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Received a time value message: \n%s", msgString.c_str());
          }
-         
-//         if (tvMsg.GetTimeMaster() == mTimeMasterName ||
-//               tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
-//         {
-         mTimeMasterName = tvMsg.GetTimeMaster();
-         
-         if (tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
-         {
-            long transmitLatency = tvMsg.GetQueryReceivedRealTime() - tvMsg.GetQueryTransmitRealTime();
-            long receiveLatency  = (long)(GetGameManager()->GetRealClockTime()/MILLISECONDS_TO_USECONDS) - tvMsg.GetValueTransmitRealTime();
-            
-            mTimeSyncLatency = (unsigned long)(abs((transmitLatency + receiveLatency) / 2));
-         }
 
-         unsigned long timeOffset = mTimeSyncLatency * int(tvMsg.GetTimeScale());
+         if (tvMsg.GetTimeMaster() == mTimeMasterName ||
+                  tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
+         {
+            mTimeMasterName = tvMsg.GetTimeMaster();
 
-         // The time offset is mute if the simulation is paused.   
-         if (tvMsg.IsPaused())
-         {
-            timeOffset = 0L;
-         }            
-
-         // Figure out which time scale to use. If the message has the default, then don't 
-         // change the timescale.  Allows time scale to be set in playback.
-         float timeScale = tvMsg.GetTimeScale();
-         if (timeScale == TimeValueMessage::DEFAULT_TIME_SCALE)
-         {
-            timeScale = GetGameManager()->GetTimeScale();
-         }
-         else 
-         {
-            // We also have to check to see if the ServerLoggerComponent is alive and active.
-            dtGame::LogController *logController;
-            GetGameManager()->GetComponentByName(dtGame::LogController::DEFAULT_NAME, logController);
-            
-            if (logController != NULL)
+            if (tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
             {
-               const dtGame::LogStatus &logStatus = logController->GetLastKnownStatus();
-               if (logStatus.GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
-                  timeScale = GetGameManager()->GetTimeScale();
+               long transmitLatency = tvMsg.GetQueryReceivedRealTime() - tvMsg.GetQueryTransmitRealTime();
+               long receiveLatency  = (long)(GetGameManager()->GetRealClockTime()/MILLISECONDS_TO_USECONDS) - tvMsg.GetValueTransmitRealTime();
+
+               mTimeSyncLatency = (unsigned long)(abs((transmitLatency + receiveLatency) / 2));
+            }
+
+            unsigned long timeOffset = mTimeSyncLatency * int(tvMsg.GetTimeScale());
+
+            // The time offset is mute if the simulation is paused.   
+            if (tvMsg.IsPaused())
+            {
+               timeOffset = 0L;
+            }
+
+            // Figure out which time scale to use. If the message has the default, then don't 
+            // change the timescale.  Allows time scale to be set in playback.
+            float timeScale = tvMsg.GetTimeScale();
+            if (timeScale == TimeValueMessage::DEFAULT_TIME_SCALE)
+            {
+               timeScale = GetGameManager()->GetTimeScale();
+            }
+            else 
+            {
+               // We also have to check to see if the ServerLoggerComponent is alive and active.
+               dtGame::LogController *logController;
+               GetGameManager()->GetComponentByName(dtGame::LogController::DEFAULT_NAME, logController);
+
+               if (logController != NULL)
+               {
+                  const dtGame::LogStatus &logStatus = logController->GetLastKnownStatus();
+                  if (logStatus.GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
+                     timeScale = GetGameManager()->GetTimeScale();
+               }
+            }
+
+            dtCore::Timer_t newTime = dtCore::Timer_t(tvMsg.GetSynchronizedTime() + timeOffset);
+            GetGameManager()->ChangeTimeSettings(double(newTime) / 1000.0, timeScale, GetGameManager()->GetSimulationClockTime());
+            GetGameManager()->SetPaused(tvMsg.IsPaused());
+
+            if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            {
+               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, 
+                        "Changed simulation clock time to match time value \"%lld\", scale \"%f\", and paused \"%s\"", 
+                        newTime, tvMsg.GetTimeScale(), tvMsg.IsPaused() ? "true" : "false");
             }
          }
-         
-         dtCore::Timer_t newTime = dtCore::Timer_t(tvMsg.GetSynchronizedTime() + timeOffset);
-         GetGameManager()->ChangeTimeSettings(double(newTime) / 1000.0, timeScale, GetGameManager()->GetSimulationClockTime());
-         GetGameManager()->SetPaused(tvMsg.IsPaused());
-         
-         if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+         else
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, 
-                  "Changed simulation clock time to match time value \"%lld\", scale \"%f\", and paused \"%s\"", 
-                  newTime, tvMsg.GetTimeScale(), tvMsg.IsPaused() ? "true" : "false");
-         }            
-//         }
-//         else
-//         {
-//            /*
-//            // Send our own query.
-//            dtCore::RefPtr<TimeQueryMessage> query;
-//            GetGameManager()->GetMessageFactory().CreateMessage(MessageType::TIME_QUERY, query);
-//            query->SetSenderName(mTimeSyncSenderName.ToString());
-//            //Set the transmit time to the sim clock time in seconds (normally in usecs)
-//            query->SetQueryTransmitRealTime(GetGameManager()->GetRealClockTime() / SECONDS_TO_USECONDS);
-//            GetGameManager()->SendMessage(*query);
-//            */
-//         }
+            // Send our own query.
+            dtCore::RefPtr<TimeQueryMessage> query;
+            GetGameManager()->GetMessageFactory().CreateMessage(MessageType::TIME_QUERY, query);
+            query->SetSenderName(mTimeSyncSenderName.ToString());
+            //Set the transmit time to the sim clock time in seconds (normally in usecs)
+            query->SetQueryTransmitRealTime(unsigned(GetGameManager()->GetRealClockTime() / 1000ULL));
+            //GetGameManager()->SendMessage(*query);
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////
@@ -278,7 +276,7 @@ namespace SimCore
             RefPtr<dtGame::GameActorProxy> proxy = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
          
             if (!AcceptPlayer(*proxy))
-               return;            
+               return;
 
             mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetActor());
             
@@ -287,9 +285,9 @@ namespace SimCore
                LOG_ERROR("Received a player entered world message from an actor that is not a player");
                return;
             }
-            else 
+            else
             {
-               LOG_ALWAYS("Got a valid PlayerEnteredWorld with id: " + msg.GetAboutActorId().ToString());               
+               LOG_ALWAYS("Got a valid PlayerEnteredWorld with id: " + msg.GetAboutActorId().ToString());
 
                //Need to set the player on the dead reckoning component
                //so that it can use it for the LOD eye point for ground clamping
@@ -298,13 +296,13 @@ namespace SimCore
                dtGame::DeadReckoningComponent* drComp = 
                   static_cast<dtGame::DeadReckoningComponent*>(
                   GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME));
-               
+
                if (drComp != NULL)
                {
                   LOG_ALWAYS("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());               
                   drComp->SetEyePointActor(mPlayer.get());
                }
-               
+
             }
          }
          else

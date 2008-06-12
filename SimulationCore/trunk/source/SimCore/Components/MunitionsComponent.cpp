@@ -38,6 +38,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
+#include <dtUtil/configproperties.h>
 
 // SIM Core
 #include <SimCore/Messages.h>
@@ -1409,13 +1410,15 @@ namespace SimCore
          mMunitionConfigPath("Configs:MunitionsConfig.xml"),
          mIsector(new dtCore::BatchIsector),
          mLastDetonationTime(0.0f),
-         mEffectsManager(new WeaponEffectsManager)
+         mEffectsManager(new WeaponEffectsManager),
+         mMaximumActiveMunitions(200)
       {
       }
 
       //////////////////////////////////////////////////////////////////////////
       MunitionsComponent::~MunitionsComponent()
       {
+         ClearCreatedMunitionsQueue();
          ClearRegisteredEntities();
          ClearTables();
          if( mMunitionTypeTable.valid() ) { mMunitionTypeTable->Clear(); }
@@ -1781,10 +1784,13 @@ namespace SimCore
             {
                mIsector->SetQueryRoot( terrains[0]->GetActor() );
             }
+
+            CleanupCreatedMunitionsQueue();
          }
          else if( type == dtGame::MessageType::INFO_RESTARTED
             || type == dtGame::MessageType::INFO_MAP_UNLOADED )
          {
+            ClearCreatedMunitionsQueue();
             ClearRegisteredEntities();
             ClearTables();
             mLastDetonationTime = 0.0f;
@@ -2262,6 +2268,8 @@ namespace SimCore
 
          // Add the newly created detonation to the scene
          GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);  
+
+         AddMunitionToCreatedMunitionsQueue(da->GetUniqueId());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -2270,6 +2278,18 @@ namespace SimCore
          dtGame::GMComponent::OnAddedToGM();
          mIsector->SetScene( &GetGameManager()->GetScene() );
          mEffectsManager->SetGameManager( GetGameManager() );
+
+         // Load a value for the maximum active munitions setting. Default is usally something like 200.
+         dtUtil::ConfigProperties& config = GetGameManager()->GetConfiguration();
+         std::string stringValue = config.GetConfigPropertyValue(this->GetName() + ".MaximumActiveMunitions");
+         if (!stringValue.empty())
+         {
+            int newValue = dtUtil::ToType<int>(stringValue);
+            if (newValue > 0)
+               mMaximumActiveMunitions = newValue;
+            else 
+               LOG_ERROR("Received bag number from configuration file for MaximumActiveMunitions on the Munitions Component.");
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -2366,6 +2386,84 @@ namespace SimCore
          return effects;
       }
 
+      // This simple structure is a remove functor for the remove_if operator on the
+      // active munitions deque. It basically checks to see if the unique id exists
+      // in the GM or not so that we can delete old id's from our queue when we clean up.
+      struct RemoveOldMunitionsChecker
+      { 
+         RemoveOldMunitionsChecker(dtGame::GameManager &gm) : theGM(gm) { }
 
+         // check to see if the unique id exists in the GM (return false) or not (return true).
+         bool operator()(const dtCore::UniqueId idToCheck)
+         {
+            bool bFound = theGM.FindActorById(idToCheck) == NULL;
+            return bFound;
+         }
+
+         dtGame::GameManager &theGM;
+      };
+
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::SetMaximumActiveMunitions(int newMax)
+      {
+         if (newMax > 0) // a negative max would be bad.
+            mMaximumActiveMunitions = newMax; 
+
+         // clean up in case our new max causes us to have too many
+         CleanupCreatedMunitionsQueue();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::ClearCreatedMunitionsQueue()
+      {
+         mCreatedMunitionsQueue.clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::CleanupCreatedMunitionsQueue()
+      {
+         if (!mCreatedMunitionsQueue.empty())
+         {
+            // First, we remove all of entries in our queue that are no longer valid. Usually happens if the 
+            // Actors were deleted, probably from timing out. 
+               mCreatedMunitionsQueue.erase(std::remove_if(mCreatedMunitionsQueue.begin(), 
+                  mCreatedMunitionsQueue.end(), RemoveOldMunitionsChecker(*GetGameManager())), mCreatedMunitionsQueue.end());  
+
+            // if we still have too many valid munitions, remove them from the front until we have the right size.
+            int curSize = mCreatedMunitionsQueue.size();
+            for (int i = curSize - mMaximumActiveMunitions; i > 0; i --)
+            {
+               RemoveOldestMunitionFromQueue();
+            }
+         }
+      }
+ 
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::RemoveOldestMunitionFromQueue()
+      {
+         if (!mCreatedMunitionsQueue.empty())
+         {
+            const dtCore::UniqueId frontId = mCreatedMunitionsQueue.front();
+            mCreatedMunitionsQueue.pop_front();
+
+            dtDAL::ActorProxy *frontProxy = GetGameManager()->FindActorById(frontId);
+            if (frontProxy != NULL)
+               GetGameManager()->DeleteActor(*frontProxy);
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::AddMunitionToCreatedMunitionsQueue(const dtCore::UniqueId &uniqueId)
+      {
+         // Add it to the back, and then clean up if we have too many.
+         mCreatedMunitionsQueue.push_back(uniqueId);
+
+         int curSize = mCreatedMunitionsQueue.size();
+         if (curSize > mMaximumActiveMunitions)
+         {
+            CleanupCreatedMunitionsQueue();
+         }
+      }
    }
 }

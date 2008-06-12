@@ -31,13 +31,18 @@
 #include <NxAgeiaWorldComponent.h>
 #include <SimCore/ModifiedStream.h>
 #include <NxCooking.h>
+#else
+#include <dtPhysics/physicscomponent.h>
+#include <dtPhysics/trianglerecorder.h>
+#include <dtCore/transform.h>
+#endif
 
 namespace SimCore
 {
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("PhysX Terra Page Listener");
+      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("Terra Page Listener");
 
       
       template< class T >
@@ -133,13 +138,13 @@ namespace SimCore
           //, mIsBuilding(false)         // is this a building or not
           , mFlags(TILE_TODO_DISABLE)  // for flag system
          {
-            SetActor(NULL);
+            SetPhysicsObject(NULL);
          }            
 
          //////////////////////////////////////////////////////////////////////
          TerrainNode::~TerrainNode()
          {
-            SetActor(NULL);
+            SetPhysicsObject(NULL);
             mGeodePTR = NULL;
          }
 
@@ -152,27 +157,41 @@ namespace SimCore
          {
             mFinalizeTerrainIter = mTerrainMap.begin();
             SetName(NxAgeiaTerraPageLandActor::DEFAULT_NAME);
+#ifdef AGEIA_PHYSICS
             mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
             mPhysicsHelper->SetBaseInterfaceClass(this);
-            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+            //mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+#else
+            mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
+            //mPhysicsHelper->SetFlags(dtPhysics::PhysicsHelper::FLAGS_POST_UPDATE);
+#endif
             mLoadedTerrainYet = false;
          }
 
          //////////////////////////////////////////////////////////////////////
          NxAgeiaTerraPageLandActor::~NxAgeiaTerraPageLandActor(void)
          {
+#ifdef AGEIA_PHYSICS
             mPhysicsHelper->ReleaseAllPhysXObjects();
+#endif
             mTerrainMap.clear();
          }
 
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::OnEnteredWorld()
          {
+#ifdef AGEIA_PHYSICS
             dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent;
             GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
             if (worldComponent != NULL)
                worldComponent->RegisterAgeiaHelper(*mPhysicsHelper);
             mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
+#else
+            dtPhysics::PhysicsComponent* physicsComponent;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
+            if (physicsComponent != NULL)
+               physicsComponent->RegisterHelper(*mPhysicsHelper);
+#endif
          }
 
          //////////////////////////////////////////////////////////////////////
@@ -199,11 +218,18 @@ namespace SimCore
                                                                   *terrainNodeToAdd));
                   if(terrainNodeToAdd->IsFilled())
                   {
+#ifdef AGEIA_PHYSICS
                      osg::Quat quaternion = matrixForTransform.getRotate();
-                     terrainNodeToAdd->GetActor()->setGlobalOrientationQuat(NxQuat(NxVec3(quaternion[0],quaternion[1],quaternion[2]), quaternion[3]));
-                     terrainNodeToAdd->GetActor()->setGlobalPosition(NxVec3(  matrixForTransform.getTrans()[0],
+                     terrainNodeToAdd->GetPhysicsObject()->setGlobalOrientationQuat(NxQuat(NxVec3(quaternion[0],quaternion[1],quaternion[2]), quaternion[3]));
+                     terrainNodeToAdd->GetPhysicsObject()->setGlobalPosition(NxVec3(  matrixForTransform.getTrans()[0],
                                                                               matrixForTransform.getTrans()[1],
                                                                               matrixForTransform.getTrans()[2]));
+#else
+                     dtPhysics::PhysicsObject* physObject = terrainNodeToAdd->GetPhysicsObject();
+                     dtCore::Transform xform;
+                     xform.Set(matrixForTransform);
+                     physObject->SetTransform(xform);
+#endif
                      terrainNodeToAdd->SetFlagsToKeep();
                   }
                   else
@@ -236,19 +262,35 @@ namespace SimCore
                {
                   // Remove ageia stuff if its loaded.
                   if(currentNode->IsFilled())
+                  {
+#ifdef AGEIA_PHYSICS
                      mPhysicsHelper->ReleasePhysXObject(currentNode->GetUniqueID().ToString());
+#else
+                     mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
+#endif
+                  }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
                }
                else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_DISABLE
                      &&currentNode->IsFilled())
                {
-                  mPhysicsHelper->TurnOffCollision(currentNode->GetActor());
+#ifdef AGEIA_PHYSICS
+                  mPhysicsHelper->TurnOffCollision(currentNode->GetPhysicsObject());
+#else
+                  //TODO make this work for a terrain
+                  currentNode->GetPhysicsObject()->SetActive(false);
+#endif
                }
                else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP  
                      &&currentNode->IsFilled())
                {
-                  mPhysicsHelper->TurnOnCollision(currentNode->GetActor());
+#ifdef AGEIA_PHYSICS
+                  mPhysicsHelper->TurnOnCollision(currentNode->GetPhysicsObject());
+#else
+                  //TODO make this work for a terrain
+                  currentNode->GetPhysicsObject()->SetActive(true);
+#endif
                }
                else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD 
                      &&currentNode->GetGeodePointer() != NULL)
@@ -278,6 +320,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::ReloadTerrainPhysics()
          {
+#ifdef AGEIA_PHYSICS
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mterrainIter;
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
             for(mterrainIter = mTerrainMap.begin(); 
@@ -294,18 +337,21 @@ namespace SimCore
                      *currentNode));
                }
             }
+#endif
          }
 
       //////////////////////////////////////////////////////////////////////
       // Terrain tile loading 
       //////////////////////////////////////////////////////////////////////
 
+#ifdef AGEIA_PHYSICS
          //////////////////////////////////////////////////////////////////////
          bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse, 
             const std::string& nameOfNode, TerrainNode& terrainNode)
          {
-            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent = 
-               dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
+            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
+            GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
+
             if(worldComponent == NULL)
             {
                LOG_ERROR("worldComponent Is not initialized, make sure a new one \
@@ -313,15 +359,7 @@ namespace SimCore
                return false;
             }
 
-            if(nodeToParse == NULL)
-            {
-               LOG_ALWAYS("Null nodeToParse sent into the ParseTerrainNode function! \
-                  No action taken.");
-               return false;
-            }
-
             mLoadedTerrainYet = true;
-
             dtCore::RefPtr<DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder> > mv = 
                new DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder>(*this);
             nodeToParse->accept(*mv.get());
@@ -412,7 +450,7 @@ namespace SimCore
                delete [] gHeightfieldFaces;
 
                NxActor *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
-               terrainNode.SetActor(actor);
+               terrainNode.SetPhysicsObject(actor);
 
                mPhysicsHelper->AddPhysXObject(*actor, nameOfNode.c_str());
                gCooking->NxCloseCooking();
@@ -425,7 +463,27 @@ namespace SimCore
             }
             return false;
          }
+#else
+         //////////////////////////////////////////////////////////////////////
+         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse, 
+            const std::string& nameOfNode, TerrainNode& terrainNode)
+         {
+            if(nodeToParse == NULL)
+            {
+               LOG_ALWAYS("Null nodeToParse sent into the ParseTerrainNode function! \
+                  No action taken.");
+               return false;
+            }
 
+            dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+            mPhysicsHelper->AddPhysicsObject(*newTile);
+            terrainNode.SetPhysicsObject(newTile.get());
+            newTile->SetMechanicsEnum(dtPhysics::PhysicsObject::MechanicsEnum::STATIC);
+            newTile->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::TERRAIN_MESH);
+            newTile->CreateFromProperties(nodeToParse);
+            return true;
+         }
+#endif
          //////////////////////////////////////////////////////////////////////
          bool NxAgeiaTerraPageLandActor::PassThisGeometry(int fid, int smc, 
             int soilTemperatureAndPressure, int soilWaterContent)
@@ -471,28 +529,6 @@ namespace SimCore
             return false;
          }
 
-         #else
-namespace SimCore
-{
-   namespace Actors
-   {
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("PhysX Terra Page Listener");
-
-      //////////////////////////////////////////////////////////////////////
-      NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy) 
-         : GameActor(proxy)
-      {
-
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      NxAgeiaTerraPageLandActor::~NxAgeiaTerraPageLandActor(void)
-      {
-      }
-
-         #endif
-
       //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
@@ -507,14 +543,15 @@ namespace SimCore
          void NxAgeiaTerraPageLandActorProxy::BuildPropertyMap()
          {
             dtGame::GameActorProxy::BuildPropertyMap();
-
-            #ifdef AGEIA_PHYSICS
-               NxAgeiaTerraPageLandActor &actor = static_cast<NxAgeiaTerraPageLandActor&>(GetGameActor());
-               std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-               actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-               for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-                  AddProperty(toFillIn[i].get());
-            #endif
+            NxAgeiaTerraPageLandActor* actor = NULL;
+            GetActor(actor);
+            std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+            toFillIn.reserve(15U);
+            actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+            for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+            {
+               AddProperty(toFillIn[i].get());
+            }
          }
 
          //////////////////////////////////////////////////////////////////////

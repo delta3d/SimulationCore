@@ -29,6 +29,10 @@
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
 
+// Curt test
+#include <dtCore/view.h>
+#include <dtABC/application.h>
+
 #include <osg/MatrixTransform>
 #include <osg/Node>
 
@@ -70,13 +74,19 @@ namespace SimCore
       {
          IGActor::AddedToScene(scene);
 
-         //Actually load the file, even if it's empty string so that if someone were to 
-         //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
-         //work.
-         if (mNeedToLoad)
+         if (GetGameActorProxy().GetGameManager() != NULL)
          {
-            LoadFile(mLoadedFile);
-            mNeedToLoad = false;
+            if (scene != NULL)
+            {
+               //Actually load the file, even if it's empty string so that if someone were to 
+               //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
+               //work.
+               if (mNeedToLoad)
+               {
+                  LoadFile(mLoadedFile);
+                  mNeedToLoad = false;
+               }
+            }
          }
       }
 

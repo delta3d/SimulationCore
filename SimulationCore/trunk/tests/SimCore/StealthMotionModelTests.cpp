@@ -18,9 +18,12 @@
  *
  * @author Chris Rodgers
  */
+
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
-
 #include <dtUtil/macros.h>
 #include <dtCore/camera.h>
 #include <dtCore/infiniteterrain.h>
@@ -29,7 +32,6 @@
 #include <dtCore/transformable.h>
 #include <dtCore/deltawin.h>
 #include <SimCore/StealthMotionModel.h>
-
 #include <osg/io_utils>
 #include <dtABC/application.h>
 
@@ -43,6 +45,13 @@
    #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
 #endif
 
+using namespace SimCore;
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// TEST OBJECT CODE
+////////////////////////////////////////////////////////////////////////////////
 class StealthMotionModelTests : public CPPUNIT_NS::TestFixture 
 {
    CPPUNIT_TEST_SUITE(StealthMotionModelTests);
@@ -50,11 +59,13 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestProperties);
       CPPUNIT_TEST(TestEndPosition);
       CPPUNIT_TEST(TestExclusiveCollision);
+      CPPUNIT_TEST(TestSpeedLimits);
 
    CPPUNIT_TEST_SUITE_END();
 
    public:
 
+      //////////////////////////////////////////////////////////////////////////
       void setUp()
       {
          mTerrain = new dtCore::InfiniteTerrain( "Ground" );
@@ -83,6 +94,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
       }
       
+      //////////////////////////////////////////////////////////////////////////
       void tearDown()
       {
          mApp = NULL;
@@ -94,27 +106,47 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Stop();
       }
       
+      //////////////////////////////////////////////////////////////////////////
       void TestProperties()
       {       
-         CPPUNIT_ASSERT( &mMotionModel->GetScene() == mApp->GetScene() );  
+         const StealthMotionModel* motionModelConst = mMotionModel.get();
+
+         CPPUNIT_ASSERT( &motionModelConst->GetScene() == mApp->GetScene() );  
 
          mMotionModel->SetTarget( mTarget.get() );
-         CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL );   
+         CPPUNIT_ASSERT( motionModelConst->GetTarget() != NULL );   
 
          mMotionModel->SetCollideWithGround(true);
-         CPPUNIT_ASSERT( mMotionModel->GetCollideWithGround() ); 
+         CPPUNIT_ASSERT( motionModelConst->GetCollideWithGround() ); 
          mMotionModel->SetCollideWithGround(false);
-         CPPUNIT_ASSERT( !mMotionModel->GetCollideWithGround() );       
+         CPPUNIT_ASSERT( ! motionModelConst->GetCollideWithGround() );       
 
-         CPPUNIT_ASSERT( mMotionModel->GetGroundClearance() );
+         CPPUNIT_ASSERT( motionModelConst->GetGroundClearance() );
          mMotionModel->SetGroundClearance(5.0f);
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0f, mMotionModel->GetGroundClearance(), 0.0f );
+         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0f, motionModelConst->GetGroundClearance(), 0.0f );
 
          mMotionModel->SetMaximumFlySpeed(200.0f);
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( 200.0f, mMotionModel->GetMaximumFlySpeed(), 0.0f ); 
+         CPPUNIT_ASSERT_DOUBLES_EQUAL( 200.0f, motionModelConst->GetMaximumFlySpeed(), 0.0f ); 
          
+         // Check setting speed limits
+         float testValue = 123.4567f;
+         CPPUNIT_ASSERT( StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN
+            != StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX );
+
+         // --- Test setting the minimum speed limit.
+         CPPUNIT_ASSERT( motionModelConst->GetFlySpeedLimitMin()
+            == StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN );
+         mMotionModel->SetFlySpeedLimitMin( testValue );
+         CPPUNIT_ASSERT( motionModelConst->GetFlySpeedLimitMin() == testValue );
+
+         // --- Test setting the maximum speed limit.
+         CPPUNIT_ASSERT( motionModelConst->GetFlySpeedLimitMax()
+            == StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX );
+         mMotionModel->SetFlySpeedLimitMax( testValue );
+         CPPUNIT_ASSERT( motionModelConst->GetFlySpeedLimitMax() == testValue );
       }
       
+      //////////////////////////////////////////////////////////////////////////
       void TestEndPosition()
       {
 
@@ -147,6 +179,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void TestExclusiveCollision()
       {
 
@@ -208,6 +241,35 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 
             CPPUNIT_ASSERT_DOUBLES_EQUAL( (elevation+mMotionModel->GetGroundClearance()), cameraPos[2], 0.01f );
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TestSpeedLimits()
+      {
+         // Test MIN clamping.
+         float testSpeed = StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN - 10.0f;
+         mMotionModel->SetMaximumFlySpeed( testSpeed );
+         CPPUNIT_ASSERT( mMotionModel->GetMaximumFlySpeed() == testSpeed );
+
+         // Step the system which will call OnMessage on the motion model.
+         // The update caused by OnMessage will cap the speed limit of the
+         // motion models currently set speed.
+         dtCore::System::GetInstance().Step();
+
+         CPPUNIT_ASSERT( mMotionModel->GetMaximumFlySpeed()
+            == StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN );
+
+
+         // Test MAX clamping
+         testSpeed = StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX + 10.0f;
+         mMotionModel->SetMaximumFlySpeed( testSpeed );
+         CPPUNIT_ASSERT( mMotionModel->GetMaximumFlySpeed() == testSpeed );
+
+         // Step the system which will call OnMessage on the motion model.
+         dtCore::System::GetInstance().Step();
+
+         CPPUNIT_ASSERT( mMotionModel->GetMaximumFlySpeed()
+            == StealthMotionModel::DEFAULT_SPEED_LIMIT_MAX );
       }
 
 

@@ -30,6 +30,7 @@
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <dtUtil/templateutility.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Group>
@@ -177,9 +178,9 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
-            PROPERTY_ENGINE_POSITION_DESC, BASE_ENTITY_GROUP);
+                  dtDAL::Vec3ActorProperty::SetFuncType(),
+                  dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetEngineSmokePos),
+                  PROPERTY_ENGINE_POSITION_DESC, BASE_ENTITY_GROUP);
 
          prop->SetReadOnly(true);
          AddProperty(prop);
@@ -278,8 +279,8 @@ namespace SimCore
             ("Returns the current scale of the model.  Model Scale = Default * Magnification");
          dtDAL::Vec3ActorProperty* modelScaleProp = new dtDAL::Vec3ActorProperty(
             PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE, 
-            dtDAL::MakeFunctor(*this, &BaseEntityActorProxy::SetModelScale), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetModelScale), 
+            dtDAL::Vec3ActorProperty::SetFuncType(), 
+            dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale), 
             PROPERTY_MODEL_SCALE_DESC,
             BASE_ENTITY_GROUP);
 

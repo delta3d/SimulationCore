@@ -4,6 +4,7 @@
 #include <SimCore/Actors/BaseEntity.h>
 #include <dtUtil/refstring.h>
 #include <SimCore/Export.h>
+#include <osg/ShapeDrawable>
 
 namespace SimCore
 {
@@ -34,10 +35,20 @@ namespace SimCore
             const BaseEntity* GetAssociatedEntity() const;
             BaseEntity* GetAssociatedEntity();
 
+            /// Implemented from the base class
+            virtual void HandleModelDrawToggle(bool active);
+
+            void SetSphereColor(const osg::Vec4& vec);
+            const osg::Vec4& GetSphereColor();
+            void SetBoxColor(const osg::Vec4& vec);
+            const osg::Vec4& GetBoxColor();
          private:
+
             double mReportTime;
             dtUtil::RefString mSourceCallsign;
             dtCore::RefPtr<BaseEntity> mAssociatedEntity;
+            dtCore::RefPtr<osg::ShapeDrawable> mSphere;
+            dtCore::RefPtr<osg::ShapeDrawable> mBox;
             BaseEntityActorProxy::ForceEnum* mSourceForce;
             BaseEntityActorProxy::ServiceEnum* mSourceService;
       };
@@ -51,13 +62,15 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_SOURCE_FORCE;
             static const dtUtil::RefString PROPERTY_SOURCE_SERVICE;
             static const dtUtil::RefString PROPERTY_REPORT_TIME;
-
             static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY;
+            static const dtUtil::RefString PROPERTY_SPHERE_COLOR;
+            static const dtUtil::RefString PROPERTY_BOX_COLOR;
 
             PositionMarkerActorProxy();
             virtual ~PositionMarkerActorProxy();
 
             virtual void BuildPropertyMap();
+            virtual void CreateActor();
          protected:
             void SetAssociatedEntity(dtDAL::ActorProxy* assocEntity);
             dtCore::DeltaDrawable* GetAssociatedEntity();

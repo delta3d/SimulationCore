@@ -259,20 +259,27 @@ namespace StealthQt
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
 
-      //const std::string &file = dtCore::FindFileInPathList("icons/help_controls.png");
-      const std::string &file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
-      if(!file.empty())
+      // Note, stuff dealing with the path has to be BELOW InitGameApp().
+      // NOTE - This image fails to load if you have a space in the path (like Program Files) 
+      // under QT 4.3.3, at least on Windows XP. This works with version 4.3.0.
+      const std::string& file = dtCore::FindFileInPathList("icons/help_controls_small.jpg");
+      if (!file.empty())
       {
-         QPixmap pixmap(tr(file.c_str()));
+         QPixmap pixmap;
+         if (!pixmap.load(tr(file.c_str())))
+            LOG_ERROR("Couldn't load camera help image \"" + file + "\".");
          mUi->mControlsCameraImageLabel->setPixmap(pixmap);
          mUi->mControlsCameraImageLabel->setScaledContents(true);
       }
 
-      const std::string &iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
-      if(!iconFile.empty())
+      const std::string& iconFile = dtCore::FindFileInPathList("icons/stealthviewer.png");
+      if (!iconFile.empty())
       {
          QIcon *icon = new QIcon;
-         icon->addPixmap(QPixmap(tr(iconFile.c_str())));
+         QPixmap pixmap;
+         if (!pixmap.load(tr(iconFile.c_str())))
+            LOG_ERROR("Couldn't load icon file \"" + iconFile + "\".");
+         icon->addPixmap(pixmap);
          setWindowIcon(*icon);
          //setIconSize(QSize(32, 32));
       }
@@ -681,6 +688,9 @@ namespace StealthQt
       // Prevent network connection changes if in record mode.
       mUi->mMenuNetwork->setEnabled( ! mIsRecording );
 
+      // Prevent changing files when in record mode.
+      mUi->mRecordFilePushButton->setEnabled( ! mIsRecording );
+
       // Change the window title to indicate record mode.
       const std::string& title = mIsRecording
          ? StealthQt::WINDOW_TITLE + StealthQt::WINDOW_TITLE_VERSION + StealthQt::WINDOW_TITLE_MODE_RECORD : 
@@ -925,6 +935,9 @@ namespace StealthQt
       mUi->mPlaybackStartOverPushButton->setEnabled(mIsPlayingBack);
       mUi->mPlaybackJumpToPrevTimeMarkerPushButton->setEnabled(mIsPlayingBack);
       mUi->mPlaybackJumpToNextTimeMarkerPushButton->setEnabled(mIsPlayingBack);
+
+      // Prevent changing files if a play back is in progress.
+      mUi->mPlaybackFilePushButton->setEnabled( ! mIsPlayingBack );
    }
 
    ///////////////////////////////////////////////////////////////////////////////

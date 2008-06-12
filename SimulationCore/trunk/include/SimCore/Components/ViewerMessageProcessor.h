@@ -106,9 +106,9 @@ namespace SimCore
              * @return mPlayer
              */
             SimCore::Actors::StealthActor* GetPlayerActor() { return mPlayer.get(); }
-            
+
             virtual void OnAddedToGM();
-            
+
             /**
              * Method used to determine if the actor referenced by a player entered world message
              * could be considered the "main" player.  The default implementation makes sure
@@ -118,14 +118,14 @@ namespace SimCore
             virtual bool AcceptPlayer(dtGame::GameActorProxy& playerProxy);
 
             virtual void ProcessMessage(const dtGame::Message &msg);
-         
+
             /// @return the name of the time master as was retrieved from a time value message.
             const std::string& GetTimeMasterName() const { return mTimeMasterName; }
-            
+
             const std::string& GetTimeSyncSenderName() const { return mTimeSyncSenderName.ToString(); }
-            
+
             unsigned long GetTimeSyncLatency() const { return mTimeSyncLatency; } 
-            
+
          protected:
             /// updates the GM time based on the time 
             void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);

@@ -302,7 +302,8 @@ namespace SimCore
          osg::MatrixTransform *viewABS = new osg::MatrixTransform;
          viewABS->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
          viewABS->setMatrix(osg::Matrix::identity());
-         viewABS->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+         viewABS->getOrCreateStateSet()->setRenderBinDetails(
+            SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD-1, "RenderBin");
 
          // Setup hierarchy
          // root <- proj <- view <- lens

@@ -85,9 +85,7 @@ int main(int argc, char *argv[])
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
-   dtCore::SetDataFilePathList(".:" +
-                               dtCore::GetDeltaDataPathList() + ":" +
-                               "source/StealthViewer") ;
+   //dtCore::SetDataFilePathList(".:" + dtCore::GetDeltaDataPathList());
    int result;
    QApplication app(argc, argv);
 

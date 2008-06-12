@@ -77,6 +77,8 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
+#else
+#include <dtPhysics/physicscomponent.h>
 #endif
 
 using dtCore::RefPtr;
@@ -346,13 +348,16 @@ namespace StealthGM
 #ifdef AGEIA_PHYSICS
       dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent = new dtAgeiaPhysX::NxAgeiaWorldComponent();
       gameManager.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+#else
+      gameManager.AddComponent(*new dtPhysics::PhysicsComponent(dtPhysics::PhysicsComponent::BULLET_ENGINE, false), 
+               dtGame::GameManager::ComponentPriority::NORMAL);
 #endif
       //mStealth->SetName("Stealth");
       //mStealth->SetTransform(stealthStart);
       //gameManager.AddActor(mStealth->GetGameActorProxy(), false, false);
       //gameManager.PublishActor(mStealth->GetGameActorProxy());
       //mStealth->AddChild(gameManager.GetApplication().GetCamera());
-   
+
       // The stealth processor component is now obsolete since the updates to the AAR ignore actor behavior.
       RefPtr<StealthMessageProcessor> stealthProcessor = new StealthMessageProcessor;
       gameManager.AddComponent(*stealthProcessor, 

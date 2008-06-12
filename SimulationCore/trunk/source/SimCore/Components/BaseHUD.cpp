@@ -123,8 +123,7 @@ namespace SimCore
          // Initialize CEGUI
          mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
 
-         osg::StateSet* ss = mGUI->GetOSGNode()->getOrCreateStateSet();
-         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "DepthSortedBin");
+         mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
 
          std::string path = dtCore::FindFileInPathList(mSchemeFile);
          if(path.empty())

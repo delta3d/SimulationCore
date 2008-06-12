@@ -40,6 +40,8 @@
 
 #include <osgSim/DOFTransform>
 
+#include <deque>
+
 // High Explosives (HE) use: Carleton Damage Model
 // Improved Conventional Munition (ICM) use: Cookie Cutter Model
 
@@ -721,6 +723,38 @@ namespace SimCore
             const SimCore::Actors::MunitionEffectsInfoActor* GetMunitionEffectsInfo(
                const SimCore::Actors::MunitionTypeActor& munition, const std::string& defaultMunitionName = "" ) const;
 
+            // Removes all entries from the queue of created munitions. Usually happens on map unload or restart.
+            void ClearCreatedMunitionsQueue();
+
+            // Walks through the munitions queue and cleans up unique id's that are no longer valid. Called 
+            // periodically so that our count is more accurate. This method will also make sure 
+            // that there are number of current active munitions is less than the Maximum allowed
+            // (can be above if the maximum was changed recently).
+            void CleanupCreatedMunitionsQueue();
+
+            // Goes through the created munitions queue and removes the old munition from the 
+            // list. This is called when we get a new munition and we are already at our cap.
+            // Note, as a byproduct of this call. A REAL munition actor will get deleted from
+            // the game manager. This is a huge cost, but is necessary to keep from running out of memory.
+            void RemoveOldestMunitionFromQueue();
+
+            // Adds a newly created munition id to the end of our created munitions queue. If there 
+            // are too many in our queue, it calls CleanupCreatedMunitionsQueue().
+            void AddMunitionToCreatedMunitionsQueue(const dtCore::UniqueId &uniqueId);
+
+            // Returns the maximum number of munitions that are allowed to be active. This is a performance 
+            // setting. The Munitions Component will track created munitions. When it needs to create a new 
+            // munition, it will first check that it is not over this count. If there are too many, then it 
+            // will remove the oldest munitions. 
+            int GetMaximumActiveMunitions() {return mMaximumActiveMunitions; }
+
+            // Returns the maximum number of munitions that are allowed to be active. This is a performance 
+            // setting. The Munitions Component will track created munitions. When it needs to create a new 
+            // munition, it will first check that it is not over this count. If there are too many, then it 
+            // will remove the oldest munitions. Note. If you set a new max that is lower than the current 
+            // number of munitions, it should immediately scale smaller.  
+            void SetMaximumActiveMunitions(int newMax);
+
          protected:
 
             // Destructor
@@ -777,6 +811,13 @@ namespace SimCore
             // entities that identify themselves as firing objects.
             // Effects include gun flash, fire sounds and tracers.
             dtCore::RefPtr<WeaponEffectsManager> mEffectsManager;
+
+            // A queue of all the munitions that the component has created. This is 
+            // useful for when we get in trouble with particles and such. If we have too 
+            // many munitions, then we can simply kill off the oldest. 
+            std::deque<dtCore::UniqueId> mCreatedMunitionsQueue;
+            int mMaximumActiveMunitions;
+
       };
 
    }
