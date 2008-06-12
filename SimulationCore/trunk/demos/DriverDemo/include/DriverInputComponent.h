@@ -230,7 +230,7 @@ namespace DriverDemo
          // Hack - Curttest code to create a test target actor
          //void CreateTarget();
    
-         void DriverInputComponent::SetViewMode();
+         void SetViewMode();
 
       private:
    
