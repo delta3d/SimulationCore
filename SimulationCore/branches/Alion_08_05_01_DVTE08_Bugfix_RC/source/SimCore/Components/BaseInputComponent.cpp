@@ -225,19 +225,21 @@ namespace SimCore
                break;
             }
 
-         case ']':
-         case '}':  
-         //case osgGA::GUIEventAdapter::KEY_Page_Up:
-            {
-               SetEntityMagnification(mEntityMagnification * 2.0f);
-               break;
-            }
-
-         case '[':
-         case '{':  
+         // Shrink the entities (helps visibility of things far away)
+         case ',':  
+         case '<':
          //case osgGA::GUIEventAdapter::KEY_Page_Down:
             {
                SetEntityMagnification(mEntityMagnification / 2.0f);
+               break;
+            }
+
+         // Enlarge the entities (helps visibility of things far away)
+         case '.':  
+         case '>':
+         //case osgGA::GUIEventAdapter::KEY_Page_Up:
+            {
+               SetEntityMagnification(mEntityMagnification * 2.0f);
                break;
             }
 
