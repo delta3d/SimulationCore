@@ -38,9 +38,9 @@
 
 namespace SimCore
 {
-   std::string SIMCORE_SVN_REVISION("666");
-   std::string SIMCORE_SVN_DATE("2008/06/13 12:25:55");
-   std::string SIMCORE_BUILD_DATE("2008/06/13 12:27:46");
+   std::string SIMCORE_SVN_REVISION("669");
+   std::string SIMCORE_SVN_DATE("2008/06/13 13:48:41");
+   std::string SIMCORE_BUILD_DATE("2008/06/13 13:48:20");
 }
 
 #endif
