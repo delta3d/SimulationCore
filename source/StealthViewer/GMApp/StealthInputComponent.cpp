@@ -481,6 +481,7 @@ namespace StealthGM
          }
          break;
    
+         /*
          case ',':
          {
             Cycle(false, true);
@@ -489,9 +490,10 @@ namespace StealthGM
    
          case '.':
          {
-            Cycle(true, true);
+            //Cycle(true, true);
          }
          break;
+         */
    
          case 'p':
          {
