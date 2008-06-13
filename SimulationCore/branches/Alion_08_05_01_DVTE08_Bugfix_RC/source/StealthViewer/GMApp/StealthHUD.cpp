@@ -274,19 +274,21 @@ namespace StealthGM
          Mouse Left Btn : Turn camera\n\
          Arrow Keys : Turn camera\n\
          +/- : Change camera speed\n\
+         </> : Shrink/Enlarge entities\n\
          L : Attach/Detach from entity\n\
          F2 : Toggle HUD display\n\
          Insert : Toggle statistics";
       }
       else
       {
+         // ,/. : Cycle between entities\n
          text = "\
          Mouse Right Btn : Move camera\n\
          W/A/S/D : Move camera\n\
          Mouse Left Btn : Turn camera\n\
          Arrow Keys : Turn camera\n\
          +/- : Change camera speed\n\
-         ,/. : Cycle between entities\n\
+         </> : Shrink/Enlarge entities\n\
          L : Toggle attachment to entity\n\
          I/O : Decrease/Increase time of day\n\
          1 : Set to IDLE state\n\
