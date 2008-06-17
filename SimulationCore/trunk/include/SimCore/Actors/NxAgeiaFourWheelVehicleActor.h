@@ -27,8 +27,8 @@
 #include <SimCore/Export.h>
 
 #include <NxAgeiaFourWheelVehiclePhysicsHelper.h>
-#include <SimCore/Actors/Platform.h>
-#include <SimCore/Actors/VehicleInterface.h>
+//#include <SimCore/Actors/Platform.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 namespace dtAudio
 {
@@ -40,13 +40,14 @@ namespace SimCore
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActor : public Platform, 
-                                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
-                                                       public VehicleInterface
+      /* This class extends BasePhysicsVehicle and has behavior specific to just the 4 wheeled 
+       * variety of vehicle. It provides for sounds, brakes, etc...
+       */
+      class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActor : public BasePhysicsVehicleActor
       {
          public:
             /// Constructor
-            NxAgeiaFourWheelVehicleActor (PlatformActorProxy &proxy);
+            NxAgeiaFourWheelVehicleActor (BasePhysicsVehicleActorProxy &proxy);
 
          protected:
             /// Destructor
@@ -54,61 +55,52 @@ namespace SimCore
          
          // INHERITED PUBLIC
          public:
-            /**
-            * This method is an invokable called when an object is local and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
+            //virtual void TickLocal(const dtGame::Message &tickMessage);
 
-            /**
-            * This method is an invokable called when an object is remote and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
+            //virtual void TickRemote(const dtGame::Message &tickMessage);
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate();
+            //virtual void AgeiaPrePhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate();
+            //virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
-               NxActor& ourSelf, NxActor& whatWeHit);
+            //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            //   NxActor& ourSelf, NxActor& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
-               const NxActor& whatWeHit){}
+            //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+            //   const NxActor& whatWeHit){}
 
             /**
             * Handle forces received from the environment, such as detonations and impacts
             */
-            virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
+            //virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
 
          // PUBLIC CLASSES
          public:
             /// Utility Methods
-            virtual float GetMPH();
+            //virtual float GetMPH();
             float GetBrakeTorque();
 
-            /// Reset to starting position, good for when u crash ;p
-            void ResetVehicle();
+            /// Reset to starting position In additional to base behavior, it turns off sounds.
+            virtual void ResetVehicle();
 
             /// Turns it up and moves up
-            void RepositionVehicle(float deltaTime);
+            //void RepositionVehicle(float deltaTime);
 
-            virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
+            //virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
             enum WHEEL_NAMES {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT};
             
-            dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+            dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper() {
+               return static_cast<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
             void SetSound_brake_squeal_amount( float value)       {SOUND_BRAKE_SQUEAL_AMOUNT=value;}    
             void SetSound_gear_change_low( float value)           {SOUND_GEAR_CHANGE_LOW=value;}
@@ -120,8 +112,6 @@ namespace SimCore
             void SetSound_effect_acceleration(const std::string& value){SOUND_EFFECT_ACCELERATION=value;} 
             void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
             void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
-            virtual void SetHasDriver( bool hasDriver )           { mHasDriver = hasDriver; }
-            void SetPerformAboveGroundSafetyCheck( bool enable )  { mPerformAboveGroundSafetyCheck = enable; }
                
             float  GetSound_brake_squeal_amount()   {return SOUND_BRAKE_SQUEAL_AMOUNT;}    
             float  GetSound_gear_change_low()       {return SOUND_GEAR_CHANGE_LOW;}
@@ -132,8 +122,24 @@ namespace SimCore
             const std::string& GetSound_effect_brake()    {return SOUND_EFFECT_BRAKE;}        
             const std::string& GetSound_effect_acceleration(){return SOUND_EFFECT_ACCELERATION;} 
             const std::string& GetSound_effect_collision_hit(){return SOUND_EFFECT_COLLISION_HIT;}
-            virtual bool GetHasDriver() const       { return mHasDriver; }
-            bool GetPerformAboveGroundSafetyCheck() const  { return mPerformAboveGroundSafetyCheck;}
+
+
+            /// Turns it up and moves up
+            virtual void RepositionVehicle(float deltaTime);
+
+         protected: 
+            /// Angles/ steering moving etc done here. Of the updates, this is called first.
+            /// This does nothing by default.
+            virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
+
+            /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
+            /// By default, this does nothing.
+            virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
+
+            /// called from tick. Do your sounds. Of the updates, this is called third.
+            /// Does nothing by default.
+            virtual void UpdateSoundEffects(float deltaTime);
+
 
          // Private vars
          private:
@@ -144,7 +150,7 @@ namespace SimCore
             GearSoundLevel    mLastGearChange;     /// So we know when to play a sound.
             ///////////////////////////////////////////////////
 
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper> mPhysicsHelper;
+            //dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper> mFourWheelPhysicsHelper;
 
             ///////////////////////////////////////////////////
             // Sound effects
@@ -173,64 +179,9 @@ namespace SimCore
             // vehicles portal for the actor
             dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
 
-            ///////////////////////////////////////////////////
-            // sending out dead reckoning
-            float mTimeForSendingDeadReckoningInfoOut;
-            float mTimesASecondYouCanSendOutAnUpdate;
-
-            ///////////////////////////////////////////////////
-            // is there currently a driver inside?
-            bool mHasDriver;
-
-            ///////////////////////////////////////////////////
-            // Was terrain currently found? Used for startup checks.
-            bool mHasFoundTerrain;
-
-            ///////////////////////////////////////////////////
-            // Should this vehicle send a full actor update when asked?
-            bool mNotifyFullUpdate;
-            bool mNotifyPartialUpdate;
-
-            /// Should the physics coll. det. fail, this will keep the vehicle above ground
-            /// at the cost of some runtime performance.
-            bool mPerformAboveGroundSafetyCheck;
-
-            /// Called internally to update the dofs for the wheels to match ageias wheel counterpoints
-            void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
-
-            /// Angles/ steering moving etc done here.
-            void UpdateVehicleTorquesAndAngles(float deltaTime);
-
-            /// called from tick.
-            void UpdateSoundEffects(float deltaTime);
-
-            /// called from tick, does local dead reckon, determines to send out updates.
-            void UpdateDeadReckoning(float deltaTime);
-
-            /// utility function for the UpdatedeadReckoning function
-            float GetPercentageChangeDifference(float startValue, float newValue);
-
-            /// Check if the supplied NxActor is below ground, if so, move it above ground
-            void KeepAboveGround( NxActor* physicsObject );
-
-            /**
-             * Get the point on the PhysX terrain at the specified location.
-             * @param location Location in world space where a ray should be used
-             *        to find a PhysX terrain point.
-             * @param outPoint Point on the terrain where a ray has detected terrain.
-             * @return TRUE if terrain was detected.
-             */
-            bool GetTerrainPoint( const osg::Vec3& location, osg::Vec3& outPoint );
-
-            /**
-             * Checks for PhysX terrain and will turn on gravity if it is found.
-             * @return TRUE if terrain is found.
-             */
-            bool IsTerrainPresent();
-
       };
 
-      class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActorProxy : public PlatformActorProxy
+      class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActorProxy : public BasePhysicsVehicleActorProxy
       {
          public:
             NxAgeiaFourWheelVehicleActorProxy();
