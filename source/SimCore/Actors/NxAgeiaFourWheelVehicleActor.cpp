@@ -52,23 +52,20 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////////////
-      NxAgeiaFourWheelVehicleActor ::NxAgeiaFourWheelVehicleActor(PlatformActorProxy &proxy) 
-         : Platform(proxy)
+      NxAgeiaFourWheelVehicleActor ::NxAgeiaFourWheelVehicleActor(BasePhysicsVehicleActorProxy &proxy) 
+         : BasePhysicsVehicleActor(proxy)
       , mLastGearChange(FIRST_GEAR)
       , SOUND_BRAKE_SQUEAL_AMOUNT(0.0f)     
       , SOUND_GEAR_CHANGE_LOW(0.0f)         
       , SOUND_GEAR_CHANGE_MEDIUM(0.0f)      
       , SOUND_GEAR_CHANGE_HIGH(0.0f)        
-      , mHasDriver(false)
-      , mHasFoundTerrain(false)
-      , mNotifyFullUpdate(true)
-      , mNotifyPartialUpdate(true)
-      , mPerformAboveGroundSafetyCheck(true)
       {
-         mTimeForSendingDeadReckoningInfoOut = 0.0f;
-         mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
-         mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper(proxy);
-         mPhysicsHelper->SetBaseInterfaceClass(this);
+         SetTimeForSendingDeadReckoningInfoOut(0.0f);
+         SetTimesASecondYouCanSendOutAnUpdate(3.0f);
+         dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper *helper = 
+            new dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper(proxy);
+         helper->SetBaseInterfaceClass(this);
+         SetPhysicsHelper(helper);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -112,8 +109,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::OnEnteredWorld()
       {
-         Platform::OnEnteredWorld();
-
          if(SOUND_EFFECT_IGNITION != "")
          {
             mSndIgnition       = dtAudio::AudioManager::GetInstance().NewSound();
@@ -169,13 +164,13 @@ namespace SimCore
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
 
-         GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,1.1));
-         GetPhysicsHelper()->CreateVehicle(ourTransform, GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel, !IsRemote());
-         GetPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
+         GetFourWheelPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,1.1));
+         GetFourWheelPhysicsHelper()->CreateVehicle(ourTransform, GetNodeCollector()->GetDOFTransform("dof_chassis"), Wheel, !IsRemote());
+         GetFourWheelPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
 
          if(!IsRemote())
          {
-            GetPhysicsHelper()->TurnObjectsGravityOff("Default");
+            GetFourWheelPhysicsHelper()->TurnObjectsGravityOff("Default");
 
             GetGameActorProxy().GetGameManager()->CreateActor(
                *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
@@ -186,106 +181,7 @@ namespace SimCore
             GetGameActorProxy().GetGameManager()->AddActor(*mVehiclesPortal.get(), false, true);
          }
 
-         GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
-
-         dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
-
-         if(IsRemote()) 
-         {
-            GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-            GetPhysicsHelper()->SetObjectAsKinematic();
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool NxAgeiaFourWheelVehicleActor::IsTerrainPresent()
-      {
-         // DEBUG: std::cout << "Terrain loaded." << std::endl;
-
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
-         if( physicsObject == NULL )
-         {
-            // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
-            return false;
-         }
-
-         // Check to see if we are currently up under the earth, if so, snap them back up.
-         osg::Vec3 terrainPoint;
-         NxVec3 pos = physicsObject->getGlobalPosition();
-         osg::Vec3 location( pos.x, pos.y, pos.z );
-
-         // DEBUG: std::cout << "\tAttempting detection at [" << location << "]...";
-
-         // If a point was detected on the terrain...
-         bool terrainDetected = GetTerrainPoint( location, terrainPoint );
-         if( terrainDetected )
-         {
-            // DEBUG: std::cout << "DETECTED!" << std::endl;
-
-            // ...and snap just above that point.
-            physicsObject->setGlobalPosition(
-               NxVec3( pos.x, pos.y, terrainPoint.z() + 5.0f ) );
-
-            // And turn gravity on if it is off...
-            if( physicsObject->readBodyFlag(NX_BF_DISABLE_GRAVITY) )
-            {
-               // DEBUG: std::cout << "\t\tTurning vehicle gravity ON.\n" << std::endl;
-
-               GetPhysicsHelper()->TurnObjectsGravityOn();
-            }
-         }
-         // DEBUG: 
-         /*else
-         {
-            std::cout << "NOT detected :(\n" << std::endl;
-         }*/
-
-         return terrainDetected;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
-      {
-         GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::TickLocal(const dtGame::Message &tickMessage)
-      {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
-         if(physicsObject == NULL)
-         {
-            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
-            return;
-         }
-
-         if(physicsObject->isSleeping())   physicsObject->wakeUp(1e30);
-
-         // Check if terrain is available. (For startup)
-         if( ! mHasFoundTerrain )
-         {
-            // Terrain has not been found. Check for it again.
-            mHasFoundTerrain = IsTerrainPresent();
-         }
-         // Check to see if we are currently up under the earth, if so, snap them back up.
-         else if( GetPerformAboveGroundSafetyCheck() == true)
-         {
-            KeepAboveGround(physicsObject);
-         }
-
-         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-         //                                          Update everything else                                      //
-         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-         float elapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-         UpdateVehicleTorquesAndAngles(elapsedTime);
-         UpdateRotationDOFS(elapsedTime, true);
-         UpdateSoundEffects(elapsedTime);
-         UpdateDeadReckoning(elapsedTime);
-
-         // Allow the base class to handle expected base functionality.
-         // NOTE: This is called last since the vehicle's position will be final.
-         //       The base TickLocal currently queries the vehicle's position and orientation.
-         Platform::TickLocal(tickMessage);
+         BasePhysicsVehicleActor::OnEnteredWorld();
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -345,15 +241,15 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if(GetMPH() < GetPhysicsHelper()->GetVehicleMaxMPH())
+            else if(GetMPH() < GetFourWheelPhysicsHelper()->GetVehicleMaxMPH())
             {
                if(mLastGearChange != FOURTH_GEAR  && mSndAcceleration != NULL)
                {
                   mSndAcceleration->Play();
                }
                mLastGearChange = FOURTH_GEAR;
-               dis = GetPhysicsHelper()->GetVehicleMaxMPH() - GetMPH();
-               dif = GetPhysicsHelper()->GetVehicleMaxMPH() - GetSound_gear_change_high();
+               dis = GetFourWheelPhysicsHelper()->GetVehicleMaxMPH() - GetMPH();
+               dif = GetFourWheelPhysicsHelper()->GetVehicleMaxMPH() - GetSound_gear_change_high();
                tick = (maxpitchBend - minpitchBend) / dif;               
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
@@ -370,180 +266,12 @@ namespace SimCore
             mSndVehicleIdleLoop->SetPitch(1.0f + (-GetMPH() * .005));
          }
          ////////////////////////////////////////////////////////////
-      }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
-      {
-         return std::abs(op1.x() - op2.x()) < epsilon
-            && std::abs(op1.y() - op2.y()) < epsilon
-            && std::abs(op1.z() - op2.z()) < epsilon;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::UpdateDeadReckoning(float deltaTime)
-      {
-         if(mTimesASecondYouCanSendOutAnUpdate == 0)
-         {
-            LOG_ERROR("Not sending out dead reckoning, the mTimesASecondYouCanSendOutAnUpdate is set to 0");
-            return;
-         }
-
-         mTimeForSendingDeadReckoningInfoOut += deltaTime;
-
-         if(mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate)
-         {
-            mTimeForSendingDeadReckoningInfoOut = 0.0f;
-         }
-         else
-            return;
-
-         float amountChange = 0.5f;
-         float glmat[16];
-         NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
-
-         if(physxObj == NULL)
-         {
-            LOG_ERROR("No physics object on the hmmwv, no doing dead reckoning");
-            return;
-         }
-
-         NxMat33 rotation = physxObj->getGlobalOrientation();
-         rotation.getColumnMajorStride4(glmat);
-         glmat[12] = physxObj->getGlobalPosition()[0];
-         glmat[13] = physxObj->getGlobalPosition()[1];
-         glmat[14] = physxObj->getGlobalPosition()[2];
-         glmat[15] = 1.0f;
-         //float zoffset = 0.0;
-         float zoffset = 1.1;
-         osg::Matrix currentMatrix(glmat);
-         osg::Vec3 globalOrientation;
-         dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
-         osg::Vec3 physTranslationVec;
-         physTranslationVec.set(physxObj->getGlobalPosition().x, physxObj->getGlobalPosition().y, physxObj->getGlobalPosition().z + zoffset);
-
-         // A full update may not be required. Prevent any further network updates.
-         // Let the following code determine if this vehicle should be flagged
-         // for a full actor update.
-         mNotifyFullUpdate = false;
-         mNotifyPartialUpdate = false;
-
-         const osg::Vec3 &drTranslationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
-         const osg::Vec3 &drOrientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
-
-         bool changedTrans = CompareVectors(physTranslationVec, drTranslationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(physTranslationVec, translationVec, 3, amountChange);
-         bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, drOrientationVec, 3, 3.0f);
-
-         const osg::Vec3 &drAngularVelocity = GetDeadReckoningHelper().GetAngularVelocityVector();
-         const osg::Vec3 &drLinearVelocity = GetDeadReckoningHelper().GetVelocityVector();
-
-         const osg::Vec3 physAngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
-         const osg::Vec3 physLinearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
-
-         float linearVelocityDiff = (drLinearVelocity - physLinearVelocity).length();
-         bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
-         bool changedLinearVelocity = linearVelocityDiff > 0.2 || (physVelocityNearZero && drLinearVelocity.length() > 0.1 );
-
-         float angularVelocityDiff = (drAngularVelocity - physAngularVelocity).length();
-         bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
-         bool changedAngularVelocity = angularVelocityDiff > 0.2 || (physAngularVelocityNearZero && drAngularVelocity.length() > 0.1 );
-
-         if( changedTrans || changedOrient || changedLinearVelocity || changedAngularVelocity)
-         {
-            SetLastKnownTranslation(physTranslationVec);
-            SetLastKnownRotation(globalOrientation);
-
-            if( physVelocityNearZero )
-            {
-               SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-            }
-            else
-            {
-               SetVelocityVector(physLinearVelocity);
-            }
-
-            if ( physAngularVelocityNearZero )
-            {
-               SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-            }
-            else
-            {
-               SetAngularVelocityVector(physAngularVelocity);
-            }
-
-            // do not send the update message here but rather flag this vehicle
-            // to send the update via the base class though ShouldForceUpdate.
-            mNotifyFullUpdate = true; 
-         }
-         else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
-         {
-            mNotifyPartialUpdate = true;
-            // DEBUG: std::cout << "Articulation Update\n" << std::endl;
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool NxAgeiaFourWheelVehicleActor::ShouldForceUpdate(
-         const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
-      {
-         // UpdateDeadReckoning will have already determined if a full update is necessary.
-         fullUpdate = mNotifyFullUpdate;
-
-         // A full update or a dirty articulation will allow for at least a partial update.
-         bool forceUpdate = fullUpdate 
-            || mNotifyPartialUpdate;
-
-         return forceUpdate;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      float NxAgeiaFourWheelVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
-      {
-         if(std::abs(startValue) < 0.01f && std::abs(newValue) < 0.01f)
-            return 1.0;
-
-         if(startValue == 0)
-            startValue = 1.0f;
-
-         return std::abs((((newValue - startValue) / startValue) * 100.0f));
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::TickRemote(const dtGame::Message &tickMessage)
-      {
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-         UpdateSoundEffects(ElapsedTime);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::AgeiaPrePhysicsUpdate()
-      {
-         osg::Matrix rot = GetMatrixNode()->getMatrix();
-         
-
-         NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
-         if(toFillIn != NULL)
-         {
-            toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
-            toFillIn->setGlobalOrientation(
-               NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
-                        NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
-                        NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
-         }
-
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::AgeiaPostPhysicsUpdate(){}
-      ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& 
-         contactReport, NxActor& ourSelf, NxActor& whatWeHit)
-      {
-         //printf("VehicleCollision\n");
+         BasePhysicsVehicleActor::UpdateSoundEffects(deltaTime);
       }
 
 
-      ///////////////////////////////////////////////////////////////////////////////////
+     ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
       {
          osg::ref_ptr<osgSim::DOFTransform> Wheel[4];
@@ -568,7 +296,7 @@ namespace SimCore
                   if(steeringWheel != NULL)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
-                     HPR[0] = GetPhysicsHelper()->GetWheelShape(1)->getSteerAngle() * 4;
+                     HPR[0] = GetFourWheelPhysicsHelper()->GetWheelShape(1)->getSteerAngle() * 4;
                      steeringWheel->setCurrentHPR(HPR);
                   }
                }
@@ -580,15 +308,15 @@ namespace SimCore
             for(int i = 0 ; i < 4; i++)
             {
                osg::Vec3 HPR;
-               HPR[0] = GetPhysicsHelper()->GetWheelShape(i)->getSteerAngle();
+               HPR[0] = GetFourWheelPhysicsHelper()->GetWheelShape(i)->getSteerAngle();
                if(i % 2)
                {
-                  HPR[1] = GetPhysicsHelper()->GetAxleRotationOne();
+                  HPR[1] = GetFourWheelPhysicsHelper()->GetAxleRotationOne();
 
                }
                else
                {
-                  HPR[1] = GetPhysicsHelper()->GetAxleRotationTwo();
+                  HPR[1] = GetFourWheelPhysicsHelper()->GetAxleRotationTwo();
                }
                HPR[2] = 0.0f;
                Wheel[i]->setCurrentHPR(HPR);
@@ -599,7 +327,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::ResetVehicle()
       {
-         GetPhysicsHelper()->ResetVehicle();
+         BasePhysicsVehicleActor::ResetVehicle();
          
          if(mSndIgnition != NULL)
          {
@@ -635,11 +363,11 @@ namespace SimCore
          {
             if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
-               GetPhysicsHelper()->ApplyAccel(GetMPH());
+               GetFourWheelPhysicsHelper()->ApplyAccel(GetMPH());
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
-               GetPhysicsHelper()->ApplyHandBrake(GetMPH());
+               GetFourWheelPhysicsHelper()->ApplyHandBrake(GetMPH());
             }
             else if (!keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
@@ -648,16 +376,16 @@ namespace SimCore
 
             if(keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
-               GetPhysicsHelper()->ApplyBrake(deltaTime);
+               GetFourWheelPhysicsHelper()->ApplyBrake(deltaTime);
             }
 
             if (keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
             {
-               GetPhysicsHelper()->SteerLeft(deltaTime);
+               GetFourWheelPhysicsHelper()->SteerLeft(deltaTime);
             }
             else if(keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
             {
-               GetPhysicsHelper()->SteerRight(deltaTime);
+               GetFourWheelPhysicsHelper()->SteerRight(deltaTime);
             }
             else
             {
@@ -668,102 +396,25 @@ namespace SimCore
          {
             steeredThisFrame = false;
             accelOrBrakePressedThisFrame = true;
-            GetPhysicsHelper()->ApplyBrake(deltaTime);
+            GetFourWheelPhysicsHelper()->ApplyBrake(deltaTime);
          }
-         GetPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      float NxAgeiaFourWheelVehicleActor::GetMPH()
-      {
-         return GetVelocityVector().length() * 2.236936291;
-         //return GetPhysicsHelper()->GetMPH();
-         return 0.0f;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      float NxAgeiaFourWheelVehicleActor::GetBrakeTorque()
-      {
-      return GetPhysicsHelper()->GetBrakeTorque();
+         GetFourWheelPhysicsHelper()->UpdateVehicle(deltaTime, accelOrBrakePressedThisFrame, steeredThisFrame, GetMPH());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::RepositionVehicle(float deltaTime)
       {
-         GetPhysicsHelper()->RepositionVehicle(deltaTime);
+         // Note - this should be refactored. There should be a base physics vehicle HELPER. 
+         // See nxageiaFourWheelActor::RepositionVehicle() for more info.
+
+         BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
+         GetFourWheelPhysicsHelper()->RepositionVehicle(deltaTime);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NxAgeiaFourWheelVehicleActor::KeepAboveGround( NxActor* physicsObject )
+      float NxAgeiaFourWheelVehicleActor::GetBrakeTorque()
       {
-         bool underearth = false;
-         std::vector<dtDAL::ActorProxy*> toFill;
-         GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
-         dtDAL::ActorProxy* terrainNode = NULL;
-         if(!toFill.empty())
-            terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-
-         NxVec3 position = physicsObject->getGlobalPosition();
-
-         osg::Vec3 hp;
-         dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
-         iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
-         iSector->SetQueryRoot(terrainNode->GetActor());
-         dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-         osg::Vec3 pos( position.x, position.y, position.z );
-         osg::Vec3 endPos = pos;
-         pos[2] -= 100.0f; 
-         endPos[2] += 100.0f;
-         float offsettodo = 5.0f;
-         SingleISector.SetSectorAsLineSegment(pos, endPos);
-         if( iSector->Update(osg::Vec3(0,0,0), true) )
-         {
-            if( SingleISector.GetNumberOfHits() > 0 ) 
-            {
-               SingleISector.GetHitPoint(hp);
-
-               if(position[2] + offsettodo < hp[2])
-               {
-                  underearth = true;
-               }
-            }
-         }
-
-         if(underearth)
-         {
-            physicsObject->setGlobalPosition(
-               NxVec3(position[0], position[1], hp[2] + offsettodo));
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool NxAgeiaFourWheelVehicleActor::GetTerrainPoint(
-         const osg::Vec3& location, osg::Vec3& outPoint )
-      {
-         NxActor* physxObject = GetPhysicsHelper()->GetPhysXObject();
-         if( physxObject == NULL )
-         {
-            return false;
-         }
-
-         NxRay ray;
-         ray.orig = NxVec3(location.x(),location.y(),location.z());
-         ray.orig.z += 10000.0f;
-         ray.dir = NxVec3(0.0f,0.0f,-1.0f);
-
-         // Create a raycast report that should ignore this vehicle.
-         dtAgeiaPhysX::SimpleRaycastReport report( this );
-         static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN);
-
-         NxU32 numHits = physxObject->getScene().raycastAllShapes(
-            ray, report, NX_ALL_SHAPES, GROUPS_FLAGS );
-
-         if( numHits > 0 && report.HasHit() )
-         {
-            report.GetClosestHit( outPoint );
-            return true;
-         } 
-         return false;
+         return GetFourWheelPhysicsHelper()->GetBrakeTorque();
       }
 
 
@@ -781,13 +432,9 @@ namespace SimCore
          const std::string& VEH_GROUP   = "Vehicle Property Values";
          const std::string& SOUND_GROUP = "Sound Property Values";
 
-         PlatformActorProxy::BuildPropertyMap();
+         BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
-         std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-         actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-         for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
-            AddProperty(toFillIn[i].get());
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 
@@ -839,12 +486,6 @@ namespace SimCore
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
-         AddProperty(new dtDAL::BooleanActorProperty("PERFORM_ABOVE_GROUND_SAFETY_CHECK",
-            "Perform above ground safety check",
-            dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor::SetPerformAboveGroundSafetyCheck),
-            dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor::GetPerformAboveGroundSafetyCheck),
-            "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
-            VEH_GROUP));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -866,11 +507,7 @@ namespace SimCore
       {
          RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
-         if (IsRemote())
-            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
-            dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
-
-         PlatformActorProxy::OnEnteredWorld();
+         BasePhysicsVehicleActorProxy::OnEnteredWorld();
       }
 
    } // namespace 
