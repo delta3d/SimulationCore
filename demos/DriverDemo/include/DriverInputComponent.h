@@ -62,8 +62,9 @@ namespace SimCore
    {
       class HumanWithPhysicsActor;
       class HumanWithPhysicsActorProxy;
-      class NxAgeiaFourWheelVehicleActor;
-      class NxAgeiaFourWheelVehicleActorProxy;
+      class BasePhysicsVehicleActor;
+      //class NxAgeiaFourWheelVehicleActor;
+      //class NxAgeiaFourWheelVehicleActorProxy;
       class InteriorActor;
       class VehicleInterface;
    }
@@ -79,6 +80,15 @@ namespace DriverDemo
    
    ////////////////////////////////////////////////////////////////////////////////
    // INPUT COMPONENT CODE
+   //
+   // NOTE - The camera sits at the bottom of a VERY large hierarchy of DoF's. Looks like this: 
+   //     Vehicle (center of vehicle)
+   //       - Ring Mount (often swivels left/right)
+   //           - mDoFWeapon (pivots about weapon pivot point)
+   //               - mWeapon (3D model of weapon)
+   //                   - mWeaponEyePoint (offset for human eyepoint)
+   //                       - StealthActor (yay!  almost there)
+   //                           - camera 
    ////////////////////////////////////////////////////////////////////////////////
    class DRIVER_DEMO_EXPORT DriverInputComponent : public SimCore::Components::BaseInputComponent
    {
@@ -125,14 +135,14 @@ namespace DriverDemo
          //
          // NOTE: The relevant simulation mode must be set prior to calling this function.
          //       This function will position the player based on the simulation mode.
-         void AttachToVehicle( SimCore::Actors::Platform& vehicle );
+         void AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
    
          // Detach the player from the current vehicle to which he is attached.
          // This function will enable the walk motion model that controls the player.
          void DetachFromVehicle();
    
          // sets the mVehicle, used through gameappcomponent
-         void SetCurrentVehicle( SimCore::Actors::Platform& vehicle) {mVehicle = &vehicle;}
+         void SetCurrentVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle) {mVehicle = &vehicle;}
    
          // This function is called by Attach to vehicle when the
          // application is in GUNNER mode.
@@ -143,10 +153,10 @@ namespace DriverDemo
          // @return TRUE if attach was successful
          //
          // NOTE: This is automatically called by AttachToVehicle.
-         bool AttachToRingmount( SimCore::Actors::Platform& vehicle );
+         bool AttachToRingmount( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
          
          void SetPlayer( SimCore::Actors::StealthActor* actor );
-         SimCore::Actors::Platform* GetVehicle();
+         //SimCore::Actors::BasePhysicsVehicleActor* GetVehicle();
    
          // Stores the default camera perspective to be set
          // when the camera is exiting tool perspectives
@@ -220,7 +230,7 @@ namespace DriverDemo
          // Capture the DOFs of the specified vehicle.
          // @param vehicle The vehicle from which to obtain the DOFs needed by the
          //        gunner and driver simulators
-         void GetVehicleDOFs( SimCore::Actors::Platform& vehicle );
+         void GetVehicleDOFs( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
    
          void EnableMotionModels( bool enable );
    
@@ -267,8 +277,8 @@ namespace DriverDemo
          // Simulator specific objects
          dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActorProxy> mPlayerAvatarProxy;
          dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActor> mPlayerAvatar;
-         dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
-         dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> mVehicleProxy;
+         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
+         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mVehicleProxy;
          // ??? dtCore::RefPtr<SimCore::Actors::InteriorActor> mInterior;
          dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;                    // current weapon
          std::vector<dtCore::RefPtr<SimCore::Actors::WeaponActor> > mWeaponList;  // all weapons
@@ -281,9 +291,9 @@ namespace DriverDemo
          osg::observer_ptr<osgSim::DOFTransform> mDOFSeat;
          osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
          osg::observer_ptr<osgSim::DOFTransform> mDOFWeapon;
-         osg::observer_ptr<osgSim::DOFTransform> mDOFWeaponStem;
-         float mDOFWeaponStemOffset; // offset up/down of the weapon mount
-         float mDOFWeaponStemOffsetLimit; // the maximum up/down displacement of the weapon mount (in meters)
+         //osg::observer_ptr<osgSim::DOFTransform> mDOFWeaponStem;
+         //float mDOFWeaponStemOffset; // offset up/down of the weapon mount
+         //float mDOFWeaponStemOffsetLimit; // the maximum up/down displacement of the weapon mount (in meters)
    
          // The original orientations of the above DOFs prior to modification.
          // These will be used to reset the orientations of the DOFs when detaching

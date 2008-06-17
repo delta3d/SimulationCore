@@ -50,6 +50,7 @@
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 #include <SimCore/StealthMotionModel.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
@@ -85,7 +86,8 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
-#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/Actors/NECCBoatActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <dtDAL/project.h>
@@ -129,8 +131,8 @@ namespace DriverDemo
       DOF_NAME_RINGMOUNT_SEAT("dof_seat_gunner"),
       mIsConnected(false),
       mUsePhysicsDemoMode(false),
-      mDOFWeaponStemOffset(0.0f),
-      mDOFWeaponStemOffsetLimit(0.05f),
+      //mDOFWeaponStemOffset(0.0f),
+      //mDOFWeaponStemOffsetLimit(0.05f),
       mHorizontalFOV(60.0f),
       mVerticalFOV(60.0f),
       mNearClip(SimCore::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE),
@@ -232,22 +234,7 @@ namespace DriverDemo
          else if(!stealthProxy->IsRemote())
          {
             InitializePlayer( *stealthActor );
-            InitializeSounds( *stealthActor );
-   
-            /*DriverDemo::GameAppComponent* gameAppComponent;
-            GetGameManager()->GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
-            if(gameAppComponent != NULL)
-            {
-               // Initialize the vehicle...
-               SimCore::Actors::Platform* vehicle = GetVehicle();
-               if( vehicle != NULL )
-               {
-                  // THIS SHOULD PROBABLY NEVER HAPPEN. WE LOAD OUR VEHICLE DOWN BELOW WHEN MAP IS LOADED
-                  // DO WE REALLY NEED THIS????
-                  AttachToVehicle( *vehicle );
-               }
-            }*/
-            
+            InitializeSounds( *stealthActor );            
          }
       }
 
@@ -277,23 +264,17 @@ namespace DriverDemo
       else if(msgType == dtGame::MessageType::INFO_MAP_LOADED)
       {
          dtGame::GameManager &gameManager = *GetGameManager();
-   
-         SimCore::Actors::Platform* vehicle = GetVehicle();
-         
+          
          DriverDemo::GameAppComponent* gameAppComponent;
          gameManager.GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
-   
-         if(gameAppComponent != NULL && vehicle == NULL )
+         if(gameAppComponent != NULL)
          {
-            gameAppComponent->InitializeVehicle();
+            SimCore::Actors::BasePhysicsVehicleActor* vehicle = 
+               gameAppComponent->CreateNewVehicle("Driver_Vehicle");
            
-            vehicle = GetVehicle();
-         }
-   
-         if(vehicle != NULL)
-         {
-            if( ! vehicle->IsRemote() )
+            if(vehicle != NULL)
             {
+               // Setup our articulation helper for the vehicle
                dtCore::RefPtr<DriverArticulationHelper> articHelper = new DriverArticulationHelper;
                articHelper->SetEntity( vehicle );
                vehicle->SetArticulationHelper( articHelper.get() );
@@ -303,19 +284,23 @@ namespace DriverDemo
                   mRingMM->SetArticulationHelper( articHelper.get() );
                if( mWeaponMM.valid() )
                   mWeaponMM->SetArticulationHelper( articHelper.get() );
-            }
 
-            // CURT - I think this next line is completely useless and should be deleted now.
-            // HACK: Ensure the Commander motion model is enabled when initialized.
-            //EnableMotionModels( true );  
-   
-            SimCore::Components::MunitionsComponent* munitionsComp;
-            gameManager.GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-            if( munitionsComp != NULL )
-            {
-               munitionsComp->Register( *vehicle );
+               // Register a munitions component to the vehicle
+               SimCore::Components::MunitionsComponent* munitionsComp;
+               gameManager.GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+               if( munitionsComp != NULL )
+               {
+                  munitionsComp->Register( *vehicle );
+               }
+
+               // This method does all the cool stuff!!!
+               AttachToVehicle(*vehicle);
             }
-            AttachToVehicle(*vehicle);
+            else 
+            {
+               LOG_ERROR("NO vehicle was found after Map was loaded. Check prototypes to ensure vehicle exists.");
+            }
+   
          }
    
       }
@@ -410,14 +395,14 @@ namespace DriverDemo
          // Toggles motion models for the turret
          case osgGA::GUIEventAdapter::KEY_Control_R:
          {
-            if( gameAppComponent != NULL )
-            {
-               if( ! mRingKeyHeld && ! mRingButtonHeld )
-               {
-                  HandleTurretEnabled( true );
-               }
-            }
-            mRingKeyHeld = true;
+            //if( gameAppComponent != NULL )
+            //{
+               //if( ! mRingKeyHeld && ! mRingButtonHeld )
+               //{
+               //   HandleTurretEnabled( true );
+               //}
+            //}
+            //mRingKeyHeld = true;
          }
          break;
    
@@ -480,21 +465,18 @@ namespace DriverDemo
          // you slightly up each frame. This helps when you are stuck in when we get stuck in geometry. 
          case 'r':
          {
-            SimCore::Actors::Platform* vehicle = GetVehicle();
-            if(gameAppComponent != NULL && vehicle != NULL)
+            //SimCore::Actors::BasePhysicsVehicleActor* vehicle = GetVehicle();
+            if(gameAppComponent != NULL && mVehicle.valid())
             {
                SimCore::Components::MunitionsComponent *munitionsComp = 
                   static_cast<SimCore::Components::MunitionsComponent*>
                   (GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
-               munitionsComp->SetDamage( *vehicle, SimCore::Components::DamageType::DAMAGE_NONE );
+               munitionsComp->SetDamage( *mVehicle, SimCore::Components::DamageType::DAMAGE_NONE );
 
                EnableMotionModels( true );
 
-               // curt - rip out the nxageia four wheel actor and replace with basePhysicsVehicle
-               SimCore::Actors::NxAgeiaFourWheelVehicleActor* physicsVehicle = 
-                  dynamic_cast<SimCore::Actors::NxAgeiaFourWheelVehicleActor*>(vehicle);
-               physicsVehicle->RepositionVehicle(1.0f/60.0f * 4);
-               physicsVehicle->SetFlamesPresent(false);
+               mVehicle->RepositionVehicle(1.0f/60.0f * 4);
+               mVehicle->SetFlamesPresent(false);
             }
          }      
          break;
@@ -557,6 +539,7 @@ namespace DriverDemo
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
       
       // Un-toggles the turret motion models bases on what was releasted 
+      /*
       if(gameAppComponent != NULL)
       {
          if( key == osgGA::GUIEventAdapter::KEY_Control_R )
@@ -586,7 +569,7 @@ namespace DriverDemo
       if( key == osgGA::GUIEventAdapter::KEY_Control_R )
       {
          mRingKeyHeld = false;
-      }
+      }*/
    
       if(!handled)
          return BaseClass::HandleKeyReleased(keyboard, key);
@@ -604,6 +587,7 @@ namespace DriverDemo
       if(gameAppComponent != NULL)
       {
          // Right button lets you move the turret
+         /*
          if( button == dtCore::Mouse::RightButton )
          {
             if( ! mRingButtonHeld && ! mRingKeyHeld )
@@ -612,7 +596,7 @@ namespace DriverDemo
             }
          }
          // Left button is fire!  Boom baby!
-         else if( button == dtCore::Mouse::LeftButton )
+         else */ if( button == dtCore::Mouse::LeftButton )
          {
             if(mWeapon.valid() && mVehicle.valid() 
                && mVehicle->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED )
@@ -623,10 +607,12 @@ namespace DriverDemo
       }
 
       // safety check here. 
+      /*
       if( button == dtCore::Mouse::RightButton )
       {
          mRingButtonHeld = true;
       }
+      */
    
       if(!handled)
          return BaseClass::HandleButtonPressed(mouse, button);
@@ -644,6 +630,7 @@ namespace DriverDemo
       if( gameAppComponent != NULL)
       {
          // turn off turret motion model
+         /*
          if( button == dtCore::Mouse::RightButton )
          {
             if( mRingButtonHeld && ! mRingKeyHeld )
@@ -653,7 +640,7 @@ namespace DriverDemo
             mRingButtonHeld = false;
          }
          // stop firing
-         else if( button == dtCore::Mouse::LeftButton )
+         else */if( button == dtCore::Mouse::LeftButton )
          {
             if( mWeapon.valid() ) 
             { 
@@ -662,10 +649,12 @@ namespace DriverDemo
          }
       }
    
+      /*
       if( button == dtCore::Mouse::RightButton )
       {
          mRingButtonHeld = false;
       }
+      */
    
       if(!handled)
          return BaseClass::HandleButtonReleased(mouse, button);
@@ -684,7 +673,7 @@ namespace DriverDemo
       }
 
       mWeaponMM->SetEnabled( ! fireEnabled );
-      mAttachedMM->SetEnabled( false );
+      //mAttachedMM->SetEnabled( false );
    
       if( enable )
       {
@@ -697,12 +686,12 @@ namespace DriverDemo
             mRingMM->SetEnabled( true );
 
             // Reset the head orientation.
-            SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-            if( headMM != NULL )
-            {
-               osg::Vec3 hpr;
-               headMM->SetTargetsRotation( hpr );
-            }
+            //SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
+            //if( headMM != NULL )
+            //{
+            //   osg::Vec3 hpr;
+            //   headMM->SetTargetsRotation( hpr );
+            //}
          }
       }
       else
@@ -710,7 +699,7 @@ namespace DriverDemo
          mRingMM->SetEnabled( false );
          if( ! fireEnabled )
          {
-            mAttachedMM->SetEnabled( true );
+            //mAttachedMM->SetEnabled( true );
             mWeaponMM->SetLeftRightEnabled( true );
             if (mSoundTurretTurnEnd.valid())
                mSoundTurretTurnEnd->Play();
@@ -897,20 +886,29 @@ namespace DriverDemo
       mSeat = new dtCore::Transformable("PlayerSeat");
    
       // Setup the main motion model (a.k.a the head transformable)
-      dtCore::RefPtr<SimCore::ClampedMotionModel> headMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-      mAttachedMM = headMM.get();
-      headMM->SetTarget( mStealthActor.get() );
-      headMM->SetFreeLookByKey(false);
-      headMM->SetFreeLookByMouseButton(true);
-      headMM->SetFreeLookMouseButton(dtCore::Mouse::RightButton);
-      headMM->SetEnabled( true );
-      headMM->SetName("HeadMM");
+      //dtCore::RefPtr<SimCore::ClampedMotionModel> headMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
+      //mAttachedMM = headMM.get();
+      //headMM->SetTarget( mStealthActor.get() );
+      //headMM->SetFreeLookByKey(false);
+      //headMM->SetFreeLookByMouseButton(true);
+      //headMM->SetFreeLookMouseButton(dtCore::Mouse::RightButton);
+      //headMM->SetEnabled( true );
+      //headMM->SetName("HeadMM");
    
    }
    
    ////////////////////////////////////////////////////////////////////////////////
-   void DriverInputComponent::AttachToVehicle( SimCore::Actors::Platform& vehicle )
+   void DriverInputComponent::AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
+      // NOTE - The camera sits at the bottom of a VERY large hierarchy of DoF's. Looks like this: 
+      //     Vehicle (center of vehicle)
+      //       - Ring Mount (often swivels left/right)
+      //           - mDoFWeapon (pivots about weapon pivot point)
+      //               - mWeapon (3D model of weapon)
+      //                   - mWeaponEyePoint (offset for human eyepoint)
+      //                       - StealthActor (yay!  almost there)
+      //                           - camera 
+
       GameAppComponent* gameAppComponent;
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
    
@@ -921,8 +919,8 @@ namespace DriverDemo
       // Change to the new vehicle.
       mCurrentActorId = vehicle.GetGameActorProxy().GetId();
       mVehicle = &vehicle;
-      mVehicleProxy = dynamic_cast<SimCore::Actors::PlatformActorProxy*>(&vehicle.GetGameActorProxy()); // Keep the actor from being deleted.
-      SimCore::Actors::Platform* curVehicle = static_cast<SimCore::Actors::Platform*>(mVehicle.get());
+      mVehicleProxy = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActorProxy*>(&vehicle.GetGameActorProxy()); // Keep the actor from being deleted.
+      SimCore::Actors::BasePhysicsVehicleActor* curVehicle = static_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
    
       // Attach the HUD to the new vehicle
       GetHUDComponent()->SetVehicle(&vehicle);
@@ -957,12 +955,7 @@ namespace DriverDemo
          }
    
          // Let this vehicle know it has a driver if the player is in driver mode.
-         SimCore::Actors::VehicleInterface* vehicle 
-            = dynamic_cast<SimCore::Actors::VehicleInterface*>(curVehicle);
-         if( vehicle != NULL)
-         {
-            vehicle->SetHasDriver( true );
-         }
+         mVehicle->SetHasDriver( true );
       }
    
    
@@ -1022,14 +1015,14 @@ namespace DriverDemo
 
       // Access the head motion model as it will be modified based upon the
       // the newly set state.
-      SimCore::ClampedMotionModel* headMM 
-         = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
+      //SimCore::ClampedMotionModel* headMM 
+      //   = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
    
       // Modify head motion. // This may be removable but not doing it now in case it produces some bugs.
-      if( headMM != NULL )
-      {
-         ResetTurnSpeeds();
-      }
+      //if( headMM != NULL )
+      //{
+      //   ResetTurnSpeeds();
+      //}
    
       // Curt hack - do this at the end... seems to be the only way to get it to work.
       SetViewMode();   
@@ -1094,8 +1087,8 @@ namespace DriverDemo
       // setting it to enabled again will not bring the motion model out of the
       // bad state. For now, the motion model is reset to disabled prior to being
       // enabled, so that the enabled state can recover gracefully.
-      mAttachedMM->SetEnabled( false );
-      mAttachedMM->SetEnabled(true);
+      //mAttachedMM->SetEnabled( false );
+      //mAttachedMM->SetEnabled(true);
 
 
       // Set NEW mode
@@ -1116,12 +1109,10 @@ namespace DriverDemo
    
    }
    
-   //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::Platform* DriverInputComponent::GetVehicle()
+/*   //////////////////////////////////////////////////////////////////////////
+   SimCore::Actors::BasePhysicsVehicleActor* DriverInputComponent::GetVehicle()
    {
-      // curt - have this method return basePhysicsVehicle
-
-      SimCore::Actors::NxAgeiaFourWheelVehicleActor* vehicle = NULL;
+      SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
       std::vector<dtDAL::ActorProxy*> actorList;
    
       GetGameManager()->FindActorsByType(
@@ -1132,16 +1123,15 @@ namespace DriverDemo
       std::vector<dtDAL::ActorProxy*>::iterator iter = actorList.begin();
       for( ; iter != actorList.end(); ++iter )
       {
-         // swap out ageia for basehysicsvehicle
-         vehicle = dynamic_cast<SimCore::Actors::NxAgeiaFourWheelVehicleActor*> ((*iter)->GetActor());
+         vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*> ((*iter)->GetActor());
          if( vehicle != NULL && !vehicle->IsRemote() )
          {
             return vehicle;
          }
       }
-   
       return NULL;
    }
+   */
    
    //////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetPlayer( SimCore::Actors::StealthActor* actor )
@@ -1152,10 +1142,10 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::ResetTurnSpeeds()
    {
-      SimCore::ClampedMotionModel* mm = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
+      //SimCore::ClampedMotionModel* mm = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
    
-      mm->SetMaximumMouseTurnSpeed(1440.0f*1.5f);
-      mm->SetKeyboardTurnSpeed(0.0f);
+      //mm->SetMaximumMouseTurnSpeed(1440.0f*1.5f);
+      //mm->SetKeyboardTurnSpeed(0.0f);
    }
    
    //////////////////////////////////////////////////////////////////////////
@@ -1209,8 +1199,11 @@ namespace DriverDemo
    
       // weapons -- for array iterator.
       // WEAPON 1
-      CreateWeapon( "Weapon_50Cal", // a.k.a M2
-         "Particle_System_Weapon_50Cal_with_tracer",
+      //CreateWeapon( "Weapon_MK19", // a.k.a M2
+      //   "Particle_System_Weapon_50Cal_with_tracer",
+      //   "weapon_50cal_flash.osg", curWeapon );
+      CreateWeapon( "Weapon_MK19", // a.k.a M2
+         "Particle_System_Weapon_MK19",
          "weapon_50cal_flash.osg", curWeapon );
    
       if( curWeapon.valid() ) { mWeaponList.push_back( curWeapon.get() ); }
@@ -1357,13 +1350,13 @@ namespace DriverDemo
          }
    
          // Offset the weapon
-         xform.SetTranslation( 0.0, 0.0, 0.0 );
+         xform.SetTranslation( 0.0, 1.0, 1.0 );
          mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
       }
    }
    
    ////////////////////////////////////////////////////////////////////////////////
-   bool DriverInputComponent::AttachToRingmount( SimCore::Actors::Platform& vehicle )
+   bool DriverInputComponent::AttachToRingmount( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
       dtABC::Application& app = GetGameManager()->GetApplication();
    
@@ -1371,9 +1364,10 @@ namespace DriverDemo
       if( ! mWeaponMM.valid() )
       {
          mWeaponMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-         mWeaponMM->SetLeftRightLimit( 7.5f );
-         mWeaponMM->SetUpDownLimit( 22.0f );
-         mWeaponMM->SetEnabled( false );
+         //mWeaponMM->SetLeftRightLimit( 7.5f );
+         mWeaponMM->SetLeftRightLimit( 0.0f );
+         mWeaponMM->SetUpDownLimit( 45.0f );// 22
+         mWeaponMM->SetEnabled( true ); // false
          mWeaponMM->SetName("WeaponMM");
       }
       mWeaponMM->SetTargetDOF( mDOFWeapon.get() );
@@ -1382,10 +1376,10 @@ namespace DriverDemo
       if( ! mRingMM.valid() )
       {
          mRingMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-         mRingMM->SetFreeLookByKey( true );
-         mRingMM->SetFreeLookKey( 'r' );
-         mRingMM->SetFreeLookByMouseButton( true );
-         mRingMM->SetFreeLookMouseButton( dtCore::Mouse::RightButton );
+         mRingMM->SetFreeLookByKey( false ); // true
+         //mRingMM->SetFreeLookKey( 'r' );
+         mRingMM->SetFreeLookByMouseButton( false ); // true
+         //mRingMM->SetFreeLookMouseButton( dtCore::Mouse::RightButton );
          mRingMM->SetUpDownLimit( 0.0f );
          mRingMM->SetName("RingMM");
       }
@@ -1476,7 +1470,7 @@ namespace DriverDemo
       bool playSound = false;
       if( mRingMM.valid() && ! vehicleTurretDisabled )
       {
-         playSound = mRingMM->GetHPRChange().x() != 0.0 && (mRingKeyHeld || mRingButtonHeld);
+         playSound = mRingMM->GetHPRChange().x() != 0.0;// && (mRingKeyHeld || mRingButtonHeld);
          if( playSound )
          {
             if( mSoundTurretTurn.valid() && ! mSoundTurretTurn->IsPlaying() )
@@ -1508,12 +1502,12 @@ namespace DriverDemo
    }
    
    ////////////////////////////////////////////////////////////////////////////////
-   void DriverInputComponent::GetVehicleDOFs( SimCore::Actors::Platform& vehicle )
+   void DriverInputComponent::GetVehicleDOFs( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
       mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT_SEAT);
       mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT);
       mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT);
-      mDOFWeaponStem = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_STEM);
+      //mDOFWeaponStem = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_STEM);
    }
    
    ////////////////////////////////////////////////////////////////////////////////
@@ -1523,14 +1517,14 @@ namespace DriverDemo
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
       mMotionModelsEnabled = enable;
 
-      SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-      headMM->SetFreeLookByMouseButton(false);
+      //SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
+      //headMM->SetFreeLookByMouseButton(false);
    
       // Force all motion models off.
       if( mAttachedMM.valid() )
       {
          mAttachedMM->SetEnabled(false);
-         headMM->SetUpDownLimit( 30.0 );
+         //headMM->SetUpDownLimit( 30.0 );
       }
       if( mRingMM.valid() ) { mRingMM->SetEnabled(false); }
       if( mWeaponMM.valid() ) { mWeaponMM->SetEnabled(false); }
@@ -1545,11 +1539,11 @@ namespace DriverDemo
                mRingMM->SetEnabled( true );
             }
 
-            mAttachedMM->SetEnabled( true );
-            headMM->SetFreeLookByMouseButton(false);
-            headMM->SetFreeLookByKey(true);
-            headMM->SetResetRotation(true);
-            headMM->SetLeftRightLimit( 179.5 );
+            //mAttachedMM->SetEnabled( true );
+            //headMM->SetFreeLookByMouseButton(false);
+            //headMM->SetFreeLookByKey(true);
+            //headMM->SetResetRotation(true);
+            //headMM->SetLeftRightLimit( 179.5 );
 
             if( mWeaponMM.valid() )
             {

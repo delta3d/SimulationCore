@@ -12,7 +12,7 @@
 */
 #include <GameAppComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/Platform.h>
+//#include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/Human.h>
 
 #include <dtGame/gamemanager.h>
@@ -48,7 +48,8 @@
 ///////////////////////////////////
 // for player initialization
 #include <SimCore/Actors/PlayerActor.h>
-#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/Components/RenderingSupportComponent.h> //for light/shadow
 #include <DriverArticulationHelper.h>
 #include <dtActors/coordinateconfigactor.h>
@@ -277,18 +278,20 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::InitializeVehicle()
+   SimCore::Actors::BasePhysicsVehicleActor *GameAppComponent::CreateNewVehicle(const std::string &vehicleName)
    {
+      SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
+
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
       if(commandLineObject == NULL)
       {
          LOG_ERROR("commandLineObject is null, InitializeVehicle will not occur");
-         return;
+         return NULL;
       }
 
       // Find the vehicle template based on the name. The default is 'Driver_Vehicle'.
       std::vector<dtDAL::ActorProxy*> toFill;
-      GetGameManager()->FindPrototypesByName("Driver_Vehicle", toFill);
+      GetGameManager()->FindPrototypesByName(vehicleName, toFill);
 
 
       // CREATE OUR NEW VEHICLE 
@@ -306,79 +309,61 @@ namespace DriverDemo
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
          if(ourActualActorProxy != NULL)
          {
-            SimCore::Actors::Platform* platform = 
-               dynamic_cast<SimCore::Actors::Platform*>(ourActualActorProxy->GetActor());
-
-            platform->SetArticulationHelper( new DriverArticulationHelper );
-
-            // Ensure the vehicle will publish its call-sign via its name property
-            const dtDAL::NamedStringParameter* callsignName
-               = dynamic_cast<const dtDAL::NamedStringParameter*>
-               (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
-            if( callsignName != NULL )
+            vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(ourActualActorProxy->GetActor());
+            if (vehicle != NULL)
             {
-               platform->SetName( callsignName->GetValue() );
-            }
+               vehicle->SetArticulationHelper( new DriverArticulationHelper );
 
-            SimCore::Actors::NxAgeiaFourWheelVehicleActor* vehicle = 
-               dynamic_cast<SimCore::Actors::NxAgeiaFourWheelVehicleActor*>(ourActualActorProxy->GetActor());
-
-            if( vehicle != NULL )
-            {
-               vehicle->GetPhysicsHelper()->SetVehicleStartingPosition( mStartingPosition );
-            }
-            else
-            {
-               dtCore::Transform atransform;
-               atransform.SetTranslation(mStartingPosition);
-               platform->SetTransform(atransform);
-            }
-
-            GetGameManager()->AddActor(platform->GetGameActorProxy(), false, true);
-
-            // Set the vehicle heading.
-            const dtDAL::NamedFloatParameter* paramHeading
-               = dynamic_cast<const dtDAL::NamedFloatParameter*>
-               (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_START_HEADING));
-            if( paramHeading != NULL )
-            {
-               osg::Vec3 hpr( paramHeading->GetValue(), 0.0f, 0.0f );
-               osg::Matrix orient;
-               dtUtil::MatrixUtil::HprToMatrix( orient, hpr );
-
-               if( vehicle != NULL )
+               // Ensure the vehicle will publish its call-sign via its name property
+               const dtDAL::NamedStringParameter* callsignName
+                  = dynamic_cast<const dtDAL::NamedStringParameter*>
+                  (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
+               if( callsignName != NULL )
                {
+                  vehicle->SetName( callsignName->GetValue() );
+               }
+
+               vehicle->GetPhysicsHelper()->SetVehicleStartingPosition( mStartingPosition );
+
+               GetGameManager()->AddActor(vehicle->GetGameActorProxy(), false, true);
+
+               // Set the vehicle heading.
+               const dtDAL::NamedFloatParameter* paramHeading
+                  = dynamic_cast<const dtDAL::NamedFloatParameter*>
+                  (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_START_HEADING));
+               if( paramHeading != NULL )
+               {
+                  osg::Vec3 hpr( paramHeading->GetValue(), 0.0f, 0.0f );
+                  osg::Matrix orient;
+                  dtUtil::MatrixUtil::HprToMatrix( orient, hpr );
+
                   vehicle->GetPhysicsHelper()->SetOrientation( orient );
                }
-               else
-               {
-                  dtCore::Transform xform;
-                  xform.SetRotation( orient );
-                  platform->SetTransform( xform );
-               }
+
+
+               //NOTE: this will add a cheap shadow effect to the vehicle in the form of a black light
+               //dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
+               //if(comp)
+               //{
+               //   SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
+               //   if(rsComp)
+               //   {
+               //      SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();                  
+               //      dl->mIntensity = -2.0f;//a negative intensity will add a negative color, the higher
+               //                             //it is the more light it will take to get rid of it
+               //      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));
+               //      dl->mAttenuation.set(2.0, 0.5, 0.2);
+               //      dl->mTarget = &(platform->GetGameActorProxy().GetGameActor());
+               //      dl->mAutoDeleteLightOnTargetNull = true;
+
+               //      rsComp->AddDynamicLight(dl);
+               //   }
+               //}
             }
-
-
-            //NOTE: this will add a cheap shadow effect to the vehicle in the form of a black light
-            //dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-            //if(comp)
-            //{
-            //   SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-            //   if(rsComp)
-            //   {
-            //      SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();                  
-            //      dl->mIntensity = -2.0f;//a negative intensity will add a negative color, the higher
-            //                             //it is the more light it will take to get rid of it
-            //      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));
-            //      dl->mAttenuation.set(2.0, 0.5, 0.2);
-            //      dl->mTarget = &(platform->GetGameActorProxy().GetGameActor());
-            //      dl->mAutoDeleteLightOnTargetNull = true;
-
-            //      rsComp->AddDynamicLight(dl);
-            //   }
-            //}
          }
       }
+
+      return vehicle;
    }
 
    //////////////////////////////////////////////////////////////////////////
