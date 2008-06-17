@@ -161,7 +161,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
             mPhysicsHelper->SetBaseInterfaceClass(this);
-            //mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+            mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
             mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
             //mPhysicsHelper->SetFlags(dtPhysics::PhysicsHelper::FLAGS_POST_UPDATE);
