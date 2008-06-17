@@ -30,6 +30,7 @@
 
 #include <NxAgeiaWorldComponent.h>
 #include <SimCore/ModifiedStream.h>
+#include <SimCore/NxCollisionGroupEnum.h>
 #include <NxCooking.h>
 #else
 #include <dtPhysics/physicscomponent.h>
@@ -445,6 +446,7 @@ namespace SimCore
                heightfieldShapeDesc.meshData = worldComponent->GetPhysicsSDK().createTriangleMesh(SimCore::MMemoryReadBuffer(buf.data));
                actorDesc.shapes.pushBack(&heightfieldShapeDesc);
                actorDesc.userData = (void *) mPhysicsHelper.get(); 
+               actorDesc.group = SimCore::NxCollisionGroup::GROUP_TERRAIN;
 
                delete [] gHeightfieldVerts;
                delete [] gHeightfieldFaces;
