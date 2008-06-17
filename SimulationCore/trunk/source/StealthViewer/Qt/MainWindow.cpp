@@ -310,12 +310,20 @@ namespace StealthQt
          osg::GraphicsContext::setWindowingSystemInterface(new EmbeddedWindowSystemWrapper(*winSys));
       }
 
-      mApp = new dtGame::GameApplication(appArgc, appArgv);
-      mApp->SetGameLibraryName(appLibName);
-      oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
-      //hack to make sure the opengl context stuff gets resized to fit the window
-      oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
-      mApp->Config();
+      try
+      {
+         mApp = new dtGame::GameApplication(appArgc, appArgv);
+         mApp->SetGameLibraryName(appLibName);
+         oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+         //hack to make sure the opengl context stuff gets resized to fit the window
+         oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
+         mApp->Config();
+      }
+      catch (const dtUtil::Exception& ex)
+      {
+         ex.LogException(dtUtil::Log::LOG_ERROR);
+         throw;
+      }
    }
    
    ///////////////////////////////////////////////////////////////////
@@ -328,17 +336,20 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnHLAWindowActionTriggered()
    {
-      dtHLAGM::HLAComponent* comp = dynamic_cast<dtHLAGM::HLAComponent*>
-         (mApp->GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
+      SimCore::HLA::HLAConnectionComponent* comp = NULL;
+      mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
       if(comp == NULL)
       {
          throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-            "Failed to locate the HLAComponent on the Game Manager. Aborting application.",
+            "Failed to locate the HLAConnectionComponent on the Game Manager. Aborting application.",
             __FILE__, __LINE__);
       }
 
-      mIsConnectedToHLA = comp->IsConnectedToFederation();
+      // Even error states should be considered connected so that the UI will make you disconnect first.
+      mIsConnectedToHLA = comp->GetConnectionState() != 
+         SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
+
       HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToHLA, mCurrentConnectionName);
 
       connect(&window, SIGNAL(ConnectedToHLA(QString)), this, SLOT(OnConnectToHLA(QString)));
@@ -1901,10 +1912,12 @@ namespace StealthQt
       if(comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
          QMessageBox::critical(this, tr("Error"), 
-                               tr("An error occured while connecting to HLA. ") + 
+                               tr("An error occurred while connecting to HLA. ") + 
                                tr("Please check your connection settings from the Network tab ") + 
                                tr("and ensure they are correct."), 
                                QMessageBox::Ok);
+
+         OnHLAWindowActionTriggered();
       }
       else if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTING)
       {
@@ -1917,6 +1930,7 @@ namespace StealthQt
          OnTimeOfDayChanged(mUi->mCustomTimeEdit->time());
       }
    }
+
    ///////////////////////////////////////////////////////////////////
    void MainWindow::PopulateEntityInfoWindow(bool notUsed)
    {

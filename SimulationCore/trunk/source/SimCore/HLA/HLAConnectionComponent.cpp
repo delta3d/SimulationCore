@@ -200,7 +200,7 @@ namespace SimCore
 
       void HLAConnectionComponent::Disconnect()
       {
-         if( mState == &ConnectionState::STATE_CONNECTED )
+         if( *mState != ConnectionState::STATE_NOT_CONNECTED )
          {
             GetGameManager()->CloseCurrentMap();
             mMapNames.clear();
