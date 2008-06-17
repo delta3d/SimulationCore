@@ -1,3 +1,6 @@
+
+Include(UtilityMacros)
+
 SET(LIB_NAME   DriverDemo)
 
 SET(HEADER_PATH include)
@@ -13,22 +16,22 @@ file(GLOB LIB_SOURCES
    "${SOURCE_PATH}/*.cpp"
    )
 
-ADD_LIBRARY(DriverDemo SHARED                        
+ADD_LIBRARY(${LIB_NAME} SHARED                        
     ${LIB_PUBLIC_HEADERS}                         
     ${LIB_SOURCES}
 )
 
-LINK_WITH_VARIABLES(DriverDemo
+LINK_WITH_VARIABLES(${LIB_NAME}
    SIMCORE_LIBRARY
    SIMCOREHLA_LIBRARY
 )
 
 
-SET_TARGET_PROPERTIES(DriverDemo
+SET_TARGET_PROPERTIES(${LIB_NAME}
                      PROPERTIES DEFINE_SYMBOL DRIVER_DEMO_LIBRARY)
 
 #little hack to get the .dll into /bin and .lib into /lib
 IF (MSVC)
-  SET_TARGET_PROPERTIES(DriverDemo PROPERTIES PREFIX "/../../bin/")
-  SET_TARGET_PROPERTIES(DriverDemo PROPERTIES IMPORT_PREFIX "../")
+  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "/../../bin/")
+  SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES IMPORT_PREFIX "../")
 ENDIF (MSVC)
