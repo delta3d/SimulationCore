@@ -1,6 +1,3 @@
-
-Include(UtilityMacros)
-
 SET(LIB_NAME   DriverDemo)
 
 SET(HEADER_PATH include)
