@@ -27,6 +27,7 @@
 
 // project includes needed
 #include <SimCore/Components/BaseGameAppComponent.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <dtCore/refptr.h>
 #include <osg/ArgumentParser>
 
@@ -43,7 +44,7 @@ namespace SimCore
 {
    namespace Actors
    {
-      class Platform;
+      //class Platform;
       class StealthActor;
    }
 }
@@ -118,7 +119,7 @@ namespace DriverDemo
          void InitializePlayer();
 
          /// inits the vhiecle for app
-         void InitializeVehicle();
+         SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle(const std::string &vehicleName);
 
          /// loads the terrain to the application, specific to CDMTS command line option.
          //void InitializeTerrain();

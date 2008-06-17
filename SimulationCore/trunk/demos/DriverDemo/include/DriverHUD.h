@@ -43,6 +43,7 @@
 #include <SimCore/Components/BaseHUD.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DamageHelper.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <dtCore/observerptr.h>
 #include <dtUtil/coordinates.h>
 
@@ -63,7 +64,7 @@ namespace SimCore
 {
    namespace Actors
    {
-      class NxAgeiaFourWheelVehicleActor;
+      //class BasePhysicsVehicleActor; //class NxAgeiaFourWheelVehicleActor;
       class WeaponActor;
    }
    namespace Components
@@ -181,8 +182,8 @@ namespace DriverDemo
          CEGUI::Window* GetToolsWindow();
          const CEGUI::Window* GetToolsWindow() const;
    
-         void SetVehicle( SimCore::Actors::Platform* vehicle );
-         SimCore::Actors::Platform* GetVehicle();
+         void SetVehicle( SimCore::Actors::BasePhysicsVehicleActor* vehicle );
+         SimCore::Actors::BasePhysicsVehicleActor* GetVehicle();
    
          void SetWeapon( SimCore::Actors::WeaponActor* weapon );
    
@@ -268,7 +269,7 @@ namespace DriverDemo
    
          // References to objects that pass data to the HUD for display
          // --- for speedometer and health
-         dtCore::ObserverPtr<SimCore::Actors::Platform> mVehicle;
+         dtCore::ObserverPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
    
          // --- for ammo meter
          dtCore::ObserverPtr<SimCore::Actors::WeaponActor> mWeapon;

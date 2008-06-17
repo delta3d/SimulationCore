@@ -49,7 +49,7 @@
 #include <SimCore/Components/StealthHUDElements.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 
@@ -459,7 +459,7 @@ namespace DriverDemo
       }
 
       // Update Driver related HUD elements
-      SimCore::Actors::Platform* vehicle = GetVehicle();
+      SimCore::Actors::BasePhysicsVehicleActor* vehicle = GetVehicle();
       if( vehicle != NULL )
       {
          dtCore::Transform trans;
@@ -523,9 +523,8 @@ namespace DriverDemo
          // if this is not the driving sim.
          if( mSpeedometer.valid() )
          {
-            SimCore::Actors::VehicleInterface* tempInterface = dynamic_cast<SimCore::Actors::VehicleInterface*>(vehicle);
-            if(tempInterface != NULL)
-               mSpeedometer->SetValue( tempInterface->GetMPH(), 60.0f );
+            if(vehicle != NULL)
+               mSpeedometer->SetValue( vehicle->GetMPH(), 60.0f );
             else
                mSpeedometer->SetValue( 0, 60.0f );
          }
@@ -569,13 +568,13 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void DriverHUD::SetVehicle( SimCore::Actors::Platform* vehicle )
+   void DriverHUD::SetVehicle( SimCore::Actors::BasePhysicsVehicleActor* vehicle )
    {
       mVehicle = vehicle;
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::Platform* DriverHUD::GetVehicle()
+   SimCore::Actors::BasePhysicsVehicleActor* DriverHUD::GetVehicle()
    {
       return mVehicle.get();
    }
