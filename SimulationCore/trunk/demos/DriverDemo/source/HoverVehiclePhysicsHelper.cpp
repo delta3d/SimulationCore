@@ -285,6 +285,8 @@ namespace DriverDemo
          else // counteract half of gravity :)
             estimatedForceAdjustment *= 0.35f; 
       }
+      else 
+         estimatedForceAdjustment = 0.0f;
 
       return estimatedForceAdjustment;
 
