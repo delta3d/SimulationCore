@@ -12,7 +12,6 @@
 */
 #include <GameAppComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-//#include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/Human.h>
 
 #include <dtGame/gamemanager.h>
@@ -48,7 +47,6 @@
 ///////////////////////////////////
 // for player initialization
 #include <SimCore/Actors/PlayerActor.h>
-//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/Components/RenderingSupportComponent.h> //for light/shadow
 #include <DriverArticulationHelper.h>
@@ -80,9 +78,6 @@ namespace DriverDemo
    const std::string GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN    = "VehicleCallSign";
    const std::string GameAppComponent::CMD_LINE_WEAPON              = "Weapon";
    const std::string GameAppComponent::CMD_LINE_START_HEADING       = "StartHeading";
-   //const std::string GameAppComponent::CMD_LINE_START_LAT           = "StartLat";
-   //const std::string GameAppComponent::CMD_LINE_START_LON           = "StartLon";
-   //const std::string GameAppComponent::CMD_LINE_START_MGRS          = "StartMGRS";
 
    //////////////////////////////////////////////////////////////////////////
    GameAppComponent::GameAppComponent(const std::string &name) 
@@ -110,18 +105,6 @@ namespace DriverDemo
       {
          UpdatePlayerStartingPosition();
       }
-
-      // If we are waiting to attach to our vehicle, then we don't know when it will come into existance. 
-      // So, anytime ANY actor gets created, we are going to try to attach to it. The problem is that we are 
-      // also waiting for the control state stuff too. So, we need both the Actor AND the Control state.
-      else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED
-           && mWaitForVehicle == true)
-      {
-         // Do we need to set our current vehicle???
-         // mInputComponent->SetCurrentVehicle(*entityToAttachTo);
-
-      }
-
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -422,7 +405,5 @@ namespace DriverDemo
          mStealth->SetName( "Player" );
       }
 
-      // starts it out with the correct offset, if needed
-      //mStealth->SetAttachOffset( osg::Vec3(-0.4f,0.3f,0.35f));
    }
 } // end dvte namespace.
