@@ -73,6 +73,8 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_ACTOR_TYPE(new dtDAL::ActorType("Platform", "Entity", "Represents a entity in the game world"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_ACTOR_TYPE(new dtDAL::ActorType("Human", "Entity", "Represents a Human"));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("PlatformWithPhysics", "Entity"));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PLAYER_ACTOR_TYPE(new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Detonation Actor", "Effects", "This actor represents a detonation"));
@@ -105,7 +107,6 @@ namespace SimCore
       // needs to be implemented whether or not physics is on.
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
       
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
@@ -141,7 +142,8 @@ namespace SimCore
       {
          mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_ACTOR_TYPE.get());
          mActorFactory->RegisterType<HumanActorProxy>(HUMAN_ACTOR_TYPE.get());
-         
+
+         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DetonationActorProxy>(DETONATION_ACTOR_TYPE.get());
@@ -174,7 +176,6 @@ namespace SimCore
 #endif
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<VehicleAttachingConfigActorProxy>(VEHICLE_CONFIG_ACTOR_TYPE.get());
 

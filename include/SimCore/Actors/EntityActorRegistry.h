@@ -40,6 +40,8 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> PLATFORM_WITH_PHYSICS_ACTOR_TYPE;
+
             static dtCore::RefPtr<dtDAL::ActorType> STEALTH_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> PLAYER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> DETONATION_ACTOR_TYPE;
@@ -65,7 +67,6 @@ namespace SimCore
 #endif
 
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_TLAND_ACTOR_TYPE;
-            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_VEHICLE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_PHYSICS_ACTOR_TYPE;
             //static dtCore::RefPtr<dtDAL::ActorType> AGEIA_EMBARKABLE_ACTOR_TYPE;
