@@ -221,7 +221,7 @@ void NxAgeiaTests::TestFunction()
    CPPUNIT_ASSERT_MESSAGE("SceneNameThr scene not initialized", (tehscene != NULL));
 
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::AGEIA_REMOTE_KINEMATIC_ACTOR_TYPE, obj);
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, obj);
    dtCore::RefPtr<SimCore::Actors::NxAgeiaRemoteKinematicActor> objActor = dynamic_cast<SimCore::Actors::NxAgeiaRemoteKinematicActor*>(obj->GetActor());
    
    objActor->GetPhysicsHelper()->SetAgeiaFlags(AGEIA_FLAGS_PRE_UPDATE);
