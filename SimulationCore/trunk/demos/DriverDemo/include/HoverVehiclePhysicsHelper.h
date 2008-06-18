@@ -100,6 +100,8 @@ namespace DriverDemo
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
             const osg::Vec3 &direction, float &distanceToHit);
 
+         void DoJump(float deltaTime);
+
          //////////////////////////////////////////////////////////////////////////////////////
          //                                    Properties                                    //
          //////////////////////////////////////////////////////////////////////////////////////

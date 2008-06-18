@@ -34,10 +34,6 @@
 
 #include <dtUtil/enumeration.h>
 
-//#include <DVTE/Actors/DVTEActorRegistry.h>
-//#include <DVTE/Actors/FloatTargetActor.h> // CurtTest
-//#include <NxAgeiaPrimitivePhysicsHelper.h> // CurtTest
-
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
@@ -131,8 +127,6 @@ namespace DriverDemo
       DOF_NAME_RINGMOUNT_SEAT("dof_seat_gunner"),
       mIsConnected(false),
       mUsePhysicsDemoMode(false),
-      //mDOFWeaponStemOffset(0.0f),
-      //mDOFWeaponStemOffsetLimit(0.05f),
       mHorizontalFOV(60.0f),
       mVerticalFOV(60.0f),
       mNearClip(SimCore::BaseGameEntryPoint::PLAYER_NEAR_CLIP_PLANE),
@@ -392,36 +386,12 @@ namespace DriverDemo
          }
          break;
 
-         // Toggles motion models for the turret
-         case osgGA::GUIEventAdapter::KEY_Control_R:
-         {
-            //if( gameAppComponent != NULL )
-            //{
-               //if( ! mRingKeyHeld && ! mRingButtonHeld )
-               //{
-               //   HandleTurretEnabled( true );
-               //}
-            //}
-            //mRingKeyHeld = true;
-         }
-         break;
-   
          case 'l':
          {
             if( mWeapon.valid() ) 
             { 
                mWeapon->SetAmmoCount( 1000 ); 
             }
-
-            // CurtTest
-            /*dtABC::Application& app = GetGameManager()->GetApplication();
-            if (app.GetKeyboard()->GetKeyState(Producer::Key_Alt_L) ||
-               app.GetKeyboard()->GetKeyState(Producer::Key_Alt_R))
-            {
-               CreateTarget(); // CurtTest
-            }
-            else */
-
          }
          break;
 
@@ -505,7 +475,6 @@ namespace DriverDemo
    #endif
                   
                {
-                  //LeaveFederation();
                   // Attempt the disconnect from the network
                   mHLA = static_cast<dtHLAGM::HLAComponent*>(GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
                   if( mHLA.valid() )
@@ -537,40 +506,7 @@ namespace DriverDemo
    
       GameAppComponent* gameAppComponent = NULL;
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
-      
-      // Un-toggles the turret motion models bases on what was releasted 
-      /*
-      if(gameAppComponent != NULL)
-      {
-         if( key == osgGA::GUIEventAdapter::KEY_Control_R )
-         {
-            if( mRingKeyHeld && ! mRingButtonHeld )
-            {
-               HandleTurretEnabled( false );
-            }
-            mRingKeyHeld = false;
-         }
-         else if( key == osgGA::GUIEventAdapter::KEY_Control_L )
-         {
-            if( mVehicle.valid() && ! mVehicle->IsFlamesPresent() )
-            {
-               if( mWeaponMM.valid() )
-               {
-                  mWeaponMM->SetEnabled( true );
-               }
-               if( mRingMM.valid() )
-               {
-                  mRingMM->SetEnabled( true );
-               }
-            }
-         }
-      }
-   
-      if( key == osgGA::GUIEventAdapter::KEY_Control_R )
-      {
-         mRingKeyHeld = false;
-      }*/
-   
+         
       if(!handled)
          return BaseClass::HandleKeyReleased(keyboard, key);
    
@@ -586,17 +522,9 @@ namespace DriverDemo
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
       if(gameAppComponent != NULL)
       {
-         // Right button lets you move the turret
-         /*
-         if( button == dtCore::Mouse::RightButton )
-         {
-            if( ! mRingButtonHeld && ! mRingKeyHeld )
-            {
-               HandleTurretEnabled( true );
-            }
-         }
+
          // Left button is fire!  Boom baby!
-         else */ if( button == dtCore::Mouse::LeftButton )
+         if( button == dtCore::Mouse::LeftButton )
          {
             if(mWeapon.valid() && mVehicle.valid() 
                && mVehicle->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED )
@@ -605,14 +533,6 @@ namespace DriverDemo
             }
          }
       }
-
-      // safety check here. 
-      /*
-      if( button == dtCore::Mouse::RightButton )
-      {
-         mRingButtonHeld = true;
-      }
-      */
    
       if(!handled)
          return BaseClass::HandleButtonPressed(mouse, button);
@@ -629,18 +549,8 @@ namespace DriverDemo
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
       if( gameAppComponent != NULL)
       {
-         // turn off turret motion model
-         /*
-         if( button == dtCore::Mouse::RightButton )
-         {
-            if( mRingButtonHeld && ! mRingKeyHeld )
-            {
-               HandleTurretEnabled( false );
-            }
-            mRingButtonHeld = false;
-         }
          // stop firing
-         else */if( button == dtCore::Mouse::LeftButton )
+         if( button == dtCore::Mouse::LeftButton )
          {
             if( mWeapon.valid() ) 
             { 
@@ -648,13 +558,6 @@ namespace DriverDemo
             }
          }
       }
-   
-      /*
-      if( button == dtCore::Mouse::RightButton )
-      {
-         mRingButtonHeld = false;
-      }
-      */
    
       if(!handled)
          return BaseClass::HandleButtonReleased(mouse, button);
@@ -673,7 +576,6 @@ namespace DriverDemo
       }
 
       mWeaponMM->SetEnabled( ! fireEnabled );
-      //mAttachedMM->SetEnabled( false );
    
       if( enable )
       {
@@ -684,14 +586,6 @@ namespace DriverDemo
             if (mSoundTurretTurnStart.valid())
                mSoundTurretTurnStart->Play();
             mRingMM->SetEnabled( true );
-
-            // Reset the head orientation.
-            //SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-            //if( headMM != NULL )
-            //{
-            //   osg::Vec3 hpr;
-            //   headMM->SetTargetsRotation( hpr );
-            //}
          }
       }
       else
@@ -884,18 +778,7 @@ namespace DriverDemo
    
       // Create the seat
       mSeat = new dtCore::Transformable("PlayerSeat");
-   
-      // Setup the main motion model (a.k.a the head transformable)
-      //dtCore::RefPtr<SimCore::ClampedMotionModel> headMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-      //mAttachedMM = headMM.get();
-      //headMM->SetTarget( mStealthActor.get() );
-      //headMM->SetFreeLookByKey(false);
-      //headMM->SetFreeLookByMouseButton(true);
-      //headMM->SetFreeLookMouseButton(dtCore::Mouse::RightButton);
-      //headMM->SetEnabled( true );
-      //headMM->SetName("HeadMM");
-   
-   }
+      }
    
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
@@ -1010,19 +893,6 @@ namespace DriverDemo
 
       // Tie the weapon to the HUD to show the ammo meter.
       mHUDComponent->SetWeapon( mWeapon.get() );
-
-
-
-      // Access the head motion model as it will be modified based upon the
-      // the newly set state.
-      //SimCore::ClampedMotionModel* headMM 
-      //   = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-   
-      // Modify head motion. // This may be removable but not doing it now in case it produces some bugs.
-      //if( headMM != NULL )
-      //{
-      //   ResetTurnSpeeds();
-      //}
    
       // Curt hack - do this at the end... seems to be the only way to get it to work.
       SetViewMode();   
@@ -1079,18 +949,6 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetViewMode()
    {
-      // CURT - probably delete the next 2 lines.
-      // LEFT OVER CODE - FIRST WE WOULD DISABLE THE EYEPOINT STUFF
-      // HACK: The following line ensures that the walk motion model is truly
-      // enabled when enable is set to true. For some reason if the motion model
-      // is already enabled but is not responding (as if it were disabled),
-      // setting it to enabled again will not bring the motion model out of the
-      // bad state. For now, the motion model is reset to disabled prior to being
-      // enabled, so that the enabled state can recover gracefully.
-      //mAttachedMM->SetEnabled( false );
-      //mAttachedMM->SetEnabled(true);
-
-
       // Set NEW mode
       if( mWeaponEyePoint.valid() )
       {
@@ -1109,30 +967,7 @@ namespace DriverDemo
    
    }
    
-/*   //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::BasePhysicsVehicleActor* DriverInputComponent::GetVehicle()
-   {
-      SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
-      std::vector<dtDAL::ActorProxy*> actorList;
-   
-      GetGameManager()->FindActorsByType(
-         *SimCore::Actors::EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE, actorList );
-   
-      if(actorList.empty()) { return NULL; }
-   
-      std::vector<dtDAL::ActorProxy*>::iterator iter = actorList.begin();
-      for( ; iter != actorList.end(); ++iter )
-      {
-         vehicle = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*> ((*iter)->GetActor());
-         if( vehicle != NULL && !vehicle->IsRemote() )
-         {
-            return vehicle;
-         }
-      }
-      return NULL;
-   }
-   */
-   
+
    //////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetPlayer( SimCore::Actors::StealthActor* actor )
    {
@@ -1142,10 +977,6 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::ResetTurnSpeeds()
    {
-      //SimCore::ClampedMotionModel* mm = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-   
-      //mm->SetMaximumMouseTurnSpeed(1440.0f*1.5f);
-      //mm->SetKeyboardTurnSpeed(0.0f);
    }
    
    //////////////////////////////////////////////////////////////////////////
@@ -1345,12 +1176,12 @@ namespace DriverDemo
          {
             // Offset the eye point
             mWeapon->AddChild( mWeaponEyePoint.get() );
-            xform.SetTranslation( 0.0f, -0.65f, 0.17f );
+            xform.SetTranslation( 0.0f, 0.0f, 0.0f );
             mWeaponEyePoint->SetTransform( xform, dtCore::Transformable::REL_CS );
          }
    
          // Offset the weapon
-         xform.SetTranslation( 0.0, 1.0, 1.0 );
+         xform.SetTranslation( 0.0, 0.0, 0.0 );
          mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
       }
    }
@@ -1364,27 +1195,26 @@ namespace DriverDemo
       if( ! mWeaponMM.valid() )
       {
          mWeaponMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-         //mWeaponMM->SetLeftRightLimit( 7.5f );
          mWeaponMM->SetLeftRightLimit( 0.0f );
-         mWeaponMM->SetUpDownLimit( 45.0f );// 22
-         mWeaponMM->SetEnabled( true ); // false
+         mWeaponMM->SetUpDownLimit( 45.0f );
          mWeaponMM->SetName("WeaponMM");
       }
+      mWeaponMM->SetEnabled( true );
       mWeaponMM->SetTargetDOF( mDOFWeapon.get() );
    
       // create the attached motion model for the ring mount DOF
       if( ! mRingMM.valid() )
       {
          mRingMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
-         mRingMM->SetFreeLookByKey( false ); // true
-         //mRingMM->SetFreeLookKey( 'r' );
-         mRingMM->SetFreeLookByMouseButton( false ); // true
-         //mRingMM->SetFreeLookMouseButton( dtCore::Mouse::RightButton );
+         mRingMM->SetMaximumMouseTurnSpeed(1440.0f*4.0f);
          mRingMM->SetUpDownLimit( 0.0f );
          mRingMM->SetName("RingMM");
       }
    
-      mRingMM->SetTargetDOF( mDOFRing.get() );
+      if (true) // ???? curt what do we check here.
+         mRingMM->SetTarget(&vehicle);
+      else
+         mRingMM->SetTargetDOF( mDOFRing.get() );
       mRingMM->SetEnabled(true);
    
       return true;
@@ -1516,15 +1346,11 @@ namespace DriverDemo
       GameAppComponent* gameAppComponent;
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
       mMotionModelsEnabled = enable;
-
-      //SimCore::ClampedMotionModel* headMM = dynamic_cast<SimCore::ClampedMotionModel*>(mAttachedMM.get());
-      //headMM->SetFreeLookByMouseButton(false);
    
       // Force all motion models off.
       if( mAttachedMM.valid() )
       {
          mAttachedMM->SetEnabled(false);
-         //headMM->SetUpDownLimit( 30.0 );
       }
       if( mRingMM.valid() ) { mRingMM->SetEnabled(false); }
       if( mWeaponMM.valid() ) { mWeaponMM->SetEnabled(false); }
@@ -1538,12 +1364,6 @@ namespace DriverDemo
             {
                mRingMM->SetEnabled( true );
             }
-
-            //mAttachedMM->SetEnabled( true );
-            //headMM->SetFreeLookByMouseButton(false);
-            //headMM->SetFreeLookByKey(true);
-            //headMM->SetResetRotation(true);
-            //headMM->SetLeftRightLimit( 179.5 );
 
             if( mWeaponMM.valid() )
             {

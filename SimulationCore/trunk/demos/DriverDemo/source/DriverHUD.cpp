@@ -23,6 +23,7 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/macros.h>
+#include <dtUtil/stringutils.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
@@ -218,14 +219,15 @@ namespace DriverDemo
       float leftOffset = 0.0f;
 
       // Call Sign Display
-      mCallSign = new SimCore::Components::StealthCallSign("DriverCallSign");
-      mCallSign->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
-      hudOverlay.Add( mCallSign.get() );
+      //mCallSign = new SimCore::Components::StealthCallSign("DriverCallSign");
+      //mCallSign->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
+      //hudOverlay.Add( mCallSign.get() );
 
       // Sim Time Meter
-      leftOffset += METER_WIDTH;
+      //leftOffset += METER_WIDTH;
       mSimTimeMeter = new SimCore::Components::StealthGPSMeter("SimTimeMeter");
-      mSimTimeMeter->SetPosition( leftOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
+      mSimTimeMeter->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
+      //mSimTimeMeter->SetPosition( leftOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
       mSimTimeMeter->SetText1("Clock");
       mSimTimeMeter->GetText1().SetColor(0.0f, 0.0f, 0.5f);
       mSimTimeMeter->GetText2().SetColor(0.2f, 0.2f, 0.2f);
@@ -259,10 +261,15 @@ namespace DriverDemo
       float rightOffset = 0.0f;
 
       // Add the speedometer only if this is the driving simulation.
-      mSpeedometer = new SimCore::Components::StealthSpeedometer("DriverSpeedometer");
+      mSpeedometer = new SimCore::Components::StealthGPSMeter("DriverSpeedometer");
       mSpeedometer->SetAlignment( SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
-      mSpeedometer->RegisterNeedleWithGUI( GetGUIDrawable().get() );
+      mSpeedometer->SetText1("Speed");
+      mSpeedometer->GetText1().SetColor(0.0f, 0.0f, 0.5f);
+      mSpeedometer->GetText2().SetColor(0.2f, 0.2f, 0.2f);
+      //mSpeedometer->RegisterNeedleWithGUI( GetGUIDrawable().get() );
       hudOverlay.Add( mSpeedometer.get() );
+      leftOffset += METER_WIDTH;
+
       rightOffset -= METER_WIDTH;
 
       // The health and ammo meters currently have no relevance to
@@ -340,12 +347,10 @@ namespace DriverDemo
             Mouse + Right Btn - Turn ring mount\n\
             H/J - Cycle weapon\n\
             \n\
+            F1 - Help\n\
+            \n\
             Alt-X - Exit the app\n\
             Esc - Full screen");
-            //B - sit mode\n
-            //N - stand mode\n
-            //M - weapon mode\n
-            //Mouse + Left Ctrl - Turn ring mount\n
 
       mHelpText_Gunner = CreateText( "HelpText_Gunner", text, offsetX, offsetY, 1.0, 1.0 );
       mHelpText_Gunner->SetAlignment(*align);
@@ -524,9 +529,13 @@ namespace DriverDemo
          if( mSpeedometer.valid() )
          {
             if(vehicle != NULL)
-               mSpeedometer->SetValue( vehicle->GetMPH(), 60.0f );
+            {
+               mSpeedometer->SetText2(dtUtil::ToString((int) vehicle->GetMPH()));
+               //mSpeedometer->SetValue( vehicle->GetMPH(), 60.0f );
+            }
             else
-               mSpeedometer->SetValue( 0, 60.0f );
+               mSpeedometer->SetText2("0");
+               //mSpeedometer->SetValue( 0, 60.0f );
          }
 
       }
@@ -630,13 +639,13 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverHUD::SetCallSign( const std::string& callSign )
    {
-      mCallSign->SetCallSign( callSign );
+      //mCallSign->SetCallSign( callSign );
    }
 
    ////////////////////////////////////////////////////////////////////////////////
    std::string DriverHUD::GetCallSign() const
    {
-      return mCallSign->GetTextElement()->GetText();
+      return "Error - No Callsign in HUD"; //mCallSign->GetTextElement()->GetText();
    }
 
    ////////////////////////////////////////////////////////////////////////////////

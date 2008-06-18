@@ -98,8 +98,22 @@ namespace DriverDemo
    //                                  Vehicle Meths                                   //
    //////////////////////////////////////////////////////////////////////////////////////
 
+   // These statics are put here as test variables. They need to be made permanent or 
+   // made into properties on the actor.
    static float testCorrection = 0.01f;
    static float testForceBoost = 0.25f;
+   static float testJumpBoost = 9.8;
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
+   {
+      NxActor* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      float weight = GetVehicleBaseWeight();
+      NxVec3 dir(0.0, 0.0, 1.0);
+      physicsObject->addForce(dir * (weight * testJumpBoost), NX_SMOOTH_IMPULSE);
+
+   }
+
    //static float timeTillPrint = 0.0f;
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime, float currentMPH, 
@@ -125,9 +139,9 @@ namespace DriverDemo
       float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
       //float futureAdjustment = currentAdjustment;
 
-      // Use current position and estimated future position to help smooth out the force. 
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
-      float finalAdjustment = currentAdjustment * 0.75 + futureAdjustment * 0.25; 
+      // Use current position and estimated future position to help smooth out the force. 
+      float finalAdjustment = currentAdjustment * 0.90 + futureAdjustment * 0.10; 
       NxVec3 dir(0.0, 0.0, 1.0);
       physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
       //ApplyForceToActor(dir, weight * multiplier); // old method
@@ -211,13 +225,13 @@ namespace DriverDemo
          return;
       if (keyboard->GetKeyState('q'))
       {
-         testCorrection *= (1.0f - 0.3 * deltaTime);
-         std::cout << "Wind Mult[" << testCorrection << "]." << std::endl;
+         testJumpBoost *= (1.0f - 0.3 * deltaTime);
+         std::cout << "Jump Boost[" << testJumpBoost << "]." << std::endl;
       }
       if (keyboard->GetKeyState('e'))
       {
-         testCorrection *= (1.0f + 0.3 * deltaTime);
-         std::cout << "Wind Mult[" << testCorrection << "]." << std::endl;
+         testJumpBoost *= (1.0f + 0.3 * deltaTime);
+         std::cout << "Jump Boost[" << testJumpBoost << "]." << std::endl;
       }
       if (keyboard->GetKeyState('y'))
       {
@@ -281,9 +295,9 @@ namespace DriverDemo
             estimatedForceAdjustment *= (1.0f + (distanceAwayPercent * distanceAwayPercent)); 
          }
          else if (distanceToCorrect > -1.0f) // if we are slightly too high, then slow down our force
-            estimatedForceAdjustment *= (0.35f + ((1.0f+distanceToCorrect) * 0.65)); // part gravity, part reduced
+            estimatedForceAdjustment *= (0.01f + ((1.0f+distanceToCorrect) * 0.99)); // part gravity, part reduced
          else // counteract half of gravity :)
-            estimatedForceAdjustment *= 0.35f; 
+            estimatedForceAdjustment *= 0.01f; 
       }
       else 
          estimatedForceAdjustment = 0.0f;

@@ -127,6 +127,7 @@ namespace DriverDemo
          //std::string SOUND_EFFECT_COLLISION_HIT;/// What is the filepath / string of the sound effect
          ///////////////////////////////////////////////////
 
+         float mTimeTillJumpReady;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

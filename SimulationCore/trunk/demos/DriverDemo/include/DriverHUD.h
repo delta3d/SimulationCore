@@ -251,8 +251,9 @@ namespace DriverDemo
          dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mGPSMeter;
          dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
          dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
-         dtCore::RefPtr<SimCore::Components::StealthCallSign> mCallSign;
-         dtCore::RefPtr<SimCore::Components::StealthSpeedometer> mSpeedometer;
+         //dtCore::RefPtr<SimCore::Components::StealthCallSign> mCallSign;
+         //dtCore::RefPtr<SimCore::Components::StealthSpeedometer> mSpeedometer;
+         dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSpeedometer;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mToolsLayer;
          dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSimTimeMeter;
    

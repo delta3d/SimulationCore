@@ -43,10 +43,11 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverVehicleActor ::HoverVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy) 
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
-   //, SOUND_GEAR_CHANGE_HIGH(0.0f)        
+   //, SOUND_GEAR_CHANGE_HIGH(0.0f)
+   , mTimeTillJumpReady(0.0f)
    {
       SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(3.0f);
+      SetTimesASecondYouCanSendOutAnUpdate(5.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.  
       // The actor just manages properties and key presses mostly.
@@ -102,8 +103,8 @@ namespace DriverDemo
       {
          GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_NORMAL | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
       }
-      //else
-      //   Flags set in the base class.
+      //else // -- Flags set in the base class.
+      //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
       //GetHoverPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
       if(!IsRemote())
@@ -112,6 +113,12 @@ namespace DriverDemo
       }
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
+
+      // For test, undo the kinematic flag so that we can apply velocity to remote hover vehicles so that 
+      // they will impact us and make us bounce back
+      NxActor *physActor = GetPhysicsHelper()->GetPhysXObject();
+      if (physActor != NULL)
+         physActor->clearBodyFlag(NX_BF_KINEMATIC);
 
       // override the flying property
 
@@ -194,10 +201,22 @@ namespace DriverDemo
          else if(keyboard->GetKeyState('d') || keyboard->GetKeyState('D') || 
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
             accelRight = true;
+
       }
 
       GetHoverPhysicsHelper()->UpdateVehicle(deltaTime, currentMPH, 
          accelForward, accelReverse, accelLeft, accelRight);
+
+      // Jump button
+      if( ! IsMobilityDisabled() && GetHasDriver() )
+      {
+         mTimeTillJumpReady -= deltaTime;
+         if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
+         {
+            GetHoverPhysicsHelper()->DoJump(deltaTime);
+            mTimeTillJumpReady = 2.5f;
+         }
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +240,12 @@ namespace DriverDemo
          osg::Matrix rot = GetMatrixNode()->getMatrix();
          NxActor* physObject = GetPhysicsHelper()->GetPhysXObject();
 
+         // In order to make our vehicle bounce, make sure we have the velocity set. Otherwise, it 
+         // dead reckons really fast, but from the physics perspective looks like it's not moving.
+         osg::Vec3 velocity = GetVelocityVector();
+         NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
+         physObject->setLinearVelocity(physVelocity );
+
          if(physObject != NULL)
          {
             physObject->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
@@ -235,7 +260,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPostPhysicsUpdate()
    {
-      // This is ONLY called if we are LOCAL (we put the check here just to help with code reading. 
+      // This is ONLY called if we are LOCAL (we put the check here just in case... )
 
       if (!IsRemote())
       {
