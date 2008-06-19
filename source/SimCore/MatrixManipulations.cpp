@@ -298,7 +298,7 @@ namespace SimCore
                osg::Vec3 vec( 0.0f, 0.0f, 1.0f );
                float isectorSpan = 20;
                mIsector->Reset();
-               mIsector->SetStartPosition( osg::Vec3(xyz[0], xyz[1], xyz[2]) + osg::Vec3(0.0f,0.0f,-isectorSpan) );
+               mIsector->SetStartPosition( xyz + osg::Vec3(0.0f,0.0f,-isectorSpan) );
                mIsector->SetDirection( vec );
                mIsector->SetLength( isectorSpan * 2.0f );
 
