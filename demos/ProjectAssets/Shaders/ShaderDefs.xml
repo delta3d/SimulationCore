@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+
+   <shadergroup name="Human">
+      <shader name="Normal" default="yes">
+         <source type="Vertex">Shaders/human_skinning.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
    <shadergroup name="TerrainShaderGroup">
       <shader name="Terrain_DetailMapping" default="yes">
          <source type="Fragment">Shaders/Base/dynamic_light_10.frag</source>
@@ -22,25 +38,10 @@
                <wrap axis="T" mode="Repeat"/>
             </texture2D>
          </parameter>
-         <parameter name="bumpTexture1">
-            <texture2D textureUnit="3">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer1.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="bumpTexture2">
-            <texture2D textureUnit="4">
-               <source type="Image">Textures/ShadersBase/terrain_detailmap_layer2.png</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
          <parameter name="shaderInEffect">
             <float defaultValue="1.0"/>
          </parameter>
       </shader>
-   </shadergroup>
 
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
@@ -55,6 +56,21 @@
          </parameter>
          <parameter name="DistanceForHorizonFog">
             <float defaultValue="1501.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="SimpleVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/shader_nogloss.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
          </parameter>
       </shader>
    </shadergroup>
@@ -139,6 +155,35 @@
          </parameter>
          <parameter name="currentAngle">
             <float defaultValue="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="PlaceholderVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/shader_gloss_reflect.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/shader_gloss_reflect.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="glossTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/placeholder/gloss_map.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="reflectTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/ShadersBase/spheremap2.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
          </parameter>
       </shader>
    </shadergroup>

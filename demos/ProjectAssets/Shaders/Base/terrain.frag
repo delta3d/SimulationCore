@@ -44,11 +44,12 @@ void main(void)
    //Discard the fragment outside some bound so that we don't get the jagged edges where the terrain ends
    if( vDistance > 10000.0)
    {
-      discard;
+      //discard;
    }
    else
    {
       //Mix the final color with the fog and don't forget the alpha
       alphaMix(color, gl_Fog.color.rgb, vFog, baseColor.a, gl_FragColor);
    }
+   //gl_FragColor.rgb = vec4(vNormal, 1.0); 
 }

@@ -1,6 +1,6 @@
 
 const int MAX_DYNAMIC_LIGHTS = 20;
-const int NUM_DYNAMIC_LIGHTS_TO_USE = 10;
+const int NUM_DYNAMIC_LIGHTS_TO_USE = 8;
 
 //each dynamic light has 3 associated vec4's
 //the first vec4 is a vec3 position and an intensity
@@ -28,7 +28,8 @@ void dynamic_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib, o
             
       //we use 50% of the dot product lighting contribution and then add 50% of the ambient contribution
       //which is basically taken as just the light color
-      vec3 dotProductLightingAndAmbient = 0.5 * ((1.0 + normalDotLight) * dynamicLights[i+1].xyz);
+      // We don't need ambient for terrain, only for vehicles
+      vec3 dotProductLightingAndAmbient = normalDotLight * dynamicLights[i+1].xyz;
          
       //we attenuate the resulting contribution of the dot product and ambient lighting,
       //multiply it by the intensity and then accumulate it into the resulting color
