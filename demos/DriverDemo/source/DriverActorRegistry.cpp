@@ -25,12 +25,10 @@ using dtCore::RefPtr;
 
 namespace DriverDemo
 {
-   
-#ifdef AGEIA_PHYSICS
+
    RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("HoverActor", "DriverDemo", "A floaty drivable vehicle for Driver Demo"));
-#endif
-   
+
    ///////////////////////////////////////////////////////////////////////////
    extern "C" DRIVER_DEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
    {
@@ -47,15 +45,12 @@ namespace DriverDemo
    DriverActorRegistry::DriverActorRegistry() :
       dtDAL::ActorPluginRegistry("This library holds actors from the Driver Demo")
    {
-      dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+      //dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
    }
 
    ///////////////////////////////////////////////////////////////////////////
    void DriverActorRegistry::RegisterActorTypes()
    {
-
-#ifdef AGEIA_PHYSICS
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
-#endif
    }
 }
