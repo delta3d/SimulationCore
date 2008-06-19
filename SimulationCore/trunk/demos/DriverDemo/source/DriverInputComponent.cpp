@@ -855,7 +855,6 @@ namespace DriverDemo
       // Offset the player vantage point.
       osg::Vec3 rotationOffset;
 
-      //case HMMWV::GameAppComponent::SIM_MODE_GUNNER:
       mStealthActor->SetAttachOffset( osg::Vec3(0.0, 0.0, 0.0) ); // GUNNER
 
       // Position the seat DOF
@@ -1033,9 +1032,9 @@ namespace DriverDemo
       //CreateWeapon( "Weapon_MK19", // a.k.a M2
       //   "Particle_System_Weapon_50Cal_with_tracer",
       //   "weapon_50cal_flash.osg", curWeapon );
-      CreateWeapon( "Weapon_MK19", // a.k.a M2
-         "Particle_System_Weapon_MK19",
-         "weapon_50cal_flash.osg", curWeapon );
+      CreateWeapon( "Weapon_Grenade", // a.k.a M2
+         "Particle_System_Weapon_Grenade",
+         "weapon_gun_flash.osg", curWeapon );
    
       if( curWeapon.valid() ) { mWeaponList.push_back( curWeapon.get() ); }
       curWeapon = NULL;
