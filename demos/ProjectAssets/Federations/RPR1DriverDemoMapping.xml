@@ -8,9 +8,9 @@
         <description>RPR1 FOM HLA mapping</description>
         <disEntityTypes>true</disEntityTypes>
         <disEntityTypeAttribute>EntityType</disEntityTypeAttribute>
-        <author>Olen Bruce, Eddie Johnson, and David Guthrie, Allen Danklefsen</author>
+        <author>David Guthrie</author>
         <comment></comment>
-        <copyright>2005-2007 Alion Science and Technology</copyright>
+        <copyright>2008 Alion Science and Technology</copyright>
         <schemaVersion>1.0</schemaVersion>
     </header>
 
@@ -472,7 +472,7 @@
         <!-- This is A 4th tier object. Heirarchy is:                              -->
         <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HoverTank           -->
         <!-- ****************************************************** -->    
-           <object extends="GroundVehicle" name="HoverTank">
+           <object extends="Aircraft" name="HoverTank">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>DriverDemo.HoverActor</actorType>
             <remoteOnly>false</remoteOnly>

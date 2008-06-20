@@ -42,6 +42,7 @@
             <float defaultValue="1.0"/>
          </parameter>
       </shader>
+   </shadergroup>
 
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
