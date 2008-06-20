@@ -64,7 +64,7 @@
 	<entityClass name="DriverVehicle">
 	
 		<munition name="Bullet">
-			<force>20</force> <!-- in Newtons -->
+			<force>200</force> <!-- in Newtons -->
 			<accumulationFactor>0.1</accumulationFactor>
 			<damageProbability>
 				<N>0.95</N>
@@ -74,7 +74,7 @@
 		</munition>
 	
 		<munition name="Grenade">
-			<force>20</force> <!-- in Newtons -->
+			<force>6000</force> <!-- in Newtons -->
 			<accumulationFactor>0.1</accumulationFactor>
 			<damageProbability>
 				<M>0.4</M>

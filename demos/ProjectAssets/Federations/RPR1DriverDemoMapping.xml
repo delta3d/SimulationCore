@@ -498,17 +498,17 @@
              <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank.ive</default>
+                <default>StaticMeshes:HoverTank_WithGun.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>VehiclesSeatConfigActorNameTable</gameName>
