@@ -518,7 +518,7 @@
             <attrToProp>
                <gameName>ShaderGroup</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>DefaultShaderGroup</default>
+               <default>SimpleVehicleShaderGroup</default>
             </attrToProp>
             <attrToProp>
                <gameName>Ground Offset</gameName>
