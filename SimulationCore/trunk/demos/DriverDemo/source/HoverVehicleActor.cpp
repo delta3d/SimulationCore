@@ -45,6 +45,7 @@ namespace DriverDemo
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    //, SOUND_GEAR_CHANGE_HIGH(0.0f)
    , mTimeTillJumpReady(0.0f)
+   , mVehicleIsTurret(true)
    {
       SetTimeForSendingDeadReckoningInfoOut(0.0f);
       SetTimesASecondYouCanSendOutAnUpdate(5.0f);
@@ -102,26 +103,22 @@ namespace DriverDemo
       if(!IsRemote())
       {
          GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_NORMAL | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+         GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
       }
       //else // -- Flags set in the base class.
       //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
       //GetHoverPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
-      if(!IsRemote())
-      {
-         GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
-      }
-
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
-      // For test, undo the kinematic flag so that we can apply velocity to remote hover vehicles so that 
+      // Undo the kinematic flag on remote entities. Lets us apply velocities to remote hover vehicles so that 
       // they will impact us and make us bounce back
-      NxActor *physActor = GetPhysicsHelper()->GetPhysXObject();
-      if (physActor != NULL)
-         physActor->clearBodyFlag(NX_BF_KINEMATIC);
-
-      // override the flying property
-
+      if(IsRemote())
+      {
+         NxActor *physActor = GetPhysicsHelper()->GetPhysXObject();
+         if (physActor != NULL)
+            physActor->clearBodyFlag(NX_BF_KINEMATIC);
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -175,6 +172,14 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   void HoverVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
+   {
+      GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+      //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
@@ -214,7 +219,7 @@ namespace DriverDemo
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
          {
             GetHoverPhysicsHelper()->DoJump(deltaTime);
-            mTimeTillJumpReady = 2.5f;
+            mTimeTillJumpReady = 0.3f;
          }
       }
    }
@@ -312,6 +317,10 @@ namespace DriverDemo
       //   &HoverVehicleActor::SetSound_effect_ignition),
       //   "What is the filepath / string of the sound effect", SOUND_GROUP));
 
+      AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
+         dtDAL::MakeFunctor(actor, &HoverVehicleActor::SetVehicleIsTurret),
+         dtDAL::MakeFunctorRet(actor, &HoverVehicleActor::GetVehicleIsTurret),
+         "True means the turret and the vehicle rotate together (unlike a HMMWV with a distinct turret).", VEH_GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

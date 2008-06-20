@@ -45,7 +45,7 @@ namespace DriverDemo
    DriverActorRegistry::DriverActorRegistry() :
       dtDAL::ActorPluginRegistry("This library holds actors from the Driver Demo")
    {
-      //dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+      dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
    }
 
    ///////////////////////////////////////////////////////////////////////////
