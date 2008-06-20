@@ -2260,7 +2260,8 @@ namespace SimCore
 
          // Prepare the reference light effect type
          curValue = effects->GetEntityImpactLight();
-         if( ! hitEntity || curValue.empty() )
+         std::string lightString = dtUtil::trim(curValue); // Stage put a bunch of bad whitenoise in some strings
+         if( ! hitEntity || lightString.empty() )
          {
             curValue = effects->GetGroundImpactLight();
          }
