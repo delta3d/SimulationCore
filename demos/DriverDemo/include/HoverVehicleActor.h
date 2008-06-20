@@ -97,6 +97,14 @@ namespace DriverDemo
          /// Turns it up and moves up
          virtual void RepositionVehicle(float deltaTime);
 
+         /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is 
+         /// separate from the vehicle. On others, the turret is hard attached to the vehicle. 
+         /// In this case, turning the motion model will rotate the vehicle.
+         void SetVehicleIsTurret( bool vehicleIsTurret ) { mVehicleIsTurret = vehicleIsTurret; }
+         bool GetVehicleIsTurret() const { return mVehicleIsTurret; }
+
+         virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
+
       protected: 
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          /// This does nothing by default.
@@ -128,6 +136,7 @@ namespace DriverDemo
          ///////////////////////////////////////////////////
 
          float mTimeTillJumpReady;
+         bool mVehicleIsTurret;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

@@ -94,6 +94,7 @@
 // TEST INCLUDES --- END
 
 #include <DriverArticulationHelper.h>
+#include <HoverVehicleActor.h>
 
 #include <SimCore/Actors/FlareActor.h>
 #include <dtUtil/matrixutil.h>
@@ -893,7 +894,6 @@ namespace DriverDemo
       // Tie the weapon to the HUD to show the ammo meter.
       mHUDComponent->SetWeapon( mWeapon.get() );
    
-      // Curt hack - do this at the end... seems to be the only way to get it to work.
       SetViewMode();   
    }
 
@@ -1209,11 +1209,17 @@ namespace DriverDemo
          mRingMM->SetUpDownLimit( 0.0f );
          mRingMM->SetName("RingMM");
       }
-   
-      if (true) // ???? curt what do we check here.
+
+      // Look up a weird quirk of the data (only set on the hover vehicle actor).
+      // Is the turret 'hard-wired' to the vehicle? If so, the ring mount motion 
+      // model turns the vehicle, not just the ring mount DoF. This is true for 
+      // instance, with the Hover Vehicle. 
+      HoverVehicleActor *hoverActor = dynamic_cast<HoverVehicleActor *> (&vehicle);
+      if (hoverActor != NULL && hoverActor->GetVehicleIsTurret())
          mRingMM->SetTarget(&vehicle);
       else
          mRingMM->SetTargetDOF( mDOFRing.get() );
+
       mRingMM->SetEnabled(true);
    
       return true;
