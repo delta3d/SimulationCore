@@ -381,6 +381,7 @@ namespace SimCore
             y = 0.0f;
          }
 
+         // This is the carleton damage function - search on google...
          //    P = D0 * exp[-D0 * ((X/r1)^2 + (Y/r2)^2)]
          return damageTypeCoefficient * 
             exp( -damageTypeCoefficient * (pow(x/forwardRadius,2.0f) + pow(y/deflectionRadius,2.0f)) );
@@ -437,8 +438,8 @@ namespace SimCore
          }
 
          // Use the Carleton Equation to determine the force magnitude.
-         force *= GetProbability_CarletonEquation( 
-            mNewtonForce, x, y, forwardRadius, deflectRadius );
+         float damagePercent = GetProbability_CarletonEquation(1.0, x, y, forwardRadius, deflectRadius );
+         force *= (mNewtonForce * damagePercent); 
 
          return force;
       }
