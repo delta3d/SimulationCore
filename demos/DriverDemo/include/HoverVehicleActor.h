@@ -37,6 +37,7 @@ namespace dtAudio
 
 namespace DriverDemo
 {
+   class VehicleShield;
 
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +138,8 @@ namespace DriverDemo
 
          float mTimeTillJumpReady;
          bool mVehicleIsTurret;
+
+         dtCore::RefPtr<VehicleShield> mShield;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
