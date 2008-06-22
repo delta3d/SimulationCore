@@ -11,6 +11,9 @@
 * @author Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
+
+#include "VehicleShield.h"
+
 #ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverVehiclePhysicsHelper.h>
@@ -118,6 +121,10 @@ namespace DriverDemo
          NxActor *physActor = GetPhysicsHelper()->GetPhysXObject();
          if (physActor != NULL)
             physActor->clearBodyFlag(NX_BF_KINEMATIC);
+
+         mShield = new VehicleShield();
+         mShield->SetTranslation(osg::Vec3(0.0f, 0.0f, 0.5f));
+         AddChild(mShield.get());
       }
    }
 
@@ -242,6 +249,11 @@ namespace DriverDemo
 
       if (IsRemote())
       {
+         if(mShield.valid())
+         {
+            mShield->Update();
+         }
+
          osg::Matrix rot = GetMatrixNode()->getMatrix();
          NxActor* physObject = GetPhysicsHelper()->GetPhysXObject();
 
