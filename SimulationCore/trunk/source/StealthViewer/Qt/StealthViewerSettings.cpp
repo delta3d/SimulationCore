@@ -167,8 +167,10 @@ namespace StealthQt
 
          endGroup();
 
-         mConnectionNameMap.insert(std::make_pair(name, mNumConnections));
-         ++mNumConnections;
+         if (mConnectionNameMap.insert(std::make_pair(name, mNumConnections)).second)
+         {
+            ++mNumConnections;
+         }
       }
       else
       {
