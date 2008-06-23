@@ -95,16 +95,16 @@ void StealthViewerSettingsTests::TestParseIniFile()
                           QString("TestFed"),  QString("TestFedex"), QString("TestFedName"),
                           QString("TestRid"));
 
-   CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
+   CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
    settings.ClearAllSettings(false);
-   CPPUNIT_ASSERT_EQUAL((unsigned int)(0), settings.GetNumConnections());
+   CPPUNIT_ASSERT_EQUAL(0U, settings.GetNumConnections());
 
    settings.ParseIniFile();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Internal settings were deleted and reparsed from the ini file", 
-                                 (unsigned int)(1), settings.GetNumConnections());
+                                 1U, settings.GetNumConnections());
 
    settings.ClearAllSettings(true);
-   CPPUNIT_ASSERT(settings.GetNumConnections() == 0);
+   CPPUNIT_ASSERT_EQUAL(0U, settings.GetNumConnections());
 
    QStringList testProps;
    testProps.push_back(QString("TestName"));
@@ -118,11 +118,11 @@ void StealthViewerSettingsTests::TestParseIniFile()
    settings.AddConnection(testProps[0], testProps[1], testProps[2], 
       testProps[3], testProps[4], testProps[5], testProps[6]);
 
-   CPPUNIT_ASSERT(settings.GetNumConnections() == 1);
+   CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
 
    settings.ParseIniFile();
-   CPPUNIT_ASSERT_MESSAGE("Reparsing the ini file should NOT add a duplicate connection", 
-      settings.GetNumConnections() == 1);
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("Reparsing the ini file should NOT add a duplicate connection", 
+      1U, settings.GetNumConnections());
 }
 
 void StealthViewerSettingsTests::TestAddConnection()
