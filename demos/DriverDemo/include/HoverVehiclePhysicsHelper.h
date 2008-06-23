@@ -55,11 +55,12 @@ namespace DriverDemo
 
          //////////////////////////////////
          // Properties
-         float  mVehicleMaxForwardMPH;     /// The max mph you want your vehicle to have
-         float  mVehicleMaxStrafeMPH;      /// The max reverse mph you can go 
-         float  mVehicleBaseWeight;        /// How much is just the chassis / wheels without people in it
-         float  mSphereRadius;             /// The radius of the hover sphere. Used to calculate lots of things...
-         float  mGroundClearance;          /// How far above the ground we should be.
+         float  mVehicleMaxForwardMPH;  /// The max mph you want your vehicle to have - conceptual, not actual. Multiplied times mForceBoostFactor
+         float  mVehicleMaxStrafeMPH;   /// The max reverse mph you can go - conceptual, not actual. Multiplied times mForceBoostFactor
+         float  mVehicleBaseWeight;     /// How much does the vehicle weight
+         float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
+         float  mGroundClearance;       /// How far above the ground we should be.
+         float  mForceBoostFactor;      /// Force boost factor is multiplied time max speeds to determine impulse force
 
       public:
 
@@ -86,8 +87,7 @@ namespace DriverDemo
           * Note, the method may not correct you if you say you accelerated forward and back, left and right 
           * at the same time - if it does check, left wins over right & forward wins over reverse.
           */
-         void UpdateVehicle(float deltaTime, float currentMPH, 
-            bool accelForward, bool accelReverse, bool accelLeft, bool accelRight);
+         void UpdateVehicle(float deltaTime, bool accelForward, bool accelReverse, bool accelLeft, bool accelRight);
 
          /**
           * /brief Purpose : To create the hover vehicle
@@ -124,6 +124,9 @@ namespace DriverDemo
 
          float GetGroundClearance() {return mGroundClearance;}        
          void SetGroundClearance(float value)  {mGroundClearance = value;}        
+
+         float GetForceBoostFactor() {return mForceBoostFactor;}        
+         void SetForceBoostFactor(float value)  {mForceBoostFactor = value;}        
    };
 }
 

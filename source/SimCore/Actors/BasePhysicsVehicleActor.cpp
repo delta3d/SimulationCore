@@ -82,6 +82,7 @@ namespace SimCore
 
          GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
+         // Register with the Physics Component
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->
             GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 
@@ -89,6 +90,12 @@ namespace SimCore
          {
             GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
             GetPhysicsHelper()->SetObjectAsKinematic();
+         }
+         else // Local
+         {
+            // Disable gravity until the map has loaded terrain under our feet...
+            // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
+            GetPhysicsHelper()->TurnObjectsGravityOff("Default");
          }
       }
 

@@ -170,8 +170,7 @@ namespace SimCore
 
          if(!IsRemote())
          {
-            GetFourWheelPhysicsHelper()->TurnObjectsGravityOff("Default");
-
+            // Create portals to get in and out of our vehicle
             GetGameActorProxy().GetGameManager()->CreateActor(
                *EntityActorRegistry::PORTAL_ACTOR_TYPE, mVehiclesPortal);
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
