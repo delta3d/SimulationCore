@@ -36,6 +36,7 @@ namespace DriverDemo
       , mVehicleBaseWeight(1000.0f)
       , mSphereRadius(1.5f)
       , mGroundClearance(0.5)
+      , mForceBoostFactor(0.25)
    {
       // non properties
 
@@ -101,8 +102,8 @@ namespace DriverDemo
    // These statics are put here as test variables. They need to be made permanent or 
    // made into properties on the actor.
    static float testCorrection = 0.01f;
-   static float testForceBoost = 0.25f;
-   static float testJumpBoost = 9.8;
+   //static float testForceBoost = 0.25f;
+   static float testJumpBoost = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
 
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
@@ -116,7 +117,7 @@ namespace DriverDemo
 
    //static float timeTillPrint = 0.0f;
    ////////////////////////////////////////////////////////////////////////////////////
-   void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime, float currentMPH, 
+   void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime, 
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
    {
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
@@ -166,8 +167,8 @@ namespace DriverDemo
       rightDir.normalize();
 
       // basic force calc
-      float speedModifier = GetVehicleMaxForwardMPH() * testForceBoost;
-      float strafeModifier = GetVehicleMaxStrafeMPH() * testForceBoost;
+      float speedModifier = GetVehicleMaxForwardMPH() * GetForceBoostFactor();
+      float strafeModifier = GetVehicleMaxStrafeMPH() * GetForceBoostFactor();
 
       // FORWARD
       if(accelForward)
@@ -235,13 +236,13 @@ namespace DriverDemo
       }
       if (keyboard->GetKeyState('y'))
       {
-         testForceBoost *= (1.0f - 0.3 * deltaTime);
-         std::cout << "Force Boost[" << testForceBoost << "]." << std::endl;
+         mForceBoostFactor *= (1.0f - 0.3 * deltaTime);
+         std::cout << "Force Boost[" << mForceBoostFactor << "]." << std::endl;
       }
       if (keyboard->GetKeyState('u'))
       {
-         testForceBoost *= (1.0f + 0.3 * deltaTime);
-         std::cout << "Force Boost[" << testForceBoost << "]." << std::endl;
+         mForceBoostFactor *= (1.0f + 0.3 * deltaTime);
+         std::cout << "Force Boost[" << mForceBoostFactor << "]." << std::endl;
       }
 
    }
@@ -279,7 +280,7 @@ namespace DriverDemo
       const osg::Vec3 &direction, float &distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN);
-      float estimatedForceAdjustment = 9.8; // gravity 
+      float estimatedForceAdjustment = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z; // gravity 
       osg::Vec3 terrainHitLocation;
 
       distanceToHit = GetClosestIntersectionUsingDirection(location, 
@@ -359,17 +360,13 @@ namespace DriverDemo
    bool HoverVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot, 
       osgSim::DOFTransform* bodyNode)
    {
-      // make sure bad data wasnt passed in
-      if(bodyNode == NULL)
-         return false;
+      // Create our vehicle with a starting position
+      osg::Vec3 startVec = GetVehicleStartingPosition();
+      NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
+      SetCollisionSphere(startPos, GetSphereRadius(), 0, 
+         mVehicleBaseWeight, 0, "Default", "Default", false);
 
-      NxVec3 startPos(GetVehicleStartingPosition()[0], GetVehicleStartingPosition()[1],
-         GetVehicleStartingPosition()[2]);
-      SetCollisionSphere(startPos, GetSphereRadius(), 0, mVehicleBaseWeight, 0, "Default", "Default", false);
-
-
-      NxActor* toFillIn = GetPhysXObject();
-
+      // Reorient physics to our Y is forward system.
       NxMat33 orient;
       orient.setRow(0, NxVec3(1,0,0));
       orient.setRow(1, NxVec3(0,0,-1));
@@ -384,36 +381,41 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void   HoverVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
+   void HoverVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
    {
       NxAgeiaPhysicsHelper::BuildPropertyMap(toFillIn);
 
       const std::string& VEHICLEGROUP = "Vehicle Physics";
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Forward MPH", "The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.", 
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Forward MPH", "Max Forward MPH", 
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleMaxForwardMPH),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleMaxForwardMPH),
-         "", VEHICLEGROUP));
+         "The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", 
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH", 
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleMaxStrafeMPH),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleMaxStrafeMPH),
-         "", VEHICLEGROUP));
+         "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("BaseWeight", "The base weight of this vehicle.", 
+      toFillIn.push_back(new dtDAL::FloatActorProperty("BaseWeight", "BaseWeight", 
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleBaseWeight),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleBaseWeight),
-         "", VEHICLEGROUP));
+         "The base weight of this vehicle.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Sphere Radius", "The radius of the hover sphere.", 
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Sphere Radius", "Sphere Radius", 
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetSphereRadius),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetSphereRadius),
-         "", VEHICLEGROUP));
+         "The radius of the hover sphere.", VEHICLEGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "The height we should try to leave beneath our vehicle (cause we hover...).", 
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance", 
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetGroundClearance),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetGroundClearance),
-         "", VEHICLEGROUP));
+         "The height we should try to leave beneath our vehicle (cause we hover...).", VEHICLEGROUP));
+
+      toFillIn.push_back(new dtDAL::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
+         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetForceBoostFactor),
+         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetForceBoostFactor),
+         "Multiplied times the max speeds to determine force to apply (ex. 0.25).", VEHICLEGROUP));
 
    }
 } // end namespace
