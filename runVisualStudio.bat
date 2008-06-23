@@ -44,6 +44,7 @@ set PATH=""
 set DELTA_ROOT=C:\Curtiss\Projects\Delta3D\Delta3D
 set SIM_CORE_ROOT=C:\Curtiss\Projects\DVTE\SimulationCore
 set DCOS_ROOT=C:\Curtiss\Projects\MTS_DCOS\trunk
+set DCSIM_ROOT=C:\Curtiss\Projects\DCSim\trunk
 set AGEIA_ROOT=C:\Program Files\AGEIA Technologies\AGEIA PhysX SDK\v2.7.0
 set DT_AGEIA_ROOT=C:\Curtiss\Projects\DVTE\dtAgeiaPhysX
 set RTI_HOME=C:\Curtiss\Projects\DVTE\rti
@@ -100,7 +101,7 @@ set RTI_PATH=%RTI_HOME%\lib\winnt_vc++-8.0
 set PYTHON_PATH=%PYTHON_ROOT%
 
 :: PATH
-set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIM_CORE_PATH%;%DT_AGEIA_PATH%;%DVTE_PATH%;%DVTE_EXT_PATH%;%AGEIA_PATH%;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%WIN_DIR%
+set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIM_CORE_PATH%;%DT_AGEIA_PATH%;%DVTE_PATH%;%DVTE_EXT_PATH%;%AGEIA_PATH%;%DCSIM_ROOT%/bin;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%WIN_DIR%
 
 path
 
