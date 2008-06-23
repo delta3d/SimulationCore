@@ -84,6 +84,11 @@ namespace SimCore
 
             /// Registers all of the actor proxies to be exported
             void RegisterActorTypes();
+         private:
+
+            //Protected so it won't be used in code
+            static dtCore::RefPtr<dtDAL::ActorType> OLD_REMOTE_PHYSX_ACTOR_TYPE;
+
       };	
    }	
 }

@@ -117,7 +117,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::OCEAN_WATER_ACTOR_TYPE(new dtDAL::ActorType("OceanWaterActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels"));
-      
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
+
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -144,6 +146,8 @@ namespace SimCore
          mActorFactory->RegisterType<HumanActorProxy>(HUMAN_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(OLD_REMOTE_PHYSX_ACTOR_TYPE.get());
+
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DetonationActorProxy>(DETONATION_ACTOR_TYPE.get());
