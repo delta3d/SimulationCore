@@ -74,7 +74,7 @@ namespace DriverDemo
    void VehicleShield::Init()
    {
       LOG_INFO("Creating noise texture.");
-      dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 128, 128, 128);
+      dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 16, 16, 16);
       dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
       LOG_INFO("Finished creating noise texture.");
 
