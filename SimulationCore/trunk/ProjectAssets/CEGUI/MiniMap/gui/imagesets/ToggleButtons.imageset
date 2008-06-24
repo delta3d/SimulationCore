@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="ToggleButtons" Imagefile="MiniMap/gui/imagesets/buttons_toggle.tga" NativeHorzRes="128" NativeVertRes="128" AutoScaled="true">
-   <Image Name="Disabled" XPos="0" YPos="0" Width="64" Height="64" />
-   <Image Name="Down" XPos="64" YPos="0" Width="64" Height="64" />
-   <Image Name="Up" XPos="0" YPos="64" Width="64" Height="64" />
-</Imageset>
