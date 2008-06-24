@@ -51,6 +51,7 @@ namespace SimCore
       const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
       const std::string HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP("AdditionalMap");
 
+      ///////////////////////////////////////////////////////////////////////
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
          dtGame::GMComponent(name), 
          mRidFile("RTI.rid"), // default to an RTI.rid file so that there is something to find.
@@ -59,11 +60,13 @@ namespace SimCore
 
       }
 
+      ///////////////////////////////////////////////////////////////////////
       HLAConnectionComponent::~HLAConnectionComponent()
       {
 
       }
 
+      ///////////////////////////////////////////////////////////////////////
       dtHLAGM::HLAComponent& HLAConnectionComponent::GetHLAComponent()
       {
          dtHLAGM::HLAComponent* component; 
@@ -79,6 +82,7 @@ namespace SimCore
          return *component;
       }
       
+      ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::ProcessMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
@@ -125,6 +129,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::GetAdditionalMaps(std::vector<std::string>& toFill) const
       {
          std::ostringstream oss;
@@ -136,13 +141,14 @@ namespace SimCore
                toFill.push_back(addMap);
 
             oss << CONFIG_PROP_ADDITIONAL_MAP << i;
-            addMap = GetGameManager()->GetApplication().GetConfigPropertyValue(oss.str());
+            addMap = GetGameManager()->GetConfiguration().GetConfigPropertyValue(oss.str());
             oss.str("");
             ++i;
          }
          while (!addMap.empty());
       }
-      
+
+      ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::Connect()
       {
          if(mMapNames.empty())
@@ -198,6 +204,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::Disconnect()
       {
          if( *mState != ConnectionState::STATE_NOT_CONNECTED )
