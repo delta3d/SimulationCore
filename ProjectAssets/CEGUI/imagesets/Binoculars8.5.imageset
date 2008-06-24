@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Binoculars8.5" Imagefile="CEGUI/imagesets/Binoculars_8_5.tga" NativeHorzRes="1024" NativeVertRes="550" AutoScaled="true">
-   <Image Name="Binoculars8.5" XPos="0" YPos="0" Width="512" Height="512" />
-</Imageset>
-

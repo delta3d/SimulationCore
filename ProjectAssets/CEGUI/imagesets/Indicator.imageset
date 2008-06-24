@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<Imageset Name="Indicator" Imagefile="CEGUI/imagesets/Indicator.tga" NativeHorzRes="128" NativeVertRes="64" AutoScaled="true">
-   <Image Name="Indicator_ON" XPos="0" YPos="0" Width="128" Height="64" />
-   <Image Name="Indicator_OFF" XPos="0" YPos="64" Width="128" Height="64" />
-</Imageset>
