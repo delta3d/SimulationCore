@@ -108,7 +108,7 @@ class TimingListener : public CppUnit::TestListener
  
 void SetupCEGUI(dtABC::Application& app)
 {
-   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
+   const std::string guiScheme = "CEGUI/schemes/DriverDemo.scheme";
 
    GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(), 
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
@@ -187,7 +187,7 @@ int main (int argc, char* argv[])
 
    try
    {
-      dtDAL::Project::GetInstance().SetContext(SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
+      dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
       SetupCEGUI(*GlobalApplication);
    }
    catch(const dtUtil::Exception& ex)
@@ -294,7 +294,7 @@ int main (int argc, char* argv[])
    {
       std::cerr << " <<< Exception occurred while running main.cpp for this unit test. No other info available >>> " << std::endl;
    }
-   
+
    GlobalApplication = NULL;
    GlobalGUI->ShutdownGUI();
    GlobalGUI = NULL;
