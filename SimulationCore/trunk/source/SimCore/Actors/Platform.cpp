@@ -81,6 +81,9 @@ namespace SimCore
       // Actor Proxy code
       ////////////////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED("Head Lights Enabled");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
 
       ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
@@ -100,21 +103,18 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         static const dtUtil::RefString PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
             PROPERTY_MESH_NON_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadNonDamagedFile),
             "This is the model for a non damaged actor"));
 
-         static const dtUtil::RefString PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DAMAGED_ACTOR,
             PROPERTY_MESH_DAMAGED_ACTOR,
             dtDAL::MakeFunctor(*this, &PlatformActorProxy::LoadDamagedFile),
             "This is the model for a damaged actor"));
 
-         static const dtUtil::RefString PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             PROPERTY_MESH_DESTROYED_ACTOR,
             PROPERTY_MESH_DESTROYED_ACTOR,

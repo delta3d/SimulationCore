@@ -83,7 +83,10 @@ namespace SimCore
             typedef BaseEntityActorProxy BaseClass;
 
             static const dtUtil::RefString PROPERTY_HEAD_LIGHTS_ENABLED;
-            
+            static const dtUtil::RefString PROPERTY_MESH_NON_DAMAGED_ACTOR;
+            static const dtUtil::RefString PROPERTY_MESH_DAMAGED_ACTOR;
+            static const dtUtil::RefString PROPERTY_MESH_DESTROYED_ACTOR;
+
             // Constructor
             PlatformActorProxy();
 
