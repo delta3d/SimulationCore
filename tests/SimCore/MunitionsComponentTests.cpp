@@ -13,6 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <osg/io_utils>
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
@@ -1115,8 +1116,8 @@ namespace SimCore
          osg::Vec3 outPos, pos( 25.0f, -10.0f, 5.0f );
          MoveEntity( *entity, pos );
          helper->GetEntityPosition( outPos );
-         CPPUNIT_ASSERT_MESSAGE( "DamageHelper should retrieve the entity's current location",
-            outPos == pos );
+         CPPUNIT_ASSERT_EQUAL_MESSAGE( "DamageHelper should retrieve the entity's current location",
+            outPos, pos );
 
 
 
@@ -1384,7 +1385,7 @@ namespace SimCore
          // Test Default Munition Feature
          // --- Maintain a reference to at least one munition
          const SimCore::Actors::MunitionTypeActor* grenadeMunition
-            = mDamageComp->GetMunition("Generic Grenade");
+            = mDamageComp->GetMunition("Grenade");
          CPPUNIT_ASSERT( grenadeMunition != NULL );
 
          // --- Pick a munition to act as a default and ensure it exists in the
@@ -1459,7 +1460,7 @@ namespace SimCore
          mDamageComp->LoadMunitionDamageTables( "Configs:MunitionsConfig.xml" );
 
          // -- Register the entity
-         std::string munitionTableName("MyEntityTypeName");
+         std::string munitionTableName("DriverVehicle");
          entity->SetMunitionDamageTableName(munitionTableName);
          // NOTE: The component will try to load the munition table upon registration
          // and also link it to the helper created for the registered entity.
@@ -1746,7 +1747,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "MunitionConfig should have loaded 1 table and returned 1 success.",
             successes == 1 );
 
-         dtCore::RefPtr<MunitionDamageTable> table = mDamageComp->GetMunitionDamageTable( "MyEntityTypeName" );
+         dtCore::RefPtr<MunitionDamageTable> table = mDamageComp->GetMunitionDamageTable( "DriverVehicle" );
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have a valid table loaded by MunitionConfig",
             table.valid() );
 
