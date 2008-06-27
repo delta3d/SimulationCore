@@ -35,6 +35,8 @@ namespace SimCore
             const BaseEntity* GetAssociatedEntity() const;
             BaseEntity* GetAssociatedEntity();
 
+            void LoadImage(const std::string& theFile);
+
             /// Implemented from the base class
             virtual void HandleModelDrawToggle(bool active);
 
@@ -65,6 +67,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY;
             static const dtUtil::RefString PROPERTY_SPHERE_COLOR;
             static const dtUtil::RefString PROPERTY_BOX_COLOR;
+            static const dtUtil::RefString PROPERTY_ICON_IMAGE;
 
             PositionMarkerActorProxy();
             virtual ~PositionMarkerActorProxy();
