@@ -3,11 +3,32 @@
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
 #include <osg/Geode>
+#include <osg/BlendFunc>
+#include <osg/Texture2D>
+#include <osgDB/ReadFile>
 
 namespace SimCore
 {
    namespace Actors
    {
+      class HideNodeCallback : public osg::NodeCallback
+      {
+         public:
+
+            /**
+             * Constructor.
+             *
+             * @param terrain the owning InfiniteTerrain object
+             */
+            HideNodeCallback()
+            {}
+
+            virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+            {
+               // We're hiding the node.  The point is to NOT traverse.
+               // traverse(node, nv);
+            }
+      };
 
       ////////////////////////////////////////////////////////////////////////
       PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy): 
@@ -23,6 +44,10 @@ namespace SimCore
          dtCore::RefPtr<osg::ShapeDrawable> boxDrawable = new osg::ShapeDrawable(box.get());
          dtCore::RefPtr<osg::Geode> geode = new osg::Geode();
 
+         dtCore::RefPtr<osg::TessellationHints> hints = new osg::TessellationHints;
+         hints->setCreateTextureCoords(true);
+         sphereDrawable->setTessellationHints(hints.get());
+
          geode->addDrawable(sphereDrawable.get());
          geode->addDrawable(boxDrawable.get());
          mSphere = sphereDrawable;
@@ -32,7 +57,12 @@ namespace SimCore
          osg::Group* g = GetOSGNode()->asGroup();
          g->addChild(geode.get());
 
-         //osg::StateSet* ss = g->getOrCreateStateSet();
+         osg::StateSet* ss = g->getOrCreateStateSet();
+         ss->setMode(GL_BLEND,osg::StateAttribute::ON);
+         dtCore::RefPtr<osg::BlendFunc> trans = new osg::BlendFunc();
+         trans->setFunction( osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
+         ss->setAttributeAndModes( trans.get() );
+         ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -133,7 +163,42 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       void PositionMarker::HandleModelDrawToggle(bool active)
       {
-         
+         if (active)
+         {
+            GetOSGNode()->setCullCallback(NULL);
+         }
+         else
+         {
+            GetOSGNode()->setCullCallback(new HideNodeCallback);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::LoadImage(const std::string& theFile)
+      {
+         if (theFile.empty())
+         {
+            osg::StateSet* ss = mSphere->getOrCreateStateSet();
+            ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
+            return;
+         }
+
+         dtCore::RefPtr<osg::Image> icon  = osgDB::readImageFile( theFile );
+         if(icon == NULL)
+         {
+            LOG_ERROR(std::string("Couldn't find image file \"") + theFile + "\"");
+            osg::StateSet* ss = mSphere->getOrCreateStateSet();
+            ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
+            return;
+         }
+
+         dtCore::RefPtr<osg::Texture2D> tex = new osg::Texture2D;
+         tex->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP );
+         tex->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
+         tex->setImage( icon.get() );
+
+         osg::StateSet* ss = mSphere->getOrCreateStateSet();
+         ss->setTextureAttributeAndModes(0, tex.get(), osg::StateAttribute::ON);
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -149,6 +214,7 @@ namespace SimCore
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ASSOCIATED_ENTITY("Associated Real Entity");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SPHERE_COLOR("Sphere Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_BOX_COLOR("Box Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ICON_IMAGE("Icon Image");
 
       ////////////////////////////////////////////////////////////////////////
       PositionMarkerActorProxy::PositionMarkerActorProxy()
@@ -232,6 +298,13 @@ namespace SimCore
                   PROPERTY_BOX_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
+         static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "
+                  "type of the entity marked by this position.");
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE, 
+                  PROPERTY_ICON_IMAGE, PROPERTY_ICON_IMAGE,
+                  dtDAL::ResourceActorProperty::SetFuncType(pm, &PositionMarker::LoadImage),
+                  PROPERTY_ICON_IMAGE_DESC, POSITION_MARKER_GROUP
+         ));
       }
 
       ////////////////////////////////////////////////////////////////////////
