@@ -3,7 +3,7 @@ SET(LIB_NAME     ${STEALTHGM_LIBRARY})
 SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/StealthViewer/GMApp)
 SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/StealthViewer/GMApp)
 
-INCLUDE_DIRECTORIES(${RTIS_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${RTI_INCLUDE_DIR})
 
 file(GLOB LIB_PUBLIC_HEADERS 
    "${HEADER_PATH}/*.h")
@@ -12,8 +12,8 @@ file(GLOB LIB_SOURCES
 
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
 
-ADD_LIBRARY(${LIB_NAME} SHARED                        
-    ${LIB_PUBLIC_HEADERS}                         
+ADD_LIBRARY(${LIB_NAME} SHARED
+    ${LIB_PUBLIC_HEADERS}
     ${LIB_SOURCES}
 )
 
