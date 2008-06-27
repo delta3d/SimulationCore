@@ -56,7 +56,7 @@
    #include <SimCore/Actors/NECCBoatActor.h>
 #endif
 
-#include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
+#include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <SimCore/Actors/oceanwater.h>
@@ -136,7 +136,7 @@ namespace SimCore
       EntityActorRegistry::EntityActorRegistry() :
          dtDAL::ActorPluginRegistry("This library will store some entity actors")
       {
-         //dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
+         dtCore::ShaderManager::GetInstance().LoadShaderDefinitions("Shaders/ShaderDefs.xml", true);
       }
 
       ///////////////////////////////////////////////////////////////////////////
@@ -145,8 +145,8 @@ namespace SimCore
          mActorFactory->RegisterType<PlatformActorProxy>(PLATFORM_ACTOR_TYPE.get());
          mActorFactory->RegisterType<HumanActorProxy>(HUMAN_ACTOR_TYPE.get());
 
-         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(OLD_REMOTE_PHYSX_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(PLATFORM_WITH_PHYSICS_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(OLD_REMOTE_PHYSX_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<StealthActorProxy>(STEALTH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PlayerActorProxy>(PLAYER_ACTOR_TYPE.get());
@@ -175,8 +175,8 @@ namespace SimCore
          mActorFactory->RegisterType<NxAgeiaMunitionsPSysActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #else
-         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaRemoteKinematicActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #endif
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
