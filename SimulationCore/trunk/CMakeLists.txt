@@ -24,6 +24,11 @@ OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" OFF)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
 
+if (BUILD_HLA)
+   OPTION(USE_RTIS "Use RTI-s for the RTI implementation" ON)
+   OPTION(USE_CERTI "Use CERTI for the RTI implementation" OFF)
+endif (BUILD_HLA)
+
 
 IF (WIN32)
    SET(CMAKE_DEBUG_POSTFIX  "d")
@@ -180,9 +185,18 @@ FIND_PACKAGE(GDAL)
 FIND_PACKAGE(DIS)
 
 if (BUILD_HLA)
-   FIND_PACKAGE(RTI-s REQUIRED)
-ENDIF(BUILD_HLA)
-
+   if (USE_RTIS)
+      MESSAGE("RTI-s selected for HLA")
+      FIND_PACKAGE(RTI-s) #for dtHLAGM
+   else (USE_RTIS)
+      if (USE_CERTI)
+         MESSAGE("CERTI selected for HLA")
+         FIND_PACKAGE(RTICERTI REQUIRED)
+      else (USE_CERTI)
+            MESSAGE("No HLA RTI selected, PICK CERTI or RTI-s")
+      endif (USE_CERTI)
+   endif (USE_RTIS)
+endif (BUILD_HLA)
 
 
 #MESSAGE(STATUS "${Boost_INCLUDE_DIR} ${Boost_PYTHON_INCLUDE_DIR} ${PYTHON_INCLUDE_PATH}")
