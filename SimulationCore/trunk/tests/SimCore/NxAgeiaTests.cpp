@@ -5,7 +5,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtDAL/project.h>
 #include <dtDAL/datatype.h>
-#include <dtGame/gamemanager.h> 
+#include <dtGame/gamemanager.h>
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
@@ -26,7 +26,7 @@
 #include <dtGame/basemessages.h>
 
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-#include <SimCore/Actors/NxAgeiaRemoteKinematicActor.h>
+#include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
 
 #include <UnitTestMain.h>
@@ -112,7 +112,7 @@ void NxAgeiaTests::TestParticleSystemPerformance()
       dtCore::System::GetInstance().Step();
       dtCore::System::GetInstance().Step();
 
-      dtDAL::Project::GetInstance().GetMap("AgeiaParticleTest").FindProxies(proxies, "AgeiaParticleSystem");      
+      dtDAL::Project::GetInstance().GetMap("AgeiaParticleTest").FindProxies(proxies, "AgeiaParticleSystem");
    }
    catch (dtUtil::Exception &e)
    {
@@ -133,12 +133,12 @@ void NxAgeiaTests::TestParticleSystemPerformance()
          dtCore::RefPtr<dtDAL::ActorProxy> newPrototypeActor = mGM->CreateActorFromPrototype(gameProxy->GetId());
          if(newPrototypeActor.valid())
          {
-            NxAgeiaParticleSystemActorProxy* newParticle = 
+            NxAgeiaParticleSystemActorProxy* newParticle =
                static_cast<NxAgeiaParticleSystemActorProxy*>(newPrototypeActor.get());
-            
-            NxAgeiaParticleSystemActor* newPartActor = 
+
+            NxAgeiaParticleSystemActor* newPartActor =
                static_cast<NxAgeiaParticleSystemActor*>(newParticle->GetActor());
-            
+
             newParticle->SetInitialOwnership(dtGame::GameActorProxy::Ownership::CLIENT_LOCAL);
             newPartActor->ToggleEmitter(true);
             mGM->AddActor(*newParticle, false, false);
@@ -185,7 +185,7 @@ void NxAgeiaTests::TestParticleSystemPerformance()
    }
    timerEnd = timer.Tick();
 
-   mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+   mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
       "   Time Results for Update: " + dtUtil::ToString(timer.DeltaSec(timerStart, timerEnd)) + " sec.");
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -223,7 +223,7 @@ void NxAgeiaTests::TestFunction()
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
    mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE, obj);
    dtCore::RefPtr<SimCore::Actors::NxAgeiaRemoteKinematicActor> objActor = dynamic_cast<SimCore::Actors::NxAgeiaRemoteKinematicActor*>(obj->GetActor());
-   
+
    objActor->GetPhysicsHelper()->SetAgeiaFlags(AGEIA_FLAGS_PRE_UPDATE);
    CPPUNIT_ASSERT_MESSAGE("Flags should have been !& with collision callback flag", (AGEIA_FLAGS_PRE_UPDATE & objActor->GetPhysicsHelper()->GetAgeiaFlags()) == true);
 
@@ -270,7 +270,7 @@ void NxAgeiaTests::TestFunction()
       // To be done.
       TestReleaseAllAgeiaHelpers() - Works, no unit test though :(
       Try to delete a scene with objects in it - test for those objects then.
-      
+
       ///////////////////////////
       // No way to test currently
       Try To make a scene with same name - no way of testing currently.
@@ -279,16 +279,16 @@ void NxAgeiaTests::TestFunction()
       // Subclassing.
       Register An Ageia Helper Twice - Is handled. no unit test without subclassing though
       Remove An Ageia Helper - Is handled. no unit test without subclassing though
-      
+
       ////////////////////////
       // External Tests.
-      Test Making multiple names. - Make a rope or StacksActor. 
-      Test Making multiple joints. - Make a RopeActor. 
+      Test Making multiple names. - Make a rope or StacksActor.
+      Test Making multiple joints. - Make a RopeActor.
       Test Remove Joint. - Rope Sim, make then just delete a joint after creation. Is handled.
-      Test Caching models 
+      Test Caching models
       Test loading static world geometry and making sure its static.
       Test setting something to kinematic and making sure it works
-   */ 
+   */
    ///////////////////////////////////////////////////////////////
 }
 #endif
