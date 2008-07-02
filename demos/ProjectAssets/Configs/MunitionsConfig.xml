@@ -53,11 +53,11 @@
 	
   -->
     <header>
-        <name>Visit</name>
+        <name>DriverDemoMunitions</name>
         <description>Map munitions damage probabilities specific to certain entities.</description>
         <author>Chris Rodgers</author>
-        <comment>Please feel free to email me questions regarding the use of munition damage tables: crodgers@alionscience.com</comment>
-        <copyright>2007 Alion Science and Technology</copyright>
+        <comment></comment>
+        <copyright>2008 Alion Science and Technology</copyright>
         <schemaVersion>1.0</schemaVersion>
     </header>
 
@@ -67,8 +67,8 @@
 			<force>200</force> <!-- in Newtons -->
 			<accumulationFactor>0.1</accumulationFactor>
 			<damageProbability>
-				<N>0.95</N>
-				<M>0.05</M>
+				<N>0.90</N>
+				<M>0.10</M>
 				<K>0.0</K>
 			</damageProbability>
 		</munition>
@@ -97,7 +97,7 @@
 		</munition>
 	
 		<munition name="High Explosive">
-			<force>200</force> <!-- in Newtons -->
+			<force>20000</force> <!-- in Newtons -->
 			<accumulationFactor>0.0</accumulationFactor>
 			<damageProbability>
 				<M>1.0</M>

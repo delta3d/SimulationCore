@@ -75,7 +75,8 @@ namespace DriverDemo
    const std::string GameAppComponent::DEFAULT_NAME                 = "GameAppComponent";
    const std::string GameAppComponent::APPLICATION_NAME             = "Driver Demo";
    const std::string GameAppComponent::CMD_LINE_STARTING_POSITION   = "StartingPosition";
-   const std::string GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN    = "VehicleCallSign";
+   //const std::string GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN    = "VehicleCallSign";
+   const std::string GameAppComponent::CMD_LINE_VEHICLE_PROTOTYPE_NAME = "VehicleName";
    const std::string GameAppComponent::CMD_LINE_WEAPON              = "Weapon";
    const std::string GameAppComponent::CMD_LINE_START_HEADING       = "StartHeading";
 
@@ -119,8 +120,8 @@ namespace DriverDemo
 
       BaseGameAppComponent::InitializeCommandLineOptionsAndRead(parser);
 
-      parser->getApplicationUsage()->addCommandLineOption("--vehicle_callsign",        
-         "Vehicle callsign we are attaching to");
+      parser->getApplicationUsage()->addCommandLineOption("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME,        
+         "Vehicle we are attaching to - use the prototype actor name in DriverPrototypes.xml");
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
       int tempValue = 0;
@@ -157,12 +158,17 @@ namespace DriverDemo
          = new dtDAL::NamedFloatParameter(CMD_LINE_START_HEADING, heading);
       commandLineObject->AddParameter(paramHeading.get());
 
-      std::string callSign;
-      if(parser->read("--vehicle_callsign", callSign))
+      std::string prototypeName;
+      if(parser->read("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName))
       {
          dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
-            = new dtDAL::NamedStringParameter(CMD_LINE_VEHICLE_CALLSIGN, callSign);
+            = new dtDAL::NamedStringParameter(CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName);
          commandLineObject->AddParameter(parameter.get());
+      }
+      else
+      {
+         LOG_ALWAYS("To choose your vehicle, pass '--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME + 
+            "' on the command line \n     followed by either, 'Hover_Vehicle' or 'Wheeled_Vehicle'.");
       }
       
    }
@@ -261,15 +267,26 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::BasePhysicsVehicleActor *GameAppComponent::CreateNewVehicle(const std::string &vehicleName)
+   SimCore::Actors::BasePhysicsVehicleActor *GameAppComponent::CreateNewVehicle()
    {
       SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
+      std::string vehicleName = "Hover_Vehicle"; // The default. Change with command line args.
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
       if(commandLineObject == NULL)
       {
          LOG_ERROR("commandLineObject is null, InitializeVehicle will not occur");
          return NULL;
+      }
+
+      // look up the prototype name from the command line args. If the user supplied one,
+      // then we use that instead of the default.  This would be like "Hover_Vehicle" or "Wheeled_Vehicle"
+      const dtDAL::NamedStringParameter* vehiclePrototypeName
+         = dynamic_cast<const dtDAL::NamedStringParameter*>
+         (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_PROTOTYPE_NAME));
+      if( vehiclePrototypeName != NULL )
+      {
+         vehicleName = vehiclePrototypeName->GetValue();
       }
 
       // Find the vehicle template based on the name. The default is 'Driver_Vehicle'.
@@ -298,13 +315,7 @@ namespace DriverDemo
                vehicle->SetArticulationHelper( new DriverArticulationHelper );
 
                // Ensure the vehicle will publish its call-sign via its name property
-               const dtDAL::NamedStringParameter* callsignName
-                  = dynamic_cast<const dtDAL::NamedStringParameter*>
-                  (commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
-               if( callsignName != NULL )
-               {
-                  vehicle->SetName( callsignName->GetValue() );
-               }
+               vehicle->SetName("VehicleName123");
 
                vehicle->GetPhysicsHelper()->SetVehicleStartingPosition( mStartingPosition );
 
@@ -393,17 +404,17 @@ namespace DriverDemo
       // so the input component knows whats going on
       mInputComponent->SetPlayer(mStealth.get());
 
-      const dtDAL::NamedStringParameter* callsignName
-         = dynamic_cast<const dtDAL::NamedStringParameter*>
-         (commandLineObject->GetParameter(DriverDemo::GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
-      if( callsignName != NULL )
-      {
-         mStealth->SetName( callsignName->GetValue() );
-      }
-      else
-      {
+      //const dtDAL::NamedStringParameter* callsignName
+      //   = dynamic_cast<const dtDAL::NamedStringParameter*>
+      //   (commandLineObject->GetParameter(DriverDemo::GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
+      //if( callsignName != NULL )
+      //{
+      //   mStealth->SetName( callsignName->GetValue() );
+      //}
+      //else
+      //{
          mStealth->SetName( "Player" );
-      }
+      //}
 
    }
 } // end dvte namespace.
