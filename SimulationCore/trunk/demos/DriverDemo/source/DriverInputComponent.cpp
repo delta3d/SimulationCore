@@ -33,6 +33,7 @@
 #include <dtCore/nodecollector.h>
 
 #include <dtUtil/enumeration.h>
+#include <dtUtil/nodeprintout.h>
 
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/WeaponActor.h>
@@ -264,8 +265,8 @@ namespace DriverDemo
          gameManager.GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
          if(gameAppComponent != NULL)
          {
-            SimCore::Actors::BasePhysicsVehicleActor* vehicle = 
-               gameAppComponent->CreateNewVehicle("Driver_Vehicle");
+            // Look up our prototype vehicle and create a new instance of one that we can drive! 
+            SimCore::Actors::BasePhysicsVehicleActor* vehicle = gameAppComponent->CreateNewVehicle();
            
             if(vehicle != NULL)
             {
@@ -383,6 +384,18 @@ namespace DriverDemo
                {
                   mRingMM->SetEnabled( false );
                }
+            }
+         }
+         break;
+
+         // Switch Weapons
+         case 'h':
+         {
+            if(!mWeaponList.empty())
+            {
+               mWeaponIndex ++;
+               mWeaponIndex = (mWeaponIndex >= mWeaponList.size()) ? 0 : mWeaponIndex;
+               SetWeapon( mWeaponList[mWeaponIndex].get() );
             }
          }
          break;
@@ -895,6 +908,13 @@ namespace DriverDemo
       mHUDComponent->SetWeapon( mWeapon.get() );
    
       SetViewMode();   
+
+      dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
+      std::string nodes = nodePrinter->CollectNodeData(*vehicle.GetNonDamagedFileNode());
+      std::cout << " --------- NODE PRINT OUT FOR VEHICLE --------- " << std::endl;
+      std::cout << nodes.c_str() << std::endl;
+
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -1029,13 +1049,16 @@ namespace DriverDemo
    
       // weapons -- for array iterator.
       // WEAPON 1
-      //CreateWeapon( "Weapon_MK19", // a.k.a M2
-      //   "Particle_System_Weapon_50Cal_with_tracer",
-      //   "weapon_50cal_flash.osg", curWeapon );
-      CreateWeapon( "Weapon_Grenade", // a.k.a M2
+      CreateWeapon( "Weapon_Grenade",
          "Particle_System_Weapon_Grenade",
          "weapon_gun_flash.osg", curWeapon );
-   
+      if( curWeapon.valid() ) { mWeaponList.push_back( curWeapon.get() ); }
+      curWeapon = NULL;
+
+      // WEAPON 2
+      CreateWeapon( "Weapon_MachineGun",
+         "Particle_System_Weapon_GunWithTracer",
+         "weapon_gun_flash.osg", curWeapon );
       if( curWeapon.valid() ) { mWeaponList.push_back( curWeapon.get() ); }
       curWeapon = NULL;
    

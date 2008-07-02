@@ -70,7 +70,8 @@ namespace DriverDemo
          static const std::string CMD_LINE_STARTING_POSITION;
          static const std::string CMD_LINE_HAS_NIGHTVISION;
          static const std::string CMD_LINE_MACHINE_ID;
-         static const std::string CMD_LINE_VEHICLE_CALLSIGN;
+         //static const std::string CMD_LINE_VEHICLE_CALLSIGN;
+         static const std::string CMD_LINE_VEHICLE_PROTOTYPE_NAME;
          static const std::string CMD_LINE_WEAPON;
          static const std::string CMD_LINE_START_HEADING;
          //static const std::string CMD_LINE_START_LAT;
@@ -118,8 +119,8 @@ namespace DriverDemo
          /// inits the player for the application
          void InitializePlayer();
 
-         /// inits the vhiecle for app
-         SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle(const std::string &vehicleName);
+         /// inits the vhiecle for app - Uses "Hover_Vehicle" as a default name. Pass in to command line to change. 
+         SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle();
 
          /// loads the terrain to the application, specific to CDMTS command line option.
          //void InitializeTerrain();

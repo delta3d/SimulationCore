@@ -345,7 +345,7 @@ namespace DriverDemo
             Mouse + Left Crtl - Look around\n\
             Mouse Left Btn - Fire\n\
             Mouse + Right Btn - Turn ring mount\n\
-            H/J - Cycle weapon\n\
+            H - Cycle weapon\n\
             \n\
             F1 - Help\n\
             \n\

@@ -251,18 +251,18 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////////////
       // HUD GUI COMPONENT
-      const dtDAL::NamedStringParameter* callsignName = 
-         dynamic_cast<const dtDAL::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
+      //const dtDAL::NamedStringParameter* callsignName = 
+      //   dynamic_cast<const dtDAL::NamedStringParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_VEHICLE_CALLSIGN));
    
       dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
       gm.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
       mHudGUI->Initialize();
-      if(callsignName == NULL)
+      //if(callsignName == NULL)
          mHudGUI->SetCallSign( "NoCallSignSet" );
-      else
-      {
-         mHudGUI->SetCallSign( callsignName->GetValue() );
-      }
+      //else
+      //{
+      //   mHudGUI->SetCallSign( callsignName->GetValue() );
+      //}
 
       ////////////////////////////////////////////////////////////////////////
       // Disable the weather component's ability to change the clipping planes.
