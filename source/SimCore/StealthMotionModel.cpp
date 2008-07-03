@@ -106,13 +106,14 @@ namespace SimCore
       float isectorSpan = GetMaximumFlySpeed() * 1.1f;
       if( isectorSpan < 100.0f )
       {
-         isectorSpan = 100.0f; 
+         isectorSpan = 100.0f;
       }
 
       mIsector->Reset();
       mIsector->SetStartPosition( camPosition + osg::Vec3(0.0f,0.0f,-isectorSpan) );
       mIsector->SetDirection( vec );
-      mIsector->SetLength( isectorSpan * 2.0f );
+      // measure up a WHOLE lot more.
+      mIsector->SetLength( isectorSpan * 10.0f );
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -157,7 +158,7 @@ namespace SimCore
             //set our new position/rotation
             xyz[2] = hitPt[2];
             transform.SetTranslation(xyz);
-            GetTarget()->SetTransform(transform, dtCore::Transformable::ABS_CS); 
+            GetTarget()->SetTransform(transform, dtCore::Transformable::ABS_CS);
          }
       }
 
@@ -206,12 +207,12 @@ namespace SimCore
       FlyMotionModel::OnMessage(data);
 
       // Collide with ground
-      if(mScene.valid() && GetTarget() != NULL && IsEnabled() && 
+      if(mScene.valid() && GetTarget() != NULL && IsEnabled() &&
             (data->message == "preframe" || data->message == "pause"))
-      {  
+      {
          if (mCollideWithGround)
-            CollideWithGround(); 
-         else 
+            CollideWithGround();
+         else
             EstimateElevation();
       }
    }

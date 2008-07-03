@@ -19,6 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
+ * @author David Guthrie
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/MessageType.h>
@@ -32,20 +33,20 @@ namespace SimCore
    const MessageType MessageType::DETONATION("Detonation", "StealthViewer", "Munition Detonation", USER_DEFINED_MESSAGE_TYPE + 2);
    const MessageType MessageType::SHOT_FIRED("Shot Fired", "StealthViewer", "Entity Weapon Fired", USER_DEFINED_MESSAGE_TYPE + 3);
 
-   const MessageType MessageType::STEALTH_ACTOR_FOV("Stealth Actor Field of View", "StealthViewer", 
-      "Carries an update or change to the stealth actor field of view.", 
+   const MessageType MessageType::STEALTH_ACTOR_FOV("Stealth Actor Field of View", "StealthViewer",
+      "Carries an update or change to the stealth actor field of view.",
       USER_DEFINED_MESSAGE_TYPE + 4);
-   const MessageType MessageType::STEALTH_ACTOR_ROTATION("Stealth Actor Rotation", "StealthViewer", 
+   const MessageType MessageType::STEALTH_ACTOR_ROTATION("Stealth Actor Rotation", "StealthViewer",
       "Carries and update or change to the stealth actor rotation.",
       USER_DEFINED_MESSAGE_TYPE + 5);
-   const MessageType MessageType::STEALTH_ACTOR_TRANSLATION("Stealth Actor Translation", "StealthViewer", 
+   const MessageType MessageType::STEALTH_ACTOR_TRANSLATION("Stealth Actor Translation", "StealthViewer",
       "Carries and update or change to the stealth actor translation.",
       USER_DEFINED_MESSAGE_TYPE + 6);
 
    const MessageType MessageType::MAGNIFICATION("Magnification", "Magnification", "Set when the magnification of the actors need to be updated", USER_DEFINED_MESSAGE_TYPE + 16);
 
    const MessageType MessageType::TIME_QUERY("Time Query", "Time", "Query the network for the current time (HLA).",
-      USER_DEFINED_MESSAGE_TYPE + 18);            
+      USER_DEFINED_MESSAGE_TYPE + 18);
    const MessageType MessageType::TIME_VALUE("Time Value", "Time", "Respose to a time query (HLA).",
       USER_DEFINED_MESSAGE_TYPE + 19);
 
@@ -57,33 +58,37 @@ namespace SimCore
    MessageType MessageType::NO_TOOL("No Tool", "Tools", "No Tool", USER_DEFINED_MESSAGE_TYPE + 15);
    MessageType MessageType::MAP("Map", "Tools", "Map", USER_DEFINED_MESSAGE_TYPE + 17);
 
-   MessageType MessageType::CONTROL_STATE_CONFLICT("Conflict", "Control State", 
-      "Conflict in controls states, possibly pointing to the same station", 
+   MessageType MessageType::CONTROL_STATE_CONFLICT("Conflict", "Control State",
+      "Conflict in controls states, possibly pointing to the same station",
       USER_DEFINED_MESSAGE_TYPE + 20);
-  
+
+   const MessageType MessageType::REQUEST_WARP_TO_POSITION("Warp To Position", "StealthViewer", "Warp the Stealth Actor to a Position", USER_DEFINED_MESSAGE_TYPE + 21);
+
+   ///////////////////////////////////////////////////////////////////////
    MessageType::MessageType(
-      const std::string &name, 
-      const std::string &category, 
-      const std::string &description, 
-      const unsigned short messageId) : 
+      const std::string &name,
+      const std::string &category,
+      const std::string &description,
+      const unsigned short messageId) :
       dtGame::MessageType(name, category, description, messageId)
    {
       AddInstance(this);
    }
 
-      void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
-   { 
-      factory.RegisterMessageType<DetonationMessage>(DETONATION);
+   ///////////////////////////////////////////////////////////////////////
+   void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
+   {
       factory.RegisterMessageType<AttachToActorMessage>(ATTACH_TO_ACTOR);
+      factory.RegisterMessageType<DetonationMessage>(DETONATION);
       factory.RegisterMessageType<ShotFiredMessage>(SHOT_FIRED);
-      
+
       factory.RegisterMessageType<StealthActorUpdatedMessage>(STEALTH_ACTOR_FOV);
       factory.RegisterMessageType<StealthActorUpdatedMessage>(STEALTH_ACTOR_ROTATION);
       factory.RegisterMessageType<StealthActorUpdatedMessage>(STEALTH_ACTOR_TRANSLATION);
-      
+
       factory.RegisterMessageType<TimeQueryMessage>(TIME_QUERY);
       factory.RegisterMessageType<TimeValueMessage>(TIME_VALUE);
-      
+
       factory.RegisterMessageType<MagnificationMessage>(MAGNIFICATION);
 
       factory.RegisterMessageType<ToolMessage>(BINOCULARS);
@@ -94,8 +99,11 @@ namespace SimCore
       factory.RegisterMessageType<ToolMessage>(NIGHT_VISION);
 
       factory.RegisterMessageType<ControlStateMessage>(CONTROL_STATE_CONFLICT);
+
+      factory.RegisterMessageType<StealthActorUpdatedMessage>(REQUEST_WARP_TO_POSITION);
    }
 
+   ///////////////////////////////////////////////////////////////////////
    bool MessageType::IsValidToolType(const dtGame::MessageType &type)
    {
       return type == MessageType::BINOCULARS
@@ -106,4 +114,7 @@ namespace SimCore
          || type == MessageType::NO_TOOL
          || type == MessageType::LASER_RANGE_FINDER;
    }
+
+   /// Destructor
+   MessageType::~MessageType() { }
 }

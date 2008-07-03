@@ -25,6 +25,10 @@
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
+#include <dtUtil/coordinates.h>
+#include <dtCore/uniqueid.h>
+#include <osg/Vec3d>
+#include <string>
 
 namespace StealthGM
 {
@@ -36,14 +40,35 @@ namespace StealthGM
          ControlsCameraConfigObject();
 
          /**
-          * Applys the changes into the game manager
+          * Applies the changes into the game manager
           */
          virtual void ApplyChanges(dtGame::GameManager &gameManager);
+
+         /**
+          * Reloads the coordinate config.
+          */
+         virtual void Reset(dtGame::GameManager &gameManager);
+
+         void WarpToPosition(double latitude, double longitude, double elevation);
+         void WarpToPosition(const std::string& MGRS, double elevation);
+         void WarpToPosition(const osg::Vec3d& xyzPosition);
+
+         bool IsAboutToWarp() const;
+         bool IsCoordConfigValid() const;
+         const dtUtil::Coordinates& GetCoordinates() const;
+         const osg::Vec3d& GetWarpToPosition() const;
+         const dtCore::UniqueId& GetStealthActorId() const;
 
       protected:
 
          /// Destructor
          virtual ~ControlsCameraConfigObject();
+
+         bool mWarp;
+         bool mCoordValid;
+         dtUtil::Coordinates mCoord;
+         osg::Vec3d mWarpToPosition;
+         dtCore::UniqueId mStealthActorId;
    };
 }
 
