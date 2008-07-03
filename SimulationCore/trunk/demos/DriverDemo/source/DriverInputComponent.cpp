@@ -12,6 +12,7 @@
 */
 #include <DriverInputComponent.h>
 #include <DriverHUD.h>
+#include <DriverActorRegistry.h>
 
 #include <dtABC/application.h>
 
@@ -96,6 +97,7 @@
 
 #include <DriverArticulationHelper.h>
 #include <HoverVehicleActor.h>
+#include <HoverTargetActor.h>
 
 #include <SimCore/Actors/FlareActor.h>
 #include <dtUtil/matrixutil.h>
@@ -397,6 +399,13 @@ namespace DriverDemo
                mWeaponIndex = (mWeaponIndex >= mWeaponList.size()) ? 0 : mWeaponIndex;
                SetWeapon( mWeaponList[mWeaponIndex].get() );
             }
+         }
+         break;
+
+         // T spawns target test actors.
+         case 't':
+         {
+            CreateTarget();
          }
          break;
 
@@ -1401,35 +1410,33 @@ namespace DriverDemo
       }
    }
    
-   // CurtTest
-/*   ////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::CreateTarget()
    {
-      if (mVehicle.valid())
+      dtGame::GameManager* gm = GetGameManager();
+      std::vector<dtDAL::ActorProxy*> foundProxies;
+      
+      gm->FindPrototypesByName("Hover_Target_Prototype", foundProxies);
+      if( foundProxies.empty() )
       {
-         // Offset the player relative to the vehicle
-         dtCore::Transform xform;
-         mVehicle->GetTransform( xform );
-         osg::Vec3 position = xform.GetTranslation();
-         position[0] += 3;
-         position[1] += 3;
-         position[2] += 3;
-         xform.SetTranslation(position);
-
-         dtCore::RefPtr<DVTE::Actors::FloatTargetProxy> targetProxy;
-         GetGameManager()->CreateActor(*DVTE::Actors::DVTEActorRegistry::FLOAT_TARGET_TYPE, targetProxy);
-
-         if (targetProxy.valid())
-         {
-            DVTE::Actors::FloatTargetActor* targetActor;
-            targetProxy->GetActor(targetActor);
-            targetActor->SetTransform( xform );
-            GetGameManager()->AddActor(*targetProxy.get(), false, false);
-
-            mStaticLastTarget = targetActor;
-         }
+         LOG_ERROR( "No Hover Target prototype could be loaded from the map." );
+         return;
       }
 
+      // Create a new target from the discovered prototype
+      dtCore::RefPtr<DriverDemo::HoverTargetActorProxy> newTargetProxy 
+         = dynamic_cast<DriverDemo::HoverTargetActorProxy*>
+         (gm->CreateActorFromPrototype(foundProxies[0]->GetId()).get());
+
+      // Add the actor to the game manager.
+      if (newTargetProxy.valid())
+      {
+         //DriverDemo::HoverTargetActor* targetActor;
+         //targetProxy->GetActor(targetActor);
+         GetGameManager()->AddActor(*newTargetProxy.get(), false, true);
+      }
+      else
+         LOG_ERROR( "Failure creating Hover Target actor." );
    }
-*/
+
 }

@@ -14,8 +14,9 @@
 #include <DriverActorRegistry.h>
 
 #ifdef AGEIA_PHYSICS
-   #include <HoverVehicleActor.h>
-   #include <NxAgeiaWorldComponent.h>
+#include <HoverVehicleActor.h>
+#include <HoverTargetActor.h>
+#include <NxAgeiaWorldComponent.h>
 #endif
 
 #include <dtCore/shadermanager.h>
@@ -28,6 +29,8 @@ namespace DriverDemo
 
    RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("HoverActor", "DriverDemo", "A floaty drivable vehicle for Driver Demo"));
+   RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE(
+      new dtDAL::ActorType("HoverTargetActor", "DriverDemo", "A floaty shootable target object for Driver Demo"));
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" DRIVER_DEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -51,5 +54,6 @@ namespace DriverDemo
    void DriverActorRegistry::RegisterActorTypes()
    {
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<HoverTargetActorProxy>(HOVER_TARGET_ACTOR_TYPE.get());
    }
 }

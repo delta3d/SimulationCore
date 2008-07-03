@@ -26,7 +26,7 @@
 namespace DriverDemo
 {
    ///a workaround for the transform inefficiency
-   void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix);
+   //void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix);
 
    ////////////////////////////////////////////////////////////////////////////////////
    HoverVehiclePhysicsHelper::HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy) :
@@ -46,23 +46,8 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////////
    HoverVehiclePhysicsHelper::~HoverVehiclePhysicsHelper(){}
 
-   ////////////////////////////////////////////////////////////////////////////////////
-   dtAgeiaPhysX::NxAgeiaWorldComponent *HoverVehiclePhysicsHelper::GetPhysicsComponent() 
-   {
-      if (!mWorldComponent.valid())
-      {
-         mWorldComponent = FindWorldComponent();
-         if (!mWorldComponent.valid())
-         {
-            LOG_ERROR("Fatal error - could not find Physics Component! Hover Vehicle will not work and may crash.");
-         }
-      }
-
-      // NOTE - This class assumes the component exists.  If it doesn't, it will probably crash.
-      return mWorldComponent.get();
-   }
-
    //??? Curt What the heck??? 
+   /*
    ///////////////////////////////////////////////////////////////////////////////////
    void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix)
    {
@@ -79,22 +64,8 @@ namespace DriverDemo
          wcMatrix.set( osg::computeLocalToWorld(nodePath) );
       }
    }
+   */
 
-   ////////////////////////////////////////////////////////////////////////////////////
-   /// Reset to starting position
-   void HoverVehiclePhysicsHelper::ResetToStarting()
-   {
-      NxAgeiaPhysicsHelper::ResetToStarting();
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////////
-   /// Turns it up and moves up
-   void HoverVehiclePhysicsHelper::RepositionVehicle(float deltaTime)
-   {
-      // Do whatever you need here in addition to the base class... 
-   }
-
-   
    //////////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Meths                                   //
    //////////////////////////////////////////////////////////////////////////////////////
@@ -247,34 +218,6 @@ namespace DriverDemo
 
    }
 
-   ////////////////////////////////////////////////////////////////////////////////////
-   float HoverVehiclePhysicsHelper::GetClosestIntersectionUsingDirection(
-      const osg::Vec3& location, const osg::Vec3& direction , osg::Vec3& outPoint, int groupFlags)
-   {
-      float closestHitDistance = 0.0f;
-      NxScene& scene = GetPhysicsComponent()->GetPhysicsScene(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME);
-
-      NxRay ray;
-      ray.orig = NxVec3(location.x(),location.y(),location.z());
-      ray.dir = NxVec3(direction.x(), direction.y(), direction.z());
-
-      // CURT - NOTE - You can pass in the owner of the intersection if it's a drawable. 
-      // This is useful for not intersecting yourself!
-      // Create a raycast report that should ignore this vehicle.
-      dtAgeiaPhysX::SimpleRaycastReport report( &GetPhysicsGameActorProxy().GetGameActor() );
-
-      NxU32 numHits = scene.raycastAllShapes(ray, report, NX_ALL_SHAPES, groupFlags );
-      if(numHits > 0 && report.HasHit())
-      {
-         closestHitDistance = report.GetClosestRaycastHit().distance;
-         //std::cout << "Hit distance[" << closestHitDistance << "]." << std::endl;
-         report.GetClosestHit( outPoint );
-      }         
-
-      // Returns 0 if no hit or distance to closest hit.  Actual hit is in outPoint
-      return closestHitDistance;
-   }
-
    ////////////////////////////////////////////////////////////////////////////////
    float HoverVehiclePhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
       const osg::Vec3 &direction, float &distanceToHit)
@@ -306,51 +249,6 @@ namespace DriverDemo
       return estimatedForceAdjustment;
 
    }
-
-/*   ////////////////////////////////////////////////////////////////////////////////
-   void HoverVehiclePhysicsHelper::CurtTestMethod(float timeDelta)
-   {
-      static osg::Vec3 lastXYZ = osg::Vec3(0.0,0.0,0.0);
-         NxScene& nxScene = GetPhysicsComponent()->GetPhysicsScene(std::string("Default"));
-         dtCore::Transform ourTransform;
-         vehicle->GetTransform(ourTransform);
-         osg::Vec3 curXYZ;
-         ourTransform.GetTranslation(curXYZ);
-         if (lastXYZ[0] == 0.0)
-            lastXYZ = curXYZ;
-
-         dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper *physicsHelper = 
-            vehicle->GetPhysicsHelper();
-         float weight = physicsHelper->GetVehicleBaseWeightAmount() + physicsHelper->GetVehicleGearWeightAmount() + 
-            physicsHelper->GetVehicleCrewWeightAmount() * physicsHelper->GetVehicleCrewMembersOnBoard();
-         //NxVec3 dir(0.0, 0.0, 180.0);
-         //physicsHelper->ApplyForceToActor(dir, 10000.0);
-
-
-         // Do a ray cast to see how close we are to the ground or other 'stuff'.
-         NxRay ourRay;
-         ourRay.orig = NxVec3(lastXYZ[0],lastXYZ[1],lastXYZ[2]);
-         ourRay.dir = NxVec3(0.0, 0.0, -1.0);
-         dtAgeiaPhysX::SimpleRaycastReport myReport(vehicle);//(mWeapon.valid() ? mWeapon->GetOwner() : NULL));
-         // CR: Create the bit mask once rather than every time the method is called.
-         static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN) | 
-            (1 << SimCore::NxCollisionGroup::GROUP_WATER)  | (1 << SimCore::NxCollisionGroup::GROUP_VEHICLE_WATER);
-         NxU32 numHits = nxScene.raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, GROUPS_FLAGS);
-         if(numHits > 0 && myReport.HasHit())
-         {
-            if (myReport.mClosestHit.distance <= 6.0)
-            {
-               float multiplier = dtUtil::Max(0.0f, 2 * (6.0f - myReport.mClosestHit.distance));
-               NxVec3 dir(0.0, 0.0, 1.0); // Why am I using 180???? 
-               //physicsHelper->ApplyForceToActor(dir, weight * multiplier);
-            }
-         }         
-
-         lastXYZ = curXYZ;
-      }
-   }
-*/
-
 
    //////////////////////////////////////////////////////////////////////////////////////
    //                               Vehicle Initialization                             //

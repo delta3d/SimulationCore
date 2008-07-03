@@ -208,6 +208,10 @@ namespace DriverDemo
          void SetStartPosition( const osg::Vec3& position ) { mStartPosition = position; }
          const osg::Vec3& GetStartPosition() const { return mStartPosition; }
    
+
+         /// Method to create a test target that can be shot
+         void CreateTarget();
+
       protected:
    
          /// Destructor

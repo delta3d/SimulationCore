@@ -41,17 +41,8 @@ namespace DriverDemo
       protected:
          virtual ~HoverVehiclePhysicsHelper();
 
-         /**
-          * A convenience method to get the physics component instead of looking it up each time.
-          * If the component doesn't exist, the app will likely crash.  
-          */
-         virtual dtAgeiaPhysX::NxAgeiaWorldComponent *GetPhysicsComponent();
-
       private:
 
-         //////////////////////////////////
-         // Runtime information
-         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> mWorldComponent;
 
          //////////////////////////////////
          // Properties
@@ -66,21 +57,8 @@ namespace DriverDemo
 
          float GetCurentMPH();
 
-         /// Reset to starting position, good for when u crash ;p
-         virtual void ResetToStarting();
-
          /// Turns it up and moves up
-         void RepositionVehicle(float deltaTime);
-
-         //void ApplySteerLeft(float deltaTime, float currentMPH);
-         //void ApplySteerRight(float deltaTime, float currentMPH);
-         //void ApplyReverse(float deltaTime, float currentMPH);
-         //void ApplyAccel(float deltaTime, float currentMPH);
-
-         /**
-         * /brief Purpose : Create Wheels onto the main NxActor from the base class
-         */
-         //NxWheelShape* AddWheelToActor(NxActor* actor, const NxVec3& position, bool BackTires);
+         //void RepositionVehicle(float deltaTime);
 
          /**
           * Call this method each frame from your actor after you have determined which direction to accelerate. 
@@ -93,9 +71,6 @@ namespace DriverDemo
           * /brief Purpose : To create the hover vehicle
           */ 
          bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode); 
-
-         float GetClosestIntersectionUsingDirection(const osg::Vec3& location, 
-            const osg::Vec3& direction , osg::Vec3& outPoint, int groupFlags);
 
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
             const osg::Vec3 &direction, float &distanceToHit);

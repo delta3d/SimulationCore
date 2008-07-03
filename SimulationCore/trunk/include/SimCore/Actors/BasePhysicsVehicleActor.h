@@ -97,9 +97,15 @@ namespace SimCore
                const NxActor& whatWeHit){}
 
             /**
-            * Handle forces received from the environment, such as detonations and impacts
-            */
-            virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
+             * Handle forces received from the environment, such as detonations and impacts
+             * Future - use the location as the source of the force impulse
+             */
+            virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location);
+
+            /**
+             * Handle forces received from the environment, such as detonations and impacts
+             */
+            virtual void ApplyForce(const osg::Vec3& force);
 
          // PUBLIC CLASSES
          public:
