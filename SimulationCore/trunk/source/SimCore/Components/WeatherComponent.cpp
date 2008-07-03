@@ -120,7 +120,7 @@ namespace SimCore
          // "Time Master". If a "Time Master" is connected, the
          // day time actor will be replaced automatically.
          //mDayTime = NULL;
-      }  
+      }
 
       //////////////////////////////////////////////////////////
       void WeatherComponent::Reset()
@@ -164,7 +164,7 @@ namespace SimCore
          return mBaseElevation;
       }
 
-      
+
       //////////////////////////////////////////////////////////
       void WeatherComponent::SetPrecipStart(float start)
       {
@@ -179,15 +179,15 @@ namespace SimCore
 
       void WeatherComponent::SetStateSet(osg::Node* node)
       {
-         osg::StateSet* ss = m_spPrecipEffect->getOrCreateStateSet();                        
-         osg::Depth* depth = new osg::Depth(osg::Depth::LEQUAL, mPrecipStart, 1.0); 
-         ss->setAttributeAndModes(depth,osg::StateAttribute::ON ); 
+         osg::StateSet* ss = m_spPrecipEffect->getOrCreateStateSet();
+         osg::Depth* depth = new osg::Depth(osg::Depth::LEQUAL, mPrecipStart, 1.0);
+         ss->setAttributeAndModes(depth,osg::StateAttribute::ON );
          ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_PRECIPITATION, "DepthSortedBin");
       }
 
       //////////////////////////////////////////////////////////
       float WeatherComponent::GetPrecipStart() const
-      { 
+      {
          return mPrecipStart;
       }
 
@@ -197,9 +197,9 @@ namespace SimCore
          dtCore::Camera* camera = GetGameManager()->GetApplication().GetCamera();
 
          //if(!mUpdatesEnabled)
-         //   return; 
+         //   return;
 
-         // Calculate the elevation and far clip plane based on elevation 
+         // Calculate the elevation and far clip plane based on elevation
          float elevation = dtUtil::Abs(mCurElevation - mBaseElevation);
          float newFarClip = mFarClipPlane + elevation * 2.0f;
          // The FAR can't be shorter than current far, or larger than maxVis
@@ -207,14 +207,14 @@ namespace SimCore
          float newNearClip = mNearClipPlane * (newFarClip / mFarClipPlane); // push the near out to scale with the far
 
          // Update the near/far - if we are allowed and if the values have changed
-         if( mAllowClipAjust && (!dtUtil::Equivalent(newNearClip, mPreviousNearClipPlane) || 
+         if( mAllowClipAjust && (!dtUtil::Equivalent(newNearClip, mPreviousNearClipPlane) ||
                !dtUtil::Equivalent(newFarClip, mPreviousFarClipPlane)))
          {
             mPreviousNearClipPlane = newNearClip;
             mPreviousFarClipPlane = newFarClip;
 
-            camera->SetPerspectiveParams(camera->GetVerticalFov(), 
-                                         camera->GetAspectRatio(), 
+            camera->SetPerspectiveParams(camera->GetVerticalFov(),
+                                         camera->GetAspectRatio(),
                                          newNearClip, newFarClip);
          }
 
@@ -224,7 +224,7 @@ namespace SimCore
          // reported by the weather server.
          if(!mUpdatesEnabled)
          {
-            float vis = newFarClip * 0.6f; // Make fog distance a tad less than the far clip. Helps account for the boxy effect of culling & clipping. 
+            float vis = newFarClip * 0.6f; // Make fog distance a tad less than the far clip. Helps account for the boxy effect of culling & clipping.
             if(mEphemerisEnvironmentActor.valid())
             {
                if(!dtUtil::Equivalent(mEphemerisEnvironmentActor->GetVisibility(), vis))
@@ -277,7 +277,7 @@ namespace SimCore
          const dtGame::MessageType& type = msg.GetMessageType();
 
          // Avoid extra comparisons as this is a mere tick message
-         if(type == dtGame::MessageType::TICK_LOCAL || 
+         if(type == dtGame::MessageType::TICK_LOCAL ||
             type == dtGame::MessageType::TICK_REMOTE)
          {
             if(mEphemerisEnvironmentActor.valid())
@@ -299,7 +299,7 @@ namespace SimCore
             type == dtGame::MessageType::INFO_ACTOR_CREATED)
          {
             // Convert the message to its true form
-            const dtGame::ActorUpdateMessage& actorUpdateMsg = 
+            const dtGame::ActorUpdateMessage& actorUpdateMsg =
                static_cast<const dtGame::ActorUpdateMessage&> (msg);
 
             AssignNewProxy(actorUpdateMsg.GetAboutActorId());
@@ -319,7 +319,7 @@ namespace SimCore
             {
                mEphemerisEnvironmentActor = NULL;
             }
-         } 
+         }
 
          else if( type == dtGame::MessageType::INFO_MAP_LOADED)
          {
@@ -343,7 +343,7 @@ namespace SimCore
          else if (type == dtGame::MessageType::INFO_ENVIRONMENT_CHANGED)
          {
             dtDAL::ActorProxy *proxy = GetGameManager()->FindActorById(msg.GetAboutActorId());
-            SimCore::Actors::IGEnvironmentActorProxy* igproxy = 
+            SimCore::Actors::IGEnvironmentActorProxy* igproxy =
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(proxy);
             if(igproxy == NULL)
             {
@@ -377,11 +377,11 @@ namespace SimCore
          if(mDayTime.valid())
          {
             SetCoordinates();
-            
+
             if(mUpdatesEnabled)
             {
-               Actors::DayTimeActor* timeActor = 
-                  static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());         
+               Actors::DayTimeActor* timeActor =
+                  static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
 
                dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
                dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
@@ -393,7 +393,7 @@ namespace SimCore
          else
          {
             LOG_WARNING("WeatherComponent has no time of day data");
-         }         
+         }
       }
 
 
@@ -403,8 +403,7 @@ namespace SimCore
             return;
 
          std::vector<dtDAL::ActorProxy*> actors;
-         const dtDAL::ActorType* type = GetGameManager()->FindActorType("dtutil", "Coordinate Config");
-         GetGameManager()->FindActorsByType(*type, actors);
+         GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, actors);
          if(!actors.empty())
          {
             // Get the offset of time zones
@@ -440,15 +439,15 @@ namespace SimCore
          if(!mUpdatesEnabled)
             return;
 
-         if(!mEphemerisEnvironmentActor.valid()) 
-         { 
-            return; 
+         if(!mEphemerisEnvironmentActor.valid())
+         {
+            return;
          }
 
          // Update the weather conditions
          if(mAtmosphere.valid())
          {
-            Actors::UniformAtmosphereActor* atmosActor = 
+            Actors::UniformAtmosphereActor* atmosActor =
                static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
 
             // Change Clouds
@@ -460,8 +459,8 @@ namespace SimCore
             UpdateFog();
 
             // Change the Cloud Coverage
-            mEphemerisEnvironmentActor->ChangeClouds(int(atmosActor->GetCloudCoverage() / 10), 
-                                                      atmosActor->GetWindSpeedX(), 
+            mEphemerisEnvironmentActor->ChangeClouds(int(atmosActor->GetCloudCoverage() / 10),
+                                                      atmosActor->GetWindSpeedX(),
                                                       atmosActor->GetWindSpeedY());
             // Change Wind
             // --- The following forces an actor update message for which
@@ -513,7 +512,7 @@ namespace SimCore
                   {
                      m_spPrecipEffect = new osgParticle::PrecipitationEffect;
                      m_spPrecipEffect->setNodeMask(0x00000010);
-                     
+
                      SetStateSet(m_spPrecipEffect.get());
 
                      GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->addChild(m_spPrecipEffect.get());
@@ -635,7 +634,7 @@ namespace SimCore
 
          if(type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
          {
-            Actors::UniformAtmosphereActorProxy* proxy = 
+            Actors::UniformAtmosphereActorProxy* proxy =
                static_cast<Actors::UniformAtmosphereActorProxy*>(actor);
 
             if(mAtmosphere.valid() && mAtmosphere->GetId() != proxy->GetId())
@@ -645,9 +644,9 @@ namespace SimCore
                mAtmosphere = NULL;
             }
 
-            if(!mAtmosphere.valid()) 
-            { 
-               mAtmosphere = proxy; 
+            if(!mAtmosphere.valid())
+            {
+               mAtmosphere = proxy;
             }
 
             UpdateWeather();
@@ -662,20 +661,20 @@ namespace SimCore
                mDayTime = NULL;
             }
 
-            if(!mDayTime.valid()) 
-            { 
-               mDayTime = proxy; 
+            if(!mDayTime.valid())
+            {
+               mDayTime = proxy;
             }
 
             UpdateDayTime();
          }
          else if(type == *dtActors::EngineActorRegistry::ENVIRONMENT_ACTOR_TYPE)
          {
-            SimCore::Actors::IGEnvironmentActorProxy* igproxy = 
+            SimCore::Actors::IGEnvironmentActorProxy* igproxy =
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(actor);
             if(igproxy != NULL)
             {
-               SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*> 
+               SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>
                   (igproxy->GetActor()));
             }
          }

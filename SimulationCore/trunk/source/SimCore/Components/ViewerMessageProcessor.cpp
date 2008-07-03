@@ -42,8 +42,6 @@
 
 #include <dtUtil/mathdefines.h>
 
-#include <dtActors/coordinateconfigactor.h>
-
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
 
@@ -56,7 +54,7 @@ namespace SimCore
    namespace Components
    {
       ///////////////////////////////////////////////////////////////////////////
-      ViewerMessageProcessor::ViewerMessageProcessor(): 
+      ViewerMessageProcessor::ViewerMessageProcessor():
          mMagnification(1.0f),
          mTimeSyncLatency(0L)
       {
@@ -76,11 +74,11 @@ namespace SimCore
          {
             dtGame::GameManager &gameManager = *GetGameManager();
             std::vector<dtDAL::ActorProxy*> actors;
-            
+
             const dtGame::MapMessage &mlm = static_cast<const dtGame::MapMessage&>(msg);
             dtGame::GameManager::NameVector mapNames;
             mlm.GetMapNames(mapNames);
-            
+
             dtGame::DeadReckoningComponent *drComp;
             gameManager.GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
             dtAnim::AnimationComponent *animComp;
@@ -135,7 +133,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg) 
+      void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg)
       {
          dtGame::GameActorProxy *ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
          if (ap == NULL)
@@ -212,20 +210,20 @@ namespace SimCore
 
             unsigned long timeOffset = mTimeSyncLatency * int(tvMsg.GetTimeScale());
 
-            // The time offset is mute if the simulation is paused.   
+            // The time offset is mute if the simulation is paused.
             if (tvMsg.IsPaused())
             {
                timeOffset = 0L;
             }
 
-            // Figure out which time scale to use. If the message has the default, then don't 
+            // Figure out which time scale to use. If the message has the default, then don't
             // change the timescale.  Allows time scale to be set in playback.
             float timeScale = tvMsg.GetTimeScale();
             if (timeScale == TimeValueMessage::DEFAULT_TIME_SCALE)
             {
                timeScale = GetGameManager()->GetTimeScale();
             }
-            else 
+            else
             {
                // We also have to check to see if the ServerLoggerComponent is alive and active.
                dtGame::LogController *logController;
@@ -245,8 +243,8 @@ namespace SimCore
 
             if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, 
-                        "Changed simulation clock time to match time value \"%lld\", scale \"%f\", and paused \"%s\"", 
+               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
+                        "Changed simulation clock time to match time value \"%lld\", scale \"%f\", and paused \"%s\"",
                         newTime, tvMsg.GetTimeScale(), tvMsg.IsPaused() ? "true" : "false");
             }
          }
@@ -274,12 +272,12 @@ namespace SimCore
          if(msg.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
          {
             RefPtr<dtGame::GameActorProxy> proxy = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
-         
+
             if (!AcceptPlayer(*proxy))
                return;
 
             mPlayer = dynamic_cast<SimCore::Actors::StealthActor*>(proxy->GetActor());
-            
+
             if(mPlayer == NULL)
             {
                LOG_ERROR("Received a player entered world message from an actor that is not a player");
@@ -293,13 +291,13 @@ namespace SimCore
                //so that it can use it for the LOD eye point for ground clamping
                //The dr comp listens for delete messages so it will clear the
                //actor itself when it is deleted.
-               dtGame::DeadReckoningComponent* drComp = 
+               dtGame::DeadReckoningComponent* drComp =
                   static_cast<dtGame::DeadReckoningComponent*>(
                   GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME));
 
                if (drComp != NULL)
                {
-                  LOG_ALWAYS("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());               
+                  LOG_ALWAYS("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());
                   drComp->SetEyePointActor(mPlayer.get());
                }
 
@@ -323,10 +321,10 @@ namespace SimCore
                if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)
                {
                   SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
-                  entity.SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification)); 
+                  entity.SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
                }
             }
-            
+
          }
       }
 
