@@ -72,7 +72,7 @@ namespace StealthGM
          static const std::string CONFIG_HAS_GPS;
          static const std::string CONFIG_HAS_NIGHT_VISION;
          static const std::string CONFIG_HAS_MAP_TOOL;
-         
+
          StealthGameEntryPoint();
          virtual ~StealthGameEntryPoint();
 

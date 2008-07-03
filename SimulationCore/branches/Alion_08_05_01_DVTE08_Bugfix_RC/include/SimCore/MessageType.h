@@ -19,6 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
+ * @author David Guthrie
  */
 #ifndef _MESSAGE_TYPES_H_
 #define _MESSAGE_TYPES_H_
@@ -45,7 +46,7 @@ namespace SimCore
          static const MessageType ATTACH_TO_ACTOR;
          static const MessageType DETONATION;
          static const MessageType SHOT_FIRED;
-         
+
          ///Marks an update to the Stealth actor field of view.
          static const MessageType STEALTH_ACTOR_FOV;
          ///Marks an update to the Stealth actor rotation.
@@ -69,21 +70,23 @@ namespace SimCore
 
          static MessageType CONTROL_STATE_CONFLICT;
 
+         const static MessageType REQUEST_WARP_TO_POSITION;
+
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 
          static bool IsValidToolType(const dtGame::MessageType &type);
-       
+
       protected:
          /// Constructor
          MessageType(
-            const std::string &name, 
-            const std::string &category, 
-            const std::string &description, 
+            const std::string &name,
+            const std::string &category,
+            const std::string &description,
             const unsigned short messageId);
 
          /// Destructor
-         virtual ~MessageType() { }
-       
+         virtual ~MessageType();
+
    };
 }
 #endif

@@ -54,17 +54,19 @@ namespace SimCore
          PlatformActorProxy::BuildInvokables();
 
          StealthActor &sa = static_cast<StealthActor&>(GetGameActor());
-         
+
          AddInvokable(*new dtGame::Invokable("AttachToActor",
             dtDAL::MakeFunctor(sa, &StealthActor::AttachToActor)));
 
-         AddInvokable(*new dtGame::Invokable("Detach", 
+         AddInvokable(*new dtGame::Invokable("Detach",
             dtDAL::MakeFunctor(sa, &StealthActor::Detach)));
 
-         AddInvokable(*new dtGame::Invokable("UpdateFromParent", 
+         AddInvokable(*new dtGame::Invokable("UpdateFromParent",
             dtDAL::MakeFunctor(sa, &StealthActor::UpdateFromParent)));
 
-         RegisterForMessagesAboutSelf(SimCore::MessageType::ATTACH_TO_ACTOR, "AttachToActor");
+         AddInvokable(*new dtGame::Invokable("WarpToPosition",
+            dtDAL::MakeFunctor(sa, &StealthActor::WarpToPosition)));
+
       }
 
       void StealthActorProxy::BuildPropertyMap()
@@ -88,8 +90,14 @@ namespace SimCore
 
       void StealthActorProxy::OnEnteredWorld()
       {
+         if (!IsRemote())
+         {
+            RegisterForMessagesAboutSelf(SimCore::MessageType::ATTACH_TO_ACTOR, "AttachToActor");
+            RegisterForMessagesAboutSelf(SimCore::MessageType::REQUEST_WARP_TO_POSITION, "WarpToPosition");
+         }
+
          PlatformActorProxy::OnEnteredWorld();
-         
+
          dtCore::RefPtr<dtGame::Message> playerMsg = GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD);
          playerMsg->SetAboutActorId(GetId());
          GetGameManager()->SendMessage(*playerMsg);
@@ -100,24 +108,26 @@ namespace SimCore
       //////////////////////////////////////////////////////
       StealthActor::StealthActor(dtGame::GameActorProxy &proxy) :
          Platform(proxy),
-         mAttachAsThirdPerson(true), 
-         mOldDRA(&GetDeadReckoningAlgorithm()), 
+         mAttachAsThirdPerson(true),
+         mOldDRA(&GetDeadReckoningAlgorithm()),
          mAttachOffset(0.0f, 0.0f, 1.5f)
       {
          mLogger = &dtUtil::Log::GetInstance("StealthActor.cpp");
       }
 
+      //////////////////////////////////////////////////////////////////////////////
       StealthActor::~StealthActor()
       {
       }
 
+      //////////////////////////////////////////////////////////////////////////////
       void StealthActor::AttachOrDetachActor(const dtCore::UniqueId& id)
-      {           
+      {
          dtGame::GameActorProxy* ga = GetGameActorProxy().GetGameManager()->FindGameActorById(id);
-         
+
          dtCore::Transform originalTransform;
          GetTransform(originalTransform, dtCore::Transformable::ABS_CS);
-         
+
          // If we have a new actor to attach to, or the caller explicitly passed in a NULL id
          // to mark a detach, then...
          if (ga != NULL || id.ToString().empty())
@@ -154,10 +164,10 @@ namespace SimCore
             else
             {
                ga->GetGameActor().AddChild(this);
-     
+
                GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, ga->GetId(), "Detach");
                GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, ga->GetId(), "UpdateFromParent");
-               
+
                //Set the translation first to be the same as the parent.
                //Make an identity transform and move it up a bit.
                dtCore::Transform xform;
@@ -177,7 +187,7 @@ namespace SimCore
                   }
                   else
                   {
-                     entity->SetDrawingModel(true);                  
+                     entity->SetDrawingModel(true);
                      entity->SetIsPlayerAttached(true);
                   }
                   SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
@@ -205,7 +215,8 @@ namespace SimCore
                SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
          }
       }
-      
+
+      //////////////////////////////////////////////////////////////////////////////
       void StealthActor::UpdateFromParent(const dtGame::Message &msg)
       {
          const dtGame::ActorUpdateMessage &aum = static_cast<const dtGame::ActorUpdateMessage&>(msg);
@@ -216,7 +227,7 @@ namespace SimCore
          BaseEntity *entity = dynamic_cast<BaseEntity*>(gap->GetActor());
          if(entity == NULL)
             return;
-         
+
          SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
          SetVelocityVector(entity->GetVelocityVector());
          SetAngularVelocityVector(entity->GetAngularVelocityVector());
@@ -225,14 +236,27 @@ namespace SimCore
          GetGameActorProxy().NotifyActorUpdate();
       }
 
+      //////////////////////////////////////////////////////////////////////////////
       void StealthActor::AttachToActor(const dtGame::Message& attachMessage)
       {
          AttachOrDetachActor(static_cast<const SimCore::AttachToActorMessage&>(attachMessage).GetAttachToActor());
       }
 
+      //////////////////////////////////////////////////////////////////////////////
       void StealthActor::Detach(const dtGame::Message &msg)
       {
          AttachOrDetachActor(dtCore::UniqueId(""));
+      }
+
+      //////////////////////////////////////////////////////////////////////////////
+      void StealthActor::WarpToPosition(const dtGame::Message& warpToPosMessage)
+      {
+         AttachOrDetachActor(dtCore::UniqueId(""));
+         const SimCore::StealthActorUpdatedMessage& wtpMsg = static_cast<const SimCore::StealthActorUpdatedMessage&>(warpToPosMessage);
+         dtCore::Transform xform;
+         GetTransform(xform);
+         xform.SetTranslation(wtpMsg.GetTranslation());
+         SetTransform(xform);
       }
 
       //////////////////////////////////////////////////////////////////////////////
