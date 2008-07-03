@@ -93,8 +93,8 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_DEFAULT("DefaultMunition");
 
    //////////////////////////////////////////////////////////////////////////
-   BaseGameEntryPoint::BaseGameEntryPoint() : 
-      parser(NULL), 
+   BaseGameEntryPoint::BaseGameEntryPoint() :
+      parser(NULL),
       mMissingRequiredCommandLineOption(false),
       mIsUIRunning(false)
    {
@@ -122,7 +122,7 @@ namespace SimCore
          LOG_ERROR("Failed to create the environment actor proxy in the game manager. Aborting.");
          gameManager.GetApplication().Quit();
       }
-   
+
       RefPtr<dtActors::BasicEnvironmentActor> envActor = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetActor());
       if(!envActor.valid())
       {
@@ -136,7 +136,7 @@ namespace SimCore
       envActor->EnableCloudPlane(true);
       envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
       envActor->EnableFog(true);
-      envActor->GetWeather().GetEnvironment()->SetFogColor(osg::Vec3(1.0f, 0.95f, 0.74f));   
+      envActor->GetWeather().GetEnvironment()->SetFogColor(osg::Vec3(1.0f, 0.95f, 0.74f));
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -155,13 +155,11 @@ namespace SimCore
       parser->getApplicationUsage()->addCommandLineOption("--lingeringShotSecs", "The number of seconds for a shot to linger after impact. The default value is 300 (5 minutes)");
       //parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
 
-      std::string fedFileResource;
-
       if (parser->read("-h") || parser->read("--help") || parser->read("-?") || parser->read("--?") ||
          parser->argc() == 0)
       {
          parser->getApplicationUsage()->write(std::cerr);
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
+         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
             "Command Line Error.", __FILE__, __LINE__);
       }
 
@@ -221,7 +219,7 @@ namespace SimCore
             << e.what() << "\" Aborting.";
          LOG_ERROR(ss.str());
          dtAudio::AudioManager::Destroy();
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
+         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
             ss.str(), __FILE__, __LINE__);
       }
    }
@@ -232,7 +230,7 @@ namespace SimCore
       if(parser == NULL)
       {
          LOG_DEBUG("FinalizeParser was called when the parser was null");
-         return; 
+         return;
       }
 
       parser->reportRemainingOptionsAsUnrecognized();
@@ -246,7 +244,7 @@ namespace SimCore
       if (mMissingRequiredCommandLineOption)
       {
          parser->getApplicationUsage()->write(std::cerr);
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
+         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
             "Command Line Error.", __FILE__, __LINE__);
       }
    }
@@ -261,7 +259,7 @@ namespace SimCore
       {
          mProjectPath = gm.GetConfiguration().GetConfigPropertyValue(CONFIG_PROP_PROJECT_CONTEXT_PATH);
       }
-      
+
       if(!mProjectPath.empty())
       {
          if(!fileUtils.DirExists(mProjectPath))
@@ -285,7 +283,7 @@ namespace SimCore
             if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
             {
                throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-                  "The data directory " + PROJECT_CONTEXT_DIR + 
+                  "The data directory " + PROJECT_CONTEXT_DIR +
                   " could not be located in the working directory or its parent directory. Aborting application."
                   , __FILE__, __LINE__);
             }
@@ -328,7 +326,7 @@ namespace SimCore
          }
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication &app)
    {
@@ -357,25 +355,25 @@ namespace SimCore
                app.GetCamera()->SetAspectRatio(mAspectRatio);
             }
          }
-         
+
       }
       else
       {
          app.GetCamera()->SetAspectRatio(mAspectRatio);
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
    {
 
       AssignProjectContext(*app.GetGameManager());
       PreLoadMap();
-      
+
       dtGame::GameManager &gameManager = *app.GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
-       
+
       osg::Camera* cam = camera->GetOSGCamera();
 
       cam->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
@@ -384,15 +382,15 @@ namespace SimCore
 
       cam->setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
       //camera->GetSceneHandler()->GetSceneView()->
-      //   setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING | 
-      //      osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING | 
+      //   setCullingMode(osg::CullSettings::SMALL_FEATURE_CULLING | osg::CullSettings::SHADOW_OCCLUSION_CULLING |
+      //      osg::CullSettings::CLUSTER_CULLING | osg::CullSettings::FAR_PLANE_CULLING |
       //      osg::CullSettings::VIEW_FRUSTUM_SIDES_CULLING);
       //camera->GetSceneHandler()->GetSceneView()->setSmallFeatureCullingPixelSize(250.0f);
 
       //camera->GetSceneHandler()->GetSceneView()->setNearFarRatio( PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
 
       cam->setNearFarRatio(PLAYER_NEAR_CLIP_PLANE / PLAYER_FAR_CLIP_PLANE);
-      
+
       camera->SetPerspectiveParams(60.0f, 1.6,
                              PLAYER_NEAR_CLIP_PLANE,
                              PLAYER_FAR_CLIP_PLANE);
@@ -401,7 +399,7 @@ namespace SimCore
 	   camera->AddChild(dtAudio::AudioManager::GetListener());
 
       gameManager.LoadActorRegistry(LIBRARY_NAME);
-      
+
       RefPtr<dtGame::DeadReckoningComponent>   drComp            = new dtGame::DeadReckoningComponent;
       RefPtr<Components::ViewerNetworkPublishingComponent> rulesComp         = new Components::ViewerNetworkPublishingComponent;
       RefPtr<Components::TimedDeleterComponent>            mTimedDeleterComp = new Components::TimedDeleterComponent;
@@ -410,7 +408,7 @@ namespace SimCore
       RefPtr<Components::MunitionsComponent>               munitionsComp     = new Components::MunitionsComponent;
       RefPtr<Components::ViewerMaterialComponent> viewerMaterialComponent    = new Components::ViewerMaterialComponent;
       RefPtr<dtAnim::AnimationComponent>          animationComponent         = new dtAnim::AnimationComponent;
-      
+
       gameManager.AddComponent(*weatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameManager.AddComponent(*rulesComp, dtGame::GameManager::ComponentPriority::HIGHER);
@@ -424,7 +422,7 @@ namespace SimCore
                CONFIG_PROP_USE_GPU_CHARACTER_SKINNING, "1");
 
       dtAnim::AnimNodeBuilder& nodeBuilder = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder();
-      
+
       if (useGPUSkinning == "1" || useGPUSkinning == "true")
       {
          nodeBuilder.SetCreate(dtAnim::AnimNodeBuilder::CreateFunc(&nodeBuilder, &dtAnim::AnimNodeBuilder::CreateHardware));
