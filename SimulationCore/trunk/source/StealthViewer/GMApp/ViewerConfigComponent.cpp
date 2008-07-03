@@ -46,6 +46,14 @@ namespace StealthGM
 
    void ViewerConfigComponent::ProcessMessage(const dtGame::Message &msg)
    {
+      if(msg.GetMessageType() != dtGame::MessageType::INFO_MAP_LOADED)
+      {
+         for(size_t i = 0; i < mConfigurationObjects.size(); i++)
+         {
+            mConfigurationObjects[i]->Reset(*GetGameManager());
+         }
+      }
+
       if(msg.GetMessageType() != dtGame::MessageType::TICK_LOCAL)
          return;
 

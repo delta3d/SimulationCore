@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1066</width>
-    <height>1027</height>
+    <width>1086</width>
+    <height>853</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -21,8 +21,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1066</width>
-     <height>25</height>
+     <width>1086</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -89,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -2994,7 +2994,230 @@
           <number>2</number>
          </property>
          <item>
+          <widget class="QGroupBox" name="mWarpToLatLonGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToLatLabel" >
+                <property name="text" >
+                 <string>Lat:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLat" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToLonLabel" >
+                <property name="text" >
+                 <string>Lon:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLon" >
+                <property name="toolTip" >
+                 <string>The longitude of the entity (East-West)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToLLElevLabel" >
+                <property name="text" >
+                 <string>Elev:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLLElev" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToLLButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mWarpToXYZGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToXLabel" >
+                <property name="text" >
+                 <string>X:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToX" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToYLabel" >
+                <property name="text" >
+                 <string>Y:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToY" >
+                <property name="toolTip" >
+                 <string>The longitude of the entity (East-West)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToZLabel" >
+                <property name="text" >
+                 <string>Z:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToZ" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToXYZButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mWarpToMGRSGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToMGRSLabel" >
+                <property name="text" >
+                 <string>MGRS:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToMGRS" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToMGRSElevLabel" >
+                <property name="text" >
+                 <string>Elev:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToMGRSElev" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToMGRSButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="mControlsCameraImageLabel" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text" >
             <string/>
            </property>
@@ -3552,5 +3775,134 @@
   <tabstop>mToolsAutoAttachOnSelectionCheckBox</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>mWarpToLLElev</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>470</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToLon</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>292</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToLat</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>117</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToMGRS</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToMGRSButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>173</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToMGRSElev</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToMGRSButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>430</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToX</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>113</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToY</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>288</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToZ</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>462</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
