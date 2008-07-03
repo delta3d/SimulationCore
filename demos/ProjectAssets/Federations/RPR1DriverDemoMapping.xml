@@ -535,9 +535,9 @@
 
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                              -->
-        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HoverTank           -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- WheeledTank           -->
         <!-- ****************************************************** -->    
-           <object extends="GroundVehicle" name="WheeledTank">
+           <object extends="Aircraft" name="WheeledTank">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</actorType>
             <remoteOnly>false</remoteOnly>
@@ -553,7 +553,7 @@
             <attrToProp>
                <gameName>EntityType</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>HoverActor</default>
+               <default>WheeledTank</default>
             </attrToProp>
              <attrToProp>
                <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
@@ -594,6 +594,70 @@
                <gameName>Munition Damage Table</gameName>
                <gameDataType>STRING</gameDataType>
                <default>DriverVehicle</default>
+            </attrToProp>
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 4th tier object. Heirarchy is:                              -->
+        <!--    BaseEntity <- PhysicalEntity <- Aircraft <- HoverTarget           -->
+        <!-- ****************************************************** -->    
+           <object extends="Aircraft" name="HoverTarget">
+            <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
+            <actorType>DriverDemo.HoverTarget</actorType>
+            <remoteOnly>false</remoteOnly>
+            <disEntityEnum>
+                <kind>1</kind>
+                <domain>1</domain>
+                <country>225</country>
+                <category>4</category>
+                <subcategory>4</subcategory>
+                <specific>4</specific>
+                <extra>0</extra>
+            </disEntityEnum>
+            <attrToProp>
+               <gameName>EntityType</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>HoverTarget</default>
+            </attrToProp>
+             <attrToProp>
+               <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
+               <gameDataType>Sounds</gameDataType>
+               <default>Sounds:Vehicle_Idle.wav</default>
+             </attrToProp>
+             <attrToProp>
+                <gameName>Non-damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:physics_happy_sphere.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:physics_happy_sphere.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Destroyed actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:physics_happy_sphere.ive</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>VehiclesSeatConfigActorNameTable</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default></default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>ShaderGroup</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>SimpleVehicleShaderGroup</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>Ground Offset</gameName>
+               <gameDataType>FLOAT</gameDataType>
+               <default>0.0</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>Munition Damage Table</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>HoverTarget</default>
             </attrToProp>
         </object>
 
