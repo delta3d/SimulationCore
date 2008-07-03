@@ -75,13 +75,6 @@
 
 #include <dtDAL/project.h>
 
-#ifdef AGEIA_PHYSICS
-   #include <NxAgeiaWorldComponent.h>
-   #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-   #include <NxAgeiaMaterialActor.h>
-   #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
-#endif
-
 using dtCore::RefPtr;
 
 namespace StealthGM

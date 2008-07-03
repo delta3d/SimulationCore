@@ -128,8 +128,8 @@ namespace StealthQt
          return;
       }
 
-      if( mHLAComp->GetConnectionState() == 
-         SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_CONNECTED )
+      if( mHLAComp->GetConnectionState() != 
+         SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED )
       {
          OnDisconnect();
 
@@ -330,7 +330,7 @@ namespace StealthQt
             catch(const dtUtil::Exception &e)
             {
                QMessageBox::warning(this, tr("Error"), 
-                  tr("An error occured while trying to connect to the federation: ") + 
+                  tr("An error occurred while trying to connect to the federation: ") + 
                   tr(e.What().c_str()), QMessageBox::Ok);
             }
 

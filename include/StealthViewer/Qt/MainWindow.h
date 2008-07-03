@@ -14,7 +14,6 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
-#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 
 namespace dtGame
 {
@@ -38,9 +37,9 @@ class QTableWidgetItem;
 class QDoubleValidator;
 class QListWidgetItem;
 
-namespace StealthQt 
+namespace StealthQt
 {
-   
+
    /**
     * This class is the main window of the application.  It contains the menu bar,
     * toolbar, statusbar, and main UI interface.
@@ -70,7 +69,7 @@ namespace StealthQt
           * @param keyFrames a list of the key frames
           */
          void RecordKeyFrameSlot(const std::vector<dtGame::LogKeyframe> &keyFrames);
-         
+
          /**
           * Slot called from dtGame when key frames are received
           * @param a list of the key frames
@@ -80,18 +79,18 @@ namespace StealthQt
       public slots:
 
          /**
-          * Starts a new wait cursor.  You MUST call endWaitCursor() for each 
+          * Starts a new wait cursor.  You MUST call endWaitCursor() for each
           * startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for 
+          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void StartWaitCursor();
 
-         /** 
+         /**
           * Ends a previously started wait cursor.  You must call this for each startWaitCursor().
           *
-          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for 
+          * @Note - This behavior is extremely trivial, but is pulled to mainWindow for
           * future expansion
           */
          void EndWaitCursor();
@@ -103,6 +102,9 @@ namespace StealthQt
          ///////////////////////////////////////////////////////////////////////
          // Camera Tab
          ///////////////////////////////////////////////////////////////////////
+         void OnWarpToLatLon(bool checked = false);
+         void OnWarpToMGRS(bool checked = false);
+         void OnWarpToXYZ(bool checked = false);
 
          ///////////////////////////////////////////////////////////////////////
          // Record Tab
@@ -308,10 +310,10 @@ namespace StealthQt
          void closeEvent(QCloseEvent *e);
 
          Ui::MainWindow* mUi;
-         
+
       private:
 
-         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[], 
+         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
                   const std::string& appLibName);
 
          /**
@@ -352,26 +354,31 @@ namespace StealthQt
          /**
           * Shows an error that occured while updating the entity info window. Made into a method cause it's called from several places
           */
-         void ShowEntityErrorMessage(QTableWidgetItem *currentItem);
+         void ShowEntityErrorMessage(QTableWidgetItem* currentItem);
 
          /**
           * Updates the data fields of the Entity Info window. Made into a method cause it's called from several places
           */
-         void UpdateEntityInfoData(dtGame::GameActorProxy *proxy);
+         void UpdateEntityInfoData(dtGame::GameActorProxy& proxy);
 
          /**
           * There is only one of 3 coordinate systems active at any one time. Therefore, hide 2 of the 3 possible
-          * sets of data fields in the EntityInfo Window.  
+          * sets of data fields in the EntityInfo Window.
           */
-         void ShowOrHideEntityInfoPositionFields(const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system);
+         void ShowOrHideEntityInfoPositionFields(const dtUtil::Enumeration& system);
 
          /**
-          * Compute a human readable degree with only 2 decimal places. Internally, degrees 
-          * are 180 (turn left) to 0 (straight) to -180 (turn right). That's backwards who 
+          * Compute a human readable degree with only 2 decimal places. Internally, degrees
+          * are 180 (turn left) to 0 (straight) to -180 (turn right). That's backwards who
           * expect it to be like a compass from 0 to 360. So swap the negative and adjust it.
           */
          float ComputeHumanReadableDirection(float flippedOrientation);
 
+         /**
+          * Shows the correct Warp UI.  Using a base enum here to avoid including things
+          * for a private method.
+          */
+         void SelectCorrectWarpToUI(dtUtil::Enumeration& enumValue);
 
          bool mIsPlaybackMode;
 
@@ -380,7 +387,7 @@ namespace StealthQt
          bool mIsPlayingBack;
 
          double mRecordingStartTime;
-         double mRecordingStopTime; 
+         double mRecordingStopTime;
 
          QString mCurrentConnectionName;
 
@@ -394,7 +401,10 @@ namespace StealthQt
 
          std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;
 
-         QDoubleValidator *mDoubleValidator;
+         QDoubleValidator* mLODScaleValidator;
+         QDoubleValidator* mLatValidator;
+         QDoubleValidator* mLonValidator;
+         QDoubleValidator* mXYZValidator;
 
          bool mShowMissingEntityInfoErrorMessage;
    };

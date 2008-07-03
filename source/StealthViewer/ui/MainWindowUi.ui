@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1066</width>
-    <height>1027</height>
+    <width>1086</width>
+    <height>853</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -21,8 +21,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1066</width>
-     <height>21</height>
+     <width>1086</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -89,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>1</number>
+        <number>2</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -1500,7 +1500,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="mControlsSearchTab" >
         <attribute name="title" >
@@ -2994,7 +2994,230 @@
           <number>2</number>
          </property>
          <item>
+          <widget class="QGroupBox" name="mWarpToLatLonGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToLatLabel" >
+                <property name="text" >
+                 <string>Lat:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLat" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToLonLabel" >
+                <property name="text" >
+                 <string>Lon:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLon" >
+                <property name="toolTip" >
+                 <string>The longitude of the entity (East-West)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToLLElevLabel" >
+                <property name="text" >
+                 <string>Elev:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToLLElev" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToLLButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mWarpToXYZGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToXLabel" >
+                <property name="text" >
+                 <string>X:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToX" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToYLabel" >
+                <property name="text" >
+                 <string>Y:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToY" >
+                <property name="toolTip" >
+                 <string>The longitude of the entity (East-West)</string>
+                </property>
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToZLabel" >
+                <property name="text" >
+                 <string>Z:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToZ" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToXYZButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mWarpToMGRSGroup" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title" >
+            <string>Warp To Position</string>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <layout class="QHBoxLayout" >
+              <item>
+               <widget class="QLabel" name="mWarpToMGRSLabel" >
+                <property name="text" >
+                 <string>MGRS:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToMGRS" >
+                <property name="toolTip" >
+                 <string>The Latitude of the entity (North-South)</string>
+                </property>
+                <property name="readOnly" >
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="mWarpToMGRSElevLabel" >
+                <property name="text" >
+                 <string>Elev:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="mWarpToMGRSElev" >
+                <property name="text" >
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="mWarpToMGRSButton" >
+                <property name="text" >
+                 <string>Warp</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="mControlsCameraImageLabel" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text" >
             <string/>
            </property>
@@ -3100,14 +3323,14 @@
            <property name="verticalSpacing" >
             <number>6</number>
            </property>
-           <item row="6" column="1" >
+           <item row="8" column="1" >
             <widget class="QLineEdit" name="mEntityInfoForceLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="6" column="0" >
+           <item row="8" column="0" >
             <widget class="QLabel" name="mEntityInfoForceLabel" >
              <property name="text" >
               <string>Force</string>
@@ -3117,14 +3340,14 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="0" >
+           <item row="10" column="0" >
             <widget class="QLabel" name="mEntityInfoLastUpdateTimeLabel" >
              <property name="text" >
               <string>Last Update</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="1" >
+           <item row="9" column="1" >
             <widget class="QLineEdit" name="mDamageStateLineEdit" >
              <property name="readOnly" >
               <bool>true</bool>
@@ -3154,14 +3377,14 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0" >
+           <item row="6" column="0" >
             <widget class="QLabel" name="mEntityInfoRotationLabel" >
              <property name="text" >
               <string>Rotation</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1" >
+           <item row="3" column="1" >
             <widget class="QLineEdit" name="mEntityInfoPositionMGRS" >
              <property name="toolTip" >
               <string>The MGRS position of the entity</string>
@@ -3171,7 +3394,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0" >
+           <item row="9" column="0" >
             <widget class="QLabel" name="mEntityInfoDamageStateLabel" >
              <property name="text" >
               <string>Damage State</string>
@@ -3181,7 +3404,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" >
+           <item row="3" column="0" >
             <widget class="QLabel" name="mEntityInfoPositionLabel_MGRS" >
              <property name="text" >
               <string>Position</string>
@@ -3191,14 +3414,14 @@
              </property>
             </widget>
            </item>
-           <item row="9" column="0" colspan="2" >
+           <item row="11" column="0" colspan="2" >
             <widget class="QCheckBox" name="mEntityInfoAutoRefreshCheckBox" >
              <property name="text" >
               <string>Auto Refresh</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1" >
+           <item row="6" column="1" >
             <layout class="QHBoxLayout" >
              <item>
               <widget class="QLabel" name="mEntityInfoRot_HeadLabel" >
@@ -3253,7 +3476,7 @@
              </item>
             </layout>
            </item>
-           <item row="8" column="1" >
+           <item row="10" column="1" >
             <widget class="QLineEdit" name="mEntityInfoLastUpdateTimeLineEdit" >
              <property name="toolTip" >
               <string>The amount of time that has passed since this entity was updated on the network.</string>
@@ -3263,7 +3486,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0" >
+           <item row="4" column="0" >
             <widget class="QLabel" name="mEntityInfoPositionLabel_LatLon" >
              <property name="text" >
               <string>Position</string>
@@ -3273,7 +3496,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1" >
+           <item row="4" column="1" >
             <layout class="QHBoxLayout" >
              <item>
               <widget class="QLabel" name="mEntityInfoPos_LatLabel" >
@@ -3311,7 +3534,7 @@
              </item>
             </layout>
            </item>
-           <item row="3" column="0" >
+           <item row="5" column="0" >
             <widget class="QLabel" name="mEntityInfoPositionLabel_XYZ" >
              <property name="text" >
               <string>Position</string>
@@ -3321,7 +3544,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1" >
+           <item row="5" column="1" >
             <layout class="QHBoxLayout" >
              <item>
               <widget class="QLabel" name="mEntityInfoPos_XLabel" >
@@ -3376,7 +3599,7 @@
              </item>
             </layout>
            </item>
-           <item row="5" column="0" >
+           <item row="7" column="0" >
             <widget class="QLabel" name="mEntityInfoSpeedLabel" >
              <property name="text" >
               <string>Velocity</string>
@@ -3386,7 +3609,7 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="1" >
+           <item row="7" column="1" >
             <layout class="QHBoxLayout" >
              <item>
               <widget class="QLineEdit" name="mEntityInfoSpeed" >
@@ -3416,6 +3639,52 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item row="1" column="0" >
+            <widget class="QLabel" name="mEntityTypeLabel" >
+             <property name="text" >
+              <string>Entity Type</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoCallSignLineEdit</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" >
+            <widget class="QLineEdit" name="mEntityTypeLineEdit" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" >
+            <widget class="QLabel" name="mEntityTypeIDLabel" >
+             <property name="text" >
+              <string>Entity Type ID</string>
+             </property>
+             <property name="buddy" >
+              <cstring>mEntityInfoPositionMGRS</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" >
+            <widget class="QLineEdit" name="mEntityTypeIDLineEdit" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly" >
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -3506,5 +3775,134 @@
   <tabstop>mToolsAutoAttachOnSelectionCheckBox</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>mWarpToLLElev</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>470</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToLon</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>292</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToLat</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToLLButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>117</x>
+     <y>122</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToMGRS</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToMGRSButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>173</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToMGRSElev</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToMGRSButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>430</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToX</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>113</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToY</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>288</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWarpToZ</sender>
+   <signal>returnPressed()</signal>
+   <receiver>mWarpToXYZButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>462</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>578</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
