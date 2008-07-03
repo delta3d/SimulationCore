@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
@@ -100,12 +100,12 @@ namespace StealthQt
       const QString StealthViewerSettings::PLAYBACK_INPUT_FILE("PLAYBACK_INPUT_FILE");
       const QString StealthViewerSettings::PLAYBACK_SPEED("PLAYBACK_SPEED");
 
-   StealthViewerSettings::StealthViewerSettings(const QString &applicationName) : 
-      QSettings(QSettings::IniFormat, 
-                QSettings::UserScope, 
-                StealthViewerSettings::ORGANIZATION, 
-                applicationName), 
-      mNumConnections(0), 
+   StealthViewerSettings::StealthViewerSettings(const QString &applicationName) :
+      QSettings(QSettings::IniFormat,
+                QSettings::UserScope,
+                StealthViewerSettings::ORGANIZATION,
+                applicationName),
+      mNumConnections(0),
       mIsLoadingFromIni(false)
    {
       ParseIniFile();
@@ -113,16 +113,16 @@ namespace StealthQt
 
    StealthViewerSettings::~StealthViewerSettings()
    {
-      
+
    }
 
-   bool StealthViewerSettings::AddConnection(const QString &name, 
-                                             const QString &mapResource, 
-                                             const QString &configResource, 
-                                             const QString &fedResource, 
-                                             const QString &fedex, 
-                                             const QString &federateName, 
-                                             const QString &ridFile, 
+   bool StealthViewerSettings::AddConnection(const QString &name,
+                                             const QString &mapResource,
+                                             const QString &configResource,
+                                             const QString &fedResource,
+                                             const QString &fedex,
+                                             const QString &federateName,
+                                             const QString &ridFile,
                                              bool isEditMode)
    {
       if(name.isEmpty() || mapResource.isEmpty() || configResource.isEmpty() ||
@@ -140,13 +140,13 @@ namespace StealthQt
          {
             if(name == existingConnections[i])
             {
-               QString message = tr("Failed to add the connection named: ") + name + 
-                  tr(" because a connection named: ") + name + tr(" already exists. ") + 
+               QString message = tr("Failed to add the connection named: ") + name +
+                  tr(" because a connection named: ") + name + tr(" already exists. ") +
                   tr("Please select a unique connection name.");
 
-               QMessageBox::critical(NULL, tr("Failed to add the connection"), 
+               QMessageBox::critical(NULL, tr("Failed to add the connection"),
                  message, QMessageBox::Ok);
-              
+
                return false;
             }
          }
@@ -175,7 +175,7 @@ namespace StealthQt
       else
       {
          // Edit an existing connection
-         std::map<QString, unsigned int>::iterator itor = 
+         std::map<QString, unsigned int>::iterator itor =
             mConnectionNameMap.find(
                StealthViewerData::GetInstance().GetOldConnectionName());
 
@@ -194,10 +194,10 @@ namespace StealthQt
 
             endGroup();
 
-            // The name of this connection was edited. 
-            // Since the connections are mapped by name we 
-            // need to readd it to the map, binded with the 
-            // same number since it is a simple edit, and 
+            // The name of this connection was edited.
+            // Since the connections are mapped by name we
+            // need to readd it to the map, binded with the
+            // same number since it is a simple edit, and
             // not a new connection
             unsigned int toReplace = itor->second;
             mConnectionNameMap.erase(itor);
@@ -217,7 +217,7 @@ namespace StealthQt
          return list;
 
       QString group = StealthViewerSettings::CONNECTION + QString::number(itor->second);
-      
+
       list = LoadConnectionProperties(group);
 
       return list;
@@ -228,7 +228,7 @@ namespace StealthQt
       QStringList results;
       bool found = false;
       unsigned int count = 0;
-      do 
+      do
       {
          QString connection = StealthViewerSettings::CONNECTION + QString::number(count) +
             "/" + StealthViewerSettings::NAME;
@@ -268,9 +268,9 @@ namespace StealthQt
          QString group = groups[i];
 
          QStringList list = LoadConnectionProperties(group);
-            
+
          // Add internally
-         AddConnection(list[0], list[1], list[2], 
+         AddConnection(list[0], list[1], list[2],
                        list[3], list[4], list[5], list[6]);
       }
 
@@ -282,18 +282,18 @@ namespace StealthQt
       std::map<QString, unsigned int>::iterator itor = mConnectionNameMap.find(connectionName);
       if(itor == mConnectionNameMap.end())
       {
-         std::string message = "Failed to remove the connection: " + 
-                                connectionName.toStdString() 
-                               + " because a connection named: " + 
+         std::string message = "Failed to remove the connection: " +
+                                connectionName.toStdString()
+                               + " because a connection named: " +
                                connectionName.toStdString() + " does not exist.";
-         
+
          LOG_ERROR(message.c_str());
          return;
       }
 
       // Locate the group to delete, then clear the file and write everything to it
       // that was there except the group
-      QString toRemove = StealthViewerSettings::CONNECTION + 
+      QString toRemove = StealthViewerSettings::CONNECTION +
                          QString::number(itor->second);
 
       QStringList groups = childGroups();
@@ -316,8 +316,8 @@ namespace StealthQt
       // Add connections back
       for(size_t i = 0; i < connectionsToAdd.size(); i++)
       {
-         AddConnection(connectionsToAdd[i][0], connectionsToAdd[i][1], connectionsToAdd[i][2], 
-                       connectionsToAdd[i][3], connectionsToAdd[i][4], connectionsToAdd[i][5], 
+         AddConnection(connectionsToAdd[i][0], connectionsToAdd[i][1], connectionsToAdd[i][2],
+                       connectionsToAdd[i][3], connectionsToAdd[i][4], connectionsToAdd[i][5],
                        connectionsToAdd[i][6]);
       }
 
@@ -337,13 +337,13 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::GENERAL_GROUP);
 
-         setValue(StealthViewerSettings::DOCK_STATE, 
-            StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));   
-         
-         setValue(StealthViewerSettings::WINDOW_GEOMETRY, 
+         setValue(StealthViewerSettings::DOCK_STATE,
+            StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));
+
+         setValue(StealthViewerSettings::WINDOW_GEOMETRY,
             StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
 
-         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO, 
+         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO,
             StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
 
       endGroup();
@@ -359,7 +359,7 @@ namespace StealthQt
 
    void StealthViewerSettings::WritePreferencesGeneralGroupToFile()
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig = 
+      StealthGM::PreferencesGeneralConfigObject &genConfig =
          StealthViewerData::GetInstance().GetGeneralConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_GENERAL_GROUP);
@@ -379,17 +379,17 @@ namespace StealthQt
 
    void StealthViewerSettings::WritePreferencesEnvironmentGroupToFile()
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig = 
+      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_ENVIRONMENT_GROUP);
 
          setValue(StealthViewerSettings::USE_NETWORK_SETTINGS, envConfig.GetUseNetworkSettings());
-      
+
          setValue(StealthViewerSettings::USE_THEMED_SETTINGS, envConfig.GetUseThemedSettings());
          setValue(StealthViewerSettings::WEATHER_THEME, envConfig.GetWeatherTheme().GetName().c_str());
          setValue(StealthViewerSettings::TIME_THEME, envConfig.GetTimeTheme().GetName().c_str());
-        
+
          setValue(StealthViewerSettings::USE_CUSTOM_SETTINGS, envConfig.GetUseCustomSettings());
          setValue(StealthViewerSettings::CUSTOM_HOUR, envConfig.GetCustomHour());
          setValue(StealthViewerSettings::CUSTOM_MINUTE, envConfig.GetCustomMinute());
@@ -402,11 +402,11 @@ namespace StealthQt
 
    void StealthViewerSettings::WritePreferencesToolsGroupToFile()
    {
-      StealthGM::PreferencesToolsConfigObject &toolsObject = 
+      StealthGM::PreferencesToolsConfigObject &toolsObject =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
-   
+
          setValue(StealthViewerSettings::COORDINATE_SYSTEM, toolsObject.GetCoordinateSystem().GetName().c_str());
          setValue(StealthViewerSettings::SHOW_BINOCULAR_IMAGE, toolsObject.GetShowBinocularImage());
          setValue(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT, toolsObject.GetShowDistanceToObject());
@@ -419,7 +419,7 @@ namespace StealthQt
 
    void StealthViewerSettings::WriteControlsRecordGroupToFile()
    {
-      StealthGM::ControlsRecordConfigObject &recordObject = 
+      StealthGM::ControlsRecordConfigObject &recordObject =
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
       beginGroup(StealthViewerSettings::CONTROLS_RECORD_GROUP);
@@ -434,7 +434,7 @@ namespace StealthQt
 
    void StealthViewerSettings::WriteControlsPlaybackGroupToFile()
    {
-      StealthGM::ControlsPlaybackConfigObject &pbObject = 
+      StealthGM::ControlsPlaybackConfigObject &pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
       beginGroup(StealthViewerSettings::CONTROLS_PLAYBACK_GROUP);
@@ -464,7 +464,7 @@ namespace StealthQt
 
          if (contains(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO))
          {
-            bool enable = 
+            bool enable =
                value(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO).toBool();
 
             StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(enable);
@@ -475,7 +475,7 @@ namespace StealthQt
       LoadPreferencesGeneral();
       LoadPreferencesEnvironment();
       LoadPreferencesTools();
-      
+
       LoadControlsRecord();
       LoadControlsPlayback();
    }
@@ -484,12 +484,12 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::PREFERENCES_GENERAL_GROUP);
 
-         StealthGM::PreferencesGeneralConfigObject &genConfig = 
+         StealthGM::PreferencesGeneralConfigObject &genConfig =
             StealthViewerData::GetInstance().GetGeneralConfigObject();
 
          if(contains(StealthViewerSettings::ATTACH_MODE))
          {
-            QString savedValue = 
+            QString savedValue =
                value(StealthViewerSettings::ATTACH_MODE).toString();
 
             genConfig.SetAttachMode(savedValue.toStdString());
@@ -521,14 +521,14 @@ namespace StealthQt
 
          if(contains(StealthViewerSettings::NEAR_CLIPPING_PLANE))
          {
-            double savedValue = 
+            double savedValue =
                value(StealthViewerSettings::NEAR_CLIPPING_PLANE).toDouble();
             genConfig.SetNearClippingPlane(savedValue);
          }
 
          if(contains(StealthViewerSettings::FAR_CLIPPING_PLANE))
          {
-            double savedValue = 
+            double savedValue =
                value(StealthViewerSettings::FAR_CLIPPING_PLANE).toDouble();
             genConfig.SetFarClippingPlane(savedValue);
          }
@@ -553,8 +553,8 @@ namespace StealthQt
    void StealthViewerSettings::LoadPreferencesEnvironment()
    {
       beginGroup(StealthViewerSettings::PREFERENCES_ENVIRONMENT_GROUP);
-      
-         StealthGM::PreferencesEnvironmentConfigObject &envConfig = 
+
+         StealthGM::PreferencesEnvironmentConfigObject &envConfig =
             StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
          if(contains(StealthViewerSettings::USE_NETWORK_SETTINGS))
@@ -619,7 +619,7 @@ namespace StealthQt
             QString savedValue = value(StealthViewerSettings::CUSTOM_CLOUD_COVER).toString();
             envConfig.SetCloudCover(savedValue.toStdString());
          }
-         
+
       endGroup();
    }
 
@@ -627,13 +627,17 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
 
-         StealthGM::PreferencesToolsConfigObject &toolsConfig = 
+         StealthGM::PreferencesToolsConfigObject &toolsConfig =
             StealthViewerData::GetInstance().GetToolsConfigObject();
 
          if(contains(StealthViewerSettings::COORDINATE_SYSTEM))
          {
             QString savedValue = value(StealthViewerSettings::COORDINATE_SYSTEM).toString();
-            toolsConfig.SetCoordinateSystem(savedValue.toStdString());
+            StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
+               StealthGM::PreferencesToolsConfigObject::CoordinateSystem::GetValueForName(savedValue.toStdString());
+
+            if (coordSystem != NULL)
+               toolsConfig.SetCoordinateSystem(*coordSystem);
          }
 
          if(contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))
@@ -673,7 +677,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::CONTROLS_RECORD_GROUP);
 
-         StealthGM::ControlsRecordConfigObject &recordConfig = 
+         StealthGM::ControlsRecordConfigObject &recordConfig =
             StealthViewerData::GetInstance().GetRecordConfigObject();
 
          if(contains(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS))
@@ -699,7 +703,7 @@ namespace StealthQt
             int savedValue = value(StealthViewerSettings::AUTO_KEY_FRAME_INTERVAL).toInt();
             recordConfig.SetAutoKeyFrameInterval(savedValue);
          }
-      
+
       endGroup();
    }
 
@@ -707,7 +711,7 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::CONTROLS_PLAYBACK_GROUP);
 
-         StealthGM::ControlsPlaybackConfigObject &playbackConfig = 
+         StealthGM::ControlsPlaybackConfigObject &playbackConfig =
             StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
          if(contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
@@ -735,7 +739,7 @@ namespace StealthQt
    {
       for(int i = 0; i < groups.size(); i++)
       {
-         QString group = groups[i]; 
+         QString group = groups[i];
 
          if(group == StealthViewerSettings::GENERAL_GROUP                 ||
             group == StealthViewerSettings::PREFERENCES_GENERAL_GROUP     ||
@@ -754,7 +758,7 @@ namespace StealthQt
    QStringList StealthViewerSettings::LoadConnectionProperties(const QString &group)
    {
       QStringList props;
-      
+
       beginGroup(group);
 
          if(contains(StealthViewerSettings::NAME))
