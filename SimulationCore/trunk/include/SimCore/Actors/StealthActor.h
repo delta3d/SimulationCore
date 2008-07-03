@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 
 #ifndef _STEALTH_ACTOR_H_
@@ -63,6 +63,11 @@ namespace SimCore
             void Detach(const dtGame::Message &msg);
             void UpdateFromParent(const dtGame::Message &msg);
 
+            /**
+             * Invokable used to make this entity warp to a position.  It will also detach.
+             */
+            void WarpToPosition(const dtGame::Message& warpToPosMessage);
+
             // Returns true if we think we are attached to something.
             bool IsAttachedToActor();
 
@@ -80,7 +85,7 @@ namespace SimCore
              */
             void AttachOrDetachActor(const dtCore::UniqueId& id);
 
-            /// This should be set to false in the PlayerActor subclass of this class 
+            /// This should be set to false in the PlayerActor subclass of this class
             bool mAttachAsThirdPerson;
 
             dtGame::DeadReckoningAlgorithm *mOldDRA;
@@ -97,15 +102,15 @@ namespace SimCore
 
             /// Builds the properties for this proxy
             void BuildPropertyMap();
-            
+
             /// Builds the invokables for this proxy
             void BuildInvokables();
-            
+
             /// Creates the actor for this proxy
             void CreateActor();
 
             virtual void OnEnteredWorld();
-            
+
          protected:
 
             /// Destructor

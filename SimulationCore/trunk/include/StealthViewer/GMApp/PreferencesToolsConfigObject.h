@@ -46,18 +46,15 @@ namespace StealthGM
 
             private:
 
-               CoordinateSystem(const std::string &name) : dtUtil::Enumeration(name)
-               {
-                  AddInstance(this);
-               }
+               CoordinateSystem(const std::string &name);
          };
 
-         
+
          /// Constructor
          PreferencesToolsConfigObject();
 
          /**
-          * Overridden base class method to apply the changes made to this class to the 
+          * Overridden base class method to apply the changes made to this class to the
           * game manager
           */
          virtual void ApplyChanges(dtGame::GameManager &gameManager);
@@ -67,11 +64,6 @@ namespace StealthGM
           * @param system The system to use
           */
          void SetCoordinateSystem(const CoordinateSystem &system) { mCoordinateSystem = &system; SetIsUpdated(true); }
-
-         /**
-          * Set overload
-          */
-         void SetCoordinateSystem(const std::string &system);
 
          /**
           * Gets the coordinate system
