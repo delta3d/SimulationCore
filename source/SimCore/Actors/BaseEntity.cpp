@@ -89,6 +89,7 @@ namespace SimCore
       const std::string BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
       const std::string BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
       const std::string BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
+      const std::string BaseEntityActorProxy::PROPERTY_FROZEN("Frozen");
       const std::string BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
       const std::string BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
       const std::string BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
@@ -98,6 +99,8 @@ namespace SimCore
       const std::string BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
       const std::string BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
       const std::string BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
+      const std::string BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
+      const std::string BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()

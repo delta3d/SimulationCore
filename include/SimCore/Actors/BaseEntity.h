@@ -44,7 +44,7 @@ namespace SimCore
       {
          public:
             typedef dtGame::GameActorProxy BaseClass;
-            
+
             static const std::string PROPERTY_LAST_KNOWN_TRANSLATION;
             static const std::string PROPERTY_LAST_KNOWN_ROTATION;
             static const std::string PROPERTY_VELOCITY_VECTOR;
@@ -52,6 +52,7 @@ namespace SimCore
             static const std::string PROPERTY_ANGULAR_VELOCITY_VECTOR;
             static const std::string PROPERTY_ENGINE_SMOKE_POSITION;
             static const std::string PROPERTY_ENGINE_SMOKE_ON;
+            static const std::string PROPERTY_FROZEN;
             static const std::string PROPERTY_FLAMES_PRESENT;
             static const std::string PROPERTY_SMOKE_PLUME_PRESENT;
             static const std::string PROPERTY_ENGINE_POSITION;
@@ -61,6 +62,8 @@ namespace SimCore
             static const std::string PROPERTY_SCALE_MAGNIFICATION_FACTOR;
             static const std::string PROPERTY_MODEL_SCALE;
             static const std::string PROPERTY_MODEL_ROTATION;
+            static const std::string PROPERTY_ENTITY_TYPE;
+            static const std::string PROPERTY_MAPPING_NAME;
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
             {
