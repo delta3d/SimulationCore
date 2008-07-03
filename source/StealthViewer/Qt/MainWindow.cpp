@@ -270,10 +270,9 @@ namespace StealthQt
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
 
-      // Note, stuff dealing with the path has to be BELOW InitGameApp().
-      // NOTE - This image fails to load if you have a space in the path (like Program Files)
-      // under QT 4.3.3, at least on Windows XP. This works with version 4.3.0.
-      const std::string helpImageResource("icons/help_controls_small.jpg");
+      // Changed to a png work around problems where the jpeg version
+      // would not load in some cases. 
+      const std::string helpImageResource("icons/help_controls_small.png");
       const std::string& file = dtCore::FindFileInPathList(helpImageResource);
       if (!file.empty())
       {
