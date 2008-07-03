@@ -1,4 +1,4 @@
-/* 
+/*
  * DVTE Stealth Viewer
  * Copyright (C) 2006, Alion Science and Technology.
  *
@@ -12,6 +12,7 @@
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 
 #include <SimCore/Components/WeatherComponent.h>
 
@@ -29,25 +30,20 @@
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   #include <Windows.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
+#include <dtCore/timer.h>
 
-class ConfigObjectTests : public CPPUNIT_NS::TestFixture 
+class ConfigObjectTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ConfigObjectTests);
 
       CPPUNIT_TEST(TestPreferencesGeneralConfigObject);
       CPPUNIT_TEST(TestPreferencesEnvironmentConfigObject);
       CPPUNIT_TEST(TestPreferencesToolsConfigObject);
-      
+
+      CPPUNIT_TEST(TestControlsCameraConfigObject);
       CPPUNIT_TEST(TestControlsRecordConfigObject);
       CPPUNIT_TEST(TestControlsPlaybackConfigObject);
-      
+
       CPPUNIT_TEST(TestPreferencesEnvironmentApplyChanges);
 
    CPPUNIT_TEST_SUITE_END();
@@ -61,6 +57,8 @@ public:
    void TestPreferencesEnvironmentConfigObject();
 
    void TestPreferencesToolsConfigObject();
+
+   void TestControlsCameraConfigObject();
    void TestControlsRecordConfigObject();
    void TestControlsPlaybackConfigObject();
 
@@ -81,31 +79,31 @@ void ConfigObjectTests::tearDown()
 
 void ConfigObjectTests::TestPreferencesGeneralConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig = 
+   dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig =
       new StealthGM::PreferencesGeneralConfigObject;
 
-   CPPUNIT_ASSERT_MESSAGE("The default attach mode should be Third Person", 
+   CPPUNIT_ASSERT_MESSAGE("The default attach mode should be Third Person",
       genConfig->GetAttachMode() == StealthGM::PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON);
 
-   CPPUNIT_ASSERT_MESSAGE("The default camera collision flag should be true", 
+   CPPUNIT_ASSERT_MESSAGE("The default camera collision flag should be true",
       genConfig->GetEnableCameraCollision());
 
-   CPPUNIT_ASSERT_MESSAGE("The default far clipping plane should be the same as the binoculars", 
+   CPPUNIT_ASSERT_MESSAGE("The default far clipping plane should be the same as the binoculars",
       genConfig->GetFarClippingPlane() == SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE);
 
-   CPPUNIT_ASSERT_MESSAGE("The default LOD scale should be 1", 
+   CPPUNIT_ASSERT_MESSAGE("The default LOD scale should be 1",
       genConfig->GetLODScale() == 1);
 
-   CPPUNIT_ASSERT_MESSAGE("The default near clipping plane should be the same as the binoculars", 
+   CPPUNIT_ASSERT_MESSAGE("The default near clipping plane should be the same as the binoculars",
       genConfig->GetNearClippingPlane() == SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE);
 
-   CPPUNIT_ASSERT_MESSAGE("The default performance mode should be DEFAULT", 
+   CPPUNIT_ASSERT_MESSAGE("The default performance mode should be DEFAULT",
       genConfig->GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::DEFAULT);
 
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetShowAdvancedOptions());
 
    genConfig->SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
-   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON, 
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON,
       genConfig->GetAttachMode());
 
    genConfig->SetCameraCollision(false);
@@ -121,7 +119,7 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT_EQUAL(1.0, genConfig->GetNearClippingPlane());
 
    genConfig->SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
-   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS, 
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
       genConfig->GetPerformanceMode());
 
    genConfig->SetShowAdvancedOptions(true);
@@ -132,7 +130,7 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
 
 void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig = 
+   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
       new StealthGM::PreferencesEnvironmentConfigObject;
 
    // Default values
@@ -146,16 +144,16 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
    CPPUNIT_ASSERT_EQUAL(0, envConfig->GetCustomMinute());
    CPPUNIT_ASSERT_EQUAL(0, envConfig->GetCustomSecond());
 
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR,
       envConfig->GetCloudCover());
 
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED,
       envConfig->GetVisibility());
 
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM,
       envConfig->GetWeatherTheme());
 
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY,
       envConfig->GetTimeTheme());
 
    // Sets and gets
@@ -200,19 +198,19 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The value should clamp", 59, envConfig->GetCustomSecond());
 
    envConfig->SetCloudCover(dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED,
       envConfig->GetCloudCover());
 
    envConfig->SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED,
       envConfig->GetVisibility());
 
    envConfig->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY,
       envConfig->GetWeatherTheme());
 
    envConfig->SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK, 
+   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK,
       envConfig->GetTimeTheme());
 
    envConfig = NULL;
@@ -220,11 +218,11 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
 
 void ConfigObjectTests::TestPreferencesToolsConfigObject()
 {
-   dtCore::RefPtr<StealthGM::PreferencesToolsConfigObject> toolsConfig = 
+   dtCore::RefPtr<StealthGM::PreferencesToolsConfigObject> toolsConfig =
       new StealthGM::PreferencesToolsConfigObject;
 
    // Defaults
-   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS, 
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS,
       toolsConfig->GetCoordinateSystem());
 
    CPPUNIT_ASSERT_EQUAL(true, toolsConfig->GetShowBinocularImage());
@@ -247,9 +245,15 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    toolsConfig = NULL;
 }
 
+void ConfigObjectTests::TestControlsCameraConfigObject()
+{
+   dtCore::RefPtr<StealthGM::ControlsCameraConfigObject> cameraConfig =
+      new StealthGM::ControlsCameraConfigObject;
+}
+
 void ConfigObjectTests::TestControlsRecordConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ControlsRecordConfigObject> recordConfig = 
+   dtCore::RefPtr<StealthGM::ControlsRecordConfigObject> recordConfig =
       new StealthGM::ControlsRecordConfigObject;
 
    // Defaults
@@ -263,7 +267,7 @@ void ConfigObjectTests::TestControlsRecordConfigObject()
 
    recordConfig->SetShowAdvancedOptions(true);
    CPPUNIT_ASSERT(recordConfig->GetShowAdvancedOptions());
-   
+
    recordConfig->SetAutoKeyFrame(true);
    CPPUNIT_ASSERT(recordConfig->GetAutoKeyFrame());
 
@@ -275,7 +279,7 @@ void ConfigObjectTests::TestControlsRecordConfigObject()
 
 void ConfigObjectTests::TestControlsPlaybackConfigObject()
 {
-   dtCore::RefPtr<StealthGM::ControlsPlaybackConfigObject> playbackConfig = 
+   dtCore::RefPtr<StealthGM::ControlsPlaybackConfigObject> playbackConfig =
       new StealthGM::ControlsPlaybackConfigObject;
 
    // Defaults
@@ -293,11 +297,11 @@ void ConfigObjectTests::TestControlsPlaybackConfigObject()
 
 void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
 {
-   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig = 
+   dtCore::RefPtr<StealthGM::PreferencesEnvironmentConfigObject> envConfig =
       new StealthGM::PreferencesEnvironmentConfigObject;
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*new dtCore::Scene);
-   dtCore::RefPtr<SimCore::Components::WeatherComponent> weatherComponent = 
+   dtCore::RefPtr<SimCore::Components::WeatherComponent> weatherComponent =
       new SimCore::Components::WeatherComponent;
 
    gm->AddComponent(*weatherComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -315,7 +319,7 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    gm->AddActor(*atmosphereProxy, false, false);
    gm->SetEnvironmentActor(envProxy.get());
 
-   SLEEP(10);
+   dtCore::AppSleep(10U);
    dtCore::System::GetInstance().Step();
 
    CPPUNIT_ASSERT(weatherComponent->GetDayTimeActor() != NULL);

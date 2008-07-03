@@ -50,11 +50,19 @@ namespace SimCore
 
          static const std::string PROJECT_CONTEXT_DIR;
          static const std::string LIBRARY_NAME;
-         
-         // The clipping plane used by this app.
-         // The application should not have to rely
-         // on binocular near clipping plane.
+
+         /**
+          * The clipping plane used by this app.
+          * The application should not have to rely
+          * on binocular near clipping plane.
+          */
          static const float PLAYER_NEAR_CLIP_PLANE;
+
+         /**
+          * The clipping plane used by this app.
+          * The application should not have to rely
+          * on binocular near clipping plane.
+          */
          static const float PLAYER_FAR_CLIP_PLANE;
 
          /// Name of the config property pointing to the directory holding the project context.
@@ -87,16 +95,18 @@ namespace SimCore
          /// May be overridden to allow subclassed to add components
          virtual void InitializeComponents(dtGame::GameManager &gm) = 0;
 
-         /// called from external to 'end' the parser so anyone can
-         /// mess with the parser wherever they need and not tied into
-         /// an exact way of calling the parser shutdown.
-
+         /**
+          * called from external to 'end' the parser so anyone can
+          * mess with the parser wherever they need and not tied into
+          * an exact way of calling the parser shutdown.
+          */
          virtual void FinalizeParser();
 
+         /// @return true if this GM app is running inside of a GUI, like the Stealth Viewer Qt UI.
          bool IsUIRunning() { return mIsUIRunning; }
-         
+
       protected:
-         
+
          /// reads the values of command line parameters and config options set the project context
          void AssignProjectContext(dtGame::GameManager &gm);
          /// if the UI is not enabled, will load the map specified on the command line.
@@ -104,12 +114,12 @@ namespace SimCore
 
          /**
           * Reads the aspect ratio first from the command line setting, then from the config. Finally
-          * it will read the current window setting and asign the value to the closest of 1.33 or 1.6. 
+          * it will read the current window setting and asign the value to the closest of 1.33 or 1.6.
           * warning. setting to the aspect ratio to anything other than 1.33 or 1.6 will result
           * in incorrect results for the binoculars and laser range finder.
           */
          void AssignAspectRatio(dtGame::GameApplication &app);
-         
+
 
          /// Destructor
          virtual ~BaseGameEntryPoint();
@@ -127,7 +137,7 @@ namespace SimCore
          //int mStatisticsInterval;
          osg::Vec3 mStartPos;
          bool mMissingRequiredCommandLineOption;
-         
+
       private:
          bool mIsUIRunning;
    };

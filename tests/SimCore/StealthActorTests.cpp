@@ -61,7 +61,7 @@
 
 using dtCore::RefPtr;
 
-class StealthActorTests : public CPPUNIT_NS::TestFixture 
+class StealthActorTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthActorTests);
 
@@ -87,11 +87,11 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
 
 
          mStealthActor = dynamic_cast<SimCore::Actors::StealthActor*>(&mStealthProxy->GetGameActor());
-         
+
          CPPUNIT_ASSERT(mStealthProxy.valid());
          CPPUNIT_ASSERT(mStealthActor.valid());
       }
-      
+
       void tearDown()
       {
          mStealthProxy = NULL;
@@ -106,28 +106,35 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
          }
          dtCore::System::GetInstance().Stop();
       }
-      
+
       void TestStealthActorProperties()
-      {                  
+      {
          CPPUNIT_ASSERT_MESSAGE("Attaching as third person should default to true.",
             mStealthActor->GetAttachAsThirdPerson());
-         
+
          mStealthActor->SetAttachAsThirdPerson(false);
-         
+
          CPPUNIT_ASSERT_MESSAGE("Attaching as third person should be false.",
             !mStealthActor->GetAttachAsThirdPerson());
-            
+
          CPPUNIT_ASSERT_MESSAGE("Default value should be 1.",
             osg::equivalent(mStealthActor->GetMaxTranslationError(), 1.0f, 0.001f));
-         
+
          float newValue = 25.03;
          mStealthActor->SetMaxTranslationError(newValue);
-         
+
          CPPUNIT_ASSERT(osg::equivalent(mStealthActor->GetMaxTranslationError(), newValue, 0.001f));
 
          mStealthActor->SetMaxRotationError(newValue);
 
          CPPUNIT_ASSERT(osg::equivalent(mStealthActor->GetMaxRotationError(), newValue, 0.001f));
+
+         dtGame::Invokable *invoke = mStealthActor->GetGameActorProxy().GetInvokable("AttachToActor");
+         CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
+
+         invoke = mStealthActor->GetGameActorProxy().GetInvokable("WarpToPosition");
+         CPPUNIT_ASSERT_MESSAGE("The WarpToPosition invokable should not be NULL", invoke != NULL);
+
       }
 
 

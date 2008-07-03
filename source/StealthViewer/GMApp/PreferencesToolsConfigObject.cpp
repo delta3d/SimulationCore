@@ -39,6 +39,11 @@ namespace StealthGM
    const PreferencesToolsConfigObject::CoordinateSystem PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ("Raw XYZ");
    const PreferencesToolsConfigObject::CoordinateSystem PreferencesToolsConfigObject::CoordinateSystem::LAT_LON("Lat Lon");
 
+   PreferencesToolsConfigObject::CoordinateSystem::CoordinateSystem(const std::string &name) : dtUtil::Enumeration(name)
+   {
+      AddInstance(this);
+   }
+
    PreferencesToolsConfigObject::PreferencesToolsConfigObject() :
       mCoordinateSystem(&PreferencesToolsConfigObject::CoordinateSystem::MGRS),
       mShowBinocularImage(true),
@@ -60,22 +65,22 @@ namespace StealthGM
    void PreferencesToolsConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
    {
       /////////////////////////////////////////////////////////////////////////////
-      // Need to update the tool display every tick. Since this method is called 
-      // every tick, here is an easy place to implement it. This might be sort of hackish, 
+      // Need to update the tool display every tick. Since this method is called
+      // every tick, here is an easy place to implement it. This might be sort of hackish,
       // but I didn't think it was a big deal.
       // - Eddie
       /////////////////////////////////////////////////////////////////////////////
-      StealthGM::StealthInputComponent *sic = 
+      StealthGM::StealthInputComponent *sic =
          static_cast<StealthGM::StealthInputComponent*>(gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME));
 
       if(sic == NULL)
       {
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GENERAL_GAMEMANAGER_EXCEPTION, 
-            "Failed to locate the stealth input component on the Game Manager.", 
+         throw dtUtil::Exception(dtGame::ExceptionEnum::GENERAL_GAMEMANAGER_EXCEPTION,
+            "Failed to locate the stealth input component on the Game Manager.",
             __FILE__, __LINE__);
       }
 
-      SimCore::Tools::Binoculars *binos = 
+      SimCore::Tools::Binoculars *binos =
          static_cast<SimCore::Tools::Binoculars*>(sic->GetTool(SimCore::MessageType::BINOCULARS));
       if(binos != NULL)
       {
@@ -83,7 +88,7 @@ namespace StealthGM
          gameManager.FindActorsByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, proxies);
          if(!proxies.empty())
          {
-            SimCore::Actors::TerrainActorProxy *proxy = 
+            SimCore::Actors::TerrainActorProxy *proxy =
                static_cast<SimCore::Actors::TerrainActorProxy*>(proxies[0]);
 
             binos->Update(*proxy->GetActor());
@@ -103,7 +108,7 @@ namespace StealthGM
       if(hud != NULL)
       {
          if(*mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::MGRS)
-         {   
+         {
             hud->SetCoordinateSystem(CoordSystem::MGRS);
          }
          else if(*mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
@@ -121,18 +126,5 @@ namespace StealthGM
       }
 
       SetIsUpdated(false);
-   }
-
-   void PreferencesToolsConfigObject::SetCoordinateSystem(const std::string &system)
-   {
-      for(unsigned int i = 0; i < PreferencesToolsConfigObject::CoordinateSystem::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current = PreferencesToolsConfigObject::CoordinateSystem::Enumerate()[i];
-
-         if(current->GetName() == system)
-         {
-            SetCoordinateSystem(static_cast<PreferencesToolsConfigObject::CoordinateSystem&>(*current));
-         }
-      }
    }
 }
