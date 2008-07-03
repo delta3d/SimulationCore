@@ -153,8 +153,8 @@ namespace StealthQt
       mLatValidator(new QDoubleValidator(-90, 90, 10, this)),
       mLonValidator(new QDoubleValidator(-180, 180, 10, this)),
       mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this)),
-      mShowMissingEntityInfoErrorMessage(true),
-      {
+      mShowMissingEntityInfoErrorMessage(true)
+   {
       mUi->setupUi(this);
       ConnectSlots();
 
