@@ -167,8 +167,10 @@ namespace StealthQt
 
          endGroup();
 
-         mConnectionNameMap.insert(std::make_pair(name, mNumConnections));
-         ++mNumConnections;
+         if (mConnectionNameMap.insert(std::make_pair(name, mNumConnections)).second)
+         {
+            ++mNumConnections;
+         }
       }
       else
       {
@@ -629,7 +631,11 @@ namespace StealthQt
          if(contains(StealthViewerSettings::COORDINATE_SYSTEM))
          {
             QString savedValue = value(StealthViewerSettings::COORDINATE_SYSTEM).toString();
-            toolsConfig.SetCoordinateSystem(savedValue.toStdString());
+            StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
+               StealthGM::PreferencesToolsConfigObject::CoordinateSystem::GetValueForName(savedValue.toStdString());
+
+            if (coordSystem != NULL)
+               toolsConfig.SetCoordinateSystem(*coordSystem);
          }
 
          if(contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))
