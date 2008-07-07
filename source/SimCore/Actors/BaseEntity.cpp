@@ -966,6 +966,9 @@ namespace SimCore
          osg::Matrix m;
          xform.Get(m);
          mScaleMatrixNode->setMatrix(m);
+
+         // Recompute the scale since the rotation probably just overwrote it
+         UpdateModelScale();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

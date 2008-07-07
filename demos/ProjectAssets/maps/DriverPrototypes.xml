@@ -3519,6 +3519,14 @@
                 <string>HoverTarget</string>
             </property>
             <property>
+                <name>Model Rotation</name>
+                <vec3>
+                    <value1>-0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
                 <name>Default Scale</name>
                 <vec3>
                     <value1>1.000000</value1>
@@ -3529,17 +3537,9 @@
             <property>
                 <name>Scale Magnification Factor</name>
                 <vec3>
-                    <value1>10.000000</value1>
-                    <value2>10.000000</value2>
-                    <value3>10.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Model Rotation</name>
-                <vec3>
-                    <value1>-0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>-0.000000</value3>
+                    <value1>2.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>2.000000</value3>
                 </vec3>
             </property>
             <property>
