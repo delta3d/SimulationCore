@@ -603,7 +603,7 @@
         <!-- ****************************************************** -->    
            <object extends="Aircraft" name="HoverTarget">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
-            <actorType>DriverDemo.HoverTarget</actorType>
+            <actorType>DriverDemo.HoverTargetActor</actorType>
             <remoteOnly>false</remoteOnly>
             <disEntityEnum>
                 <kind>1</kind>
@@ -617,7 +617,7 @@
             <attrToProp>
                <gameName>EntityType</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>HoverTarget</default>
+               <default>HoverTargetActor</default>
             </attrToProp>
              <attrToProp>
                <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>

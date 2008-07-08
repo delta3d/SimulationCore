@@ -224,21 +224,21 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateDeadReckoning(float deltaTime)
       {
-         if(mTimesASecondYouCanSendOutAnUpdate == 0)
-         {
-            LOG_ERROR("Not sending out dead reckoning, the mTimesASecondYouCanSendOutAnUpdate is set to 0");
-            return;
-         }
-
+         // Increment how long it's been since our last DR check. We can only send out an update 
+         // so many times a second.
          mTimeForSendingDeadReckoningInfoOut += deltaTime;
 
-         if(mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate)
-         {
-            mTimeForSendingDeadReckoningInfoOut = 0.0f;
-         }
-         else
-            return;
 
+         ///// DELETE THE FOLLOWING!!!!
+
+
+         // A full update may not be required. Prevent any further network updates.
+         // Let the following code determine if this vehicle should be flagged
+         // for a full actor update.
+         //mNotifyFullUpdate = false;
+         //mNotifyPartialUpdate = false;
+
+/*
          float amountChange = 0.5f;
          float glmat[16];
          NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
@@ -262,12 +262,6 @@ namespace SimCore
          dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
          osg::Vec3 physTranslationVec;
          physTranslationVec.set(physxObj->getGlobalPosition().x, physxObj->getGlobalPosition().y, physxObj->getGlobalPosition().z + zoffset);
-
-         // A full update may not be required. Prevent any further network updates.
-         // Let the following code determine if this vehicle should be flagged
-         // for a full actor update.
-         mNotifyFullUpdate = false;
-         mNotifyPartialUpdate = false;
 
          const osg::Vec3 &drTranslationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
          const osg::Vec3 &drOrientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
@@ -321,20 +315,62 @@ namespace SimCore
             mNotifyPartialUpdate = true;
             // DEBUG: std::cout << "Articulation Update\n" << std::endl;
          }
+         */
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       bool BasePhysicsVehicleActor::ShouldForceUpdate(
          const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
-         // UpdateDeadReckoning will have already determined if a full update is necessary.
-         fullUpdate = mNotifyFullUpdate;
+         bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
+         bool enoughTimeHasPassed = (mTimesASecondYouCanSendOutAnUpdate > 0.0f && 
+            (mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate));
 
-         // A full update or a dirty articulation will allow for at least a partial update.
-         bool forceUpdate = fullUpdate 
-            || mNotifyPartialUpdate;
+         if(fullUpdate || enoughTimeHasPassed)
+         {
+            // Let parent determine if we are outside our threshold values
+            if (!fullUpdate)
+               forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
 
-         return forceUpdate;
+            NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
+            if(physxObj == NULL)
+            {
+               LOG_ERROR("No physics object on BasePhysicsVehicleActor::ShouldForceUpdate(), no doing dead reckoning");
+               return false;
+            }
+
+            // If we are going to update, then set our velocities so others can do remote dead reckoning.
+            if (forceUpdateResult)
+            {
+               // Linear Velocity - set our linear velocity from the physics object in preparation for a publish
+               NxVec3 linearVelVec3 = physxObj->getLinearVelocity();
+               const osg::Vec3 physLinearVelocity(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+               // If the value is very close to 0, set it to zero to prevent warbling
+               bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
+               if( physVelocityNearZero )
+                  SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+               else
+                  SetVelocityVector(physLinearVelocity);
+
+               // Angular Velocity - set our angular velocity from the physics object in preparation for a publish
+               NxVec3 angularVelVec3 = physxObj->getAngularVelocity();
+               const osg::Vec3 physAngularVelocity(angularVelVec3.x, angularVelVec3.y, angularVelVec3.z);
+               // If the value is very close to 0, set it to zero to prevent warbling
+               bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
+               if ( physAngularVelocityNearZero ) // 
+                  SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+               else
+                  SetAngularVelocityVector(physAngularVelocity);
+
+               // Since we are about to publish, set our time since last publish back to 0. 
+               // This allows us to immediately send out a change the exact moment it happens (ex if we 
+               // were moving slowly and hadn't updated recently).
+               mTimeForSendingDeadReckoningInfoOut = 0.0f;
+            }
+
+         }
+
+         return forceUpdateResult;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -359,22 +395,70 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate()
       {
-         osg::Matrix rot = GetMatrixNode()->getMatrix();
-         
-         NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
-         if(toFillIn != NULL)
+         NxActor* physicsActor = GetPhysicsHelper()->GetPhysXObject();
+
+         // The PRE physics update is only trapped if we are remote. It updates the physics 
+         // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
+         // We do this because we don't own remote vehicles and naturally can't just go 
+         // physically simulating them however we like. But, the physics scene needs them to interact with. 
+         // Only called if we are remote, but check for safety. Local objects are moved by the physics engine...
+         if (IsRemote() && physicsActor != NULL)
          {
-            toFillIn->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
-            toFillIn->setGlobalOrientation(
+            osg::Matrix rot = GetMatrixNode()->getMatrix();
+
+            // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of 
+            // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating), 
+            // but we want to act like their not.
+            osg::Vec3 velocity = GetVelocityVector();
+            NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
+            physicsActor->setLinearVelocity(physVelocity );
+
+            // Move the remote physics object to its dead reckoned position/rotation.
+            physicsActor->setGlobalPosition(NxVec3(rot.operator ()(3,0), rot.operator ()(3,1), rot.operator ()(3,2)));
+            physicsActor->setGlobalOrientation(
                NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
                         NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
                         NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
          }
-
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::AgeiaPostPhysicsUpdate(){}
+      void BasePhysicsVehicleActor::AgeiaPostPhysicsUpdate()
+      {
+         // This is ONLY called if we are LOCAL (we put the check here just in case... )
+         if (!IsRemote() && GetPhysicsHelper() != NULL)
+         {
+            // The base behavior is that we want to pull the translation and rotation off the object
+            // in our physics scene and apply it to our 3D object in the visual scene.
+            NxActor* physicsActor = GetPhysicsHelper()->GetPhysXObject();
+            if(physicsActor != NULL && !physicsActor->isSleeping())
+            {
+               dtCore::Transform ourTransform;
+               //GetTransform(ourTransform);
+
+               // Rotation
+               float glmat[16];
+               memset(glmat, 0, 16*sizeof(float));
+               NxMat33 rotation = physicsActor->getGlobalOrientation();
+               rotation.getColumnMajorStride4(glmat);
+               // Translation
+               glmat[12] = physicsActor->getGlobalPosition()[0];
+               glmat[13] = physicsActor->getGlobalPosition()[1];
+               glmat[14] = physicsActor->getGlobalPosition()[2];
+               glmat[15] = 1.0f;
+               osg::Matrix currentMatrix(glmat);
+               ourTransform.Set(currentMatrix);
+
+               // Translation
+               //ourTransform.SetTranslation(physicsActor->getGlobalPosition()[0], 
+               //   physicsActor->getGlobalPosition()[1], physicsActor->getGlobalPosition()[2]);
+
+               SetTransform(ourTransform);
+            }
+         }
+
+      }
+
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& 
@@ -535,7 +619,7 @@ namespace SimCore
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());
 
-         AddProperty(new dtDAL::BooleanActorProperty("PERFORM_ABOVE_GROUND_SAFETY_CHECK",
+         AddProperty(new dtDAL::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
             dtDAL::MakeFunctor(actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
             dtDAL::MakeFunctorRet(actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),

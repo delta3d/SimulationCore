@@ -762,9 +762,10 @@ namespace SimCore
          if (!forceUpdate)
          {
 
-            osg::Vec3 distanceMoved = pos - GetLastKnownTranslation();
-
-            osg::Vec3 distanceTurned = rot - GetLastKnownRotation();
+            osg::Vec3 distanceMoved = pos - GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
+            // Note the rotation check isn't perfect (ie, not a quaternion), so you might get 
+            // an extra update, but it's close enough and is very cheap processor wise.
+            osg::Vec3 distanceTurned = rot - GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
 
             if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
@@ -841,10 +842,12 @@ namespace SimCore
             forceUpdate = true;
          }
 
-         if( ! fullUpdate )
-         {
-            forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
-         }
+         //if( ! fullUpdate )
+         //{
+         // Check for update (or child class). Call this even if fullUpdate, because they may set some 
+         // properties that we need to publish
+         forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
+         //}
 
          if (forceUpdate)
          {
