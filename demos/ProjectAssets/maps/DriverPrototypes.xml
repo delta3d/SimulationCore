@@ -2720,9 +2720,9 @@
             <property>
                 <name>Default Scale</name>
                 <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
+                    <value1>2.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>2.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -2859,6 +2859,10 @@
                 <resourceDisplayName>Ignition.wav</resourceDisplayName>
                 <resource>Sounds::Ignition.wav</resource>
 	</property>-->
+            <property>
+                <name>Perform_Above_Ground_Safety_Check</name>
+                <boolean>true</boolean>
+            </property>
         </actor>
         <actor>
             <type>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</type>
@@ -3326,11 +3330,15 @@
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
             </property>
+            <property>
+                <name>Perform_Above_Ground_Safety_Check</name>
+                <boolean>true</boolean>
+            </property>
         </actor>
         <actor>
 		<!-- <type>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</type> -->
             <type>DriverDemo.HoverTargetActor</type>
-            <id>b979edcc-0a69-4f51-b21b-abc2223a11f2</id>
+            <id>b9798888-0a69-4f51-b21b-abc2223a11f2</id>
             <name>Hover_Target_Prototype</name>
             <property>
                 <name>Rotation</name>
@@ -3529,17 +3537,17 @@
             <property>
                 <name>Default Scale</name>
                 <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
+                    <value1>2.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>2.000000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Scale Magnification Factor</name>
                 <vec3>
-                    <value1>2.000000</value1>
-                    <value2>2.000000</value2>
-                    <value3>2.000000</value3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -3590,7 +3598,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoSim</string>
+                <string>DriverDemoTarget</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -3645,6 +3653,10 @@
                     <value2>0.000000</value2>
                     <value3>0.000</value3>
                 </vec3>
+            </property>
+            <property>
+                <name>Perform_Above_Ground_Safety_Check</name>
+                <boolean>false</boolean>
             </property>
 	    <!--<property>
                 <name>SOUND_EFFECT_IGNITION</name>
