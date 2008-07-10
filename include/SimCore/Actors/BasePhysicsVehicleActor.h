@@ -137,6 +137,12 @@ namespace SimCore
             virtual void SetTimesASecondYouCanSendOutAnUpdate( float timesASecondYouCanSendOutAnUpdate )           { mTimesASecondYouCanSendOutAnUpdate = timesASecondYouCanSendOutAnUpdate; }
             virtual float GetTimesASecondYouCanSendOutAnUpdate() const       { return mTimesASecondYouCanSendOutAnUpdate; }
 
+            void SetPublishLinearVelocity(bool publishLinearVelocity)   { mPublishLinearVelocity = publishLinearVelocity; }
+            bool GetPublishLinearVelocity() const { return mPublishLinearVelocity; }
+
+            void SetPublishAngularVelocity(bool publishAngularVelocity)   { mPublishAngularVelocity = publishAngularVelocity; }
+            bool GetPublishAngularVelocity() const { return mPublishAngularVelocity; }
+
 
          protected: 
             /// Angles/ steering moving etc done here. Of the updates, this is called first.
@@ -212,6 +218,15 @@ namespace SimCore
             /// at the cost of some runtime performance.
             bool mPerformAboveGroundSafetyCheck;
 
+            /// When publishing pos/rot updates vs dead reckoning - do we send linear velocity or not?
+            /// Allows tightly controlled entities that do motion model stuff to not mess up linear velocity
+            /// If false, linear velocity will always be zero.
+            bool mPublishLinearVelocity;
+
+            /// When publishing pos/rot updates vs dead reckoning - do we send angular velocity or not?
+            /// Allows tightly controlled entities that do motion model stuff to not mess up angular velocity
+            /// If false, angular velocity will always be zero.
+            bool mPublishAngularVelocity;
 
 
       };

@@ -60,6 +60,8 @@ namespace SimCore
       , mNotifyFullUpdate(true)
       , mNotifyPartialUpdate(true)
       , mPerformAboveGroundSafetyCheck(true)
+      , mPublishLinearVelocity(true)
+      , mPublishAngularVelocity(true)
       {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
@@ -343,24 +345,35 @@ namespace SimCore
             if (forceUpdateResult)
             {
                // Linear Velocity - set our linear velocity from the physics object in preparation for a publish
-               NxVec3 linearVelVec3 = physxObj->getLinearVelocity();
-               const osg::Vec3 physLinearVelocity(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
-               // If the value is very close to 0, set it to zero to prevent warbling
-               bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
-               if( physVelocityNearZero )
-                  SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+               if (mPublishLinearVelocity)
+               {
+                  NxVec3 linearVelVec3 = physxObj->getLinearVelocity();
+                  const osg::Vec3 physLinearVelocity(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+                  // If the value is very close to 0, set it to zero to prevent warbling
+                  bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
+                  if( physVelocityNearZero )
+                     SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+                  else
+                     SetVelocityVector(physLinearVelocity);
+               }
                else
-                  SetVelocityVector(physLinearVelocity);
+                  SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+
 
                // Angular Velocity - set our angular velocity from the physics object in preparation for a publish
-               NxVec3 angularVelVec3 = physxObj->getAngularVelocity();
-               const osg::Vec3 physAngularVelocity(angularVelVec3.x, angularVelVec3.y, angularVelVec3.z);
-               // If the value is very close to 0, set it to zero to prevent warbling
-               bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
-               if ( physAngularVelocityNearZero ) // 
-                  SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+               if (mPublishAngularVelocity)
+               {
+                  NxVec3 angularVelVec3 = physxObj->getAngularVelocity();
+                  const osg::Vec3 physAngularVelocity(angularVelVec3.x, angularVelVec3.y, angularVelVec3.z);
+                  // If the value is very close to 0, set it to zero to prevent warbling
+                  bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
+                  if ( physAngularVelocityNearZero ) // 
+                     SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+                  else
+                     SetAngularVelocityVector(physAngularVelocity);
+               }
                else
-                  SetAngularVelocityVector(physAngularVelocity);
+                  SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
 
                // Since we are about to publish, set our time since last publish back to 0. 
                // This allows us to immediately send out a change the exact moment it happens (ex if we 

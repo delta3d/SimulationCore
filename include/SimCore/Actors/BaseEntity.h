@@ -489,6 +489,8 @@ namespace SimCore
              */
             virtual void TickLocal(const dtGame::Message& tickMessage);
 
+            virtual void ProcessMessage(const dtGame::Message& message);
+
             //this was made public so the proxy could call it.. -bga
             dtGame::DeadReckoningHelper& GetDeadReckoningHelper() { return *mDeadReckoningHelper; }
             const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const { return *mDeadReckoningHelper; }
