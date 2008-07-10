@@ -277,12 +277,6 @@ namespace DriverDemo
                articHelper->SetEntity( vehicle );
                vehicle->SetArticulationHelper( articHelper.get() );
 
-               // Tell the MotionModels about the articulation helper.
-               if( mRingMM.valid() )
-                  mRingMM->SetArticulationHelper( articHelper.get() );
-               if( mWeaponMM.valid() )
-                  mWeaponMM->SetArticulationHelper( articHelper.get() );
-
                // Register a munitions component to the vehicle
                SimCore::Components::MunitionsComponent* munitionsComp;
                gameManager.GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
@@ -293,6 +287,12 @@ namespace DriverDemo
 
                // This method does all the cool stuff!!!
                AttachToVehicle(*vehicle);
+               // Tell the MotionModels about the articulation helper.
+               //if( mRingMM.valid() )
+               //   mRingMM->SetArticulationHelper( articHelper.get() );
+               //if( mWeaponMM.valid() )
+               //   mWeaponMM->SetArticulationHelper( articHelper.get() );
+
             }
             else 
             {
@@ -1251,6 +1251,14 @@ namespace DriverDemo
          mRingMM->SetTarget(&vehicle);
       else
          mRingMM->SetTargetDOF( mDOFRing.get() );
+
+      // Tell the MotionModels about the articulation helper - This allows the artic helper to 
+      // know about data changes which in turn, allows it to check for changes before publishing an update.
+      if( mRingMM.valid() )
+         mRingMM->SetArticulationHelper(vehicle.GetArticulationHelper());
+      if( mWeaponMM.valid() )
+         mWeaponMM->SetArticulationHelper(vehicle.GetArticulationHelper());
+
 
       mRingMM->SetEnabled(true);
    
