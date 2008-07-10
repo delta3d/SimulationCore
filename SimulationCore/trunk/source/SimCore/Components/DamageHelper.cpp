@@ -51,7 +51,7 @@ namespace SimCore
          mDamageModifier(0.0f),
          mLastNotifiedDamageState(&DamageType::DAMAGE_NONE),
          mCurrentDamageState(&DamageType::DAMAGE_NONE),
-         mLastDRAlgorithm(NULL),
+         //mLastDRAlgorithm(NULL),
          mScratchProbs(new DamageProbability("")),
          mDamageLevels(new DamageProbability("DamageLevels"))
       {
@@ -65,7 +65,7 @@ namespace SimCore
          mDamageModifier(0.0f),
          mLastNotifiedDamageState(&DamageType::DAMAGE_NONE),
          mCurrentDamageState(&DamageType::DAMAGE_NONE),
-         mLastDRAlgorithm(NULL),
+         //mLastDRAlgorithm(NULL),
          mEntity(&entity),
          mScratchProbs(new DamageProbability("")),
          mDamageLevels(new DamageProbability("DamageLevels"))
@@ -232,13 +232,16 @@ namespace SimCore
 
          mCurrentDamageState = &damage;
 
+         // We no longer deal with the LAST DR algorithm because even if the vehicle is DEAD
+         // it could still be falling or being moved by other things (such as being hit or a munition)
+         // If we stop DR'ing, then we mess up our publishing also.
          // Store dead reckoning algorithm
-         if( dtGame::DeadReckoningAlgorithm::STATIC != 
-            mEntity->GetDeadReckoningAlgorithm()
-            && damage == DamageType::DAMAGE_KILL )
-         {
-            mLastDRAlgorithm = &mEntity->GetDeadReckoningAlgorithm();
-         }
+         //if( dtGame::DeadReckoningAlgorithm::STATIC != 
+         //   mEntity->GetDeadReckoningAlgorithm()
+         //   && damage == DamageType::DAMAGE_KILL )
+         //{
+         //   mLastDRAlgorithm = &mEntity->GetDeadReckoningAlgorithm();
+         //}
 
          if( damage == DamageType::DAMAGE_NONE )
          {
@@ -246,10 +249,10 @@ namespace SimCore
             mEntity->SetMobilityDisabled(false);
             mEntity->SetFirepowerDisabled(false);
             mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
-            if( mLastDRAlgorithm != NULL )
-            {
-               mEntity->SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
-            }
+            //if( mLastDRAlgorithm != NULL )
+            //{
+            //   mEntity->SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
+            //}
             mEntity->SetFlamesPresent( false );
          }
          else if( damage == DamageType::DAMAGE_MOBILITY || damage == DamageType::DAMAGE_FIREPOWER )
@@ -275,7 +278,9 @@ namespace SimCore
             mEntity->SetMobilityDisabled(true);
             mEntity->SetFirepowerDisabled(true);
             mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
-            mEntity->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
+            // We no longer turn off the DR algorithm when we are dead. The reason is that we could 
+            // be pushed around, or falling (if a plane gets shot, it falls down) even though we are dead
+            //mEntity->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
             mEntity->SetFlamesPresent( true );
          }
 

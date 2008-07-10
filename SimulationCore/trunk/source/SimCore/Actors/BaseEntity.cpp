@@ -341,7 +341,12 @@ namespace SimCore
          {
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
          }
-         // don't register for remote ticks!!!  
+         else
+         {
+            // Turn this on to print out debug info in ProcessMessage();
+            //RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_UPDATED, dtGame::GameActorProxy::PROCESS_MSG_INVOKABLE);
+         }
+         // We don't use remote ticks
          //else
          //{
             //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
@@ -386,10 +391,10 @@ namespace SimCore
          mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
          mDefaultScale(1.0f, 1.0f, 1.0f),
          mScaleMagnification(1.0f, 1.0f, 1.0f),
-         mMaxRotationError(10.0f),
-         mMaxRotationError2(100.0f),
-         mMaxTranslationError(1.0f),
-         mMaxTranslationError2(1.0f),
+         mMaxRotationError(6.0f),
+         mMaxRotationError2(36.0f),
+         mMaxTranslationError(0.5f),
+         mMaxTranslationError2(0.25f),
          mEngineSmokeOn(false),
          mSmokePlumePresent(false),
          mFlamesPresent(false),
@@ -756,18 +761,30 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
-         bool forceUpdate = false;
+         bool forceUpdate = fullUpdate;
 
-         //if it's not time for an update, check to see if it's moved or turned enough to warrant one.
-         if (!forceUpdate)
+         // If it's going to be a full update, then we don't have to check. 
+         // If it's none, then we don't WANT to check.  
+         if (!forceUpdate && GetDeadReckoningHelper().GetDeadReckoningAlgorithm() != 
+            dtGame::DeadReckoningAlgorithm::NONE)
          {
+            // check to see if it's moved or turned enough to warrant one.
 
             osg::Vec3 distanceMoved = pos - GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
             // Note the rotation check isn't perfect (ie, not a quaternion), so you might get 
             // an extra update, but it's close enough and is very cheap processor wise.
             osg::Vec3 distanceTurned = rot - GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
 
-            if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
+            if (distanceMoved.length2() > mMaxTranslationError2)
+            {
+               forceUpdate = true;
+            }
+            else if (distanceTurned.length2() > mMaxRotationError2)
+            {
+               forceUpdate = true;
+            }
+
+            if (forceUpdate && mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
                mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
                   "The change in the translation is \"%f\" for \"%s\" named \"%s\".  The max is \"%f\".",
@@ -778,15 +795,6 @@ namespace SimCore
                   "The change in the rotation is \"%f\" for \"%s\" named \"%s\".  The max is \"%f\".",
                   distanceTurned.length(), GetGameActorProxy().GetName().c_str(),
                   GetName().c_str(),  mMaxRotationError);
-            }
-
-            if (distanceMoved.length2() > mMaxTranslationError2)
-            {
-               forceUpdate = true;
-            }
-            else if (distanceTurned.length2() > mMaxRotationError2)
-            {
-               forceUpdate = true;
             }
          }
          return forceUpdate;
@@ -816,8 +824,49 @@ namespace SimCore
       {
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
       }
-      
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::ProcessMessage(const dtGame::Message& message)
+      {
+/*
+         if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
+         {
+            const dtGame::ActorUpdateMessage &updateMessage = 
+               static_cast<const dtGame::ActorUpdateMessage&> (message);
+            const dtGame::MessageParameter *posParameter = 
+               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+            const dtGame::MessageParameter *rotParameter = 
+               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+            const dtGame::MessageParameter *velParameter = 
+               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
+
+            // CURT HACK STUFF. Curt - DR Debug stuff.
+            if (posParameter != NULL && rotParameter != NULL)
+            {
+               dtCore::Transform ourTransform;
+               GetTransform(ourTransform);
+               osg::Vec3 pos = ourTransform.GetTranslation();
+               osg::Vec3 rot;
+               ourTransform.GetRotation(rot);
+               std::ostringstream oss;
+               oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// << 
+                  //"] VEL [" << velParameter->ToString() << "].";
+                  //"] ROTATION [" << rotParameter->ToString() << "].";
+               if (velParameter != NULL)
+                  oss << "] VEL [" << velParameter->ToString() << "].";
+               else 
+                  oss << "] [NO VEL].";
+               LOG_ALWAYS(oss.str());
+               return;
+            }
+         }
+         */
+      }
+
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::TickLocal(const dtGame::Message& tickMessage)
       {
@@ -853,6 +902,17 @@ namespace SimCore
          {
             SetLastKnownTranslation(pos);
             SetLastKnownRotation(rot);
+
+            /*
+            osg::Vec3 velocity = GetVelocityVector();
+            // Curt - DR Debug stuff.
+            std::ostringstream oss;
+            oss << "PUB [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] << 
+               "] VEL [" << velocity[0] << " " << velocity[1] << " " << velocity[2] << "]";
+            //oss << "Publishing [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] << 
+            //   "] ROTATION [" << rot[0] << " " << rot[1] << " " << rot[2] << "].";
+            LOG_ALWAYS(oss.str());
+            */
 
             dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
                GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
