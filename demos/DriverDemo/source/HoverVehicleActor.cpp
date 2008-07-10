@@ -53,6 +53,9 @@ namespace DriverDemo
       SetTimeForSendingDeadReckoningInfoOut(0.0f);
       SetTimesASecondYouCanSendOutAnUpdate(5.0f);
 
+      SetPublishLinearVelocity(true);
+      SetPublishAngularVelocity(false);
+
       // create my unique physics helper.  almost all of the physics is on the helper.  
       // The actor just manages properties and key presses mostly.
       HoverVehiclePhysicsHelper *helper = new HoverVehiclePhysicsHelper(proxy);

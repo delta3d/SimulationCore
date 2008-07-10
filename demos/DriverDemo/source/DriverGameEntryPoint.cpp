@@ -98,6 +98,11 @@ namespace DriverDemo
    {
       dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
     
+      // Change log file name
+      std::string logFileName = gameManager.GetConfiguration().GetConfigPropertyValue("Delta3DLogFileName");
+      if (!logFileName.empty())
+         dtUtil::LogFile::SetFileName(logFileName);
+
       gameAppComponent = new DriverDemo::GameAppComponent();
       gameManager.AddComponent(*gameAppComponent, dtGame::GameManager::ComponentPriority::HIGHER);
    
