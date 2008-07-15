@@ -1406,12 +1406,12 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       MunitionsComponent::MunitionsComponent( const std::string& name )
-         :dtGame::GMComponent(name),
-         mMunitionConfigPath("Configs:MunitionsConfig.xml"),
-         mIsector(new dtCore::BatchIsector),
-         mLastDetonationTime(0.0f),
-         mEffectsManager(new WeaponEffectsManager),
-         mMaximumActiveMunitions(200)
+         : dtGame::GMComponent(name)
+         , mMunitionConfigPath("Configs:MunitionsConfig.xml")
+         , mIsector(new dtCore::BatchIsector)
+         , mLastDetonationTime(0.0f)
+         , mEffectsManager(new WeaponEffectsManager)
+         , mMaximumActiveMunitions(200)
       {
       }
 
@@ -1528,6 +1528,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       unsigned int MunitionsComponent::LoadMunitionDamageTables( const std::string& munitionConfigPath )
       {
+         // Check just in case - no need to error out though. This happens sometimes in unit tests.
+         if (munitionConfigPath.empty())
+         {
+            return 0 ;
+         }
+
          // Find the specified file
          std::string resourcePath = dtDAL::Project::GetInstance()
             .GetResourcePath(dtDAL::ResourceDescriptor( munitionConfigPath ));
@@ -1795,7 +1801,7 @@ namespace SimCore
             ClearTables();
             mLastDetonationTime = 0.0f;
 
-            if( type == dtGame::MessageType::INFO_RESTARTED )
+            if( type == dtGame::MessageType::INFO_RESTARTED)
             {
                LoadMunitionDamageTables( mMunitionConfigPath );
             }
