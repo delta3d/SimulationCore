@@ -707,6 +707,13 @@ namespace SimCore
             void SetDefaultMunitionName( const std::string& munitionName );
             const std::string& GetDefaultMunitionName() const;
 
+            // Set the munition config file that will be loaded whenever the system is restarted. 
+            // It defaults to "Configs:MunitionsConfig.xml". If you want to change it, you MUST 
+            // call this method BEFORE the RESTART message is sent.
+            // @param munitionConfigFileName The config file name that is loaded/reloaded on a restart.
+            void SetMunitionConfigFileName( const std::string& munitionConfigFileName ) { mMunitionConfigPath = munitionConfigFileName; }
+            const std::string& GetMunitionConfigFileName() const { return mMunitionConfigPath; }
+
             // Convenience method for directly retrieving a munition from the contained munition table.
             // @param munitionName Name of the munition to be retrieved from the munition type table.
             // @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
