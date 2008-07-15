@@ -118,7 +118,7 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
             !mStealthActor->GetAttachAsThirdPerson());
 
          CPPUNIT_ASSERT_MESSAGE("Default value should be 1.",
-            osg::equivalent(mStealthActor->GetMaxTranslationError(), 1.0f, 0.001f));
+            osg::equivalent(mStealthActor->GetMaxTranslationError(), 0.5f, 0.001f));
 
          float newValue = 25.03;
          mStealthActor->SetMaxTranslationError(newValue);

@@ -260,7 +260,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetVelocityVector(osg::Vec3(1.1f, 0.3f, 0.4f));
 
-         human->SetMaxTimePerIteration(0.5);
+         human->SetMaxTimePerIteration(0.25);
 
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
@@ -272,7 +272,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
 
          bool value = human->GenerateNewAnimationSequence();
-         CPPUNIT_ASSERT(value);
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.", value);
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",

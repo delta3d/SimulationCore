@@ -134,6 +134,7 @@ void BaseEntityActorProxyTests::setUp()
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
    mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   mGM->SetApplication(GetGlobalApplication());
    
    mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
    mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -469,6 +470,12 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    mGM->AddActor(eap, false, true);
    
    SimCore::Actors::BaseEntity& entityActor = static_cast<SimCore::Actors::BaseEntity&>(eap.GetGameActor());
+   // we now need a DR algorithm other than none, or it will skip updates.
+   entityActor.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);//VELOCITY_ONLY);
+   // Eliminating smoothing causes the entity movements and DR movements to be fully in sync. This 
+   // prevents too many updates being sent based on 'smoothing' changes.
+   entityActor.GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
+   entityActor.GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
 
    double oldTime = dtCore::System::GetInstance().GetSimulationTime();
    
@@ -488,7 +495,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());
    
-   osg::Vec3 smallMovement(0.1f, 0.3f, 0.4f);
+   osg::Vec3 smallMovement(0.1f, 0.1f, 0.1f);
    
    dtCore::Transform xform;
    osg::Vec3 pos;
@@ -523,10 +530,11 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    CPPUNIT_ASSERT_MESSAGE(ss.str(),
                           update1.valid());
                           
+   // The number of params is based on the subclass. It should at least be pos & rot, but might also be vel & ang vel...
    std::vector<const dtGame::MessageParameter*> toFill;
    update1->GetUpdateParameters(toFill);
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("The update message should exactly have 2 update parameters in it.",
-                                size_t(2), toFill.size()); 
+   CPPUNIT_ASSERT_MESSAGE("The update message should have at least 2 update parameters in it.",
+                           (int) (toFill.size()) >= 2); 
 
    tc->reset();
 
@@ -553,8 +561,9 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
                           update2.valid());
                           
    update2->GetUpdateParameters(toFill);
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("The update message should only have 2 update parameters in it.",
-                                size_t(2), toFill.size()); 
+   // The number of params is based on the subclass. It should at least be pos & rot, but might also be vel & ang vel...
+   CPPUNIT_ASSERT_MESSAGE("The update message should have at least 2 update parameters in it.",
+                          (int) (toFill.size()) >= 2); 
 
    tc->reset();
 }

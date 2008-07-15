@@ -340,17 +340,16 @@ namespace SimCore
          if (!IsRemote())
          {
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
-         }
-         else
-         {
-            // Turn this on to print out debug info in ProcessMessage();
-            //RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_UPDATED, dtGame::GameActorProxy::PROCESS_MSG_INVOKABLE);
+
          }
          // We don't use remote ticks
          //else
          //{
-            //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+             //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+             // Turn this on to print out debug info in ProcessMessage();
+             //RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_UPDATED, dtGame::GameActorProxy::PROCESS_MSG_INVOKABLE);
          //}
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -470,6 +469,24 @@ namespace SimCore
             osg::Vec3 rot;
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
+
+            // For local actors, by default, we don't want to use smoothing on our Dead Reckoning. 
+            // If we do, then when we check to see if we should publish, we'll be off by more than we 
+            // should, and be more likely to republish.
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
+         }
+         else
+         {
+            // For remote actors, we want to make sure they have smoothing on DR changes. 
+            // Note - this is usually set by the DR helper, but in case it's not, or in the case 
+            // that an actor was changed from local to remote, we want a value... yes, it's obscure
+            if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
+               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(
+                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+            if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
+               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(
+                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
          }
       }
 
@@ -836,14 +853,10 @@ namespace SimCore
          {
             const dtGame::ActorUpdateMessage &updateMessage = 
                static_cast<const dtGame::ActorUpdateMessage&> (message);
-            const dtGame::MessageParameter *posParameter = 
-               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
-            const dtGame::MessageParameter *rotParameter = 
-               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
             const dtGame::MessageParameter *velParameter = 
                updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
 
-            // CURT HACK STUFF. Curt - DR Debug stuff.
+            // Debug Print out test stuff
             if (posParameter != NULL && rotParameter != NULL)
             {
                dtCore::Transform ourTransform;
@@ -852,18 +865,15 @@ namespace SimCore
                osg::Vec3 rot;
                ourTransform.GetRotation(rot);
                std::ostringstream oss;
-               oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// << 
+               //oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// << 
                   //"] VEL [" << velParameter->ToString() << "].";
                   //"] ROTATION [" << rotParameter->ToString() << "].";
-               if (velParameter != NULL)
-                  oss << "] VEL [" << velParameter->ToString() << "].";
-               else 
-                  oss << "] [NO VEL].";
-               LOG_ALWAYS(oss.str());
-               return;
+               //if (velParameter != NULL)
+               //   std::cout << "VEL [" << velParameter->ToString() << "].";
+               //std::cout << std::endl;
+               //LOG_ALWAYS(oss.str());
             }
-         }
-         */
+         }*/
       }
 
 
@@ -913,6 +923,7 @@ namespace SimCore
             //   "] ROTATION [" << rot[0] << " " << rot[1] << " " << rot[2] << "].";
             LOG_ALWAYS(oss.str());
             */
+            //std::cout << "      pub ROT [" << rot[0] << " " << rot[1] << " " << rot[2] << "]." << std::endl;
 
             dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
                GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);

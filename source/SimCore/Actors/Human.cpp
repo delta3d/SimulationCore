@@ -629,12 +629,14 @@ namespace SimCore
          if (result == dtAI::Planner::PLAN_FOUND)
          {
             mCurrentPlan = mPlanner.GetConfig().mResult;
+            //std::cout << " BOGUS TEST -- HUMAN.cpp - Plan took[" << mPlanner.GetConfig().mTotalElapsedTime << "]." << std::endl;
             return true;
          }
          else
          {
             std::ostringstream ss;
-            ss << "Unable to generate a plan:  \n\nGoing from:\n\n"
+            ss << "Unable to generate a plan. Time[" << mPlanner.GetConfig().mTotalElapsedTime
+               << "]\n\nGoing from:\n\n"
                << *mPlannerHelper.GetCurrentState()
                << "\n\n Going To:\n\n"
                << "Stance:  \"" << GetStance().GetName() 
