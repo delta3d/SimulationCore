@@ -652,7 +652,7 @@
             <attrToProp>
                <gameName>Ground Offset</gameName>
                <gameDataType>FLOAT</gameDataType>
-               <default>0.0</default>
+               <default>1.0</default>
             </attrToProp>
             <attrToProp>
                <gameName>Munition Damage Table</gameName>
@@ -674,8 +674,8 @@
                 <kind>1</kind>
                 <domain>3</domain>
                 <country>222</country>
-                <category>50</category>
-                <subcategory>12</subcategory>
+                <category>1</category>
+                <subcategory>1</subcategory>
                 <specific>0</specific>
                 <extra>0</extra>
             </disEntityEnum>

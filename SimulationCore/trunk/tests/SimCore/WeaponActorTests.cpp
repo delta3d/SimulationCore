@@ -476,7 +476,7 @@ namespace SimCore
 
          // Ensure the MunitionsComponent has munition definitions loaded
          // so that the WeaponActor can find them when entering the world.
-         mMunitionsComp->LoadMunitionTypeTable( "MunitionTypesMap" );
+         mMunitionsComp->LoadMunitionTypeTable( "UnitTestMunitionTypesMap" );
 
          // Create a tick message used for testing WeaponActor::TickLocal
          dtCore::RefPtr<dtGame::TickMessage> tickMsg;
