@@ -74,6 +74,7 @@ void NxAgeiaTests::setUp()
 
    mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    mGM->LoadActorRegistry(AGEIA_REGISTRY);
+   mGM->SetApplication(GetGlobalApplication());
 
    dtCore::System::GetInstance().Step();
 
