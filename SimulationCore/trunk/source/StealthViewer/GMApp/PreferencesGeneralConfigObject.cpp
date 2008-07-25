@@ -37,7 +37,7 @@
 #include <dtABC/application.h>
 
 #include <dtUtil/version.h>
- 
+
 namespace StealthGM
 {
    IMPLEMENT_ENUM(PreferencesGeneralConfigObject::AttachMode);
@@ -52,15 +52,15 @@ namespace StealthGM
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BEST_SPEED("Best Speed");
 
    PreferencesGeneralConfigObject::PreferencesGeneralConfigObject() :
-      mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON), 
-      mEnableCameraCollision(true), 
-      mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT), 
-      mLODScale(1.0f), 
+      mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON),
+      mEnableCameraCollision(true),
+      mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT),
+      mLODScale(1.0f),
       mNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE),
       mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
-      mShowAdvancedOptions(false), 
-      mAttachProxy(NULL), 
-      mReconnectOnStartup(true), 
+      mShowAdvancedOptions(false),
+      mAttachProxy(NULL),
+      mReconnectOnStartup(true),
       mAutoRefreshEntityInfo(true),
       mDetachFromActor(false),
       mInputComponent(NULL)
@@ -78,7 +78,7 @@ namespace StealthGM
       if(!IsUpdated())
          return;
 
-      dtGame::GMComponent *component = 
+      dtGame::GMComponent *component =
          gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
       mInputComponent = static_cast<StealthInputComponent*>(component);
 
@@ -92,7 +92,7 @@ namespace StealthGM
 
       // Update rendering options
       dtCore::Camera *camera = gameManager.GetApplication().GetCamera();
-      
+
       // Send the Near/Far clipping plane to the weather component
       dtGame::GMComponent *weatherGMComp = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
       if(weatherGMComp != NULL)
@@ -105,7 +105,7 @@ namespace StealthGM
       // no weather component, so we update the clip planes by hand
       else
       {
-         camera->SetPerspective(camera->GetVerticalFov(), camera->GetAspectRatio(), 
+         camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(),
             GetNearClippingPlane(), GetFarClippingPlane());
       }
 
@@ -120,10 +120,10 @@ namespace StealthGM
          }
          else
          {
-            dtCore::RefPtr<dtGame::Message> msg = 
+            dtCore::RefPtr<dtGame::Message> msg =
                gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
 
-            SimCore::AttachToActorMessage &ataMsg = 
+            SimCore::AttachToActorMessage &ataMsg =
                static_cast<SimCore::AttachToActorMessage&>(*msg);
 
             ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
@@ -136,9 +136,9 @@ namespace StealthGM
       }
 
       // DETACH - Send an attach message with no actor
-      if (mDetachFromActor && mInputComponent->GetStealthActor() != NULL) 
+      if (mDetachFromActor && mInputComponent->GetStealthActor() != NULL)
       {
-         dtCore::RefPtr<dtGame::Message> msg = 
+         dtCore::RefPtr<dtGame::Message> msg =
             gameManager.GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
          SimCore::AttachToActorMessage &ataMsg = static_cast<SimCore::AttachToActorMessage&>(*msg);
          ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
