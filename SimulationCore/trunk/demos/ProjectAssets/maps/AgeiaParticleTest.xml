@@ -13,7 +13,7 @@
     </header>
     <libraries>
         <library>
-            <name>dtAgeiaPhysX</name>
+            <name>dtPhysX</name>
             <version></version>
         </library>
         <library>
