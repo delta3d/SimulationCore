@@ -2130,7 +2130,7 @@ namespace SimCore
 
 
          // Test Sound Loading
-         std::string soundFile("Sounds:weapon_tank_fire.wav");
+         std::string soundFile("Sounds/weapon_tank_fire.wav");
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect sound should be NULL by default",
             effect->GetSound() == NULL );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect should be able to load a sound file",
@@ -2206,7 +2206,7 @@ namespace SimCore
             ! effect->IsVisible() );
 
          // Test Flash Loading
-         std::string particleFile("Particles:weapon_tank_flash.osg");
+         std::string particleFile("Particles/weapon_tank_flash.osg");
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect flash particles should be NULL by default",
             effect->GetFlash() == NULL );
          CPPUNIT_ASSERT_MESSAGE("WeaponEffect should be able to load a particle file",
