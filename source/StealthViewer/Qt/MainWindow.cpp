@@ -157,7 +157,7 @@ namespace StealthQt
       mPreviousCustomHour(-1),
       mPreviousCustomMinute(-1),
       mPreviousCustomSecond(-1)
-      {
+   {
       mUi->setupUi(this);
       ConnectSlots();
 
@@ -273,10 +273,9 @@ namespace StealthQt
 
       InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
 
-      // Note, stuff dealing with the path has to be BELOW InitGameApp().
-      // NOTE - This image fails to load if you have a space in the path (like Program Files)
-      // under QT 4.3.3, at least on Windows XP. This works with version 4.3.0.
-      const std::string helpImageResource("icons/help_controls_small.jpg");
+      // This was coverted to a png from a jpg because of weird loading problems
+      // on Windows XP
+      const std::string helpImageResource("icons/help_controls_small.png");
       const std::string& file = dtCore::FindFileInPathList(helpImageResource);
       if (!file.empty())
       {
@@ -318,9 +317,9 @@ namespace StealthQt
       mUi->mEntityInfoLastUpdateTimeLineEdit->hide();
       mUi->mEntityInfoLastUpdateTimeLabel->hide();
 
-      // At startup, we have to hide 2 of the 3 position sections of Entity Info.
-      ShowOrHideEntityInfoPositionFields(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS);
-      }
+      //Init the coordinate type.
+      OnToolsCoordinateSystemChanged(mUi->mToolsCoordinateSystemComboBox->currentText());
+   }
 
    ///////////////////////////////////////////////////////////////////
    void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
@@ -1493,6 +1492,7 @@ namespace StealthQt
       {
          toolsConfig.SetCoordinateSystem(*coordSystem);
          SelectCorrectWarpToUI(*coordSystem);
+         ShowOrHideEntityInfoPositionFields(*coordSystem);
       }
    }
 
@@ -2043,7 +2043,7 @@ namespace StealthQt
       dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
       if(proxy != NULL)
       {
-         UpdateEntityInfoData(proxy);
+         UpdateEntityInfoData(*proxy);
 
          // This is the special case. See also OnRefreshEntityInfoTimerElapsed() for similar code and explanation.
          if(mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
@@ -2165,7 +2165,7 @@ namespace StealthQt
          // - Eddie
 
          //PopulateEntityInfoWindow();
-         QTableWidgetItem *currentItem = mUi->mSearchEntityTableWidget->currentItem();
+         QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
          unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
          if(index > mFoundActors.size() || currentItem == NULL)
             return;
@@ -2176,7 +2176,7 @@ namespace StealthQt
          dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
          if(proxy != NULL)
          {
-            UpdateEntityInfoData(proxy);
+            UpdateEntityInfoData(*proxy);
          }
          else
          {
@@ -2203,141 +2203,117 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy *proxy)
+   void MainWindow::UpdateEntityInfoData(dtGame::GameActorProxy& proxy)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
-         StealthViewerData::GetInstance().GetToolsConfigObject();
-      const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system = toolsConfig.GetCoordinateSystem();
-
-      ShowOrHideEntityInfoPositionFields(system);
-
-      if(proxy != NULL)
+      std::ostringstream oss;
+      // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
+      StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
+      (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
+      if(hudComponent == NULL)
       {
-         std::ostringstream oss;
-         // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
-         StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
-         (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
-         if(hudComponent == NULL)
-         {
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-                     "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
-                     __FILE__, __LINE__);
-         }
-         dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
-
-         // Decided not to use proxy->GetTranslation and proxy->GetRotation() based on David's
-         // recommendation that GetRotation is screwy and will be refactored at some point because
-         // it changes the HPR order to RHP.
-         const dtCore::Transformable *t = static_cast<const dtCore::Transformable*>(proxy->GetActor());
-         dtCore::Transform trans;
-         t->GetTransform(trans, dtCore::Transformable::REL_CS);
-         osg::Vec3 pos;
-         trans.GetTranslation(pos);
-         osg::Vec3 rot;
-         trans.GetRotation(rot);
-         //osg::Vec3 pos = proxy->GetTranslation(), rot = proxy->GetRotation();
-
-
-         // For the 3 types of positions. We just go ahead and set all 3. It only happens once a
-         // second and that way, if the user switches at any time, the data is already valid.
-         //mUi->mEntityInfoPositionLineEdit->setText(tr(oss.str().c_str()));
-         //oss << "X:" << pos[0] << " Y:" << pos[1] << " Z:" << pos[2];
-
-         // Set the Lat Lon pos
-         //coordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
-         const osg::Vec3d& globePos = coordinateConverter.ConvertToRemoteTranslation(pos);
-         oss.str("");
-         oss << globePos[0];
-         mUi->mEntityInfoPosLatEdit->setText(tr(oss.str().c_str()));
-         oss.str("");
-         oss << globePos[1];
-         mUi->mEntityInfoPosLonEdit->setText(tr(oss.str().c_str()));
-
-         // Set the MGRS pos
-         std::string milgrid = coordinateConverter.XYZToMGRS(pos);
-         mUi->mEntityInfoPositionMGRS->setText(tr(milgrid.c_str()));
-
-         // Set the XYZ Pos
-         oss.str("");
-         oss << pos[0];
-         mUi->mEntityInfoPosXEdit->setText(tr(oss.str().c_str()));
-         oss.str("");
-         oss << pos[1];
-         mUi->mEntityInfoPosYEdit->setText(tr(oss.str().c_str()));
-         oss.str("");
-         oss << pos[2];
-         mUi->mEntityInfoPosZEdit->setText(tr(oss.str().c_str()));
-
-
-         // Heading
-         float heading = ComputeHumanReadableDirection((float) rot[0]);
-         oss.str("");
-         oss << heading;
-         mUi->mEntityInfoRotHeadEdit->setText(tr(oss.str().c_str()));
-         // Pitch
-         float pitch = ComputeHumanReadableDirection((float) rot[1]);
-         oss.str("");
-         oss << pitch;
-         mUi->mEntityInfoRotPitchEdit->setText(tr(oss.str().c_str()));
-         // Roll
-         float roll = ComputeHumanReadableDirection((float) rot[2]);
-         oss.str("");
-         oss << roll;
-         mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
-
-         // Calculate the directional speed from the entities velocity
-         SimCore::Actors::BaseEntity *entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy->GetActor());
-         if (entity != NULL)
-         {
-            osg::Vec3 velocity = entity->GetVelocityVector();
-            // speed is distance of velocity. Then, convert from m/s to MPH
-            float speed = 2.237 * sqrt((float)(velocity[0] * velocity[0]) +
-                     (float)(velocity[1] * velocity[1]) + (float)(velocity[2] * velocity[2]));
-            speed = ((int)(speed * 100)) / 100.0f; // truncate to 2 decimal places
-            oss.str("");
-            oss << speed << " MPH";
-            mUi->mEntityInfoSpeed->setText(tr(oss.str().c_str()));
-
-            // compute the direction of movement
-            float direction = atan2(-(float)velocity[0], (float) velocity[1]);
-            direction = osg::RadiansToDegrees(direction);
-            direction = ComputeHumanReadableDirection(direction);
-            oss.str("");
-            oss << direction;
-            mUi->mEntityInfoSpeedDir->setText(tr(oss.str().c_str()));
-         }
-         else
-         {
-            mUi->mEntityInfoSpeed->setText(tr(""));
-            mUi->mEntityInfoSpeedDir->setText(tr(""));
-         }
-
-         mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy->GetName().c_str()));
-         mUi->mEntityInfoForceLineEdit->setText(tr(proxy->GetProperty("Force Affiliation")->ToString().c_str()));
-         mUi->mDamageStateLineEdit->setText(tr(proxy->GetProperty("Damage State")->ToString().c_str()));
-
-         // NOTE: To avoid confusion.
-         // Entity Type will write to Entity Type ID line edit
-         // Mapping Name will write to Entity Type line edit.
-         const dtDAL::ActorProperty* param
-         = proxy->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE);
-         mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
-
-         param = proxy->GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
-         mUi->mEntityTypeLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
-
-         // we hide the last update time now, since in reality, we can't use this field. The last update time
-         // is really the last time that the entity trans or rotation was changed. But, if the entity is sitting
-         // still, the last update time is never changed. This is further complicated when the sim time changes
-         // after joining a federation, making this time something like 370000 seconds. It's just not helpful[
-         //double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
-         //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime) + tr(" seconds ago"));
-
+         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+                  "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
+                  __FILE__, __LINE__);
       }
+      dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
+
+      // Calculate the directional speed from the entities velocity
+      SimCore::Actors::BaseEntity *entity = NULL;
+      proxy.GetActor(entity);
+
+      // Decided not to use proxy->GetTranslation and proxy->GetRotation() based on David's
+      // recommendation that GetRotation is screwy and will be refactored at some point because
+      // it changes the HPR order to RHP.
+      dtCore::Transform trans;
+      entity->GetTransform(trans, dtCore::Transformable::REL_CS);
+      osg::Vec3 pos;
+      trans.GetTranslation(pos);
+      osg::Vec3 rot;
+      trans.GetRotation(rot);
+
+      // Set the Lat Lon pos
+      //coordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
+      const osg::Vec3d& globePos = coordinateConverter.ConvertToRemoteTranslation(pos);
+      oss.str("");
+      oss << globePos[0];
+      mUi->mEntityInfoPosLatEdit->setText(tr(oss.str().c_str()));
+      oss.str("");
+      oss << globePos[1];
+      mUi->mEntityInfoPosLonEdit->setText(tr(oss.str().c_str()));
+
+      // Set the MGRS pos
+      std::string milgrid = coordinateConverter.XYZToMGRS(pos);
+      mUi->mEntityInfoPositionMGRS->setText(tr(milgrid.c_str()));
+
+      // Set the XYZ Pos
+      oss.str("");
+      oss << pos[0];
+      mUi->mEntityInfoPosXEdit->setText(tr(oss.str().c_str()));
+      oss.str("");
+      oss << pos[1];
+      mUi->mEntityInfoPosYEdit->setText(tr(oss.str().c_str()));
+      oss.str("");
+      oss << pos[2];
+      mUi->mEntityInfoPosZEdit->setText(tr(oss.str().c_str()));
+
+
+      // Heading
+      float heading = ComputeHumanReadableDirection((float) rot[0]);
+      oss.str("");
+      oss << heading;
+      mUi->mEntityInfoRotHeadEdit->setText(tr(oss.str().c_str()));
+      // Pitch
+      float pitch = ComputeHumanReadableDirection((float) rot[1]);
+      oss.str("");
+      oss << pitch;
+      mUi->mEntityInfoRotPitchEdit->setText(tr(oss.str().c_str()));
+      // Roll
+      float roll = ComputeHumanReadableDirection((float) rot[2]);
+      oss.str("");
+      oss << roll;
+      mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
+
+      osg::Vec3 velocity = entity->GetVelocityVector();
+      // speed is distance of velocity. Then, convert from m/s to MPH
+      float speed = 2.237 * sqrt((float)(velocity[0] * velocity[0]) +
+               (float)(velocity[1] * velocity[1]) + (float)(velocity[2] * velocity[2]));
+      speed = ((int)(speed * 100)) / 100.0f; // truncate to 2 decimal places
+      oss.str("");
+      oss << speed << " MPH";
+      mUi->mEntityInfoSpeed->setText(tr(oss.str().c_str()));
+
+      // compute the direction of movement
+      float direction = atan2(-(float)velocity[0], (float) velocity[1]);
+      direction = osg::RadiansToDegrees(direction);
+      direction = ComputeHumanReadableDirection(direction);
+      oss.str("");
+      oss << direction;
+      mUi->mEntityInfoSpeedDir->setText(tr(oss.str().c_str()));
+
+      mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy.GetName().c_str()));
+      mUi->mEntityInfoForceLineEdit->setText(tr(proxy.GetProperty("Force Affiliation")->ToString().c_str()));
+      mUi->mDamageStateLineEdit->setText(tr(proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE)->ToString().c_str()));
+
+      // NOTE: To avoid confusion.
+      // Entity Type will write to Entity Type ID line edit
+      // Mapping Name will write to Entity Type line edit.
+      const dtDAL::ActorProperty* param
+      = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE);
+      mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
+
+      param = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);
+      mUi->mEntityTypeLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
+
+      // we hide the last update time now, since in reality, we can't use this field. The last update time
+      // is really the last time that the entity trans or rotation was changed. But, if the entity is sitting
+      // still, the last update time is never changed. This is further complicated when the sim time changes
+      // after joining a federation, making this time something like 370000 seconds. It's just not helpful[
+      //double lastUpdateTime = EntitySearch::GetLastUpdateTime(*proxy);
+      //mUi->mEntityInfoLastUpdateTimeLineEdit->setText(QString::number(lastUpdateTime) + tr(" seconds ago"));
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::ShowOrHideEntityInfoPositionFields(const StealthGM::PreferencesToolsConfigObject::CoordinateSystem &system)
+   void MainWindow::ShowOrHideEntityInfoPositionFields(const dtUtil::Enumeration& system)
    {
       if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
       {

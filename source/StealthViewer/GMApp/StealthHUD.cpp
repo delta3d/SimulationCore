@@ -22,10 +22,11 @@
 */
 
 #include <StealthViewer/GMApp/StealthHUD.h>
+#include <SimCore/Components/LabelManager.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/StealthHUDElements.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/RenderingSupportComponent.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
@@ -77,9 +78,9 @@ namespace StealthGM
    const std::string StealthHUD::DEFAULT_NAME("StealthHUD");
 
    //////////////////////////////////////////////////////////////////////////
-   StealthHUD::StealthHUD(dtCore::DeltaWin *win, 
-                          dtGame::LogController* logController, 
-                          const std::string &name, 
+   StealthHUD::StealthHUD(dtCore::DeltaWin *win,
+                          dtGame::LogController* logController,
+                          const std::string &name,
                           bool hasUI)
    :  SimCore::Components::BaseHUD(win, name),
       mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL),
@@ -88,67 +89,82 @@ namespace StealthGM
       mTextYTopOffset(10.0f),
       mTextYSeparation(2.0f),
       mTextHeight(40.0f),
-      mLastLogState(NULL), 
-      mCoordSystem(&CoordSystem::MGRS), 
+      mLastLogState(NULL),
+      mCoordSystem(&CoordSystem::MGRS),
       mHasUI(hasUI)
    {
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    StealthHUD::~StealthHUD()
    {
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::ProcessMessage(const dtGame::Message& message)
    {
-      if (message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
+      const dtGame::MessageType& type = message.GetMessageType();
+
+      if( type == dtGame::MessageType::TICK_LOCAL )
       {
          TickHUD();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::BINOCULARS)
+      else if( type == dtGame::MessageType::TICK_REMOTE )
+      {
+         // DO NOTHING but escape early.
+      }
+      else if( type == dtGame::MessageType::TICK_END_OF_FRAME )
+      {
+         //const dtGame::TickMessage& tick
+            //= static_cast<const dtGame::TickMessage&>(message);
+
+         // Update Label Manager since all entities are at their
+         // final positions in the world.
+//         mLabelManager->Update( tick.GetDeltaRealTime() );
+      }
+      else if( type == SimCore::MessageType::BINOCULARS )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&> (message);
          mToolbar->SetButtonActive("Binoculars",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::NIGHT_VISION)
+      else if( type == SimCore::MessageType::NIGHT_VISION )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          mToolbar->SetButtonActive("NightVision",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::LASER_RANGE_FINDER)
+      else if( type == SimCore::MessageType::LASER_RANGE_FINDER )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          mToolbar->SetButtonActive("LRF",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::GPS)
+      else if( type == SimCore::MessageType::GPS )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          mToolbar->SetButtonActive("GPS",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::MAP)
+      else if( type == SimCore::MessageType::MAP )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          mToolbar->SetButtonActive("Map",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if(message.GetMessageType() == SimCore::MessageType::COMPASS)
+      else if( type == SimCore::MessageType::COMPASS )
       {
          mToolbar->SetButtonsActive(false);
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          mToolbar->SetButtonActive("Compass",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
-      else if (message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
+      else if( type == dtGame::MessageType::INFO_MAP_LOADED )
       {
          //Is this a problem now?
          SimCore::Components::RenderingSupportComponent* renderComp = NULL;
@@ -179,22 +195,34 @@ namespace StealthGM
             return;
          }
 
-         dtActors::CoordinateConfigActor &ccActor = 
+         dtActors::CoordinateConfigActor &ccActor =
             static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
-           
-         SetCoordinateConverter(ccActor.GetCoordinateConverter());   
+
+         SetCoordinateConverter(ccActor.GetCoordinateConverter());
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::SetupGUI( SimCore::Components::HUDGroup& mainOverlay, unsigned int designedResWidth, unsigned int designedResHeight )
    {
       mHUDOverlay = new SimCore::Components::HUDGroup("HUD Overlay");
       mainOverlay.Add( mHUDOverlay.get() );
-   
+
       mToolbarOverlay = new SimCore::Components::HUDGroup("HUD Toolbar Overlay");
       mainOverlay.Add( mToolbarOverlay.get() );
-   
+
+      // Label Layer
+      mLabelLayer = new SimCore::Components::HUDElement( "LabelLayer",
+         SimCore::Components::HUDElement::DEFAULT_BLANK_TYPE );
+      mLabelLayer->SetSize( 1.0f, 1.0f );
+      mLabelLayer->SetVisible( true );
+      mainOverlay.Add( mLabelLayer.get() );
+
+      // --- Setup the associated label manager.
+      mLabelManager = new SimCore::Components::LabelManager;
+      mLabelManager->SetGameManager( GetGameManager() );
+      mLabelManager->SetGUILayer( mLabelLayer.get() );
+
       // Toolbar
       mToolbar = new SimCore::Components::StealthToolbar("StealthToolbar");
       mToolbarOverlay->Add(mToolbar.get());
@@ -205,12 +233,12 @@ namespace StealthGM
       //     so that it can be updated properly.
       mHelpButton = mToolbar->GetButton("Help");
       mHelpButton->SetActive( false );
-   
+
       // Tools GUI Layer
       mToolsLayer = new SimCore::Components::HUDGroup("ToolsLayer");
       mToolsLayer->GetCEGUIWindow()->disable(); // avoids mouse clicks that change z-order
       mHUDOverlay->Add(mToolsLayer.get());
-   
+
       // Sim time & record/playback state
       mSimTimeAndState = new SimCore::Components::StealthGPSMeter("SimTimeAndStateMeter");
       mSimTimeAndState->SetPosition( 256.0f/1920.0f, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
@@ -218,13 +246,13 @@ namespace StealthGM
       mSimTimeAndState->GetText1().SetColor(0.1, 0.1, 1.0);
       mSimTimeAndState->GetText2().SetColor(0.2, 0.2, 0.2);
       mHUDOverlay->Add( mSimTimeAndState.get() );
-   
+
       // Compass Meter
       mCompass = new SimCore::Components::StealthCompassMeter("StealthCompass");
       mCompass->Initialize();
       mHUDOverlay->Add(mCompass.get());
       mCompass->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
-   
+
       // GPS Meter
       mGPS = new SimCore::Components::StealthGPSMeter("StealthGPSMeter");
       mHUDOverlay->Add(mGPS.get());
@@ -300,14 +328,14 @@ namespace StealthGM
       mHelpText->SetAlignment(*align);
       mHelpOverlay->Add( mHelpText.get() );
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::TickHUD()
    {
       int x(0), y(0), w(0), h(0);
       GetMainDeltaWindow()->GetPosition(x, y, w, h);
    //   float curYPos;
-   
+
       // update the compass
       if(mMotionModel.valid() && mMotionModel->GetTarget() != NULL)
       {
@@ -333,15 +361,15 @@ namespace StealthGM
 
             /*mCoordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
             osg::Vec3d latLonElev = mCoordinateConverter.ConvertToRemoteTranslation(pos);
-            
+
             unsigned ewZone;
             char nsZone;
-   
+
             dtUtil::Coordinates::CalculateUTMZone(latLonElev[0], latLonElev[1], ewZone, nsZone);
-   
+
             mCoordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::UTM);
             osg::Vec3d eastingNorthingElev = GetCoordinateConverter().ConvertToRemoteTranslation(pos);*/
-   
+
             std::string milgrid = mCoordinateConverter.XYZToMGRS(pos);
             mMGRSMeter->SetText(milgrid);
          }
@@ -372,7 +400,7 @@ namespace StealthGM
             mGPS->SetLatLong(globePos[0], globePos[1]);
          }
       }
-   
+
       if(GetHUDState() != SimCore::Components::HUDState::HELP)
       {
          // Log - CMM - I removed this check in order to account for 'paused' which can happen at any time
@@ -380,7 +408,7 @@ namespace StealthGM
          mLastLogState = &mLogController->GetLastKnownStatus().GetStateEnum();
 
          // Playback State
-         if (GetGameManager()->IsPaused()) 
+         if (GetGameManager()->IsPaused())
          {
             mSimTimeAndState->SetText1("PAUSED");
             mSimTimeAndState->GetText1().SetColor(0.2, 0.2, 0.7);
@@ -401,21 +429,21 @@ namespace StealthGM
             mSimTimeAndState->GetText1().SetColor(0.5, 0.1, 0.1);
          }
 
-         // Set the time control to the basic sim time 
-         mSimTimeAndState->SetText2( 
-            dtUtil::DateTime::ToString(GetGameManager()->GetSimulationClockTime() / 1000000, 
+         // Set the time control to the basic sim time
+         mSimTimeAndState->SetText2(
+            dtUtil::DateTime::ToString(GetGameManager()->GetSimulationClockTime() / 1000000,
             dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT) );
-   
+
          UpdateHighDetailData();
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::SetMotionModel( dtCore::MotionModel* motionModel )
    {
       mMotionModel = motionModel;
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::UpdateHighDetailData()
    {
@@ -423,7 +451,7 @@ namespace StealthGM
       {
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::UpdateStaticText(SimCore::Components::HUDText* textControl, char *newText,
                                      float red, float blue, float green, float x, float y)
@@ -446,7 +474,7 @@ namespace StealthGM
          }
       }
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    SimCore::Components::HUDState & StealthHUD::CycleToNextHUDState()
    {
@@ -469,13 +497,13 @@ namespace StealthGM
       {
          SetHUDState( *mLastHUDStateBeforeHelp );
       }
-   
+
       // we've changed our state, so reset our hide/show status
       UpdateState();
-   
+
       return GetHUDState();
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::UpdateState()
    {
@@ -490,7 +518,7 @@ namespace StealthGM
       }
       else {
          mHelpOverlay->Hide();
-   
+
          if (GetHUDState() == SimCore::Components::HUDState::MINIMAL
             || GetHUDState() == SimCore::Components::HUDState::MAXIMUM)
          {
@@ -517,7 +545,7 @@ namespace StealthGM
       newText->SetSize(width,height);
       return newText;
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    bool StealthHUD::AddToolButton( const std::string& buttonName, const std::string& keyLabel, bool enable )
    {
@@ -536,7 +564,7 @@ namespace StealthGM
       }
       return false;
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    bool StealthHUD::RemoveToolButton( const std::string& buttonName )
    {
@@ -551,25 +579,25 @@ namespace StealthGM
       }
       return false;
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    CEGUI::Window* StealthHUD::GetToolsWindow()
    {
       return mToolsLayer->GetCEGUIWindow();
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    const CEGUI::Window* StealthHUD::GetToolsWindow() const
    {
       return mToolsLayer->GetCEGUIWindow();
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::SetToolbarVisible( bool visible )
    {
       mToolsLayer->SetVisible( visible );
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::UpdateHelpButton()
    {

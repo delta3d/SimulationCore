@@ -1,25 +1,21 @@
 <?xml version="1.0" ?>
 <GUIScheme Name="WindowsLookSkin">
+        <Imageset Name="Clipboard" Filename="CEGUI/imagesets/Clipboard.imageset" />
+        <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
+        <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
+        <Imageset Name="RoundedRect" Filename="CEGUI/imagesets/RoundedRect.imageset" />
+        <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
+        <Imageset Name="WindowsLook" Filename="CEGUI/imagesets/WindowsLook.imageset" />
 
-   <!-- IMAGE SET - WINDOWS LOOK -->
-   <Imageset Name="WindowsLook" Filename="CEGUI/imagesets/WindowsLook.imageset" />
-   
-   <!-- IMAGE SET - DRIVER DEMO -->
-   <Imageset Name="Clipboard" Filename="CEGUI/imagesets/Clipboard.imageset" />
-   <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
-   <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
-   <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
+	<LookNFeel Filename="CEGUI/looknfeel/WindowsLook.looknfeel" />
+	<LookNFeel Filename="CEGUI/looknfeel/Label.looknfeel" />
 
-   <!-- FONTS -->
-   <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
-   <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
-   <Font Name="DejaVuSans-10" Filename="CEGUI/fonts/DejaVuSans-10.font" />
+	<WindowSet Filename="CEGUIFalagardWRBase" />
 
-   <!-- LOOKNFEELS -->
-   <LookNFeel Filename="CEGUI/looknfeel/WindowsLook.looknfeel" />
+        <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
+        <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
+        <Font Name="DejaVuSans-10" Filename="CEGUI/fonts/DejaVuSans-10.font" />
 
-   <!-- MAPPINGS - WINDOW FACTORIES - WINDOWS LOOK -->
-   <WindowSet Filename="CEGUIFalagardWRBase" />
 	<FalagardMapping WindowType="WindowsLook/Button"      TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/Button" />
 	<FalagardMapping WindowType="WindowsLook/Checkbox"    TargetType="CEGUI/Checkbox"    Renderer="Falagard/ToggleButton" LookNFeel="WindowsLook/Checkbox" />
 	<FalagardMapping WindowType="WindowsLook/IconButton"  TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/IconButton" />
@@ -57,7 +53,7 @@
 	<FalagardMapping WindowType="WindowsLook/StaticText"  TargetType="DefaultWindow" Renderer="Falagard/StaticText"  LookNFeel="WindowsLook/StaticText" />
 	<FalagardMapping WindowType="WindowsLook/ItemListbox" TargetType="CEGUI/ItemListbox" Renderer="Falagard/ItemListbox" LookNFeel="WindowsLook/ItemListbox" />
 	<FalagardMapping WindowType="WindowsLook/ListboxItem" TargetType="CEGUI/ItemEntry"   Renderer="Falagard/ItemEntry"   LookNFeel="WindowsLook/ListboxItem" />
-
-	<!-- ADD CUSTOM MAPPINGS HERE -->
-   
+	<!-- CUSTOM FACTORY & RENDERER MAPPINGS -->
+	<FalagardMapping WindowType="Label/EntityLabel" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="Label/EntityLabel" />
+	<FalagardMapping WindowType="Label/RoundedRect" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="Label/RoundedRect" />
 </GUIScheme>

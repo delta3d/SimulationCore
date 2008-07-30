@@ -74,14 +74,14 @@ namespace SimCore
          CEGUI::HA_RIGHT, CEGUI::VA_BOTTOM);//*/
 
       //////////////////////////////////////////////////////////////////////////
-      HUDAlignment& HUDAlignment::ClassifyAlignment( CEGUI::Window& window )
+      HUDAlignment& HUDAlignment::ClassifyAlignment(CEGUI::Window& window)
       {
          CEGUI::VerticalAlignment alignV = window.getVerticalAlignment();
-         switch( window.getHorizontalAlignment() )
+         switch(window.getHorizontalAlignment())
          {
             case CEGUI::HA_RIGHT:
             {
-               switch( alignV )
+               switch(alignV)
                {
                   case CEGUI::VA_BOTTOM: return HUDAlignment::RIGHT_BOTTOM;
                   case CEGUI::VA_CENTRE: return HUDAlignment::RIGHT_CENTER;
@@ -91,7 +91,7 @@ namespace SimCore
 
             case CEGUI::HA_CENTRE:
             {
-               switch( alignV )
+               switch(alignV)
                {
                   case CEGUI::VA_BOTTOM: return HUDAlignment::CENTER_BOTTOM;
                   case CEGUI::VA_CENTRE: return HUDAlignment::CENTER;
@@ -101,7 +101,7 @@ namespace SimCore
 
             default: // LEFT
             {
-               switch( alignV )
+               switch(alignV)
                {
                   case CEGUI::VA_BOTTOM: return HUDAlignment::LEFT_BOTTOM;
                   case CEGUI::VA_CENTRE: return HUDAlignment::LEFT_CENTER;
@@ -113,7 +113,7 @@ namespace SimCore
             return HUDAlignment::LEFT_TOP;
          }
       }
-      
+
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -125,18 +125,18 @@ namespace SimCore
       const std::string HUDElement::PROPERTY_IMAGE("Image");
 
       //////////////////////////////////////////////////////////////////////////
-      HUDElement::HUDElement( const std::string& name, const std::string& type )
-         : dtCore::Base( name ),
+      HUDElement::HUDElement(const std::string& name, const std::string& type)
+         : dtCore::Base(name),
          mAlign(&HUDAlignment::LEFT_TOP),
          mAbsPos(false),
          mAbsSize(false)
       {
-         CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
+         CEGUI::WindowManager* wm = CEGUI::WindowManager::getSingletonPtr();
          try
          {
-            mWindow = wm->createWindow( type, name );
+            mWindow = wm->createWindow(type, name);
          }
-         catch (CEGUI::Exception &e)
+         catch (CEGUI::Exception& e)
          {
             std::ostringstream oss;
             oss << "CEGUI while setting up BaseHUD: " << e.getMessage().c_str();
@@ -145,7 +145,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      HUDElement::HUDElement( CEGUI::Window& window )
+      HUDElement::HUDElement(CEGUI::Window& window)
          : dtCore::Base(window.getName().c_str()),
          mAlign(&HUDAlignment::ClassifyAlignment(window)),
          mAbsPos(false),
@@ -157,67 +157,67 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-         if( mWindow != NULL )
+         if (mWindow != NULL)
          {
             mWindow->destroy();
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetPosition( float x, float y )
+      void HUDElement::SetPosition(float x, float y)
       {
-         if( mAbsPos )
+         if (mAbsPos)
          {
-            mWindow->setXPosition( cegui_absdim(x) );
-            mWindow->setYPosition( cegui_absdim(y) );
+            mWindow->setXPosition(cegui_absdim(x));
+            mWindow->setYPosition(cegui_absdim(y));
          }
          else
          {
-            mWindow->setXPosition( cegui_reldim(x) );
-            mWindow->setYPosition( cegui_reldim(y) );
+            mWindow->setXPosition(cegui_reldim(x));
+            mWindow->setYPosition(cegui_reldim(y));
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetPosition( float x, float y, bool absoluteCoords )
+      void HUDElement::SetPosition(float x, float y, bool absoluteCoords)
       {
          mAbsPos = absoluteCoords;
-         SetPosition( x, y );
+         SetPosition(x, y);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetPosition( float x, float y, const HUDAlignment& align )
+      void HUDElement::SetPosition(float x, float y, const HUDAlignment& align)
       {
-         SetPosition( x, y );
-         SetAlignment( align );
+         SetPosition(x, y);
+         SetAlignment(align);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetPosition( float x, float y, const HUDAlignment& align, bool absoluteCoords )
+      void HUDElement::SetPosition(float x, float y, const HUDAlignment& align, bool absoluteCoords)
       {
-         SetPosition( x, y, absoluteCoords );
-         SetAlignment( align );
+         SetPosition(x, y, absoluteCoords);
+         SetAlignment(align);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::GetPosition( osg::Vec2& outPos ) const
+      void HUDElement::GetPosition(osg::Vec2& outPos) const
       {
          const CEGUI::UVector2& ceguiPos = mWindow->getPosition();
-         if(mAbsPos)
+         if (mAbsPos)
          {
-            outPos.set( ceguiPos.d_x.d_offset, ceguiPos.d_y.d_offset );
+            outPos.set(ceguiPos.d_x.d_offset, ceguiPos.d_y.d_offset);
          }
          else
          {
-            outPos.set( ceguiPos.d_x.d_scale, ceguiPos.d_y.d_scale );
+            outPos.set(ceguiPos.d_x.d_scale, ceguiPos.d_y.d_scale);
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetSize( float width, float height, bool absoluteCoords )
+      void HUDElement::SetSize(float width, float height, bool absoluteCoords)
       {
          mAbsSize = absoluteCoords;
-         if( mAbsSize )
+         if (mAbsSize)
          {
             mWindow->setWidth(cegui_absdim(width));
             mWindow->setHeight(cegui_absdim(height));
@@ -230,50 +230,50 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::GetSize( osg::Vec2& outSize ) const
+      void HUDElement::GetSize(osg::Vec2& outSize) const
       {
          const CEGUI::UVector2& ceguiSize = mWindow->getSize();
-         if( mAbsSize )
+         if (mAbsSize)
          {
-            outSize.set( ceguiSize.d_x.d_offset, ceguiSize.d_y.d_offset );
+            outSize.set(ceguiSize.d_x.d_offset, ceguiSize.d_y.d_offset);
          }
          else
          {
-            outSize.set( ceguiSize.d_x.d_scale, ceguiSize.d_y.d_scale );
+            outSize.set(ceguiSize.d_x.d_scale, ceguiSize.d_y.d_scale);
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetBounds( float x, float y, float width, float height, const HUDAlignment& align, bool absolutePos, bool absoluteSize )
+      void HUDElement::SetBounds(float x, float y, float width, float height, const HUDAlignment& align, bool absolutePos, bool absoluteSize)
       {
-         SetPosition( x, y, absolutePos );
-         SetSize( width, height, absoluteSize );
-         SetAlignment( align );
+         SetPosition(x, y, absolutePos);
+         SetSize(width, height, absoluteSize);
+         SetAlignment(align);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetBounds( float x, float y, float width, float height, bool absolutePos, bool absoluteSize )
+      void HUDElement::SetBounds(float x, float y, float width, float height, bool absolutePos, bool absoluteSize)
       {
-         SetPosition( x, y, absolutePos );
-         SetSize( width, height, absoluteSize );
+         SetPosition(x, y, absolutePos);
+         SetSize(width, height, absoluteSize);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::GetBounds( osg::Vec4& outBounds ) const
+      void HUDElement::GetBounds(osg::Vec4& outBounds) const
       {
          outBounds.set(
-            mAbsPos ? mWindow->getXPosition().d_offset : mWindow->getXPosition().d_scale, 
-            mAbsPos ? mWindow->getYPosition().d_offset : mWindow->getYPosition().d_scale, 
-            mAbsSize ? mWindow->getWidth().d_offset : mWindow->getWidth().d_scale, 
-            mAbsSize ? mWindow->getHeight().d_offset : mWindow->getHeight().d_scale );
+            mAbsPos ? mWindow->getXPosition().d_offset : mWindow->getXPosition().d_scale,
+            mAbsPos ? mWindow->getYPosition().d_offset : mWindow->getYPosition().d_scale,
+            mAbsSize ? mWindow->getWidth().d_offset : mWindow->getWidth().d_scale,
+            mAbsSize ? mWindow->getHeight().d_offset : mWindow->getHeight().d_scale);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetAlignment( const HUDAlignment& align )
+      void HUDElement::SetAlignment(const HUDAlignment& align)
       {
          mAlign = &align;
-         mWindow->setHorizontalAlignment( align.GetAlignH() );
-         mWindow->setVerticalAlignment( align.GetAlignV() );
+         mWindow->setHorizontalAlignment(align.GetAlignH());
+         mWindow->setVerticalAlignment(align.GetAlignV());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -283,10 +283,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetProperty( const std::string& propName, const std::string& value )
+      void HUDElement::SetProperty(const std::string& propName, const std::string& value)
       {
-         try{
-            mWindow->setProperty( propName, value );
+         try
+         {
+            mWindow->setProperty(propName, value);
          }
          catch(CEGUI::Exception& e)
          {
@@ -298,25 +299,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      std::string HUDElement::GetProperty( const std::string& propName ) const
+      std::string HUDElement::GetProperty(const std::string& propName) const
       {
-         try{
-            return std::string( mWindow->getProperty( CEGUI::String(propName) ).c_str() );
+         try
+         {
+            return std::string(mWindow->getProperty(CEGUI::String(propName)).c_str());
          }
-         catch(CEGUI::Exception& e)
+         catch(CEGUI::Exception& ex)
          {
             std::ostringstream oss;
-            oss << "FAILURE: "<<GetName().c_str()<<".GetProperty("
-               << propName.c_str() << "\")" << std::endl
-               << e.getMessage().c_str();
+            oss << "FAILURE: " << GetName() << ".GetProperty("
+               << propName << "\")" << std::endl
+               << ex.getMessage().c_str();
+            LOG_ERROR(oss.str())
             return "";
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetVisible( bool visible )
+      void HUDElement::SetVisible(bool visible)
       {
-         if( ! visible )
+         if (! visible)
          {
             mWindow->hide();
          }
@@ -335,23 +338,23 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void HUDElement::Hide()
       {
-         SetVisible( false );
+         SetVisible(false);
       }
 
       //////////////////////////////////////////////////////////////////////////
       void HUDElement::Show()
       {
-         SetVisible( true );
+         SetVisible(true);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDElement::SetCEGUIImage( CEGUI::Window& window, 
+      void HUDElement::SetCEGUIImage(CEGUI::Window& window,
          const std::string& imagesetName, const std::string& imageName,
-         const std::string& imagePropertyName )
+         const std::string& imagePropertyName)
       {
          std::stringstream ss;
          ss << "set:" << imagesetName << " image:" << imageName;
-         window.setProperty( imagePropertyName, ss.str() );
+         window.setProperty(imagePropertyName, ss.str());
       }
 
 
@@ -359,10 +362,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Text Code
       //////////////////////////////////////////////////////////////////////////
-      HUDText::HUDText( const std::string& name, const std::string& type )
-         : HUDElement( name, type )
+      HUDText::HUDText(const std::string& name, const std::string& type)
+         : HUDElement(name, type)
       {
-         SetAlignment( HUDAlignment::LEFT_TOP );
+         SetAlignment(HUDAlignment::LEFT_TOP);
          SetProperty("FrameEnabled", "false");
          SetProperty("BackgroundEnabled", "false");
       }
@@ -374,48 +377,48 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetText( const std::string& text, float x, float y )
+      void HUDText::SetText(const std::string& text, float x, float y)
       {
-         SetText( text );
-         SetPosition( x, y );
+         SetText(text);
+         SetPosition(x, y);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetText( const std::string& text )
+      void HUDText::SetText(const std::string& text)
       {
          mText = text;
-         mWindow->setText( text );
+         mWindow->setText(text);
       }
 
       //////////////////////////////////////////////////////////////////////////
       const std::string& HUDText::GetText() const
       {
-         return mText;//std::string( mWindow->getText().c_str() );
+         return mText;//std::string(mWindow->getText().c_str());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetFont( const std::string& font )
+      void HUDText::SetFont(const std::string& font)
       {
-         mWindow->setFont( font );
+         mWindow->setFont(font);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetFontAndText( const std::string& font, const std::string& text )
+      void HUDText::SetFontAndText(const std::string& font, const std::string& text)
       {
-         SetFont( font );
-         SetText( text );
+         SetFont(font);
+         SetText(text);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetFontAndText( const std::string& font, const std::string& text, float x, float y )
+      void HUDText::SetFontAndText(const std::string& font, const std::string& text, float x, float y)
       {
-         SetFont( font );
-         SetText( text );
-         SetPosition( x, y );
+         SetFont(font);
+         SetText(text);
+         SetPosition(x, y);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDText::SetColor( float r, float g, float b, float a )
+      void HUDText::SetColor(float r, float g, float b, float a)
       {
          if (r >= 0.0f && g >= 0.0f && b >= 0.0f)
             mWindow->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(r, g, b, a)));
@@ -426,8 +429,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Image Code
       //////////////////////////////////////////////////////////////////////////
-      HUDImage::HUDImage( const std::string& name, const std::string& type )
-         : HUDElement( name, type )
+      HUDImage::HUDImage(const std::string& name, const std::string& type)
+         : HUDElement(name, type)
       {
          SetProperty("FrameEnabled", "false");
          SetProperty("BackgroundEnabled", "false");
@@ -440,7 +443,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDImage::SetImage( const std::string& imageSet, const std::string& imageName )
+      void HUDImage::SetImage(const std::string& imageSet, const std::string& imageName)
       {
          SetProperty("Image", "set:"+imageSet+" image:"+imageName);
       }
@@ -450,15 +453,15 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Group Code
       //////////////////////////////////////////////////////////////////////////
-      HUDGroup::HUDGroup( const std::string& name, const std::string& type )
-         : HUDElement( name, type )
+      HUDGroup::HUDGroup(const std::string& name, const std::string& type)
+         : HUDElement(name, type)
       {
          SetProperty("FrameEnabled", "false");
          SetProperty("BackgroundEnabled", "false");
       }
 
       //////////////////////////////////////////////////////////////////////////
-      HUDGroup::HUDGroup( CEGUI::Window& window )
+      HUDGroup::HUDGroup(CEGUI::Window& window)
          : HUDElement(window)
       {
       }
@@ -466,35 +469,35 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDGroup::~HUDGroup()
       {
-         if( ! mChildRefs.empty() ) { mChildRefs.clear(); }
+         if (! mChildRefs.empty()) { mChildRefs.clear(); }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDGroup::Add( HUDElement* child )
+      bool HUDGroup::Add(HUDElement* child)
       {
-         if( child == NULL ) { return false; }
+         if (child == NULL) { return false; }
 
          // On successful insert...
-         if( mChildRefs.insert( std::make_pair( child->GetUniqueId(), child ) ).second )
+         if (mChildRefs.insert(std::make_pair(child->GetUniqueId(), child)).second)
          {
             // ...add the child CEGUI window pointer to this object's window
-            mWindow->addChildWindow( child->GetCEGUIWindow() );
+            mWindow->addChildWindow(child->GetCEGUIWindow());
             return true;
          }
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDGroup::Remove( HUDElement* child )
+      bool HUDGroup::Remove(HUDElement* child)
       {
-         if( child == NULL ) { return false; }
+         if (child == NULL) { return false; }
 
          std::map<dtCore::UniqueId, dtCore::RefPtr<HUDElement> >::iterator i =
-            mChildRefs.find( child->GetUniqueId() );
+            mChildRefs.find(child->GetUniqueId());
 
-         if( i != mChildRefs.end() )
+         if (i != mChildRefs.end())
          {
-            mWindow->removeChildWindow( child->GetCEGUIWindow() );
+            mWindow->removeChildWindow(child->GetCEGUIWindow());
             mChildRefs.erase(i);
             return true;
          }
@@ -502,15 +505,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDGroup::Has( const HUDElement& child ) const
+      bool HUDGroup::Has(const HUDElement& child) const
       {
          return mWindow->isChild(child.GetCEGUIWindow());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDGroup::Has( const std::string& childName ) const
+      bool HUDGroup::Has(const std::string& childName) const
       {
-         return mWindow->isChild( childName );
+         return mWindow->isChild(childName);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -520,14 +523,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch )
+      CEGUI::Window* HUDGroup::GetCEGUIChild(const std::string& childName, bool deepSearch)
       {
-         if( mWindow->isChild( childName ) )
+         if (mWindow->isChild(childName))
          {
-            return mWindow->getChild( childName );
+            return mWindow->getChild(childName);
          }
 
-         if( deepSearch )
+         if (deepSearch)
          {
             // TODO:
          }
@@ -535,14 +538,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const CEGUI::Window* HUDGroup::GetCEGUIChild( const std::string& childName, bool deepSearch ) const
+      const CEGUI::Window* HUDGroup::GetCEGUIChild(const std::string& childName, bool deepSearch) const
       {
-         if( mWindow->isChild( childName ) )
+         if (mWindow->isChild(childName))
          {
-            return mWindow->getChild( childName );
+            return mWindow->getChild(childName);
          }
 
-         if( deepSearch )
+         if (deepSearch)
          {
             // TODO:
          }
@@ -554,8 +557,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Button Code
       //////////////////////////////////////////////////////////////////////////
-      HUDButton::HUDButton( const std::string& name, const std::string& type )
-         : HUDElement( name, type ),
+      HUDButton::HUDButton(const std::string& name, const std::string& type)
+         : HUDElement(name, type),
          mActive(true),
          mDisabled(false)
       {
@@ -566,34 +569,34 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDButton::~HUDButton()
       {
-         if( mActiveElement.valid() )
+         if (mActiveElement.valid())
          {
-            mWindow->removeChildWindow( mActiveElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mActiveElement->GetCEGUIWindow());
             mActiveElement = NULL;
          }
-         if( mInactiveElement.valid() )
+         if (mInactiveElement.valid())
          {
-            mWindow->removeChildWindow( mInactiveElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mInactiveElement->GetCEGUIWindow());
             mInactiveElement = NULL;
          }
-         if( mDisabledElement.valid() )
+         if (mDisabledElement.valid())
          {
-            mWindow->removeChildWindow( mDisabledElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mDisabledElement->GetCEGUIWindow());
             mDisabledElement = NULL;
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDButton::SetActiveElement( HUDElement* activeElement )
+      void HUDButton::SetActiveElement(HUDElement* activeElement)
       {
-         if( mActiveElement.valid() )
+         if (mActiveElement.valid())
          {
-            mWindow->removeChildWindow( mActiveElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mActiveElement->GetCEGUIWindow());
          }
          mActiveElement = activeElement;
-         if( activeElement != NULL )
+         if (activeElement != NULL)
          {
-            mWindow->addChildWindow( activeElement->GetCEGUIWindow() );
+            mWindow->addChildWindow(activeElement->GetCEGUIWindow());
          }
       }
 
@@ -610,16 +613,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDButton::SetInactiveElement( HUDElement* inactiveElement )
+      void HUDButton::SetInactiveElement(HUDElement* inactiveElement)
       {
-         if( mInactiveElement.valid() )
+         if (mInactiveElement.valid())
          {
-            mWindow->removeChildWindow( mInactiveElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mInactiveElement->GetCEGUIWindow());
          }
          mInactiveElement = inactiveElement;
-         if( inactiveElement != NULL )
+         if (inactiveElement != NULL)
          {
-            mWindow->addChildWindow( inactiveElement->GetCEGUIWindow() );
+            mWindow->addChildWindow(inactiveElement->GetCEGUIWindow());
          }
       }
 
@@ -636,17 +639,17 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDButton::SetDisabledElement( HUDElement* disabledElement )
+      void HUDButton::SetDisabledElement(HUDElement* disabledElement)
       {
-         if( mDisabledElement.valid() )
+         if (mDisabledElement.valid())
          {
-            mWindow->removeChildWindow( mDisabledElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mDisabledElement->GetCEGUIWindow());
          }
          mDisabledElement = disabledElement;
-         if( mDisabledElement.valid() )
+         if (mDisabledElement.valid())
          {
-            mWindow->addChildWindow( mDisabledElement->GetCEGUIWindow() );
-            mDisabledElement->SetVisible( mDisabled );
+            mWindow->addChildWindow(mDisabledElement->GetCEGUIWindow());
+            mDisabledElement->SetVisible(mDisabled);
          }
       }
 
@@ -663,18 +666,18 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDButton::SetActive( bool active )
+      void HUDButton::SetActive(bool active)
       {
-         if( ! mDisabled )
+         if (! mDisabled)
          {
             mActive = active;
-            if( mActiveElement.valid() )
+            if (mActiveElement.valid())
             {
-               mActiveElement->SetVisible( active );
+               mActiveElement->SetVisible(active);
             }
-            if( mInactiveElement.valid() )
+            if (mInactiveElement.valid())
             {
-               mInactiveElement->SetVisible( !active );
+               mInactiveElement->SetVisible(!active);
             }
          }
       }
@@ -686,31 +689,31 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDButton::SetDisabled( bool disabled )
+      void HUDButton::SetDisabled(bool disabled)
       {
-         if( mDisabled != disabled )
+         if (mDisabled != disabled)
          {
             mDisabled = disabled;
-            if( mDisabledElement.valid() )
+            if (mDisabledElement.valid())
             {
-               mDisabledElement->SetVisible( mDisabled );
+               mDisabledElement->SetVisible(mDisabled);
             }
 
-            if( mDisabled )
+            if (mDisabled)
             {
-               if( mActiveElement.valid() )
+               if (mActiveElement.valid())
                {
-                  mActiveElement->SetVisible( false );
+                  mActiveElement->SetVisible(false);
                }
-               if( mInactiveElement.valid() )
+               if (mInactiveElement.valid())
                {
-                  mInactiveElement->SetVisible( false );
+                  mInactiveElement->SetVisible(false);
                }
             }
             else
             {
                // Default to inactive but enabled state
-               SetActive( false );
+               SetActive(false);
             }
          }
       }
@@ -725,8 +728,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Meter Code
       //////////////////////////////////////////////////////////////////////////
-      HUDMeter::HUDMeter( const std::string& name, const std::string& type )
-         : HUDElement( name, type ),
+      HUDMeter::HUDMeter(const std::string& name, const std::string& type)
+         : HUDElement(name, type),
          mValue(0.0f),
          mScale(0.0f),
          mUnits(0.0f),
@@ -739,46 +742,46 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDMeter::~HUDMeter()
       {
-         if( mImage.valid() )
+         if (mImage.valid())
          {
-            mWindow->removeChildWindow( mImage->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mImage->GetCEGUIWindow());
             mImage = NULL;
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDMeter::SetScale( float scale )
+      void HUDMeter::SetScale(float scale)
       {
          mScale = scale;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDMeter::SetValue( float current, float maxValue, float minValue )
+      void HUDMeter::SetValue(float current, float maxValue, float minValue)
       {
          mValue = current > maxValue ? maxValue : current < minValue ? minValue : current;
          maxValue = std::abs(maxValue-minValue);
-         if( mUnits > 0.0f )
+         if (mUnits > 0.0f)
          {
             float unitSize = maxValue/mUnits;
-            mValue = unitSize != 0.0f 
-               ? (int)(mValue/unitSize + (mValue/maxValue > 0.0f && mValue < maxValue ? 1.0 : 0.0f))*unitSize 
+            mValue = unitSize != 0.0f
+               ? (int)(mValue/unitSize + (mValue/maxValue > 0.0f && mValue < maxValue ? 1.0 : 0.0f))*unitSize
                : mValue;
          }
          current = mValue-minValue;
-         SetScale( maxValue != 0.0f ? current/maxValue : 0.0f );
+         SetScale(maxValue != 0.0f ? current/maxValue : 0.0f);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDMeter::SetImage( HUDImage* image )
+      void HUDMeter::SetImage(HUDImage* image)
       {
-         if( mImage.valid() )
+         if (mImage.valid())
          {
-            mWindow->removeChildWindow( mImage->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mImage->GetCEGUIWindow());
          }
          mImage = image;
-         if( mImage.valid() )
+         if (mImage.valid())
          {
-            mWindow->addChildWindow( mImage->GetCEGUIWindow() );
+            mWindow->addChildWindow(mImage->GetCEGUIWindow());
          }
       }
 
@@ -798,8 +801,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Bar Meter Code
       //////////////////////////////////////////////////////////////////////////
-      HUDBarMeter::HUDBarMeter( const std::string& name, const std::string& type )
-         : HUDMeter( name, type )
+      HUDBarMeter::HUDBarMeter(const std::string& name, const std::string& type)
+         : HUDMeter(name, type)
       {
       }
 
@@ -809,84 +812,84 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDBarMeter::SetImage( HUDImage* image )
+      void HUDBarMeter::SetImage(HUDImage* image)
       {
-         HUDMeter::SetImage( image );
+         HUDMeter::SetImage(image);
 
-         if( GetImage() != NULL )
+         if (GetImage() != NULL)
          {
-            GetImage()->GetSize( mOriginalImageSize );
+            GetImage()->GetSize(mOriginalImageSize);
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDBarMeter::SetSize( float width, float height, bool absoluteSize )
+      void HUDBarMeter::SetSize(float width, float height, bool absoluteSize)
       {
-         HUDMeter::SetSize( width, height, absoluteSize );
-         GetSize( mOriginalSize );
+         HUDMeter::SetSize(width, height, absoluteSize);
+         GetSize(mOriginalSize);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDBarMeter::SetScale( float scale )
+      void HUDBarMeter::SetScale(float scale)
       {
-         if( scale == HUDMeter::GetScale() ) { return; }
+         if (scale == HUDMeter::GetScale()) { return; }
 
-         HUDMeter::SetScale( scale );
+         HUDMeter::SetScale(scale);
 
          // Scale this window up or down so that it will
          // clip the image it contains when rendering.
          osg::Vec2 size;
-         GetOriginalSize( size );
+         GetOriginalSize(size);
          HUDImage* image = GetImage();
 
-         if( IsHorizontal() )
+         if (IsHorizontal())
          {
-            GetOriginalSize( size );
+            GetOriginalSize(size);
 
             // Scale up/down this frame
             // NOTE: Use parent version of SetSize since the sub-class version will
             // modify mOriginalSize
-            HUDMeter::SetSize( size[0]*scale, size[1], IsAbsoluteSize() );
+            HUDMeter::SetSize(size[0]*scale, size[1], IsAbsoluteSize());
 
             // Scale up the contained image so that it will be clipped
             // and look like it was not scaled (only if this container
             // is in relative size mode).
-            if( !IsAbsoluteSize() && image != NULL 
-               && scale != 0.0f && mOriginalSize[0] != 0.0f )
+            if (!IsAbsoluteSize() && image != NULL
+               && scale != 0.0f && mOriginalSize[0] != 0.0f)
             {
-               GetOriginalImageSize( size );
-               image->SetSize( size[0]/scale, size[1], image->IsAbsoluteSize() );
+               GetOriginalImageSize(size);
+               image->SetSize(size[0]/scale, size[1], image->IsAbsoluteSize());
             }
          }
          else
          {
-            GetOriginalSize( size );
+            GetOriginalSize(size);
 
             // Scale up/down this frame
             // NOTE: Use parent version of SetSize since the sub-class version will
             // modify mOriginalSize
-            HUDMeter::SetSize( size[0], size[1]*scale, IsAbsoluteSize() );
+            HUDMeter::SetSize(size[0], size[1]*scale, IsAbsoluteSize());
 
             // Scale up the contained image so that it will be clipped
             // and look like it was not scaled (only if this container
             // is in relative size mode).
-            if( !IsAbsoluteSize() && image != NULL 
-               && scale != 0.0f && mOriginalSize[1] != 0.0f )
+            if (!IsAbsoluteSize() && image != NULL
+               && scale != 0.0f && mOriginalSize[1] != 0.0f)
             {
-               GetOriginalImageSize( size );
-               image->SetSize( size[0], size[1]/scale, image->IsAbsoluteSize() );
+               GetOriginalImageSize(size);
+               image->SetSize(size[0], size[1]/scale, image->IsAbsoluteSize());
             }
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDBarMeter::GetOriginalSize( osg::Vec2& outSize ) const
+      void HUDBarMeter::GetOriginalSize(osg::Vec2& outSize) const
       {
          outSize = mOriginalSize;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDBarMeter::GetOriginalImageSize( osg::Vec2& outSize ) const
+      void HUDBarMeter::GetOriginalImageSize(osg::Vec2& outSize) const
       {
          outSize = mOriginalImageSize;
       }
@@ -896,8 +899,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Slide Bar Meter Code
       //////////////////////////////////////////////////////////////////////////
-      HUDSlideBarMeter::HUDSlideBarMeter( const std::string& name, const std::string& type )
-         : HUDMeter( name ),
+      HUDSlideBarMeter::HUDSlideBarMeter(const std::string& name, const std::string& type)
+         : HUDMeter(name),
          mImageOffset(0.0f),
          mImageRangeScale(1.0f),
          mSlideReversed(false)
@@ -912,43 +915,43 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDSlideBarMeter::SetImageOffset( float offset )
+      void HUDSlideBarMeter::SetImageOffset(float offset)
       {
          mImageOffset = offset;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDSlideBarMeter::SetScale( float scale )
+      void HUDSlideBarMeter::SetScale(float scale)
       {
-         HUDMeter::SetScale( scale );
+         HUDMeter::SetScale(scale);
 
          HUDImage* image = GetImage();
 
-         if( image == NULL ) { return; }
+         if (image == NULL) { return; }
 
          osg::Vec2 size;
          image->GetSize(size);
 
          osg::Vec2 imgPos;
-         image->GetPosition( imgPos );
+         image->GetPosition(imgPos);
 
-         if(mImageRangeScale != 0.0f)
+         if (mImageRangeScale != 0.0f)
          {
             scale /= mImageRangeScale;
          }
 
-         if( IsHorizontal() )
+         if (IsHorizontal())
          {
-            if( size[0] != 0.0f )
+            if (size[0] != 0.0f)
             {
-               image->SetPosition( (mSlideReversed?scale:-scale)*size[0]+mImageOffset, imgPos[1] );
+               image->SetPosition((mSlideReversed?scale:-scale)*size[0]+mImageOffset, imgPos[1]);
             }
          }
          else
          {
-            if( size[1] != 0.0f )
+            if (size[1] != 0.0f)
             {
-               image->SetPosition(  imgPos[0], (mSlideReversed?scale:-scale)*size[1]+mImageOffset );
+               image->SetPosition( imgPos[0], (mSlideReversed?scale:-scale)*size[1]+mImageOffset);
             }
          }
       }
@@ -957,8 +960,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Toolbar Code
       //////////////////////////////////////////////////////////////////////////
-      HUDToolbar::HUDToolbar( const std::string& name, const std::string& type )
-         : HUDElement( name, type ),
+      HUDToolbar::HUDToolbar(const std::string& name, const std::string& type)
+         : HUDElement(name, type),
          mHorizontal(true),
          mStartSpace(0.0f),
          mMidSpace(0.0f),
@@ -969,7 +972,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      HUDToolbar::HUDToolbar( CEGUI::Window& window )
+      HUDToolbar::HUDToolbar(CEGUI::Window& window)
          : HUDElement(window),
          mHorizontal(true),
          mStartSpace(0.0f),
@@ -985,16 +988,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDToolbar::SetStartElement( HUDElement* element )
+      void HUDToolbar::SetStartElement(HUDElement* element)
       {
-         if( mStartElement.valid() )
+         if (mStartElement.valid())
          {
-            mWindow->removeChildWindow( mStartElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mStartElement->GetCEGUIWindow());
          }
          mStartElement = element;
-         if( mStartElement.valid() )
+         if (mStartElement.valid())
          {
-            mWindow->addChildWindow( mStartElement->GetCEGUIWindow() );
+            mWindow->addChildWindow(mStartElement->GetCEGUIWindow());
          }
       }
 
@@ -1011,16 +1014,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDToolbar::SetEndElement( HUDElement* element )
+      void HUDToolbar::SetEndElement(HUDElement* element)
       {
-         if( mEndElement.valid() )
+         if (mEndElement.valid())
          {
-            mWindow->removeChildWindow( mEndElement->GetCEGUIWindow() );
+            mWindow->removeChildWindow(mEndElement->GetCEGUIWindow());
          }
          mEndElement = element;
-         if( mEndElement.valid() )
+         if (mEndElement.valid())
          {
-            mWindow->addChildWindow( mEndElement->GetCEGUIWindow() );
+            mWindow->addChildWindow(mEndElement->GetCEGUIWindow());
          }
       }
 
@@ -1037,13 +1040,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::GetItorAtIndex( unsigned int index, 
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter )
+      bool HUDToolbar::GetItorAtIndex(unsigned int index,
+         std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter)
       {
          // Step the iterator forward to index
-         for( unsigned int curIndex = 0; 
+         for (unsigned int curIndex = 0;
             curIndex < index && outIter != mElements.end();
-            ++outIter, ++curIndex )
+            ++outIter, ++curIndex)
          {
             // Do nothing
          }
@@ -1052,13 +1055,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::GetItorAtIndex( unsigned int index, 
-         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter ) const
+      bool HUDToolbar::GetItorAtIndex(unsigned int index,
+         std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter) const
       {
          // Step the iterator forward to index
-         for( unsigned int curIndex = 0; 
+         for (unsigned int curIndex = 0;
             curIndex < index && outIter != mElements.end();
-            ++outIter, ++curIndex )
+            ++outIter, ++curIndex)
          {
             // Do nothing
          }
@@ -1067,44 +1070,44 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::GetItorAtElement( const HUDElement& element, 
+      bool HUDToolbar::GetItorAtElement(const HUDElement& element,
          std::vector< dtCore::RefPtr<HUDElement> >::iterator& outIter,
-         int* outIndex )
+         int* outIndex)
       {
-         if( outIndex != NULL ) { *outIndex = 0; }
+         if (outIndex != NULL) { *outIndex = 0; }
 
-         for( ; outIter != mElements.end(); ++outIter )
+         for (; outIter != mElements.end(); ++outIter)
          {
             // Is this the element to be removed?
-            if( outIter->get() == &element )
+            if (outIter->get() == &element)
             {
                return true;
             }
-            if( outIndex != NULL ) { (*outIndex)++; }
+            if (outIndex != NULL) { (*outIndex)++; }
          }
 
-         if( outIndex != NULL ) { *outIndex = -1; }
+         if (outIndex != NULL) { *outIndex = -1; }
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::GetItorAtElement( const HUDElement& element, 
+      bool HUDToolbar::GetItorAtElement(const HUDElement& element,
          std::vector< dtCore::RefPtr<HUDElement> >::const_iterator& outIter,
-         int* outIndex ) const
+         int* outIndex) const
       {
-         if( outIndex != NULL ) { *outIndex = 0; }
+         if (outIndex != NULL) { *outIndex = 0; }
 
-         for( ; outIter != mElements.end(); ++outIter )
+         for (; outIter != mElements.end(); ++outIter)
          {
             // Is this the element to be removed?
-            if( outIter->get() == &element )
+            if (outIter->get() == &element)
             {
                return true;
             }
-            if( outIndex != NULL ) { (*outIndex)++; }
+            if (outIndex != NULL) { (*outIndex)++; }
          }
 
-         if( outIndex != NULL ) { *outIndex = -1; }
+         if (outIndex != NULL) { *outIndex = -1; }
          return false;
       }
 
@@ -1115,50 +1118,50 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      HUDElement* HUDToolbar::GetElement( unsigned int index )
+      HUDElement* HUDToolbar::GetElement(unsigned int index)
       {
          std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         return GetItorAtIndex( index, iter ) ? iter->get() : NULL;
+         return GetItorAtIndex(index, iter) ? iter->get() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const HUDElement* HUDToolbar::GetElement( unsigned int index ) const
+      const HUDElement* HUDToolbar::GetElement(unsigned int index) const
       {
          std::vector< dtCore::RefPtr<HUDElement> >::const_iterator iter = mElements.begin();
-         return GetItorAtIndex( index, iter ) ? iter->get() : NULL;
+         return GetItorAtIndex(index, iter) ? iter->get() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      int HUDToolbar::GetElementIndex( const HUDElement& element ) const
+      int HUDToolbar::GetElementIndex(const HUDElement& element) const
       {
          std::vector< dtCore::RefPtr<HUDElement> >::const_iterator iter = mElements.begin();
          int index = -1;
-         GetItorAtElement( element, iter, &index );
+         GetItorAtElement(element, iter, &index);
          return index;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::InsertElement( HUDElement* element, int index )
+      bool HUDToolbar::InsertElement(HUDElement* element, int index)
       {
-         if( element == NULL ) { return false; }
+         if (element == NULL) { return false; }
 
-         if( index < 0 || (unsigned int)index > mElements.size() ) { index = mElements.size(); }
+         if (index < 0 || (unsigned int)index > mElements.size()) { index = mElements.size(); }
 
          // Step the iterator forward to index
          std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         GetItorAtIndex( index, iter );
+         GetItorAtIndex(index, iter);
 
          try{
             // Attach and register the HUD element
-            mWindow->addChildWindow( element->GetCEGUIWindow() );
-            mElements.insert( iter, element );
+            mWindow->addChildWindow(element->GetCEGUIWindow());
+            mElements.insert(iter, element);
             return true;
          }
-         catch( CEGUI::Exception& e )
+         catch(CEGUI::Exception& e)
          {
             std::ostringstream oss;
-            oss << "FAILURE: "<<GetName().c_str()<<".InsertElement( HUDElement.\"" 
-               << element->GetName().c_str() << "\", "<< index <<" )" 
+            oss << "FAILURE: "<<GetName().c_str()<<".InsertElement(HUDElement.\""
+               << element->GetName().c_str() << "\", "<< index <<")"
                << std::endl
                << e.getMessage().c_str();
          }
@@ -1167,25 +1170,25 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::RemoveElement( const HUDElement* element )
+      bool HUDToolbar::RemoveElement(const HUDElement* element)
       {
-         if( element == NULL ) { return false; }
+         if (element == NULL) { return false; }
 
-         if( mElements.empty() ) { return false; }
+         if (mElements.empty()) { return false; }
 
          std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         if( GetItorAtElement( *element, iter ) )
+         if (GetItorAtElement(*element, iter))
          {
             try{
-               mWindow->removeChildWindow( (*iter)->GetCEGUIWindow() );
+               mWindow->removeChildWindow((*iter)->GetCEGUIWindow());
                mElements.erase(iter);
                return true;
-            } 
-            catch( CEGUI::Exception& e )
+            }
+            catch(CEGUI::Exception& e)
             {
                std::ostringstream oss;
-               oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() " 
-                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\"" 
+               oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() "
+                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\""
                   << std::endl
                   << e.getMessage().c_str();
             }
@@ -1196,19 +1199,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool HUDToolbar::ClearElements()
       {
-         if( mElements.empty() ) { return false; }
+         if (mElements.empty()) { return false; }
 
          std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         for( ; iter != mElements.end(); ++iter )
+         for (; iter != mElements.end(); ++iter)
          {
             try{
-               mWindow->removeChildWindow( (*iter)->GetCEGUIWindow() );
-            } 
-            catch( CEGUI::Exception& e )
+               mWindow->removeChildWindow((*iter)->GetCEGUIWindow());
+            }
+            catch(CEGUI::Exception& e)
             {
                std::ostringstream oss;
-               oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() " 
-                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\"" 
+               oss << "FAILURE: "<<GetName().c_str()<<".ClearElements() "
+                  << "removing element \"" << ((*iter).valid()?(*iter)->GetName():"NULL") << "\""
                   << std::endl
                   << e.getMessage().c_str();
             }
@@ -1219,11 +1222,11 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDToolbar::HasElement( const HUDElement& element ) const
+      bool HUDToolbar::HasElement(const HUDElement& element) const
       {
-         return GetElementIndex( element ) >= 0;
+         return GetElementIndex(element) >= 0;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void HUDToolbar::UpdateLayout()
       {
@@ -1232,10 +1235,10 @@ namespace SimCore
          osg::Vec2 curPos;
 
          // Get size of start element and advance current position
-         if( mStartElement.valid() )
+         if (mStartElement.valid())
          {
-            mStartElement->GetSize( curSize );
-            if( mHorizontal )
+            mStartElement->GetSize(curSize);
+            if (mHorizontal)
             {
                curPos[0] += curSize[0] + mStartSpace;
             }
@@ -1247,12 +1250,14 @@ namespace SimCore
 
          // Loop through and distribute the elements between
          // the start and end elements.
-         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter = mElements.begin();
-         for( ; iter != mElements.end(); ++iter )
+         std::vector< dtCore::RefPtr<HUDElement> >::iterator iter, iterEnd;
+         iter = mElements.begin();
+         iterEnd = mElements.end();
+         for (; iter != iterEnd; ++iter)
          {
-            (*iter)->SetPosition( curPos[0], curPos[1] );
-            (*iter)->GetSize( curSize );
-            if( mHorizontal )
+            (*iter)->SetPosition(curPos[0], curPos[1]);
+            (*iter)->GetSize(curSize);
+            if (mHorizontal)
             {
                curPos[0] += curSize[0] + mMidSpace;
             }
@@ -1263,9 +1268,9 @@ namespace SimCore
          }
 
          // Advance current position and set the position of the end element
-         if( mEndElement.valid() )
+         if (mEndElement.valid())
          {
-            if( mHorizontal )
+            if (mHorizontal)
             {
                curPos[0] += mEndSpace;
             }
@@ -1273,8 +1278,8 @@ namespace SimCore
             {
                curPos[1] += mEndSpace;
             }
-            mEndElement->SetPosition( curPos[0], curPos[1] );
-            mEndElement->GetSize( curSize );
+            mEndElement->SetPosition(curPos[0], curPos[1]);
+            mEndElement->GetSize(curSize);
          }
 
       }
@@ -1288,7 +1293,7 @@ namespace SimCore
       const float HUDQuadElement::WIN_HEIGHT_RATIO = 1200.0f/1920.0f;
 
       //////////////////////////////////////////////////////////////////////////
-      HUDQuadElement::HUDQuadElement( const std::string& name, const std::string& imageFileName )
+      HUDQuadElement::HUDQuadElement(const std::string& name, const std::string& imageFileName)
          : dtCore::DeltaDrawable(name),
          mVisible(true),
          mAlpha(1.0f),
@@ -1309,14 +1314,14 @@ namespace SimCore
          // Setup the node tree
          mRoot->addChild(projection);
          projection->addChild(mTrans.get());
-         mTrans->addChild( mGeode.get() );
+         mTrans->addChild(mGeode.get());
 
          // VERTICES
          mVerts = new osg::Vec3Array;
-         mVerts->push_back( osg::Vec3( 0,    0,-1) );
-         mVerts->push_back( osg::Vec3(1.0,  0,-1) );
-         mVerts->push_back( osg::Vec3(1.0,1.0,-1) );
-         mVerts->push_back( osg::Vec3(   0,1.0,-1) );
+         mVerts->push_back(osg::Vec3(0,    0,-1));
+         mVerts->push_back(osg::Vec3(1.0,  0,-1));
+         mVerts->push_back(osg::Vec3(1.0,1.0,-1));
+         mVerts->push_back(osg::Vec3(  0,1.0,-1));
 
          // INDICES
          osg::DrawElementsUInt* indices =
@@ -1346,11 +1351,11 @@ namespace SimCore
          states->setMode(GL_BLEND,osg::StateAttribute::ON);
          states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
          states->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
-         states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-         states->setRenderBinDetails( BIN_NUMBER, BIN_NAME );
+         states->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+         states->setRenderBinDetails(BIN_NUMBER, BIN_NAME);
 
          // Get the current texture directory
-         if( ! imageFileName.empty() )
+         if (! imageFileName.empty())
          {
             // Set the texture
             dtCore::RefPtr<osg::Texture2D> texture = new osg::Texture2D;
@@ -1364,12 +1369,12 @@ namespace SimCore
                texture->setImage(image);
                states->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON);
             }
-            catch( dtUtil::Exception& e )
+            catch(dtUtil::Exception& e)
             {
                std::stringstream ss;
                ss << "HUDQuadElement could not load texture \"" << filePath << "\" because:\n"
                   << e.ToString() << std::endl;
-               LOG_ERROR( ss.str() );
+               LOG_ERROR(ss.str());
             }
          }
 
@@ -1390,36 +1395,36 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDQuadElement::~HUDQuadElement()
       {
-         if( mRoot.valid() && mRoot->getNumParents() > 0 )
+         if (mRoot.valid() && mRoot->getNumParents() > 0)
          {
             osg::Group* parent = dynamic_cast<osg::Group*> (mRoot->getParent(0));
-            if( parent != NULL )
+            if (parent != NULL)
             {
-               parent->removeChild( mRoot.get() );
+               parent->removeChild(mRoot.get());
             }
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDQuadElement::Has( HUDQuadElement& element ) const
+      bool HUDQuadElement::Has(HUDQuadElement& element) const
       {
-         return mRoot->getNumChildren() != mRoot->getChildIndex( element.mRoot.get() );
+         return mRoot->getNumChildren() != mRoot->getChildIndex(element.mRoot.get());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDQuadElement::Add( HUDQuadElement& element, int index )
+      bool HUDQuadElement::Add(HUDQuadElement& element, int index)
       {
          unsigned numChildren = mRoot->getNumChildren();
-         unsigned safeIndex = mRoot->getChildIndex( element.mRoot.get() );
+         unsigned safeIndex = mRoot->getChildIndex(element.mRoot.get());
 
          // Avoid adding new child if it already exists
-         if( safeIndex != numChildren || &element == this )
+         if (safeIndex != numChildren || &element == this)
          {
             return false;
          }
 
          // Modify the safe index
-         if( index < 0 || index >= int(numChildren) )
+         if (index < 0 || index >= int(numChildren))
          {
             // Index was out of range and unsafe.
             safeIndex = numChildren;
@@ -1430,19 +1435,19 @@ namespace SimCore
             safeIndex = unsigned(index);
          }
 
-         return mRoot->insertChild( safeIndex, element.mRoot.get() );
+         return mRoot->insertChild(safeIndex, element.mRoot.get());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool HUDQuadElement::Remove( HUDQuadElement& element )
+      bool HUDQuadElement::Remove(HUDQuadElement& element)
       {
-         return mRoot->removeChild( element.mRoot.get() );
+         return mRoot->removeChild(element.mRoot.get());
       }
 
       //////////////////////////////////////////////////////////////////////////
       unsigned HUDQuadElement::GetTotalChildren() const
       {
-         return mRoot->getNumChildren() - 1; // -1 for the root's first main child 
+         return mRoot->getNumChildren() - 1; // -1 for the root's first main child
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1458,7 +1463,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetSize( float width, float height )
+      void HUDQuadElement::SetSize(float width, float height)
       {
          mWidth = width;
          mHeight = height;
@@ -1469,39 +1474,39 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::GetSize( osg::Vec2& outSize ) const
+      void HUDQuadElement::GetSize(osg::Vec2& outSize) const
       {
-         outSize.set( mWidth, mHeight );
+         outSize.set(mWidth, mHeight);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetPosition( float x, float y, float z )
+      void HUDQuadElement::SetPosition(float x, float y, float z)
       {
          // Modify Y based on window height ratio
          y *= WIN_HEIGHT_RATIO;
 
-         mPos.set( x, y, z );
+         mPos.set(x, y, z);
          osg::Matrix mtx = mTrans->getMatrix();
-         mtx.setTrans( mPos );
-         mTrans->setMatrix( mtx );
+         mtx.setTrans(mPos);
+         mTrans->setMatrix(mtx);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::GetPosition( osg::Vec3& outPos ) const
+      void HUDQuadElement::GetPosition(osg::Vec3& outPos) const
       {
          // Y component: undo the ratio adjustment set in SetPosition
-         outPos.set( mPos[0], mPos[1]/WIN_HEIGHT_RATIO, mPos[2] );
+         outPos.set(mPos[0], mPos[1]/WIN_HEIGHT_RATIO, mPos[2]);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::GetPosition( osg::Vec2& outPos ) const
+      void HUDQuadElement::GetPosition(osg::Vec2& outPos) const
       {
          // Y component: undo the ratio adjustment set in SetPosition
-         outPos.set( mPos[0], mPos[1]/WIN_HEIGHT_RATIO );
+         outPos.set(mPos[0], mPos[1]/WIN_HEIGHT_RATIO);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetOffset( float x, float y )
+      void HUDQuadElement::SetOffset(float x, float y)
       {
          (*mVerts)[0].set(x,y,0);
          (*mVerts)[1].set(x+mWidth,y,0);
@@ -1510,42 +1515,42 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::GetOffset( osg::Vec2& outOffset ) const
+      void HUDQuadElement::GetOffset(osg::Vec2& outOffset) const
       {
-         outOffset.set( (*mVerts)[0][0], (*mVerts)[0][1] );
+         outOffset.set((*mVerts)[0][0], (*mVerts)[0][1]);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetRotation( float degrees )
+      void HUDQuadElement::SetRotation(float degrees)
       {
          osg::Matrix mtx;
-         mtx.makeRotate( degrees, osg::Vec3(0.0,0.0,1.0) );
-         mtx.setTrans( mPos );
-         mTrans->setMatrix( mtx );
+         mtx.makeRotate(degrees, osg::Vec3(0.0,0.0,1.0));
+         mtx.setTrans(mPos);
+         mTrans->setMatrix(mtx);
          mRotation = degrees;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetColor( float r, float g, float b )
+      void HUDQuadElement::SetColor(float r, float g, float b)
       {
-         (*mColor)[0].set( r, g, b, mAlpha );
+         (*mColor)[0].set(r, g, b, mAlpha);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetColor( float r, float g, float b, float a )
+      void HUDQuadElement::SetColor(float r, float g, float b, float a)
       {
          mAlpha = a;
-         (*mColor)[0].set( r, g, b, a);
+         (*mColor)[0].set(r, g, b, a);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::GetColor( osg::Vec4& outColor ) const
+      void HUDQuadElement::GetColor(osg::Vec4& outColor) const
       {
          outColor = (*mColor)[0];
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetAlpha( float alpha )
+      void HUDQuadElement::SetAlpha(float alpha)
       {
          mAlpha = alpha;
          (*mColor)[0][3] = alpha;
@@ -1558,10 +1563,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void HUDQuadElement::SetVisible( bool visible )
+      void HUDQuadElement::SetVisible(bool visible)
       {
          mVisible = visible;
-         if( mVisible )
+         if (mVisible)
          {
             GetOSGNode()->setNodeMask(0xFFFFFFFF);
          }

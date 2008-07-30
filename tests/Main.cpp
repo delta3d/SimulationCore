@@ -77,7 +77,7 @@ class TimingListener : public CppUnit::TestListener
         mFailure = false;
         mTestClockStart = mTestClock.Tick();
      }
- 
+
       void endTest( CppUnit::Test *test )
       {
          // handle timing - for checking slow tests
@@ -102,15 +102,15 @@ class TimingListener : public CppUnit::TestListener
 
     private:
        dtCore::Timer mTestClock;
-       dtCore::Timer_t mTestClockStart; 
+       dtCore::Timer_t mTestClockStart;
        bool mFailure;
 };
- 
+
 void SetupCEGUI(dtABC::Application& app)
 {
-   const std::string guiScheme = "CEGUI/schemes/DriverDemo.scheme";
+   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
 
-   GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(), 
+   GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
    std::string path = dtCore::FindFileInPathList(guiScheme);
@@ -148,7 +148,7 @@ int main (int argc, char* argv[])
    if (argc > 1)
       singleSuiteName = argv[1];
    if (argc > 2)
-      singleTestName = argv[2]; 
+      singleTestName = argv[2];
 
    // We need to change our directory based on the executable
    dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);
@@ -163,13 +163,13 @@ int main (int argc, char* argv[])
       LOG_ALWAYS("The path to the executable is: " + path);
       LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
 
-      try 
+      try
       {
          if(!info.path.empty())
             dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
 
          dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
-      } 
+      }
       catch(const dtUtil::Exception &ex)
       {
          ex.LogException(dtUtil::Log::LOG_ERROR);
@@ -206,9 +206,9 @@ int main (int argc, char* argv[])
    try
    {
       dtCore::Timer testsClock;
-      dtCore::Timer_t testsTimerStart = testsClock.Tick(); 
-   
-      CPPUNIT_NS::TestResult testResult;   
+      dtCore::Timer_t testsTimerStart = testsClock.Tick();
+
+      CPPUNIT_NS::TestResult testResult;
       testResult.addListener(&collectedResults);
       TimingListener timelistener;
       testResult.addListener(&timelistener);
@@ -224,7 +224,7 @@ int main (int argc, char* argv[])
          CPPUNIT_NS::Test *suiteTest = fullTestSuite->findTest(singleSuiteName);
          if (suiteTest == NULL)
          {
-            std::cerr << " *** FAILED to find test suite named [" << singleSuiteName << 
+            std::cerr << " *** FAILED to find test suite named [" << singleSuiteName <<
                "]. Please check suite name. The name should match what was used in the registration line, " <<
                "\'CPPUNIT_TEST_SUITE(MyTests)\' would be \'MyTests\'. Aborting test." <<  std::endl;
          }
@@ -235,14 +235,14 @@ int main (int argc, char* argv[])
             CPPUNIT_NS::Test *individualTest = suiteTest->findTest(singleTestName);
             if (individualTest == NULL)
             {
-               std::cerr << " *** FAILED to individual test [" << singleTestName << 
+               std::cerr << " *** FAILED to individual test [" << singleTestName <<
                   "] inside suite [" << singleSuiteName << "]. Please check suite name. " <<
                   "The name should match what was used in the registration line, " <<
                   "\'CPPUNIT_TEST(TestFunction)\' would be \'TestFunction\'. Aborting test." <<  std::endl;
             }
-            else 
+            else
             {
-               LOG_ALWAYS(std::string("   *** Found test suite and single test[ ") + 
+               LOG_ALWAYS(std::string("   *** Found test suite and single test[ ") +
                   singleTestName + std::string("].  Starting run."));
                testRunner.addTest(individualTest);
             }
@@ -254,7 +254,7 @@ int main (int argc, char* argv[])
             testRunner.addTest(suiteTest);
          }
       }
-      else 
+      else
       {
          LOG_ALWAYS(std::string("No arguments detected.  Running all tests!  Pass the suite name as 1st arg to run a single suite. For single test, pass test name as 2nd arg."));
          testRunner.addTest(fullTestSuite);
@@ -262,27 +262,27 @@ int main (int argc, char* argv[])
 
       // Go to it!!!  Run this puppy!
       testRunner.run(testResult);
-   
+
       CPPUNIT_NS::CompilerOutputter compilerOutputter(&collectedResults,std::cerr);
       compilerOutputter.write();
-   
+
       // print out slow tests and total time.
       dtCore::Timer_t testsTimerStop = testsClock.Tick();
       double timeDelta = testsClock.DeltaSec(testsTimerStart, testsTimerStop);
       timeDelta = (floor(timeDelta * 10000.0)) / 10000.0; // force data truncation
       if(!mSlowTests.str().empty())
       {
-         std::cerr << " <<< SLOW TEST RESULTS ::: START >>> " << std::endl << 
-            mSlowTests.str() << " <<< SLOW TEST RESULTS ::: END ::: TotalTime[" << 
+         std::cerr << " <<< SLOW TEST RESULTS ::: START >>> " << std::endl <<
+            mSlowTests.str() << " <<< SLOW TEST RESULTS ::: END ::: TotalTime[" <<
             timeDelta << "] >>> " << std::endl;
       }
-      else 
+      else
          std::cerr << " <<< SLOW TEST RESULTS ::: ALL TESTS RAN FAST!!! WOOT! ::: TotalTime[" << timeDelta << "] >>> " << std::endl;
 
    }
    catch (std::invalid_argument &ie)
    {
-      std::cerr << " <<< Invalid argument occurred. Likely, the suite name or test name are invalid or not found. " << 
+      std::cerr << " <<< Invalid argument occurred. Likely, the suite name or test name are invalid or not found. " <<
          " For tests, be sure to include the class name like [MyClass::TestStuff]. Or, see cppunit.sourceforge.net for more info.  Error: [" <<
          ie.what() << "]. >>> " << std::endl;
    }
@@ -298,7 +298,7 @@ int main (int argc, char* argv[])
    GlobalApplication = NULL;
    GlobalGUI->ShutdownGUI();
    GlobalGUI = NULL;
-   
+
    dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();
 
