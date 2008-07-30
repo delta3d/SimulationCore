@@ -80,7 +80,7 @@ namespace SimCore
       class SIMCORE_EXPORT BaseHUD : public dtGame::GMComponent
       {
       public:
-         BaseHUD( dtCore::DeltaWin *win, const std::string& name = "BaseHUD", 
+         BaseHUD( dtCore::DeltaWin* win, const std::string& name = "BaseHUD",
             const std::string& ceguiScheme = "CEGUI/schemes/WindowsLook.scheme" );
 
          virtual ~BaseHUD();
@@ -88,7 +88,7 @@ namespace SimCore
          // Does additional setup prior to calling the virtual function SetupGUI.
          // This MUST be called before the HUD is used.
          // The parameters passed in represent the resolution at which the
-         // HUD elements and layout were designed, and aid in setup of 
+         // HUD elements and layout were designed, and aid in setup of
          // elements in relative position and relative size modes.
          void Initialize( unsigned int designedResWidth = 1920, unsigned int designedResHeight = 1200);
 
@@ -98,9 +98,9 @@ namespace SimCore
          dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
          const dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
 
-         virtual void SetHUDState(HUDState &newState) { mHUDState = &newState;  UpdateState(); }
-         HUDState &GetHUDState() { return *mHUDState; }
-         const HUDState &GetHUDState() const { return *mHUDState; }
+         virtual void SetHUDState(HUDState& newState) { mHUDState = &newState;  UpdateState(); }
+         HUDState& GetHUDState() { return *mHUDState; }
+         const HUDState& GetHUDState() const { return *mHUDState; }
 
          // Get messages from the GM component
          virtual void ProcessMessage(const dtGame::Message& message);
@@ -128,12 +128,12 @@ namespace SimCore
          virtual void OnAddedToGM();
 
       private:
-         dtCore::DeltaWin *mWin;
+         dtCore::DeltaWin* mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtGUI::BaseScriptModule* mScriptModule;
 
-         HUDState *mHUDState;
+         HUDState* mHUDState;
 
          std::string mSchemeFile;
       };

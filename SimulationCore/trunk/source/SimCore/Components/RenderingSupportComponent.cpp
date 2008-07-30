@@ -41,11 +41,12 @@
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/mouse.h>
+#include <dtCore/globals.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
 
-#include <dtUtil/noiseutility.h> 
+#include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
 
 #include <osg/Camera>
@@ -67,7 +68,7 @@ namespace SimCore
 
      //useful functors
       struct findLightById
-      { 
+      {
          findLightById(RenderingSupportComponent::LightID id): mID(id){}
 
          template<class T>
@@ -81,7 +82,7 @@ namespace SimCore
       };
 
       struct removeLightsFunc
-      { 
+      {
          template<class T>
          bool operator()(T lightPtr)
          {
@@ -107,16 +108,16 @@ namespace SimCore
             return  dist1 < dist2;
          }
 
-      private: 
+      private:
          osg::Vec3 mViewPos;
-               
+
       };
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";  
+      const std::string RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";
 
-      const std::string RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";      
+      const std::string RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";
 
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
@@ -145,7 +146,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::RenderingSupportComponent(const std::string &name) 
+      RenderingSupportComponent::RenderingSupportComponent(const std::string &name)
          : dtGame::GMComponent(name)
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
@@ -209,7 +210,7 @@ namespace SimCore
          mSceneRoot->addChild(mNVGSRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
          mSceneRoot->addChild(mDeltaScene.get());
-                  
+
          mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
          mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
@@ -217,17 +218,17 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
-      {        
+      {
          osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
          osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
          osgUtil::SceneView* sceneView = renderer->getSceneView(0);
-         
+
          mCullVisitor->setRenderStage(sceneView->getRenderStage());
          mCullVisitor->setStateGraph(sceneView->getStateGraph());
 
          int flags = osgUtil::CullVisitor::ENABLE_ALL_CULLING;
 
-         // probably only need to set the scene veiw, and it 
+         // probably only need to set the scene veiw, and it
          // auto sets the cull visitor but havent checked yet.
          mCullVisitor->setCullingMode(flags);
          sceneView->setCullingMode(flags);
@@ -245,12 +246,12 @@ namespace SimCore
       void RenderingSupportComponent::SetEnableNVGS(bool pEnable)
       {
          if(mNVGS.valid())
-         {            
+         {
             mEnableNVGS = pEnable;
             if(mEnableNVGS)
             {
                //This is really bad.  It FORCES the notify level.  This is bad for debugging.
-               
+
                //tell OSG to keep it quiet
                osg::setNotifyLevel(osg::FATAL);
             }
@@ -260,7 +261,7 @@ namespace SimCore
             }
 
             mNVGS->SetEnable(mEnableNVGS);
-         }                  
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -287,7 +288,7 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
-      {         
+      {
          if(dl != NULL)
          {
             mLights.push_back(dl);
@@ -343,7 +344,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::RemoveDynamicLight(RenderingSupportComponent::LightID id)
       {
-         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)));  
+         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)));
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,7 +352,7 @@ namespace SimCore
       {
          mLights.erase(iter);
       }
- 
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::GetDynamicLight(RenderingSupportComponent::LightID id)
       {
@@ -366,7 +367,7 @@ namespace SimCore
          {
             return (*iter).get();
          }
-         
+
          return 0;
       }
 
@@ -376,7 +377,7 @@ namespace SimCore
          if(rf != NULL)
          {
             mNVGS = rf;
-            mNVGS->Init(mNVGSRoot.get(), GetGameManager()->GetApplication().GetCamera());         
+            mNVGS->Init(mNVGSRoot.get(), GetGameManager()->GetApplication().GetCamera());
          }
       }
 
@@ -412,15 +413,15 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateViewMatrix()
-      {         
+      {
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
          osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
-   
+
          osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getViewMatrix());
 
          osg::Matrix viewInverse;
          viewInverse.invert(mat);
-         viewUniform->set(viewInverse);         
+         viewUniform->set(viewInverse);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,11 +435,11 @@ namespace SimCore
          {
             if(mNVGS.valid())
             {
-               SetEnableNVGS(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled());            
+               SetEnableNVGS(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled());
             }
          }
 
-         // When the map change begins, clear out our lists. 
+         // When the map change begins, clear out our lists.
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_CHANGE_BEGIN)
          {
             mLights.clear();
@@ -490,7 +491,7 @@ namespace SimCore
          }
 
          if(mEnableDynamicLights)
-         {             
+         {
            UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
          }
       }
@@ -558,10 +559,10 @@ namespace SimCore
                      continue;
                   }
                }
-            }                        
+            }
             else if(dl->mFadeOut)
             {
-               dl->mIntensity -= (dt / dl->mFadeOutTime);               
+               dl->mIntensity -= (dt / dl->mFadeOutTime);
                if(dl->mIntensity <= 0.0f)
                {
                   dl->mDeleteMe = true;
@@ -569,17 +570,17 @@ namespace SimCore
                   continue;
                }
             }
-            
+
             //apply different update effects
             if(dl->mFlicker)
             {
                //lets flicker the lights a little
                static dtUtil::Noise1f perlinNoise;
-               float noiseValue = dl->mFlickerScale * perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f)); 
+               float noiseValue = dl->mFlickerScale * perlinNoise.GetNoise(dt + dtUtil::RandFloat(0.0f, 10.0f));
 
                //keep the intensity within range of the noise flicker
                //TODO- don't assume an intensity of 1.0
-               if(dtUtil::Abs(1.0f - (dl->mIntensity + noiseValue)) > dl->mFlickerScale) noiseValue *= -1.0f; 
+               if(dtUtil::Abs(1.0f - (dl->mIntensity + noiseValue)) > dl->mFlickerScale) noiseValue *= -1.0f;
                dl->mIntensity += noiseValue;
 
                //std::cout << "Intensity " << dl->mIntensity << std::endl;
@@ -605,7 +606,7 @@ namespace SimCore
 
          unsigned count = 0;
          for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3;)
-         { 
+         {
             if(iter != endIter)
             {
                DynamicLight* dl = (*iter).get();
@@ -643,7 +644,7 @@ namespace SimCore
          }
 
          std::vector<dtDAL::ActorProxy*> toFill;
-         
+
          if(mCullVisitor->GetLandActor() == NULL)
          {
             GetGameManager()->FindActorsByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, toFill);
@@ -676,7 +677,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCSM()
       {
-         char *csmData = getenv("CSM_DATA");
+         char* csmData = getenv("CSM_DATA");
          if(csmData == NULL)
          {
             std::string csmPath = dtDAL::Project::GetInstance().GetContext();
@@ -690,14 +691,7 @@ namespace SimCore
 
             csmPath += "/CSM/data";
 
-   #ifdef DELTA_WIN32
-            std::string val = "CSM_DATA=";
-            val += csmPath;
-            _putenv(val.c_str());
-   #else
-            setenv("CSM_DATA", csmPath.c_str(), 0);
-   #endif
-
+            dtCore::SetEnvironment("CSM_DATA", csmPath);
          }
       }
 

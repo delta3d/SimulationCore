@@ -69,6 +69,12 @@ namespace SimCore
       ///////////////////////////////////////////////////////
       //    The Component
       ///////////////////////////////////////////////////////
+      /**
+       * TODO:  This component currently knows specifically about the NVGS.  It needs to just
+       *        know about named render features.  Then the tool messages should contain the name of the
+       *        render feature to enable, plus some additional data to send to the feature when it is enabled.
+       *        Initializing CSM should be in the startup code, not here.
+       */
       class SIMCORE_EXPORT RenderingSupportComponent : public dtGame::GMComponent
       {
          public:
@@ -76,7 +82,7 @@ namespace SimCore
             static const unsigned MAX_LIGHTS;
 
             struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
-            {                          
+            {
                protected:
                   /*virtual*/ ~DynamicLight(){}
                   DynamicLight(const DynamicLight&); //un-implemented
@@ -100,10 +106,10 @@ namespace SimCore
                   bool mFlicker; //a flickering light will automatically increase and decrease its intensity relative to the flicker scale
                   float mFlickerScale;  //the flicker scale should be the maximum increase or decrease in the light intensity in a single frame
                                         //and also the maximum it will vary from its original intensity
-                  
+
                   bool mAutoDeleteAfterMaxTime; //using this flag will set the light to be automatically removed after the number of seconds
                   float mMaxTime;            //specified by mMaxTime, this can be used in conjunction with Fade Out
-                  
+
                   bool mFadeOut;      //if this is set to true we will gradually decrease our intensity over the time specified
                   float mFadeOutTime; //NOTE: if used in accordance with mMaxTime OR mAutoDeleteLightOnTargetNull then the fade out will
                                       //  occur after the object is marked for deletion.  So if MaxTime = 1.0 and FadeOutTime = 0.5
@@ -114,7 +120,7 @@ namespace SimCore
 
                   LightID mID;
                   static LightID mLightCounter;
-                  
+
                   bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
                                                      //can be used in conjunction with Fade Out
 
@@ -123,7 +129,7 @@ namespace SimCore
             };
 
 
-            typedef std::vector<dtCore::RefPtr<DynamicLight> > LightArray; 
+            typedef std::vector<dtCore::RefPtr<DynamicLight> > LightArray;
 
             class RenderFeature: public osg::Referenced
             {
@@ -152,7 +158,7 @@ namespace SimCore
 
             bool GetEnableCullVisitor();
             void SetEnableCullVisitor(bool pEnable);
-            
+
             void SetNVGS(RenderFeature* rf);
             const RenderFeature* GetNVGS() const;
 

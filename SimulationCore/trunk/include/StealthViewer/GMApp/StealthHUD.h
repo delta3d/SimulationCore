@@ -28,11 +28,14 @@
 #include <dtGame/logstatus.h>
 #include <dtGame/message.h>
 #include <dtGame/gmcomponent.h>
+#include <dtGame/logcontroller.h>
 #include <dtUtil/coordinates.h>
 #include <dtUtil/enumeration.h>
 #include <osg/Referenced>
 #include <SimCore/Components/BaseHUD.h>
 #include <SimCore/Components/BaseHUDElements.h>
+#include <SimCore/Components/StealthHUDElements.h>
+#include <SimCore/Components/LabelManager.h>
 #include <SimCore/StealthMotionModel.h>
 #include <StealthViewer/GMApp/Export.h>
 //This is for the CEGUI headers.
@@ -42,28 +45,6 @@
 #include <CEGUI/CEGUI.h>
 
 #define HUDCONTROLMAXTEXTSIZE 100
-
-namespace dtGame
-{
-   class GameManager;
-   class GameActorProxy;
-   class ServerLoggerComponent;
-   class LogController;
-}
-
-namespace SimCore
-{
-   namespace Components
-   {
-      class StealthButton;
-      class StealthCompassMeter;
-      class StealthGPSMeter;
-      class StealthMGRSMeter;
-      class StealthCartesianMeter;
-      class StealthToolbar;
-      class HUDGroup;
-   }
-}
 
 namespace StealthGM
 {
@@ -100,11 +81,11 @@ namespace StealthGM
       /**
        * Constructs the class.
        */
-      StealthHUD(dtCore::DeltaWin *win, 
+      StealthHUD(dtCore::DeltaWin *win,
                  dtGame::LogController* logController = NULL,
-                 const std::string &name = DEFAULT_NAME, 
+                 const std::string &name = DEFAULT_NAME,
                  bool hasUI = false);
-   
+
       /**
        * Destroys the class.
        */
@@ -136,23 +117,23 @@ namespace StealthGM
 
       // Used to change the key bindings when in physics mode.
       //void SetUsePhysicsDemoMode(bool usePhysicsDemoMode) { mUsePhysicsDemoMode = usePhysicsDemoMode; }
-   
+
       // This function allows the game entry point to enable certain buttons.
       // @param buttonName The name of the button as it appears in Toolbar.imageset
       // @param keyLabel The name of the key label as it appears in KeyLabels.imageset
       // @param enable Set the new button in enabled or disabled state; enabled by default
       // @return success of operation
       bool AddToolButton( const std::string& buttonName, const std::string& keyLabel, bool enable = true );
-   
+
       // This function exists as a compliment to AddToolButton.
       // @param buttonName The name of the button as it appears in Toolbar.imageset
       // @return success of operation
       bool RemoveToolButton( const std::string& buttonName );
-   
+
       // Access the HUDGroup CEGUI window devoted to the display of tools
       CEGUI::Window* GetToolsWindow();
       const CEGUI::Window* GetToolsWindow() const;
-   
+
       void SetToolbarVisible( bool visible );
 
       /**
@@ -166,7 +147,7 @@ namespace StealthGM
 
       void SetHelpEnabled( bool enabled );
       bool IsHelpEnabled() const;
-   
+
    protected:
 
       void InitHelpOverlay( SimCore::Components::HUDGroup& hudOverlay );
@@ -184,7 +165,7 @@ namespace StealthGM
       void UpdateStaticText(SimCore::Components::HUDText *textControl, char *newText,
          float red = -1.0, float blue = -1.0, float green = -1.0,
          float x = -1, float y = -1);
-   
+
    private:
 
       /**
@@ -197,7 +178,7 @@ namespace StealthGM
        * on the current state of the HUD.
        */
       void UpdateHelpButton();
-   
+
       /**
        * Utility method to create text
        */
@@ -207,7 +188,8 @@ namespace StealthGM
       SimCore::Components::HUDState *mLastHUDStateBeforeHelp;
 
       dtCore::RefPtr<dtGame::LogController> mLogController;
-   
+
+      // Overlays
       dtCore::RefPtr<SimCore::Components::HUDGroup> mHUDOverlay;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mToolbarOverlay;
       dtCore::RefPtr<SimCore::Components::StealthCompassMeter> mCompass;
@@ -216,9 +198,9 @@ namespace StealthGM
       dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
       dtCore::RefPtr<SimCore::Components::StealthToolbar> mToolbar;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mToolsLayer;
-   
-   
-      // main info
+
+
+      // Main info
       dtCore::RefPtr<SimCore::Components::HUDText> mStateText;
       dtCore::RefPtr<SimCore::Components::HUDText> mSimTimeText;
       dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mSimTimeAndState;
@@ -227,6 +209,10 @@ namespace StealthGM
       dtCore::RefPtr<SimCore::Components::HUDGroup> mHelpOverlay;
       dtCore::RefPtr<SimCore::Components::StealthButton> mHelpButton;
       dtCore::RefPtr<SimCore::Components::HUDText> mHelpText;
+
+      // Label Manager
+      dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
+      dtCore::RefPtr<SimCore::Components::HUDElement> mLabelLayer;
 
       // The HUD will need a reference to the motion model
       // in order to get all data that needs to be displayed.
@@ -239,7 +225,7 @@ namespace StealthGM
       float mTextHeight;
 
       bool mUsePhysicsDemoMode;
-   
+
       const dtGame::LogStateEnumeration* mLastLogState;
 
       const CoordSystem *mCoordSystem;

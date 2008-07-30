@@ -1,0 +1,157 @@
+<?xml version="1.0" ?>
+<Falagard>
+
+   <!-- BOX - ROUNDED RECTANGLE -->
+   <WidgetLook name="Label/RoundedRect">
+      <PropertyDefinition name="BackgroundColor" initialValue="FFFFFFFF" redrawOnWrite="true" />
+      <ImagerySection name="Look_Normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <UnifiedDim scale="0" offset="0" type="LeftEdge" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <UnifiedDim scale="0" offset="0" type="TopEdge" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" offset="0" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" offset="0" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image image="LeftTop" imageset="RoundedRect" type="TopLeftCorner"/>
+            <Image image="RightTop" imageset="RoundedRect" type="TopRightCorner"/>
+            <Image image="LeftBottom" imageset="RoundedRect" type="BottomLeftCorner"/>
+            <Image image="RightBottom" imageset="RoundedRect" type="BottomRightCorner"/>
+            <Image image="Left" imageset="RoundedRect" type="LeftEdge"/>
+            <Image image="Top" imageset="RoundedRect" type="TopEdge"/>
+            <Image image="Right" imageset="RoundedRect" type="RightEdge"/>
+            <Image image="Bottom" imageset="RoundedRect" type="BottomEdge"/>
+            <Image image="Center" imageset="RoundedRect" type="Background"/>
+            <ColourProperty name="BackgroundColor" /> 
+            <VertFormat type="Stretched"/>
+            <HorzFormat type="Stretched"/>
+         </FrameComponent>
+      </ImagerySection>
+      <StateImagery name="Normal">
+         <Layer>
+            <Section section="Look_Normal"/>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Hover">
+         <Layer>
+            <Section section="Look_Normal"/>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Pushed">
+         <Layer>
+            <Section section="Look_Normal"/>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Disabled">
+         <Layer>
+            <Section section="Look_Normal"/>
+         </Layer>
+      </StateImagery>
+   </WidgetLook>
+   
+   <!-- ENTITY LABEL -->
+   <WidgetLook name="Label/EntityLabel">
+      <!--This is a temp definition to make the code work for now, but we are not showing line 2 ATM-->
+      <PropertyDefinition name="Line2Text" initialValue="" redrawOnWrite="true" layoutOnWrite="true" />
+
+      <PropertyDefinition name="OTHER_COLOR" initialValue="BBFFFFFF" redrawOnWrite="false" />
+      <PropertyDefinition name="FRIENDLY_COLOR" initialValue="BB0000FF" redrawOnWrite="false" />
+      <PropertyDefinition name="OPPOSING_COLOR" initialValue="BBFF0000" redrawOnWrite="false" />
+      <PropertyDefinition name="NEUTRAL_COLOR" initialValue="BB00FF00" redrawOnWrite="false" />
+      <PropertyDefinition name="INSURGENT_COLOR" initialValue="BBFF0000" redrawOnWrite="false" />
+      <PropertyLinkDefinition name="CallSign" widget=".CallSign" targetProperty="Text" initialValue="" redrawOnWrite="true" layoutOnWrite="true" />
+      <!--PropertyLinkDefinition name="Line2Text" widget=".Line2" targetProperty="Text" initialValue="" redrawOnWrite="true" layoutOnWrite="true" /-->
+      <PropertyLinkDefinition name="IconColour" widget=".Icon" targetProperty="BackgroundColor" initialValue="FFFFFFFF" redrawOnWrite="true" layoutOnWrite="true" />
+      
+      <Child type="Label/RoundedRect" nameSuffix=".Icon">
+         <Area>
+            <Dim type="LeftEdge" >
+               <AbsoluteDim value="0" />
+            </Dim>
+            <Dim type="TopEdge" >
+               <AbsoluteDim value="0" />
+            </Dim>
+            <Dim type="RightEdge">
+               <FontDim widget=".CallSign" type="HorzExtent" padding="10" />
+            </Dim>
+            <Dim type="Height">
+               <FontDim type="LineSpacing" >
+                  <DimOperator op="Multiply">
+                     <AbsoluteDim value="1" />
+                  </DimOperator>
+               </FontDim>
+            </Dim>
+         </Area>
+         <!--<VertAlignment type="CentreAligned" />
+         <HorzAlignment type="CentreAligned" />-->
+         <Property name="HorizontalAlignment" value="Centre"/>
+         <Property name="VerticalAlignment" value="Bottom"/>
+      </Child>
+      <Child type="WindowsLook/StaticText" nameSuffix=".CallSign">
+         <Area>
+            <Dim type="LeftEdge" >
+               <AbsoluteDim value="2" />
+            </Dim>
+            <!--Dim type="TopEdge" >
+               <FontDim type="LineSpacing" >
+                  <DimOperator op="Multiply">
+                     <AbsoluteDim value="-1" />
+                  </DimOperator>
+               </FontDim>
+            </Dim-->
+            <Dim type="TopEdge" >
+               <AbsoluteDim value="0" />
+            </Dim>
+            <Dim type="RightEdge">
+               <FontDim widget=".CallSign" type="HorzExtent" padding="10" />
+            </Dim>
+            <Dim type="Height" >
+               <FontDim type="LineSpacing" />
+            </Dim>
+         </Area>
+         <!--<VertAlignment type="CentreAligned" />
+         <HorzAlignment type="CentreAligned" />-->
+         <Property name="HorizontalAlignment" value="Centre"/>
+         <Property name="VerticalAlignment" value="Bottom"/>
+         <Property name="Font" value="Arial-Bold-12" />
+         <Property name="TextColours" value="FFFFFFFF" />
+         <Property name="BackgroundEnabled" value="False"  />
+         <Property name="FrameEnabled" value="False" />
+      </Child>
+      <!--Child type="WindowsLook/StaticText" nameSuffix=".Line2">
+         <Area>
+            <Dim type="LeftEdge" >
+               <AbsoluteDim value="2" />
+            </Dim>
+            <Dim type="TopEdge" >
+               <AbsoluteDim value="0" />
+            </Dim>
+            <Dim type="RightEdge">
+               <FontDim widget=".CallSign" type="HorzExtent" padding="10" />
+            </Dim>
+            <Dim type="Height" >
+               <FontDim type="LineSpacing" />
+            </Dim>
+         </Area>
+         <Property name="HorizontalAlignment" value="Centre"/>
+         <Property name="VerticalAlignment" value="Bottom"/>
+         <Property name="Font" value="Arial-Bold-12" />
+         <Property name="TextColours" value="FFFFFFFF" />
+         <Property name="BackgroundEnabled" value="False"  />
+         <Property name="FrameEnabled" value="False" />
+      </Child-->
+      <StateImagery name="Normal"/>
+      <StateImagery name="Hover"/>
+      <StateImagery name="Pushed"/>
+      <StateImagery name="Disabled"/>
+   </WidgetLook>
+
+
+</Falagard>
