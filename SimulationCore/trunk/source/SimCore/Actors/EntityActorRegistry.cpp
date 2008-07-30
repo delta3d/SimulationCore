@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -73,10 +73,16 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_ACTOR_TYPE(new dtDAL::ActorType("Platform", "Entity", "Represents a entity in the game world"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_ACTOR_TYPE(new dtDAL::ActorType("Human", "Entity", "Represents a Human"));
 
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("PlatformWithPhysics", "Entity"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLATFORM_WITH_PHYSICS_ACTOR_TYPE(
+               new dtDAL::ActorType("PlatformWithPhysics", "Entity", "A platform with a basic convex hull for collision detection",
+                        EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLAYER_ACTOR_TYPE(new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::STEALTH_ACTOR_TYPE(
+               new dtDAL::ActorType("Stealth Actor", "Stealth Actor", "This actor is a stealth actor",
+                        EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PLAYER_ACTOR_TYPE(
+               new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player",
+                        EntityActorRegistry::STEALTH_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Detonation Actor", "Effects", "This actor represents a detonation"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE(new dtDAL::ActorType("Positon Marker", "Entity", "This represents a position report or a blip."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::TERRAIN_ACTOR_TYPE(new dtDAL::ActorType("Terrain", "DVTETerrain", "This actor is the terrain used in DVTE."));
@@ -87,9 +93,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DAYTIME_ACTOR_TYPE(new dtDAL::ActorType("DayTime", "Environment", "This is a generic actor for capturing time of day information"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE(new dtDAL::ActorType("UniformAtmosphere", "Environment", "This is a generic actor for many possible missile-like objects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MATERIAL_ACTOR_TYPE(new dtDAL::ActorType("ViewerMaterialActor", "Environment", "Holds onto material properties, multiple materials can reference this."));
-      
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE(new dtDAL::ActorType(
-         "MunitionTypeActor", "Munitions", 
+         "MunitionTypeActor", "Munitions",
          "Contains the name, DIS ID, and an effects info reference specific to a munition."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE(new dtDAL::ActorType(
          "MunitionEffectsInfoActor", "Munitions",
@@ -98,7 +104,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE(new dtDAL::ActorType("WeaponFlashActor", "Munitions", "The actor that represents a weapon's flash effect."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::FLARE_ACTOR_TYPE(new dtDAL::ActorType("FlareActor", "Munitions", "The actor that represents a flare (illumination round)."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE(new dtDAL::ActorType("ControlState", "ControlState", "The base control state actor."));
-      
+
 #ifdef AGEIA_PHYSICS
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaParticleSystemActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaMunitionsPSysActor", "NxAgeiaPhysicsModels"));
@@ -106,9 +112,12 @@ namespace SimCore
 
       // needs to be implemented whether or not physics is on.
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels"));
-      
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
+               EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
+               new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels", "Human with a physics collision mesh",
+                        EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::VEHICLE_CONFIG_ACTOR_TYPE(new dtDAL::ActorType("VehicleConfigActorType", "ViSiTToolkit"));
@@ -116,9 +125,12 @@ namespace SimCore
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::OCEAN_WATER_ACTOR_TYPE(new dtDAL::ActorType("OceanWaterActorType", "Effects"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels", "",
+               EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(
+               new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels", "",
+                        EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -188,7 +200,7 @@ namespace SimCore
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
 
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
-         dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity", 
+         dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",
                "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
       }
