@@ -264,7 +264,7 @@ namespace SimCore
                   // Remove ageia stuff if its loaded.
                   if(currentNode->IsFilled())
                   {
-                     mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
+                     mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
                   }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
