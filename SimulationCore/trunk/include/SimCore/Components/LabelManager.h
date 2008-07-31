@@ -86,7 +86,7 @@ namespace SimCore
 
             bool operator < (const HUDLabel& other) const;
 
-            bool HUDLabel::operator > (const HUDLabel& other) const;
+            bool operator > (const HUDLabel& other) const;
 
          protected:
             virtual ~HUDLabel();
