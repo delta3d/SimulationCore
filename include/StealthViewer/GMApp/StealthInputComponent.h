@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #ifndef STEALTH_INPUT_COMPONENT_H_
 #define STEALTH_INPUT_COMPONENT_H_
@@ -42,7 +42,7 @@ namespace dtHLAGM
 namespace SimCore
 {
    class MessageType;
-   
+
    namespace Tools
    {
       class Tool;
@@ -58,12 +58,16 @@ namespace StealthGM
          static const std::string DEFAULT_NAME;
 
          /// Constructor
-         StealthInputComponent(bool enableLogging  = false, 
-                               bool enablePlayback = false, 
-                               const std::string& name = DEFAULT_NAME, 
+         StealthInputComponent(bool enableLogging  = false,
+                               bool enablePlayback = false,
+                               const std::string& name = DEFAULT_NAME,
                                bool hasUI = false);
 
          void ProcessMessage(const dtGame::Message &message);
+
+         virtual bool HandleButtonPressed( const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button );
+
+         virtual bool HandleButtonReleased( const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button );
 
          virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
@@ -71,9 +75,9 @@ namespace StealthGM
 
          void SetConnectionParameters(const std::string& executionName,
             const std::string &fedFile,
-            const std::string &federateName, 
+            const std::string &federateName,
             const std::string &ridFile = "RTI.rid");
-   
+
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
          void RemoveTool(SimCore::MessageType &type);
@@ -85,11 +89,11 @@ namespace StealthGM
          void SetToolEnabled(SimCore::MessageType& toolType, bool enable);
 
          bool IsConnected() const;
-   
+
          bool IsInPlayback() const;
          bool IsInRecord() const;
          bool IsIdle() const;
-   
+
          void JoinFederation( bool updateSystem = true );
          void LeaveFederation();
 
@@ -121,7 +125,7 @@ namespace StealthGM
 
          void SetReconnectOnIdle( bool reconnect ) { mReconnectOnIdle = reconnect; }
          bool GetReconnectOnIdle() const { return mReconnectOnIdle; }
-   
+
       protected:
 
          /// Destructor
@@ -130,17 +134,17 @@ namespace StealthGM
          void Cycle(bool forward, bool attach);
          void ToggleEntityShaders();
          void ChangeAARState( const dtGame::LogStateEnumeration& targetState );
-         
+
       private:
          void HandleHelpPressed();
          StealthHUD* GetHUDComponent();
-   
+
          dtCore::RefPtr<SimCore::StealthMotionModel> mStealthMM;
-      
+
          dtCore::RefPtr<StealthHUD>    mHUDComponent;
          dtCore::UniqueId              mCurrentActorId;
          unsigned int                  mCycleIndex;
-         
+
          // logging methods and vars
          void SetupLogging();
          bool mEnableLogging;
@@ -150,7 +154,7 @@ namespace StealthGM
          int mTicksToLogStateChange;
          const dtGame::LogStateEnumeration* mTargetLogState;
          dtCore::RefPtr<dtGame::LogController> mLogController;
-         
+
          // JSAF vars needed for joining and leaving a federation
          std::string mExecutionName;
          std::string mFedFile;
