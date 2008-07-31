@@ -24,7 +24,7 @@
 using namespace osgEphemeris;
 
 
-EphemerisModel::EphemerisModel(const EphemerisModel& copy, 
+EphemerisModel::EphemerisModel(const EphemerisModel& copy,
                               const osg::CopyOp& copyop )
 {
 }
@@ -98,7 +98,7 @@ void EphemerisModel::setSkyDomeRadius( double radius )
 
 }
 
-double EphemerisModel::getSkyDomeRadius()  const 
+double EphemerisModel::getSkyDomeRadius()  const
 {
     return SkyDome::getMeanDistanceToMoon() * _scale;
 }
@@ -135,7 +135,7 @@ bool EphemerisModel::_init()
         addChild( _moonLightSource.get() );
     }
 
-    // Sky 
+    // Sky
     _skyTx->setMatrix( osg::Matrix::scale( _scale, _scale, _scale ) *
                        osg::Matrix::translate( _center ));
 
@@ -262,7 +262,7 @@ bool EphemerisModel::getMoveWithEyePoint() const
 void EphemerisModel::setLatitude( double latitude)
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLatitude( latitude ); 
+        _ephemerisEngine->setLatitude( latitude );
 }
 
 double EphemerisModel::getLatitude() const
@@ -283,7 +283,7 @@ double EphemerisModel::getLongitude() const
 void EphemerisModel::setLongitude( double longitude)
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLongitude( longitude ); 
+        _ephemerisEngine->setLongitude( longitude );
 }
 
 float EphemerisModel::getTurbidity() const
@@ -302,7 +302,7 @@ void EphemerisModel::setTurbidity( float turbidity )
 void EphemerisModel::setLatitudeLongitude( double latitude, double longitude )
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLatitudeLongitude( latitude, longitude ); 
+        _ephemerisEngine->setLatitudeLongitude( latitude, longitude );
 }
 
 void EphemerisModel::getLatitudeLongitude( double &latitude, double &longitude ) const
@@ -358,7 +358,7 @@ bool EphemerisModel::getAutoDateTime() const
 
 void EphemerisModel::update()
 {
-    if( !_inited ) 
+    if( !_inited )
         _init();
 
     if( _ephemerisUpdateCallback.valid() )
@@ -380,7 +380,7 @@ void EphemerisModel::_updateStars()
 {
     if( _starFieldTx.valid() )
     {
-        _starFieldTx->setMatrix( 
+        _starFieldTx->setMatrix(
         osg::Matrix::rotate( -(-1.0 + (_ephemerisData->localSiderealTime/12.0)) * osg::PI,     osg::Vec3(0, 0, 1)) *
         osg::Matrix::rotate( -osg::DegreesToRadians((90.0 - _ephemerisData->latitude)), osg::Vec3(1, 0, 0))
         );
@@ -389,10 +389,10 @@ void EphemerisModel::_updateStars()
 
 void EphemerisModel::_updateMoon()
 {
-    osg::Matrix mat = 
-        osg::Matrix::translate( 0.0, SkyDome::getMeanDistanceToMoon() + MoonModel::getMoonRadius() * 1.1, 0.0 ) * 
-        osg::Matrix::rotate( _ephemerisData->data[CelestialBodyNames::Moon].alt, 1, 0, 0 ) * 
-        osg::Matrix::rotate( _ephemerisData->data[CelestialBodyNames::Moon].azimuth, 0, 0, -1 ); 
+    osg::Matrix mat =
+        osg::Matrix::translate( 0.0, SkyDome::getMeanDistanceToMoon() + MoonModel::getMoonRadius() * 1.1, 0.0 ) *
+        osg::Matrix::rotate( _ephemerisData->data[CelestialBodyNames::Moon].alt, 1, 0, 0 ) *
+        osg::Matrix::rotate( _ephemerisData->data[CelestialBodyNames::Moon].azimuth, 0, 0, -1 );
 
     if( _moonTx.valid() )
         _moonTx->setMatrix( mat );
@@ -472,7 +472,7 @@ void EphemerisModel::_updateSun()
     if( _skyDome.valid() )
     {
         _skyDome->setSunPos( sunAz, sunAlt );
-        _skyDome->setTurbidity( _ephemerisData->turbidity );    
+        _skyDome->setTurbidity( _ephemerisData->turbidity );
     }
 
     if( _starField.valid() )
@@ -490,11 +490,11 @@ void EphemerisModel::_updateSun()
     // Mean distance to sun  1.496x10^8 km
     // Use 1/2 distance.  In reality, light "goes around corners".  Using half the distance
     // allows us to mimic the light surrounding the moon sphere a bit more.
-    n *= (1.496 * 100000000000.0) * 0.5; 
+    n *= (1.496 * 100000000000.0) * 0.5;
     _sunVec = n;
 
     // Set atmosphere lighting
-    // Note - This is similar to the computing the sky color... Perhaps the two 
+    // Note - This is similar to the computing the sky color... Perhaps the two
     // should be combined.
     if( _sunLightSource.valid() ){
         double red = sunAlt * 0.5;
@@ -533,7 +533,7 @@ void EphemerisModel::_updateSun()
         double source = 0.8;
         double rsource = 0.8;
 
-        //if( silf > 0.35 ) 
+        //if( silf > 0.35 )
         {
             double f = silf + 0.35;
             source /= f;
@@ -585,8 +585,8 @@ void EphemerisModel::setEphemerisUpdateCallback( EphemerisUpdateCallback *update
 }
 
 const EphemerisUpdateCallback *EphemerisModel::getEphemerisUpdateCallback()  const
-{ 
-    return _ephemerisUpdateCallback.get(); 
+{
+    return _ephemerisUpdateCallback.get();
 }
 
 
