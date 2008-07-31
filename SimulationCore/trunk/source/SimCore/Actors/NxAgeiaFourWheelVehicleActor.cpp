@@ -44,7 +44,6 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
-#include <SimCore/NxCollisionGroupEnum.h>
 
 namespace SimCore
 {
@@ -52,17 +51,17 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////////////
-      NxAgeiaFourWheelVehicleActor ::NxAgeiaFourWheelVehicleActor(BasePhysicsVehicleActorProxy &proxy) 
+      NxAgeiaFourWheelVehicleActor ::NxAgeiaFourWheelVehicleActor(BasePhysicsVehicleActorProxy &proxy)
          : BasePhysicsVehicleActor(proxy)
       , mLastGearChange(FIRST_GEAR)
-      , SOUND_BRAKE_SQUEAL_AMOUNT(0.0f)     
-      , SOUND_GEAR_CHANGE_LOW(0.0f)         
-      , SOUND_GEAR_CHANGE_MEDIUM(0.0f)      
-      , SOUND_GEAR_CHANGE_HIGH(0.0f)        
+      , SOUND_BRAKE_SQUEAL_AMOUNT(0.0f)
+      , SOUND_GEAR_CHANGE_LOW(0.0f)
+      , SOUND_GEAR_CHANGE_MEDIUM(0.0f)
+      , SOUND_GEAR_CHANGE_HIGH(0.0f)
       {
          SetTimeForSendingDeadReckoningInfoOut(0.0f);
          SetTimesASecondYouCanSendOutAnUpdate(3.0f);
-         dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper *helper = 
+         dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper *helper =
             new dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper(proxy);
          helper->SetBaseInterfaceClass(this);
          SetPhysicsHelper(helper);
@@ -95,7 +94,7 @@ namespace SimCore
             RemoveChild(mSndAcceleration.get());
             mSndAcceleration.release();
          }
-         
+
          if(!IsRemote() && mVehiclesPortal.valid() )
          {
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
@@ -103,7 +102,7 @@ namespace SimCore
             GetGameActorProxy().GetGameManager()->DeleteActor(*mVehiclesPortal.get());
             mVehiclesPortal = NULL;
          }
-         
+
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -153,14 +152,14 @@ namespace SimCore
             dtCore::Transform xform;
             mSndAcceleration->SetTransform(xform, dtCore::Transformable::REL_CS);
          }
-         
+
          osgSim::DOFTransform* Wheel[4];
 
-         Wheel[BACK_LEFT]  = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_02"); 
+         Wheel[BACK_LEFT]  = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_02");
          Wheel[BACK_RIGHT] = GetNodeCollector()->GetDOFTransform("dof_wheel_rt_02");
          Wheel[FRONT_LEFT] = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_01");
          Wheel[FRONT_RIGHT]= GetNodeCollector()->GetDOFTransform("dof_wheel_rt_01");
-         
+
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
 
@@ -249,7 +248,7 @@ namespace SimCore
                mLastGearChange = FOURTH_GEAR;
                dis = GetFourWheelPhysicsHelper()->GetVehicleMaxMPH() - GetMPH();
                dif = GetFourWheelPhysicsHelper()->GetVehicleMaxMPH() - GetSound_gear_change_high();
-               tick = (maxpitchBend - minpitchBend) / dif;               
+               tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
             else
@@ -327,7 +326,7 @@ namespace SimCore
       void NxAgeiaFourWheelVehicleActor::ResetVehicle()
       {
          BasePhysicsVehicleActor::ResetVehicle();
-         
+
          if(mSndIgnition != NULL)
          {
             if(!mSndIgnition->IsPlaying())
@@ -403,7 +402,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NxAgeiaFourWheelVehicleActor::RepositionVehicle(float deltaTime)
       {
-         // Note - this should be refactored. There should be a base physics vehicle HELPER. 
+         // Note - this should be refactored. There should be a base physics vehicle HELPER.
          // See nxageiaFourWheelActor::RepositionVehicle() for more info.
 
          BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
@@ -436,10 +435,10 @@ namespace SimCore
          NxAgeiaFourWheelVehicleActor  &actor = static_cast<NxAgeiaFourWheelVehicleActor &>(GetGameActor());
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 
+            "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetVehicleInsideModel),
             "What is the filepath / string of the inside model", VEH_GROUP));
-         
+
          AddProperty(new dtDAL::FloatActorProperty("SOUND_BRAKE_SQUEAL_AMOUNT", "How much MPH for Squeal Brake",
             dtDAL::MakeFunctor(actor, &NxAgeiaFourWheelVehicleActor ::SetSound_brake_squeal_amount),
             dtDAL::MakeFunctorRet(actor, &NxAgeiaFourWheelVehicleActor ::GetSound_brake_squeal_amount),
@@ -461,27 +460,27 @@ namespace SimCore
             "At what speed play the acceleration sound effect / reset idle pitch", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_ignition),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_vehicle_loop),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_BRAKE", "SFX Brake Squeal Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_BRAKE", "SFX Brake Squeal Path", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_brake),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_ACCELERATION", "SFX Acceleration Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_ACCELERATION", "SFX Acceleration Path", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_acceleration),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor,
             &NxAgeiaFourWheelVehicleActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
@@ -509,6 +508,6 @@ namespace SimCore
          BasePhysicsVehicleActorProxy::OnEnteredWorld();
       }
 
-   } // namespace 
-}// namespace 
+   } // namespace
+}// namespace
 #endif
