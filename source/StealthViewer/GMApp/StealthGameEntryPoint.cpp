@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  * @author David Guthrie
  */
 #include <StealthViewer/GMApp/StealthGameEntryPoint.h>
@@ -131,7 +131,7 @@ namespace StealthGM
       parser->getApplicationUsage()->setCommandLineUsage("Stealth Viewer Application [options] value ...");
       parser->getApplicationUsage()->addCommandLineOption("--enableLogging","Specify 1 or 0 to enable and disable logging of the scene.");
       parser->getApplicationUsage()->addCommandLineOption("--enablePlayback","Specify 1 if this is playback for after action review (AAR)");
-      
+
       int tempValue = 0;
       if(!parser->read("--enableLogging", tempValue))
    	{
@@ -142,7 +142,7 @@ namespace StealthGM
          mEnableLogging = (tempValue == 1) ? true : false;
          tempValue = 0;
       }
-      
+
    	if(!parser->read("--enablePlayback", tempValue))
    	{
    		mEnablePlayback = false;
@@ -150,8 +150,8 @@ namespace StealthGM
       else
       {
          mEnablePlayback = (tempValue == 1) ? true : false;
-      }   
-   
+      }
+
       if( parser->read("--hasBinos") )
       {
          mHasBinoculars = true;
@@ -172,10 +172,10 @@ namespace StealthGM
       {
          mHasMap = true;
       }
-   
+
       SimCore::HLA::BaseHLAGameEntryPoint::Initialize(app, argc, argv);
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////
    static void ReadBoolConfigProperty(const std::string& name, bool& value, dtUtil::ConfigProperties& config)
    {
@@ -186,7 +186,7 @@ namespace StealthGM
          value = dtUtil::ToType<bool>(stringValue);
       }
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::InitializeTools(dtGame::GameManager &gm)
    {
@@ -199,11 +199,11 @@ namespace StealthGM
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION, mHasNightVis, app);
 
       // Check for enabled tools
-      StealthInputComponent* inputComp = 
+      StealthInputComponent* inputComp =
          dynamic_cast<StealthInputComponent*>(gm.GetComponentByName(StealthInputComponent::DEFAULT_NAME));
-   
+
       if( inputComp == NULL ) { return; }
-   
+
       if( mHasNightVis )
       {
          // TODO: Add new Night Vision tool
@@ -217,10 +217,10 @@ namespace StealthGM
          inputComp->AddTool(*nvgs, SimCore::MessageType::NIGHT_VISION);
          mHudGUI->AddToolButton("NightVision","F7");
       }
-   
+
       if( mHasCompass )
       {
-         dtCore::Camera *camera = inputComp->GetGameManager()->GetApplication().GetCamera(); 
+         dtCore::Camera *camera = inputComp->GetGameManager()->GetApplication().GetCamera();
          float aspectRatio = camera->GetAspectRatio();
          SimCore::Tools::Compass* compass = new SimCore::Tools::Compass(mHudGUI->GetToolsWindow(), *inputComp->GetGameManager()->GetApplication().GetCamera(), false, aspectRatio);         compass->SetPlayerActor(mStealth.get());
          compass->InitLens( *mHudGUI->GetGUIDrawable() );
@@ -233,7 +233,7 @@ namespace StealthGM
 
       if( mHasBinoculars )
       {
-         SimCore::Tools::Binoculars *binos = 
+         SimCore::Tools::Binoculars *binos =
             new SimCore::Tools::Binoculars(
             *inputComp->GetGameManager()->GetApplication().GetCamera(), mHudGUI->GetToolsWindow());
 
@@ -252,9 +252,9 @@ namespace StealthGM
 //         inputComp->AddTool( *mapTool, SimCore::MessageType::MAP );
 //         mHudGUI->AddToolButton("Map","F11");
 //      }
-   
+
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////
    /*ObserverPtr<dtGame::GameManager> StealthGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
    {
@@ -266,61 +266,61 @@ namespace StealthGM
    {
       SimCore::HLA::BaseHLAGameEntryPoint::HLAConnectionComponentSetup(gm);
    }
-   
+
    ///////////////////////////////////////////////////////////////////////////
    void StealthGameEntryPoint::OnStartup(dtGame::GameApplication& app)
    {
       dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
-      
+
       dtCore::Transform stealthStart;
       RefPtr<dtGame::GameActorProxy> ap;
 
       SimCore::HLA::BaseHLAGameEntryPoint::OnStartup(app);
 
       // Add Input Component
-      dtCore::RefPtr<StealthInputComponent> mInputComponent 
-         = new StealthInputComponent(mEnableLogging, 
-                                             mEnablePlayback, 
-                                             StealthInputComponent::DEFAULT_NAME, 
+      dtCore::RefPtr<StealthInputComponent> mInputComponent
+         = new StealthInputComponent(mEnableLogging,
+                                             mEnablePlayback,
+                                             StealthInputComponent::DEFAULT_NAME,
                                              IsUIRunning());
 
       gameManager.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      // Capture HLA connection parameters for the input component to use later in record/playback 
+      // Capture HLA connection parameters for the input component to use later in record/playback
       // state swapping. Transitions to IDLE should join the federation; PLAYBACK should leave
       // the connection to the federation.
       StealthInputComponent* inputComp = mInputComponent.get();
-   
+
       // AAR logging
       if (mEnableLogging)
       {
          // AAR LOGGING COMPONENTS
-         //To enable logging, we must have three parts.  A server logger component, a log controller, 
-         // and a log stream to save messages.  
+         //To enable logging, we must have three parts.  A server logger component, a log controller,
+         // and a log stream to save messages.
          dtGame::BinaryLogStream *logStream = new dtGame::BinaryLogStream(gameManager.GetMessageFactory());
          mServerLogger = new dtGame::ServerLoggerComponent(*logStream);
          mLogController = new dtGame::LogController;
          gameManager.AddComponent(*mServerLogger, dtGame::GameManager::ComponentPriority::NORMAL);
          gameManager.AddComponent(*mLogController, dtGame::GameManager::ComponentPriority::NORMAL);
-   
+
          // Set auto keyframe interval
          mLogController->RequestSetAutoKeyframeInterval(20.0f);
-   
+
          // Ignore constant actors from being recorded. This protects them from
          // deletion over ServerLoggerComponent state changes; such as transitions
          // from PLAYBACK to IDLE states.
          //--- Terrain & Sky
          // NOTE: Code has been moved to StealthInputComponent.ProcessMessage(INFO_MAP_LOADED).
          // The terrain will not exist at this point, but will exist later when a message is received.
-   
+
          //--- Camera
          //mLogController->RequestAddIgnoredActor(mStealth->GetUniqueId());
       }
-   
+
       // HUD GUI COMPONENT
-      mHudGUI = new StealthHUD(gameManager.GetApplication().GetWindow(), 
-                               mLogController.get(), 
-                               StealthHUD::DEFAULT_NAME, 
+      mHudGUI = new StealthHUD(gameManager.GetApplication().GetWindow(),
+                               mLogController.get(),
+                               StealthHUD::DEFAULT_NAME,
                                IsUIRunning());
 
       gameManager.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -349,7 +349,9 @@ namespace StealthGM
       dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent = new dtAgeiaPhysX::NxAgeiaWorldComponent();
       gameManager.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 #else
-      gameManager.AddComponent(*new dtPhysics::PhysicsComponent(dtPhysics::PhysicsComponent::BULLET_ENGINE, false), 
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
+      physicsWorld->Init();
+      gameManager.AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                dtGame::GameManager::ComponentPriority::NORMAL);
 #endif
       //mStealth->SetName("Stealth");
@@ -360,13 +362,13 @@ namespace StealthGM
 
       // The stealth processor component is now obsolete since the updates to the AAR ignore actor behavior.
       RefPtr<StealthMessageProcessor> stealthProcessor = new StealthMessageProcessor;
-      gameManager.AddComponent(*stealthProcessor, 
+      gameManager.AddComponent(*stealthProcessor,
                                dtGame::GameManager::ComponentPriority::HIGHEST);
-      gameManager.AddComponent(*new StealthGM::ViewerConfigComponent, 
+      gameManager.AddComponent(*new StealthGM::ViewerConfigComponent,
                                dtGame::GameManager::ComponentPriority::HIGHER);
 
       //this enables night vision
-      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent 
+      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
       renderingSupportComponent->SetEnableCullVisitor(false);
 
@@ -376,7 +378,7 @@ namespace StealthGM
       {
          const std::string fedFile = dtDAL::Project::GetInstance().
             GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
-         // Capture HLA connection parameters for the input component to use later in record/playback 
+         // Capture HLA connection parameters for the input component to use later in record/playback
          // state swapping. Transitions to IDLE should join the federation; PLAYBACK should leave
          // the connection to the federation.
          inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName);
