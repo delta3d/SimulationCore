@@ -1,13 +1,13 @@
 /* -*-c++-*-
  * Copyright, 2006, Alion Science and Technology Corporation, all rights reserved.
- * 
+ *
  *    Alion Science and Technology Corporation
  *    5365 Robin Hood Road
  *    Norfolk, VA 23513
  *    (757) 857-5670, www.alionscience.com
  *
  * This software was developed by Alion Science and Technology Corporation under circumstances in which the U. S. Government may have rights in the software.
- * 
+ *
  * @author Chris Rodgers
  */
 #include <prefix/SimCorePrefix-src.h>
@@ -53,6 +53,7 @@
 #include <osgParticle/ModularProgram>
 #include <osgParticle/Operator>
 #include <osgParticle/ForceOperator>
+#include <osg/MatrixTransform>
 
 #include <UnitTestMain.h>
 
@@ -96,11 +97,11 @@ namespace SimCore
             dtCore::ObserverPtr<osgParticle::ModularEmitter> mEmitter;
             dtCore::ObserverPtr<osgParticle::ParticleSystem> mParticles;
       };
-      
+
 
 
       //////////////////////////////////////////////////////////////////////////
-      // Testable Sub-classed Component 
+      // Testable Sub-classed Component
       // (allows public access to protected functions)
       //////////////////////////////////////////////////////////////////////////
 
@@ -133,7 +134,7 @@ namespace SimCore
       {
 
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       // Tests Object
       //////////////////////////////////////////////////////////////////////////
@@ -167,7 +168,7 @@ namespace SimCore
             void AddParticlesToScene( dtCore::ParticleSystem& ps );
             void RemoveParticlesFromScene( dtCore::ParticleSystem& ps );
 
-            bool ParticleSystemHasForce( const std::string& forceName, 
+            bool ParticleSystemHasForce( const std::string& forceName,
                dtCore::ParticleSystem& ps, osg::Vec3* outForce = NULL );
 
             void TestParticleInfo();
@@ -235,7 +236,7 @@ namespace SimCore
          {
             mGM->DeleteAllActors(true);
          }
-         
+
          mGM = NULL;
          mApp = NULL;
          mMachineInfo = NULL;
@@ -259,18 +260,18 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
 
          dtDAL::Project& project = dtDAL::Project::GetInstance();
-         std::string path = project.GetContext() + "/" + 
+         std::string path = project.GetContext() + "/" +
             project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
-         
+
          CPPUNIT_ASSERT(path != (project.GetContext() + "/"));
-         
+
          CPPUNIT_ASSERT(ptr->LoadFile(path) != NULL);
 
          CPPUNIT_ASSERT_MESSAGE("Particles should be valid", ptr.valid() );
 
          // Automatically insert the particles into the scene so that they can be ticked
          AddParticlesToScene(*ptr);
-         
+
          if( spawnParticles )
          {
             bool success = false;
@@ -278,13 +279,13 @@ namespace SimCore
             const std::list<dtCore::ParticleLayer>& layers = ptr->GetAllLayers();
 
             CPPUNIT_ASSERT(!layers.empty());
-            
+
             const osgParticle::ParticleSystem& ps = layers.begin()->GetParticleSystem();
             unsigned int totalAttempts = 20;
             for( unsigned int attempt = 0; attempt < totalAttempts; ++attempt )
             {
                AdvanceTime(0.5f); // tick to generate some particles
-               
+
                if( ps.numParticles() > 0 )
                {
                   success = true;
@@ -294,7 +295,7 @@ namespace SimCore
 
             if( !success )
             {
-               std::cout << "New test particle system did not generate particles. This may cause a test to fail." 
+               std::cout << "New test particle system did not generate particles. This may cause a test to fail."
                   << std::endl;
             }
          }
@@ -318,7 +319,7 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      void ParticleManagerComponentTests::CreateEnvironmentActor( 
+      void ParticleManagerComponentTests::CreateEnvironmentActor(
          dtCore::RefPtr<SimCore::Actors::IGEnvironmentActorProxy>& ptr )
       {
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, ptr );
@@ -330,8 +331,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // NOTE: Much of the code in this function has been copied
       // from ParticleManagerComponent::ApplyForce().
-      bool ParticleManagerComponentTests::ParticleSystemHasForce( 
-         const std::string& forceName, 
+      bool ParticleManagerComponentTests::ParticleSystemHasForce(
+         const std::string& forceName,
          dtCore::ParticleSystem& ps, osg::Vec3* outForce )
       {
          dtCore::ParticleLayer* curLayer = NULL;
@@ -348,7 +349,7 @@ namespace SimCore
 
             // Obtain the particle layer's modular program which
             // contains the force operators of the particle system.
-            osgParticle::ModularProgram& program = 
+            osgParticle::ModularProgram& program =
                static_cast<osgParticle::ModularProgram&> (curLayer->GetProgram());
 
             // Find the force operator matching forceName or an unused operator
@@ -372,9 +373,9 @@ namespace SimCore
          }
          return false;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
-      void ParticleManagerComponentTests::TestParticleInfo()      
+      void ParticleManagerComponentTests::TestParticleInfo()
       {
          // Create the particle system with particles already ticked into existence.
          CreateParticleSystem(mPS,true);
@@ -423,7 +424,7 @@ namespace SimCore
          AdvanceTime(0.05f);
          info->Update();
 
-         unsigned int live = info->GetLiveCount(), 
+         unsigned int live = info->GetLiveCount(),
                       dead = info->GetDeadCount();
          CPPUNIT_ASSERT_MESSAGE("Set live particle count should be 0",
             live > 0 );
@@ -476,7 +477,7 @@ namespace SimCore
          // Verify that the particle system IS registered.
          CPPUNIT_ASSERT_MESSAGE("Particles SHOULD already be registered.",
             mParticleComp->HasRegistered(mPS->GetUniqueId()) );
-         
+
          // Verify that the global count of particles has been calculated.
          mParticleComp->UpdateParticleInfo();
          CPPUNIT_ASSERT_MESSAGE("Global particle count should be greater than 0.",
@@ -512,7 +513,7 @@ namespace SimCore
          // and that the force is the same as the one that was specified.
          osg::Vec3 currentForce;
          CPPUNIT_ASSERT_MESSAGE("Particles should have the correct force applied.",
-            ParticleSystemHasForce( forceName,*mPS,&currentForce ) 
+            ParticleSystemHasForce( forceName,*mPS,&currentForce )
             && currentForce == force );
       }
 
@@ -545,7 +546,7 @@ namespace SimCore
 
          // NOTE: The following tests will test removal of particle systems as well as
          // the component's update timer functionality. The component does not listen for
-         // deletes of the particles individually, but rather waits for the update timer 
+         // deletes of the particles individually, but rather waits for the update timer
          // to cycle before it updates all its references to the particles systems.
          // If the weak pointers to the particle systems go NULL, the component will
          // remove the weak references and updates global particle info accordingly.
@@ -596,7 +597,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem 3 should be registered.",
             totalParticles > 0 );
 
-         // NOTE: About setting the 3 tested particle systems to NULL... 
+         // NOTE: About setting the 3 tested particle systems to NULL...
          // With the new OSG 2.2, a system step is required so that the
          // OSG particle systems can be garbage collected when the containing
          // Delta particle system object goes NULL. It seems the OSG garbage
@@ -828,13 +829,13 @@ namespace SimCore
          CPPUNIT_ASSERT( localForce3 != localForce4 );
 
          float errorTolerance = 0.01f;
-         SubTestLocalForceToWorldForce( localForce1, 
+         SubTestLocalForceToWorldForce( localForce1,
             worlToLocalMtx1.preMult(globalForce) - worlToLocalMtx1.getTrans(), errorTolerance );
-         SubTestLocalForceToWorldForce( localForce2, 
+         SubTestLocalForceToWorldForce( localForce2,
             worlToLocalMtx2.preMult(globalForce) - worlToLocalMtx2.getTrans(), errorTolerance );
-         SubTestLocalForceToWorldForce( localForce3, 
+         SubTestLocalForceToWorldForce( localForce3,
             worlToLocalMtx3.preMult(globalForce) - worlToLocalMtx3.getTrans(), errorTolerance );
-         SubTestLocalForceToWorldForce( localForce4, 
+         SubTestLocalForceToWorldForce( localForce4,
             worlToLocalMtx4.preMult(globalForce) - worlToLocalMtx4.getTrans(), errorTolerance );
       }
 

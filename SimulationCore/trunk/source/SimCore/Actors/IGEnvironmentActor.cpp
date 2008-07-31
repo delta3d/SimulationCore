@@ -44,45 +44,12 @@
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
 #include <osg/Fog>
-#include <osg/Vec4>
 #include <osg/Depth>
-#include <osg/Fog>
-#include <osg/StateSet>
-
-#include <osgEphemeris/EphemerisData>
+#include <osg/Vec4>
+#include <ctime>
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
-
-struct FogBoundingBoxCallback: public osg::Drawable::ComputeBoundingBoxCallback
-{
-   virtual osg::BoundingBox computeBound(const osg::Drawable& d) const 
-   {
-      return osg::BoundingBox(); 
-   }
-};
-
-
-class BBVisitor : public osg::NodeVisitor
-{
-public:
-
-   BBVisitor(): osg::NodeVisitor(TRAVERSE_ALL_CHILDREN)
-   {
-
-   }
-
-   virtual void apply(osg::Geode& geode)
-   {
-      unsigned pNumDrawables = geode.getNumDrawables();
-      for(unsigned i = 0; i < pNumDrawables; ++i)
-      {
-         osg::Drawable* draw = geode.getDrawable(i);
-         draw->setComputeBoundingBoxCallback(new FogBoundingBoxCallback());
-      }
-
-   }
-};
 
 namespace SimCore
 {
@@ -91,59 +58,24 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       // Actor code
       ////////////////////////////////////////////////////////////////////////
-      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy &proxy)
+      IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& proxy)
          : BaseClass(proxy)
          , mEnableCloudPlane(true)
          , mCurrTime()
          , mWind()
          , mCloudPlane(new dtCore::CloudPlane(1500.0f, "Cloud Plane","./Textures/CloudTexture9.dds"))
          , mEnvironment( new dtCore::Environment("EphemerisEnvironment") )
-         , mEphemerisModel(new osgEphemeris::EphemerisModel())
-         , mFogSphere(0)
-         , mFogSphereEyePointTransform(new MoveWithEyePointTransform())
          , mFog ( new osg::Fog() )
          , mCloudCoverage(0)
       {
          EnableCloudPlane(true);
          AddChild(mEnvironment.get());
-         
-         mEphemerisModel->setSkyDomeRadius( 9000.0f );
-         mEphemerisModel->setSunLightNum(0);
-         mEphemerisModel->setMoveWithEyePoint(true);
 
-         //FogSphere SetUp
-         mFogSphere = new osgEphemeris::Sphere( 8500.0f,
-            osgEphemeris::Sphere::TessLow,
-            osgEphemeris::Sphere::OuterOrientation,
-            osgEphemeris::Sphere::BothHemispheres,
-            false
-            );
-            
-         // Change render order and depth writing.
-         osg::StateSet* states = mEphemerisModel->getOrCreateStateSet();
          osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
-         states->setAttributeAndModes(depthState);
-
          osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
          cloudPlaneSS->setAttributeAndModes(depthState);
          cloudPlaneSS->setRenderBinDetails( -1, "RenderBin" );
 
-         states->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
-         states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-         states->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT, "RenderBin" );
-         mEphemerisModel->setStateSet(states);
-
-
-         //Set up the Fog Sphere so that it can be rendered
-         osg::StateSet* fogSphereStates = mFogSphere->getOrCreateStateSet();
-         osg::Depth* depthFogState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
-         fogSphereStates->setAttributeAndModes(depthFogState);
-         fogSphereStates->setMode(GL_FOG, osg::StateAttribute::ON);
-         fogSphereStates->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-         fogSphereStates->setMode(GL_BLEND, osg::StateAttribute::ON);
-         fogSphereStates->setRenderBinDetails( -1, "RenderBin" );
-
-         mFogSphere->setStateSet(fogSphereStates);         
          //set default fog distance to a clear day
          mFog->setEnd( 600000 );
       }
@@ -153,7 +85,7 @@ namespace SimCore
       {
          RemoveAllActors();
       }
-   
+
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetSkyDomesCenter(const osg::Vec3& position)
       {
@@ -164,12 +96,6 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetLatitudeAndLongitude( float latitude, float longitude )
       {
-         //this updates the sky and sun colors
-         if(mEphemerisModel.valid())
-         { 
-            mEphemerisModel->setLatitudeLongitude(latitude, longitude);
-         }
-
          //this updates the fog color
          if(mEnvironment.valid())
          {
@@ -181,83 +107,11 @@ namespace SimCore
       void IGEnvironmentActor::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         //GetGameActorProxy().GetGameManager()->GetScene().UseSceneLight(true);
-         mEnvironment->GetOSGNode()->asGroup()->addChild(mEphemerisModel.get());
-
-         //here we setup the FogSphere's state set and add it to the scene
-         mEnvironment->GetOSGNode()->asGroup()->addChild(mFogSphereEyePointTransform.get());
-         mFogSphereEyePointTransform->addChild(mFogSphere.get());
-                  
          mEnvironment->Update(999.99f); //passing a large number will force an update
 
-         osg::Vec3 fogColor;         
+         osg::Vec3 fogColor;
          mEnvironment->GetModFogColor(fogColor);
-         SetFogColor(fogColor);
-
-
-         //we give all the drawables on the fog sphere a large bounding box to ensure it is always rendered
-         size_t sizeOfNH = mFogSphere->getNorthernHemisphere()->getNumDrawables();
-         for(size_t i = 0; i < sizeOfNH; ++i)
-         {
-            mFogSphere->getNorthernHemisphere()->getDrawable(i)->setComputeBoundingBoxCallback(new FogBoundingBoxCallback());
-         }
-
-         //we give all the drawables on the fog sphere a large bounding box to ensure it is always rendered
-         size_t sizeOfSH = mFogSphere->getSouthernHemisphere()->getNumDrawables();
-         for(size_t i = 0; i < sizeOfSH; ++i)
-         {
-            mFogSphere->getSouthernHemisphere()->getDrawable(i)->setComputeBoundingBoxCallback(new FogBoundingBoxCallback());
-         }
-          
-         mFogSphereEyePointTransform->setCenter(mEphemerisModel->getSkyDomeCenter());
-
-         //this little hack will create a large bounding volume for the ephemeris to ensure it doesn't 
-         //get culled out
-         BBVisitor bbv;
-         mEphemerisModel->traverse(bbv);
-
-
-         dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*mFogSphere.get());
-
-         //First get the shader group assigned to this actor.
-         const dtCore::ShaderGroup *shaderGroup =
-         dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype("EphemerisFogGroup");
-
-         if (shaderGroup == NULL)
-         {
-            LOG_INFO("Could not find shader group EphemerisFogGroup");
-            return;
-         }
-
-         const dtCore::ShaderProgram *defaultShader = shaderGroup->GetDefaultShader();
-
-         try
-         {
-            if (defaultShader != NULL)
-            {
-               dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*defaultShader, *mFogSphere.get());
-            }
-            else
-            {
-               LOG_WARNING("Could not find a default shader in shader group: EphemerisFogGroup");
-               return;
-            }
-         }
-         catch (const dtUtil::Exception &e)
-         {
-            LOG_WARNING("Caught Exception while assigning shader: " + e.ToString());
-            return;
-         }
-
-         //setup the weather component
-         /*SimCore::Components::WeatherComponent* weatherComp = 
-            static_cast<SimCore::Components::WeatherComponent*>
-            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME));
-         if(weatherComp != NULL)
-         {            
-            weatherComp->SetUseEphemeris(true);
-         }*/
-         // Seems wierd, but we have to set the clear color to black on the camera or 
+         SetFogColor(fogColor);         // Seems wierd, but we have to set the clear color to black on the camera or
          // the ephemeris shows stars in the daytime and at night, they are sort of gray instead of white.
          GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->SetClearColor(osg::Vec4(0, 0, 0, 0));
       }
@@ -275,11 +129,11 @@ namespace SimCore
          // Look up the cloud texture from the map so we have the right path. Using ./projectassets doesn't work in all cases depending on path
          std::string cloudTextureResource("Textures:CloudTexture" + dtUtil::ToString(cloudNumber) + ".dds");
          std::string texturePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(cloudTextureResource));
-         if (texturePath.empty()) 
+         if (texturePath.empty())
          {
             LOG_ERROR("The Cloud File Texture [" + texturePath + "] Could Not be Found");
          }
-         else 
+         else
          {
             loaded = mCloudPlane->LoadTexture(texturePath);
             if(loaded)
@@ -337,6 +191,18 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetWind( const osg::Vec3& wind )
+      {
+         mWind = wind;
+      }
+
+      /////////////////////////////////////////////////////////////
+      const osg::Vec3& IGEnvironmentActor::GetWind() const
+      {
+         return mWind;
+      }
+
+      /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::EnableCloudPlane( bool enable )
       {
          mEnableCloudPlane = enable;
@@ -389,36 +255,9 @@ namespace SimCore
          osg::Vec3 fogColor;
          mEnvironment->GetModFogColor(fogColor);
          SetFogColor(fogColor);
-
-         osg::StateSet* fogSphereStates = mFogSphere->getOrCreateStateSet();
-         fogSphereStates->setAttributeAndModes(mFog.get());
-
-         mFogSphere->setStateSet(fogSphereStates);
-
-         //update the ephemeris with the proper time
-         mEphemerisModel->setAutoDateTime( false );
-
-         osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
-
-         dtUtil::DateTime dt(GetDateTime().GetGMTTime());
-
-         ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
-         ephem->dateTime.setMonth(dt.GetMonth());    // DateTime numbers months from 1 to 12, not 0 to 11
-         ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
-         ephem->dateTime.setHour(dt.GetHour());
-         ephem->dateTime.setMinute(dt.GetMinute());
-         ephem->dateTime.setSecond(int(dt.GetSecond()));
       }
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::EnableFog(bool enable)
-      {
-         mEnvironment->SetFogEnable(enable);
-      }
-
-      /////////////////////////////////////////////////////////////
- 
-
       void IGEnvironmentActor::SetDensity(float density)
       {
          mEnvironment->SetFogDensity(density);
@@ -429,55 +268,51 @@ namespace SimCore
          return mEnvironment->GetFogDensity();
       }
 
-
-      void IGEnvironmentActor::SetEphemerisFog(bool fog_toggle ) 
+      /////////////////////////////////////////////////////////////
+      bool IGEnvironmentActor::IsFogEnabled() const
       {
-         if(fog_toggle == true)
-         {
-            mFogSphere->setNodeMask(0xFFFFFFFF);
-         }
-         else
-         {   
-            mFogSphere->setNodeMask(0);
-         }
+         return mEnvironment->GetFogEnable();
       }
 
       /////////////////////////////////////////////////////////////
-      osgEphemeris::EphemerisModel* IGEnvironmentActor::GetEphemerisModel()
+      void IGEnvironmentActor::SetFogEnabled(bool enable)
       {
-         return mEphemerisModel.get();
+         mEnvironment->SetFogEnable(enable);
       }
 
+      /////////////////////////////////////////////////////////////
+      const osg::Vec3 IGEnvironmentActor::GetFogColor()
+      {
+         osg::Vec3 color;
+         mEnvironment->GetFogColor(color);
+         return color;
+      }
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetFogColor( const osg::Vec3& color )
+      void IGEnvironmentActor::SetFogColor(const osg::Vec3& color)
       {
          mFog->setColor(osg::Vec4 (color, 1.0f) );
 
-         osg::StateSet* fogSphereStates = mFogSphere->getOrCreateStateSet();
-         fogSphereStates->setAttributeAndModes(mFog.get());
-
-         mFogSphere->setStateSet(fogSphereStates);
          mCloudPlane->SetColor( osg::Vec4(color, 1.0f) );
       }
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetFogMode( dtCore::Environment::FogMode mode )
+      void IGEnvironmentActor::SetFogMode(dtCore::Environment::FogMode mode)
       {
          mEnvironment->SetFogMode(mode);
       }
 
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetFogNear( float val )
+      void IGEnvironmentActor::SetFogNear(float val )
       {
          mEnvironment->SetFogNear(val);
       }
 
       /////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetVisibility( float distance )
+      void IGEnvironmentActor::SetVisibility(float distance)
       {
-         mFog->setEnd( distance );
+         mFog->setEnd(distance);
          mEnvironment->SetVisibility(distance);
       }
 
@@ -494,7 +329,7 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////
-      void IGEnvironmentActor::SetTimeAndDateString( const std::string &timeAndDate )
+      void IGEnvironmentActor::SetTimeAndDateString(const std::string& timeAndDate)
       {
          if(timeAndDate.empty())
             return;
@@ -505,13 +340,13 @@ namespace SimCore
          // So we need to use a delimeter to ensure that we don't choke on the seperators
          if( ! SetTimeAndDate( iss ) )
          {
-            LOG_ERROR( "The input time and date string: " + timeAndDate 
+            LOG_ERROR( "The input time and date string: " + timeAndDate
                + " was not formatted correctly. The correct format is: yyyy-mm-ddThh:mm:ss. Ignoring.");
          }
       }
 
       ///////////////////////////////////////////////////////////////
-      bool IGEnvironmentActor::SetTimeAndDate( std::istringstream& iss )
+      bool IGEnvironmentActor::SetTimeAndDate(std::istringstream& iss)
       {
          unsigned year, month, day, hour, min, sec;
          char delimeter;
@@ -563,22 +398,17 @@ namespace SimCore
          return dt.ToString();
       }
 
-
-      bool IGEnvironmentActor::MoveWithEyePointTransform::computeLocalToWorldMatrix(osg::Matrix& matrix,osg::NodeVisitor* nv) const
+      /////////////////////////////////////////////////////////////
+      dtCore::Environment& IGEnvironmentActor::GetCoreEnvironment()
       {
-         if( _enabled )
-         {
-            osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
-            if (cv)
-            {
-               osg::Vec3 eyePointLocal = cv->getEyeLocal();
-               matrix.preMult(osg::Matrix::translate(
-                  osg::Vec3( eyePointLocal.x(),eyePointLocal.y(),0.0f) - _center));
-            }
-         }
-         return true;
+         return *mEnvironment;
       }
 
+      /////////////////////////////////////////////////////////////
+      osg::Fog& IGEnvironmentActor::GetFog()
+      {
+         return *mFog;
+      }
 
 
       /////////////////////////////////////////////////////////////
@@ -594,27 +424,33 @@ namespace SimCore
       {
       }
 
+      /// Creates the actor
+      void IGEnvironmentActorProxy::CreateActor()
+      {
+         SetActor(*new IGEnvironmentActor(*this));
+      }
+
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::BuildPropertyMap()
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         IGEnvironmentActor *env = static_cast<IGEnvironmentActor*>(GetActor());
+         IGEnvironmentActor* env = static_cast<IGEnvironmentActor*>(GetActor());
 
          AddProperty(new dtDAL::BooleanActorProperty("Enable Fog", "Enable Fog",
-            dtDAL::MakeFunctor(*env, &IGEnvironmentActor::EnableFog),
-            dtDAL::MakeFunctorRet(*env, &IGEnvironmentActor::IsFogEnabled),
+            dtDAL::BooleanActorProperty::SetFuncType(env, &IGEnvironmentActor::SetFogEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(env, &IGEnvironmentActor::IsFogEnabled),
             "Toggles fog on and off"));
 
          AddProperty(new dtDAL::StringActorProperty("Time and Date", "Time and Date",
-            dtDAL::MakeFunctor(*env, &IGEnvironmentActor::SetTimeAndDateString),
-            dtDAL::MakeFunctorRet(*env, &IGEnvironmentActor::GetTimeAndDateString),
+            dtDAL::StringActorProperty::SetFuncType(env, &IGEnvironmentActor::SetTimeAndDateString),
+            dtDAL::StringActorProperty::GetFuncType(env, &IGEnvironmentActor::GetTimeAndDateString),
             "Sets the time and date of the application. This string must be in the following UTC format: yyyy-mm-ddThh:mm:ss"));
 
          AddProperty(new dtDAL::Vec3ActorProperty("Wind", "Wind",
-            dtDAL::MakeFunctor(*env, &IGEnvironmentActor::SetWind),
-            dtDAL::MakeFunctorRet(*env, &IGEnvironmentActor::GetWind),
-            "Sets the force of wind, measured in meters per second")); 
+            dtDAL::Vec3ActorProperty::SetFuncType(env, &IGEnvironmentActor::SetWind),
+            dtDAL::Vec3ActorProperty::GetFuncType(env, &IGEnvironmentActor::GetWind),
+            "Sets the force of wind, measured in meters per second"));
       }
 
       /////////////////////////////////////////////////////////////
@@ -624,7 +460,7 @@ namespace SimCore
 
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActorProxy::OnEnteredWorld()
-      { 
+      {
       }
    }
 }
