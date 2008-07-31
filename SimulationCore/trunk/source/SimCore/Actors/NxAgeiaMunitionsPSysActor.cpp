@@ -32,7 +32,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/WeaponActor.h>
-#include <SimCore/NxCollisionGroupEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <dtDAL/enginepropertytypes.h>
 
@@ -54,7 +54,7 @@
 #include <osg/MatrixTransform>
 #include <osg/PrimitiveSet>
 
-using namespace SimCore::NxCollisionGroup;
+using namespace SimCore::CollisionGroup;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ using namespace SimCore::NxCollisionGroup;
          /////////////////////////////////////////////////////////////////////////////////////////////
          virtual bool onHit(const NxRaycastHit& hit)
          {
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
                (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
 
             dtCore::DeltaDrawable *hitTarget = NULL;
@@ -94,9 +94,9 @@ using namespace SimCore::NxCollisionGroup;
                hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
             }
 
-            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
+            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
             // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor 
+            if (mOwnerActor == NULL || hitTarget != mOwnerActor
                // So we dont want to return false if collision is off, this onHit is called for
                // every hit along the line, and returning false tells it to stop the raycast
                // report, its amazing how rereading the sdk can help so much :(
@@ -111,7 +111,7 @@ using namespace SimCore::NxCollisionGroup;
             }
 
             return true;
-         }	
+         }
 
       public:
          bool mGotAHit;
@@ -128,7 +128,7 @@ using namespace SimCore::NxCollisionGroup;
    {
       if( mIsTracer )
       {
-         SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+         SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
             renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
          //SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
          //dl->mColor.set(1.0f, 0.2f, 0.2f);
@@ -150,7 +150,7 @@ using namespace SimCore::NxCollisionGroup;
     void MunitionsPhysicsParticle::SetLastPosition(const osg::Vec3& value)
     {
       mLastPosition = value;
-      
+
       if( mIsTracer && mDynamicLight.valid() )
       {
          osg::Matrix mat;
@@ -160,7 +160,7 @@ using namespace SimCore::NxCollisionGroup;
          mDynamicLight->GetMatrixNode()->setMatrix(mat);
       }
     }
- 
+
 
 
 ////////////////////////////////////////////////////////////////////
@@ -193,12 +193,12 @@ void NxAgeiaMunitionsPSysActor::TickLocal(const dtGame::Message &tickMessage)
 
       if( ourActor == NULL )
          continue;
-      
+
       // CURT HACK FOR IPT 2 - DISABLED FORCE ON MUNITIONS
       /*if(false && mApplyForces)
       {
          ourActor->addForce(
-            NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]), 
+            NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]),
                      GetRandBetweenTwoFloats(mForceVectorMax[1], mForceVectorMin[1]),
                      GetRandBetweenTwoFloats(mForceVectorMax[2], mForceVectorMin[2])));
       }*/
@@ -212,7 +212,7 @@ void NxAgeiaMunitionsPSysActor::TickLocal(const dtGame::Message &tickMessage)
          ++iter;
          mOurParticleList.erase(toDelete);
          continue;
-      }     
+      }
       else
       {
          ++iter;
@@ -230,13 +230,13 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
    {
       osg::Vec3 lastposition = particleToCheck.GetLastPosition();
 
-      osg::Vec3 currentPosition = osg::Vec3( ourActor->getGlobalPosition()[0], 
+      osg::Vec3 currentPosition = osg::Vec3( ourActor->getGlobalPosition()[0],
                                              ourActor->getGlobalPosition()[1],
                                              ourActor->getGlobalPosition()[2]);
 
       if(currentPosition != lastposition)
       {
-         
+
          NxRay ourRay;
          ourRay.orig = NxVec3(lastposition[0],lastposition[1],lastposition[2]);
          ourRay.dir = NxVec3(currentPosition[0] - lastposition[0], currentPosition[1] - lastposition[1],currentPosition[2] - lastposition[2]);
@@ -246,13 +246,13 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
          // Drop a ray through the world to see what we hit. Make sure we don't hit ourselves.  And,
          // Make sure we DO hit the terrain appropriately.
          MunitionRaycastReport myReport(mWeapon.valid() ? mWeapon->GetOwner() : NULL);
-         
+
          // CR: Create the bit mask once rather than every time the method is called.
-         static const int GROUPS_FLAGS = 
+         static const int GROUPS_FLAGS =
             (1 << GROUP_TERRAIN)
-            | (1 << GROUP_WATER) 
-            | (1 << GROUP_VEHICLE_WATER) 
-            | (1 << GROUP_HUMAN_LOCAL) 
+            | (1 << GROUP_WATER)
+            | (1 << GROUP_VEHICLE_WATER)
+            | (1 << GROUP_HUMAN_LOCAL)
             | (1 << GROUP_HUMAN_REMOTE);
          NxU32 numHits = ourActor->getScene().raycastAllShapes(
             ourRay, myReport, NX_ALL_SHAPES, GROUPS_FLAGS );
@@ -272,10 +272,10 @@ bool NxAgeiaMunitionsPSysActor::ResolveISectorCollision(MunitionsPhysicsParticle
                   mWeapon->ReceiveContactReport( report, NULL);
                return true;
             }
-         }         
+         }
       }
 
-      particleToCheck.SetLastPosition( osg::Vec3(  ourActor->getGlobalPosition()[0], 
+      particleToCheck.SetLastPosition( osg::Vec3(  ourActor->getGlobalPosition()[0],
                                                    ourActor->getGlobalPosition()[1],
                                                    ourActor->getGlobalPosition()[2])) ;
    }
@@ -306,8 +306,8 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
 
    //we obtain the rendering support component so that the particle effect can add a dynamic light effect
    SimCore::Components::RenderingSupportComponent* renderComp = NULL;
-   
-   if( isTracer ) 
+
+   if( isTracer )
    {
       renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
          (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
@@ -319,7 +319,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
 
    dtCore::Transform ourTransform;
    GetTransform(ourTransform);
-   
+
    osg::Vec3 xyz;
    ourTransform.GetTranslation(xyz);
 
@@ -337,15 +337,15 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    positionRandMax.set(mStartingPositionRandMax[0], mStartingPositionRandMax[1], mStartingPositionRandMax[2], 0);
    osg::Vec4 positionRandMin;
    positionRandMin.set(mStartingPositionRandMin[0], mStartingPositionRandMin[1], mStartingPositionRandMin[2], 0);
-   
+
    positionRandMax = ourRotationMatrix.preMult(positionRandMax);
    positionRandMin = ourRotationMatrix.preMult(positionRandMin);
 
    ourTranslation[0] = GetRandBetweenTwoFloats(ourTranslation[0] + positionRandMax[0], ourTranslation[0] + positionRandMin[0]);
-   ourTranslation[1] = GetRandBetweenTwoFloats(ourTranslation[1] + positionRandMax[1], ourTranslation[1] + positionRandMin[1]); 
-   ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]); 
+   ourTranslation[1] = GetRandBetweenTwoFloats(ourTranslation[1] + positionRandMax[1], ourTranslation[1] + positionRandMin[1]);
+   ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]);
 
-   NxCollisionGroup collisionGroupToSendIn = 0;
+   CollisionGroupType collisionGroupToSendIn = 0;
    if(!mSelfInteracting)
       collisionGroupToSendIn = mPhysicsHelper->GetCollisionGroup();
 
@@ -367,7 +367,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          // but optimizing matrix transformations.
          if( NULL != node && node->getNumChildren() == 0 )
          {
-            dtCore::RefPtr<SimCore::Actors::VolumetricLine> line 
+            dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
                = new SimCore::Actors::VolumetricLine( 20.0f, 0.5f, "VolumetricLines", "TracerGroup" );
             _particle->mObj->AddChild( line.get() );
 
@@ -418,21 +418,21 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE)
    {
       newActor = mPhysicsHelper->SetCollisionBox(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-         dimensions, 
+         dimensions,
          mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str(), true);
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::SPHERE)
    {
       // load sphere
       newActor = mPhysicsHelper->SetCollisionSphere(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-         (dimensions[0] + dimensions[1] + dimensions[2]) / 3, 
+         (dimensions[0] + dimensions[1] + dimensions[2]) / 3,
          mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CAPSULE)
    {
       // load capsule
-      newActor = mPhysicsHelper->SetCollisionCapsule(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
-         dimensions[2], (dimensions[0] + dimensions[1]) / 2, 
+      newActor = mPhysicsHelper->SetCollisionCapsule(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
+         dimensions[2], (dimensions[0] + dimensions[1]) / 2,
          mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(),
          _id.ToString().c_str());
    }
@@ -446,13 +446,13 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       GetTransform(initialTransform);
       SetTransform(identityTransform);
       // load triangle mesh
-      newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(), 
-         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)), 
+      newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(),
+         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)),
          NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])),
-				 mPhysicsHelper->GetDensity(),mPhysicsHelper->GetAgeiaMass(), 
-				 mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0], 
+				 mPhysicsHelper->GetDensity(),mPhysicsHelper->GetAgeiaMass(),
+				 mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0],
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
-      
+
 	  SetTransform(initialTransform);
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::TRIANGLEMESH)
@@ -462,22 +462,22 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
       GetTransform(initialTransform);
       SetTransform(identityTransform);
       // load triangle mesh
-      newActor = mPhysicsHelper->SetCollisionStaticMesh(_particle->mObj->GetOSGNode(), 
-		         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
-                 mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0], 
+      newActor = mPhysicsHelper->SetCollisionStaticMesh(_particle->mObj->GetOSGNode(),
+		         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
+                 mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0],
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str(), collisionGroupToSendIn);
 
       SetTransform(initialTransform);
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    // Set up emitter values on the particle...
-   
+
    osg::Vec4 linearVelocities;
    linearVelocities[0] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[0], mStartingLinearVelocityScaleMin[0]);
    linearVelocities[1] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[1], mStartingLinearVelocityScaleMin[1]);
    linearVelocities[2] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[2], mStartingLinearVelocityScaleMin[2]);
-   
+
    linearVelocities = ourRotationMatrix.preMult(linearVelocities);
 
    linearVelocities[0] += mParentsWorldRelativeVelocityVector[0];
@@ -487,12 +487,12 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    NxVec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
    newActor->setLinearVelocity(vRandVec);
 
-   vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]), 
-                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]), 
+   vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
+                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
                   GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[2], mStartingAngularVelocityScaleMin[2]));
    newActor->setAngularVelocity(vRandVec);
    if(!mGravityEnabled) newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-   
+
    GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(_particle->mObj.get());
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
