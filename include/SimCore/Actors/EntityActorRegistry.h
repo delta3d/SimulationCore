@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #ifndef _ENTITY_ACTOR_REGISTRY_H_
 #define _ENTITY_ACTOR_REGISTRY_H_
@@ -26,9 +26,9 @@
 #include <dtDAL/actorpluginregistry.h>
 #include <SimCore/Export.h>
 
-namespace SimCore 
+namespace SimCore
 {
-   namespace Actors 
+   namespace Actors
    {
       /**
        * Class that exports the applicable actor proxies to a library
@@ -89,8 +89,8 @@ namespace SimCore
             //Protected so it won't be used in code
             static dtCore::RefPtr<dtDAL::ActorType> OLD_REMOTE_PHYSX_ACTOR_TYPE;
 
-      };	
-   }	
+      };
+   }
 }
 
-#endif 
+#endif

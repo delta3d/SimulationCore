@@ -35,7 +35,7 @@
 #include <SimCore/Actors/MissileActor.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/TextureProjectorActor.h>
-#include <SimCore/Actors/IGEnvironmentActor.h>
+#include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
@@ -168,7 +168,7 @@ namespace SimCore
          mActorFactory->RegisterType<InteriorActorProxy>(INTERIOR_ACTOR_TYPE.get());
          mActorFactory->RegisterType<MissileActorProxy>(MISSILE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<TextureProjectorActorProxy>(TEXTURE_PROJECTION_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<IGEnvironmentActorProxy>(ENVIRONMENT_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<EphemerisEnvironmentActorProxy>(ENVIRONMENT_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DayTimeActorProxy>(DAYTIME_ACTOR_TYPE.get());
          mActorFactory->RegisterType<UniformAtmosphereActorProxy>(UNIFORM_ATMOSPHERE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ViewerMaterialActorProxy>(MATERIAL_ACTOR_TYPE.get());
