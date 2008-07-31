@@ -345,7 +345,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
    ourTranslation[1] = GetRandBetweenTwoFloats(ourTranslation[1] + positionRandMax[1], ourTranslation[1] + positionRandMin[1]);
    ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]);
 
-   CollisionGroupType collisionGroupToSendIn = 0;
+   SimCore::CollisionGroupType collisionGroupToSendIn = 0;
    if(!mSelfInteracting)
       collisionGroupToSendIn = mPhysicsHelper->GetCollisionGroup();
 

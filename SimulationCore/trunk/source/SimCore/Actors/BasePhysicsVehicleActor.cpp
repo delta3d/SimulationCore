@@ -206,7 +206,7 @@ namespace SimCore
       {
          // Do nothing in the base. That's yer job.
       }
-xq
+
       bool BasePhysicsVehicleActor::CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
       {
          return std::abs(op1.x() - op2.x()) < epsilon
