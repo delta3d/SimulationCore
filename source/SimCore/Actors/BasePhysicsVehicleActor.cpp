@@ -44,7 +44,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
-#include <SimCore/NxCollisionGroupEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 namespace SimCore
@@ -53,7 +53,7 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////////////
-      BasePhysicsVehicleActor ::BasePhysicsVehicleActor(PlatformActorProxy &proxy) 
+      BasePhysicsVehicleActor ::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
       , mHasDriver(false)
       , mHasFoundTerrain(false)
@@ -66,7 +66,7 @@ namespace SimCore
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
 
-         // If you subclass this actor, you MUST do something like the following in the constructor. 
+         // If you subclass this actor, you MUST do something like the following in the constructor.
          // The actor can't do it's job without having a physics helper! Might even crash!!!
          //mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaVehiclePhysicsHelper(proxy);
          //mPhysicsHelper->SetBaseInterfaceClass(this);
@@ -88,7 +88,7 @@ namespace SimCore
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->
             GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 
-         if(IsRemote()) 
+         if(IsRemote())
          {
             GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
             GetPhysicsHelper()->SetObjectAsKinematic();
@@ -138,7 +138,7 @@ namespace SimCore
                GetPhysicsHelper()->TurnObjectsGravityOn();
             }
          }
-         // DEBUG: 
+         // DEBUG:
          /*else
          {
             std::cout << "NOT detected :(\n" << std::endl;
@@ -171,7 +171,7 @@ namespace SimCore
             return;
          }
 
-         if(physicsObject->isSleeping())   
+         if(physicsObject->isSleeping())
             physicsObject->wakeUp(1e30);
 
          // Check if terrain is available. (For startup)
@@ -206,8 +206,7 @@ namespace SimCore
       {
          // Do nothing in the base. That's yer job.
       }
-
-      ///////////////////////////////////////////////////////////////////////////////////
+xq
       bool BasePhysicsVehicleActor::CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
       {
          return std::abs(op1.x() - op2.x()) < epsilon
@@ -226,7 +225,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateDeadReckoning(float deltaTime)
       {
-         // Increment how long it's been since our last DR check. We can only send out an update 
+         // Increment how long it's been since our last DR check. We can only send out an update
          // so many times a second.
          mTimeForSendingDeadReckoningInfoOut += deltaTime;
 
@@ -310,7 +309,7 @@ namespace SimCore
 
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
-            mNotifyFullUpdate = true; 
+            mNotifyFullUpdate = true;
          }
          else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
          {
@@ -325,7 +324,7 @@ namespace SimCore
          const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
          bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
-         bool enoughTimeHasPassed = (mTimesASecondYouCanSendOutAnUpdate > 0.0f && 
+         bool enoughTimeHasPassed = (mTimesASecondYouCanSendOutAnUpdate > 0.0f &&
             (mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate));
 
          if(fullUpdate || enoughTimeHasPassed)
@@ -367,7 +366,7 @@ namespace SimCore
                   const osg::Vec3 physAngularVelocity(angularVelVec3.x, angularVelVec3.y, angularVelVec3.z);
                   // If the value is very close to 0, set it to zero to prevent warbling
                   bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
-                  if ( physAngularVelocityNearZero ) // 
+                  if ( physAngularVelocityNearZero ) //
                      SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
                   else
                      SetAngularVelocityVector(physAngularVelocity);
@@ -375,8 +374,8 @@ namespace SimCore
                else
                   SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
 
-               // Since we are about to publish, set our time since last publish back to 0. 
-               // This allows us to immediately send out a change the exact moment it happens (ex if we 
+               // Since we are about to publish, set our time since last publish back to 0.
+               // This allows us to immediately send out a change the exact moment it happens (ex if we
                // were moving slowly and hadn't updated recently).
                mTimeForSendingDeadReckoningInfoOut = 0.0f;
             }
@@ -410,17 +409,17 @@ namespace SimCore
       {
          NxActor* physicsActor = GetPhysicsHelper()->GetPhysXObject();
 
-         // The PRE physics update is only trapped if we are remote. It updates the physics 
+         // The PRE physics update is only trapped if we are remote. It updates the physics
          // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
-         // We do this because we don't own remote vehicles and naturally can't just go 
-         // physically simulating them however we like. But, the physics scene needs them to interact with. 
+         // We do this because we don't own remote vehicles and naturally can't just go
+         // physically simulating them however we like. But, the physics scene needs them to interact with.
          // Only called if we are remote, but check for safety. Local objects are moved by the physics engine...
          if (IsRemote() && physicsActor != NULL)
          {
             osg::Matrix rot = GetMatrixNode()->getMatrix();
 
-            // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of 
-            // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating), 
+            // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
+            // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
             // but we want to act like their not.
             osg::Vec3 velocity = GetVelocityVector();
             NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
@@ -463,7 +462,7 @@ namespace SimCore
                ourTransform.Set(currentMatrix);
 
                // Translation
-               //ourTransform.SetTranslation(physicsActor->getGlobalPosition()[0], 
+               //ourTransform.SetTranslation(physicsActor->getGlobalPosition()[0],
                //   physicsActor->getGlobalPosition()[1], physicsActor->getGlobalPosition()[2]);
 
                SetTransform(ourTransform);
@@ -474,7 +473,7 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& 
+      void BasePhysicsVehicleActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport&
          contactReport, NxActor& ourSelf, NxActor& whatWeHit)
       {
          //printf("VehicleCollision\n");
@@ -509,9 +508,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::RepositionVehicle(float deltaTime)
       {
-         // This behavior is semi duplicated in the four wheel vehicle helper. 
-         // It has been moved here to allow vehicles to have separate behavior. Eventually, 
-         // we need a base vehicle helper and it should be moved there. 
+         // This behavior is semi duplicated in the four wheel vehicle helper.
+         // It has been moved here to allow vehicles to have separate behavior. Eventually,
+         // we need a base vehicle helper and it should be moved there.
          // The code in PhysicsHelper::RepositionVehicle can be refactored out
 
          NxActor* physActor = GetPhysicsHelper()->GetPhysXObject();
@@ -528,7 +527,7 @@ namespace SimCore
          float xyOffset = deltaTime;
          float zOffset = deltaTime * 5.0f;
 
-         GetPhysicsHelper()->SetTransform(NxVec3(physActor->getGlobalPosition()[0] + xyOffset, 
+         GetPhysicsHelper()->SetTransform(NxVec3(physActor->getGlobalPosition()[0] + xyOffset,
             physActor->getGlobalPosition()[1] + xyOffset, physActor->getGlobalPosition()[2] + zOffset), osg::Matrix(glmat));
 
          GetPhysicsHelper()->ResetForces();
@@ -554,13 +553,13 @@ namespace SimCore
          dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
          osg::Vec3 pos( position.x, position.y, position.z );
          osg::Vec3 endPos = pos;
-         pos[2] -= 100.0f; 
+         pos[2] -= 100.0f;
          endPos[2] += 100.0f;
          float offsettodo = 5.0f;
          SingleISector.SetSectorAsLineSegment(pos, endPos);
          if( iSector->Update(osg::Vec3(0,0,0), true) )
          {
-            if( SingleISector.GetNumberOfHits() > 0 ) 
+            if( SingleISector.GetNumberOfHits() > 0 )
             {
                SingleISector.GetHitPoint(hp);
 
@@ -595,7 +594,7 @@ namespace SimCore
 
          // Create a raycast report that should ignore this vehicle.
          dtAgeiaPhysX::SimpleRaycastReport report( this );
-         static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN);
+         static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
 
          NxU32 numHits = physxObject->getScene().raycastAllShapes(
             ray, report, NX_ALL_SHAPES, GROUPS_FLAGS );
@@ -604,7 +603,7 @@ namespace SimCore
          {
             report.GetClosestHit( outPoint );
             return true;
-         } 
+         }
          return false;
       }
 
@@ -660,12 +659,12 @@ namespace SimCore
          //RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
          if (IsRemote())
-            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
+            RegisterForMessages(dtGame::MessageType::TICK_REMOTE,
                dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
       }
 
-   } // namespace 
-}// namespace 
+   } // namespace
+}// namespace
 #endif
