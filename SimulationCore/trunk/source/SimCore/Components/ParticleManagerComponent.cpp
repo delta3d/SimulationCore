@@ -30,12 +30,14 @@
 #include <dtGame/messagetype.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+//#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <osgParticle/ParticleSystem>
 #include <osgParticle/ModularProgram>
 #include <osgParticle/Operator>
 #include <osgParticle/ForceOperator>
+#include <osg/MatrixTransform>
 #include <osg/Geode>
 #include <osg/Matrix>
 #include <osg/Node>
@@ -140,7 +142,7 @@ namespace SimCore
          unsigned int limit = mLayerRefs.size(); // this avoids multiple function jumps
          for( unsigned int i = 0; i < limit; i++ )
          {
-            if( ! mLayerRefs[i].valid() ) 
+            if( ! mLayerRefs[i].valid() )
             {
                continue;
             }
@@ -195,7 +197,7 @@ namespace SimCore
 
             //int count = 0;
             //for(;count < 20 * 3; count += 3)
-            //{ 
+            //{
             //   //else we turn the light off by setting the intensity to 0
             //   lightArray->setElement(count, osg::Vec4(1000.0f, 1000.0f, 1000000.0f, 10.0f));
             //   lightArray->setElement(count + 1, osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -228,7 +230,7 @@ namespace SimCore
          else
          {
             LOG_ERROR("Unable to find shader group for particle system manager.");
-         }            
+         }
       }
 
       //////////////////////////////////////////////////////////
@@ -312,7 +314,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       ParticleManagerComponent::~ParticleManagerComponent()
       {
-         
+
       }
 
       //////////////////////////////////////////////////////////
@@ -321,7 +323,7 @@ namespace SimCore
          mGlobalParticleCount = 0;
          mIdToInfoMap.clear();
          mIdToActorMap.clear();
-         
+
          // Normally the timer would be disabled here but
          // the GameManager will clear the timer when it
          // goes through shutdown. If the timer needs to
@@ -360,12 +362,12 @@ namespace SimCore
          {
             return;
          }
-         
+
          // Update particle information if the timer has
          // reached a full cycle.
          if( msgType == dtGame::MessageType::INFO_TIMER_ELAPSED )
          {
-            const dtGame::TimerElapsedMessage& timerMsg = 
+            const dtGame::TimerElapsedMessage& timerMsg =
                static_cast<const dtGame::TimerElapsedMessage&>(message);
 
             // Update particle info if the elapsed timer is the
@@ -377,7 +379,7 @@ namespace SimCore
             }
          }
          // Check for changes in environmental forces
-         else if( 
+         else if(
             msgType == dtGame::MessageType::INFO_ACTOR_UPDATED
             || msgType == dtGame::MessageType::INFO_ACTOR_CREATED )
          {
@@ -388,7 +390,7 @@ namespace SimCore
                return;
             }
 
-            Actors::IGEnvironmentActorProxy* envProxy = 
+            Actors::IGEnvironmentActorProxy* envProxy =
                static_cast<Actors::IGEnvironmentActorProxy*> (env);
 
             Actors::IGEnvironmentActor* envActor = static_cast<Actors::IGEnvironmentActor*>
@@ -435,14 +437,14 @@ namespace SimCore
       bool ParticleManagerComponent::Register( dtCore::ParticleSystem& particles,
          const ParticleInfo::AttributeFlags* attrFlags,  const ParticlePriority& priority )
       {
-         if( HasRegistered(particles.GetUniqueId()) 
+         if( HasRegistered(particles.GetUniqueId())
             || particles.GetAllLayers().empty() )
          {
             return false;
          }
 
-         bool success = mIdToInfoMap.insert( 
-            std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) ) 
+         bool success = mIdToInfoMap.insert(
+            std::make_pair( particles.GetUniqueId(), new ParticleInfo( particles, attrFlags, priority ) )
             ).second;
 
          if( !success )
@@ -463,7 +465,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       bool ParticleManagerComponent::Unregister( const dtCore::ParticleSystem& particles )
       {
-         std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor = 
+         std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor =
             mIdToInfoMap.find(particles.GetUniqueId());
 
          if( itor != mIdToInfoMap.end() )
@@ -544,7 +546,7 @@ namespace SimCore
             {
                idsToDelete.push_back(itor->first);
             }
-            else 
+            else
             {
                mGlobalParticleCount += itor->second->GetAllocatedCount();
                totalSystems++;
@@ -554,7 +556,7 @@ namespace SimCore
          // Delete the failed info entries
          for( unsigned int i = 0; i < idsToDelete.size(); i ++)
          {
-            std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor = 
+            std::map< dtCore::UniqueId, dtCore::RefPtr<ParticleInfo> >::iterator itor =
                mIdToInfoMap.find(idsToDelete[i]);
             if (itor != mIdToInfoMap.end())
             {
@@ -630,7 +632,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      osg::Vec3 ParticleManagerComponent::ConvertWorldToLocalForce( 
+      osg::Vec3 ParticleManagerComponent::ConvertWorldToLocalForce(
          const osg::Vec3& globalForce, dtCore::Transformable& object, osg::Matrix& outWorldLocalMatrix )
       {
          osg::NodePathList nodePathList = object.GetMatrixNode()->getParentalNodePaths();
@@ -654,7 +656,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      osg::Vec3 ParticleManagerComponent::ConvertWorldToLocalForce( 
+      osg::Vec3 ParticleManagerComponent::ConvertWorldToLocalForce(
          const osg::Vec3& globalForce, dtCore::Transformable& object )
       {
          osg::Matrix worldLocalMatrix;
@@ -662,7 +664,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void ParticleManagerComponent::ApplyForce( 
+      void ParticleManagerComponent::ApplyForce(
          const std::string& forceName, const osg::Vec3& force, dtCore::ParticleSystem& ps, bool addToAllLayers )
       {
          dtCore::ParticleLayer* curLayer = NULL;
@@ -689,7 +691,7 @@ namespace SimCore
 
             // Obtain the particle layer's modular program which
             // contains the force operators of the particle system.
-            osgParticle::ModularProgram& program = 
+            osgParticle::ModularProgram& program =
                static_cast<osgParticle::ModularProgram&> (curLayer->GetProgram());
 
             // Find the force operator matching forceName or an unused operator
@@ -709,7 +711,7 @@ namespace SimCore
                   // be a placeholder operator created in the particle editor just for
                   // this effect. Future particle editor will give the ability to apply
                   // names to these operators.
-                  if( opName.empty() 
+                  if( opName.empty()
                      && (forceOp->getForce().isNaN() || forceOp->getForce().length() == 0.0) )
                   {
                      // Remember this operator in case an operator is not found by the name of forceName
@@ -789,7 +791,7 @@ namespace SimCore
             {
                idsToDelete.push_back(itor->first);
             }
-            else 
+            else
             {
                totalActors++;
             }
@@ -798,7 +800,7 @@ namespace SimCore
          // Delete the failed info entries
          for( unsigned int i = 0; i < idsToDelete.size(); i ++)
          {
-            std::map< dtCore::UniqueId, dtCore::RefPtr<ActorInfo> >::iterator itor = 
+            std::map< dtCore::UniqueId, dtCore::RefPtr<ActorInfo> >::iterator itor =
                mIdToActorMap.find(idsToDelete[i]);
             if (itor != mIdToActorMap.end())
             {
@@ -819,8 +821,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       bool ParticleManagerComponent::RegisterActor( dtGame::GameActorProxy& proxy )
       {
-         return mIdToActorMap.insert( 
-            std::make_pair( proxy.GetId(), new ActorInfo( proxy ) ) 
+         return mIdToActorMap.insert(
+            std::make_pair( proxy.GetId(), new ActorInfo( proxy ) )
             ).second;
       }
 
