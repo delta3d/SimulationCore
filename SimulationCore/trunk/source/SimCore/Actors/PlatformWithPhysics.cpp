@@ -41,9 +41,9 @@ namespace SimCore
    {
       const std::string &PlatformWithPhysics::DEFAULT_NAME = "Default";
       const std::string &PlatformWithPhysics::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
-      
+
       /////////////////////////////////////////////////////////////////////////
-      PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy &proxy) 
+      PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy &proxy)
       : Platform(proxy)
       {
 #ifdef AGEIA_PHYSICS
@@ -91,7 +91,7 @@ namespace SimCore
             mPhysicsHelper->SetCollisionStaticMesh(mNodeForGeometry.get(), NxVec3(0,0,0), false, "");
 #else
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-            physObj->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::CONVEX_HULL);
+            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
             physObj->CreateFromProperties(mNodeForGeometry.get());
             mPhysicsHelper->AddPhysicsObject(*physObj);
 #endif
@@ -102,7 +102,7 @@ namespace SimCore
          }
 
 #ifdef AGEIA_PHYSICS
-         dtGame::GMComponent *comp = 
+         dtGame::GMComponent *comp =
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
          if(comp != NULL)
          {
@@ -125,14 +125,9 @@ namespace SimCore
          std::string checkValue;
          unsigned int modelToLoad = 0;
 
-#ifdef AGEIA_PHYSICS
-         // release if something is already made for this actor
-         mPhysicsHelper->ReleasePhysXObject(DEFAULT_NAME);
-#else
          // release if something is already made for this actor
          mPhysicsHelper->RemovePhysicsObject(DEFAULT_NAME);
 
-#endif
          BaseEntityActorProxy::DamageStateEnum& damState = GetDamageState();
          if (damState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          {
@@ -152,7 +147,7 @@ namespace SimCore
 
          if(checkValue.empty())
          {
-            LOG_DEBUG("Unable to load file, resource was not valid! This is for actor \"" + 
+            LOG_DEBUG("Unable to load file, resource was not valid! This is for actor \"" +
                GetUniqueId().ToString() + "\", damage state \"" + damState.GetName() + "\". However this is called from " +
                "setdamagestate, and model may not be valid yet.");
             return;
@@ -162,13 +157,13 @@ namespace SimCore
          {
             dtCore::Transform ourTransform, zeroTransform;
             GetTransform(ourTransform);
-            osg::Matrix rot; 
+            osg::Matrix rot;
             ourTransform.GetRotation(rot);
             rot.invert(rot);
 
             NxMat34 sendInMatrix(NxMat33( NxVec3(rot(0,0), rot(0,1), rot(0,2)),
                                           NxVec3(rot(1,0), rot(1,1), rot(1,2)),
-                                          NxVec3(rot(2,0), rot(2,1), rot(2,2))), 
+                                          NxVec3(rot(2,0), rot(2,1), rot(2,2))),
                                  NxVec3(0,0,0));
             mPhysicsHelper->SetAgeiaMass(5000);
             mPhysicsHelper->SetResourceName(checkValue);
@@ -202,7 +197,7 @@ namespace SimCore
 #else
          {
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-            physObj->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::CONVEX_HULL);
+            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
             physObj->CreateFromProperties(mNodeForGeometry.get());
 
             switch(modelToLoad)
