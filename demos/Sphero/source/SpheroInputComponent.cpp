@@ -29,6 +29,7 @@
 
 #include <dtPhysics/physicsmaterialactor.h>
 #include <dtPhysics/physicscomponent.h>
+#include <dtPhysics/collisionprimitive.h>
 
 namespace Sphero
 {
@@ -36,13 +37,13 @@ namespace Sphero
    SpheroInputComponent::SpheroInputComponent(const std::string& name):
       BaseClass(name)
    {
-      
+
    }
 
    //////////////////////////////////////////////////////////////
    SpheroInputComponent::~SpheroInputComponent()
    {
-      
+
    }
 
    //////////////////////////////////////////////////////////////
@@ -97,9 +98,9 @@ namespace Sphero
       helper->SetMaterialActor(terrainMaterial);
       dtCore::RefPtr<dtPhysics::PhysicsObject> terrainObject = new dtPhysics::PhysicsObject();
       helper->AddPhysicsObject(*terrainObject);
-      terrainObject->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::TERRAIN_MESH);
+      terrainObject->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
       terrainObject->SetMass(1e12f);
-      terrainObject->SetMechanicsEnum(dtPhysics::PhysicsObject::MechanicsEnum::STATIC);
+      terrainObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
       terrainObject->CreateFromProperties(terrain->GetActor()->GetOSGNode());
 
       physicsComponent->RegisterHelper(*helper);
@@ -202,16 +203,20 @@ namespace Sphero
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject();
       helper->AddPhysicsObject(*physicsObject);
       physicsObject->SetName(projectile->GetName());
-      physicsObject->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::CUBE);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::BOX);
       physicsObject->SetMass(3.0f);
-      physicsObject->SetMechanicsEnum(dtPhysics::PhysicsObject::MechanicsEnum::DYNAMIC);
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
       physicsObject->SetExtents(osg::Vec3(1.0f, 1.0f, 2.0f));
       physicsObject->CreateFromProperties(NULL);
       physicsObject->SetActive(true);
-      physicsObject->GetPhysicsObjectImpl()->ApplyImpulse(dtPhysics::VectorType(0.0, 20.0, 0.0));
 
       dtCore::Transform xform;
       GetGameManager()->GetApplication().GetCamera()->GetTransform(xform);
+      osg::Matrix m;
+      xform.Get(m);
+      dtPhysics::VectorType impulse(20 * m(1, 0), 20 * m(1, 1), 20 * m(1, 2));
+      physicsObject->GetPhysicsObjectImpl()->ApplyImpulse(impulse);
+
       physicsObject->SetTransform(xform);
 
 
