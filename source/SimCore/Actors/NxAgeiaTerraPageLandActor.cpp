@@ -30,7 +30,7 @@
 
 #include <NxAgeiaWorldComponent.h>
 #include <SimCore/ModifiedStream.h>
-#include <SimCore/NxCollisionGroupEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 #include <NxCooking.h>
 #else
 #include <dtPhysics/physicscomponent.h>
@@ -45,7 +45,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("Terra Page Listener");
 
-      
+
       template< class T >
       class DrawableTriangleVisitor : public osg::NodeVisitor
       {
@@ -87,7 +87,7 @@ namespace SimCore
                      if(tempStateSet != NULL)
                         mOurList = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
 
-                     if(mOurList.valid()) 
+                     if(mOurList.valid())
                      {
                         if(mOurList->size())
                         {
@@ -110,7 +110,7 @@ namespace SimCore
                            //   legeode->addDrawable(d);
                            //}
                            // what's left?  Probably vegetation, which gets ignored for now
-                           else 
+                           else
                            {
                               //dtCore::RefPtr<osg::Geode> miniGeode = new osg::Geode();
                               //miniGeode->addDrawable(d);
@@ -133,14 +133,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         TerrainNode::TerrainNode(osg::Geode* toSet) : 
+         TerrainNode::TerrainNode(osg::Geode* toSet) :
             mGeodePTR(toSet)           // the group pointer of what was loaded
           , mFilledBL(false)           // filled for physics use yet?
           //, mIsBuilding(false)         // is this a building or not
           , mFlags(TILE_TODO_DISABLE)  // for flag system
          {
             SetPhysicsObject(NULL);
-         }            
+         }
 
          //////////////////////////////////////////////////////////////////////
          TerrainNode::~TerrainNode()
@@ -214,7 +214,7 @@ namespace SimCore
 
                if(loadNow)
                {
-                  terrainNodeToAdd->SetFilled( ParseTerrainNode( terrainNodeToAdd->GetGeodePointer(), 
+                  terrainNodeToAdd->SetFilled( ParseTerrainNode( terrainNodeToAdd->GetGeodePointer(),
                                                                   terrainNodeToAdd->GetUniqueID().ToString(),
                                                                   *terrainNodeToAdd));
                   if(terrainNodeToAdd->IsFilled())
@@ -252,23 +252,19 @@ namespace SimCore
          bool NxAgeiaTerraPageLandActor::FinalizeTerrain(int amountOfFrames)
          {
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
-            for(unsigned int i = 0; 
-               mFinalizeTerrainIter != mTerrainMap.end() 
-               && i < mTerrainMap.size() / amountOfFrames + 1; 
+            for(unsigned int i = 0;
+               mFinalizeTerrainIter != mTerrainMap.end()
+               && i < mTerrainMap.size() / amountOfFrames + 1;
                ++i)
             {
                TerrainNode* currentNode = mFinalizeTerrainIter->second.get();
-               
+
                if(currentNode->GetGeodePointer() == NULL)
                {
                   // Remove ageia stuff if its loaded.
                   if(currentNode->IsFilled())
                   {
-#ifdef AGEIA_PHYSICS
-                     mPhysicsHelper->ReleasePhysXObject(currentNode->GetUniqueID().ToString());
-#else
                      mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
-#endif
                   }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
@@ -283,7 +279,7 @@ namespace SimCore
                   currentNode->GetPhysicsObject()->SetActive(false);
 #endif
                }
-               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP  
+               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
                      &&currentNode->IsFilled())
                {
 #ifdef AGEIA_PHYSICS
@@ -293,16 +289,16 @@ namespace SimCore
                   currentNode->GetPhysicsObject()->SetActive(true);
 #endif
                }
-               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD 
+               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD
                      &&currentNode->GetGeodePointer() != NULL)
                {
                   // load the tile to ageia
-                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(), 
+                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(),
                                                             currentNode->GetUniqueID().ToString(),
                                                             *currentNode));
-                  
+
                }
-               
+
                if(currentNode->IsFilled() == false)
                   currentNode->SetFlagsToLoad();
                else
@@ -310,7 +306,7 @@ namespace SimCore
 
                ++mFinalizeTerrainIter;
             }
-           
+
             if(mFinalizeTerrainIter ==  mTerrainMap.end() )
             {
                return false;
@@ -324,7 +320,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mterrainIter;
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
-            for(mterrainIter = mTerrainMap.begin(); 
+            for(mterrainIter = mTerrainMap.begin();
                mterrainIter != mTerrainMap.end() ;
                ++mterrainIter)
             {
@@ -332,8 +328,8 @@ namespace SimCore
 
                if(currentNode->GetGeodePointer() != NULL && currentNode->IsFilled())
                {
-                  mPhysicsHelper->ReleasePhysXObject(currentNode->GetUniqueID().ToString());
-                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(), 
+                  mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
+                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(),
                      currentNode->GetUniqueID().ToString(),
                      *currentNode));
                }
@@ -342,12 +338,12 @@ namespace SimCore
          }
 
       //////////////////////////////////////////////////////////////////////
-      // Terrain tile loading 
+      // Terrain tile loading
       //////////////////////////////////////////////////////////////////////
 
 #ifdef AGEIA_PHYSICS
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse, 
+         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse,
             const std::string& nameOfNode, TerrainNode& terrainNode)
          {
             dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
@@ -361,7 +357,7 @@ namespace SimCore
             }
 
             mLoadedTerrainYet = true;
-            dtCore::RefPtr<DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder> > mv = 
+            dtCore::RefPtr<DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder> > mv =
                new DrawableTriangleVisitor<dtAgeiaPhysX::TriangleRecorder>(*this);
             nodeToParse->accept(*mv.get());
 
@@ -392,14 +388,14 @@ namespace SimCore
                for(funcIter = mv->mFunctor.begin(); funcIter != mv->mFunctor.end();
                    ++funcIter)
                {
-                  for(vertIter = (*funcIter).mVertices.begin(); 
+                  for(vertIter = (*funcIter).mVertices.begin();
                       vertIter != (*funcIter).mVertices.end(); ++vertIter)
                   {
                      gHeightfieldVerts[offset1] = (*vertIter).Vertex;
                      offset1++;
                   }
 
-                  for(trngIter = (*funcIter).mTriangles.begin(); 
+                  for(trngIter = (*funcIter).mTriangles.begin();
                       trngIter != (*funcIter).mTriangles.end(); ++trngIter)
                   {
                      gHeightfieldFaces[offset2]     = (*trngIter).Indices[0] + sizevarz;
@@ -421,7 +417,7 @@ namespace SimCore
                heightfieldDesc.pointStrideBytes   = sizeof(NxVec3);
                heightfieldDesc.triangleStrideBytes= 3*sizeof(NxU32);
                heightfieldDesc.points             = gHeightfieldVerts;
-               heightfieldDesc.triangles          = gHeightfieldFaces;       
+               heightfieldDesc.triangles          = gHeightfieldFaces;
                //heightfieldDesc.heightFieldVerticalAxis   = NX_Z;
                //heightfieldDesc.heightFieldVerticalExtent = -3000;
                heightfieldDesc.flags              = 0;
@@ -445,8 +441,8 @@ namespace SimCore
                NxActorDesc     actorDesc;
                heightfieldShapeDesc.meshData = worldComponent->GetPhysicsSDK().createTriangleMesh(SimCore::MMemoryReadBuffer(buf.data));
                actorDesc.shapes.pushBack(&heightfieldShapeDesc);
-               actorDesc.userData = (void *) mPhysicsHelper.get(); 
-               actorDesc.group = SimCore::NxCollisionGroup::GROUP_TERRAIN;
+               actorDesc.userData = (void *) mPhysicsHelper.get();
+               actorDesc.group = SimCore::CollisionGroup::GROUP_TERRAIN;
 
                delete [] gHeightfieldVerts;
                delete [] gHeightfieldFaces;
@@ -467,7 +463,7 @@ namespace SimCore
          }
 #else
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse, 
+         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse,
             const std::string& nameOfNode, TerrainNode& terrainNode)
          {
             if(nodeToParse == NULL)
@@ -480,21 +476,21 @@ namespace SimCore
             dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
             mPhysicsHelper->AddPhysicsObject(*newTile);
             terrainNode.SetPhysicsObject(newTile.get());
-            newTile->SetMechanicsEnum(dtPhysics::PhysicsObject::MechanicsEnum::STATIC);
-            newTile->SetPrimitiveType(dtPhysics::PhysicsObject::PhysicsPrimitiveType::TERRAIN_MESH);
+            newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+            newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
             newTile->CreateFromProperties(nodeToParse);
             return true;
          }
 #endif
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::PassThisGeometry(int fid, int smc, 
+         bool NxAgeiaTerraPageLandActor::PassThisGeometry(int fid, int smc,
             int soilTemperatureAndPressure, int soilWaterContent)
          {
             // 957 - arid vegetation
             // 301 - commercial building
             // 401 - residential building
             // 772 - training building
-            
+
             // Changed for buildings to static mesh internally
             //if(fid == 957 || fid == 301 || fid == 401 || fid == 772)
             //   return false;
@@ -505,7 +501,7 @@ namespace SimCore
          }
 
          ////////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::DetermineHowToLoadGeometry(int fid, 
+         void NxAgeiaTerraPageLandActor::DetermineHowToLoadGeometry(int fid,
             int smc, int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad)
          {
             // the case is mostly going to be is this a box or is this a tree...
@@ -534,7 +530,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
-         
+
          //////////////////////////////////////////////////////////////////////
          NxAgeiaTerraPageLandActorProxy::NxAgeiaTerraPageLandActorProxy()
          {
@@ -569,7 +565,7 @@ namespace SimCore
             dtGame::GameActorProxy::OnEnteredWorld();
 
             // Ignore this object from any recording
-            dtGame::LogController* logController 
+            dtGame::LogController* logController
                = dynamic_cast<dtGame::LogController*> (GetGameManager()->GetComponentByName("LogController"));
 
             if( logController != NULL )
