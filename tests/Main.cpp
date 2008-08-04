@@ -114,14 +114,14 @@ void SetupCEGUI(dtABC::Application& app)
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
    std::string path = dtCore::FindFileInPathList(guiScheme);
-   if(path.empty())
+   if (path.empty())
    {
       throw dtUtil::Exception("Failed to find the scheme file.",
          __FILE__, __LINE__);
    }
 
    std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
-   dtUtil::FileUtils::GetInstance().PushDirectory(dir);
+   //dtUtil::FileUtils::GetInstance().PushDirectory(dir);
    try
    {
       CEGUI::SchemeManager::getSingleton().loadScheme(path);
@@ -129,57 +129,75 @@ void SetupCEGUI(dtABC::Application& app)
    catch (const CEGUI::Exception& ex)
    {
       //make sure the directory gets popped if it fails.
-      dtUtil::FileUtils::GetInstance().PopDirectory();
+      //dtUtil::FileUtils::GetInstance().PopDirectory();
       std::ostringstream ss;
       ss << ex.getMessage();
       LOG_ERROR(ss.str());
       throw;
    }
-   dtUtil::FileUtils::GetInstance().PopDirectory();
+   //dtUtil::FileUtils::GetInstance().PopDirectory();
 }
 
 int main (int argc, char* argv[])
 {
    const std::string executable = argv[0];
+   bool changeDir = true;
    std::string singleSuiteName;
    std::string singleTestName;
 
-   // Get the test name from args.
-   if (argc > 1)
-      singleSuiteName = argv[1];
-   if (argc > 2)
-      singleTestName = argv[2];
-
-   // We need to change our directory based on the executable
-   dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);
-   if(info.fileType == dtUtil::FILE_NOT_FOUND)
+   int arg = 1;
+   std::string currArg;
+   for (int arg = 1; arg < argc; ++arg)
    {
-      LOG_ERROR(std::string("Unable to change to the directory of application \"")
+      currArg = argv[arg];
+      if (currArg == "-nochdir")
+      {
+         changeDir = false;
+      }
+      else if (singleSuiteName.empty())
+      {
+         singleSuiteName = currArg;
+      }
+      else if (singleSuiteName.empty())
+      {
+         singleTestName = currArg;
+      }
+      else
+      {
+         std::cerr << "Ignoring argument: " << currArg << std::endl;
+      }
+   }
+
+   if (changeDir)
+   {
+      // We need to change our directory based on the executable
+      dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);
+      if(info.fileType == dtUtil::FILE_NOT_FOUND)
+      {
+         LOG_ERROR(std::string("Unable to change to the directory of application \"")
          + executable + "\": file not found.");
-   }
-   else
-   {
-      std::string path = info.path;
-      LOG_ALWAYS("The path to the executable is: " + path);
-      LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
-
-      try
-      {
-         if(!info.path.empty())
-            dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
-
-         dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
       }
-      catch(const dtUtil::Exception &ex)
+      else
       {
-         ex.LogException(dtUtil::Log::LOG_ERROR);
+         std::string path = info.path;
+         LOG_ALWAYS("The path to the executable is: " + path);
+         LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
+
+         try
+         {
+            if(!info.path.empty())
+               dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
+
+            dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
+         }
+         catch(const dtUtil::Exception &ex)
+         {
+            ex.LogException(dtUtil::Log::LOG_ERROR);
+         }
       }
    }
-
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
-
-   dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
 
    GlobalApplication = new dtABC::Application("config.xml");
    GlobalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
@@ -188,6 +206,7 @@ int main (int argc, char* argv[])
    try
    {
       dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
+      dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*GlobalApplication);
    }
    catch(const dtUtil::Exception& ex)

@@ -51,11 +51,12 @@ IF (AUTO_RUN_TESTS)
     ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
                           COMMAND "\"$(TargetPath)\""
+                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} -nochdir
                           COMMENT "Run the unit tests")  
   ELSE (WIN32)
      ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
-                          COMMAND ${CMAKE_BINARY_DIR}/bin/allTests
+                          COMMAND ${CMAKE_BINARY_DIR}/bin/allTests -nochdir
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                           COMMENT Run the unit tests)
   ENDIF (WIN32)
