@@ -198,7 +198,6 @@ namespace SimCore
          {
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
             physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-            physObj->CreateFromProperties(mNodeForGeometry.get());
 
             switch(modelToLoad)
             {
