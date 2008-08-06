@@ -180,7 +180,7 @@
          </parameter>
          <parameter name="glossTexture">
             <texture2D textureUnit="1">
-               <source type="Image">Textures/placeholder/gloss_map.png</source>
+               <source type="Image">Textures/gloss_map.png</source>
                <wrap axis="S" mode="Repeat"/>
                <wrap axis="T" mode="Repeat"/>
             </texture2D>
