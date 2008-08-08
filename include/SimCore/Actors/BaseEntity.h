@@ -185,7 +185,7 @@ namespace SimCore
              * Sets the force for which this entity is fighting.
              * @param newForceEnum the new enum value to set.
              */
-            void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& newForceEnum);
+            virtual void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& newForceEnum);
 
             /**
              * @return the force for which this entity is fighting.
@@ -196,7 +196,7 @@ namespace SimCore
              * Sets the service of this entity
              * @param service The new service
              */
-            void SetService(BaseEntityActorProxy::ServiceEnum &service);
+            virtual void SetService(BaseEntityActorProxy::ServiceEnum &service);
 
             /**
              * Gets the service of this entity
@@ -409,14 +409,14 @@ namespace SimCore
             /**
              * Sets the offset from the ground the actor should be clamped to.
              * This only matters if flying is set to false.
-             * @param newOffset the new offset value. 
+             * @param newOffset the new offset value.
              */
             void SetGroundOffset(float newOffset);
-          
+
             ///@return The distance from the ground that the actor should be.
             float GetGroundOffset() const;
 
-            /** 
+            /**
              * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
              * @param tableName The name of the table, usually the same name as the entity class
              */
@@ -425,28 +425,28 @@ namespace SimCore
             std::string GetMunitionDamageTableName() const;
 
             /**
-             * Sets the maximum translation offset from the last update translation this 
+             * Sets the maximum translation offset from the last update translation this
              * actor may have before forcing an update message to be sent.
              */
-            void SetMaxTranslationError(float distance) 
-            { 
+            void SetMaxTranslationError(float distance)
+            {
                mMaxTranslationError = distance;
                mMaxTranslationError2 = distance * distance;
             }
-            
+
             ///@return the max translation error allowed before forcing an update.
             float GetMaxTranslationError() const { return mMaxTranslationError; }
 
             /**
-             * Sets the maximum rotation offset (in degrees) from the last update rotation this 
+             * Sets the maximum rotation offset (in degrees) from the last update rotation this
              * actor may have before forcing an update message to be sent.
              */
-            void SetMaxRotationError(float rotation) 
-            { 
-               mMaxRotationError = rotation; 
+            void SetMaxRotationError(float rotation)
+            {
+               mMaxRotationError = rotation;
                mMaxRotationError2 = rotation * rotation;
             }
-            
+
             ///@return the max rotation (in degrees) error allowed before forcing an update.
             float GetMaxRotationError() const { return mMaxRotationError; }
 
@@ -477,7 +477,7 @@ namespace SimCore
             void SetModelRotation(const osg::Vec3& hpr);
 
             ///@return the rotation on the model matrix
-            osg::Vec3 GetModelRotation() const; 
+            osg::Vec3 GetModelRotation() const;
 
             /**
              * Overridden to handle dead-reckoning and other such issues related to rendering a remote actor.
@@ -510,7 +510,7 @@ namespace SimCore
              *              The location components will be measured in meters.
              */
             virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location ) {}
-            
+
             /// Getter for the time until next update value.  Used for testing
             float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
 
@@ -519,20 +519,20 @@ namespace SimCore
 
             void SetEntityType( const std::string& entityType );
             std::string GetEntityType() const;
-            
+
          protected:
             virtual ~BaseEntity();
 
             dtUtil::Log* mLogger;
-            float mTimeUntilNextUpdate; 
+            float mTimeUntilNextUpdate;
 
-            /** 
+            /**
              * @return the matrix transform node that holds the scale.  This should be the parent
              *         of all other nodes, not the one returned by GetOSGNode().
              */
             osg::MatrixTransform& GetScaleMatrixTransform();
 
-            /** 
+            /**
              * @return the matrix transform node that holds the scale.  This should be the parent
              *         of all other nodes, not the one returned by GetOSGNode().
              */
@@ -587,7 +587,7 @@ namespace SimCore
 
             /// Position of the engine for smoke
             osg::Vec3 mEngineSmokePosition;
-            
+
             /// the default xyz scale of the model
             osg::Vec3 mDefaultScale;
 
