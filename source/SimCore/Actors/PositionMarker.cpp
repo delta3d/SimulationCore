@@ -31,15 +31,15 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////////////////////////////////
-      PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy): 
+      PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy):
          BaseClass(proxy),
          mReportTime(0.0),
          mAssociatedEntity(NULL),
          mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER),
          mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
       {
-         dtCore::RefPtr<osg::Sphere> sphere = new osg::Sphere(osg::Vec3(0.0, 0.0, 10.0), 5.0);
-         dtCore::RefPtr<osg::Box> box = new osg::Box(osg::Vec3(0.0, 0.0, 2.5), 25.0, 15.0, 5.0);
+         dtCore::RefPtr<osg::Sphere> sphere = new osg::Sphere(osg::Vec3(0.0, 0.0, 3.0), 1.0);
+         dtCore::RefPtr<osg::Box> box = new osg::Box(osg::Vec3(0.0, 0.0, 1.0), 5.0, 4.0, 2.0);
          dtCore::RefPtr<osg::ShapeDrawable> sphereDrawable = new osg::ShapeDrawable(sphere.get());
          dtCore::RefPtr<osg::ShapeDrawable> boxDrawable = new osg::ShapeDrawable(box.get());
          dtCore::RefPtr<osg::Geode> geode = new osg::Geode();
@@ -52,8 +52,7 @@ namespace SimCore
          geode->addDrawable(boxDrawable.get());
          mSphere = sphereDrawable;
          mBox = boxDrawable;
-         SetSphereColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
-         SetBoxColor(osg::Vec4(0.5, 1.0, 5.0, 0.4));
+         SetForceAffiliation(GetForceAffiliation());
          osg::Group* g = GetOSGNode()->asGroup();
          g->addChild(geode.get());
 
@@ -81,6 +80,35 @@ namespace SimCore
       {
          return mReportTime;
       }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce)
+      {
+         BaseClass::SetForceAffiliation(markerForce);
+         if (markerForce == BaseEntityActorProxy::ForceEnum::FRIENDLY)
+         {
+            SetSphereColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
+            SetBoxColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
+         }
+         else if (markerForce == BaseEntityActorProxy::ForceEnum::NEUTRAL)
+         {
+            SetSphereColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
+            SetBoxColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
+         }
+         else if (markerForce == BaseEntityActorProxy::ForceEnum::INSURGENT ||
+                  markerForce == BaseEntityActorProxy::ForceEnum::OPPOSING)
+         {
+            SetSphereColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
+            SetBoxColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
+         }
+         else
+         {
+            SetSphereColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
+            SetBoxColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
+         }
+
+      }
+
 
       ////////////////////////////////////////////////////////////////////////
       void PositionMarker::SetSourceForce(BaseEntityActorProxy::ForceEnum& sourceForce)
@@ -202,6 +230,13 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::OnEnteredWorld()
+      {
+         BaseClass::OnEnteredWorld();
+         RegisterWithDeadReckoningComponent();
+      }
+
+      ////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////
       /////////////    Actor Proxy    ////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////
@@ -300,7 +335,7 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "
                   "type of the entity marked by this position.");
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE, 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE,
                   PROPERTY_ICON_IMAGE, PROPERTY_ICON_IMAGE,
                   dtDAL::ResourceActorProperty::SetFuncType(pm, &PositionMarker::LoadImage),
                   PROPERTY_ICON_IMAGE_DESC, POSITION_MARKER_GROUP

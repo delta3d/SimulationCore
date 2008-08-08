@@ -44,6 +44,11 @@ namespace SimCore
             const osg::Vec4& GetSphereColor();
             void SetBoxColor(const osg::Vec4& vec);
             const osg::Vec4& GetBoxColor();
+
+            /// overridden to set the colors when the force changes.
+            virtual void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce);
+
+            virtual void OnEnteredWorld();
          private:
 
             double mReportTime;
