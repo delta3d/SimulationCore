@@ -145,7 +145,6 @@ int main (int argc, char* argv[])
    std::string singleSuiteName;
    std::string singleTestName;
 
-   int arg = 1;
    std::string currArg;
    for (int arg = 1; arg < argc; ++arg)
    {
