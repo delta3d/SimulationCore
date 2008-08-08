@@ -128,6 +128,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::BLIP_ACTOR_TYPE(
+               new dtDAL::ActorType("Blip", "Entity", ""));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(
                new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels", "",
                         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
@@ -198,6 +201,8 @@ namespace SimCore
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
 
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<PositionMarkerActorProxy>(BLIP_ACTOR_TYPE.get());
 
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",

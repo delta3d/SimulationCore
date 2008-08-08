@@ -79,6 +79,8 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> OCEAN_WATER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> NECC_BOAT_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> BLIP_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 
