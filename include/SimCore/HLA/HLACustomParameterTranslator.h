@@ -56,7 +56,7 @@ namespace dtHLAGM
 }
 
 namespace SimCore
-{   
+{
    namespace HLA
    {
       /**
@@ -72,6 +72,8 @@ namespace SimCore
             static const HLACustomAttributeType CONTINUOUS_CONTROL_ARRAY_TYPE;
             static const HLACustomAttributeType VEC3F_TYPE;
             static const HLACustomAttributeType VEC3D_TYPE;
+            /// time in milliseconds
+            static const HLACustomAttributeType MILLISECOND_TIME_TYPE;
 
          private:
             HLACustomAttributeType(const std::string& name, unsigned char id, size_t encodedLength)
@@ -92,12 +94,12 @@ namespace SimCore
          public:
             HLACustomParameterTranslator();
 
-            virtual void MapToMessageParameters(const char* buffer, size_t size, 
-               std::vector<dtCore::RefPtr<dtGame::MessageParameter> >& parameters, 
+            virtual void MapToMessageParameters(const char* buffer, size_t size,
+               std::vector<dtCore::RefPtr<dtGame::MessageParameter> >& parameters,
                const dtHLAGM::OneToManyMapping& mapping) const;
 
-            virtual void MapFromMessageParameters(char* buffer, size_t& maxSize, 
-               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> >& parameters, 
+            virtual void MapFromMessageParameters(char* buffer, size_t& maxSize,
+               std::vector<dtCore::RefPtr<const dtGame::MessageParameter> >& parameters,
                const dtHLAGM::OneToManyMapping& mapping) const;
 
             virtual const dtHLAGM::AttributeType& GetAttributeTypeForName(const std::string& name) const;
@@ -112,21 +114,34 @@ namespace SimCore
 
             void MapToGroupParamFromControlArray(
                const dtHLAGM::AttributeType& type,
-               const char* buffer, 
+               const char* buffer,
                const size_t size,
                dtDAL::NamedGroupParameter& parameter ) const;
 
             void MapToParamFromVec3(
-               const char* buffer, 
+               const char* buffer,
                const size_t size,
                dtGame::MessageParameter& parameter,
                const dtDAL::DataType& parameterDataType ) const;
 
             void MapFromParamToVec3(
-               char* buffer, 
-               const size_t maxSize, 
-               const dtGame::MessageParameter& parameter, 
+               char* buffer,
+               const size_t maxSize,
+               const dtGame::MessageParameter& parameter,
                const dtDAL::DataType& parameterDataType) const;
+
+            void MapToParamFromTime(
+               const char* buffer,
+               const size_t size,
+               dtGame::MessageParameter& parameter,
+               const dtDAL::DataType& parameterDataType ) const;
+
+            void MapFromParamToTime(
+               char* buffer,
+               size_t& maxSize,
+               const dtGame::MessageParameter& parameter,
+               const dtDAL::DataType& parameterDataType) const;
+
 
             // This function allows the translator access to the table that
             // maps munition names to the munition DIS identifiers.

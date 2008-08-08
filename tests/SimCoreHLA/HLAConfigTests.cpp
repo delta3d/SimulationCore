@@ -1,6 +1,6 @@
 /*
  * Delta3D Open Source Game and Simulation Engine
- * Copyright (C) 2005, BMH Associates, Inc.
+ * Copyright (C) 2005-2008, Alion Science and Technology
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -51,20 +51,12 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-#ifdef DELTA_WIN32
-   #include <Windows.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 
-class HLAConfigTests : public CPPUNIT_NS::TestFixture 
+class HLAConfigTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HLAConfigTests);
-  
+
       CPPUNIT_TEST(TestLoadBasicConfigXML);
 
    CPPUNIT_TEST_SUITE_END();
@@ -85,7 +77,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HLAConfigTests);
 // Called implicitly by CPPUNIT when the app starts
 void HLAConfigTests::setUp()
 {
-   
+
    std::string logName("HLAConfigTest");
    //dtUtil::Log::GetInstance("hlafomconfigxml.cpp").SetLogLevel(dtUtil::Log::LOG_DEBUG);
    logger = &dtUtil::Log::GetInstance(logName);
@@ -94,7 +86,7 @@ void HLAConfigTests::setUp()
    dtCore::Scene* scene = GetGlobalApplication().GetScene();
    mGameManager = new dtGame::GameManager(*scene);
    SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
-} 
+}
 
 // Called implicitly by CPPUNIT when the app terminates
 void HLAConfigTests::tearDown()
@@ -102,7 +94,7 @@ void HLAConfigTests::tearDown()
    mTranslator = NULL;
 
    mGameManager = NULL;
-   
+
 }
 
 void HLAConfigTests::TestLoadBasicConfigXML()
@@ -111,11 +103,11 @@ void HLAConfigTests::TestLoadBasicConfigXML()
    {
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
-      config.LoadConfiguration(*mTranslator, "Federations/HLAMapping.xml");      
+      config.LoadConfiguration(*mTranslator, "Federations/HLAMapping.xml");
    }
    catch (const dtUtil::Exception& ex)
    {
       CPPUNIT_FAIL(ex.What());
    }
-   
+
 }
