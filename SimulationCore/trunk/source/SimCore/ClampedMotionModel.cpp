@@ -68,6 +68,11 @@ namespace SimCore
    {
    }
 
+   // Curt Hack - Mouse update test code
+   //static float testTimeSincePrint = 0.0;
+   //static int testNumberOfZeros = 0;
+   //static int testNumberOfCalls = 0;
+
    //////////////////////////////////////////////////////////////////////////         
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
@@ -76,6 +81,28 @@ namespace SimCore
          && IsEnabled() 
          && ( GetMouse()->GetHasFocus() || mTestMode ) )
       {
+         // Curt Hack - Mouse update test code
+         /*
+         const double myTime = static_cast<const double*>(data->userData)[1];
+
+         // CURT TEST
+         testNumberOfCalls ++;
+         testTimeSincePrint += myTime;
+         if (GetUpDownMouseAxis()->GetState() < 0.0001)
+            testNumberOfZeros++;
+
+         if (testTimeSincePrint > 5.0f)
+         {
+            std::cout << "Attached Motion Model Report [" << testTimeSincePrint << "s] Zeros["
+               << testNumberOfZeros << "] Calls [" << testNumberOfCalls << "] FPS [" << 
+               (int) (testNumberOfCalls/testTimeSincePrint) << "] UP-PS[" << 
+               (int) ((testNumberOfCalls-testNumberOfZeros)/testTimeSincePrint) << "]." << std::endl;
+            testNumberOfZeros = 0;
+            testNumberOfCalls = 0;
+            testTimeSincePrint = 0.0f;
+         }*/
+
+
          if( ! IsFreeLookHeld() )
          {
             if( mResetRotation )
