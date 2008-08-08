@@ -195,8 +195,8 @@ namespace SimCore
             mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Received a time value message: \n%s", msgString.c_str());
          }
 
-         if (tvMsg.GetTimeMaster() == mTimeMasterName ||
-                  tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
+         if (true)//tvMsg.GetTimeMaster() == mTimeMasterName ||
+             //     tvMsg.GetSenderName() == mTimeSyncSenderName.ToString())
          {
             mTimeMasterName = tvMsg.GetTimeMaster();
 
