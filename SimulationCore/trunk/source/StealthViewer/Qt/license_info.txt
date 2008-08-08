@@ -1,6 +1,6 @@
 /* -*-c++-*-
-* Driver Demo - DriverActorRegistry (.cpp & .h) - Using 'The MIT License'
-* Copyright (C) 2008, Alion Science and Technology Corporation
+* Stealth Viewer - Files in this dir named ui_*.h - Using 'The MIT License'
+* Copyright (C) 2006-2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 * 
-* @author Curtiss Murphy
+* This software was developed by Alion Science and Technology Corporation under
+* circumstances in which the U. S. Government may have rights in the software.
+*
 */
-#ifndef _DRIVER_ACTOR_REGISTRY_H_
-#define _DRIVER_ACTOR_REGISTRY_H_
 
-#include <dtDAL/actorpluginregistry.h>
-#include <DriverExport.h>
-
-
-namespace DriverDemo 
-{
-   /**
-    * Class that exports the applicable actor proxies to a library
-    */
-   class DRIVER_DEMO_EXPORT DriverActorRegistry : public dtDAL::ActorPluginRegistry
-   {
-      public:
-
-         //static dtCore::RefPtr<dtDAL::ActorType> TEST_ACTOR_TYPE;
-
-#ifdef AGEIA_PHYSICS
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
-         static dtCore::RefPtr<dtDAL::ActorType> HOVER_TARGET_ACTOR_TYPE;
-#endif
-
-         /// Constructor
-         DriverActorRegistry();
-
-         /// Registers all of the actor proxies to be exported
-         void RegisterActorTypes();
-   };	
-}
-
-#endif 
