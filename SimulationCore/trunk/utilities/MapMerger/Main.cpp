@@ -40,6 +40,8 @@
 #include <dtDAL/map.h>
 #include <dtDAL/librarymanager.h>
 
+#include <dtAudio/audiomanager.h>
+
 #include <set>
 #include <vector>
 
@@ -171,6 +173,9 @@ int main (int argc, char* argv[])
       Usage();
    }
 
+   dtAudio::AudioManager::Instantiate();
+   dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
+
    try
    {
       dtDAL::Project::GetInstance().SetContext(projectPath);
@@ -193,9 +198,12 @@ int main (int argc, char* argv[])
       MergeEvents(mapFrom, mapTo);
 
       dtDAL::Project::GetInstance().SaveMap(mapTo);
+
+      dtAudio::AudioManager::Destroy();
    }
    catch(const dtUtil::Exception& ex)
    {
+      dtAudio::AudioManager::Destroy();
       LOG_ERROR(ex.ToString());
       return 1;
    }
