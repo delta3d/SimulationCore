@@ -20,7 +20,12 @@ LINK_WITH_VARIABLES(${PROG_NAME}
                                    DTUTIL_LIBRARY
                                    DTDAL_LIBRARY
                                    DTCORE_LIBRARY
-                                   )
+                                   OSG_LIBRARY
+                                   OSGUTIL_LIBRARY
+                                   OSGTEXT_LIBRARY
+                                   ODE_LIBRARY
+                                   XERCES_LIBRARY
+                                   OSGDB_LIBRARY)
 
 TARGET_LINK_LIBRARIES(${PROG_NAME} 
    ${OPENGL_LIBRARY}
