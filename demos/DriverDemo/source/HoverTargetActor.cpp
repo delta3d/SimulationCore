@@ -36,7 +36,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/NxCollisionGroupEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/MunitionsComponent.h>
 
 #include <dtUtil/nodeprintout.h>
@@ -261,7 +261,7 @@ namespace DriverDemo
    float HoverTargetActor::ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
       const osg::Vec3 &direction, float &distanceToHit)
    {
-      static const int GROUPS_FLAGS = (1 << SimCore::NxCollisionGroup::GROUP_TERRAIN);
+      static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
       float estimatedForceAdjustment = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z; // gravity 
       osg::Vec3 terrainHitLocation;
 
