@@ -36,7 +36,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/NxCollisionGroupEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <dtUtil/nodeprintout.h>
 
