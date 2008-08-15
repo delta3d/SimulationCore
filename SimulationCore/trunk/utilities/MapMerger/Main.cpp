@@ -172,10 +172,14 @@ void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
       dtDAL::GameEvent* foundEvent = mapToEventMan.FindEvent(curEvent->GetUniqueId());
       if (foundEvent != NULL)
       {
-         mapToEventMan.RemoveEvent(foundEvent->GetUniqueId());
+         foundEvent->SetDescription(curEvent->GetDescription());
+         foundEvent->SetName(curEvent->GetName());
+      }
+      else
+      {
+         mapToEventMan.AddEvent(*curEvent);
       }
 
-      mapToEventMan.AddEvent(*curEvent);
    }
 }
 
