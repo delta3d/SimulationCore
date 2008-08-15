@@ -28,12 +28,14 @@
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/stringutils.h>
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
 
 #include <dtDAL/actorproxy.h>
+#include <dtDAL/actorproperty.h>
 #include <dtDAL/project.h>
 #include <dtDAL/gameevent.h>
 #include <dtDAL/gameeventmanager.h>
@@ -46,11 +48,12 @@
 #include <vector>
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 
 void Usage()
 {
-   std::cerr << "Usage: MapMerger <projectPath> <mapFrom> <mapTo>" << std::endl;
+   std::cerr << "Usage: MapMerger [-i ignorePropsFile] <projectPath> <mapFrom> <mapTo>" << std::endl;
    exit(1);
 }
 
@@ -97,7 +100,42 @@ void MergeLibraries(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
    }
 }
 
-void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
+void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::set<std::string> ignorePropsSet)
+{
+   std::vector<const dtDAL::ActorProperty*> props;
+   from.GetPropertyList(props);
+
+   std::vector<const dtDAL::ActorProperty*>::const_iterator i, iend;
+   i = props.begin();
+   iend = props.end();
+   for (; i != iend; ++i)
+   {
+      const dtDAL::ActorProperty& curProp = **i;
+      if (curProp.IsReadOnly())
+      {
+         continue;
+      }
+
+      /// make sure the property name is not in the ignore set.
+      if (ignorePropsSet.find(curProp.GetName()) == ignorePropsSet.end())
+      {
+         dtDAL::ActorProperty* toProp = to.GetProperty(curProp.GetName());
+         if (toProp == NULL)
+         {
+            std::cerr << "Proxies with the same Id, don't have the same properties?? \n\n"
+            << "   Property: \"" << curProp.GetName() << "\"\n   First ActorType: \"" << from.GetActorType().ToString() << "\"\n"
+            << "   Second ActorType: \"" << to.GetActorType().ToString() << "\""
+            << std::endl;
+         }
+         else
+         {
+            toProp->CopyFrom(curProp);
+         }
+      }
+   }
+}
+
+void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> ignorePropsSet)
 {
    std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxiesFrom;
    mapFrom.GetAllProxies(proxiesFrom);
@@ -110,10 +148,12 @@ void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
       dtDAL::ActorProxy* foundProxy = mapTo.GetProxyById(mapFromProxyCurrent.GetId());
       if (foundProxy != NULL)
       {
-         mapTo.RemoveProxy(*foundProxy);
+         SyncProperties(mapFromProxyCurrent, *foundProxy, ignorePropsSet);
       }
-
-      mapTo.AddProxy(mapFromProxyCurrent);
+      else
+      {
+         mapTo.AddProxy(mapFromProxyCurrent);
+      }
    }
 }
 
@@ -139,6 +179,46 @@ void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
    }
 }
 
+/** \brief A functor which tests if a character is part of a newline.
+  * This "predicate" needed to have 'state', the locale member.
+  */
+class IsEOL : public std::unary_function<char, bool>
+{
+   public:
+      bool operator()(char c) const { return c == '\n' || c == '\r'; }
+
+private:
+   std::locale mLocale;
+};
+
+void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resultingList)
+{
+   dtUtil::FileInfo fi = dtUtil::FileUtils::GetInstance().GetFileInfo(path);
+   if (fi.fileType != dtUtil::REGULAR_FILE)
+   {
+      throw dtUtil::Exception("Unable to open file \"" + path + "\" for a list of properties to ignore when copying from the base map.",
+               __FILE__, __LINE__);
+   }
+
+   char* c = new char[fi.size + 1];
+
+   std::ifstream ifs(path.c_str(), std::ios_base::in);
+   ifs.read(c, fi.size);
+   if (ifs.bad())
+   {
+      delete[] c;
+      throw dtUtil::Exception("Unable to read from file \"" + path + "\" for a list of properties to ignore when copying from the base map.",
+               __FILE__, __LINE__);
+
+   }
+
+   c[fi.size] = '\0';
+   std::string data(c);
+
+   dtUtil::StringTokenizer<IsEOL> tokenizer;
+   tokenizer.tokenize(resultingList, data);
+}
+
 int main (int argc, char* argv[])
 {
    const std::string executable = argv[0];
@@ -146,11 +226,25 @@ int main (int argc, char* argv[])
    std::string mapFromName;
    std::string mapToName;
 
+   std::string ignorePropsFile;
    std::string currArg;
    for (int arg = 1; arg < argc; ++arg)
    {
       currArg = argv[arg];
-      if (projectPath.empty())
+      if (currArg == "-i")
+      {
+         if (arg + 1 < argc)
+         {
+            ignorePropsFile = argv[arg + 1];
+            ++arg;
+         }
+         else
+         {
+            std::cerr << "Passed -i without an argument.\n";
+            Usage();
+         }
+      }
+      else if (projectPath.empty())
       {
          projectPath = currArg;
       }
@@ -193,8 +287,16 @@ int main (int argc, char* argv[])
          PrintMissingData(mapTo);
       }
 
+      std::vector<std::string> ignoreProps;
+      if (!ignorePropsFile.empty())
+      {
+         ReadIgnoreProplist(ignorePropsFile, ignoreProps);
+      }
+      std::set<std::string> ignorePropsSet;
+      ignorePropsSet.insert(ignoreProps.begin(), ignoreProps.end());
+
       MergeLibraries(mapFrom, mapTo);
-      MergeProxies(mapFrom, mapTo);
+      MergeProxies(mapFrom, mapTo, ignorePropsSet);
       MergeEvents(mapFrom, mapTo);
 
       dtDAL::Project::GetInstance().SaveMap(mapTo);
