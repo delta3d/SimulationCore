@@ -61,7 +61,7 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////
-      void PlatformWithPhysics::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
+      void PlatformWithPhysics::SetDamageState(BaseEntityActorProxy::DamageStateEnum& damageState)
       {
          Platform::SetDamageState( damageState );
          if(mLoadGeomFromNode == true)
