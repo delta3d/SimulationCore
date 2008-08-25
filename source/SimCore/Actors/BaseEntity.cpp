@@ -17,7 +17,7 @@
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
 * This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
+* circumstances in which the U.a S. Government may have rights in the software.
 */
 #include <prefix/SimCorePrefix-src.h>
 
@@ -42,7 +42,7 @@ namespace SimCore
 
    namespace Actors
    {
-      
+
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::DamageStateEnum);
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE("No Damage");
@@ -202,7 +202,7 @@ namespace SimCore
          dtDAL::ResourceDescriptor rdFire("Particles:fire.osg");
          rp->SetValue(&rdFire);
          AddProperty(rp.get());
-         
+
          rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Engine smoke particles", "Engine smoke particles",
             dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokeFile),
@@ -238,19 +238,19 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDeadReckoningAlgorithm),
             "Sets the enumerated dead reckoning algorithm to use.", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>("Force Affiliation", "Force Affiliation", 
-            dtDAL::MakeFunctor(e, &BaseEntity::SetForceAffiliation), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetForceAffiliation), 
+         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>("Force Affiliation", "Force Affiliation",
+            dtDAL::MakeFunctor(e, &BaseEntity::SetForceAffiliation),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetForceAffiliation),
             "The force for which the entity is fighting.", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("Ground Offset", "Ground Offset", 
-            dtDAL::MakeFunctor(e, &BaseEntity::SetGroundOffset), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetGroundOffset), 
+         AddProperty(new dtDAL::FloatActorProperty("Ground Offset", "Ground Offset",
+            dtDAL::MakeFunctor(e, &BaseEntity::SetGroundOffset),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetGroundOffset),
             "Sets the offset from the ground this entity should have.  This only matters if it is not flying.", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service", 
-            dtDAL::MakeFunctor(e, &BaseEntity::SetService), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetService), 
+         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
+            dtDAL::MakeFunctor(e, &BaseEntity::SetService),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetService),
             "Sets the service of this entity", BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::StringActorProperty("Munition Damage Table","Munition Damage Table",
@@ -261,26 +261,26 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_DEFAULT_SCALE_DESC
             ("Changes the desired base scale to make the model/geometry "
                   "of this model correct for the rendering.  Model Scale = Default * Magnification");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE, 
-            dtDAL::MakeFunctor(e, &BaseEntity::SetDefaultScale), 
+         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_DEFAULT_SCALE, PROPERTY_DEFAULT_SCALE,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetDefaultScale),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDefaultScale),
             PROPERTY_DEFAULT_SCALE_DESC,
             BASE_ENTITY_GROUP));
-         
+
          static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC
             ("Changes the amount the geometry of the entity is magnified.  Model Scale = Default * Magnification");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_SCALE_MAGNIFICATION_FACTOR, PROPERTY_SCALE_MAGNIFICATION_FACTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetScaleMagnification), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetScaleMagnification), 
+            dtDAL::MakeFunctor(e, &BaseEntity::SetScaleMagnification),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetScaleMagnification),
             PROPERTY_SCALE_MAGNIFICATION_FACTOR_DESC,
             BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_MODEL_SCALE_DESC
             ("Returns the current scale of the model.  Model Scale = Default * Magnification");
          dtDAL::Vec3ActorProperty* modelScaleProp = new dtDAL::Vec3ActorProperty(
-            PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE, 
-            dtDAL::Vec3ActorProperty::SetFuncType(), 
-            dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale), 
+            PROPERTY_MODEL_SCALE, PROPERTY_MODEL_SCALE,
+            dtDAL::Vec3ActorProperty::SetFuncType(),
+            dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetModelScale),
             PROPERTY_MODEL_SCALE_DESC,
             BASE_ENTITY_GROUP);
 
@@ -291,9 +291,9 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_MODEL_ROTATION_DESC
             ("Model offset rotation HPR");
          AddProperty(new dtDAL::Vec3ActorProperty(
-            PROPERTY_MODEL_ROTATION, PROPERTY_MODEL_ROTATION, 
-            dtDAL::MakeFunctor(e, &BaseEntity::SetModelRotation), 
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetModelRotation), 
+            PROPERTY_MODEL_ROTATION, PROPERTY_MODEL_ROTATION,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetModelRotation),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetModelRotation),
             PROPERTY_MODEL_ROTATION_DESC,
             BASE_ENTITY_GROUP));
 
@@ -336,7 +336,7 @@ namespace SimCore
       void BaseEntityActorProxy::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         
+
          if (!IsRemote())
          {
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
@@ -445,10 +445,10 @@ namespace SimCore
       void BaseEntity::InitDeadReckoningHelper()
       {
          mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
-         
+
          SetFlying(false);
-                  
-         // attempt to fix the z-fighting on treads and wheels that are 
+
+         // attempt to fix the z-fighting on treads and wheels that are
          // very close to the ground. We move the vehicle up about 3-4 inches...
          mDeadReckoningHelper->SetGroundOffset(0.09);
       }
@@ -470,16 +470,16 @@ namespace SimCore
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
 
-            // For local actors, by default, we don't want to use smoothing on our Dead Reckoning. 
-            // If we do, then when we check to see if we should publish, we'll be off by more than we 
+            // For local actors, by default, we don't want to use smoothing on our Dead Reckoning.
+            // If we do, then when we check to see if we should publish, we'll be off by more than we
             // should, and be more likely to republish.
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
          }
          else
          {
-            // For remote actors, we want to make sure they have smoothing on DR changes. 
-            // Note - this is usually set by the DR helper, but in case it's not, or in the case 
+            // For remote actors, we want to make sure they have smoothing on DR changes.
+            // Note - this is usually set by the DR helper, but in case it's not, or in the case
             // that an actor was changed from local to remote, we want a value... yes, it's obscure
             if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
                GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(
@@ -495,7 +495,7 @@ namespace SimCore
       {
          SetFlamesPresent(false);
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDeadReckoningHelper(dtGame::DeadReckoningHelper* pHelper)
       {
@@ -507,7 +507,7 @@ namespace SimCore
       {
          return *mDamageState;
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
       {
@@ -519,7 +519,7 @@ namespace SimCore
       {
          mDRAlgorithm = &newAlgorithm;
          //if the entity is destroyed, it should be set to static unless DR is turned off altogether.
-         if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED 
+         if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED
          &&  newAlgorithm != dtGame::DeadReckoningAlgorithm::NONE)
          {
             mDeadReckoningHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
@@ -637,7 +637,7 @@ namespace SimCore
          mDrawing = newDrawing;
          HandleModelDrawToggle(mDrawing);
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::IsPlayerAttached() const
       {
@@ -677,7 +677,7 @@ namespace SimCore
 
                if( renderComp != NULL )
                {
-                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+                  SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                      renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
                   dl->mTarget = this;
                   dl->mAutoDeleteLightOnTargetNull = true;
@@ -771,7 +771,7 @@ namespace SimCore
          }
       }
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::TickRemote(const dtGame::Message& tickMessage) 
+      void BaseEntity::TickRemote(const dtGame::Message& tickMessage)
       {
       }
 
@@ -780,15 +780,15 @@ namespace SimCore
       {
          bool forceUpdate = fullUpdate;
 
-         // If it's going to be a full update, then we don't have to check. 
-         // If it's none, then we don't WANT to check.  
-         if (!forceUpdate && GetDeadReckoningHelper().GetDeadReckoningAlgorithm() != 
+         // If it's going to be a full update, then we don't have to check.
+         // If it's none, then we don't WANT to check.
+         if (!forceUpdate && GetDeadReckoningHelper().GetDeadReckoningAlgorithm() !=
             dtGame::DeadReckoningAlgorithm::NONE)
          {
             // check to see if it's moved or turned enough to warrant one.
 
             osg::Vec3 distanceMoved = pos - GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
-            // Note the rotation check isn't perfect (ie, not a quaternion), so you might get 
+            // Note the rotation check isn't perfect (ie, not a quaternion), so you might get
             // an extra update, but it's close enough and is very cheap processor wise.
             osg::Vec3 distanceTurned = rot - GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
 
@@ -816,19 +816,19 @@ namespace SimCore
          }
          return forceUpdate;
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::RegisterWithDeadReckoningComponent()
       {
          dtGame::DeadReckoningComponent* drc = NULL;
-         
+
          GetGameActorProxy().GetGameManager()->
             GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drc);
 
          if (drc != NULL)
          {
             drc->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
-         } 
+         }
          else
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
@@ -851,9 +851,9 @@ namespace SimCore
 /*
          if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
          {
-            const dtGame::ActorUpdateMessage &updateMessage = 
+            const dtGame::ActorUpdateMessage &updateMessage =
                static_cast<const dtGame::ActorUpdateMessage&> (message);
-            const dtGame::MessageParameter *velParameter = 
+            const dtGame::MessageParameter *velParameter =
                updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
 
             // Debug Print out test stuff
@@ -865,7 +865,7 @@ namespace SimCore
                osg::Vec3 rot;
                ourTransform.GetRotation(rot);
                std::ostringstream oss;
-               //oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// << 
+               //oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// <<
                   //"] VEL [" << velParameter->ToString() << "].";
                   //"] ROTATION [" << rotParameter->ToString() << "].";
                //if (velParameter != NULL)
@@ -883,7 +883,7 @@ namespace SimCore
          mTimeUntilNextUpdate -= static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
          GameActor::TickLocal(tickMessage);
-         
+
          bool forceUpdate = false;
          bool fullUpdate = false;
 
@@ -903,7 +903,7 @@ namespace SimCore
 
          //if( ! fullUpdate )
          //{
-         // Check for update (or child class). Call this even if fullUpdate, because they may set some 
+         // Check for update (or child class). Call this even if fullUpdate, because they may set some
          // properties that we need to publish
          forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
          //}
@@ -917,9 +917,9 @@ namespace SimCore
             osg::Vec3 velocity = GetVelocityVector();
             // Curt - DR Debug stuff.
             std::ostringstream oss;
-            oss << "PUB [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] << 
+            oss << "PUB [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] <<
                "] VEL [" << velocity[0] << " " << velocity[1] << " " << velocity[2] << "]";
-            //oss << "Publishing [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] << 
+            //oss << "Publishing [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] <<
             //   "] ROTATION [" << rot[0] << " " << rot[1] << " " << rot[2] << "].";
             LOG_ALWAYS(oss.str());
             */
@@ -960,7 +960,7 @@ namespace SimCore
       {
          return mDeadReckoningHelper->GetGroundOffset();
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetGroundOffset(float newOffset)
       {
@@ -981,27 +981,27 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       osg::Vec3 BaseEntity::GetLastKnownTranslation() const
-      { 
-         return mDeadReckoningHelper->GetLastKnownTranslation(); 
-      }
-      
-      ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetLastKnownRotation() const 
-      { 
-         return mDeadReckoningHelper->GetLastKnownRotation(); 
+      {
+         return mDeadReckoningHelper->GetLastKnownTranslation();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetDefaultScale(const osg::Vec3& newDefScale) 
-      { 
+      osg::Vec3 BaseEntity::GetLastKnownRotation() const
+      {
+         return mDeadReckoningHelper->GetLastKnownRotation();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetDefaultScale(const osg::Vec3& newDefScale)
+      {
          mDefaultScale = newDefScale;
          UpdateModelScale();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetScaleMagnification(const osg::Vec3& newScaleMag) 
-      { 
-         mScaleMagnification = newScaleMag; 
+      void BaseEntity::SetScaleMagnification(const osg::Vec3& newScaleMag)
+      {
+         mScaleMagnification = newScaleMag;
          UpdateModelScale();
       }
 
@@ -1013,8 +1013,8 @@ namespace SimCore
          osg::Vec3 newScale;
          for (int i = 0; i < 3; ++i)
          {
-            newScale[i] = mDefaultScale[i] * mScaleMagnification[i]; 
-         } 
+            newScale[i] = mDefaultScale[i] * mScaleMagnification[i];
+         }
          xform.Rescale(newScale);
          osg::Matrix m;
          xform.Get(m);
@@ -1029,7 +1029,7 @@ namespace SimCore
          osg::Vec3 currentScale;
          xform.CalcScale(currentScale);
          return currentScale;
-      } 
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetModelRotation(const osg::Vec3& hpr)
