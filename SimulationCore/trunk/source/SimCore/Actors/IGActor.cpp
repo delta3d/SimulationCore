@@ -41,7 +41,7 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////
-      IGActor::IGActor(dtGame::GameActorProxy &proxy) : 
+      IGActor::IGActor(dtGame::GameActorProxy &proxy) :
          GameActor(proxy)
       {
       }
@@ -52,15 +52,15 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool IGActor::LoadFile(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile, 
+      bool IGActor::LoadFile(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
          dtCore::RefPtr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
       {
-         return IGActor::LoadFileStatic(fileName, originalFile, 
+         return IGActor::LoadFileStatic(fileName, originalFile,
             copiedFile, useCache, loadTerrainMaterialsOn);
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      bool IGActor::LoadFileStatic(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile, 
+      bool IGActor::LoadFileStatic(const std::string& fileName, dtCore::RefPtr<osg::Node>& originalFile,
          dtCore::RefPtr<osg::Node>& copiedFile, bool useCache , bool loadTerrainMaterialsOn )
       {
          //Log::GetInstance().LogMessage(Log::LOG_DEBUG, __FUNCTION__,
@@ -73,7 +73,7 @@ namespace SimCore
             options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
          }
          else
-         {  
+         {
             options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_NONE);
          }
 
@@ -93,7 +93,7 @@ namespace SimCore
          }
          else
          {
-//            Log::GetInstance().LogMessage(Log::LOG_WARNING, __FUNCTION__, 
+//            Log::GetInstance().LogMessage(Log::LOG_WARNING, __FUNCTION__,
 //               "Can't load '%s'", mFilename.c_str() );
             return false;
          }
