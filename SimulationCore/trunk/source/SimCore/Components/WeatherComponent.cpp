@@ -402,33 +402,29 @@ namespace SimCore
          if(!mEphemerisEnvironmentActor.valid())
             return;
 
-         std::vector<dtDAL::ActorProxy*> actors;
-         GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, actors);
-         if(!actors.empty())
+         dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = NULL;
+         GetGameManager()->FindActorByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE,
+                  coordConfigActorProxy);
+         // Get the offset of time zones
+         if(coordConfigActorProxy != NULL)
          {
-            // Get the offset of time zones
-            dtActors::CoordinateConfigActorProxy *coordConfigActorProxy = dynamic_cast<dtActors::CoordinateConfigActorProxy*>(actors[0]);
-            if(coordConfigActorProxy != NULL)
+            dtActors::CoordinateConfigActor* coordConfigActor = NULL;
+            coordConfigActorProxy->GetActor(coordConfigActor);
+
+            // Compensate for the time zone
+            osg::Vec3d geoOffset;
+            if(coordConfigActor != NULL)
             {
-               dtActors::CoordinateConfigActor *coordConfigActor
-                  = dynamic_cast<dtActors::CoordinateConfigActor*>
-                  (coordConfigActorProxy->GetActor());
+               dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
+               coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
+               geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
 
-               // Compensate for the time zone
-               osg::Vec3d geoOffset;
-               if(coordConfigActor != NULL)
-               {
-                  dtUtil::Coordinates coords = coordConfigActor->GetCoordinates();
-                  coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
-                  geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
+               mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
+                  geoOffset[1]);
 
-                  mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
-                     geoOffset[1]);
-
-                  dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
-                  dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
-                  mEphemerisEnvironmentActor->SetDateTime(dt);
-               }
+               dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+               dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
+               mEphemerisEnvironmentActor->SetDateTime(dt);
             }
          }
       }
