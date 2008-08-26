@@ -39,7 +39,6 @@
 #include <osgUtil/CullVisitor>
 #include <osgUtil/SceneView>
 #include <osgUtil/StateGraph>
-#include <osgUtil/RenderStage>
 
 ///////////////////////////////////
 
@@ -57,11 +56,11 @@ namespace SimCore
       const std::string BaseGameAppComponent::CMD_LINE_FEDMAPPING_FILE_RESOURCE = "FedMappingFileResource";
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      BaseGameAppComponent::BaseGameAppComponent(const std::string &name) 
+      BaseGameAppComponent::BaseGameAppComponent(const std::string &name)
          : dtGame::GMComponent(name)
       {
          mCommandLineObject = new SimCore::CommandLineObject();
-      }  
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       BaseGameAppComponent::~BaseGameAppComponent(void)
@@ -113,44 +112,44 @@ namespace SimCore
 
          if (parser->read("--projectPath", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_PROJECTPATH, tempString);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--statisticsInterval", tempInt))
          {
-            dtCore::RefPtr<dtDAL::NamedIntParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedIntParameter> parameter
                = new dtDAL::NamedIntParameter(CMD_LINE_STATISTICS_INTERVAL, tempInt);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--mapName", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_MAP_NAME, tempString);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--federationExecutionName", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_FEDEXECUTION_NAME, tempString);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--fedFileName", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_FEDFILE_NAME, tempString);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
 
          if(parser->read("--fedMappingFileResource", tempString))
          {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
                = new dtDAL::NamedStringParameter(CMD_LINE_FEDMAPPING_FILE_RESOURCE, tempString);
-            mCommandLineObject->AddParameter(parameter.get()); 
+            mCommandLineObject->AddParameter(parameter.get());
          }
       }
 
