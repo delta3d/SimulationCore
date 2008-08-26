@@ -15,6 +15,8 @@ namespace SimCore
       class SIMCORE_EXPORT PositionMarker : public BaseEntity
       {
          public:
+            static const std::string COLOR_UNIFORM;
+
             typedef BaseEntity BaseClass;
             PositionMarker(dtGame::GameActorProxy& proxy);
             virtual ~PositionMarker();
@@ -40,10 +42,8 @@ namespace SimCore
             /// Implemented from the base class
             virtual void HandleModelDrawToggle(bool active);
 
-            void SetSphereColor(const osg::Vec4& vec);
-            const osg::Vec4& GetSphereColor();
-            void SetBoxColor(const osg::Vec4& vec);
-            const osg::Vec4& GetBoxColor();
+            void SetColor(const osg::Vec4& vec);
+            const osg::Vec4 GetColor();
 
             /// overridden to set the colors when the force changes.
             virtual void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce);
@@ -54,8 +54,6 @@ namespace SimCore
             double mReportTime;
             dtUtil::RefString mSourceCallsign;
             dtCore::RefPtr<BaseEntity> mAssociatedEntity;
-            dtCore::RefPtr<osg::ShapeDrawable> mSphere;
-            dtCore::RefPtr<osg::ShapeDrawable> mBox;
             BaseEntityActorProxy::ForceEnum* mSourceForce;
             BaseEntityActorProxy::ServiceEnum* mSourceService;
       };
@@ -70,8 +68,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_SOURCE_SERVICE;
             static const dtUtil::RefString PROPERTY_REPORT_TIME;
             static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY;
-            static const dtUtil::RefString PROPERTY_SPHERE_COLOR;
-            static const dtUtil::RefString PROPERTY_BOX_COLOR;
+            static const dtUtil::RefString PROPERTY_MARKER_COLOR;
             static const dtUtil::RefString PROPERTY_ICON_IMAGE;
 
             PositionMarkerActorProxy();

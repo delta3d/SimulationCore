@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -73,6 +73,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestDetachOnActorDeletedMessage);
       CPPUNIT_TEST(TestToolMessageTypes);
       CPPUNIT_TEST(TestMagnificationMessage);
+      CPPUNIT_TEST(TestEmbeddedDataMessage);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -601,6 +602,36 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          catch(const dtUtil::Exception &e)
          {
             CPPUNIT_FAIL("Exception caught: " + e.What());
+         }
+      }
+
+      void TestEmbeddedDataMessage()
+      {
+         try
+         {
+
+            RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::INFO_EMBEDDED_DATA);
+            CPPUNIT_ASSERT_MESSAGE("The message factory failed to create the message", msg.valid());
+
+            SimCore::EmbeddedDataMessage* edm = static_cast<SimCore::EmbeddedDataMessage*>(msg.get());
+
+            const std::string data("horch.83du982hu[;[h30938uh02huhal.8p2e23pi3a3i3233p3");
+            edm->SetData(data);
+            std::string fetchedData;
+            edm->GetData(fetchedData);
+            CPPUNIT_ASSERT_EQUAL(data, fetchedData);
+
+            TestParameter<dtGame::StringMessageParameter, std::string>(*edm, SimCore::EmbeddedDataMessage::PARAM_DATA, data);
+
+            unsigned short testVal = 21;
+            edm->SetDataSize(testVal);
+            CPPUNIT_ASSERT_EQUAL(testVal, edm->GetDataSize());
+
+            TestParameter<dtGame::UnsignedShortIntMessageParameter, unsigned short>(*edm, SimCore::EmbeddedDataMessage::PARAM_DATA_SIZE, testVal);
+         }
+         catch(const dtUtil::Exception &ex)
+         {
+            CPPUNIT_FAIL("Exception caught: " + ex.What());
          }
       }
 

@@ -408,19 +408,19 @@ namespace SimCore
 
    const std::string& TimeQueryMessage::GetSenderName() const
    {
-      return mSenderName->GetValue();      
+      return mSenderName->GetValue();
    }
 
    void TimeQueryMessage::SetSenderName(const std::string& newName)
    {
-      mSenderName->SetValue(newName);      
+      mSenderName->SetValue(newName);
    }
-   
+
    unsigned long TimeQueryMessage::GetQueryTransmitRealTime() const
    {
       return mQueryTransmitRealTime->GetValue();
    }
-   
+
    void TimeQueryMessage::SetQueryTransmitRealTime(unsigned long newTime)
    {
       mQueryTransmitRealTime->SetValue(newTime);
@@ -460,7 +460,7 @@ namespace SimCore
    {
       return mQueryReceivedRealTime->GetValue();
    }
-   
+
    void TimeValueMessage::SetQueryReceivedRealTime(unsigned long newTime)
    {
       mQueryReceivedRealTime->SetValue(newTime);
@@ -470,7 +470,7 @@ namespace SimCore
    {
       return mValueTransmitRealTime->GetValue();
    }
-   
+
    void TimeValueMessage::SetValueTransmitRealTime(unsigned long newTime)
    {
       mValueTransmitRealTime->SetValue(newTime);
@@ -480,7 +480,7 @@ namespace SimCore
    {
       return mSynchronizedTime->GetValue();
    }
-   
+
    void TimeValueMessage::SetSynchronizedTime(unsigned long newTime)
    {
       mSynchronizedTime->SetValue(newTime);
@@ -490,7 +490,7 @@ namespace SimCore
    {
       return mTimeScale->GetValue();
    }
-   
+
    void TimeValueMessage::SetTimeScale(float newTimeScale)
    {
       mTimeScale->SetValue(newTimeScale);
@@ -498,7 +498,7 @@ namespace SimCore
 
    bool TimeValueMessage::IsPaused() const
    {
-      return mPaused->GetValue(); 
+      return mPaused->GetValue();
    }
 
    void TimeValueMessage::SetPaused(bool pause)
@@ -510,12 +510,12 @@ namespace SimCore
    {
       return mTimeMaster->GetValue();
    }
-   
+
    void TimeValueMessage::SetTimeMaster(const std::string& newMaster)
    {
       mTimeMaster->SetValue(newMaster);
    }
-   
+
    //////////////////////////////////////////////////////////////////
    MagnificationMessage::MagnificationMessage()
    {
@@ -537,41 +537,105 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////
+   ///////////////  Control State Message  /////////////////////////
+   /////////////////////////////////////////////////////////////////
    const std::string ControlStateMessage::PARAM_CONTROL_STATE_ID("ControlStateID");
    const std::string ControlStateMessage::PARAM_STATION("Station");
 
+   /////////////////////////////////////////////////////////////////
    ControlStateMessage::ControlStateMessage()
    {
       AddParameter(new dtGame::StringMessageParameter(PARAM_CONTROL_STATE_ID));
       AddParameter(new dtGame::IntMessageParameter(PARAM_STATION));
    }
 
+   /////////////////////////////////////////////////////////////////
    ControlStateMessage::~ControlStateMessage()
    {
    }
 
+   /////////////////////////////////////////////////////////////////
    void ControlStateMessage::SetControlStateID( const std::string& controlStateID )
    {
       static_cast<dtGame::StringMessageParameter*>
          (GetParameter(PARAM_CONTROL_STATE_ID))->FromString(controlStateID);
    }
-   
-   const std::string ControlStateMessage::GetControlStateID() const
+
+   /////////////////////////////////////////////////////////////////
+   const std::string& ControlStateMessage::GetControlStateID() const
    {
       return static_cast<const dtGame::StringMessageParameter*>
-         (GetParameter(PARAM_CONTROL_STATE_ID))->ToString();
+         (GetParameter(PARAM_CONTROL_STATE_ID))->GetValue();
    }
 
+   /////////////////////////////////////////////////////////////////
    void ControlStateMessage::SetStation( int station )
    {
       static_cast<dtGame::IntMessageParameter*>
          (GetParameter(PARAM_STATION))->SetValue(station);
    }
 
+   /////////////////////////////////////////////////////////////////
    int ControlStateMessage::GetStation() const
    {
       return static_cast<const dtGame::IntMessageParameter*>
          (GetParameter(PARAM_STATION))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////
+   /////////////////  Binary Data Message  ///////////////
+   ////////////////////////////////////////////////////////
+   const std::string EmbeddedDataMessage::PARAM_ENCODING_SCHEME("Encoding Scheme");
+   const std::string EmbeddedDataMessage::PARAM_DATA_SIZE("Data Size");
+   const std::string EmbeddedDataMessage::PARAM_DATA("Data");
+   ////////////////////////////////////////////////////////
+   EmbeddedDataMessage::EmbeddedDataMessage()
+   {
+      mEncoding = new dtGame::UnsignedShortIntMessageParameter(PARAM_ENCODING_SCHEME);
+      AddParameter(mEncoding);
+      mDataSize = new dtGame::UnsignedShortIntMessageParameter(PARAM_DATA_SIZE);
+      AddParameter(mDataSize);
+      mDataParameter = new dtGame::StringMessageParameter(PARAM_DATA);
+      AddParameter(mDataParameter);
+   }
+
+   ////////////////////////////////////////////////////////
+   EmbeddedDataMessage::~EmbeddedDataMessage()
+   {
+   }
+
+   void EmbeddedDataMessage::SetEncodingScheme(unsigned short scheme)
+   {
+      mEncoding->SetValue(scheme);
+   }
+
+   unsigned short EmbeddedDataMessage::GetEncodingScheme() const
+   {
+      return mEncoding->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////
+   void EmbeddedDataMessage::SetDataSize(unsigned short dataSize)
+   {
+      mDataSize->SetValue(dataSize);
+   }
+
+   ////////////////////////////////////////////////////////
+   unsigned short EmbeddedDataMessage::GetDataSize() const
+   {
+      return mDataSize->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////
+   void EmbeddedDataMessage::SetData(const std::string& dataBuffer)
+   {
+      mDataParameter->SetValue(dataBuffer);
+   }
+
+   ////////////////////////////////////////////////////////
+   void EmbeddedDataMessage::GetData(std::string& dataBufferToFill) const
+   {
+      dataBufferToFill = mDataParameter->GetValue();
    }
 
 }
