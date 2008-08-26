@@ -35,7 +35,6 @@
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
 #include <dtUtil/mathdefines.h>
-#include <dtUtil/coordinates.h>
 
 #include <dtActors/basicenvironmentactorproxy.h>
 
@@ -133,7 +132,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::SetEntityMagnification(float newMag)
-      {  
+      {
          mEntityMagnification = newMag;
          dtUtil::Clamp(mEntityMagnification, 1.0f, 8.0f);
          RefPtr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(MessageType::MAGNIFICATION);
@@ -168,19 +167,19 @@ namespace SimCore
          if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR)
          {
             envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR);
-         } 
+         }
          else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR)
          {
             envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY);
-         } 
+         }
          else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY)
          {
             envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
-         } 
+         }
          else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY)
          {
             envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR);
-         } 
+         }
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -211,7 +210,7 @@ namespace SimCore
          case 'x':
             {
                dtABC::Application& app = GetGameManager()->GetApplication();
-#ifndef __APPLE__               
+#ifndef __APPLE__
                if (app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_L) ||
                    app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Alt_R))
 #endif
