@@ -70,7 +70,9 @@ namespace SimCore
 
          static MessageType CONTROL_STATE_CONFLICT;
 
-         const static MessageType REQUEST_WARP_TO_POSITION;
+         static const MessageType REQUEST_WARP_TO_POSITION;
+
+         static const MessageType INFO_EMBEDDED_DATA;
 
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 

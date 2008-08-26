@@ -311,7 +311,7 @@ namespace SimCore
    class SIMCORE_EXPORT TimeQueryMessage : public dtGame::Message
    {
       public:
-      
+
          /// Defines the string name for the time the query the sent.
          static const std::string QUERY_TRANSMIT_REAL_TIME;
          /// The name of the sender.
@@ -322,7 +322,7 @@ namespace SimCore
 
          const std::string& GetSenderName() const;
          void SetSenderName(const std::string& newName);
-         
+
          /// @return the real time the query was sent.
          unsigned long GetQueryTransmitRealTime() const;
          /// Sets the real time the query was sent.
@@ -332,7 +332,7 @@ namespace SimCore
 
          /// Destructor
          virtual ~TimeQueryMessage() {}
-         
+
       private:
          dtGame::StringMessageParameter* mSenderName;
          dtGame::UnsignedLongIntMessageParameter* mQueryTransmitRealTime;
@@ -341,10 +341,10 @@ namespace SimCore
    class SIMCORE_EXPORT TimeValueMessage : public TimeQueryMessage
    {
       public:
-         // We need a default scale so that we don't override the scale time in playback 
+         // We need a default scale so that we don't override the scale time in playback
          // when a time message wasn't sent with a value in the first place.
          // This is usually set to something like -1.0 or 999999.0
-         static const float DEFAULT_TIME_SCALE; 
+         static const float DEFAULT_TIME_SCALE;
 
          /// The parameter name of the real time the query was received by the time master.
          static const std::string QUERY_RECEIVED_REAL_TIME;
@@ -366,8 +366,8 @@ namespace SimCore
          unsigned long GetQueryReceivedRealTime() const;
          /// Set the real time the query was received by the server.
          void SetQueryReceivedRealTime(unsigned long newTime);
-         
-         /// @return the real time the server sent this message. 
+
+         /// @return the real time the server sent this message.
          unsigned long GetValueTransmitRealTime() const;
          /// Sets the time the server sent this message.
          void SetValueTransmitRealTime(unsigned long newTime);
@@ -376,7 +376,7 @@ namespace SimCore
          unsigned long GetSynchronizedTime() const;
          /// Sets the synchronized time value when the server sent the message.
          void SetSynchronizedTime(unsigned long newTime);
-         
+
          /// @return the time scale factor (Multiple of real time)
          float GetTimeScale() const;
          /// Set the time scale factor (Multiple of real time)
@@ -397,14 +397,14 @@ namespace SimCore
 
          /// Destructor
          virtual ~TimeValueMessage() {}
-         
+
       private:
          dtGame::UnsignedLongIntMessageParameter* mQueryReceivedRealTime;
          dtGame::UnsignedLongIntMessageParameter* mValueTransmitRealTime;
          dtGame::UnsignedLongIntMessageParameter* mSynchronizedTime;
          dtGame::FloatMessageParameter*           mTimeScale;
          dtGame::BooleanMessageParameter*         mPaused;
-         
+
          dtGame::StringMessageParameter*          mTimeMaster;
    };
 
@@ -438,13 +438,47 @@ namespace SimCore
          ControlStateMessage();
 
          void SetControlStateID( const std::string& controlStateID );
-         const std::string GetControlStateID() const;
+         const std::string& GetControlStateID() const;
 
          void SetStation( int station );
          int GetStation() const;
 
       protected:
          virtual ~ControlStateMessage();
+   };
+
+
+   /**
+    * Message that transmits a block of binary data.
+    * It could be an embedded message or a radio transmission.
+    */
+   class SIMCORE_EXPORT EmbeddedDataMessage : public dtGame::Message
+   {
+      public:
+         static const std::string PARAM_ENCODING_SCHEME;
+         static const std::string PARAM_DATA_SIZE;
+         static const std::string PARAM_DATA;
+
+         /// Constructor
+         EmbeddedDataMessage();
+
+         void SetEncodingScheme(unsigned short scheme);
+         unsigned short GetEncodingScheme() const;
+
+         void SetDataSize(unsigned short dataSize);
+         unsigned short GetDataSize() const;
+
+         void SetData(const std::string& dataBuffer);
+         void GetData(std::string& dataBufferToFill) const;
+
+      protected:
+         /// Destructor
+         virtual ~EmbeddedDataMessage();
+
+      private:
+         dtGame::UnsignedShortIntMessageParameter* mEncoding;
+         dtGame::UnsignedShortIntMessageParameter* mDataSize;
+         dtGame::StringMessageParameter* mDataParameter;
    };
 }
 #endif

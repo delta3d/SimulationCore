@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -63,7 +63,7 @@ namespace SimCore
 {
    namespace Actors
    {
-      class PositionMarkerTests : public CPPUNIT_NS::TestFixture 
+      class PositionMarkerTests : public CPPUNIT_NS::TestFixture
       {
          CPPUNIT_TEST_SUITE(PositionMarkerTests);
 
@@ -161,16 +161,11 @@ namespace SimCore
                CreatePositionMaker(pmap, pm);
 
                dtDAL::ColorRgbaActorProperty* prop = NULL;
-               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SPHERE_COLOR, prop);
+               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_MARKER_COLOR, prop);
                osg::Vec4 theColor(1.0, 0.03, 0.81, 0.3);
                prop->SetValue(theColor);
                CPPUNIT_ASSERT_EQUAL(theColor, prop->GetValue());
-               CPPUNIT_ASSERT_EQUAL(theColor, pm->GetSphereColor());
-
-               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_BOX_COLOR, prop);
-               prop->SetValue(theColor);
-               CPPUNIT_ASSERT_EQUAL(theColor, prop->GetValue());
-               CPPUNIT_ASSERT_EQUAL(theColor, pm->GetSphereColor());
+               CPPUNIT_ASSERT_EQUAL(theColor, pm->GetColor());
             }
 
          private:

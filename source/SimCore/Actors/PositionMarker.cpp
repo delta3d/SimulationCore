@@ -1,11 +1,10 @@
 #include <SimCore/Actors/PositionMarker.h>
 #include <dtDAL/enginepropertytypes.h>
-#include <osg/Shape>
-#include <osg/ShapeDrawable>
-#include <osg/Geode>
 #include <osg/BlendFunc>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
+#include <osg/Uniform>
+#include <osg/MatrixTransform>
 
 namespace SimCore
 {
@@ -31,6 +30,9 @@ namespace SimCore
       };
 
       ////////////////////////////////////////////////////////////////////////
+      const std::string PositionMarker::COLOR_UNIFORM("forceColor");
+
+      ////////////////////////////////////////////////////////////////////////
       PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy):
          BaseClass(proxy),
          mReportTime(0.0),
@@ -38,23 +40,17 @@ namespace SimCore
          mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER),
          mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
       {
-         dtCore::RefPtr<osg::Sphere> sphere = new osg::Sphere(osg::Vec3(0.0, 0.0, 3.0), 1.0);
-         dtCore::RefPtr<osg::Box> box = new osg::Box(osg::Vec3(0.0, 0.0, 1.0), 5.0, 4.0, 2.0);
-         dtCore::RefPtr<osg::ShapeDrawable> sphereDrawable = new osg::ShapeDrawable(sphere.get());
-         dtCore::RefPtr<osg::ShapeDrawable> boxDrawable = new osg::ShapeDrawable(box.get());
-         dtCore::RefPtr<osg::Geode> geode = new osg::Geode();
-
-         dtCore::RefPtr<osg::TessellationHints> hints = new osg::TessellationHints;
-         hints->setCreateTextureCoords(true);
-         sphereDrawable->setTessellationHints(hints.get());
-
-         geode->addDrawable(sphereDrawable.get());
-         geode->addDrawable(boxDrawable.get());
-         mSphere = sphereDrawable;
-         mBox = boxDrawable;
-         SetForceAffiliation(GetForceAffiliation());
+         dtCore::RefPtr<osg::Node> original, copied;
+         IGActor::LoadFileStatic("StaticMeshes/Hemisphere.ive", original, copied);
+         //gotta hold onto the new one.
+         copied->setUserData(original.get());
+         dtCore::RefPtr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+         mt->addChild(copied.get());
+         osg::Matrix m;
+         m.setTrans(osg::Vec3(0.0, 0.0, 3.0));
+         mt->setMatrix(m);
          osg::Group* g = GetOSGNode()->asGroup();
-         g->addChild(geode.get());
+         g->addChild(mt.get());
 
          osg::StateSet* ss = g->getOrCreateStateSet();
          ss->setMode(GL_BLEND,osg::StateAttribute::ON);
@@ -87,24 +83,20 @@ namespace SimCore
          BaseClass::SetForceAffiliation(markerForce);
          if (markerForce == BaseEntityActorProxy::ForceEnum::FRIENDLY)
          {
-            SetSphereColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
-            SetBoxColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
+            SetColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
          }
          else if (markerForce == BaseEntityActorProxy::ForceEnum::NEUTRAL)
          {
-            SetSphereColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
-            SetBoxColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
+            SetColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
          }
          else if (markerForce == BaseEntityActorProxy::ForceEnum::INSURGENT ||
                   markerForce == BaseEntityActorProxy::ForceEnum::OPPOSING)
          {
-            SetSphereColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
-            SetBoxColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
+            SetColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
          }
          else
          {
-            SetSphereColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
-            SetBoxColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
+            SetColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
          }
 
       }
@@ -165,27 +157,21 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      void PositionMarker::SetSphereColor(const osg::Vec4& vec)
+      void PositionMarker::SetColor(const osg::Vec4& vec)
       {
-         mSphere->setColor(vec);
+         osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
+         osg::Uniform* uniform = ss->getOrCreateUniform(COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4, 1);
+         uniform->set(vec);
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetSphereColor()
+      const osg::Vec4 PositionMarker::GetColor()
       {
-         return mSphere->getColor();
-      }
-
-      ////////////////////////////////////////////////////////////////////////
-      void PositionMarker::SetBoxColor(const osg::Vec4& vec)
-      {
-         mBox->setColor(vec);
-      }
-
-      ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetBoxColor()
-      {
-         return mBox->getColor();
+         osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
+         osg::Uniform* uniform = ss->getOrCreateUniform(COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4, 1);
+         osg::Vec4 returnVal;
+         uniform->get(returnVal);
+         return returnVal;
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -206,7 +192,7 @@ namespace SimCore
       {
          if (theFile.empty())
          {
-            osg::StateSet* ss = mSphere->getOrCreateStateSet();
+            osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
             ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
             return;
          }
@@ -215,7 +201,7 @@ namespace SimCore
          if(icon == NULL)
          {
             LOG_ERROR(std::string("Couldn't find image file \"") + theFile + "\"");
-            osg::StateSet* ss = mSphere->getOrCreateStateSet();
+            osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
             ss->setTextureAttributeAndModes(0, NULL, osg::StateAttribute::OFF);
             return;
          }
@@ -225,7 +211,7 @@ namespace SimCore
          tex->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
          tex->setImage( icon.get() );
 
-         osg::StateSet* ss = mSphere->getOrCreateStateSet();
+         osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
          ss->setTextureAttributeAndModes(0, tex.get(), osg::StateAttribute::ON);
       }
 
@@ -247,13 +233,13 @@ namespace SimCore
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE("Source Service");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_REPORT_TIME("Report Time");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ASSOCIATED_ENTITY("Associated Real Entity");
-      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SPHERE_COLOR("Sphere Color");
-      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_BOX_COLOR("Box Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_MARKER_COLOR("Marker Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ICON_IMAGE("Icon Image");
 
       ////////////////////////////////////////////////////////////////////////
       PositionMarkerActorProxy::PositionMarkerActorProxy()
       {
+         SetClassName("SimCore::Actors::PositionMarker");
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -319,18 +305,11 @@ namespace SimCore
             dtDAL::ActorActorProperty::GetFuncType(this, &PositionMarkerActorProxy::GetAssociatedEntity),
             PROPERTY_ASSOCIATED_ENTITY_DESC, POSITION_MARKER_GROUP));
 
-         static const dtUtil::RefString PROPERTY_SPHERE_COLOR_DESC("The color of the sphere on the marker.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_SPHERE_COLOR, PROPERTY_SPHERE_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetSphereColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetSphereColor),
-                  PROPERTY_SPHERE_COLOR_DESC, POSITION_MARKER_GROUP
-         ));
-
-         static const dtUtil::RefString PROPERTY_BOX_COLOR_DESC("The color of the box on the marker.");
-         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_BOX_COLOR, PROPERTY_BOX_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetBoxColor),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetBoxColor),
-                  PROPERTY_BOX_COLOR_DESC, POSITION_MARKER_GROUP
+         static const dtUtil::RefString PROPERTY_MARKER_COLOR_DESC("The color of the marker.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_MARKER_COLOR, PROPERTY_MARKER_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetColor),
+                  PROPERTY_MARKER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "

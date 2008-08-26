@@ -62,7 +62,10 @@ namespace SimCore
       "Conflict in controls states, possibly pointing to the same station",
       USER_DEFINED_MESSAGE_TYPE + 20);
 
-   const MessageType MessageType::REQUEST_WARP_TO_POSITION("Warp To Position", "StealthViewer", "Warp the Stealth Actor to a Position", USER_DEFINED_MESSAGE_TYPE + 21);
+   const MessageType MessageType::REQUEST_WARP_TO_POSITION("Warp To Position", "StealthViewer",
+            "Warp the Stealth Actor to a Position", USER_DEFINED_MESSAGE_TYPE + 21);
+   const MessageType MessageType::INFO_EMBEDDED_DATA("Embedded Data", "Info",
+            "Holds a buffer of embedded binary data.  Traditionally a radio message", USER_DEFINED_MESSAGE_TYPE + 22);
 
    ///////////////////////////////////////////////////////////////////////
    MessageType::MessageType(
@@ -101,6 +104,8 @@ namespace SimCore
       factory.RegisterMessageType<ControlStateMessage>(CONTROL_STATE_CONFLICT);
 
       factory.RegisterMessageType<StealthActorUpdatedMessage>(REQUEST_WARP_TO_POSITION);
+
+      factory.RegisterMessageType<EmbeddedDataMessage>(INFO_EMBEDDED_DATA);
    }
 
    ///////////////////////////////////////////////////////////////////////
