@@ -597,7 +597,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetAngularVelocityVector(const osg::Vec3 &vec)
       {
-         return mDeadReckoningHelper->SetAngularVelocityVector(vec);
+         mDeadReckoningHelper->SetAngularVelocityVector(vec);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -614,7 +614,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlying(bool newFlying)
       {
-         return mDeadReckoningHelper->SetFlying(newFlying);
+         mDeadReckoningHelper->SetFlying(newFlying);
 //         if (mFlying)
 //            mNode->asGroup()->removeChild(mPointsGeode.get());
 //         else
