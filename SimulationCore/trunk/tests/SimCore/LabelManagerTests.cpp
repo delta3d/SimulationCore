@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -288,6 +288,22 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(false, options.ShowDamageState());
          options.SetShowDamageState(true);
          CPPUNIT_ASSERT_EQUAL(true,  options.ShowDamageState());
+
+         CPPUNIT_ASSERT_EQUAL(true, options.ShowLabels());
+         options.SetShowLabels(false);
+         CPPUNIT_ASSERT_EQUAL(false,  options.ShowLabels());
+
+         CPPUNIT_ASSERT_EQUAL(true, options.ShowLabelsForEntities());
+         options.SetShowLabelsForEntities(false);
+         CPPUNIT_ASSERT_EQUAL(false,  options.ShowLabelsForEntities());
+
+         CPPUNIT_ASSERT_EQUAL(true, options.ShowLabelsForBlips());
+         options.SetShowLabelsForBlips(false);
+         CPPUNIT_ASSERT_EQUAL(false,  options.ShowLabelsForBlips());
+
+         CPPUNIT_ASSERT_EQUAL(true, options.ShowLabelsForPositionReports());
+         options.SetShowLabelsForPositionReports(false);
+         CPPUNIT_ASSERT_EQUAL(false,  options.ShowLabelsForPositionReports());
       }
 
       void TestLabelColor()

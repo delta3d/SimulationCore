@@ -47,14 +47,16 @@
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 
+#include <StealthViewer/GMApp/StealthHUD.h>
+
 #include <StealthViewer/GMApp/ViewerConfigComponent.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
-#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
-#include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/SimCoreVersion.h>
@@ -565,6 +567,18 @@ namespace StealthQt
 
       connect(mUi->mPlaybackTimeMarkersTextBox, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                this,                             SLOT(OnTimeMarkerDoubleClicked(QListWidgetItem*)));
+
+      connect(mUi->mVisLabelGroup, SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisLabelsToggled(bool)));
+      connect(mUi->mVisTrackChk, SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisLabelsToggled(bool)));
+      connect(mUi->mVisEntityChk, SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisLabelsToggled(bool)));
+      connect(mUi->mVisMaxDistCombo, SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisLabelsToggled(bool)));
+      connect(mUi->mVisMaxDistCombo, SIGNAL(currentIndexChanged(const QString&)),
+               this,               SLOT(OnVisLabelsDistanceChanged(const QString&)));
+
       ////////////////////////////////////////////////////
 
       connect(&mDurationTimer, SIGNAL(timeout()), this, SLOT(OnDurationTimerElapsed()));
@@ -1555,15 +1569,16 @@ namespace StealthQt
       StealthGM::ViewerConfigComponent &viewComp =
          static_cast<StealthGM::ViewerConfigComponent&>(*gmComp);
 
-         StealthViewerData &instance = StealthViewerData::GetInstance();
+      StealthViewerData &instance = StealthViewerData::GetInstance();
 
-         viewComp.AddConfigObject(instance.GetGeneralConfigObject());
-         viewComp.AddConfigObject(instance.GetEnvironmentConfigObject());
-         viewComp.AddConfigObject(instance.GetToolsConfigObject());
+      viewComp.AddConfigObject(instance.GetEnvironmentConfigObject());
+      viewComp.AddConfigObject(instance.GetGeneralConfigObject());
+      viewComp.AddConfigObject(instance.GetToolsConfigObject());
+      viewComp.AddConfigObject(instance.GetVisibilityConfigObject());
 
-         viewComp.AddConfigObject(instance.GetCameraConfigObject());
-         viewComp.AddConfigObject(instance.GetRecordConfigObject());
-         viewComp.AddConfigObject(instance.GetPlaybackConfigObject());
+      viewComp.AddConfigObject(instance.GetCameraConfigObject());
+      viewComp.AddConfigObject(instance.GetRecordConfigObject());
+      viewComp.AddConfigObject(instance.GetPlaybackConfigObject());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -2396,7 +2411,7 @@ namespace StealthQt
    void MainWindow::OnAutoRefreshEntityInfoCheckBoxChanged(int state)
    {
       bool isChecked = (state == Qt::Checked);
-      if(isChecked)
+      if (isChecked)
          mShowMissingEntityInfoErrorMessage = true;
       StealthViewerData::GetInstance().GetGeneralConfigObject().SetAutoRefreshEntityInfoWindow(isChecked);
    }
@@ -2404,10 +2419,38 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::OnTimeMarkerDoubleClicked(QListWidgetItem *item)
    {
-      if(item != NULL)
+      if (item != NULL)
       {
          OnPlaybackJumpToTimeMarkerButtonClicked(item->text());
       }
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::OnVisLabelsToggled(bool)
+   {
+      SimCore::Components::LabelOptions options =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetOptions();
+
+      options.SetShowLabels(mUi->mVisLabelGroup->isChecked());
+      options.SetShowLabelsForEntities(mUi->mVisEntityChk->isChecked());
+      options.SetShowLabelsForBlips(mUi->mVisTrackChk->isChecked());
+      options.SetShowLabelsForPositionReports(mUi->mVisTrackChk->isChecked());
+
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetOptions(options);
+   }
+
+   ///////////////////////////////////////////////////////////////////
+   void MainWindow::OnVisLabelsDistanceChanged(const QString& text)
+   {
+      float distance = dtUtil::ToType<float>(text.toStdString());
+
+      SimCore::Components::LabelOptions options =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetOptions();
+
+      options.SetMaxLabelDistance(distance);
+
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetOptions(options);
+
    }
 
    ///////////////////////////////////////////////////////////////////

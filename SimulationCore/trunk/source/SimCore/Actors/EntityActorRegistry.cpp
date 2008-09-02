@@ -84,7 +84,7 @@ namespace SimCore
                new dtDAL::ActorType("Player Actor", "Player Actor", "This actor represents a player",
                         EntityActorRegistry::STEALTH_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DETONATION_ACTOR_TYPE(new dtDAL::ActorType("Detonation Actor", "Effects", "This actor represents a detonation"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE(new dtDAL::ActorType("Positon Marker", "Entity", "This represents a position report or a blip."));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE(new dtDAL::ActorType("Position Marker", "Entity", "This represents a position report or a blip."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::TERRAIN_ACTOR_TYPE(new dtDAL::ActorType("Terrain", "DVTETerrain", "This actor is the terrain used in DVTE."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::INTERIOR_ACTOR_TYPE(new dtDAL::ActorType("Interior", "Vehicles", "This is an actor for generic vehicle interiors"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::MISSILE_ACTOR_TYPE(new dtDAL::ActorType("Missile", "Munitions", "This is a generic actor for many possible missile-like objects"));
