@@ -63,6 +63,7 @@ namespace SimCore
          static MessageType BINOCULARS;
          static MessageType COMPASS;
          static MessageType NIGHT_VISION;
+         static MessageType FLIR;
          static MessageType LASER_RANGE_FINDER;
          static MessageType GPS;
          static MessageType MAP;

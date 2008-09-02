@@ -66,6 +66,8 @@ namespace SimCore
       //class in cpp
       class UpdateViewCallback;
 
+      class WeatherComponent;
+
       ///////////////////////////////////////////////////////
       //    The Component
       ///////////////////////////////////////////////////////
@@ -134,10 +136,15 @@ namespace SimCore
             class RenderFeature: public osg::Referenced
             {
             public:
-               virtual void SetEnable(bool pEnable) = 0;
+               enum SensorType {
+                  SENSOR_NONE,
+                  SENSOR_NVG,
+                  SENSOR_FLIR,
+               };
+
+               virtual void SetEnable(bool pEnable, SensorType type) = 0;
                virtual void Init(osg::Group* parent, dtCore::Camera* cam) = 0;
                virtual void Update() = 0;
-
             };
 
             static const std::string DEFAULT_NAME;
@@ -153,14 +160,14 @@ namespace SimCore
             void RemoveDynamicLight(LightID id);
             DynamicLight* GetDynamicLight(LightID id);
 
-            bool GetEnableNVGS();
-            void SetEnableNVGS(bool pEnable);
+            bool GetEnableSensor(RenderFeature::SensorType type);
+            void SetEnableSensor(bool pEnable, RenderFeature::SensorType type);
 
             bool GetEnableCullVisitor();
             void SetEnableCullVisitor(bool pEnable);
 
-            void SetNVGS(RenderFeature* rf);
-            const RenderFeature* GetNVGS() const;
+            void SetSensorRenderFeature(RenderFeature* rf);
+            const RenderFeature* GetSensorRenderFeature() const;
 
             void SetEnableDynamicLights(bool);
             bool GetEnableDynamicLights() const;
@@ -219,17 +226,17 @@ namespace SimCore
 
          private:
 
-            /// Private helper method to Init CSM properly
-            void InitializeCSM();
+            /// Private helper method to Init the Sensors properly
+            void InitializeSensors();
 
             bool mEnableDynamicLights;
             bool mEnableCullVisitor;
-            bool mEnableNVGS;
+            RenderFeature::SensorType mActiveSensor;
             dtCore::RefPtr<osg::Group> mDeltaScene;
             dtCore::RefPtr<osg::Group> mSceneRoot;
             dtCore::RefPtr<osg::Camera> mGUIRoot;
-            dtCore::RefPtr<osg::Camera> mNVGSRoot;
-            dtCore::RefPtr<RenderFeature> mNVGS;
+            dtCore::RefPtr<osg::Camera> mSensorRoot;
+            dtCore::RefPtr<RenderFeature> mSensor;
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
 
             // list of dynamic light actor prototypes

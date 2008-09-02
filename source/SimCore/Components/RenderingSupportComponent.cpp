@@ -150,12 +150,12 @@ namespace SimCore
          : dtGame::GMComponent(name)
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
-         , mEnableNVGS(false)
+         , mActiveSensor(RenderFeature::SENSOR_NONE)
          , mDeltaScene(new osg::Group())
          , mSceneRoot(new osg::Group())
          , mGUIRoot(new osg::Camera())
-         , mNVGSRoot(new osg::Camera())
-         , mNVGS(0)
+         , mSensorRoot(new osg::Camera())
+         , mSensor(0)
          , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
       }
@@ -168,7 +168,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnAddedToGM()
       {
-         InitializeCSM();
+         InitializeSensors();
          InitializeFrameBuffer();
 
          //we we are setup to use the cullvisitor then initialize it
@@ -207,11 +207,11 @@ namespace SimCore
          }*/
          ///////////////////////////////////////////////////////////////////////////////////////////////
 
-         mSceneRoot->addChild(mNVGSRoot.get());
+         mSceneRoot->addChild(mSensorRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
          mSceneRoot->addChild(mDeltaScene.get());
 
-         mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
+         mSensorRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
          mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
       }
@@ -237,30 +237,45 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      bool RenderingSupportComponent::GetEnableNVGS()
+      bool RenderingSupportComponent::GetEnableSensor(RenderFeature::SensorType type)
       {
-         return mEnableNVGS;
+         if(type == mActiveSensor)
+             return true;
+         else
+             return false;
       }
 
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::SetEnableNVGS(bool pEnable)
+      void RenderingSupportComponent::SetEnableSensor(bool pEnable, RenderFeature::SensorType type)
       {
-         if(mNVGS.valid())
-         {
-            mEnableNVGS = pEnable;
-            if(mEnableNVGS)
+         if(mSensor.valid())
+         {    
+            // By default OSG set the notify level to NOTICE.  When ICSM is 
+            // enabled inside of OSG, an OpenGL error is generated.  The Error
+            // is not harmful.  By changing the notify level to WARN, this 
+            // error is not printed.
+            if (osg::getNotifyLevel() == osg::NOTICE)
             {
-               //This is really bad.  It FORCES the notify level.  This is bad for debugging.
 
-               //tell OSG to keep it quiet
-               osg::setNotifyLevel(osg::FATAL);
-            }
-            else
-            {
                osg::setNotifyLevel(osg::WARN);
+               LOG_WARNING("Changing the OSG notify level from NOTICE to WARN to prevent printing of non-harmfull OpenGL Error");
             }
 
-            mNVGS->SetEnable(mEnableNVGS);
+            // If we are suppose to turn the sensor on...
+            if(pEnable)
+            {
+               mActiveSensor = type;
+               mSensor->SetEnable( true, type );
+            }
+
+            // Else, if we are suppose to turn it off AND it is the current
+            // sensor, turn it off...
+            else if(type == mActiveSensor)
+            {
+               mSensor->SetEnable( false, mActiveSensor );
+               mActiveSensor = RenderFeature::SENSOR_NONE;
+            }
          }
       }
 
@@ -372,19 +387,19 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::SetNVGS(RenderFeature* rf)
+      void RenderingSupportComponent::SetSensorRenderFeature(RenderFeature* rf)
       {
          if(rf != NULL)
          {
-            mNVGS = rf;
-            mNVGS->Init(mNVGSRoot.get(), GetGameManager()->GetApplication().GetCamera());
+            mSensor = rf;
+            mSensor->Init(mSensorRoot.get(), GetGameManager()->GetApplication().GetCamera());         
          }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      const RenderingSupportComponent::RenderFeature* RenderingSupportComponent::GetNVGS() const
+      const RenderingSupportComponent::RenderFeature* RenderingSupportComponent::GetSensorRenderFeature() const
       {
-         return mNVGS.get();
+         return mSensor.get();
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -433,11 +448,19 @@ namespace SimCore
          }
          else if(msg.GetMessageType() == SimCore::MessageType::NIGHT_VISION)
          {
-            if(mNVGS.valid())
+            if(mSensor.valid())
             {
-               SetEnableNVGS(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled());
+               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_NVG); 
             }
          }
+         else if(msg.GetMessageType() == SimCore::MessageType::FLIR)
+         {
+            if(mSensor.valid())
+            {
+               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_FLIR);            
+            }
+         }
+
 
          // When the map change begins, clear out our lists.
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_CHANGE_BEGIN)
@@ -479,9 +502,9 @@ namespace SimCore
          //we update the view matrix for all the shaders
          UpdateViewMatrix();
 
-         if(mEnableNVGS && mNVGS.valid())
+         if(mSensor.valid())
          {
-            mNVGS->Update();
+            mSensor->Update();
          }
 
          if(mEnableCullVisitor)
@@ -675,23 +698,43 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::InitializeCSM()
+      void RenderingSupportComponent::InitializeSensors()
       {
-         char* csmData = getenv("CSM_DATA");
-         if(csmData == NULL)
+
+         // Tell ICSM where to find the data that it needs.
+         char* icsmData = getenv("ICSM_DATA");
+         if(icsmData == NULL)
          {
-            std::string csmPath = dtDAL::Project::GetInstance().GetContext();
-            for(size_t i = 0; i < csmPath.size(); i++)
+            std::string icsmPath = dtDAL::Project::GetInstance().GetContext();
+            for(size_t i = 0; i < icsmPath.size(); i++)
             {
-               if(csmPath[i] == '\\')
+               if(icsmPath[i] == '\\')
                {
-                  csmPath[i] = '/';
+                  icsmPath[i] = '/';
                }
             }
 
-            csmPath += "/CSM/data";
+            icsmPath += "/Sensors/ICSM/data";
 
-            dtCore::SetEnvironment("CSM_DATA", csmPath);
+            dtCore::SetEnvironment("ICSM_DATA", icsmPath);
+         }
+
+         // Tell SERE where it find the data that it needs.
+         char* sereData = getenv("SERE_DATA");
+         if(sereData == NULL)
+         {
+             std::string serePath = dtDAL::Project::GetInstance().GetContext();
+             for(size_t i = 0; i < serePath.size(); i++)
+             {
+                 if(serePath[i] == '\\')
+                 {
+                     serePath[i] = '/';
+                 }
+             }
+
+             serePath += "/Sensors/SERE/data";
+
+             dtCore::SetEnvironment("SERE_DATA", serePath);
          }
       }
 

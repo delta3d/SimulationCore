@@ -102,6 +102,7 @@ namespace StealthGM
    const std::string StealthGameEntryPoint::CONFIG_HAS_COMPASS("HasCompass");
    const std::string StealthGameEntryPoint::CONFIG_HAS_GPS("HasGPS");
    const std::string StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION("HasNightVision");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_FLIR("HasFLIR");
    const std::string StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL("HasMapTool");
 
    ///////////////////////////////////////////////////////////////////////////
@@ -113,6 +114,7 @@ namespace StealthGM
       mHasLRF(false),
       mHasGPS(false),
       mHasNightVis(false),
+      mHasFLIR(false),
       mHasMap(false)
    {
    }
@@ -168,6 +170,10 @@ namespace StealthGM
       {
          mHasNightVis = true;
       }
+      if( parser->read("--hasFLIR") )
+      {
+          mHasFLIR = true;
+      }
       if( parser->read("--hasMap") )
       {
          mHasMap = true;
@@ -197,12 +203,27 @@ namespace StealthGM
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_GPS, mHasGPS, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL, mHasMap, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION, mHasNightVis, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_FLIR, mHasFLIR, app);
 
       // Check for enabled tools
       StealthInputComponent* inputComp =
          dynamic_cast<StealthInputComponent*>(gm.GetComponentByName(StealthInputComponent::DEFAULT_NAME));
 
       if( inputComp == NULL ) { return; }
+
+      if( mHasFLIR )
+      {
+          // TODO: Add new Night Vision tool
+          mHudGUI->AddToolButton("FLIR","F6",false);
+      }
+
+      if( mHasFLIR )
+      {
+          // TODO: this probably needs to be refactored, for the moment I just needed a tool to add which allows us to support NVGS
+          SimCore::Tools::Tool* flir = new SimCore::Tools::Tool(mHudGUI->GetToolsWindow());
+          inputComp->AddTool(*flir, SimCore::MessageType::FLIR);
+          mHudGUI->AddToolButton("FLIR","F6");
+      }
 
       if( mHasNightVis )
       {
