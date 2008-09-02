@@ -136,6 +136,13 @@ namespace StealthGM
          mToolbar->SetButtonActive("NightVision",toolMsg.IsEnabled());
          UpdateHelpButton();
       }
+      else if( type == SimCore::MessageType::FLIR)
+      {
+          mToolbar->SetButtonsActive(false);
+          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
+          mToolbar->SetButtonActive("FLIR",toolMsg.IsEnabled());
+          UpdateHelpButton();
+      }
       else if( type == SimCore::MessageType::LASER_RANGE_FINDER )
       {
          mToolbar->SetButtonsActive(false);

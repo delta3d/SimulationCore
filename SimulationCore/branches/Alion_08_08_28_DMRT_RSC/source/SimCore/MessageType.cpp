@@ -53,6 +53,7 @@ namespace SimCore
    MessageType MessageType::BINOCULARS("Binoculars", "Tools", "Binoculars", USER_DEFINED_MESSAGE_TYPE + 10);
    MessageType MessageType::COMPASS("Compass", "Tools", "Compass", USER_DEFINED_MESSAGE_TYPE + 11);
    MessageType MessageType::NIGHT_VISION("Night Vision", "Tools", "Night Vision", USER_DEFINED_MESSAGE_TYPE + 12);
+   MessageType MessageType::FLIR("FLIR", "Tools", "FLIR", USER_DEFINED_MESSAGE_TYPE + 100);
    MessageType MessageType::LASER_RANGE_FINDER("Laser Range Finder", "Tools", "Laser Range Finder", USER_DEFINED_MESSAGE_TYPE + 13);
    MessageType MessageType::GPS("GPS", "Tools", "GPS", USER_DEFINED_MESSAGE_TYPE + 14);
    MessageType MessageType::NO_TOOL("No Tool", "Tools", "No Tool", USER_DEFINED_MESSAGE_TYPE + 15);
@@ -100,6 +101,7 @@ namespace SimCore
       factory.RegisterMessageType<ToolMessage>(GPS);
       factory.RegisterMessageType<ToolMessage>(MAP);
       factory.RegisterMessageType<ToolMessage>(NIGHT_VISION);
+      factory.RegisterMessageType<ToolMessage>(FLIR);
 
       factory.RegisterMessageType<ControlStateMessage>(CONTROL_STATE_CONFLICT);
 
@@ -116,6 +118,7 @@ namespace SimCore
          || type == MessageType::GPS
          || type == MessageType::MAP
          || type == MessageType::NIGHT_VISION
+         || type == MessageType::FLIR
          || type == MessageType::NO_TOOL
          || type == MessageType::LASER_RANGE_FINDER;
    }

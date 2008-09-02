@@ -618,6 +618,12 @@ namespace StealthGM
             }
             break;
 
+         case osgGA::GUIEventAdapter::KEY_F6:
+             {
+                 ToggleTool(SimCore::MessageType::FLIR);
+             }
+             break;
+
          case osgGA::GUIEventAdapter::KEY_F8:
             {
                ToggleTool(SimCore::MessageType::COMPASS);
@@ -1314,6 +1320,7 @@ namespace StealthGM
    void StealthInputComponent::DisableAllTools()
    {
       SimCore::Tools::Tool* nvg = GetTool(SimCore::MessageType::NIGHT_VISION);
+      SimCore::Tools::Tool* flir = GetTool(SimCore::MessageType::FLIR);
 
       // Turn off all other tools (this could be NO_TOOL)
       std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::iterator i;
@@ -1321,7 +1328,9 @@ namespace StealthGM
       {
          if (i->second->IsEnabled())
          {
-            if (nvg != NULL && i->second == nvg )
+
+            // If this tool is NVG, send a message to turn it off
+            if( nvg != NULL && i->second == nvg ) 
             {
                dtCore::RefPtr<dtGame::Message> nvgMsg
                   = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::NIGHT_VISION);
@@ -1329,6 +1338,17 @@ namespace StealthGM
                nvgMsg->SetAboutActorId(mStealthActor->GetUniqueId());
                nvgMsg->SetSource(*mMachineInfo);
                GetGameManager()->SendMessage(*nvgMsg);
+            }
+
+            // If this tool is FLIR, send a message to turn it off
+            if( flir != NULL && i->second == flir ) 
+            {
+                dtCore::RefPtr<dtGame::Message> flirMsg 
+                   = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::FLIR);
+                static_cast<SimCore::ToolMessage*>(flirMsg.get())->SetEnabled(false);
+                flirMsg->SetAboutActorId(mStealthActor->GetUniqueId());
+                flirMsg->SetSource(*mMachineInfo);
+                GetGameManager()->SendMessage(*flirMsg);
             }
 
             i->second->Enable(false);
