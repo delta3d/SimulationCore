@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -65,7 +65,7 @@ namespace StealthQt
             static const QString FAR_CLIPPING_PLANE;
             static const QString RECONNECT_ON_STARTUP;
             static const QString STARTUP_CONNECTION_NAME;
-           
+
          static const QString PREFERENCES_ENVIRONMENT_GROUP;
             static const QString USE_NETWORK_SETTINGS;
             static const QString USE_THEMED_SETTINGS;
@@ -86,8 +86,15 @@ namespace StealthQt
             static const QString MAGNIFICATION;
             static const QString AUTO_ATTACH_ON_SELECTION;
 
+         static const QString PREFERENCES_VISIBILITY_GROUP;
+            static const QString SHOW_LABELS;
+            static const QString SHOW_LABELS_FOR_ENTITIES;
+            static const QString SHOW_LABELS_FOR_BLIPS;
+            static const QString SHOW_LABELS_FOR_TRACKS;
+            static const QString LABEL_MAX_DISTANCE;
+
          static const QString CONTROLS_CAMERA_GROUP;
-         
+
          static const QString CONTROLS_RECORD_GROUP;
             static const QString SHOW_ADVANCED_RECORD_OPTIONS;
             static const QString RECORD_OUTPUT_FILE;
@@ -117,13 +124,13 @@ namespace StealthQt
           * @param isEditMode True if you are editing an existing connection
           * @return True on success
           */
-         bool AddConnection(const QString &name, 
-                            const QString &mapResource, 
-                            const QString &configResource, 
-                            const QString &fedResource, 
-                            const QString &fedex, 
-                            const QString &federateName, 
-                            const QString &ridFile, 
+         bool AddConnection(const QString &name,
+                            const QString &mapResource,
+                            const QString &configResource,
+                            const QString &fedResource,
+                            const QString &fedex,
+                            const QString &federateName,
+                            const QString &ridFile,
                             bool isEditMode = false);
 
          /**
@@ -205,6 +212,9 @@ namespace StealthQt
           */
          void WritePreferencesToolsGroupToFile();
 
+         /// Writes the visibility options to the output file.
+         void WritePreferencesVisibilityGroupToFile();
+
          /**
           * Writes the Controls Record group to the output file
           */
@@ -229,6 +239,11 @@ namespace StealthQt
           * Loads the tools preferences
           */
          void LoadPreferencesTools();
+
+         /**
+          * Loads the visibility preferences
+          */
+         void LoadPreferencesVisibility();
 
          /**
           * Loads the controls record

@@ -34,6 +34,7 @@
 #include <osg/Math>
 #include <osg/Vec4>
 
+#include <dtUtil/mathdefines.h>
 #include <dtCore/system.h>
 #include <dtCore/observerptr.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -71,6 +72,7 @@ namespace SimCore
             CPPUNIT_TEST(TestPositionMarkerSourceService);
             CPPUNIT_TEST(TestPositionMarkerSourceForce);
             CPPUNIT_TEST(TestColors);
+            CPPUNIT_TEST(TestColorForForce);
             CPPUNIT_TEST(TestPositionMarkerDelete);
 
          CPPUNIT_TEST_SUITE_END();
@@ -104,7 +106,7 @@ namespace SimCore
             {
                RefPtr<PositionMarkerActorProxy> pmap;
                PositionMarker* pm = NULL;
-               CreatePositionMaker(pmap, pm);
+               CreatePositionMarker(pmap, pm);
 
                dtDAL::StringActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_CALLSIGN, prop);
@@ -118,7 +120,7 @@ namespace SimCore
             {
                RefPtr<PositionMarkerActorProxy> pmap;
                PositionMarker* pm = NULL;
-               CreatePositionMaker(pmap, pm);
+               CreatePositionMarker(pmap, pm);
 
                dtDAL::AbstractEnumActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_FORCE, prop);
@@ -131,7 +133,7 @@ namespace SimCore
             {
                RefPtr<PositionMarkerActorProxy> pmap;
                PositionMarker* pm = NULL;
-               CreatePositionMaker(pmap, pm);
+               CreatePositionMarker(pmap, pm);
 
                dtDAL::AbstractEnumActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE, prop);
@@ -144,7 +146,7 @@ namespace SimCore
             {
                RefPtr<PositionMarkerActorProxy> pmap;
                PositionMarker* pm = NULL;
-               CreatePositionMaker(pmap, pm);
+               CreatePositionMarker(pmap, pm);
                dtCore::ObserverPtr<PositionMarker> edraw = pm;
 
                CPPUNIT_ASSERT_EQUAL(1, pmap->referenceCount());
@@ -158,19 +160,92 @@ namespace SimCore
             {
                RefPtr<PositionMarkerActorProxy> pmap;
                PositionMarker* pm = NULL;
-               CreatePositionMaker(pmap, pm);
+               CreatePositionMarker(pmap, pm);
+
+               dtDAL::ColorRgbaActorProperty* prop = NULL;
+               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_FRIENDLY_COLOR, prop);
+               osg::Vec4 theColorF(1.2, 0.03, 0.33, 1.0);
+               prop->SetValue(theColorF);
+               CPPUNIT_ASSERT_EQUAL(theColorF, prop->GetValue());
+               CPPUNIT_ASSERT_EQUAL(theColorF, pm->GetFriendlyColor());
+
+               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_NEUTRAL_COLOR, prop);
+               osg::Vec4 theColorN(1.0, 0.03, 0.81, 1.0);
+               prop->SetValue(theColorN);
+               CPPUNIT_ASSERT_EQUAL(theColorN, prop->GetValue());
+               CPPUNIT_ASSERT_EQUAL(theColorN, pm->GetNeutralColor());
+
+               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_OPPOSING_COLOR, prop);
+               osg::Vec4 theColorOP(0.93, 0.09, 0.11, 9.9);
+               prop->SetValue(theColorOP);
+               CPPUNIT_ASSERT_EQUAL(theColorOP, prop->GetValue());
+               CPPUNIT_ASSERT_EQUAL(theColorOP, pm->GetOpposingColor());
+
+               pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_OTHER_COLOR, prop);
+               osg::Vec4 theColorOT(0.93, 0.09, 1.0, 1.0);
+               prop->SetValue(theColorOT);
+               CPPUNIT_ASSERT_EQUAL(theColorOT, prop->GetValue());
+               CPPUNIT_ASSERT_EQUAL(theColorOT, pm->GetOtherColor());
+
+            }
+
+            void TestColorForForce()
+            {
+               RefPtr<PositionMarkerActorProxy> pmap;
+               PositionMarker* pm = NULL;
+               CreatePositionMarker(pmap, pm);
 
                dtDAL::ColorRgbaActorProperty* prop = NULL;
                pmap->GetProperty(PositionMarkerActorProxy::PROPERTY_MARKER_COLOR, prop);
-               osg::Vec4 theColor(1.0, 0.03, 0.81, 0.3);
-               prop->SetValue(theColor);
-               CPPUNIT_ASSERT_EQUAL(theColor, prop->GetValue());
-               CPPUNIT_ASSERT_EQUAL(theColor, pm->GetColor());
+               CPPUNIT_ASSERT(prop != NULL);
+               CPPUNIT_ASSERT(prop->IsReadOnly());
+
+               osg::Vec4 theColor;
+
+               pm->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
+               theColor = pm->GetColor();
+               osg::Vec4 expectedColorF(pm->GetFriendlyColor());
+               expectedColorF.a() = 0.8;
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorF);
+               theColor = prop->GetValue();
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorF);
+
+               pm->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::NEUTRAL);
+               theColor = pm->GetColor();
+               osg::Vec4 expectedColorN(pm->GetNeutralColor());
+               expectedColorN.a() = 0.8;
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorN);
+               theColor = prop->GetValue();
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorN);
+
+               pm->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::OPPOSING);
+               theColor = pm->GetColor();
+               osg::Vec4 expectedColorOP(pm->GetOpposingColor());
+               expectedColorOP.a() = 0.8;
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOP);
+               theColor = prop->GetValue();
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOP);
+
+               pm->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::INSURGENT);
+               theColor = pm->GetColor();
+               osg::Vec4 expectedColorOP2(pm->GetOpposingColor());
+               expectedColorOP2.a() = 0.8;
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOP2);
+               theColor = prop->GetValue();
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOP2);
+
+               pm->SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::OTHER);
+               theColor = pm->GetColor();
+               osg::Vec4 expectedColorOT(pm->GetOtherColor());
+               expectedColorOT.a() = 0.8;
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOT);
+               theColor = prop->GetValue();
+               CPPUNIT_ASSERT_EQUAL(theColor, expectedColorOT);
             }
 
          private:
 
-            void CreatePositionMaker(RefPtr<PositionMarkerActorProxy>& pmap, PositionMarker*& pm)
+            void CreatePositionMarker(RefPtr<PositionMarkerActorProxy>& pmap, PositionMarker*& pm)
             {
                mGM->CreateActor(*EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE, pmap);
                CPPUNIT_ASSERT(pmap.valid());

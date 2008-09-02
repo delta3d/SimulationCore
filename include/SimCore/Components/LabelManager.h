@@ -18,7 +18,9 @@
  *
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
+ *
  * @author Chris Rodgers
+ * @author David Guthrie
  */
 
 #ifndef SIMCORE_LABEL_MANAGER_H
@@ -30,7 +32,10 @@
 #include <SimCore/Export.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <dtCore/observerptr.h>
+#include <dtGame/gamemanager.h>
 
+#include <map>
+#include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,9 +44,15 @@ namespace osg
    class Camera;
 }
 
-namespace dtGame
+namespace dtCore
 {
-   class GameManager;
+   class Camera;
+   class Transformable;
+}
+
+namespace dtDAL
+{
+   class ActorProxy;
 }
 
 namespace SimCore
@@ -107,14 +118,27 @@ namespace SimCore
             LabelOptions();
             ~LabelOptions();
 
+            bool ShowLabels() const;
+            void SetShowLabels(bool show);
+
             bool ShowDamageState() const;
             void SetShowDamageState(bool show);
+
+            bool ShowLabelsForEntities() const;
+            void SetShowLabelsForEntities(bool show);
+
+            bool ShowLabelsForPositionReports() const;
+            void SetShowLabelsForPositionReports(bool show);
+
+            bool ShowLabelsForBlips() const;
+            void SetShowLabelsForBlips(bool show);
 
             float GetMaxLabelDistance() const;
             float GetMaxLabelDistance2() const;
             void SetMaxLabelDistance(float distance);
 
             bool operator == (const LabelOptions& toCompare) const;
+            bool operator != (const LabelOptions& toCompare) const { return !(*this == toCompare); }
 
             /// Used for the game manager find to see if the actor matches the options.
             bool operator() (dtDAL::ActorProxy& actor);
@@ -122,7 +146,11 @@ namespace SimCore
             float mMaxLabelDistance;
             float mMaxLabelDistance2;
 
-            bool mShowDamageState;
+            bool mShowDamageState : 1;
+            bool mShowLabels : 1;
+            bool mShowLabelsForEntities : 1;
+            bool mShowLabelsForPositionReports : 1;
+            bool mShowLabelsForBlips : 1;
       };
 
 

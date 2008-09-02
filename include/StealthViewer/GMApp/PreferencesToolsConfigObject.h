@@ -46,7 +46,7 @@ namespace StealthGM
 
             private:
 
-               CoordinateSystem(const std::string &name);
+               CoordinateSystem(const std::string& name);
          };
 
 
@@ -57,13 +57,13 @@ namespace StealthGM
           * Overridden base class method to apply the changes made to this class to the
           * game manager
           */
-         virtual void ApplyChanges(dtGame::GameManager &gameManager);
+         virtual void ApplyChanges(dtGame::GameManager& gameManager);
 
          /**
           * Sets the coordinate system
           * @param system The system to use
           */
-         void SetCoordinateSystem(const CoordinateSystem &system) { mCoordinateSystem = &system; SetIsUpdated(true); }
+         void SetCoordinateSystem(const CoordinateSystem& system) { mCoordinateSystem = &system; SetIsUpdated(true); }
 
          /**
           * Gets the coordinate system
@@ -138,7 +138,7 @@ namespace StealthGM
 
       private:
 
-         const CoordinateSystem *mCoordinateSystem;
+         const CoordinateSystem* mCoordinateSystem;
          bool mShowBinocularImage;
          bool mShowDistanceToObject;
          bool mShowElevationOfObject;

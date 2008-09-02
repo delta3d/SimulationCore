@@ -33,12 +33,16 @@ namespace SimCore
       const std::string PositionMarker::COLOR_UNIFORM("forceColor");
 
       ////////////////////////////////////////////////////////////////////////
-      PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy):
-         BaseClass(proxy),
-         mReportTime(0.0),
-         mAssociatedEntity(NULL),
-         mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER),
-         mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
+      PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy)
+         : BaseClass(proxy)
+         , mReportTime(0.0)
+         , mAssociatedEntity(NULL)
+         , mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER)
+         , mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
+         , mFriendlyColor(0.5, 0.5, 1.0, 1.0)
+         , mNeutralColor(0.1, 1.0, 0.1, 1.0)
+         , mOpposingColor(1.0, 0.1, 0.1, 1.0)
+         , mOtherColor(0.5, 0.5, 0.5, 1.0)
       {
          dtCore::RefPtr<osg::Node> original, copied;
          IGActor::LoadFileStatic("StaticMeshes/Hemisphere.ive", original, copied);
@@ -58,6 +62,9 @@ namespace SimCore
          trans->setFunction( osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
          ss->setAttributeAndModes( trans.get() );
          ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+
+         //Need to call the current incarnation to make it set the color.
+         SetForceAffiliation(GetForceAffiliation());
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -81,24 +88,26 @@ namespace SimCore
       void PositionMarker::SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce)
       {
          BaseClass::SetForceAffiliation(markerForce);
+         osg::Vec4 newColor;
          if (markerForce == BaseEntityActorProxy::ForceEnum::FRIENDLY)
          {
-            SetColor(osg::Vec4(0.5, 0.5, 1.0, 0.4));
+            newColor = GetFriendlyColor();
          }
          else if (markerForce == BaseEntityActorProxy::ForceEnum::NEUTRAL)
          {
-            SetColor(osg::Vec4(0.1, 1.0, 0.1, 0.4));
+            newColor = GetNeutralColor();
          }
          else if (markerForce == BaseEntityActorProxy::ForceEnum::INSURGENT ||
                   markerForce == BaseEntityActorProxy::ForceEnum::OPPOSING)
          {
-            SetColor(osg::Vec4(1.0, 0.1, 0.1, 0.4));
+            newColor = GetOpposingColor();
          }
          else
          {
-            SetColor(osg::Vec4(0.5, 0.5, 0.5, 0.4));
+            newColor = GetOtherColor();
          }
-
+         newColor.a() = 0.8;
+         SetColor(newColor);
       }
 
 
@@ -175,6 +184,54 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetFriendlyColor(const osg::Vec4& vec)
+      {
+         mFriendlyColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetFriendlyColor()
+      {
+         return mFriendlyColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetNeutralColor(const osg::Vec4& vec)
+      {
+         mNeutralColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetNeutralColor()
+      {
+         return mNeutralColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetOpposingColor(const osg::Vec4& vec)
+      {
+         mOpposingColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetOpposingColor()
+      {
+         return mOpposingColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetOtherColor(const osg::Vec4& vec)
+      {
+         mOtherColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetOtherColor()
+      {
+         return mOtherColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
       void PositionMarker::HandleModelDrawToggle(bool active)
       {
          if (active)
@@ -234,6 +291,10 @@ namespace SimCore
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_REPORT_TIME("Report Time");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ASSOCIATED_ENTITY("Associated Real Entity");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_MARKER_COLOR("Marker Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_FRIENDLY_COLOR("Friendly Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_NEUTRAL_COLOR("Neutral Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_OPPOSING_COLOR("Opposing Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_OTHER_COLOR("Other Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ICON_IMAGE("Icon Image");
 
       ////////////////////////////////////////////////////////////////////////
@@ -307,9 +368,38 @@ namespace SimCore
 
          static const dtUtil::RefString PROPERTY_MARKER_COLOR_DESC("The color of the marker.");
          AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_MARKER_COLOR, PROPERTY_MARKER_COLOR,
-                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetColor),
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(),
                   dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetColor),
                   PROPERTY_MARKER_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+         GetProperty(PROPERTY_MARKER_COLOR)->SetReadOnly(true);
+
+         static const dtUtil::RefString PROPERTY_FRIENDLY_COLOR_DESC("The color if the force is friendly.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_FRIENDLY_COLOR, PROPERTY_FRIENDLY_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetFriendlyColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetFriendlyColor),
+                  PROPERTY_FRIENDLY_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
+         static const dtUtil::RefString PROPERTY_NEUTRAL_COLOR_DESC("The color if the force is neutral.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_NEUTRAL_COLOR, PROPERTY_NEUTRAL_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetNeutralColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetNeutralColor),
+                  PROPERTY_NEUTRAL_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
+         static const dtUtil::RefString PROPERTY_OPPOSING_COLOR_DESC("The color if the force is opposing or insurgent.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_OPPOSING_COLOR, PROPERTY_OPPOSING_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOpposingColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOpposingColor),
+                  PROPERTY_OPPOSING_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
+         static const dtUtil::RefString PROPERTY_OTHER_COLOR_DESC("The color if the force is other.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_OTHER_COLOR, PROPERTY_OTHER_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetOtherColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetOtherColor),
+                  PROPERTY_OTHER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
          static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "
