@@ -51,6 +51,7 @@
 // TEMP:
 #include <osg/ShapeDrawable>
 #include <osg/Shape>
+#include <osg/Math>
 
 #include <queue>
 
@@ -295,7 +296,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool LabelOptions::operator == (const LabelOptions& toCompare) const
       {
-         return toCompare.mMaxLabelDistance == mMaxLabelDistance &&
+         /// using 0.5 for the epsilon because the values are really only ever set to whole numbers.
+         return osg::equivalent(toCompare.mMaxLabelDistance, mMaxLabelDistance, 0.5f) &&
             toCompare.mShowLabels == mShowLabels &&
             toCompare.mShowLabelsForBlips == mShowLabelsForBlips &&
             toCompare.mShowLabelsForEntities == mShowLabelsForEntities &&
@@ -459,12 +461,11 @@ namespace SimCore
          typedef std::vector<dtDAL::ActorProxy*> ProxyList;
          ProxyList proxies;
 
-         if (!GetOptions().ShowLabels())
+         // No need to do a find if when labels are off.
+         if (GetOptions().ShowLabels())
          {
-            return;
+            mGM->FindActorsIf(GetOptions(), proxies);
          }
-
-         mGM->FindActorsIf(GetOptions(), proxies);
 
          // Get the MAIN camera.
          dtCore::Camera* deltaCamera = mGM->GetApplication().GetCamera();
@@ -518,7 +519,8 @@ namespace SimCore
             deltaCamera->GetTransform(camXform);
             osg::Vec3 camPos;
             camXform.GetTranslation(camPos);
-            if ((camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
+            if (GetOptions().GetMaxLabelDistance() > 0.0 &&
+                     (camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
             {
                continue;
             }

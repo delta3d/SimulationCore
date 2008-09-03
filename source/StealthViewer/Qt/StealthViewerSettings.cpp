@@ -343,25 +343,28 @@ namespace StealthQt
          clear();
    }
 
-   void StealthViewerSettings::WritePreferencesToFile()
+   void StealthViewerSettings::WritePreferencesToFile(bool writeWindowState)
    {
-      beginGroup(StealthViewerSettings::GENERAL_GROUP);
+      if (writeWindowState)
+      {
+         beginGroup(StealthViewerSettings::GENERAL_GROUP);
 
-         setValue(StealthViewerSettings::DOCK_STATE,
-            StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));
+            setValue(StealthViewerSettings::DOCK_STATE,
+               StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));
 
-         setValue(StealthViewerSettings::WINDOW_GEOMETRY,
-            StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
+            setValue(StealthViewerSettings::WINDOW_GEOMETRY,
+               StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
 
-         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO,
-            StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
+            setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO,
+               StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
 
-      endGroup();
-
+         endGroup();
+      }
       // Low cyclomatic complexity
       WritePreferencesGeneralGroupToFile();
       WritePreferencesEnvironmentGroupToFile();
       WritePreferencesToolsGroupToFile();
+      WritePreferencesVisibilityGroupToFile();
 
       WriteControlsRecordGroupToFile();
       WriteControlsPlaybackGroupToFile();
@@ -503,6 +506,7 @@ namespace StealthQt
       LoadPreferencesGeneral();
       LoadPreferencesEnvironment();
       LoadPreferencesTools();
+      LoadPreferencesVisibility();
 
       LoadControlsRecord();
       LoadControlsPlayback();
@@ -734,6 +738,7 @@ namespace StealthQt
             options.SetMaxLabelDistance(value(LABEL_MAX_DISTANCE).toDouble());
          }
       endGroup();
+      visObject.SetOptions(options);
    }
 
    void StealthViewerSettings::LoadControlsRecord()

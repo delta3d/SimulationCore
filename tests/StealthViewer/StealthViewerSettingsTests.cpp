@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -27,10 +27,13 @@
 */
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
+#include <SimCore/Components/LabelManager.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>
 #include <QtGui/QApplication>
 #include <QtCore/QStringList>
+#include <StealthViewer/Qt/StealthViewerData.h>
 
 class SubStealthViewerSettings : public StealthQt::StealthViewerSettings
 {
@@ -53,13 +56,14 @@ class SubStealthViewerSettings : public StealthQt::StealthViewerSettings
       }
 };
 
-class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture 
+class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthViewerSettingsTests);
 
-        CPPUNIT_TEST(TestParseIniFile);
-        CPPUNIT_TEST(TestAddConnection);
-        CPPUNIT_TEST(TestRemoveConnection);
+      CPPUNIT_TEST(TestVisibilitySettings);
+      CPPUNIT_TEST(TestParseIniFile);
+      CPPUNIT_TEST(TestAddConnection);
+      CPPUNIT_TEST(TestRemoveConnection);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -69,6 +73,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 
       void tearDown();
 
+      void TestVisibilitySettings();
       void TestParseIniFile();
       void TestAddConnection();
       void TestRemoveConnection();
@@ -102,6 +107,45 @@ void StealthViewerSettingsTests::tearDown()
    mQApp = NULL;
 }
 
+void StealthViewerSettingsTests::TestVisibilitySettings()
+{
+   StealthGM::PreferencesVisibilityConfigObject& visConfig =
+      StealthQt::StealthViewerData::GetInstance().GetVisibilityConfigObject();
+
+   SimCore::Components::LabelOptions options = visConfig.GetOptions();
+   options.SetMaxLabelDistance(-1.0f);
+   options.SetShowLabels(false);
+   options.SetShowLabelsForEntities(false);
+   options.SetShowLabelsForBlips(false);
+   options.SetShowLabelsForPositionReports(false);
+   visConfig.SetOptions(options);
+
+   SubStealthViewerSettings settings(QString("UnitTest"));
+   settings.ClearAllSettings(true);
+   settings.WritePreferencesToFile(false);
+   //reset the values to defaults
+   visConfig.SetOptions(SimCore::Components::LabelOptions());
+   settings.LoadPreferences();
+   SimCore::Components::LabelOptions options2 = visConfig.GetOptions();
+
+   CPPUNIT_ASSERT(options == options2);
+
+   options.SetMaxLabelDistance(1000.0f);
+   options.SetShowLabels(true);
+   options.SetShowLabelsForEntities(true);
+   options.SetShowLabelsForBlips(true);
+   options.SetShowLabelsForPositionReports(true);
+   visConfig.SetOptions(options);
+
+   settings.WritePreferencesToFile(false);
+   //reset the values to defaults
+   visConfig.SetOptions(SimCore::Components::LabelOptions());
+   settings.LoadPreferences();
+   options2 = visConfig.GetOptions();
+
+   CPPUNIT_ASSERT(options == options2);
+}
+
 void StealthViewerSettingsTests::TestParseIniFile()
 {
    // Ensure data does not exist from a previous unit test run
@@ -112,7 +156,7 @@ void StealthViewerSettingsTests::TestParseIniFile()
    settings.ParseIniFile();
    CPPUNIT_ASSERT_MESSAGE("There should not be any connections added", !settings.GetNumConnections());
 
-   settings.AddConnection(QString("TestName"), QString("TestMap"),   QString("TestConfig"), 
+   settings.AddConnection(QString("TestName"), QString("TestMap"),   QString("TestConfig"),
                           QString("TestFed"),  QString("TestFedex"), QString("TestFedName"),
                           QString("TestRid"));
 
@@ -121,7 +165,7 @@ void StealthViewerSettingsTests::TestParseIniFile()
    CPPUNIT_ASSERT_EQUAL(0U, settings.GetNumConnections());
 
    settings.ParseIniFile();
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("Internal settings were deleted and reparsed from the ini file", 
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("Internal settings were deleted and reparsed from the ini file",
                                  1U, settings.GetNumConnections());
 
    settings.ClearAllSettings(true);
@@ -136,13 +180,13 @@ void StealthViewerSettingsTests::TestParseIniFile()
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRid"));
 
-   settings.AddConnection(testProps[0], testProps[1], testProps[2], 
+   settings.AddConnection(testProps[0], testProps[1], testProps[2],
       testProps[3], testProps[4], testProps[5], testProps[6]);
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
 
    settings.ParseIniFile();
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("Reparsing the ini file should NOT add a duplicate connection", 
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("Reparsing the ini file should NOT add a duplicate connection",
       1U, settings.GetNumConnections());
 }
 
@@ -163,8 +207,8 @@ void StealthViewerSettingsTests::TestAddConnection()
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRid"));
 
-   settings.AddConnection(testProps[0], testProps[1], testProps[2], 
-                          testProps[3], testProps[4], testProps[5], 
+   settings.AddConnection(testProps[0], testProps[1], testProps[2],
+                          testProps[3], testProps[4], testProps[5],
                           testProps[6]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
@@ -190,8 +234,8 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    const unsigned int numConnections = 3;
    for(unsigned int i = 0; i < numConnections; i++)
    {
-      settings.AddConnection(QString("Name")     + QString::number(i), 
-                             QString("Map")      + QString::number(i), 
+      settings.AddConnection(QString("Name")     + QString::number(i),
+                             QString("Map")      + QString::number(i),
                              QString("Config")   + QString::number(i),
                              QString("FedFile")  + QString::number(i),
                              QString("FedEx")    + QString::number(i),
@@ -203,17 +247,17 @@ void StealthViewerSettingsTests::TestRemoveConnection()
 
    settings.RemoveConnection(QString("Name") + QString::number(1));
 
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.", 
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.",
                                  numConnections - 1, settings.GetNumConnections());
 
    QStringList shouldBeEmpty = settings.GetConnectionProperties(QString("Name") + QString::number(1));
 
-   CPPUNIT_ASSERT_MESSAGE("Searching for the removed connection should fail.", 
+   CPPUNIT_ASSERT_MESSAGE("Searching for the removed connection should fail.",
                            shouldBeEmpty.isEmpty());
 
    QStringList resultOne = settings.GetConnectionProperties(QString("Name") + QString::number(0));
    CPPUNIT_ASSERT(!resultOne.isEmpty());
-   QString name = resultOne[0], map = resultOne[1], config = resultOne[2], 
+   QString name = resultOne[0], map = resultOne[1], config = resultOne[2],
            fedFile = resultOne[3], fedex = resultOne[4], fedName = resultOne[5],
            ridFile = resultOne[6];
 
@@ -236,7 +280,7 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(resultTwo[6] == (QString("RidFile") + QString::number(2)));
 
    settings.RemoveConnection(QString("Name") + QString::number(0));
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.", 
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.",
       numConnections - 2, settings.GetNumConnections());
 
    shouldBeEmpty = settings.GetConnectionProperties(QString("Name") + QString::number(0));

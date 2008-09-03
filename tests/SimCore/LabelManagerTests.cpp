@@ -275,7 +275,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       {
          SimCore::Components::LabelOptions options;
          mLabelManager->SetOptions(options);
-         const SimCore::Components::LabelOptions& gottenOptions = mLabelManager->GetOptions();
+         SimCore::Components::LabelOptions gottenOptions = mLabelManager->GetOptions();
          CPPUNIT_ASSERT(options == gottenOptions);
 
          CPPUNIT_ASSERT_DOUBLES_EQUAL(500.0f, options.GetMaxLabelDistance(), 0.01f);
@@ -304,6 +304,12 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_EQUAL(true, options.ShowLabelsForPositionReports());
          options.SetShowLabelsForPositionReports(false);
          CPPUNIT_ASSERT_EQUAL(false,  options.ShowLabelsForPositionReports());
+
+         gottenOptions = mLabelManager->GetOptions();
+         CPPUNIT_ASSERT(options != gottenOptions);
+         mLabelManager->SetOptions(options);
+         gottenOptions = mLabelManager->GetOptions();
+         CPPUNIT_ASSERT(options == gottenOptions);
       }
 
       void TestLabelColor()
