@@ -47,6 +47,7 @@
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
+#include <dtCore/shadermanager.h>
 
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
@@ -319,6 +320,8 @@ int main (int argc, char* argv[])
    {
       std::cerr << " <<< Exception occurred while running main.cpp for this unit test. No other info available >>> " << std::endl;
    }
+
+   dtCore::ShaderManager::GetInstance().Clear();
 
    GlobalApplication = NULL;
    GlobalGUI->ShutdownGUI();
