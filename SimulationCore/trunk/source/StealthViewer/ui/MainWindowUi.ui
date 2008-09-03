@@ -1486,6 +1486,16 @@
            </property>
            <layout class="QVBoxLayout" >
             <item>
+             <widget class="QCheckBox" name="mVisEntityChk" >
+              <property name="text" >
+               <string>Entities</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="mVisTrackChk" >
               <property name="text" >
                <string>Tracks</string>
@@ -1496,9 +1506,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="mVisEntityChk" >
+             <widget class="QCheckBox" name="mVisBlipChk" >
               <property name="text" >
-               <string>Entities</string>
+               <string>Blips</string>
               </property>
               <property name="checked" >
                <bool>true</bool>
@@ -4047,22 +4057,6 @@
     <hint type="destinationlabel" >
      <x>578</x>
      <y>207</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mVisLabelGroup</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>mVisEntityChk</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>929</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>929</x>
-     <y>147</y>
     </hint>
    </hints>
   </connection>

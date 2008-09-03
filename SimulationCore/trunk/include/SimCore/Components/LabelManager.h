@@ -133,8 +133,16 @@ namespace SimCore
             bool ShowLabelsForBlips() const;
             void SetShowLabelsForBlips(bool show);
 
+            /// @return maximum visible distance of a label.  <= 0 means unlimited.
             float GetMaxLabelDistance() const;
+
+            /**
+             * This prevents doing sqrts, but you can't see if the value is < 0 by calling this method.
+             * @return maximum visible distance of a label squared.
+             */
             float GetMaxLabelDistance2() const;
+
+            /// Sets the maximum visible distance of a label.  <= 0 means unlimited.
             void SetMaxLabelDistance(float distance);
 
             bool operator == (const LabelOptions& toCompare) const;

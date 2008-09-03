@@ -173,11 +173,13 @@ namespace StealthQt
 
          /**
           * Writes all preferences to the output file
+          * The parameter only exists to allow unit testing without a main window instance.
+          * @param writeWindowState true if the windowing state should be written as well.  false if not.
           */
-         void WritePreferencesToFile();
+         void WritePreferencesToFile(bool writeWindowState = true);
 
          /**
-          * Loads the preferences from ther input file
+          * Loads the preferences from the input file
           */
          void LoadPreferences();
 
