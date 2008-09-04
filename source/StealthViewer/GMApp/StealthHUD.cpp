@@ -78,7 +78,7 @@ namespace StealthGM
    const std::string StealthHUD::DEFAULT_NAME("StealthHUD");
 
    //////////////////////////////////////////////////////////////////////////
-   StealthHUD::StealthHUD(dtCore::DeltaWin *win,
+   StealthHUD::StealthHUD(dtCore::DeltaWin* win,
                           dtGame::LogController* logController,
                           const std::string &name,
                           bool hasUI)
@@ -628,5 +628,17 @@ namespace StealthGM
    bool StealthHUD::IsHelpEnabled() const
    {
       return mHelpOverlay.valid() && mHelpOverlay->IsVisible();
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   SimCore::Components::LabelManager& StealthHUD::GetLabelManager()
+   {
+      return *mLabelManager;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   const SimCore::Components::LabelManager& StealthHUD::GetLabelManager() const
+   {
+      return *mLabelManager;
    }
 }

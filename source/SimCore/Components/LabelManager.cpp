@@ -51,6 +51,7 @@
 // TEMP:
 #include <osg/ShapeDrawable>
 #include <osg/Shape>
+#include <osg/Math>
 
 #include <queue>
 
@@ -201,12 +202,28 @@ namespace SimCore
       : mMaxLabelDistance(500.0f)
       , mMaxLabelDistance2(mMaxLabelDistance * mMaxLabelDistance)
       , mShowDamageState(false)
+      , mShowLabels(true)
+      , mShowLabelsForEntities(true)
+      , mShowLabelsForPositionReports(true)
+      , mShowLabelsForBlips(true)
       {
       }
 
       //////////////////////////////////////////////////////////////////////////
       LabelOptions::~LabelOptions()
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool LabelOptions::ShowLabels() const
+      {
+         return mShowLabels;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LabelOptions::SetShowLabels(bool show)
+      {
+         mShowLabels = show;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -219,6 +236,42 @@ namespace SimCore
       void LabelOptions::SetShowDamageState(bool show)
       {
          mShowDamageState = show;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool LabelOptions::ShowLabelsForEntities() const
+      {
+         return mShowLabelsForEntities;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LabelOptions::SetShowLabelsForEntities(bool show)
+      {
+         mShowLabelsForEntities = show;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool LabelOptions::ShowLabelsForPositionReports() const
+      {
+         return mShowLabelsForPositionReports;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LabelOptions::SetShowLabelsForPositionReports(bool show)
+      {
+         mShowLabelsForPositionReports = show;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool LabelOptions::ShowLabelsForBlips() const
+      {
+         return mShowLabelsForBlips;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void LabelOptions::SetShowLabelsForBlips(bool show)
+      {
+         mShowLabelsForBlips = show;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -243,19 +296,39 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool LabelOptions::operator == (const LabelOptions& toCompare) const
       {
-         return true;
+         /// using 0.5 for the epsilon because the values are really only ever set to whole numbers.
+         return osg::equivalent(toCompare.mMaxLabelDistance, mMaxLabelDistance, 0.5f) &&
+            toCompare.mShowLabels == mShowLabels &&
+            toCompare.mShowLabelsForBlips == mShowLabelsForBlips &&
+            toCompare.mShowLabelsForEntities == mShowLabelsForEntities &&
+            toCompare.mShowLabelsForPositionReports == mShowLabelsForPositionReports &&
+            toCompare.mShowDamageState == mShowDamageState;
       }
 
       //////////////////////////////////////////////////////////////////////////
       bool LabelOptions::operator() (dtDAL::ActorProxy& proxy)
       {
+         if (!mShowLabels)
+         {
+            return false;
+         }
+
          bool result = false;
+
          if (!proxy.GetActorType().InstanceOf(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE))
          {
             if (proxy.GetActorType().InstanceOf(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE)
                || proxy.GetActorType().InstanceOf(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE))
             {
-               result = true;
+               result = mShowLabelsForEntities;
+            }
+            else if (proxy.GetActorType().InstanceOf(*SimCore::Actors::EntityActorRegistry::POSITION_MARKER_ACTOR_TYPE))
+            {
+               result = mShowLabelsForPositionReports;
+            }
+            else if (proxy.GetActorType().InstanceOf(*SimCore::Actors::EntityActorRegistry::BLIP_ACTOR_TYPE))
+            {
+               result = mShowLabelsForBlips;
             }
          }
          return result;
@@ -315,6 +388,8 @@ namespace SimCore
          }
 
          mGUILayer = guiLayer;
+         //must enable z-ordering
+         mGUILayer->GetCEGUIWindow()->setZOrderingEnabled(true);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -377,7 +452,6 @@ namespace SimCore
          // Attach the label CEGUI window to the main label layer's CEGUI window
          // so that it can be visible.
          mGUILayer->GetCEGUIWindow()->addChildWindow(label.GetCEGUIWindow());
-         mGUILayer->GetCEGUIWindow()->setZOrderingEnabled(true);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -387,7 +461,11 @@ namespace SimCore
          typedef std::vector<dtDAL::ActorProxy*> ProxyList;
          ProxyList proxies;
 
-         mGM->FindActorsIf(GetOptions(), proxies);
+         // No need to do a find if when labels are off.
+         if (GetOptions().ShowLabels())
+         {
+            mGM->FindActorsIf(GetOptions(), proxies);
+         }
 
          // Get the MAIN camera.
          dtCore::Camera* deltaCamera = mGM->GetApplication().GetCamera();
@@ -433,7 +511,7 @@ namespace SimCore
             //Determine if entity is in view.
             if (!deltaCamera->ConvertWorldCoordinateToScreenCoordinate(worldPos, screenPos))
             {
-               // Entity not in view, avoid setting a label for it.
+               //Entity not in view, avoid setting a label for it.
                continue;
             }
 
@@ -441,7 +519,8 @@ namespace SimCore
             deltaCamera->GetTransform(camXform);
             osg::Vec3 camPos;
             camXform.GetTranslation(camPos);
-            if ((camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
+            if (GetOptions().GetMaxLabelDistance() > 0.0 &&
+                     (camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
             {
                continue;
             }
@@ -511,7 +590,6 @@ namespace SimCore
          //for the next frame.
          mLastLabels.swap(newLabels);
 
-         // Remove all allocated labels from the GUI layer.
          CEGUISortList::iterator curWindow = mCEGUISortList.begin();
          CEGUISortList::iterator endWindowList = mCEGUISortList.end();
          unsigned int i = 0;
@@ -586,6 +664,7 @@ namespace SimCore
          mCEGUISortList.clear();
       }
 
+      //////////////////////////////////////////////////////////////////////////
       const osg::Vec2 LabelManager::CalculateLabelScreenPosition(dtCore::Transformable& transformable,
                dtCore::Camera& deltaCam, const osg::Vec3& screenPos, const osg::Vec2& labelSize)
       {

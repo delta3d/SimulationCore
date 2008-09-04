@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>853</height>
+    <height>914</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>1086</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -89,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>2</number>
+        <number>3</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -1428,6 +1428,162 @@
                 <property name="checked" >
                  <bool>true</bool>
                 </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="mVisibilityTab" >
+        <property name="accessibleName" >
+         <string>Visibility Tab</string>
+        </property>
+        <attribute name="title" >
+         <string>Visibility</string>
+        </attribute>
+        <layout class="QVBoxLayout" >
+         <property name="spacing" >
+          <number>2</number>
+         </property>
+         <property name="leftMargin" >
+          <number>2</number>
+         </property>
+         <property name="topMargin" >
+          <number>2</number>
+         </property>
+         <property name="rightMargin" >
+          <number>2</number>
+         </property>
+         <property name="bottomMargin" >
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="mVisLabelGroup" >
+           <property name="title" >
+            <string>Show Labels</string>
+           </property>
+           <property name="alignment" >
+            <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+           </property>
+           <property name="checkable" >
+            <bool>true</bool>
+           </property>
+           <layout class="QVBoxLayout" >
+            <item>
+             <widget class="QCheckBox" name="mVisEntityChk" >
+              <property name="text" >
+               <string>Entities</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="mVisTrackChk" >
+              <property name="text" >
+               <string>Tracks</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="mVisBlipChk" >
+              <property name="text" >
+               <string>Blips</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" >
+              <property name="spacing" >
+               <number>2</number>
+              </property>
+              <property name="leftMargin" >
+               <number>2</number>
+              </property>
+              <property name="topMargin" >
+               <number>2</number>
+              </property>
+              <property name="rightMargin" >
+               <number>2</number>
+              </property>
+              <property name="bottomMargin" >
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="mVisDistLabel" >
+                <property name="text" >
+                 <string>Max Distance</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="mVisMaxDistCombo" >
+                <property name="currentIndex" >
+                 <number>3</number>
+                </property>
+                <item>
+                 <property name="text" >
+                  <string>50</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>100</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>500</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>1000</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>2500</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>5000</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>10000</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text" >
+                  <string>Unlimited</string>
+                 </property>
+                </item>
                </widget>
               </item>
              </layout>
@@ -3901,6 +4057,54 @@
     <hint type="destinationlabel" >
      <x>578</x>
      <y>207</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mVisLabelGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mVisTrackChk</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>929</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>929</x>
+     <y>121</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mVisLabelGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mVisDistLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>929</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>835</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mVisLabelGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mVisMaxDistCombo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>929</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>1000</x>
+     <y>179</y>
     </hint>
    </hints>
   </connection>
