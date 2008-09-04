@@ -81,7 +81,7 @@ namespace StealthGM
       /**
        * Constructs the class.
        */
-      StealthHUD(dtCore::DeltaWin *win,
+      StealthHUD(dtCore::DeltaWin* win,
                  dtGame::LogController* logController = NULL,
                  const std::string &name = DEFAULT_NAME,
                  bool hasUI = false);
@@ -148,6 +148,8 @@ namespace StealthGM
       void SetHelpEnabled( bool enabled );
       bool IsHelpEnabled() const;
 
+      SimCore::Components::LabelManager& GetLabelManager();
+      const SimCore::Components::LabelManager& GetLabelManager() const;
    protected:
 
       void InitHelpOverlay( SimCore::Components::HUDGroup& hudOverlay );

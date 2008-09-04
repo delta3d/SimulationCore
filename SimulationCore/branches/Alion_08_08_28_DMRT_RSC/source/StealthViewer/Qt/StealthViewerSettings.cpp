@@ -28,9 +28,12 @@
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+
+#include <SimCore/Components/LabelManager.h>
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
@@ -86,6 +89,13 @@ namespace StealthQt
       const QString StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT("SHOW_ELEVATION_OF_OBJECT");
       const QString StealthViewerSettings::MAGNIFICATION("MAGNIFICATION");
       const QString StealthViewerSettings::AUTO_ATTACH_ON_SELECTION("AUTO_ATTACH_ON_SELECTION");
+
+   const QString StealthViewerSettings::PREFERENCES_VISIBILITY_GROUP("PREFERENCES_VISIBILITY_GROUP");
+      const QString StealthViewerSettings::SHOW_LABELS("SHOW_LABELS");
+      const QString StealthViewerSettings::SHOW_LABELS_FOR_ENTITIES("SHOW_LABELS_FOR_ENTITIES");
+      const QString StealthViewerSettings::SHOW_LABELS_FOR_BLIPS("SHOW_LABELS_FOR_BLIPS");
+      const QString StealthViewerSettings::SHOW_LABELS_FOR_TRACKS("SHOW_LABELS_FOR_TRACKS");
+      const QString StealthViewerSettings::LABEL_MAX_DISTANCE("LABEL_MAX_DISTANCE");
 
    const QString StealthViewerSettings::CONTROLS_CAMERA_GROUP("CONTROLS_CAMERA_GROUP");
 
@@ -333,25 +343,28 @@ namespace StealthQt
          clear();
    }
 
-   void StealthViewerSettings::WritePreferencesToFile()
+   void StealthViewerSettings::WritePreferencesToFile(bool writeWindowState)
    {
-      beginGroup(StealthViewerSettings::GENERAL_GROUP);
+      if (writeWindowState)
+      {
+         beginGroup(StealthViewerSettings::GENERAL_GROUP);
 
-         setValue(StealthViewerSettings::DOCK_STATE,
-            StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));
+            setValue(StealthViewerSettings::DOCK_STATE,
+               StealthViewerData::GetInstance().GetMainWindow()->saveState(StealthViewerSettings::WINDOW_DOCK_ID));
 
-         setValue(StealthViewerSettings::WINDOW_GEOMETRY,
-            StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
+            setValue(StealthViewerSettings::WINDOW_GEOMETRY,
+               StealthViewerData::GetInstance().GetMainWindow()->saveGeometry());
 
-         setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO,
-            StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
+            setValue(StealthViewerSettings::AUTO_REFRESH_ENTITY_INFO,
+               StealthViewerData::GetInstance().GetGeneralConfigObject().GetAutoRefreshEntityInfoWindow());
 
-      endGroup();
-
+         endGroup();
+      }
       // Low cyclomatic complexity
       WritePreferencesGeneralGroupToFile();
       WritePreferencesEnvironmentGroupToFile();
       WritePreferencesToolsGroupToFile();
+      WritePreferencesVisibilityGroupToFile();
 
       WriteControlsRecordGroupToFile();
       WriteControlsPlaybackGroupToFile();
@@ -402,7 +415,7 @@ namespace StealthQt
 
    void StealthViewerSettings::WritePreferencesToolsGroupToFile()
    {
-      StealthGM::PreferencesToolsConfigObject &toolsObject =
+      StealthGM::PreferencesToolsConfigObject& toolsObject =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
@@ -416,6 +429,24 @@ namespace StealthQt
 
       endGroup();
    }
+
+   /////////////////////////////////////////////////////////////////////
+   void StealthViewerSettings::WritePreferencesVisibilityGroupToFile()
+   {
+      StealthGM::PreferencesVisibilityConfigObject& visObject =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject();
+
+      beginGroup(StealthViewerSettings::PREFERENCES_VISIBILITY_GROUP);
+         SimCore::Components::LabelOptions options = visObject.GetOptions();
+
+         setValue(StealthViewerSettings::SHOW_LABELS, options.ShowLabels());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_BLIPS, options.ShowLabelsForBlips());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_ENTITIES, options.ShowLabelsForEntities());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_TRACKS, options.ShowLabelsForPositionReports());
+         setValue(StealthViewerSettings::LABEL_MAX_DISTANCE, options.GetMaxLabelDistance());
+      endGroup();
+   }
+
 
    void StealthViewerSettings::WriteControlsRecordGroupToFile()
    {
@@ -475,6 +506,7 @@ namespace StealthQt
       LoadPreferencesGeneral();
       LoadPreferencesEnvironment();
       LoadPreferencesTools();
+      LoadPreferencesVisibility();
 
       LoadControlsRecord();
       LoadControlsPlayback();
@@ -671,6 +703,42 @@ namespace StealthQt
          }
 
       endGroup();
+   }
+
+   void StealthViewerSettings::LoadPreferencesVisibility()
+   {
+      StealthGM::PreferencesVisibilityConfigObject& visObject =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject();
+
+      beginGroup(PREFERENCES_VISIBILITY_GROUP);
+         SimCore::Components::LabelOptions options = visObject.GetOptions();
+
+         if (contains(SHOW_LABELS))
+         {
+            options.SetShowLabels(value(SHOW_LABELS).toBool());
+         }
+
+         if (contains(SHOW_LABELS_FOR_BLIPS))
+         {
+            options.SetShowLabelsForBlips(value(SHOW_LABELS_FOR_BLIPS).toBool());
+         }
+
+         if (contains(SHOW_LABELS_FOR_ENTITIES))
+         {
+            options.SetShowLabelsForEntities(value(SHOW_LABELS_FOR_ENTITIES).toBool());
+         }
+
+         if (contains(SHOW_LABELS_FOR_TRACKS))
+         {
+            options.SetShowLabelsForPositionReports(value(SHOW_LABELS_FOR_TRACKS).toBool());
+         }
+
+         if (contains(LABEL_MAX_DISTANCE))
+         {
+            options.SetMaxLabelDistance(value(LABEL_MAX_DISTANCE).toDouble());
+         }
+      endGroup();
+      visObject.SetOptions(options);
    }
 
    void StealthViewerSettings::LoadControlsRecord()

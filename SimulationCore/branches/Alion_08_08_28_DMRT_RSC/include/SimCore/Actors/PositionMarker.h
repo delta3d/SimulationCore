@@ -42,20 +42,35 @@ namespace SimCore
             /// Implemented from the base class
             virtual void HandleModelDrawToggle(bool active);
 
-            void SetColor(const osg::Vec4& vec);
             const osg::Vec4 GetColor();
+
+            void SetFriendlyColor(const osg::Vec4& vec);
+            const osg::Vec4& GetFriendlyColor();
+
+            void SetNeutralColor(const osg::Vec4& vec);
+            const osg::Vec4& GetNeutralColor();
+
+            void SetOpposingColor(const osg::Vec4& vec);
+            const osg::Vec4& GetOpposingColor();
+
+            void SetOtherColor(const osg::Vec4& vec);
+            const osg::Vec4& GetOtherColor();
 
             /// overridden to set the colors when the force changes.
             virtual void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce);
 
             virtual void OnEnteredWorld();
-         private:
 
+         protected:
+            void SetColor(const osg::Vec4& vec);
+
+         private:
             double mReportTime;
             dtUtil::RefString mSourceCallsign;
             dtCore::RefPtr<BaseEntity> mAssociatedEntity;
             BaseEntityActorProxy::ForceEnum* mSourceForce;
             BaseEntityActorProxy::ServiceEnum* mSourceService;
+            osg::Vec4 mFriendlyColor, mNeutralColor, mOpposingColor, mOtherColor;
       };
 
       class SIMCORE_EXPORT PositionMarkerActorProxy : public BaseEntityActorProxy
@@ -69,6 +84,10 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_REPORT_TIME;
             static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY;
             static const dtUtil::RefString PROPERTY_MARKER_COLOR;
+            static const dtUtil::RefString PROPERTY_FRIENDLY_COLOR;
+            static const dtUtil::RefString PROPERTY_NEUTRAL_COLOR;
+            static const dtUtil::RefString PROPERTY_OPPOSING_COLOR;
+            static const dtUtil::RefString PROPERTY_OTHER_COLOR;
             static const dtUtil::RefString PROPERTY_ICON_IMAGE;
 
             PositionMarkerActorProxy();

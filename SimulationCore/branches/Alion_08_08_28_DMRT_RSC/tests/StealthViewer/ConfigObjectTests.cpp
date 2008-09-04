@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -31,11 +31,14 @@
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <SimCore/Components/WeatherComponent.h>
+#include <SimCore/Components/LabelManager.h>
 
 #include <SimCore/Tools/Binoculars.h>
 
@@ -53,6 +56,8 @@
 
 #include <dtCore/timer.h>
 
+#include <UnitTestMain.h>
+
 class ConfigObjectTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ConfigObjectTests);
@@ -60,6 +65,7 @@ class ConfigObjectTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPreferencesGeneralConfigObject);
       CPPUNIT_TEST(TestPreferencesEnvironmentConfigObject);
       CPPUNIT_TEST(TestPreferencesToolsConfigObject);
+      CPPUNIT_TEST(TestPreferencesVisibilityConfigObject);
 
       CPPUNIT_TEST(TestControlsCameraConfigObject);
       CPPUNIT_TEST(TestControlsRecordConfigObject);
@@ -78,6 +84,7 @@ public:
    void TestPreferencesEnvironmentConfigObject();
 
    void TestPreferencesToolsConfigObject();
+   void TestPreferencesVisibilityConfigObject();
 
    void TestControlsCameraConfigObject();
    void TestControlsRecordConfigObject();
@@ -265,6 +272,41 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
 
    toolsConfig = NULL;
 }
+
+void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
+{
+   dtCore::RefPtr<StealthGM::PreferencesVisibilityConfigObject> visConfig =
+      new StealthGM::PreferencesVisibilityConfigObject;
+
+   SimCore::Components::LabelOptions options = visConfig->GetOptions();
+   options.SetShowLabels(false);
+   options.SetShowLabelsForBlips(false);
+   options.SetShowLabelsForEntities(false);
+   options.SetShowLabelsForPositionReports(false);
+   options.SetMaxLabelDistance(10.0f);
+
+   visConfig->SetOptions(options);
+   CPPUNIT_ASSERT(visConfig->IsUpdated());
+
+   SimCore::Components::LabelOptions options2 = visConfig->GetOptions();
+   CPPUNIT_ASSERT(options == options2);
+
+   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+
+   dtCore::RefPtr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
+   hud->SetupGUI(*new SimCore::Components::HUDGroup("hello"), 50, 50 );
+   gm->AddComponent(*hud, dtGame::GameManager::ComponentPriority::NORMAL);
+
+   SimCore::Components::LabelOptions optionsApplied = hud->GetLabelManager().GetOptions();
+   CPPUNIT_ASSERT(options != optionsApplied);
+
+   visConfig->ApplyChanges(*gm);
+
+   optionsApplied = hud->GetLabelManager().GetOptions();
+
+   CPPUNIT_ASSERT(options == optionsApplied);
+}
+
 
 void ConfigObjectTests::TestControlsCameraConfigObject()
 {
