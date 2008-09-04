@@ -714,7 +714,7 @@ namespace SimCore
                }
             }
 
-            icsmPath += "/Sensors/ICSM/data";
+            icsmPath += "/Sensors/ICSM/data/";
 
             dtCore::SetEnvironment("ICSM_DATA", icsmPath);
          }
@@ -732,10 +732,29 @@ namespace SimCore
                  }
              }
 
-             serePath += "/Sensors/SERE/data";
+             serePath += "/Sensors/SERE/data/";
 
              dtCore::SetEnvironment("SERE_DATA", serePath);
          }
+
+         // Tell SEREdb where it find the data that it needs.
+         char* sereDBData = getenv("SERE_DB_DATA");
+         if(sereDBData == NULL)
+         {
+             std::string sereDBPath = dtDAL::Project::GetInstance().GetContext();
+             for(size_t i = 0; i < sereDBPath.size(); i++)
+             {
+                 if(sereDBPath[i] == '\\')
+                 {
+                     sereDBPath[i] = '/';
+                 }
+             }
+
+             sereDBPath += "/Sensors/SEREdb/data/";
+
+             dtCore::SetEnvironment("SERE_DB_DATA", sereDBPath);
+         }
+
       }
 
    } // end entity namespace.
