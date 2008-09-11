@@ -24,6 +24,7 @@
 #ifndef EPHEMERIS_ENVIRONMENT_ACTOR
 #define EPHEMERIS_ENVIRONMENT_ACTOR
 
+#include <SimCore/Export.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 
 #include <osgEphemeris/EphemerisModel>
@@ -33,7 +34,7 @@ namespace SimCore
    namespace Actors
    {
 
-      class EphemerisEnvironmentActor: public SimCore::Actors::IGEnvironmentActor
+      class SIMCORE_EXPORT EphemerisEnvironmentActor: public SimCore::Actors::IGEnvironmentActor
       {
       public:
          typedef SimCore::Actors::IGEnvironmentActor BaseClass;
