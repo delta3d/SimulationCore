@@ -186,6 +186,8 @@ namespace SimCore
             ///by default we will always create a cullvisitor
             AgeiaTerrainCullVisitor* GetCullVisitor();
 
+            void AddCamera(osg::Camera* cam);
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);

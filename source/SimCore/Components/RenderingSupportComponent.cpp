@@ -217,6 +217,12 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::AddCamera(osg::Camera* cam)
+      {
+         mSceneRoot->addChild(cam);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeCullVisitor()
       {
          osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
