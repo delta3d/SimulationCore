@@ -78,7 +78,7 @@ namespace SimCore
          std::list<dtCore::RefPtr<Actors::TextureProjectorActor> >::iterator listIter = mActorList.begin();
          for(; listIter != mActorList.end(); ++listIter)
          {
-            if( (*listIter)->GetCurrentTime() > (*listIter)->GetMaxTime() )
+            if( (*listIter)->GetCurrTime() > (*listIter)->GetMaxTime() )
             {
                GetGameManager()->DeleteActor((*listIter)->GetGameActorProxy());
                mActorList.erase(listIter);
