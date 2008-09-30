@@ -1,0 +1,41 @@
+SET(LIB_NAME   ${SIMCOREHLA_LIBRARY})
+
+SET(HEADER_PATH ${SimulationCore_SOURCE_DIR}/include/SimCore/HLA)
+SET(SOURCE_PATH ${SimulationCore_SOURCE_DIR}/source/SimCore/HLA)
+
+INCLUDE_DIRECTORIES(${RTI_INCLUDE_DIR})
+
+file(GLOB LIB_PUBLIC_HEADERS 
+    "${HEADER_PATH}/*.h"
+    )
+file(GLOB LIB_SOURCES 
+    "${SOURCE_PATH}/*.cpp")
+
+list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/HLA/precomp.cpp)
+
+ADD_LIBRARY(${LIB_NAME} SHARED                        
+    ${LIB_PUBLIC_HEADERS}                         
+    ${LIB_SOURCES}
+)
+
+LINK_WITH_VARIABLES(${LIB_NAME}
+											  DTHLAGM_LIBRARY
+											  DTPHYSX_LIBRARY
+											  SIMCORE_LIBRARY
+											  )
+
+TARGET_LINK_LIBRARIES(${LIB_NAME} 
+${RTI_LIBRARIES}
+)
+
+SET_TARGET_PROPERTIES(${LIB_NAME}
+                        PROPERTIES DEFINE_SYMBOL SIMCORE_HLA_LIBRARY)
+
+
+INCLUDE(ModuleInstall OPTIONAL)
+
+#little hack to get the .dll into /bin and .lib into /lib
+IF (MSVC)
+    SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "/../../bin/")
+    SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES IMPORT_PREFIX "../")
+ENDIF (MSVC)
