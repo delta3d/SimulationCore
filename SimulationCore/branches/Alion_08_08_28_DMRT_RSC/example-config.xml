@@ -63,7 +63,14 @@ find it.  It shows an example set of values one may set
       <Property Name="HasCompass">false</Property>
       <Property Name="HasGPS">false</Property>
       <Property Name="HasNightVision">false</Property>
+      <Property Name="HasFLIR">false</Property>
       <Property Name="HasMapTool">false</Property>
+
+      <Property Name="SensorRenderProfile">PROFILE_NV_8000</Property>
+      <Property Name="SensorMultiSamples">4</Property>
+      <Property Name="SensorNVGModel">SENSOR_F4949G</Property>
+      <Property Name="SensorFLIRModel">2</Property>
+
     </Properties>
 
 </Application>
