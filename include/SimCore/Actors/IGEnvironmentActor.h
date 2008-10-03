@@ -133,6 +133,8 @@ namespace SimCore
 
          std::string GetTimeAndDateString() const;
 
+         dtCore::CloudPlane* GetCloudPlane(){return mCloudPlane.get();};
+
       protected:
 
          // Destructor
