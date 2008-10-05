@@ -50,7 +50,7 @@ namespace SimCore
 
          virtual void OnTimeChanged();
 
-         osgEphemeris::Sphere* GetFogSphere();
+         osg::Transform* GetFogSphere();
 
       protected:
          virtual ~EphemerisEnvironmentActor();

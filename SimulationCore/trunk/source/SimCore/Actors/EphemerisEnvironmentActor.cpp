@@ -207,9 +207,9 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
-      osgEphemeris::Sphere* EphemerisEnvironmentActor::GetFogSphere()
+      osg::Transform* EphemerisEnvironmentActor::GetFogSphere()
       {
-         return mFogSphere.get();
+         return mFogSphereEyePointTransform.get();
       }
 
       /////////////////////////////////////////////////////////////
