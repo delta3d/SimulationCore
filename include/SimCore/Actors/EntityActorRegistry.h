@@ -60,6 +60,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> WEAPON_FLASH_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> FLARE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> CONTROL_STATE_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> BASE_WATER_ACTOR_TYPE;
 
 #ifdef AGEIA_PHYSICS
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_PARTICLE_SYSTEM_TYPE;

@@ -43,6 +43,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
+#include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
@@ -104,6 +105,8 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::WEAPON_FLASH_ACTOR_TYPE(new dtDAL::ActorType("WeaponFlashActor", "Munitions", "The actor that represents a weapon's flash effect."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::FLARE_ACTOR_TYPE(new dtDAL::ActorType("FlareActor", "Munitions", "The actor that represents a flare (illumination round)."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE(new dtDAL::ActorType("ControlState", "ControlState", "The base control state actor."));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::BASE_WATER_ACTOR_TYPE(new dtDAL::ActorType("BaseWaterActor", "SimCore.Actors", "The base class for water actors."));
 
 #ifdef AGEIA_PHYSICS
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaParticleSystemActor", "NxAgeiaPhysicsModels"));
@@ -181,6 +184,7 @@ namespace SimCore
          mActorFactory->RegisterType<WeaponFlashActorProxy>(WEAPON_FLASH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<FlareActorProxy>(FLARE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<BaseWaterActorProxy>(BASE_WATER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<OceanWaterActorProxy>(OCEAN_WATER_ACTOR_TYPE.get());
 
