@@ -53,6 +53,7 @@
 #include <dtAudio/audiomanager.h>
 
 #include <SimCore/Actors/BaseEntity.h>
+#include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/Human.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/PlayerActor.h>
@@ -100,6 +101,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlayerActorProxy);
       CPPUNIT_TEST(TestDetonationActorProxy);
       CPPUNIT_TEST(TestDetonationSoundDelay);
+      CPPUNIT_TEST(TestBaseWaterActorProxy);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -118,6 +120,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       void TestPlayerActorProxy();
       void TestDetonationActorProxy();
       void TestDetonationSoundDelay();
+      void TestBaseWaterActorProxy();
 
    private:
       void TestScaleMagnification(SimCore::Actors::BaseEntityActorProxy&);
@@ -805,4 +808,34 @@ void BaseEntityActorProxyTests::TestDetonationSoundDelay()
    pos.set(1050, 350, 350);
    da.CalculateDelayTime(pos);
    CPPUNIT_ASSERT_MESSAGE("The delay time should be reasonably close to 2 seconds", osg::equivalent(da.GetDelayTime(), 2.0f, 0.01f));
+}
+
+void BaseEntityActorProxyTests::TestBaseWaterActorProxy()
+{
+   RefPtr<SimCore::Actors::BaseWaterActorProxy> waterProxy;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, waterProxy);
+   
+   CPPUNIT_ASSERT(waterProxy.valid());
+   SimCore::Actors::BaseWaterActor* waterActor = NULL;
+   waterProxy->GetActor( waterActor );
+   const SimCore::Actors::BaseWaterActor* constWaterActor = waterActor;
+
+   float testValue = 1234.56789f;
+   float testHeight = 0.0f;
+   osg::Vec3 detectPoint;
+   osg::Vec3 testNormal;
+   const osg::Vec3 worldAxixZ( 0.0f, 0.0f, 1.0f );
+   CPPUNIT_ASSERT( constWaterActor->GetHeightAndNormalAtPoint( detectPoint, testHeight, testNormal ) );
+   CPPUNIT_ASSERT( testHeight == 0.0f );
+   CPPUNIT_ASSERT( testNormal == worldAxixZ );
+
+   CPPUNIT_ASSERT( constWaterActor->GetWaterHeight() == 0.0f );
+   waterActor->SetWaterHeight( testValue );
+   CPPUNIT_ASSERT( constWaterActor->GetWaterHeight() == testValue );
+
+   testNormal.set( 0.0f, 0.0f, 0.0f );
+   CPPUNIT_ASSERT( constWaterActor->GetHeightAndNormalAtPoint( detectPoint, testHeight, testNormal ) );
+   CPPUNIT_ASSERT( testHeight == testValue );
+   CPPUNIT_ASSERT( testNormal == worldAxixZ );
+
 }
