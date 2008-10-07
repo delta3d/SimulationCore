@@ -14,14 +14,17 @@ ADD_EXECUTABLE(${PROG_NAME}
 )
 
 LINK_WITH_VARIABLES(${PROG_NAME}
-                                   SIMCORE_LIBRARY
-                                   SIMCOREHLA_LIBRARY
-                                   STEALTHGM_LIBRARY
-                                   STEALTHQT_LIBRARY
                                    QT_QTCORE_LIBRARY
                                    QT_QTGUI_LIBRARY
                                    QT_QTOPENGL_LIBRARY
-											  )
+)
+
+TARGET_LINK_LIBRARIES(${PROG_NAME} 
+   ${SIMCORE_LIBRARY}
+   ${SIMCOREHLA_LIBRARY}
+   ${STEALTHGM_LIBRARY}
+   ${STEALTHQT_LIBRARY}
+)
     
 INCLUDE(ModuleInstall OPTIONAL)
 

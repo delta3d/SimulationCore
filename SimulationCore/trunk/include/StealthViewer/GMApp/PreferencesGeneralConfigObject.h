@@ -26,9 +26,13 @@
 
 #include <dtUtil/enumeration.h>
 #include <dtCore/refptr.h>
+#include <dtCore/uniqueid.h>
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
+
+#include <osg/Vec2f>
+#include <osg/Vec3>
 
 namespace dtGame
 {
@@ -85,7 +89,7 @@ namespace StealthGM
          PreferencesGeneralConfigObject();
 
          /**
-          * Overridden base class method to apply the changes made to this class to the 
+          * Overridden base class method to apply the changes made to this class to the
           * game manager
           */
          virtual void ApplyChanges(dtGame::GameManager &gameManager);
@@ -188,12 +192,24 @@ namespace StealthGM
           * Sends an attach to actor message on the next tick
           * @param proxy The proxy to attach to
           */
-         void AttachToActor(const dtGame::GameActorProxy &proxy) { mAttachProxy = &proxy; SetIsUpdated(true); }
-      
+         void AttachToActor(const dtCore::UniqueId& id) { mAttachActorId = id; SetIsUpdated(true); }
+
          /**
           * Tells the Stealth Actor to detach - sends an attach with a NULL actor.
           */
          void DetachFromActor() { mDetachFromActor = true; SetIsUpdated(true); }
+
+         /// Sets the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         void SetAttachPointNodeName(const std::string& name);
+
+         /// @return the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         const std::string& GetAttachPointNodeName() const;
+
+         /// Sets the initial rotation offset in reference to the entity to which to attach.
+         void SetInitialAttachRotationHPR(const osg::Vec3& hpr);
+         /// @return the initial rotation offset in reference to the entity to which to attach.
+         const osg::Vec3& GetInitialAttachRotationHPR() const;
+
 
          /**
           * Checks to see if the stealth actor is currently attached.
@@ -206,8 +222,8 @@ namespace StealthGM
           * @param enable True to connect, false to start ordinarily
           * @param name The name of the connection
           */
-         void SetReconnectOnStartup(bool enable, const std::string &name) 
-         { 
+         void SetReconnectOnStartup(bool enable, const std::string &name)
+         {
             mReconnectOnStartup = enable;
             SetStartupConnectionName(name);
          }
@@ -242,27 +258,58 @@ namespace StealthGM
           */
          bool GetAutoRefreshEntityInfoWindow() const { return mAutoRefreshEntityInfo; }
 
+         bool UseAspectRatioForFOV() const;
+         void SetUseAspectRatioForFOV(bool useAspect);
+
+         void SetFOVAspectRatio(float aspectRatio);
+         float GetFOVAspectRatio() const;
+
+         void SetFOVVerticalForAspect(float vertical);
+         float GetFOVVerticalForAspect() const;
+
+         void SetFOVHorizontal(float horizontal);
+         float GetFOVHorizontal() const;
+
+         void SetFOVVerticalForHorizontal(float vertical);
+         float GetFOVVerticalForHorizontal() const;
+
+         void SetShouldAutoAttachToEntity(bool);
+         bool GetShouldAutoAttachToEntity() const;
+
+         void SetAutoAttachEntityCallsign(const std::string& callsign);
+         const std::string& GetAutoAttachEntityCallsign() const;
+
       protected:
 
          /// Destructor
          virtual ~PreferencesGeneralConfigObject();
 
+         void AttachOrDetach(dtGame::GameManager& gameManager);
       private:
 
-         const AttachMode *mAttachMode;
+         const AttachMode* mAttachMode;
          bool mEnableCameraCollision;
-         const PerformanceMode *mPerformanceMode;
+         const PerformanceMode* mPerformanceMode;
          float mLODScale;
          double mNearClippingPlane;
          double mFarClippingPlane;
          bool mShowAdvancedOptions;
-         const dtGame::GameActorProxy *mAttachProxy;
+         dtCore::UniqueId mAttachActorId;
          bool mReconnectOnStartup;
          std::string mStartupConnectionName;
          bool mAutoRefreshEntityInfo;
-         bool mDetachFromActor; 
+         bool mDetachFromActor;
          dtCore::RefPtr<StealthInputComponent> mInputComponent;
 
+         bool mUseAspectRatioForFOV;
+         osg::Vec2f mFOVAspectVertical;
+         osg::Vec2f mFOVHorizontalVertical;
+
+         std::string mAttachPointNodeName;
+         osg::Vec3 mInitialAttachRotationHPR;
+
+         bool mShouldAutoAttachToEntity;
+         std::string mAutoAttachEntityCallsign;
    };
 }
 #endif

@@ -61,6 +61,15 @@ namespace StealthQt
 
    const QString StealthViewerSettings::PREFERENCES_GENERAL_GROUP("PREFERENCES_GENERAL_GROUP");
       const QString StealthViewerSettings::ATTACH_MODE("ATTACH_MODE");
+      const QString StealthViewerSettings::ATTACH_POINT_NODE("ATTACH_POINT_NODE");
+      const QString StealthViewerSettings::ATTACH_ROTATION("ATTACH_ROTATION");
+      const QString StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN("AUTO_ATTACH_TO_CALLSIGN");
+      const QString StealthViewerSettings::SHOULD_AUTO_ATTACH("SHOULD_AUTO_ATTACH");
+      const QString StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL("FOV_ASPECT_OR_HORIZONTAL");
+      const QString StealthViewerSettings::FOV_ASPECT_RATIO("FOV_ASPECT_RATIO");
+      const QString StealthViewerSettings::FOV_HORIZONTAL("FOV_HORIZONTAL");
+      const QString StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT("FOV_VERTICAL_FOR_ASPECT");
+      const QString StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL("FOV_VERTICAL_FOR_HORIZONTAL");
       const QString StealthViewerSettings::CAMERA_COLLISION("CAMERA_COLLISION");
       const QString StealthViewerSettings::PERFORMANCE("PERFORMANCE");
       const QString StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS("SHOW_ADVANCED_GENERAL_OPTIONS");
@@ -243,7 +252,7 @@ namespace StealthQt
          QString connection = StealthViewerSettings::CONNECTION + QString::number(count) +
             "/" + StealthViewerSettings::NAME;
 
-         if(contains(connection))
+         if (contains(connection))
          {
             results.push_back(value(connection).toString());
             found = true;
@@ -378,6 +387,20 @@ namespace StealthQt
       beginGroup(StealthViewerSettings::PREFERENCES_GENERAL_GROUP);
 
          setValue(StealthViewerSettings::ATTACH_MODE, genConfig.GetAttachMode().GetName().c_str());
+         setValue(StealthViewerSettings::ATTACH_POINT_NODE, genConfig.GetAttachPointNodeName().c_str());
+
+         std::ostringstream ss;
+         ss << genConfig.GetInitialAttachRotationHPR();
+         setValue(StealthViewerSettings::ATTACH_ROTATION, ss.str().c_str());
+         setValue(StealthViewerSettings::SHOULD_AUTO_ATTACH, genConfig.GetShouldAutoAttachToEntity());
+         setValue(StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN, genConfig.GetAutoAttachEntityCallsign().c_str());
+         setValue(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL, genConfig.UseAspectRatioForFOV());
+         setValue(StealthViewerSettings::FOV_ASPECT_RATIO, genConfig.GetFOVAspectRatio());
+         setValue(StealthViewerSettings::FOV_HORIZONTAL, genConfig.GetFOVHorizontal());
+         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT, genConfig.GetFOVVerticalForAspect());
+         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, genConfig.GetFOVVerticalForHorizontal());
+
+
          setValue(StealthViewerSettings::CAMERA_COLLISION, genConfig.GetEnableCameraCollision());
          setValue(StealthViewerSettings::PERFORMANCE, genConfig.GetPerformanceMode().GetName().c_str());
          setValue(StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS, genConfig.GetShowAdvancedOptions());
@@ -481,13 +504,13 @@ namespace StealthQt
    {
       beginGroup(StealthViewerSettings::GENERAL_GROUP);
 
-         if(contains(StealthViewerSettings::DOCK_STATE))
+         if (contains(StealthViewerSettings::DOCK_STATE))
          {
             QByteArray state = value(StealthViewerSettings::DOCK_STATE).toByteArray();
             StealthViewerData::GetInstance().GetMainWindow()->restoreState(state, StealthViewerSettings::WINDOW_DOCK_ID);
          }
 
-         if(contains(StealthViewerSettings::WINDOW_GEOMETRY))
+         if (contains(StealthViewerSettings::WINDOW_GEOMETRY))
          {
             QByteArray geometry = value(StealthViewerSettings::WINDOW_GEOMETRY).toByteArray();
             StealthViewerData::GetInstance().GetMainWindow()->restoreGeometry(geometry);
@@ -519,7 +542,7 @@ namespace StealthQt
          StealthGM::PreferencesGeneralConfigObject &genConfig =
             StealthViewerData::GetInstance().GetGeneralConfigObject();
 
-         if(contains(StealthViewerSettings::ATTACH_MODE))
+         if (contains(StealthViewerSettings::ATTACH_MODE))
          {
             QString savedValue =
                value(StealthViewerSettings::ATTACH_MODE).toString();
@@ -527,38 +550,116 @@ namespace StealthQt
             genConfig.SetAttachMode(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::CAMERA_COLLISION))
+         if (contains(StealthViewerSettings::ATTACH_POINT_NODE))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::ATTACH_POINT_NODE).toString();
+
+            genConfig.SetAttachPointNodeName(savedValue.toStdString());
+         }
+
+         if (contains(StealthViewerSettings::ATTACH_ROTATION))
+         {
+            std::string savedValue =
+               value(StealthViewerSettings::ATTACH_ROTATION).toString().toStdString();
+            std::istringstream iss;
+            iss.str(savedValue);
+            osg::Vec3 value;
+            iss >> value.x();
+            iss >> value.y();
+            iss >> value.z();
+
+            genConfig.SetInitialAttachRotationHPR(value);
+         }
+
+         if (contains(StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN).toString();
+
+            genConfig.SetAutoAttachEntityCallsign(savedValue.toStdString());
+         }
+
+         if (contains(StealthViewerSettings::SHOULD_AUTO_ATTACH))
+         {
+            bool savedValue =
+               value(StealthViewerSettings::SHOULD_AUTO_ATTACH).toBool();
+
+            genConfig.SetShouldAutoAttachToEntity(savedValue);
+         }
+
+         if (contains(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL))
+         {
+            bool savedValue =
+               value(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL).toBool();
+
+            genConfig.SetUseAspectRatioForFOV(savedValue);
+         }
+
+         if (contains(StealthViewerSettings::FOV_ASPECT_RATIO))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::FOV_ASPECT_RATIO).toString();
+
+            genConfig.SetFOVAspectRatio(savedValue.toFloat());
+         }
+
+         if (contains(StealthViewerSettings::FOV_HORIZONTAL))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::FOV_HORIZONTAL).toString();
+
+            genConfig.SetFOVHorizontal(savedValue.toFloat());
+         }
+
+         if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT).toString();
+
+            genConfig.SetFOVVerticalForAspect(savedValue.toFloat());
+         }
+
+         if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL).toString();
+
+            genConfig.SetFOVVerticalForHorizontal(savedValue.toFloat());
+         }
+
+         if (contains(StealthViewerSettings::CAMERA_COLLISION))
          {
             bool savedValue = value(StealthViewerSettings::CAMERA_COLLISION).toBool();
             genConfig.SetCameraCollision(savedValue);
          }
 
-         if(contains(StealthViewerSettings::PERFORMANCE))
+         if (contains(StealthViewerSettings::PERFORMANCE))
          {
             QString savedValue = value(StealthViewerSettings::PERFORMANCE).toString();
             genConfig.SetPerformanceMode(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS))
+         if (contains(StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS).toBool();
             genConfig.SetShowAdvancedOptions(savedValue);
          }
 
-         if(contains(StealthViewerSettings::LOD_SCALE))
+         if (contains(StealthViewerSettings::LOD_SCALE))
          {
             float savedValue = float(value(StealthViewerSettings::LOD_SCALE).toDouble());
             genConfig.SetLODScale(savedValue);
          }
 
-         if(contains(StealthViewerSettings::NEAR_CLIPPING_PLANE))
+         if (contains(StealthViewerSettings::NEAR_CLIPPING_PLANE))
          {
             double savedValue =
                value(StealthViewerSettings::NEAR_CLIPPING_PLANE).toDouble();
             genConfig.SetNearClippingPlane(savedValue);
          }
 
-         if(contains(StealthViewerSettings::FAR_CLIPPING_PLANE))
+         if (contains(StealthViewerSettings::FAR_CLIPPING_PLANE))
          {
             double savedValue =
                value(StealthViewerSettings::FAR_CLIPPING_PLANE).toDouble();
@@ -567,12 +668,12 @@ namespace StealthQt
 
          bool connectValue = true;
          QString name;
-         if(contains(StealthViewerSettings::RECONNECT_ON_STARTUP))
+         if (contains(StealthViewerSettings::RECONNECT_ON_STARTUP))
          {
             connectValue = value(StealthViewerSettings::RECONNECT_ON_STARTUP).toBool();
          }
 
-         if(contains(StealthViewerSettings::STARTUP_CONNECTION_NAME))
+         if (contains(StealthViewerSettings::STARTUP_CONNECTION_NAME))
          {
             name = value(StealthViewerSettings::STARTUP_CONNECTION_NAME).toString();
          }
@@ -589,64 +690,64 @@ namespace StealthQt
          StealthGM::PreferencesEnvironmentConfigObject &envConfig =
             StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
-         if(contains(StealthViewerSettings::USE_NETWORK_SETTINGS))
+         if (contains(StealthViewerSettings::USE_NETWORK_SETTINGS))
          {
             bool savedValue = value(StealthViewerSettings::USE_NETWORK_SETTINGS).toBool();
             if(savedValue)
                envConfig.SetUseNetworkSettings();
          }
 
-         if(contains(StealthViewerSettings::USE_THEMED_SETTINGS))
+         if (contains(StealthViewerSettings::USE_THEMED_SETTINGS))
          {
             bool savedValue = value(StealthViewerSettings::USE_THEMED_SETTINGS).toBool();
             if(savedValue)
                envConfig.SetUseThemedSettings();
          }
 
-         if(contains(StealthViewerSettings::WEATHER_THEME))
+         if (contains(StealthViewerSettings::WEATHER_THEME))
          {
             QString savedValue = value(StealthViewerSettings::WEATHER_THEME).toString();
             envConfig.SetWeatherTheme(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::TIME_THEME))
+         if (contains(StealthViewerSettings::TIME_THEME))
          {
             QString savedValue = value(StealthViewerSettings::TIME_THEME).toString();
             envConfig.SetTimeTheme(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::USE_CUSTOM_SETTINGS))
+         if (contains(StealthViewerSettings::USE_CUSTOM_SETTINGS))
          {
             bool savedValue = value(StealthViewerSettings::USE_CUSTOM_SETTINGS).toBool();
             if(savedValue)
                envConfig.SetUseCustomSettings();
          }
 
-         if(contains(StealthViewerSettings::CUSTOM_HOUR))
+         if (contains(StealthViewerSettings::CUSTOM_HOUR))
          {
             int savedValue = value(StealthViewerSettings::CUSTOM_HOUR).toInt();
             envConfig.SetCustomHour(savedValue);
          }
 
-         if(contains(StealthViewerSettings::CUSTOM_MINUTE))
+         if (contains(StealthViewerSettings::CUSTOM_MINUTE))
          {
             int savedValue = value(StealthViewerSettings::CUSTOM_MINUTE).toInt();
             envConfig.SetCustomMinute(savedValue);
          }
 
-         if(contains(StealthViewerSettings::CUSTOM_SECOND))
+         if (contains(StealthViewerSettings::CUSTOM_SECOND))
          {
             int savedValue = value(StealthViewerSettings::CUSTOM_SECOND).toInt();
             envConfig.SetCustomSecond(savedValue);
          }
 
-         if(contains(StealthViewerSettings::CUSTOM_VISIBILITY))
+         if (contains(StealthViewerSettings::CUSTOM_VISIBILITY))
          {
             QString savedValue = value(StealthViewerSettings::CUSTOM_VISIBILITY).toString();
             envConfig.SetVisibility(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::CUSTOM_CLOUD_COVER))
+         if (contains(StealthViewerSettings::CUSTOM_CLOUD_COVER))
          {
             QString savedValue = value(StealthViewerSettings::CUSTOM_CLOUD_COVER).toString();
             envConfig.SetCloudCover(savedValue.toStdString());
@@ -662,7 +763,7 @@ namespace StealthQt
          StealthGM::PreferencesToolsConfigObject &toolsConfig =
             StealthViewerData::GetInstance().GetToolsConfigObject();
 
-         if(contains(StealthViewerSettings::COORDINATE_SYSTEM))
+         if (contains(StealthViewerSettings::COORDINATE_SYSTEM))
          {
             QString savedValue = value(StealthViewerSettings::COORDINATE_SYSTEM).toString();
             StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
@@ -672,31 +773,31 @@ namespace StealthQt
                toolsConfig.SetCoordinateSystem(*coordSystem);
          }
 
-         if(contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))
+         if (contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_BINOCULAR_IMAGE).toBool();
             toolsConfig.SetShowBinocularImage(savedValue);
          }
 
-         if(contains(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT))
+         if (contains(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT).toBool();
             toolsConfig.SetShowDistanceToObject(savedValue);
          }
 
-         if(contains(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT))
+         if (contains(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT).toBool();
             toolsConfig.SetShowElevationOfObject(savedValue);
          }
 
-         if(contains(StealthViewerSettings::MAGNIFICATION))
+         if (contains(StealthViewerSettings::MAGNIFICATION))
          {
             float savedValue = float(value(StealthViewerSettings::MAGNIFICATION).toDouble());
             toolsConfig.SetMagnification(savedValue);
          }
 
-         if(contains(StealthViewerSettings::AUTO_ATTACH_ON_SELECTION))
+         if (contains(StealthViewerSettings::AUTO_ATTACH_ON_SELECTION))
          {
             bool savedValue = value(StealthViewerSettings::AUTO_ATTACH_ON_SELECTION).toBool();
             toolsConfig.SetAutoAttachOnSelection(savedValue);
@@ -748,25 +849,25 @@ namespace StealthQt
          StealthGM::ControlsRecordConfigObject &recordConfig =
             StealthViewerData::GetInstance().GetRecordConfigObject();
 
-         if(contains(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS))
+         if (contains(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_RECORD_OPTIONS).toBool();
             recordConfig.SetShowAdvancedOptions(savedValue);
          }
 
-         if(contains(StealthViewerSettings::RECORD_OUTPUT_FILE))
+         if (contains(StealthViewerSettings::RECORD_OUTPUT_FILE))
          {
             QString savedValue = value(StealthViewerSettings::RECORD_OUTPUT_FILE).toString();
             recordConfig.SetOutputFilename(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::AUTO_KEY_FRAME))
+         if (contains(StealthViewerSettings::AUTO_KEY_FRAME))
          {
             bool savedValue = value(StealthViewerSettings::AUTO_KEY_FRAME).toBool();
             recordConfig.SetAutoKeyFrame(savedValue);
          }
 
-         if(contains(StealthViewerSettings::AUTO_KEY_FRAME_INTERVAL))
+         if (contains(StealthViewerSettings::AUTO_KEY_FRAME_INTERVAL))
          {
             int savedValue = value(StealthViewerSettings::AUTO_KEY_FRAME_INTERVAL).toInt();
             recordConfig.SetAutoKeyFrameInterval(savedValue);
@@ -782,19 +883,19 @@ namespace StealthQt
          StealthGM::ControlsPlaybackConfigObject &playbackConfig =
             StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-         if(contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
+         if (contains(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS))
          {
             bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS).toBool();
             playbackConfig.SetShowAdvancedOptions(savedValue);
          }
 
-         if(contains(StealthViewerSettings::PLAYBACK_INPUT_FILE))
+         if (contains(StealthViewerSettings::PLAYBACK_INPUT_FILE))
          {
             QString savedValue = value(StealthViewerSettings::PLAYBACK_INPUT_FILE).toString();
             playbackConfig.SetInputFilename(savedValue.toStdString());
          }
 
-         if(contains(StealthViewerSettings::PLAYBACK_SPEED))
+         if (contains(StealthViewerSettings::PLAYBACK_SPEED))
          {
             float savedValue = float(value(StealthViewerSettings::PLAYBACK_SPEED).toDouble());
             playbackConfig.SetPlaybackSpeed(savedValue);
@@ -829,37 +930,37 @@ namespace StealthQt
 
       beginGroup(group);
 
-         if(contains(StealthViewerSettings::NAME))
+         if (contains(StealthViewerSettings::NAME))
             props.push_back(value(StealthViewerSettings::NAME).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::MAP_RESOURCE))
+         if (contains(StealthViewerSettings::MAP_RESOURCE))
             props.push_back(value(StealthViewerSettings::MAP_RESOURCE).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::CONFIG_RESOURCE))
+         if (contains(StealthViewerSettings::CONFIG_RESOURCE))
             props.push_back(value(StealthViewerSettings::CONFIG_RESOURCE).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::FED_RESOURCE))
+         if (contains(StealthViewerSettings::FED_RESOURCE))
             props.push_back(value(StealthViewerSettings::FED_RESOURCE).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::FEDEX))
+         if (contains(StealthViewerSettings::FEDEX))
             props.push_back(value(StealthViewerSettings::FEDEX).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::FEDERATE_NAME))
+         if (contains(StealthViewerSettings::FEDERATE_NAME))
             props.push_back(value(StealthViewerSettings::FEDERATE_NAME).toString());
          else
             props.push_back(tr(""));
 
-         if(contains(StealthViewerSettings::RID_FILE))
+         if (contains(StealthViewerSettings::RID_FILE))
             props.push_back(value(StealthViewerSettings::RID_FILE).toString());
          else
             props.push_back(tr(""));

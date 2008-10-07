@@ -110,9 +110,6 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig =
       new StealthGM::PreferencesGeneralConfigObject;
 
-   CPPUNIT_ASSERT_MESSAGE("The default attach mode should be Third Person",
-      genConfig->GetAttachMode() == StealthGM::PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON);
-
    CPPUNIT_ASSERT_MESSAGE("The default camera collision flag should be true",
       genConfig->GetEnableCameraCollision());
 
@@ -133,6 +130,39 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    genConfig->SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
    CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON,
       genConfig->GetAttachMode());
+
+   genConfig->SetAttachPointNodeName("frank");
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("The attach point node name should be frank",
+      genConfig->GetAttachPointNodeName(), std::string("frank"));
+
+   osg::Vec3 newInitialAttachRot(3.3, 9.7, 8.4);
+   genConfig->SetInitialAttachRotationHPR(newInitialAttachRot);
+   CPPUNIT_ASSERT_MESSAGE("The attach rotation should have changed.",
+      dtUtil::Equivalent(genConfig->GetInitialAttachRotationHPR(), newInitialAttachRot, 0.01f));
+
+   genConfig->SetShouldAutoAttachToEntity(true);
+   CPPUNIT_ASSERT_MESSAGE("The auto attach to entity should new be true.",
+      genConfig->GetShouldAutoAttachToEntity());
+
+   genConfig->SetUseAspectRatioForFOV(false);
+   CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
+      !genConfig->UseAspectRatioForFOV());
+
+   genConfig->SetFOVAspectRatio(31.9f);
+   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
+      dtUtil::Equivalent(genConfig->GetFOVAspectRatio(), 31.9f));
+
+   genConfig->SetFOVHorizontal(9373.3f);
+   CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
+      dtUtil::Equivalent(genConfig->GetFOVHorizontal(), 9373.3f));
+
+   genConfig->SetFOVVerticalForAspect(11.1f);
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
+      dtUtil::Equivalent(genConfig->GetFOVVerticalForAspect(), 11.1f));
+
+   genConfig->SetFOVVerticalForHorizontal(13.2f);
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
+      dtUtil::Equivalent(genConfig->GetFOVVerticalForHorizontal(), 13.2f));
 
    genConfig->SetCameraCollision(false);
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetEnableCameraCollision());

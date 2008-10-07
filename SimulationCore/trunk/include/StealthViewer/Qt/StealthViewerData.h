@@ -58,6 +58,12 @@ namespace StealthQt
          /// Accessor to the instance
          static StealthViewerData& GetInstance();
 
+         /**
+          * Change the instance version of the Settings. This allows one to have multiple
+          * sets of setting/configurations.
+          */
+         void ChangeSettingsInstance(const std::string& instanceName);
+
          /// Accessor to the internal settings
          StealthViewerSettings& GetSettings();
 

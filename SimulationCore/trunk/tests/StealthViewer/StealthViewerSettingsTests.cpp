@@ -27,9 +27,11 @@
 */
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <SimCore/Components/LabelManager.h>
 #include <dtUtil/fileutils.h>
+#include <dtUtil/mathdefines.h>
 #include <dtDAL/project.h>
 #include <QtGui/QApplication>
 #include <QtCore/QStringList>
@@ -60,6 +62,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthViewerSettingsTests);
 
+      CPPUNIT_TEST(TestGeneralSettings);
       CPPUNIT_TEST(TestVisibilitySettings);
       CPPUNIT_TEST(TestParseIniFile);
       CPPUNIT_TEST(TestAddConnection);
@@ -73,6 +76,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 
       void tearDown();
 
+      void TestGeneralSettings();
       void TestVisibilitySettings();
       void TestParseIniFile();
       void TestAddConnection();
@@ -106,6 +110,78 @@ void StealthViewerSettingsTests::tearDown()
    delete mQApp;
    mQApp = NULL;
 }
+
+void StealthViewerSettingsTests::TestGeneralSettings()
+{
+   StealthGM::PreferencesGeneralConfigObject& genConfig =
+      StealthQt::StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+   genConfig.SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
+   genConfig.SetAttachPointNodeName("frank");
+
+   osg::Vec3 newInitialAttachRot(3.3, 9.7, 8.4);
+   genConfig.SetInitialAttachRotationHPR(newInitialAttachRot);
+
+   genConfig.SetShouldAutoAttachToEntity(true);
+   genConfig.SetUseAspectRatioForFOV(false);
+   genConfig.SetFOVAspectRatio(31.9f);
+   genConfig.SetFOVHorizontal(9373.3f);
+   genConfig.SetFOVVerticalForAspect(11.1f);
+   genConfig.SetFOVVerticalForHorizontal(13.2f);
+   genConfig.SetCameraCollision(false);
+   genConfig.SetFarClippingPlane(10.0);
+   genConfig.SetLODScale(2.0f);
+   genConfig.SetNearClippingPlane(1.0);
+   genConfig.SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
+   genConfig.SetShowAdvancedOptions(true);
+
+   SubStealthViewerSettings settings(QString("UnitTest"));
+   settings.ClearAllSettings(true);
+   settings.WritePreferencesToFile(false);
+   settings.LoadPreferences();
+
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON,
+      genConfig.GetAttachMode());
+
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("The attach point node name should be frank",
+      genConfig.GetAttachPointNodeName(), std::string("frank"));
+
+   CPPUNIT_ASSERT_MESSAGE("The attach rotation should have changed.",
+      dtUtil::Equivalent(genConfig.GetInitialAttachRotationHPR(), newInitialAttachRot, 0.01f));
+
+   CPPUNIT_ASSERT_MESSAGE("The auto attach to entity should new be true.",
+      genConfig.GetShouldAutoAttachToEntity());
+
+   CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
+      !genConfig.UseAspectRatioForFOV());
+
+   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
+      dtUtil::Equivalent(genConfig.GetFOVAspectRatio(), 31.9f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
+      dtUtil::Equivalent(genConfig.GetFOVHorizontal(), 9373.3f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
+      dtUtil::Equivalent(genConfig.GetFOVVerticalForAspect(), 11.1f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
+      dtUtil::Equivalent(genConfig.GetFOVVerticalForHorizontal(), 13.2f));
+
+   CPPUNIT_ASSERT_EQUAL(false, genConfig.GetEnableCameraCollision());
+
+   CPPUNIT_ASSERT_EQUAL(10.0, genConfig.GetFarClippingPlane());
+
+   CPPUNIT_ASSERT_EQUAL(2.0f, genConfig.GetLODScale());
+
+   CPPUNIT_ASSERT_EQUAL(1.0, genConfig.GetNearClippingPlane());
+
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
+      genConfig.GetPerformanceMode());
+
+   CPPUNIT_ASSERT_EQUAL(true, genConfig.GetShowAdvancedOptions());
+
+}
+
 
 void StealthViewerSettingsTests::TestVisibilitySettings()
 {

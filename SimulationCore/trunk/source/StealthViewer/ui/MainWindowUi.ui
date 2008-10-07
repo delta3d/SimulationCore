@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
-    <height>914</height>
+    <width>989</width>
+    <height>853</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -21,8 +21,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1086</width>
-     <height>31</height>
+     <width>989</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -89,7 +89,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>3</number>
+        <number>0</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -105,217 +105,295 @@
          <string>General</string>
         </attribute>
         <layout class="QVBoxLayout" >
-         <property name="spacing" >
-          <number>2</number>
-         </property>
          <property name="leftMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="topMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="rightMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="bottomMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
-            <number>6</number>
+          <widget class="QGroupBox" name="groupBox" >
+           <property name="title" >
+            <string>Options</string>
            </property>
-           <property name="leftMargin" >
-            <number>0</number>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mGeneralEnableCameraCollisionCheckBox" >
+              <property name="toolTip" >
+               <string>Selecting this will prevent the camera from going under the earth.</string>
+              </property>
+              <property name="text" >
+               <string>Keep Camera Above Ground</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="mGeneralPerformaceLabel" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>Performance</string>
+              </property>
+              <property name="buddy" >
+               <cstring>mGeneralPerformanceComboBox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QComboBox" name="mGeneralPerformanceComboBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip" >
+               <string>Select one of the preset performance options of customize your own. </string>
+              </property>
+              <property name="currentIndex" >
+               <number>-1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" >
+             <widget class="QLabel" name="mOptionsCoordinateSystemLabel" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text" >
+               <string>Coordinate System</string>
+              </property>
+              <property name="buddy" >
+               <cstring>mOptionsCoordinateSystemComboBox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1" >
+             <widget class="QComboBox" name="mOptionsCoordinateSystemComboBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip" >
+               <string>Select the coordinate system to be used. This is a global change. </string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
+              <property name="toolTip" >
+               <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
+              </property>
+              <property name="text" >
+               <string>Automatically Attach on Selection</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mGeneralShowAdvancedOptionsCheckBox" >
+              <property name="text" >
+               <string>Show Advanced Options</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mFieldOfViewGroup" >
+           <property name="title" >
+            <string>Field of View</string>
            </property>
-           <property name="topMargin" >
-            <number>0</number>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QRadioButton" name="mFOVAspectVerticalRadio" >
+              <property name="text" >
+               <string/>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" >
+             <widget class="QLabel" name="mFOVAspectRatioLabel" >
+              <property name="text" >
+               <string>Aspect Ratio:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" >
+             <widget class="QLineEdit" name="mFOVAspectRatioText" />
+            </item>
+            <item row="0" column="3" >
+             <widget class="QLabel" name="mFOVVerticalwAspectLabel" >
+              <property name="text" >
+               <string>Vertical:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4" >
+             <widget class="QLineEdit" name="mFOVVerticalwAspectText" />
+            </item>
+            <item row="1" column="0" >
+             <widget class="QRadioButton" name="mFOVHorizontalVerticalRadio" >
+              <property name="text" >
+               <string/>
+              </property>
+              <property name="checked" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QLabel" name="mFOVHorizontalLabel" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+              <property name="text" >
+               <string>Horizontal:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2" >
+             <widget class="QLineEdit" name="mFOVHorizontalText" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3" >
+             <widget class="QLabel" name="mFOVVerticalwHorizontalLabel" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+              <property name="text" >
+               <string>Vertical:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4" >
+             <widget class="QLineEdit" name="mFOVVerticalwHorizontalText" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mAttachOptionsGroup" >
+           <property name="title" >
+            <string>Attachment</string>
            </property>
-           <property name="rightMargin" >
-            <number>0</number>
-           </property>
-           <property name="bottomMargin" >
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QGroupBox" name="groupBox" >
-             <property name="title" >
-              <string>Options</string>
-             </property>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
-               <number>4</number>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QLabel" name="mGeneralAttachModeLabel" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="leftMargin" >
-               <number>6</number>
+              <property name="text" >
+               <string>Attach Mode</string>
               </property>
-              <property name="topMargin" >
-               <number>6</number>
+              <property name="buddy" >
+               <cstring>mGeneralAttachModeComboBox</cstring>
               </property>
-              <property name="rightMargin" >
-               <number>6</number>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2" >
+             <widget class="QComboBox" name="mGeneralAttachModeComboBox" >
+              <property name="sizePolicy" >
+               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="bottomMargin" >
-               <number>6</number>
+              <property name="toolTip" >
+               <string>Selects first or third person attach mode. </string>
               </property>
-              <item>
-               <widget class="QCheckBox" name="mGeneralEnableCameraCollisionCheckBox" >
-                <property name="toolTip" >
-                 <string>Selecting this will prevent the camera from going under the earth.</string>
-                </property>
-                <property name="text" >
-                 <string>Keep Camera Above Ground</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="mGeneralAttachModeLabel" >
-                  <property name="sizePolicy" >
-                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text" >
-                   <string>Attach Mode</string>
-                  </property>
-                  <property name="buddy" >
-                   <cstring>mGeneralAttachModeComboBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="mGeneralAttachModeComboBox" >
-                  <property name="sizePolicy" >
-                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip" >
-                   <string>Selects first or third person attach mode. </string>
-                  </property>
-                  <property name="currentIndex" >
-                   <number>1</number>
-                  </property>
-                  <item>
-                   <property name="text" >
-                    <string>First Person</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Third Person</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="mGeneralPerformaceLabel" >
-                  <property name="sizePolicy" >
-                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text" >
-                   <string>Performance</string>
-                  </property>
-                  <property name="buddy" >
-                   <cstring>mGeneralPerformanceComboBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="mGeneralPerformanceComboBox" >
-                  <property name="sizePolicy" >
-                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip" >
-                   <string>Select one of the preset performance options of customize your own. </string>
-                  </property>
-                  <property name="currentIndex" >
-                   <number>2</number>
-                  </property>
-                  <item>
-                   <property name="text" >
-                    <string>Best Graphics</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Better Graphics</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Default</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Better Speed</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Best Speed</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="mGeneralShowAdvancedOptionsCheckBox" >
-                <property name="text" >
-                 <string>Show Advanced Options</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
+              <property name="currentIndex" >
+               <number>-1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="mAttachNodeLabel" >
+              <property name="text" >
+               <string>Attach Point/Node (Optional)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2" >
+             <widget class="QLineEdit" name="mAttachNodeName" >
+              <property name="toolTip" >
+               <string>Name of pre-created attach point provided by the 3d model creator.  If this does not exist, it will be ignored.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" >
+             <widget class="QLabel" name="mAttachAzimuthLabel" >
+              <property name="toolTip" >
+               <string>Attach azimuth in degrees.  Right is positive.</string>
+              </property>
+              <property name="text" >
+               <string>Attach Azimuth (Degrees)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1" colspan="2" >
+             <widget class="QLineEdit" name="mAttachAzimuth" >
+              <property name="toolTip" >
+               <string>Attach azimuth in degrees.  Right is positive.</string>
+              </property>
+              <property name="text" >
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" >
+             <widget class="QCheckBox" name="mAutoAttachCheckBox" >
+              <property name="toolTip" >
+               <string>If this is enabled, and the Auto-Attach Callsign is set, this will automatically attach to any entity with that callsign when it enters the world.</string>
+              </property>
+              <property name="text" >
+               <string>Auto-Attach to Callsign</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2" >
+             <widget class="QLineEdit" name="mAutoAttachCallsign" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <widget class="QWidget" native="1" name="widget_5" >
@@ -346,212 +424,188 @@
               <property name="title" >
                <string>Advanced Performance Options</string>
               </property>
-              <layout class="QVBoxLayout" >
-               <property name="spacing" >
-                <number>4</number>
-               </property>
-               <property name="leftMargin" >
-                <number>6</number>
-               </property>
-               <property name="topMargin" >
-                <number>6</number>
-               </property>
-               <property name="rightMargin" >
-                <number>6</number>
-               </property>
-               <property name="bottomMargin" >
-                <number>6</number>
-               </property>
-               <item>
-                <layout class="QGridLayout" >
-                 <property name="leftMargin" >
+              <layout class="QGridLayout" >
+               <item row="0" column="0" >
+                <widget class="QLabel" name="mGeneralLODScaleLabel" >
+                 <property name="text" >
+                  <string>LOD Scale</string>
+                 </property>
+                 <property name="buddy" >
+                  <cstring>mGeneralLODScaleLineEdit</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" >
+                <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
+                 <property name="toolTip" >
+                  <string>This is the scale value for level of detail</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" >
+                <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
+                 <property name="text" >
+                  <string>Near Clipping Plane</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" >
+                <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
+                 <property name="currentIndex" >
                   <number>0</number>
                  </property>
-                 <property name="topMargin" >
+                 <item>
+                  <property name="text" >
+                   <string>0.05</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>0.1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>0.25</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>0.5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>10</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>100</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="0" >
+                <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
+                 <property name="text" >
+                  <string>Far Clipping Plane</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" >
+                <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
+                 <property name="currentIndex" >
                   <number>0</number>
                  </property>
-                 <property name="rightMargin" >
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin" >
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing" >
-                  <number>6</number>
-                 </property>
-                 <property name="verticalSpacing" >
-                  <number>6</number>
-                 </property>
-                 <item row="0" column="0" >
-                  <widget class="QLabel" name="mGeneralLODScaleLabel" >
-                   <property name="text" >
-                    <string>LOD Scale</string>
-                   </property>
-                   <property name="buddy" >
-                    <cstring>mGeneralLODScaleLineEdit</cstring>
-                   </property>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>1000</string>
+                  </property>
                  </item>
-                 <item row="0" column="1" >
-                  <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
-                   <property name="toolTip" >
-                    <string>This is the scale value for level of detail</string>
-                   </property>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>New Item</string>
+                  </property>
                  </item>
-                 <item row="1" column="0" >
-                  <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
-                   <property name="text" >
-                    <string>Near Clipping Plane</string>
-                   </property>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>2000</string>
+                  </property>
                  </item>
-                 <item row="2" column="0" >
-                  <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
-                   <property name="text" >
-                    <string>Far Clipping Plane</string>
-                   </property>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>5000</string>
+                  </property>
                  </item>
-                 <item row="1" column="1" >
-                  <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
-                   <property name="currentIndex" >
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <property name="text" >
-                     <string>0.05</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>0.1</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>0.25</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>0.5</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>1</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>2</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>5</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>10</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>100</string>
-                    </property>
-                   </item>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>8000</string>
+                  </property>
                  </item>
-                 <item row="2" column="1" >
-                  <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
-                   <property name="currentIndex" >
-                    <number>5</number>
-                   </property>
-                   <item>
-                    <property name="text" >
-                     <string>1000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>2000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>5000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>8000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>10000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>11000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>12000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>15000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>18000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>20000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>25000</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>30000</string>
-                    </property>
-                   </item>
-                  </widget>
+                 <item>
+                  <property name="text" >
+                   <string>10000</string>
+                  </property>
                  </item>
-                </layout>
+                 <item>
+                  <property name="text" >
+                   <string>11000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>12000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>15000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>18000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>20000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>25000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>30000</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>50000</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item>
-             <spacer>
-              <property name="orientation" >
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" >
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>20</width>
+             <height>900</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -560,112 +614,59 @@
          <string>Environment</string>
         </attribute>
         <layout class="QVBoxLayout" >
-         <property name="spacing" >
-          <number>2</number>
-         </property>
          <property name="leftMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="topMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="rightMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <property name="bottomMargin" >
-          <number>2</number>
+          <number>5</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" >
-           <property name="spacing" >
-            <number>6</number>
+          <widget class="QGroupBox" name="mWeatherGroupBox" >
+           <property name="sizePolicy" >
+            <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="leftMargin" >
-            <number>0</number>
+           <property name="title" >
+            <string>Weather Options</string>
            </property>
-           <property name="topMargin" >
-            <number>0</number>
-           </property>
-           <property name="rightMargin" >
-            <number>0</number>
-           </property>
-           <property name="bottomMargin" >
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QGroupBox" name="mWeatherGroupBox" >
-             <property name="sizePolicy" >
-              <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title" >
-              <string>Weather Options</string>
-             </property>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
-               <number>6</number>
+           <layout class="QVBoxLayout" >
+            <item>
+             <widget class="QRadioButton" name="mWeatherUseNetworkSettingsRadioButton" >
+              <property name="text" >
+               <string>Use Network Settings</string>
               </property>
-              <property name="leftMargin" >
-               <number>9</number>
+              <property name="checked" >
+               <bool>true</bool>
               </property>
-              <property name="topMargin" >
-               <number>9</number>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="mWeatherThemedRadioButton" >
+              <property name="text" >
+               <string>Themed</string>
               </property>
-              <property name="rightMargin" >
-               <number>9</number>
+              <property name="checked" >
+               <bool>false</bool>
               </property>
-              <property name="bottomMargin" >
-               <number>9</number>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="mWeatherCustomRadioButton" >
+              <property name="text" >
+               <string>Custom</string>
               </property>
-              <item>
-               <layout class="QVBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QRadioButton" name="mWeatherUseNetworkSettingsRadioButton" >
-                  <property name="text" >
-                   <string>Use Network Settings</string>
-                  </property>
-                  <property name="checked" >
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="mWeatherThemedRadioButton" >
-                  <property name="text" >
-                   <string>Themed</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="mWeatherCustomRadioButton" >
-                  <property name="text" >
-                   <string>Custom</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <widget class="QWidget" native="1" name="widget_6" >
@@ -702,104 +703,67 @@
               <property name="title" >
                <string>Network Settings</string>
               </property>
-              <layout class="QVBoxLayout" >
-               <property name="spacing" >
-                <number>6</number>
-               </property>
-               <property name="leftMargin" >
-                <number>9</number>
-               </property>
-               <property name="topMargin" >
-                <number>9</number>
-               </property>
-               <property name="rightMargin" >
-                <number>9</number>
-               </property>
-               <property name="bottomMargin" >
-                <number>9</number>
-               </property>
-               <item>
-                <layout class="QGridLayout" >
-                 <property name="leftMargin" >
-                  <number>0</number>
+              <layout class="QGridLayout" >
+               <item row="0" column="0" colspan="2" >
+                <widget class="QLabel" name="mNetworkTimeLabel_2" >
+                 <property name="text" >
+                  <string>Network Time</string>
                  </property>
-                 <property name="topMargin" >
-                  <number>0</number>
+                </widget>
+               </item>
+               <item row="0" column="2" >
+                <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
+                 <property name="toolTip" >
+                  <string>The time of the network of the current network connection</string>
                  </property>
-                 <property name="rightMargin" >
-                  <number>0</number>
+                 <property name="readOnly" >
+                  <bool>true</bool>
                  </property>
-                 <property name="bottomMargin" >
-                  <number>0</number>
+                 <property name="maximumDate" >
+                  <date>
+                   <year>2000</year>
+                   <month>1</month>
+                   <day>1</day>
+                  </date>
                  </property>
-                 <property name="horizontalSpacing" >
-                  <number>6</number>
+                 <property name="displayFormat" >
+                  <string>hh:mm</string>
                  </property>
-                 <property name="verticalSpacing" >
-                  <number>6</number>
+                </widget>
+               </item>
+               <item row="1" column="1" >
+                <widget class="QLabel" name="mVisibilityLabel_2" >
+                 <property name="text" >
+                  <string>Visibility</string>
                  </property>
-                 <item row="0" column="1" >
-                  <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
-                   <property name="toolTip" >
-                    <string>The time of the network of the current network connection</string>
-                   </property>
-                   <property name="readOnly" >
-                    <bool>true</bool>
-                   </property>
-                   <property name="maximumDate" >
-                    <date>
-                     <year>2000</year>
-                     <month>1</month>
-                     <day>1</day>
-                    </date>
-                   </property>
-                   <property name="displayFormat" >
-                    <string>hh:mm</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0" >
-                  <widget class="QLabel" name="mVisibilityLabel_2" >
-                   <property name="text" >
-                    <string>Visibility</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1" >
-                  <widget class="QLineEdit" name="mWeatherLineEdit" >
-                   <property name="toolTip" >
-                    <string>The weather of the network of the current network connection</string>
-                   </property>
-                   <property name="readOnly" >
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" >
-                  <widget class="QLabel" name="mNetworkTimeLabel_2" >
-                   <property name="text" >
-                    <string>Network Time</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0" >
-                  <widget class="QLabel" name="mWeatherLabel_2" >
-                   <property name="text" >
-                    <string>Weather</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1" >
-                  <widget class="QLineEdit" name="mVisibilityLineEdit" >
-                   <property name="toolTip" >
-                    <string>The visibility of the network of the current network connection</string>
-                   </property>
-                   <property name="readOnly" >
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                </widget>
+               </item>
+               <item row="1" column="2" >
+                <widget class="QLineEdit" name="mVisibilityLineEdit" >
+                 <property name="toolTip" >
+                  <string>The visibility of the network of the current network connection</string>
+                 </property>
+                 <property name="readOnly" >
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" >
+                <widget class="QLabel" name="mWeatherLabel_2" >
+                 <property name="text" >
+                  <string>Weather</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2" >
+                <widget class="QLineEdit" name="mWeatherLineEdit" >
+                 <property name="toolTip" >
+                  <string>The weather of the network of the current network connection</string>
+                 </property>
+                 <property name="readOnly" >
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -815,116 +779,33 @@
               <property name="title" >
                <string>Themed Settings</string>
               </property>
-              <layout class="QVBoxLayout" >
-               <property name="spacing" >
-                <number>6</number>
-               </property>
-               <property name="leftMargin" >
-                <number>9</number>
-               </property>
-               <property name="topMargin" >
-                <number>9</number>
-               </property>
-               <property name="rightMargin" >
-                <number>9</number>
-               </property>
-               <property name="bottomMargin" >
-                <number>9</number>
-               </property>
-               <item>
-                <layout class="QGridLayout" >
-                 <property name="leftMargin" >
-                  <number>0</number>
+              <layout class="QGridLayout" >
+               <item row="0" column="0" >
+                <widget class="QLabel" name="mThemeLabel" >
+                 <property name="text" >
+                  <string>Theme</string>
                  </property>
-                 <property name="topMargin" >
-                  <number>0</number>
+                </widget>
+               </item>
+               <item row="0" column="1" >
+                <widget class="QComboBox" name="mThemeComboBox" >
+                 <property name="sizePolicy" >
+                  <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                   <horstretch>1</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="rightMargin" >
-                  <number>0</number>
+                </widget>
+               </item>
+               <item row="1" column="0" >
+                <widget class="QLabel" name="mTimeLabel" >
+                 <property name="text" >
+                  <string>Time</string>
                  </property>
-                 <property name="bottomMargin" >
-                  <number>0</number>
-                 </property>
-                 <property name="horizontalSpacing" >
-                  <number>6</number>
-                 </property>
-                 <property name="verticalSpacing" >
-                  <number>6</number>
-                 </property>
-                 <item row="0" column="0" >
-                  <widget class="QLabel" name="mThemeLabel" >
-                   <property name="text" >
-                    <string>Theme</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1" >
-                  <widget class="QComboBox" name="mThemeComboBox" >
-                   <property name="sizePolicy" >
-                    <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <item>
-                    <property name="text" >
-                     <string>Clear</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Custom</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Fair</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Foggy</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Rainy</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="1" column="0" >
-                  <widget class="QLabel" name="mTimeLabel" >
-                   <property name="text" >
-                    <string>Time</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1" >
-                  <widget class="QComboBox" name="mTimeComboBox" >
-                   <item>
-                    <property name="text" >
-                     <string>Dawn</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Day</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Dusk</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Night</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                </layout>
+                </widget>
+               </item>
+               <item row="1" column="1" >
+                <widget class="QComboBox" name="mTimeComboBox" />
                </item>
               </layout>
              </widget>
@@ -940,157 +821,68 @@
               <property name="title" >
                <string>Custom Settings</string>
               </property>
-              <layout class="QVBoxLayout" >
-               <property name="spacing" >
-                <number>6</number>
-               </property>
-               <property name="leftMargin" >
-                <number>9</number>
-               </property>
-               <property name="topMargin" >
-                <number>9</number>
-               </property>
-               <property name="rightMargin" >
-                <number>9</number>
-               </property>
-               <property name="bottomMargin" >
-                <number>9</number>
-               </property>
-               <item>
-                <layout class="QGridLayout" >
-                 <property name="leftMargin" >
-                  <number>0</number>
+              <layout class="QGridLayout" >
+               <item row="0" column="0" >
+                <widget class="QLabel" name="mCustomTimeLabel" >
+                 <property name="text" >
+                  <string>Time</string>
                  </property>
-                 <property name="topMargin" >
-                  <number>0</number>
+                </widget>
+               </item>
+               <item row="0" column="1" >
+                <widget class="QTimeEdit" name="mCustomTimeEdit" >
+                 <property name="sizePolicy" >
+                  <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+                   <horstretch>1</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="rightMargin" >
-                  <number>0</number>
+                 <property name="wrapping" >
+                  <bool>true</bool>
                  </property>
-                 <property name="bottomMargin" >
-                  <number>0</number>
+                 <property name="buttonSymbols" >
+                  <enum>QAbstractSpinBox::UpDownArrows</enum>
                  </property>
-                 <property name="horizontalSpacing" >
-                  <number>6</number>
+                 <property name="accelerated" >
+                  <bool>true</bool>
                  </property>
-                 <property name="verticalSpacing" >
-                  <number>6</number>
+                 <property name="correctionMode" >
+                  <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
                  </property>
-                 <item row="2" column="0" >
-                  <widget class="QLabel" name="mCustomCloudCoverLabel" >
-                   <property name="text" >
-                    <string>Cloud Cover</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1" >
-                  <widget class="QComboBox" name="mCustomCloudCoverComboBox" >
-                   <item>
-                    <property name="text" >
-                     <string>Clear</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Few</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Scattered</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Broken</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Overcast</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" >
-                  <widget class="QLabel" name="mCustomTimeLabel" >
-                   <property name="text" >
-                    <string>Time</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1" >
-                  <widget class="QComboBox" name="mCustomVisibilityComboBox" >
-                   <item>
-                    <property name="text" >
-                     <string>Unlimited</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Far</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Moderate</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Limited</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text" >
-                     <string>Close</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="1" column="0" >
-                  <widget class="QLabel" name="mCustomVisibilityLabel" >
-                   <property name="text" >
-                    <string>Visibility</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1" >
-                  <widget class="QTimeEdit" name="mCustomTimeEdit" >
-                   <property name="sizePolicy" >
-                    <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="wrapping" >
-                    <bool>true</bool>
-                   </property>
-                   <property name="buttonSymbols" >
-                    <enum>QAbstractSpinBox::UpDownArrows</enum>
-                   </property>
-                   <property name="accelerated" >
-                    <bool>true</bool>
-                   </property>
-                   <property name="correctionMode" >
-                    <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-                   </property>
-                   <property name="displayFormat" >
-                    <string>hh:mm:ss</string>
-                   </property>
-                   <property name="calendarPopup" >
-                    <bool>true</bool>
-                   </property>
-                   <property name="time" >
-                    <time>
-                     <hour>9</hour>
-                     <minute>0</minute>
-                     <second>0</second>
-                    </time>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                 <property name="displayFormat" >
+                  <string>hh:mm:ss</string>
+                 </property>
+                 <property name="calendarPopup" >
+                  <bool>true</bool>
+                 </property>
+                 <property name="time" >
+                  <time>
+                   <hour>9</hour>
+                   <minute>0</minute>
+                   <second>0</second>
+                  </time>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" >
+                <widget class="QLabel" name="mCustomVisibilityLabel" >
+                 <property name="text" >
+                  <string>Visibility</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" >
+                <widget class="QComboBox" name="mCustomVisibilityComboBox" />
+               </item>
+               <item row="2" column="0" >
+                <widget class="QLabel" name="mCustomCloudCoverLabel" >
+                 <property name="text" >
+                  <string>Cloud Cover</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" >
+                <widget class="QComboBox" name="mCustomCloudCoverComboBox" />
                </item>
               </layout>
              </widget>
@@ -1134,303 +926,81 @@
           <number>2</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="mToolsGeneralGroupBox" >
-           <property name="title" >
-            <string>General</string>
-           </property>
-           <layout class="QVBoxLayout" >
-            <property name="spacing" >
-             <number>4</number>
-            </property>
-            <property name="leftMargin" >
-             <number>6</number>
-            </property>
-            <property name="topMargin" >
-             <number>6</number>
-            </property>
-            <property name="rightMargin" >
-             <number>6</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>6</number>
-            </property>
-            <item>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
-               <number>6</number>
-              </property>
-              <property name="leftMargin" >
-               <number>0</number>
-              </property>
-              <property name="topMargin" >
-               <number>0</number>
-              </property>
-              <property name="rightMargin" >
-               <number>0</number>
-              </property>
-              <property name="bottomMargin" >
-               <number>0</number>
-              </property>
-              <item>
-               <layout class="QHBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="mToolsCoordinateSystemLabel" >
-                  <property name="text" >
-                   <string>Coordinate System</string>
-                  </property>
-                  <property name="buddy" >
-                   <cstring>mToolsCoordinateSystemComboBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="mToolsCoordinateSystemComboBox" >
-                  <property name="toolTip" >
-                   <string>Select the coordinate system to be used. This is a global change. </string>
-                  </property>
-                  <item>
-                   <property name="text" >
-                    <string>MGRS</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Raw XYZ</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text" >
-                    <string>Lat Lon</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
           <widget class="QGroupBox" name="mToolsBinocularGroupBox" >
            <property name="title" >
             <string>Binoculars</string>
            </property>
-           <layout class="QVBoxLayout" >
-            <property name="spacing" >
-             <number>4</number>
-            </property>
-            <property name="leftMargin" >
-             <number>6</number>
-            </property>
-            <property name="topMargin" >
-             <number>6</number>
-            </property>
-            <property name="rightMargin" >
-             <number>6</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>6</number>
-            </property>
-            <item>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
-               <number>6</number>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mToolsShowBinocularImageCheckBox" >
+              <property name="toolTip" >
+               <string>Selects whether or not to render the binocular reticle. </string>
               </property>
-              <property name="leftMargin" >
-               <number>0</number>
+              <property name="text" >
+               <string>Show Binocular Image</string>
               </property>
-              <property name="topMargin" >
-               <number>0</number>
+              <property name="checked" >
+               <bool>true</bool>
               </property>
-              <property name="rightMargin" >
-               <number>0</number>
-              </property>
-              <property name="bottomMargin" >
-               <number>0</number>
-              </property>
-              <item>
-               <layout class="QHBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QCheckBox" name="mToolsShowBinocularImageCheckBox" >
-                  <property name="toolTip" >
-                   <string>Selects whether or not to render the binocular reticle. </string>
-                  </property>
-                  <property name="text" >
-                   <string>Show Binocular Image</string>
-                  </property>
-                  <property name="checked" >
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="mToolsShowDistanceToObjectCheckBox" >
-                <property name="toolTip" >
-                 <string>Select to show the distance to the object in front of the camera's eyepoint. </string>
-                </property>
-                <property name="text" >
-                 <string>Show Distance to Object</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
-                <property name="toolTip" >
-                 <string>Select this to print the elevation of the object being viewed by binoculars</string>
-                </property>
-                <property name="text" >
-                 <string>Show Elevation of Object</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" >
-                <property name="spacing" >
-                 <number>6</number>
-                </property>
-                <property name="leftMargin" >
-                 <number>0</number>
-                </property>
-                <property name="topMargin" >
-                 <number>0</number>
-                </property>
-                <property name="rightMargin" >
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin" >
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="mToolsMagnificationLabel" >
-                  <property name="toolTip" >
-                   <string>Select the magnification of the binoculars. The greater the magnification, the farther in they zoom. 7x is miliary standard issue. </string>
-                  </property>
-                  <property name="text" >
-                   <string>Magnification</string>
-                  </property>
-                  <property name="buddy" >
-                   <cstring>mToolsMagnificationSpinBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
-                  <property name="toolTip" >
-                   <string>This selects the magnification of the binoculars</string>
-                  </property>
-                  <property name="buttonSymbols" >
-                   <enum>QAbstractSpinBox::PlusMinus</enum>
-                  </property>
-                  <property name="specialValueText" >
-                   <string>x</string>
-                  </property>
-                  <property name="suffix" >
-                   <string>x</string>
-                  </property>
-                  <property name="minimum" >
-                   <number>1</number>
-                  </property>
-                  <property name="maximum" >
-                   <number>25</number>
-                  </property>
-                  <property name="value" >
-                   <number>7</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
+             </widget>
             </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mToolsSelectionGroupBox" >
-           <property name="title" >
-            <string>Selection</string>
-           </property>
-           <layout class="QVBoxLayout" >
-            <property name="spacing" >
-             <number>4</number>
-            </property>
-            <property name="leftMargin" >
-             <number>6</number>
-            </property>
-            <property name="topMargin" >
-             <number>6</number>
-            </property>
-            <property name="rightMargin" >
-             <number>6</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>6</number>
-            </property>
-            <item>
-             <layout class="QVBoxLayout" >
-              <property name="spacing" >
-               <number>6</number>
+            <item row="1" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mToolsShowDistanceToObjectCheckBox" >
+              <property name="toolTip" >
+               <string>Select to show the distance to the object in front of the camera's eyepoint. </string>
               </property>
-              <property name="leftMargin" >
-               <number>0</number>
+              <property name="text" >
+               <string>Show Distance to Object</string>
               </property>
-              <property name="topMargin" >
-               <number>0</number>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2" >
+             <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
+              <property name="toolTip" >
+               <string>Select this to print the elevation of the object being viewed by binoculars</string>
               </property>
-              <property name="rightMargin" >
-               <number>0</number>
+              <property name="text" >
+               <string>Show Elevation of Object</string>
               </property>
-              <property name="bottomMargin" >
-               <number>0</number>
+             </widget>
+            </item>
+            <item row="3" column="0" >
+             <widget class="QLabel" name="mToolsMagnificationLabel" >
+              <property name="toolTip" >
+               <string>Select the magnification of the binoculars. The greater the magnification, the farther in they zoom. 7x is miliary standard issue. </string>
               </property>
-              <item>
-               <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
-                <property name="toolTip" >
-                 <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
-                </property>
-                <property name="text" >
-                 <string>Automatically Attach on Selection</string>
-                </property>
-                <property name="checked" >
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
+              <property name="text" >
+               <string>Magnification</string>
+              </property>
+              <property name="buddy" >
+               <cstring>mToolsMagnificationSpinBox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" >
+             <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
+              <property name="toolTip" >
+               <string>This selects the magnification of the binoculars</string>
+              </property>
+              <property name="buttonSymbols" >
+               <enum>QAbstractSpinBox::PlusMinus</enum>
+              </property>
+              <property name="specialValueText" >
+               <string>x</string>
+              </property>
+              <property name="suffix" >
+               <string>x</string>
+              </property>
+              <property name="minimum" >
+               <number>1</number>
+              </property>
+              <property name="maximum" >
+               <number>25</number>
+              </property>
+              <property name="value" >
+               <number>7</number>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1484,8 +1054,8 @@
            <property name="checkable" >
             <bool>true</bool>
            </property>
-           <layout class="QVBoxLayout" >
-            <item>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" colspan="2" >
              <widget class="QCheckBox" name="mVisEntityChk" >
               <property name="text" >
                <string>Entities</string>
@@ -1495,7 +1065,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item row="1" column="0" colspan="2" >
              <widget class="QCheckBox" name="mVisTrackChk" >
               <property name="text" >
                <string>Tracks</string>
@@ -1505,7 +1075,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item row="2" column="0" colspan="2" >
              <widget class="QCheckBox" name="mVisBlipChk" >
               <property name="text" >
                <string>Blips</string>
@@ -1515,78 +1085,59 @@
               </property>
              </widget>
             </item>
-            <item>
-             <layout class="QHBoxLayout" >
-              <property name="spacing" >
-               <number>2</number>
+            <item row="3" column="0" >
+             <widget class="QLabel" name="mVisDistLabel" >
+              <property name="text" >
+               <string>Max Distance</string>
               </property>
-              <property name="leftMargin" >
-               <number>2</number>
-              </property>
-              <property name="topMargin" >
-               <number>2</number>
-              </property>
-              <property name="rightMargin" >
-               <number>2</number>
-              </property>
-              <property name="bottomMargin" >
-               <number>2</number>
+             </widget>
+            </item>
+            <item row="3" column="1" >
+             <widget class="QComboBox" name="mVisMaxDistCombo" >
+              <property name="currentIndex" >
+               <number>3</number>
               </property>
               <item>
-               <widget class="QLabel" name="mVisDistLabel" >
-                <property name="text" >
-                 <string>Max Distance</string>
-                </property>
-               </widget>
+               <property name="text" >
+                <string>50</string>
+               </property>
               </item>
               <item>
-               <widget class="QComboBox" name="mVisMaxDistCombo" >
-                <property name="currentIndex" >
-                 <number>3</number>
-                </property>
-                <item>
-                 <property name="text" >
-                  <string>50</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>100</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>500</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>1000</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>2500</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>5000</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>10000</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text" >
-                  <string>Unlimited</string>
-                 </property>
-                </item>
-               </widget>
+               <property name="text" >
+                <string>100</string>
+               </property>
               </item>
-             </layout>
+              <item>
+               <property name="text" >
+                <string>500</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>1000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2500</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>Unlimited</string>
+               </property>
+              </item>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1656,7 +1207,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>3</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="mControlsSearchTab" >
         <attribute name="title" >
@@ -3924,7 +3475,6 @@
   <tabstop>mWeatherUseNetworkSettingsRadioButton</tabstop>
   <tabstop>mWeatherThemedRadioButton</tabstop>
   <tabstop>mWeatherCustomRadioButton</tabstop>
-  <tabstop>mToolsCoordinateSystemComboBox</tabstop>
   <tabstop>mToolsShowBinocularImageCheckBox</tabstop>
   <tabstop>mToolsShowDistanceToObjectCheckBox</tabstop>
   <tabstop>mToolsMagnificationSpinBox</tabstop>
@@ -4105,6 +3655,198 @@
     <hint type="destinationlabel" >
      <x>1000</x>
      <y>179</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVAspectVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVAspectRatioLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>656</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVAspectVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVAspectRatioText</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>753</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVAspectVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVVerticalwAspectLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>836</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVAspectVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVVerticalwAspectText</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>918</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVHorizontalVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVHorizontalText</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>753</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVHorizontalVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVHorizontalLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>656</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVHorizontalVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVVerticalwHorizontalLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>836</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFOVHorizontalVerticalRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFOVVerticalwHorizontalText</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>601</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>918</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mAutoAttachCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mAutoAttachCallsign</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>685</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>874</x>
+     <y>426</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mGeneralShowAdvancedOptionsCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mGeneralAdvancedPerformanceOptionsGroupBox</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>780</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>778</x>
+     <y>517</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mGeneralShowAdvancedOptionsCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mFieldOfViewGroup</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>780</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>778</x>
+     <y>231</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mGeneralShowAdvancedOptionsCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mAttachOptionsGroup</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>780</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>778</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>

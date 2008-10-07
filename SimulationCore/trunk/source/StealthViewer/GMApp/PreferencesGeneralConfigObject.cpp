@@ -51,19 +51,23 @@ namespace StealthGM
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BETTER_SPEED("Better Speed");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BEST_SPEED("Best Speed");
 
-   PreferencesGeneralConfigObject::PreferencesGeneralConfigObject() :
-      mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON),
-      mEnableCameraCollision(true),
-      mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT),
-      mLODScale(1.0f),
-      mNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE),
-      mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
-      mShowAdvancedOptions(false),
-      mAttachProxy(NULL),
-      mReconnectOnStartup(true),
-      mAutoRefreshEntityInfo(true),
-      mDetachFromActor(false),
-      mInputComponent(NULL)
+   PreferencesGeneralConfigObject::PreferencesGeneralConfigObject()
+   : mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
+   , mEnableCameraCollision(true)
+   , mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT)
+   , mLODScale(1.0f)
+   , mNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE)
+   , mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE)
+   , mShowAdvancedOptions(false)
+   , mAttachActorId("")
+   , mReconnectOnStartup(true)
+   , mAutoRefreshEntityInfo(true)
+   , mDetachFromActor(false)
+   , mInputComponent(NULL)
+   , mUseAspectRatioForFOV(true)
+   , mFOVAspectVertical(1.6, 60.0)
+   , mFOVHorizontalVertical(96.6, 60.0)
+   , mShouldAutoAttachToEntity(false)
    {
 
    }
@@ -73,12 +77,24 @@ namespace StealthGM
 
    }
 
-   void PreferencesGeneralConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
+   void PreferencesGeneralConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
+      if (GetShouldAutoAttachToEntity() && !IsStealthActorCurrentlyAttached()
+               && !GetAutoAttachEntityCallsign().empty())
+      {
+         dtDAL::ActorProxy* proxy = NULL;
+         gameManager.FindActorByName(GetAutoAttachEntityCallsign(), proxy);
+         if (proxy != NULL)
+         {
+            AttachToActor(proxy->GetId());
+         }
+      }
+
+
       if(!IsUpdated())
          return;
 
-      dtGame::GMComponent *component =
+      dtGame::GMComponent* component =
          gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
       mInputComponent = static_cast<StealthInputComponent*>(component);
 
@@ -91,7 +107,7 @@ namespace StealthGM
       mInputComponent->EnableCameraCollision(GetEnableCameraCollision());
 
       // Update rendering options
-      dtCore::Camera *camera = gameManager.GetApplication().GetCamera();
+      dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
 
       // Send the Near/Far clipping plane to the weather component
       dtGame::GMComponent *weatherGMComp = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
@@ -102,19 +118,32 @@ namespace StealthGM
          weatherComp.SetFarClipPlane(GetFarClippingPlane());
          weatherComp.UpdateFog();
       }
-      // no weather component, so we update the clip planes by hand
+
+      // since we set the perspective,
+      if (mUseAspectRatioForFOV)
+      {
+         camera->SetPerspectiveParams(mFOVAspectVertical[1], mFOVAspectVertical[0],
+                  GetNearClippingPlane(), GetFarClippingPlane());
+      }
       else
       {
-         camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(),
-            GetNearClippingPlane(), GetFarClippingPlane());
+         camera->SetPerspectiveParams(mFOVHorizontalVertical[1], mFOVHorizontalVertical[0]/mFOVHorizontalVertical[1],
+                  GetNearClippingPlane(), GetFarClippingPlane());
       }
 
       // Updated the LOD scale
       camera->GetOSGCamera()->setLODScale(GetLODScale());
 
-      if(mAttachProxy != NULL && mInputComponent->GetStealthActor() != NULL)
+      AttachOrDetach(gameManager);
+
+      SetIsUpdated(false);
+   }
+
+   void PreferencesGeneralConfigObject::AttachOrDetach(dtGame::GameManager& gameManager)
+   {
+      if(!mAttachActorId.ToString().empty() && mInputComponent->GetStealthActor() != NULL)
       {
-         if(mAttachProxy->GetId() == mInputComponent->GetStealthActor()->GetUniqueId())
+         if(mAttachActorId == mInputComponent->GetStealthActor()->GetUniqueId())
          {
             LOG_ERROR("The stealth actor cannot attach to itself.");
          }
@@ -127,12 +156,14 @@ namespace StealthGM
                static_cast<SimCore::AttachToActorMessage&>(*msg);
 
             ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
-            ataMsg.SetAttachToActor(mAttachProxy->GetId());
+            ataMsg.SetAttachToActor(mAttachActorId);
+            ataMsg.SetAttachPointNodeName(GetAttachPointNodeName());
+            ataMsg.SetInitialAttachRotationHPR(GetInitialAttachRotationHPR());
 
             gameManager.SendMessage(ataMsg);
          }
 
-         mAttachProxy = NULL;
+         mAttachActorId = "";
       }
 
       // DETACH - Send an attach message with no actor
@@ -149,7 +180,6 @@ namespace StealthGM
          mDetachFromActor = false;
       }
 
-      SetIsUpdated(false);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -165,6 +195,7 @@ namespace StealthGM
       return result;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::SetAttachMode(const std::string &mode)
    {
       for(unsigned int i = 0; i < PreferencesGeneralConfigObject::AttachMode::Enumerate().size(); i++)
@@ -179,18 +210,133 @@ namespace StealthGM
       }
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::SetPerformanceMode(const std::string &mode)
    {
-      for(unsigned int i = 0; i < PreferencesGeneralConfigObject::PerformanceMode::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current =
-            PreferencesGeneralConfigObject::PerformanceMode::Enumerate()[i];
+      PreferencesGeneralConfigObject::PerformanceMode* modeVal =
+         PreferencesGeneralConfigObject::PerformanceMode::GetValueForName(mode);
 
-         if(current->GetName() == mode)
-         {
-            SetPerformanceMode(
-               static_cast<const PreferencesGeneralConfigObject::PerformanceMode&>(*current));
-         }
+      if (modeVal != NULL)
+      {
+         SetPerformanceMode(*modeVal);
       }
+      else
+      {
+         LOGN_ERROR("PreferencesGeneralConfigObject.cpp", "Unable to set the performance mode to \"" + mode
+                  + "\", no such mode exists.");
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetUseAspectRatioForFOV(bool useAspect)
+   {
+      mUseAspectRatioForFOV = useAspect;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool PreferencesGeneralConfigObject::UseAspectRatioForFOV() const
+   {
+      return mUseAspectRatioForFOV;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetFOVAspectRatio(float aspectRatio)
+   {
+      mFOVAspectVertical[0] = aspectRatio;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   float PreferencesGeneralConfigObject::GetFOVAspectRatio() const
+   {
+      return mFOVAspectVertical[0];
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetFOVVerticalForAspect(float vertical)
+   {
+      mFOVAspectVertical[1] = vertical;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   float PreferencesGeneralConfigObject::GetFOVVerticalForAspect() const
+   {
+      return mFOVAspectVertical[1];
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetFOVHorizontal(float horizontal)
+   {
+      mFOVHorizontalVertical[0] = horizontal;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   float PreferencesGeneralConfigObject::GetFOVHorizontal() const
+   {
+      return mFOVHorizontalVertical[0];
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetFOVVerticalForHorizontal(float vertical)
+   {
+      mFOVHorizontalVertical[1] = vertical;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   float PreferencesGeneralConfigObject::GetFOVVerticalForHorizontal() const
+   {
+      return mFOVHorizontalVertical[1];
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetShouldAutoAttachToEntity(bool shouldAttach)
+   {
+      mShouldAutoAttachToEntity = shouldAttach;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool PreferencesGeneralConfigObject::GetShouldAutoAttachToEntity() const
+   {
+      return mShouldAutoAttachToEntity;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetAutoAttachEntityCallsign(const std::string& callsign)
+   {
+      mAutoAttachEntityCallsign = callsign;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const std::string& PreferencesGeneralConfigObject::GetAutoAttachEntityCallsign() const
+   {
+      return mAutoAttachEntityCallsign;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetAttachPointNodeName(const std::string& name)
+   {
+      mAttachPointNodeName = name;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const std::string& PreferencesGeneralConfigObject::GetAttachPointNodeName() const
+   {
+      return mAttachPointNodeName;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetInitialAttachRotationHPR(const osg::Vec3& hpr)
+   {
+      mInitialAttachRotationHPR = hpr;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const osg::Vec3& PreferencesGeneralConfigObject::GetInitialAttachRotationHPR() const
+   {
+      return mInitialAttachRotationHPR;
    }
 }

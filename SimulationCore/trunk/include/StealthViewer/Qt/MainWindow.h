@@ -57,6 +57,7 @@ class QDateTime;
 class QTableWidgetItem;
 class QDoubleValidator;
 class QListWidgetItem;
+class QComboBox;
 
 namespace StealthQt
 {
@@ -221,22 +222,36 @@ namespace StealthQt
          // General Tab
          /////////////////////////////////////////////////////////////////////////
          /// Called when the attach mode is changed
-         void OnAttachModeChanged(const QString &text);
+         void OnAttachModeChanged(const QString& text);
+
+         /// Called when the Attach Node Name control changes.
+         void OnAttachNodeNameChanged(const QString& text);
+
+         /// Called when the relative attach azimuth angle control changes.
+         void OnAttachAzimuthChanged(const QString& text);
+
+         /// turned on when auto attach is enabled.
+         void OnAutoAttachToggled(bool checked);
+
+         /// turned on when auto attach is enabled.
+         void OnAutoAttachEntityNameChanged(const QString& text);
 
          /// Called when camera collision is enabled
          void OnCameraCollisionChanged(int state);
 
          /// Called when LOD scale is changed
-         void OnLODScaleChanged(const QString &text);
+         void OnLODScaleChanged(const QString& text);
 
          /// Called when the near clip plane is changed
-         void OnNearClippingPlaneChanged(const QString &text);
+         void OnNearClippingPlaneChanged(const QString& text);
 
          /// Called when the far clip plane is changed
-         void OnFarClipplingPlaneChanged(const QString &text);
+         void OnFarClipplingPlaneChanged(const QString& text);
 
-         /// Called when the show advanced options check box is checked
-         void OnShowAdvancedGeneralOptions(int state);
+         /// Fired when the aspect/vertical radio button is toggled.
+         void OnFOVAspectVecticalToggled(bool checked = false);
+         /// This is a catch all for all the different fov fields.
+         void OnFOVChange(const QString& text);
 
          /////////////////////////////////////////////////////////////////////////
          // Environment Tab
@@ -340,6 +355,10 @@ namespace StealthQt
 
       private:
 
+         void ParseCommandLine();
+
+         void PreShowUIControlInit();
+
          void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
                   const std::string& appLibName);
 
@@ -352,6 +371,13 @@ namespace StealthQt
           * Registers the configuration objects with the ViewerComponent
           */
          void AddConfigObjectsToViewerComponent();
+
+         /**
+          * Many of the combo boxes are backed by an enumeration, this fills the combo box and sets it to
+          * point to the given value.
+          */
+         void FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums,
+                  QComboBox& combo, const dtUtil::Enumeration& enumValue);
 
          /**
           * Updates UI controls from the loaded preferences
@@ -440,6 +466,8 @@ namespace StealthQt
          QDoubleValidator* mLatValidator;
          QDoubleValidator* mLonValidator;
          QDoubleValidator* mXYZValidator;
+         QDoubleValidator* mGtZeroValidator;
+         QDoubleValidator* mFOVValidator;
 
          bool mShowMissingEntityInfoErrorMessage;
 

@@ -26,6 +26,13 @@
 #include <dtGame/message.h>
 #include <SimCore/Export.h>
 
+namespace dtDAL
+{
+   class NamedVec3Parameter;
+   class NamedStringParameter;
+   class NamedActorParameter;
+}
+
 namespace SimCore
 {
    namespace Actors
@@ -188,13 +195,26 @@ namespace SimCore
          void SetAttachToActor(const dtCore::UniqueId& actorId);
 
          /**
-          * Returns the actor id the recipient should attach to.
+          * @return the actor id the recipient should attach to.
           */
          const dtCore::UniqueId& GetAttachToActor() const;
 
+         /// Sets the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         void SetAttachPointNodeName(const std::string& name);
+
+         /// @return the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         const std::string& GetAttachPointNodeName() const;
+
+         /// Sets the initial rotation offset in reference to the entity to which to attach.
+         void SetInitialAttachRotationHPR(const osg::Vec3& hpr) const;
+         /// @return the initial rotation offset in reference to the entity to which to attach.
+         const osg::Vec3& GetInitialAttachRotationHPR() const;
       protected:
          /// Destructor
          virtual ~AttachToActorMessage();
+         dtDAL::NamedActorParameter& mAttachToActorParam;
+         dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
+         dtDAL::NamedVec3Parameter& mInitialAttachRotationHPRParam;
    };
 
    /**
