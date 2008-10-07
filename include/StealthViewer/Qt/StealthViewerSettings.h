@@ -57,6 +57,15 @@ namespace StealthQt
 
          static const QString PREFERENCES_GENERAL_GROUP;
             static const QString ATTACH_MODE;
+            static const QString ATTACH_POINT_NODE;
+            static const QString ATTACH_ROTATION;
+            static const QString AUTO_ATTACH_TO_CALLSIGN;
+            static const QString SHOULD_AUTO_ATTACH;
+            static const QString FOV_ASPECT_OR_HORIZONTAL;
+            static const QString FOV_ASPECT_RATIO;
+            static const QString FOV_HORIZONTAL;
+            static const QString FOV_VERTICAL_FOR_ASPECT;
+            static const QString FOV_VERTICAL_FOR_HORIZONTAL;
             static const QString CAMERA_COLLISION;
             static const QString PERFORMANCE;
             static const QString SHOW_ADVANCED_GENERAL_OPTIONS;
@@ -107,7 +116,7 @@ namespace StealthQt
             static const QString PLAYBACK_SPEED;
 
          /// Constructor
-         StealthViewerSettings(const QString &applicationName = StealthViewerSettings::APPLICATION);
+         StealthViewerSettings(const QString& applicationName = StealthViewerSettings::APPLICATION);
 
          /// Destructor
          virtual ~StealthViewerSettings();

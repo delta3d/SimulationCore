@@ -37,19 +37,19 @@ namespace StealthQt
    dtCore::RefPtr<StealthViewerData> StealthViewerData::mInstance(NULL);
 
    //////////////////////////////////////////////////////////////////////
-   StealthViewerData::StealthViewerData() :
-      mSettings(new StealthViewerSettings),
-      mEnvironmentConfigObject(new StealthGM::PreferencesEnvironmentConfigObject),
-      mGeneralConfigObject(new StealthGM::PreferencesGeneralConfigObject),
-      mToolsConfigObject(new StealthGM::PreferencesToolsConfigObject),
-      mVisibilityConfigObject(new StealthGM::PreferencesVisibilityConfigObject),
-      mCameraConfigObject(new StealthGM::ControlsCameraConfigObject),
-      mRecordConfigObject(new StealthGM::ControlsRecordConfigObject),
-      mPlaybackConfigObject(new StealthGM::ControlsPlaybackConfigObject),
-      mMainWindow(NULL)
-      {
+   StealthViewerData::StealthViewerData()
+   : mSettings(new StealthViewerSettings)
+   , mEnvironmentConfigObject(new StealthGM::PreferencesEnvironmentConfigObject)
+   , mGeneralConfigObject(new StealthGM::PreferencesGeneralConfigObject)
+   , mToolsConfigObject(new StealthGM::PreferencesToolsConfigObject)
+   , mVisibilityConfigObject(new StealthGM::PreferencesVisibilityConfigObject)
+   , mCameraConfigObject(new StealthGM::ControlsCameraConfigObject)
+   , mRecordConfigObject(new StealthGM::ControlsRecordConfigObject)
+   , mPlaybackConfigObject(new StealthGM::ControlsPlaybackConfigObject)
+   , mMainWindow(NULL)
+   {
 
-      }
+   }
 
    //////////////////////////////////////////////////////////////////////
    StealthViewerData::~StealthViewerData()
@@ -65,6 +65,13 @@ namespace StealthQt
          mInstance = new StealthViewerData;
 
       return *mInstance;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void StealthViewerData::ChangeSettingsInstance(const std::string& instanceName)
+   {
+      delete mSettings;
+      mSettings = new StealthViewerSettings(instanceName.c_str());
    }
 
    //////////////////////////////////////////////////////////////////////

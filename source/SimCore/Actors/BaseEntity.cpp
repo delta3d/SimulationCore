@@ -1055,11 +1055,13 @@ namespace SimCore
          return result;
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFrozen( bool frozen )
       {
          mIsFrozen = frozen;
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::GetFrozen() const
       {
          return mIsFrozen;

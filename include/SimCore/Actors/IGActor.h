@@ -40,16 +40,18 @@ namespace SimCore
 {
    namespace Actors
    {
+      class IGActor;
+
       class SIMCORE_EXPORT IGActor : public dtGame::GameActor
       {
       public:
-
-         /// This will share images, textures, and vertices between models. 
+         typedef dtGame::GameActor BaseClass;
+         /// This will share images, textures, and vertices between models.
          /// Good use case is for articulated vehicles or characters.
-         static const unsigned int COPY_OPS_SHARED_GEOMETRY = (osg::CopyOp::DEEP_COPY_OBJECTS 
-            | osg::CopyOp::DEEP_COPY_NODES 
-            | osg::CopyOp::DEEP_COPY_STATESETS 
-            | osg::CopyOp::DEEP_COPY_STATEATTRIBUTES 
+         static const unsigned int COPY_OPS_SHARED_GEOMETRY = (osg::CopyOp::DEEP_COPY_OBJECTS
+            | osg::CopyOp::DEEP_COPY_NODES
+            | osg::CopyOp::DEEP_COPY_STATESETS
+            | osg::CopyOp::DEEP_COPY_STATEATTRIBUTES
             | osg::CopyOp::DEEP_COPY_UNIFORMS );
 
             /// Constructor
@@ -62,13 +64,13 @@ namespace SimCore
              * or NULL if error
              */
             //osg::Node* LoadFile(const std::string &fileName, bool useCache = true);
-            bool LoadFile(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile, 
+            bool LoadFile(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile,
                dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /**
-             * A static version of LoadFile.  The real LoadFile is now a wrapper that calls this. 
+             * A static version of LoadFile.  The real LoadFile is now a wrapper that calls this.
              */
-            static bool LoadFileStatic(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile, 
+            static bool LoadFileStatic(const std::string &fileName, dtCore::RefPtr<osg::Node>& originalFile,
                dtCore::RefPtr<osg::Node>& copiedFile, bool useCache = true, bool loadTerrainMaterialsOn = false);
 
             /* Registers the particle system to the ParticleManagerComponent
@@ -79,7 +81,7 @@ namespace SimCore
              * @param particles The reference to the particle system that must be registered.
              * @param attrFlags The attribute flags that specify what forces can be applied to particles
              */
-            void RegisterParticleSystem( dtCore::ParticleSystem& particles, 
+            void RegisterParticleSystem( dtCore::ParticleSystem& particles,
                const SimCore::Components::ParticleInfo::AttributeFlags* attrFlags = NULL );
 
             /* Removes the particle system from the ParticleManagerComponent
@@ -91,12 +93,15 @@ namespace SimCore
              */
             void UnregisterParticleSystem( dtCore::ParticleSystem& particles );
 
+            // Add an optional parameter for the node name, and a bool return if that
+            // node was found.
+            virtual bool AddChild(dtCore::DeltaDrawable* child, const std::string& nodeName = "");
+            virtual void RemoveChild(dtCore::DeltaDrawable* child);
+
          protected:
 
             /// Destructor
             virtual ~IGActor();
-
-         private:
       };
    }
 }
