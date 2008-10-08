@@ -300,6 +300,13 @@
               </property>
              </widget>
             </item>
+            <item row="2" column="0" colspan="2" >
+             <widget class="QPushButton" name="mFOVResetButton" >
+              <property name="text" >
+               <string>Reset</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -396,196 +403,169 @@
           </widget>
          </item>
          <item>
-          <widget class="QWidget" native="1" name="widget_5" >
-           <property name="sizePolicy" >
-            <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
-             <horstretch>0</horstretch>
-             <verstretch>10</verstretch>
-            </sizepolicy>
+          <widget class="QGroupBox" name="mGeneralAdvancedPerformanceOptionsGroupBox" >
+           <property name="title" >
+            <string>Advanced Performance Options</string>
            </property>
-           <layout class="QVBoxLayout" >
-            <property name="spacing" >
-             <number>0</number>
-            </property>
-            <property name="leftMargin" >
-             <number>0</number>
-            </property>
-            <property name="topMargin" >
-             <number>0</number>
-            </property>
-            <property name="rightMargin" >
-             <number>0</number>
-            </property>
-            <property name="bottomMargin" >
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QGroupBox" name="mGeneralAdvancedPerformanceOptionsGroupBox" >
-              <property name="title" >
-               <string>Advanced Performance Options</string>
+           <layout class="QGridLayout" >
+            <item row="0" column="0" >
+             <widget class="QLabel" name="mGeneralLODScaleLabel" >
+              <property name="text" >
+               <string>LOD Scale</string>
               </property>
-              <layout class="QGridLayout" >
-               <item row="0" column="0" >
-                <widget class="QLabel" name="mGeneralLODScaleLabel" >
-                 <property name="text" >
-                  <string>LOD Scale</string>
-                 </property>
-                 <property name="buddy" >
-                  <cstring>mGeneralLODScaleLineEdit</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" >
-                <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
-                 <property name="toolTip" >
-                  <string>This is the scale value for level of detail</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" >
-                <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
-                 <property name="text" >
-                  <string>Near Clipping Plane</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1" >
-                <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
-                 <property name="currentIndex" >
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <property name="text" >
-                   <string>0.05</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>0.1</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>0.25</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>0.5</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>1</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>2</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>5</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>10</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>100</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="2" column="0" >
-                <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
-                 <property name="text" >
-                  <string>Far Clipping Plane</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" >
-                <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
-                 <property name="currentIndex" >
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <property name="text" >
-                   <string>1000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>New Item</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>2000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>5000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>8000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>10000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>11000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>12000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>15000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>18000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>20000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>25000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>30000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text" >
-                   <string>50000</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
+              <property name="buddy" >
+               <cstring>mGeneralLODScaleLineEdit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="3" >
+             <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
+              <property name="toolTip" >
+               <string>This is the scale value for level of detail</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" >
+             <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
+              <property name="text" >
+               <string>Near Plane</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
+              <property name="currentIndex" >
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text" >
+                <string>0.05</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>0.1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>0.25</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>0.5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>100</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="2" >
+             <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
+              <property name="text" >
+               <string>Far Plane</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3" >
+             <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
+              <property name="currentIndex" >
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text" >
+                <string>1000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>New Item</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>2000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>5000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>8000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>10000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>11000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>12000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>15000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>18000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>20000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>25000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>30000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text" >
+                <string>50000</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -3799,22 +3779,6 @@
     <hint type="destinationlabel" >
      <x>874</x>
      <y>426</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mGeneralShowAdvancedOptionsCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>mGeneralAdvancedPerformanceOptionsGroupBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>780</x>
-     <y>159</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>778</x>
-     <y>517</y>
     </hint>
    </hints>
   </connection>

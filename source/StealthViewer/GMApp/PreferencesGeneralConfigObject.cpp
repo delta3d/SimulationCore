@@ -64,12 +64,9 @@ namespace StealthGM
    , mAutoRefreshEntityInfo(true)
    , mDetachFromActor(false)
    , mInputComponent(NULL)
-   , mUseAspectRatioForFOV(true)
-   , mFOVAspectVertical(1.6, 60.0)
-   , mFOVHorizontalVertical(96.6, 60.0)
    , mShouldAutoAttachToEntity(false)
    {
-
+      FOVReset();
    }
 
    PreferencesGeneralConfigObject::~PreferencesGeneralConfigObject()
@@ -228,6 +225,15 @@ namespace StealthGM
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::FOVReset()
+   {
+      mUseAspectRatioForFOV = true;
+      mFOVAspectVertical.set(1.6, 60.0);
+      mFOVHorizontalVertical.set(96.0, 60.0);
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::SetUseAspectRatioForFOV(bool useAspect)
    {
       mUseAspectRatioForFOV = useAspect;
@@ -296,6 +302,7 @@ namespace StealthGM
    void PreferencesGeneralConfigObject::SetShouldAutoAttachToEntity(bool shouldAttach)
    {
       mShouldAutoAttachToEntity = shouldAttach;
+      SetIsUpdated(true);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -308,6 +315,7 @@ namespace StealthGM
    void PreferencesGeneralConfigObject::SetAutoAttachEntityCallsign(const std::string& callsign)
    {
       mAutoAttachEntityCallsign = callsign;
+      SetIsUpdated(true);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -320,6 +328,7 @@ namespace StealthGM
    void PreferencesGeneralConfigObject::SetAttachPointNodeName(const std::string& name)
    {
       mAttachPointNodeName = name;
+      SetIsUpdated(true);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -332,6 +341,7 @@ namespace StealthGM
    void PreferencesGeneralConfigObject::SetInitialAttachRotationHPR(const osg::Vec3& hpr)
    {
       mInitialAttachRotationHPR = hpr;
+      SetIsUpdated(true);
    }
 
    //////////////////////////////////////////////////////////////////////////

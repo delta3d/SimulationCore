@@ -91,6 +91,9 @@ public:
    void TestControlsPlaybackConfigObject();
 
    void TestPreferencesEnvironmentApplyChanges();
+private:
+   void CheckFOVDefaults();
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ConfigObjectTests);
@@ -103,6 +106,27 @@ void ConfigObjectTests::setUp()
 void ConfigObjectTests::tearDown()
 {
    dtCore::System::GetInstance().Stop();
+}
+
+void ConfigObjectTests::CheckFOVDefaults()
+{
+   dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig =
+      new StealthGM::PreferencesGeneralConfigObject;
+
+   CPPUNIT_ASSERT_MESSAGE("Default Use aspect ratio for fov should true.",
+      genConfig->UseAspectRatioForFOV());
+
+   CPPUNIT_ASSERT_MESSAGE("The default aspect ratio should be 1.6.",
+      dtUtil::Equivalent(genConfig->GetFOVAspectRatio(), 1.6f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 96.0.",
+      dtUtil::Equivalent(genConfig->GetFOVHorizontal(), 96.0f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 60.0.",
+      dtUtil::Equivalent(genConfig->GetFOVVerticalForAspect(), 60.0f));
+
+   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 60.0.",
+      dtUtil::Equivalent(genConfig->GetFOVVerticalForHorizontal(), 60.0f));
 }
 
 void ConfigObjectTests::TestPreferencesGeneralConfigObject()
@@ -125,63 +149,110 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT_MESSAGE("The default performance mode should be DEFAULT",
       genConfig->GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::DEFAULT);
 
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("The default attach point node name should be empty",
+      genConfig->GetAttachPointNodeName(), std::string());
+
+   osg::Vec3 defaultInitialAttachRot(0.0, 0.0, 0.0);
+   CPPUNIT_ASSERT_MESSAGE("The attach rotation should default to 0,0,0.",
+      dtUtil::Equivalent(genConfig->GetInitialAttachRotationHPR(), defaultInitialAttachRot, 0.01f));
+
+   CPPUNIT_ASSERT_MESSAGE("Auto attach to entity should default to false..",
+      !genConfig->GetShouldAutoAttachToEntity());
+
+   CheckFOVDefaults();
+
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetShowAdvancedOptions());
 
    genConfig->SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
    CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON,
       genConfig->GetAttachMode());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetAttachPointNodeName("frank");
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The attach point node name should be frank",
       genConfig->GetAttachPointNodeName(), std::string("frank"));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    osg::Vec3 newInitialAttachRot(3.3, 9.7, 8.4);
    genConfig->SetInitialAttachRotationHPR(newInitialAttachRot);
    CPPUNIT_ASSERT_MESSAGE("The attach rotation should have changed.",
       dtUtil::Equivalent(genConfig->GetInitialAttachRotationHPR(), newInitialAttachRot, 0.01f));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetShouldAutoAttachToEntity(true);
-   CPPUNIT_ASSERT_MESSAGE("The auto attach to entity should new be true.",
+   CPPUNIT_ASSERT_MESSAGE("Auto attach to entity should now be true.",
       genConfig->GetShouldAutoAttachToEntity());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetUseAspectRatioForFOV(false);
    CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
       !genConfig->UseAspectRatioForFOV());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetFOVAspectRatio(31.9f);
-   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
+   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should now be 31.9.",
       dtUtil::Equivalent(genConfig->GetFOVAspectRatio(), 31.9f));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetFOVHorizontal(9373.3f);
-   CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
+   CPPUNIT_ASSERT_MESSAGE("The horizontal fov should now be 9373.3.",
       dtUtil::Equivalent(genConfig->GetFOVHorizontal(), 9373.3f));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetFOVVerticalForAspect(11.1f);
-   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 11.1.",
       dtUtil::Equivalent(genConfig->GetFOVVerticalForAspect(), 11.1f));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetFOVVerticalForHorizontal(13.2f);
-   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 13.2.",
       dtUtil::Equivalent(genConfig->GetFOVVerticalForHorizontal(), 13.2f));
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetCameraCollision(false);
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetEnableCameraCollision());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetFarClippingPlane(10.0);
    CPPUNIT_ASSERT_EQUAL(10.0, genConfig->GetFarClippingPlane());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetLODScale(2.0f);
    CPPUNIT_ASSERT_EQUAL(2.0f, genConfig->GetLODScale());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetNearClippingPlane(1.0);
    CPPUNIT_ASSERT_EQUAL(1.0, genConfig->GetNearClippingPlane());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
    CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
       genConfig->GetPerformanceMode());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
 
    genConfig->SetShowAdvancedOptions(true);
    CPPUNIT_ASSERT_EQUAL(true, genConfig->GetShowAdvancedOptions());
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   genConfig->SetIsUpdated(false);
+
+   //The FOV reset should set update to true and then the values should be the defaults again.
+   genConfig->FOVReset();
+   CPPUNIT_ASSERT(genConfig->IsUpdated());
+   CheckFOVDefaults();
 
    genConfig = NULL;
 }

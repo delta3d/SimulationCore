@@ -26,8 +26,8 @@
 
 namespace StealthQt
 {
-   MapSelectDialog::MapSelectDialog(QWidget *parent) :   
-      QDialog(parent), 
+   MapSelectDialog::MapSelectDialog(QWidget *parent) :
+      QDialog(parent),
       mUi(new Ui::MapSelectDialog)
    {
       mUi->setupUi(this);
@@ -39,7 +39,7 @@ namespace StealthQt
          mUi->mMapSelectListWidget->addItem(str);
       }
 
-      connect(mUi->mMapSelectListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), 
+      connect(mUi->mMapSelectListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
               this,                      SLOT(OnListItemDoubleClicked(QListWidgetItem*)));
    }
 

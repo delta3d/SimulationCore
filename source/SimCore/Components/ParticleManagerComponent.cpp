@@ -29,8 +29,8 @@
 #include <dtGame/message.h>
 #include <dtGame/messagetype.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
-//#include <SimCore/Actors/PhysicsParticleSystemActor.h>
+//#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <osgParticle/ParticleSystem>
