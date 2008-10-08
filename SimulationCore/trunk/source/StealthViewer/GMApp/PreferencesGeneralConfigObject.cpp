@@ -180,6 +180,18 @@ namespace StealthGM
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::Reattach()
+   {
+      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != NULL)
+      {
+         if (mInputComponent->GetStealthActor()->IsAttachedToActor())
+         {
+            AttachToActor(mInputComponent->GetStealthActor()->GetParent()->GetUniqueId());
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    bool PreferencesGeneralConfigObject::IsStealthActorCurrentlyAttached()
    {
       bool result = false;
@@ -329,6 +341,7 @@ namespace StealthGM
    {
       mAttachPointNodeName = name;
       SetIsUpdated(true);
+      Reattach();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -342,6 +355,7 @@ namespace StealthGM
    {
       mInitialAttachRotationHPR = hpr;
       SetIsUpdated(true);
+      Reattach();
    }
 
    //////////////////////////////////////////////////////////////////////////
