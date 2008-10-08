@@ -45,7 +45,6 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
 #include <dtCore/camera.h>
-#include <dtCore/scene.h>
 #include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
