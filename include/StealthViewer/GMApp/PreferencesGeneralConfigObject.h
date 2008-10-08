@@ -210,6 +210,8 @@ namespace StealthGM
          /// @return the initial rotation offset in reference to the entity to which to attach.
          const osg::Vec3& GetInitialAttachRotationHPR() const;
 
+         /// Resets the attachment of the stealth actor to it the current actor is attached to.
+         void Reattach();
 
          /**
           * Checks to see if the stealth actor is currently attached.

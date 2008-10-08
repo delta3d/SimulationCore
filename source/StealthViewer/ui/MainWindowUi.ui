@@ -3814,5 +3814,21 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mGeneralShowAdvancedOptionsCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mGeneralAdvancedPerformanceOptionsGroupBox</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>789</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>785</x>
+     <y>596</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

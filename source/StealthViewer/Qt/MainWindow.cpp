@@ -154,7 +154,7 @@ namespace StealthQt
    , mLonValidator(new QDoubleValidator(-180, 180, 10, this))
    , mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this))
    , mGtZeroValidator(new QDoubleValidator(0, DBL_MAX, 5, this))
-   , mFOVValidator(new QDoubleValidator(0.0, 360.0, 2, this))
+   , mFOVValidator(new QDoubleValidator(2.0, 179.0, 2, this))
    , mShowMissingEntityInfoErrorMessage(true)
    , mPreviousCustomHour(-1)
    , mPreviousCustomMinute(-1)
