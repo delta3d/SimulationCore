@@ -646,6 +646,9 @@ namespace StealthQt
       connect(mUi->mFOVVerticalwHorizontalText, SIGNAL(textChanged(const QString&)),
                this,                        SLOT(OnFOVChange(const QString&)));
 
+      connect(mUi->mFOVResetButton, SIGNAL(clicked(bool)),
+               this,                SLOT(OnFOVReset(bool)));
+
       ////////////////////////////////////////////////////
 
       connect(&mDurationTimer, SIGNAL(timeout()), this, SLOT(OnDurationTimerElapsed()));
@@ -1426,6 +1429,15 @@ namespace StealthQt
       genConfig.SetFOVVerticalForHorizontal(textValue.toFloat());
    }
 
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnFOVReset(bool)
+   {
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
+         StealthViewerData::GetInstance().GetGeneralConfigObject();
+      genConfig.FOVReset();
+      AssignFOVUiValuesFromConfig();
+   }
+
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnWeatherThemedRadioButtonClicked(bool checked)
    {
@@ -1770,6 +1782,31 @@ namespace StealthQt
       }
    }
 
+   void MainWindow::AssignFOVUiValuesFromConfig()
+   {
+      // General Preferences
+       StealthGM::PreferencesGeneralConfigObject& genConfig =
+          StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+      mUi->mFOVAspectRatioText->blockSignals(true);
+      mUi->mFOVHorizontalText->blockSignals(true);
+      mUi->mFOVVerticalwAspectText->blockSignals(true);
+      mUi->mFOVVerticalwHorizontalText->blockSignals(true);
+
+      mUi->mFOVAspectRatioText->setText(QString::number(genConfig.GetFOVAspectRatio(), 'g', 5));
+      mUi->mFOVHorizontalText->setText(QString::number(genConfig.GetFOVHorizontal(), 'g', 5));
+      mUi->mFOVVerticalwAspectText->setText(QString::number(genConfig.GetFOVVerticalForAspect(), 'g', 5));
+      mUi->mFOVVerticalwHorizontalText->setText(QString::number(genConfig.GetFOVVerticalForHorizontal(), 'g', 5));
+
+      mUi->mFOVAspectRatioText->blockSignals(false);
+      mUi->mFOVHorizontalText->blockSignals(false);
+      mUi->mFOVVerticalwAspectText->blockSignals(false);
+      mUi->mFOVVerticalwHorizontalText->blockSignals(false);
+
+      mUi->mFOVAspectVerticalRadio->setChecked(genConfig.UseAspectRatioForFOV());
+      mUi->mFOVHorizontalVerticalRadio->setChecked(!genConfig.UseAspectRatioForFOV());
+   }
+
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::UpdateUIFromPreferences()
    {
@@ -1795,23 +1832,7 @@ namespace StealthQt
          mUi->mGeneralFarClippingPlaneComboBox->setCurrentIndex(index);
       }
 
-      mUi->mFOVAspectRatioText->blockSignals(true);
-      mUi->mFOVHorizontalText->blockSignals(true);
-      mUi->mFOVVerticalwAspectText->blockSignals(true);
-      mUi->mFOVVerticalwHorizontalText->blockSignals(true);
-
-      mUi->mFOVAspectRatioText->setText(QString::number(genConfig.GetFOVAspectRatio(), 'g', 5));
-      mUi->mFOVHorizontalText->setText(QString::number(genConfig.GetFOVHorizontal(), 'g', 5));
-      mUi->mFOVVerticalwAspectText->setText(QString::number(genConfig.GetFOVVerticalForAspect(), 'g', 5));
-      mUi->mFOVVerticalwHorizontalText->setText(QString::number(genConfig.GetFOVVerticalForHorizontal(), 'g', 5));
-
-      mUi->mFOVAspectRatioText->blockSignals(false);
-      mUi->mFOVHorizontalText->blockSignals(false);
-      mUi->mFOVVerticalwAspectText->blockSignals(false);
-      mUi->mFOVVerticalwHorizontalText->blockSignals(false);
-
-      mUi->mFOVAspectVerticalRadio->setChecked(genConfig.UseAspectRatioForFOV());
-      mUi->mFOVHorizontalVerticalRadio->setChecked(!genConfig.UseAspectRatioForFOV());
+      AssignFOVUiValuesFromConfig();
 
       index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(genConfig.GetNearClippingPlane()));
       if (index >= 0)

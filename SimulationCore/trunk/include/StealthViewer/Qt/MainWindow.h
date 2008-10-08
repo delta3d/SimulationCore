@@ -253,6 +253,9 @@ namespace StealthQt
          /// This is a catch all for all the different fov fields.
          void OnFOVChange(const QString& text);
 
+         /// This handles the reset button for the field of view.
+         void OnFOVReset(bool checked = false);
+
          /////////////////////////////////////////////////////////////////////////
          // Environment Tab
          /////////////////////////////////////////////////////////////////////////
@@ -351,6 +354,18 @@ namespace StealthQt
           */
          void closeEvent(QCloseEvent *e);
 
+         /**
+          * Many of the combo boxes are backed by an enumeration, this fills the combo box and sets it to
+          * point to the given value.
+          */
+         virtual void FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums,
+                  QComboBox& combo, const dtUtil::Enumeration& enumValue);
+         /**
+          * Updates UI controls from the loaded preferences
+          */
+         virtual void UpdateUIFromPreferences();
+
+
          Ui::MainWindow* mUi;
 
       private:
@@ -372,17 +387,8 @@ namespace StealthQt
           */
          void AddConfigObjectsToViewerComponent();
 
-         /**
-          * Many of the combo boxes are backed by an enumeration, this fills the combo box and sets it to
-          * point to the given value.
-          */
-         void FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums,
-                  QComboBox& combo, const dtUtil::Enumeration& enumValue);
-
-         /**
-          * Updates UI controls from the loaded preferences
-          */
-         void UpdateUIFromPreferences();
+         /// Sets the Field of view UI values by reading them from the general config.
+         void AssignFOVUiValuesFromConfig();
 
          /**
           * Enables or disables all of the playback buttons at once

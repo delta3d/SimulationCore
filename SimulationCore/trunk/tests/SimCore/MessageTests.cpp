@@ -37,6 +37,7 @@
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/nodecollector.h>
 
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
@@ -56,6 +57,9 @@
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
+#include <osg/Group>
+#include <osgSim/DOFTransform>
+
 #include <UnitTestMain.h>
 
 using dtCore::RefPtr;
@@ -65,10 +69,11 @@ class MessageTests : public CPPUNIT_NS::TestFixture
    CPPUNIT_TEST_SUITE(MessageTests);
 
       CPPUNIT_TEST(TestStealthActorMessage);
-		CPPUNIT_TEST(TestDetonationMessage);
+      CPPUNIT_TEST(TestDetonationMessage);
       CPPUNIT_TEST(TestTimeQueryMessage);
       CPPUNIT_TEST(TestTimeValueMessage);
-      CPPUNIT_TEST(TestAttachToActorMessage);
+      CPPUNIT_TEST(TestAttachToActorMessageNoSubNode);
+      CPPUNIT_TEST(TestAttachToActorMessageWithSubNode);
       CPPUNIT_TEST(TestWarpToPositionMessage);
       CPPUNIT_TEST(TestDetachOnActorDeletedMessage);
       CPPUNIT_TEST(TestToolMessageTypes);
@@ -283,7 +288,17 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          }
       }
 
-      void TestAttachToActorMessage()
+      void TestAttachToActorMessageNoSubNode()
+      {
+         TestAttachToActorMessage(false);
+      }
+
+      void TestAttachToActorMessageWithSubNode()
+      {
+         TestAttachToActorMessage(true);
+      }
+
+      void TestAttachToActorMessage(bool useSubNode)
       {
          try
          {
@@ -306,6 +321,15 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::BaseEntity> t80Actor = dynamic_cast<SimCore::Actors::BaseEntity*>(t80Proxy->GetActor());
             CPPUNIT_ASSERT(t80Actor.valid());
 
+            if (useSubNode)
+            {
+               const std::string modelFile("StaticMeshes/T80/t80u_good.ive");
+               CPPUNIT_ASSERT_MESSAGE("The T80 Model does not exist",
+                        dtUtil::FileUtils::GetInstance().FileExists(dtDAL::Project::GetInstance().GetContext() +
+                        "/" + modelFile));
+               t80Proxy->LoadNonDamagedFile(modelFile);
+            }
+
             RefPtr<SimCore::Actors::StealthActorProxy> playerProxy;
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, playerProxy);
             CPPUNIT_ASSERT(playerProxy.valid());
@@ -326,6 +350,17 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             CPPUNIT_ASSERT(atamsg.valid());
             atamsg->SetAboutActorId(playerActor->GetUniqueId());
             atamsg->SetAttachToActor(t80Actor->GetUniqueId());
+
+            const std::string parentSubNodeName("dof_gun_01");
+            if (useSubNode)
+            {
+               // The T80 model should have this node name.
+               atamsg->SetAttachPointNodeName(parentSubNodeName);
+            }
+
+            const osg::Vec3 initialRotation(30.5f, 17.1f, 10.3f);
+            atamsg->SetInitialAttachRotationHPR(initialRotation);
+
             mGM->SendMessage(*atamsg);
 
             dtCore::AppSleep(10);
@@ -335,16 +370,36 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             playerActor->GetTransform(newTransform);
             t80Actor->GetTransform(tankTransform);
 
-            osg::Vec3 playerPos, newPos, tankPos;
+            osg::Vec3 playerPos, newPos, tankPos, tankRot;
             originalTransform.GetTranslation(playerPos);
             newTransform.GetTranslation(newPos);
             tankTransform.GetTranslation(tankPos);
 
-            //Checking the X and Y for now because the Z position is not the same.  It's up some.
-            CPPUNIT_ASSERT_MESSAGE("The player X position should equal the tank position", newPos.x() == tankPos.x());
-            CPPUNIT_ASSERT_MESSAGE("The player Y position should equal the tank position", newPos.y() == tankPos.y());
+            originalTransform.GetTranslation(playerPos);
+
+            if (useSubNode)
+            {
+               dtCore::RefPtr<dtCore::NodeCollector> nc = new dtCore::NodeCollector(t80Actor->GetOSGNode(), dtCore::NodeCollector::DOFTransformFlag);
+               osg::Group* group = nc->GetDOFTransform(parentSubNodeName);
+               CPPUNIT_ASSERT_MESSAGE("The dof node \"" + parentSubNodeName +
+                        "\" should exist on the model, or the test won't work..", group != NULL);
+               CPPUNIT_ASSERT_EQUAL(size_t(1), playerActor->GetOSGNode()->getParents().size());
+               CPPUNIT_ASSERT_MESSAGE("The stealth actor node should by a child of the dof node",
+                        playerActor->GetOSGNode()->getParent(0) == group);
+            }
+            else
+            {
+               //Checking the X and Y for now because the Z position is not the same.  It's up some.
+               CPPUNIT_ASSERT_MESSAGE("The player X position should equal the tank position", newPos.x() == tankPos.x());
+               CPPUNIT_ASSERT_MESSAGE("The player Y position should equal the tank position", newPos.y() == tankPos.y());
+            }
 
             CPPUNIT_ASSERT_MESSAGE("The old position should not equal the new position", playerPos != newPos);
+
+            playerActor->GetTransform(newTransform, dtCore::Transformable::REL_CS);
+            osg::Vec3 currRot;
+            newTransform.GetRotation(currRot);
+            CPPUNIT_ASSERT(dtUtil::Equivalent(currRot, initialRotation, 0.01f));
          }
          catch(const dtUtil::Exception &e)
          {

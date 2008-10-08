@@ -258,6 +258,9 @@ namespace StealthGM
           */
          bool GetAutoRefreshEntityInfoWindow() const { return mAutoRefreshEntityInfo; }
 
+         /// Reset all the FOV stuff to defaults.
+         void FOVReset();
+
          bool UseAspectRatioForFOV() const;
          void SetUseAspectRatioForFOV(bool useAspect);
 
