@@ -229,7 +229,6 @@ namespace SimCore
             mPhysicsHelper->AddPhysicsObject(*physObj);
          }
          mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
-         mPhysicsHelper->SetFlags(dtPhysics::PhysicsHelper::FLAGS_PRE_UPDATE);
 #endif
       }
 
