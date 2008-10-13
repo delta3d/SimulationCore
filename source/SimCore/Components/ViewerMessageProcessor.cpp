@@ -28,9 +28,12 @@
 
 #include <dtCore/isector.h>
 
+#include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
+
+#include <SimCore/Components/MultiSurfaceClamper.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
@@ -75,38 +78,60 @@ namespace SimCore
             dtGame::GameManager &gameManager = *GetGameManager();
             std::vector<dtDAL::ActorProxy*> actors;
 
-            const dtGame::MapMessage &mlm = static_cast<const dtGame::MapMessage&>(msg);
+            const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(msg);
             dtGame::GameManager::NameVector mapNames;
             mlm.GetMapNames(mapNames);
 
-            dtGame::DeadReckoningComponent *drComp;
+            dtGame::DeadReckoningComponent* drComp = NULL;
             gameManager.GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
-            dtAnim::AnimationComponent *animComp;
+            dtAnim::AnimationComponent* animComp = NULL;
             gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
-            std::vector<dtDAL::ActorProxy*> toFill;
-            gameManager.FindActorsByName("Terrain", toFill);
-            dtDAL::ActorProxy* terrainProxy = NULL;
-            if(!toFill.empty())
+            if (drComp != NULL)
             {
-               terrainProxy = toFill.front();
-               dtCore::Transformable* terrain;
-               terrainProxy->GetActor(terrain);
-               if(terrain == NULL)
+               std::vector<dtDAL::ActorProxy*> toFill;
+               gameManager.FindActorsByName("Terrain", toFill);
+               dtDAL::ActorProxy* terrainProxy = NULL;
+               if(!toFill.empty())
                {
-                  LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
+                  terrainProxy = toFill.front();
+                  dtCore::Transformable* terrain;
+                  terrainProxy->GetActor(terrain);
+                  if(terrain == NULL)
+                  {
+                     LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
+                  }
+                  else
+                  {
+                     drComp->SetTerrainActor(terrain);
+                     //if (animComp != NULL)
+                        //animComp->SetTerrainActor(terrain);
+                  }
                }
                else
                {
-                  if (drComp != NULL)
-                     drComp->SetTerrainActor(terrain);
-                  //if (animComp != NULL)
-                     //animComp->SetTerrainActor(terrain);
+                  LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
                }
-            }
-            else
-            {
-               LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
+
+               // Get any water actor and assign it to the multi surface ground clamper,
+               // which happens to be managed by the Dead Reckoning Component.
+               SimCore::Actors::BaseWaterActorProxy* proxy = NULL;
+               gameManager.FindActorByType(
+                  *SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, proxy );
+               if( proxy != NULL )
+               {
+                  SimCore::Actors::BaseWaterActor* water = NULL;
+                  proxy->GetActor( water );
+
+                  // Assign the water surface to the clamper for any water based entities
+                  // to clamp to.
+                  SimCore::Components::MultiSurfaceClamper* clamper
+                     = dynamic_cast<SimCore::Components::MultiSurfaceClamper*>(&drComp->GetGroundClamper());
+                  if( clamper != NULL )
+                  {
+                     clamper->SetWaterSurface( water );
+                  }
+               }
             }
          }
 
