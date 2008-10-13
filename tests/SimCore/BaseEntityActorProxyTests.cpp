@@ -222,10 +222,16 @@ void BaseEntityActorProxyTests::TestHuman()
 
 void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEntityActorProxy& eap)
 {
+   using namespace SimCore::Actors;
+
    //make the actor 
    mGM->AddActor(eap, true, false);
 
    dtDAL::ActorProperty *prop = NULL;
+   BaseEntity* entity = NULL;
+   eap.GetActor( entity );
+   CPPUNIT_ASSERT_MESSAGE("BaseEntity should be valid when being accessed from its proxy.",
+      entity != NULL);
    
    prop = eap.GetProperty("Firepower Disabled");
    CPPUNIT_ASSERT_MESSAGE("The firepower property should not be NULL", prop != NULL);
@@ -275,6 +281,23 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    aep->SetValueFromString("No Damage");
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName() == "No Damage");
 
+   prop = eap.GetProperty(BaseEntityActorProxy::PROPERTY_DOMAIN);
+   aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("Property should be defaulted to GROUND domain.", aep->GetEnumValue().GetName()
+      == BaseEntityActorProxy::DomainEnum::GROUND.GetName());
+   CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::GROUND);
+
+   aep->SetValueFromString(BaseEntityActorProxy::DomainEnum::SURFACE.GetName());
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName()
+      == BaseEntityActorProxy::DomainEnum::SURFACE.GetName());
+   CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::SURFACE);
+
+   entity->SetDomain(BaseEntityActorProxy::DomainEnum::AMPHIBIOUS);
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName()
+      == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS.GetName());
+   CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS);
+
    prop = eap.GetProperty("Dead Reckoning Algorithm");
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
@@ -285,9 +308,9 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    prop = eap.GetProperty("Force Affiliation");
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"Force Affiliation\" should not be NULL", aep != NULL);
-   CPPUNIT_ASSERT_MESSAGE("The \"Force Affilition\" should default to NEUTRAL", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::NEUTRAL);
+   CPPUNIT_ASSERT_MESSAGE("The \"Force Affiliation\" should default to NEUTRAL", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::NEUTRAL);
    aep->SetValueFromString("FRIENDLY");
-   CPPUNIT_ASSERT_MESSAGE("The \"Force Affilition\" should now be friendly", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
+   CPPUNIT_ASSERT_MESSAGE("The \"Force Affiliation\" should now be friendly", aep->GetEnumValue() == SimCore::Actors::BaseEntityActorProxy::ForceEnum::FRIENDLY);
 
    osg::Vec3 translation(0.0f, 0.0f, 0.0f);
    prop = eap.GetProperty(dtDAL::TransformableActorProxy::PROPERTY_TRANSLATION);
