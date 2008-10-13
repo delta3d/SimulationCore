@@ -26,6 +26,7 @@
 #include <SimCore/Components/BaseInputComponent.h>
 #include <SimCore/Components/ViewerNetworkPublishingComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/MultiSurfaceClamper.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
@@ -436,8 +437,12 @@ namespace SimCore
 
       SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
 
-      drComp->GetGroundClamper().SetHighResGroundClampingRange(200.0f);
+      // Setup the DR Component.
+      dtCore::RefPtr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
+      clamper->SetHighResGroundClampingRange( 200.0f );
+      drComp->SetGroundClamper( *clamper );
 
+      // Setup the Weather Component.
       weatherComp->SetUpdatesEnabled(!mIsUIRunning);
       //WeatherComp->SetUseEphemeris(mIsUIRunning);
       weatherComp->SetNearFarClipPlanes( PLAYER_NEAR_CLIP_PLANE, PLAYER_FAR_CLIP_PLANE );
