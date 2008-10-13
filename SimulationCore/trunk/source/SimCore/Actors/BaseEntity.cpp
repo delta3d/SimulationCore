@@ -44,6 +44,16 @@ namespace SimCore
    {
 
       //////////////////////////////////////////////////////////////////////////
+      IMPLEMENT_ENUM(BaseEntityActorProxy::DomainEnum);
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AIR("AIR");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AMPHIBIOUS("AMPHIBIOUS");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::GROUND("GROUND");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SPACE("SPACE");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SUBMARINE("SUBMARINE");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SURFACE("SURFACE");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::MULTI("MULTI");
+
+      //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::DamageStateEnum);
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE("No Damage");
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE("Slight Damage");
@@ -97,6 +107,7 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLYING("Flying");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE("Default Scale");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DOMAIN("Domain");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
@@ -232,6 +243,13 @@ namespace SimCore
             dtDAL::MakeFunctor(e, &BaseEntity::SetDamageState),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDamageState),
             PROPERTY_DAMAGE_STATE_DESC, BASE_ENTITY_GROUP));
+
+         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::DomainEnum>(
+            PROPERTY_DOMAIN, PROPERTY_DOMAIN,
+            dtDAL::MakeFunctor(e, &BaseEntity::SetDomain),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetDomain),
+            "Specifies the type of environment an entity is specialized in navigating.",
+            BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>("Dead Reckoning Algorithm", "Dead Reckoning Algorithm",
             dtDAL::MakeFunctor(e, &BaseEntity::SetDeadReckoningAlgorithm),
@@ -388,6 +406,7 @@ namespace SimCore
          mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL),
          mService(&BaseEntityActorProxy::ServiceEnum::MARINES),
          mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
+         mDomain(&BaseEntityActorProxy::DomainEnum::GROUND),
          mDefaultScale(1.0f, 1.0f, 1.0f),
          mScaleMagnification(1.0f, 1.0f, 1.0f),
          mMaxRotationError(6.0f),
@@ -512,6 +531,18 @@ namespace SimCore
       void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
       {
          mDamageState = &damageState;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      BaseEntityActorProxy::DomainEnum& BaseEntity::GetDomain() const
+      {
+         return *mDomain;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetDomain(BaseEntityActorProxy::DomainEnum& domain)
+      {
+         mDomain = &domain;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
