@@ -104,16 +104,13 @@ namespace SimCore
          {
             bool isSub = domain == BaseEntityActorProxy::DomainEnum::SUBMARINE;
 
-            osg::Vec3 normal;
+            osg::Vec3 normal; // This will just satisfy the method call for now.
+            osg::Vec3 pos;
+            xform.GetTranslation( pos );
 
-            osg::Vec3* curVec = &inOutPoints[0];
-            GetWaterSurfaceHit( curVec->z(), *curVec, normal, ! isSub, isSub );
-
-            curVec = &inOutPoints[1];
-            GetWaterSurfaceHit( curVec->z(), *curVec, normal, ! isSub, isSub );
-
-            curVec = &inOutPoints[2];
-            GetWaterSurfaceHit( curVec->z(), *curVec, normal, ! isSub, isSub );
+            GetWaterSurfaceHit( pos.z(), inOutPoints[0], normal, ! isSub, isSub );
+            GetWaterSurfaceHit( pos.z(), inOutPoints[1], normal, ! isSub, isSub );
+            GetWaterSurfaceHit( pos.z(), inOutPoints[2], normal, ! isSub, isSub );
          }
          else
          {
@@ -214,8 +211,8 @@ namespace SimCore
 
             // Clamp to water only if it is above the Z height.
             if( forceClamp 
-               || surfaceHeight > objectHeight && ! clampUnderneath // Surface Clamp
-               || surfaceHeight < objectHeight && clampUnderneath ) // Sub-surface Clamp
+               || ( surfaceHeight > objectHeight && ! clampUnderneath ) // Surface Clamp
+               || ( surfaceHeight < objectHeight && clampUnderneath ) ) // Sub-surface Clamp
             {
                // Set the final hit point at the detected height.
                inOutHit.z() = surfaceHeight;
