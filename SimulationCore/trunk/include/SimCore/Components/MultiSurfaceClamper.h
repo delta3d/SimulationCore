@@ -31,8 +31,6 @@
 #include <SimCore/Export.h>
 #include <dtGame/defaultgroundclamper.h>
 #include <SimCore/Actors/BaseWaterActor.h>
-
-// TEMP:
 #include <SimCore/Actors/BaseEntity.h>
 
 
@@ -60,22 +58,148 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT BuoyancyCalculator : public osg::Referenced
+      {
+         public:
+            static const float DEFAULT_DENSITY_AIR;
+            static const float DEFAULT_DENSITY_WATER;
+            static const float DEFAULT_DRAG_COEFFICIENT_AIR;
+            static const float DEFAULT_DRAG_COEFFICIENT_WATER;
+
+            BuoyancyCalculator();
+
+            void SetAirDensity( float density );
+            float GetAirDensity() const;
+
+            void SetWaterDensity( float density );
+            float GetWaterDensity() const;
+
+            void SetAirDragCoefficient( float dragCoefficient );
+            float GetAirDragCoefficient() const;
+
+            void SetWaterDragCoefficient( float dragCoefficient );
+            float GetWaterDragCoefficient() const;
+
+            float GetImmersedVolume( float waterHeight, float objectHeight,
+               float objectRadius ) const;
+
+            float GetDrag( float fluidDensity, float objectExposedArea,
+               float objectVelocity, float dragCoefficient ) const;
+
+            float GetBuoyancy( float waterDensity, float objectImmersedVolume,
+               float objectMass, float gravity ) const;
+
+            float GetFinalVelocity( float timeDelta, float waterHeight,
+               float objectHeight, float objectRadius,
+               float objectMass, float objectVelocity ) const;
+
+         protected:
+            virtual ~BuoyancyCalculator();
+
+         private:
+            float mDensityAir;
+            float mDensityWater;
+            float mDragCoefficientAir;
+            float mDragCoefficientWater;
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // CLASS CODE
+      //////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT SurfacePointData
+      {
+         public:
+            SurfacePointData();
+            virtual ~SurfacePointData();
+
+            void SetPointSolid( bool pointIsSolid );
+            bool IsPointSolid() const;
+
+            void SetVelocity( float velocity );
+            float GetVelocity() const;
+
+            void SetLastClampPoint( const osg::Vec3& clampPoint );
+            const osg::Vec3& GetLastClampPoint() const;
+
+         private:
+            bool mSolid;
+            float mVelocity;
+            osg::Vec3 mClampLastKnown;
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // CLASS CODE
+      //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT MultiSurfaceClamper : public dtGame::DefaultGroundClamper
       {
          public:
 
             typedef dtGame::DefaultGroundClamper BaseClass;
 
+
+
+            ////////////////////////////////////////////////////////////////////
+            // INNER CLASS CODE
+            ////////////////////////////////////////////////////////////////////
             class SIMCORE_EXPORT MultiSurfaceRuntimeData : public dtGame::DefaultGroundClamper::RuntimeData
             {
                public:
                   typedef dtGame::DefaultGroundClamper::RuntimeData BaseClass;
 
+                  static const float DEFAULT_MAX_TIME_STEP;
+                  static const float DEFAULT_POINT_MASS;
+                  static const float DEFAULT_POINT_RADIUS;
+                  static const float MINIMUM_MAX_TIME_STEP;
+                  static const float MINIMUM_POINT_MASS;
+                  static const float MINIMUM_POINT_RADIUS;
+
                   /**
                    * Constructor
-                   * @param data Back-reference to the parent ground clamping data.
+                   * @param data Back-reference to the parent Ground Clamping Data.
                    */
                   MultiSurfaceRuntimeData( const dtGame::GroundClampingData& data );
+
+                  /**
+                   * Set/get the entity associated with this data.
+                   */
+                  void SetEntity( SimCore::Actors::BaseEntity* entity );
+                  SimCore::Actors::BaseEntity* GetEntity();
+                  const SimCore::Actors::BaseEntity* GetEntity() const;
+
+                  /**
+                   * Get the associated object's clamping domain.
+                   * @return NULL if no entity was assigned.
+                   */
+                  SimCore::Actors::BaseEntityActorProxy::DomainEnum* GetDomain() const;
+
+                  /**
+                   * Set/get the metric radius for clamp points, used for liquid buoyancy.
+                   */
+                  void SetPointRadius( float radius );
+                  float GetPointRadius() const;
+
+                  /**
+                   * Set/get the average mass for clamp points, used for liquid buoyancy.
+                   */
+                  void SetPointMass( float mass );
+                  float GetPointMass() const;
+
+                  /**
+                   * Set/get the maximum time step to apply to buoyancy calculations.
+                   */
+                  void SetMaxTimeStep( float seconds );
+                  float GetMaxTimeStep() const;
+
+                  /**
+                   * Get data pertaining to clamp points, used to track changes and modify
+                   * final clamping points (for point oscillation) on a surface, usually that of liquid.
+                   */
+                  SurfacePointData* GetSurfacePointData();
+                  const SurfacePointData* GetSurfacePointData() const;
 
                   // HACK:
                   /**
@@ -89,12 +213,60 @@ namespace SimCore
 
                private:
 
+                  float mRadius;
+                  float mMass;
+                  float mMaxTimeStep;
+
+                  // Data about the last clamping points.
+                  SurfacePointData mPointData[3];
+
                   // HACK:
                   // Back-reference to the parent Clamping Data.
                   const dtGame::GroundClampingData& mClampingData;
+
+                  // Entity associated with this data.
+                  dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
             };
 
             MultiSurfaceClamper();
+
+            /**
+             * Get the simulation time from the last call to ClampToGround.
+             */
+            double GetCurrentSimTime() const;
+
+            /**
+             * Override this method to make special clamp type determinations on the type of object.
+             * This method allows a sub-class clamper to change the clamp type for optimization
+             * based on factors such as velocity, transformation change and special-case objects.
+             * @param suggestedClampType Clamp type sent into ClampToGround for the specified object.
+             * @param proxy Actor to be clamped and is passed in case collision geometry is needed.
+             * @param data Ground Clamping Data containing clamping options and runtime data.
+             * @param tranformChanged Flag to make a better determination for clamping.
+             * @param velocity Instantaneous velocity of the object for the current frame.
+             * @return INTERMITTENT if velocity is zero and the transform has not changed; otherwise
+             *         suggestedCalmpType is returned.
+             */
+            virtual dtGame::BaseGroundClamper::GroundClampingType& GetBestClampType(
+               dtGame::BaseGroundClamper::GroundClampingType& suggestedClampType,
+               const dtDAL::TransformableActorProxy& proxy,
+               const dtGame::GroundClampingData& data,
+               bool transformChanged, const osg::Vec3& velocity) const;
+
+            /**
+             * Clamps an actor to the ground.  It will pick, based on the type and eye point 
+             * which algorithm to Use.
+             * @param type Ground clamping type to perform.
+             * @param currentTime Current simulation time. Used for intermittent ground clamping.
+             * @param xform Current absolute transform of the actor.
+             * @param proxy Actor to be clamped and is passed in case collision geometry is needed.
+             * @param data Ground Clamping Data containing clamping options.
+             * @param transformChanged Flag to help the clamper to determine if it should perform a clamp or not.
+             * @param velocity The transformable's instantaneous velocity for the current frame.
+             */
+            virtual void ClampToGround( GroundClampingType& type, double currentTime, dtCore::Transform& xform,
+               dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
+               bool transformChanged = false, const osg::Vec3& velocity = osg::Vec3());
 
             /**
              * Set the default domain to use if an object does not have a domain
@@ -109,12 +281,13 @@ namespace SimCore
              * NOTE: This override will subsequently call GetWaterSurfaceHit if the object's
              * domain includes water.
              * @param proxy Actor that owns the specified transform.
+             * @param data Ground Clamping Data associated with the proxy.
              * @param xform Transform that has the location and rotation in world space.
              * @param inOutPoints IN: detection points relative to the transform.
              *                    OUT: resulting surface points.
              */
             virtual void GetSurfacePoints( const dtDAL::TransformableActorProxy& proxy,
-               const dtCore::Transform& xform,
+               dtGame::GroundClampingData& data, const dtCore::Transform& xform,
                osg::Vec3 inOutPoints[3] );
 
             /**
@@ -124,6 +297,7 @@ namespace SimCore
              * domain includes water.
              * @param proxy Actor proxy that is to be clamped. This parameter may help
              *              sub-classes of Ground Clamper make better determinations.
+             * @param data Ground Clamping Data associated with the proxy.
              * @param single Isector containing points to be checked.
              * @param pointZ Z value to compare against the Isector points.
              * @param inOutHit Point to capture the values of the point that is the closest match.
@@ -134,6 +308,7 @@ namespace SimCore
              *         contained in the specified Isector.
              */
             virtual bool GetClosestHit( const dtDAL::TransformableActorProxy& proxy,
+               dtGame::GroundClampingData& data, 
                dtCore::BatchIsector::SingleISector& single, float pointZ,
                osg::Vec3& inOutHit, osg::Vec3& outNormal );
 
@@ -144,6 +319,7 @@ namespace SimCore
              * domain includes water.
              * @param proxy Actor proxy that is to be clamped. This parameter may help
              *              sub-classes of Ground Clamper make better determinations.
+             * @param data Ground Clamping Data associated with the proxy.
              * @param pointZ Z value to compare against the Isector points.
              * @param inOutHit Point to capture the values of the point that is the closest match.
              *                 IN: Point containing the object's current X & Y position.
@@ -152,6 +328,7 @@ namespace SimCore
              * @return TRUE if a hit point was calculated, otherwise FALSE if it could not be calculated.
              */
             virtual bool GetMissingHit( const dtDAL::TransformableActorProxy& proxy,
+               dtGame::GroundClampingData& data,
                float pointZ, osg::Vec3& inOutHit, osg::Vec3& outNormal);
 
             /**
@@ -186,12 +363,13 @@ namespace SimCore
 
             /**
              * Get the domain of the generic transformable object.
-             * @param proxy Proxy that represents the transformable object in question.
+             * @param data Data associated with the clamped proxy that has a reference to
+             *        the proxy and thus its domain property.
              * @return Valid domain of the object; the set Default Domain will be returned
              *         if the object does not have an accessible domain-related property.
              */
             SimCore::Actors::BaseEntityActorProxy::DomainEnum& GetDomain(
-               const dtDAL::TransformableActorProxy& proxy ) const;
+               const dtGame::GroundClampingData& data ) const;
 
             /**
              * Determine if the specified domain includes ground; most domains should because of gravity.
@@ -223,6 +401,20 @@ namespace SimCore
              */
             virtual bool HasValidSurface() const;
 
+            /**
+             * Get the calculator object that is responsible for buoyancy effect
+             * calculations for water clamping.
+             */
+            BuoyancyCalculator& GetBuoyancyCalculator();
+            const BuoyancyCalculator& GetBuoyancyCalculator() const;
+
+            /**
+             * Convenience method for updating points needing to be clamped to a water surface.
+             * This method updates the buoyancy effect for such points.
+             */
+            void UpdatePointBuoyancy( MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] );
+            void UpdatePointBuoyancy_Simple( MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] );
+
          protected:
             virtual ~MultiSurfaceClamper();
 
@@ -239,8 +431,10 @@ namespace SimCore
 
          private:
 
+            double mCurrentSimTime;
             SimCore::Actors::BaseEntityActorProxy::DomainEnum* mDefaultDomain;
             dtCore::ObserverPtr<SimCore::Actors::BaseWaterActor> mSurfaceWater;
+            dtCore::RefPtr<BuoyancyCalculator> mBuoyancyCalc;
       };
    }
 
