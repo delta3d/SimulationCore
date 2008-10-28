@@ -143,7 +143,6 @@ namespace SimCore
          , mAutoDeleteLightOnTargetNull(false)
          , mTarget(NULL)
       {
-
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,11 +158,13 @@ namespace SimCore
          , mNVGS(0)
          , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
+         AddSender(&dtCore::System::GetInstance());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::~RenderingSupportComponent()
       {
+         RemoveSender(&dtCore::System::GetInstance());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -458,12 +459,38 @@ namespace SimCore
       {
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
          osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* viewMatUniform = ss->getOrCreateUniform("viewMatrix", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* mvpUniform = ss->getOrCreateUniform("modelViewProjectionMatrix", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* forwardUniform = ss->getOrCreateUniform("cameraForward", osg::Uniform::FLOAT_VEC3);
 
-         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getViewMatrix());
+         osg::Camera* cam = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
+         //getViewMatrixAsLookAt (osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up, float lookDistance=1.0f)
+         osg::Vec3 eye, center, up;
+         cam->getViewMatrixAsLookAt(eye, center, up);
+         forwardUniform->set(center);
+
+         osg::Matrix mat(cam->getViewMatrix());
+         osg::Matrix matMVP(cam->getProjectionMatrix() * cam->getViewMatrix());
+         mvpUniform->set(matMVP);
+         viewMatUniform->set(mat);
 
          osg::Matrix viewInverse;
          viewInverse.invert(mat);
          viewUniform->set(viewInverse);
+         
+         osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
+
+         osg::Matrix proj = cam->getProjectionMatrix();       
+         proj.invert(proj);     
+
+         //these should be opposite but aren't always
+         //do to precision issues
+         proj(3,3) = -proj(2,3);
+
+         osg::Matrix view = cam->getViewMatrix();
+         view.invert(view);
+
+         mvpiUniform->set(proj * view);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
