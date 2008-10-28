@@ -102,7 +102,7 @@ namespace SimCore
          fogSphereStates->setMode(GL_FOG, osg::StateAttribute::ON);
          fogSphereStates->setMode(GL_LIGHTING, osg::StateAttribute::ON);
          fogSphereStates->setMode(GL_BLEND, osg::StateAttribute::ON);
-         fogSphereStates->setRenderBinDetails( -1, "RenderBin" );
+         fogSphereStates->setRenderBinDetails( -3, "RenderBin" );
       }
 
       /////////////////////////////////////////////////////////////
