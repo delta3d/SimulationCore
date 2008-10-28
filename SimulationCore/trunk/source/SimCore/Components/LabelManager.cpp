@@ -752,6 +752,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void LabelManager::OnMessage( MessageData *data )
       {
+         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in 
+         // our system: 1) Simulate, 2) Update Camera Pos, 3) Post Camera Update, and 4) Draw. Currently, we only
+         // have 1 (preframe), 2 (framesynch), &  4 (frame). 
+         // The following code traps during the framesynch and forces the camera to update itself, and then 
+         // does our 'Post Camera' work.
+         // This behavior is duplicated in RenderingSupportComponent. If you change this, you should change that...
          if( data->message == "framesynch" )
          {
             try

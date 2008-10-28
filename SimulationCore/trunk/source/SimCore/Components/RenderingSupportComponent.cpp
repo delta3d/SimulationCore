@@ -42,6 +42,7 @@
 #include <dtCore/deltadrawable.h>
 #include <dtCore/mouse.h>
 #include <dtCore/globals.h>
+#include <dtCore/system.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
@@ -417,6 +418,41 @@ namespace SimCore
          return mEnableDynamicLights;
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::OnMessage( MessageData *data )
+      {
+         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in 
+         // our system: 1) Simulate, 2) Update Camera Pos, 3) Post Camera Update, and 4) Draw. Currently, we only
+         // have 1 (preframe), 2 (framesynch), &  4 (frame). 
+         // The following code traps during the framesynch and forces the camera to update itself, and then 
+         // does our 'Post Camera' work.
+         // This behavior was copied from LabalManager.cpp... if you change this, you should change that.
+         if( data->message == "framesynch" )
+         {
+            try
+            {
+               dtCore::Camera* deltaCamera = GetGameManager()->GetApplication().GetCamera();
+               if( deltaCamera == NULL)
+               {
+                  std::cout << "No Camera in RenderingSupportComponent"<< std::endl;
+                  return;
+               }
+
+               //HACK: Force the camera to sync its view matrix.  It's a protected method, but we're both
+               // instances of Base.  C++ doesn't REALLY let you do this, but you can work around it.
+               void (dtCore::Base::* method)(dtCore::Base::MessageData*) = &dtCore::Base::OnMessage;
+               (deltaCamera->*method)(data);
+
+               UpdateViewMatrix();
+            }
+            catch (const dtUtil::Exception& ex)
+            {
+               ex.LogException(dtUtil::Log::LOG_ERROR);
+               throw;
+            }
+         }
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateViewMatrix()
       {
@@ -483,7 +519,7 @@ namespace SimCore
       void RenderingSupportComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
          //we update the view matrix for all the shaders
-         UpdateViewMatrix();
+         //UpdateViewMatrix(); //-- now called during the framesynch message.
 
          if(mEnableNVGS && mNVGS.valid())
          {
