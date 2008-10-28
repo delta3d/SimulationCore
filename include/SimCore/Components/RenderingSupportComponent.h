@@ -188,6 +188,9 @@ namespace SimCore
 
             void AddCamera(osg::Camera* cam);
 
+            // This override is used as a hack for FrameSync to force the camera to be up to date.
+            virtual void OnMessage(MessageData* data);
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
