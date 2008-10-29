@@ -46,8 +46,8 @@ class QMouseEvent;
 class QDESIGNER_WIDGET_EXPORT RangeRadial : public QWidget
 {
    Q_OBJECT
-      Q_PROPERTY( qreal startAngle READ getStartAngle WRITE setStartAngle )
-      Q_PROPERTY( qreal endAngle READ getEndAngle WRITE setEndAngle )
+      Q_PROPERTY( double startAngle READ getStartAngle WRITE setStartAngle )
+      Q_PROPERTY( double endAngle READ getEndAngle WRITE setEndAngle )
       Q_PROPERTY( QColor startHandleColor READ getStartHandleColor WRITE setStartHandleColor )
       Q_PROPERTY( QColor middleHandleColor READ getMiddleHandleColor WRITE setMiddleHandleColor )
       Q_PROPERTY( QColor endHandleColor READ getEndHandleColor WRITE setEndHandleColor )
@@ -76,9 +76,9 @@ class QDESIGNER_WIDGET_EXPORT RangeRadial : public QWidget
       void setHandleHoverColor( const QColor& color );
       QColor getHandleHoverColor() const;
 
-      qreal getStartAngle() const;
+      double getStartAngle() const;
 
-      qreal getEndAngle() const;
+      double getEndAngle() const;
 
    public slots:
       void setStartAngle( double angle );
@@ -100,15 +100,15 @@ class QDESIGNER_WIDGET_EXPORT RangeRadial : public QWidget
 
       QRect* getHandle( const QPoint& mousePoint );
 
-      qreal getAngleToPoint( const QPoint& point ) const;
+      double getAngleToPoint( const QPoint& point ) const;
 
-      void setHandleToAngle( QRect& handle, qreal angle, qreal radiusScale = 1.0 );
+      void setHandleToAngle( QRect& handle, double angle, double radiusScale = 1.0 );
 
       void updateHandles();
 
    private:
-      qreal mStart;
-      qreal mEnd;
+      double mStart;
+      double mEnd;
       QRect* mHandleHeld;
       QRect* mHandleHovered;
       QRect mHandleStart;

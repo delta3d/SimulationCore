@@ -65,12 +65,12 @@ void RangeRadial::onCreated()
 void RangeRadial::setStartAngle( double angle )
 {
    mStart = angle;
-   changedStartAngle( mStart );
+   emit changedStartAngle( mStart );
    updateHandles();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-qreal RangeRadial::getStartAngle() const
+double RangeRadial::getStartAngle() const
 {
    return mStart;
 }
@@ -79,12 +79,12 @@ qreal RangeRadial::getStartAngle() const
 void RangeRadial::setEndAngle( double angle )
 {
    mEnd = angle;
-   changedEndAngle( mEnd );
+   emit changedEndAngle( mEnd );
    updateHandles();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-qreal RangeRadial::getEndAngle() const
+double RangeRadial::getEndAngle() const
 {
    return mEnd;
 }
@@ -232,7 +232,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
    // Find the angle to the mouse point from the center of this widget.
    // Convert the in-going point to widget-relative coordinates from
    // absolute window coordinates.
-   qreal angle = getAngleToPoint( mouseEvent->pos() + pos() );
+   double angle = getAngleToPoint( mouseEvent->pos() + pos() );
 
    // If on middle/rotate handle, change the rotation of the range.
    if( mHandleHeld == &mHandleMiddle )
@@ -243,7 +243,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
    }
    else
    {
-      qreal difference = 0.0;
+      double difference = 0.0;
 
       // Get the difference in angle by the selected handle.
       if( mHandleHeld == &mHandleStart )
@@ -274,7 +274,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
          {
             // Ensure adding the difference will not overflow or under flow
             // the range.
-            qreal testValue = mEnd + difference * 2.0;
+            double testValue = mEnd + difference * 2.0;
             if( growing )
             {
                if( testValue > 360.0 )
@@ -367,9 +367,9 @@ QRect* RangeRadial::getHandle( const QPoint& mousePoint )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-qreal RangeRadial::getAngleToPoint( const QPoint& point ) const
+double RangeRadial::getAngleToPoint( const QPoint& point ) const
 {
-   static const qreal RADS_TO_DEGS_RATIO = 180.0/3.141592653589;
+   static const double RADS_TO_DEGS_RATIO = 180.0/3.141592653589;
 
    // Derive the radius from the center of the widget to the
    // specified point.
@@ -379,7 +379,7 @@ qreal RangeRadial::getAngleToPoint( const QPoint& point ) const
    radius.setY( -radius.y() );
 
    // Find the length of the radius so that it can be normalized.
-   qreal radiusLength = sqrt( radius.x() * radius.x() + radius.y() * radius.y() );
+   double radiusLength = sqrt( radius.x() * radius.x() + radius.y() * radius.y() );
 
    // Prevent division by 0.
    if( radiusLength == 0.0 )
@@ -393,7 +393,7 @@ qreal RangeRadial::getAngleToPoint( const QPoint& point ) const
    // Use sine to find the standard right-handed angle in degrees.
    radius.setY( asin( radius.y() ) );
 
-   qreal angle = 0.0;
+   double angle = 0.0;
    
    // 4th Quadrant?
    if( radius.x() >= 0.0 && radius.y() < 0.0 )
@@ -423,14 +423,14 @@ qreal RangeRadial::getAngleToPoint( const QPoint& point ) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void RangeRadial::setHandleToAngle( QRect& handle, qreal angle, qreal radiusScale )
+void RangeRadial::setHandleToAngle( QRect& handle, double angle, double radiusScale )
 {
-   static const qreal DEGS_TO_RADS_RATIO = 3.141592653589/180.0;
+   static const double DEGS_TO_RADS_RATIO = 3.141592653589/180.0;
 
    // NOTE: Window Y-down is positive, so reverse the value so that value
    // matches that expected of a normal right-handled coordinate system.
-   qreal angleSin = -sin( angle*DEGS_TO_RADS_RATIO )*radiusScale;
-   qreal angleCos = cos( angle*DEGS_TO_RADS_RATIO )*radiusScale;
+   double angleSin = -sin( angle*DEGS_TO_RADS_RATIO )*radiusScale;
+   double angleCos = cos( angle*DEGS_TO_RADS_RATIO )*radiusScale;
 
    // Derive a vector that represents an ellipse radius rotated to
    // the specified angle.
