@@ -30,6 +30,7 @@
 #include <QtCore/QtPlugin>
 
 // Custom Widget Plugins
+#include <SimCoreWidgets/NonLinearSliderPlugin.h>
 #include <SimCoreWidgets/RangeRadialPlugin.h>
 
 
@@ -49,6 +50,7 @@ class SimCoreWidgetCollectionPlugin : public QObject, public QDesignerCustomWidg
       {
          QList<QDesignerCustomWidgetInterface *> plugins;
          plugins
+            << new NonLinearSliderPlugin
             << new RangeRadialPlugin;
          return plugins;
       }
