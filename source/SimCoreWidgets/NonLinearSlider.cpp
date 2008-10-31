@@ -27,6 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <cmath>
 #include <QtGui/QHBoxLayout>
+#include <QtGui/QLabel>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QSlider>
 #include <SimCoreWidgets/NonLinearSlider.h>
@@ -60,8 +61,12 @@ NonLinearSlider::NonLinearSlider( QWidget* parent )
    : QWidget(parent)
    , mLastSlidePosition(0)
    , mLastValue(0.0)
+   , mMiddleValue(50.0)
    , mSlider(NULL)
    , mSpinBox(NULL)
+   , mLabelMin(NULL)
+   , mLabelMax(NULL)
+   , mLabelMiddle(NULL)
 {
    setMinimumSize( QSize(128,32) );
 
@@ -73,6 +78,17 @@ NonLinearSlider::NonLinearSlider( QWidget* parent )
    mSlider->setOrientation( Qt::Horizontal );
    mSlider->setRange( 0, 1000 );
    mSpinBox->setRange( 0.0, 100.0 );
+
+   // Create the label widgets.
+   mLabelMin = new QLabel;
+   mLabelMax = new QLabel;
+   mLabelMiddle = new QLabel;
+   setLabelValue( *mLabelMin, getMinValue() );
+   setLabelValue( *mLabelMax, getMaxValue() );
+   setLabelValue( *mLabelMiddle, mMiddleValue );
+   mLabelMin->setAlignment( Qt::AlignLeft );
+   mLabelMax->setAlignment( Qt::AlignRight );
+   mLabelMiddle->setAlignment( Qt::AlignCenter );
 
    // Connect the signals and slots of both the spin box and the slider.
    // ---  This Object's Signals
@@ -96,12 +112,24 @@ NonLinearSlider::NonLinearSlider( QWidget* parent )
       mSpinBox, SIGNAL(signalStepped()),
       this, SLOT(onSpinBoxEditFinished()) );
 
-   // Attach the sub-widgets.
-   QHBoxLayout* layout = new QHBoxLayout;
-   layout->addWidget(mSlider);
-   layout->addWidget(mSpinBox);
-   setLayout(layout);
+   // Create the primary layout.
+   QHBoxLayout* layoutLabels = new QHBoxLayout;
+   QVBoxLayout* layoutSliderAndLabels = new QVBoxLayout;
+   layoutSliderAndLabels->addWidget(mSlider);
+   layoutLabels->addWidget(mLabelMin);
+   layoutLabels->addWidget(mLabelMiddle);
+   layoutLabels->addWidget(mLabelMax);
+   layoutSliderAndLabels->addLayout(layoutLabels);
 
+   // Attach the sub-widgets.
+   QHBoxLayout* layoutMain = new QHBoxLayout;
+   layoutMain->addLayout(layoutSliderAndLabels);
+   layoutMain->addWidget(mSpinBox);
+
+   // Finally attach the main layout
+   setLayout(layoutMain);
+
+   // Set default value on spinner.
    mSpinBox->setValue(0);
 }
 
@@ -135,6 +163,12 @@ double NonLinearSlider::getMaxValue() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+double NonLinearSlider::getMiddleValue() const
+{
+   return mMiddleValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 double NonLinearSlider::getRangeSize() const
 {
    return mSpinBox->maximum() - mSpinBox->minimum();
@@ -157,12 +191,26 @@ double NonLinearSlider::getValueFromSliderPosition( int slidePosition ) const
 {
    double value = 0.0;
    double resolution = double(getResolution());
-   double rangeSize = getRangeSize();
 
-   if( resolution != 0 && rangeSize != 0.0 )
+   if( resolution != 0 )
    {
-      double ratio = double(slidePosition) / resolution;
-      value = ratio * ratio * rangeSize;
+      double ratio = double(slidePosition) / (resolution);
+      if( ratio > 0.5 )
+      {
+         // Clip and expand ratio for the higher range.
+         ratio = (ratio - 0.5) * 2.0;
+
+         // Interpolate between the mid and max values to get the final value.
+         value = (getMaxValue() - mMiddleValue) * ratio + mMiddleValue;
+      }
+      else
+      {
+         // Expand the ratio for the lower range.
+         ratio *= 2.0;
+
+         // Interpolate between the min and mid values to get the final value.
+         value = (mMiddleValue - getMinValue()) * ratio + getMinValue();
+      }
    }
    
    return value;
@@ -173,15 +221,52 @@ int NonLinearSlider::getSliderPositionFromValue( double spinBoxValue ) const
 {
    int slideValue = 0;
    double resolution = double(getResolution());
-   double rangeSize = getRangeSize();
    
-   if( resolution != 0 && rangeSize != 0.0 )
+   if( resolution != 0 )
    {
-      double ratio = spinBoxValue / rangeSize;
-      slideValue = int(double(getResolution()) * std::sqrt(ratio) + 0.5);
+      double ratio = 0.0;
+
+      if( spinBoxValue > mMiddleValue )
+      {
+         double diff = getMaxValue() - mMiddleValue;
+         if( diff != 0.0 )
+         {
+            ratio = ((spinBoxValue - mMiddleValue)/diff) * 0.5 + 0.5;
+         }
+         else // Middle value must be the same as max.
+         {
+            ratio = 1.0;
+         }
+      }
+      else
+      {
+         double diff = mMiddleValue - getMinValue();
+         if( diff != 0.0 )
+         {
+            ratio = (spinBoxValue-mMiddleValue)/diff + 1.0;
+            if( ratio < 0.0 )
+            {
+               ratio += 1.0;
+            }
+            ratio *= 0.5;
+         }
+         else // Middle value must be the same as min.
+         {
+            ratio = 0.0;
+         }
+      }
+      slideValue = int(double(getResolution()) * ratio);
    }
 
    return slideValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void NonLinearSlider::setLabelValue( QLabel& label, double value )
+{
+   QString stringValue;
+   stringValue.setNum( value );
+   label.setText( stringValue );
 }
 
 
@@ -194,17 +279,30 @@ void NonLinearSlider::setMinValue( double minValue )
    if( getMinValue() != minValue )
    {
       mSpinBox->setMinimum( minValue );
+      setLabelValue( *mLabelMin, minValue );
       emit changedRange( mSpinBox->minimum(), mSpinBox->maximum() );
    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void NonLinearSlider::setMaxValue( double minValue )
+void NonLinearSlider::setMaxValue( double maxValue )
 {
-   if( getMaxValue() != minValue )
+   if( getMaxValue() != maxValue )
    {
-      mSpinBox->setMaximum( minValue );
+      mSpinBox->setMaximum( maxValue );
+      setLabelValue( *mLabelMax, maxValue );
       emit changedRange( mSpinBox->minimum(), mSpinBox->maximum() );
+   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void NonLinearSlider::setMiddleValue( double midValue )
+{
+   if( mMiddleValue != midValue )
+   {
+      mMiddleValue = midValue;
+      setLabelValue( *mLabelMiddle, midValue );
+      emit changedMiddleValue( midValue );
    }
 }
 

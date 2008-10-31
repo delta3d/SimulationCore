@@ -37,6 +37,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
+class QLabel;
 class QSlider;
 
 
@@ -68,6 +69,7 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
       Q_PROPERTY( int resolution READ getResolution WRITE setResolution )
       Q_PROPERTY( double minValue READ getMinValue WRITE setMinValue )
       Q_PROPERTY( double maxValue READ getMaxValue WRITE setMaxValue )
+      Q_PROPERTY( double middleValue READ getMiddleValue WRITE setMiddleValue )
       Q_PROPERTY( double value READ getValue WRITE setValue )
 
    public:
@@ -84,6 +86,8 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
 
       double getMaxValue() const;
 
+      double getMiddleValue() const;
+
       double getRangeSize() const;
 
       QSlider& getSlider();
@@ -97,10 +101,14 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
 
       void changedValue( double value );
 
+      void changedMiddleValue( double midValue );
+
    public slots:
       void setMinValue( double minValue );
       
-      void setMaxValue( double minValue );
+      void setMaxValue( double maxValue );
+
+      void setMiddleValue( double midValue );
 
       void setRange( double minValue, double maxValue );
 
@@ -118,11 +126,17 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
 
       int getSliderPositionFromValue( double spinBoxValue ) const;
 
+      void setLabelValue( QLabel& label, double value );
+
    private:
       int mLastSlidePosition;
       double mLastValue;
+      double mMiddleValue;
       QSlider* mSlider;
       QDoubleSpinBoxExtended* mSpinBox;
+      QLabel* mLabelMin;
+      QLabel* mLabelMax;
+      QLabel* mLabelMiddle;
 };
 
 #endif
