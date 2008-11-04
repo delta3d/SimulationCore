@@ -45,7 +45,6 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
 #include <dtCore/camera.h>
-#include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/groupactorproperty.h>
@@ -53,6 +52,7 @@
 #include <dtDAL/actortype.h>
 #include <dtDAL/namedparameter.h>
 
+#include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
 
@@ -364,7 +364,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       osg::Vec3 ComputeDimensions( osg::Node& node )
       {
-         dtCore::BoundingBoxVisitor bbv;
+         dtUtil::BoundingBoxVisitor bbv;
          node.accept(bbv);
 
          osg::Vec3 modelDimensions;
