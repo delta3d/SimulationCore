@@ -35,10 +35,11 @@
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/Components/LabelManager.h>
 
-#include <dtCore/boundingboxvisitor.h>
 // TEMP:
 #include <dtCore/system.h>
 #include <dtDAL/enginepropertytypes.h>
+
+#include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/exception.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
@@ -743,7 +744,7 @@ namespace SimCore
             }
          }
 
-         dtCore::BoundingBoxVisitor bbv;
+         dtUtil::BoundingBoxVisitor bbv;
          osg::Node* node = transformable.GetOSGNode();
          node->accept(bbv);
          outBB = bbv.mBoundingBox;
