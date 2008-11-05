@@ -14,12 +14,17 @@ file(GLOB LIB_SOURCES "*.cpp")
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
 
 QT4_ADD_RESOURCES(QRC_RESOURCES ${QRC_PATH}/SimCoreWidgets.qrc)
-qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
+
+if (QT_USE_FRAMEWORKS)
+   qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS} OPTIONS "-F${QT_LIBRARY_DIR}")
+else (QT_USE_FRAMEWORKS)
+   qt4_wrap_cpp(MOC_SOURCES ${LIB_PUBLIC_HEADERS})
+endif (QT_USE_FRAMEWORKS)
+
 qt4_wrap_ui(UIC_HEADERS ${UI_FILES})
 
 #The ui files are output here, so it must be included.
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR})
-
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDES})
 
 ADD_LIBRARY(${LIB_NAME} SHARED
     ${LIB_PUBLIC_HEADERS}
