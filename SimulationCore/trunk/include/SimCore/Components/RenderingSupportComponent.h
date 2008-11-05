@@ -176,6 +176,7 @@ namespace SimCore
 
             // loads cull visitor stuff.
             void OnAddedToGM();
+            void OnRemovedFromGM();
 
             // so its decoupled from tick local, and tick local is not cluttered
             // with future stuff.

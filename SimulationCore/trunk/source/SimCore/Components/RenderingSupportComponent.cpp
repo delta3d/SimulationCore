@@ -158,7 +158,6 @@ namespace SimCore
          , mNVGS(0)
          , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
       {
-         AddSender(&dtCore::System::GetInstance());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +177,13 @@ namespace SimCore
          {
             InitializeCullVisitor();
          }
+         AddSender(&dtCore::System::GetInstance());
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::OnRemovedFromGM()
+      {
+         RemoveSender(&dtCore::System::GetInstance());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,10 +428,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnMessage( MessageData *data )
       {
-         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in 
+         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in
          // our system: 1) Simulate, 2) Update Camera Pos, 3) Post Camera Update, and 4) Draw. Currently, we only
-         // have 1 (preframe), 2 (framesynch), &  4 (frame). 
-         // The following code traps during the framesynch and forces the camera to update itself, and then 
+         // have 1 (preframe), 2 (framesynch), &  4 (frame).
+         // The following code traps during the framesynch and forces the camera to update itself, and then
          // does our 'Post Camera' work.
          // This behavior was copied from LabalManager.cpp... if you change this, you should change that.
          if( data->message == "framesynch" )
@@ -477,11 +483,11 @@ namespace SimCore
          osg::Matrix viewInverse;
          viewInverse.invert(mat);
          viewUniform->set(viewInverse);
-         
+
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
 
-         osg::Matrix proj = cam->getProjectionMatrix();       
-         proj.invert(proj);     
+         osg::Matrix proj = cam->getProjectionMatrix();
+         proj.invert(proj);
 
          //these should be opposite but aren't always
          //do to precision issues
