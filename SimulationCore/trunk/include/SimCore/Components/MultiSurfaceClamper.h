@@ -58,56 +58,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT BuoyancyCalculator : public osg::Referenced
-      {
-         public:
-            static const float DEFAULT_DENSITY_AIR;
-            static const float DEFAULT_DENSITY_WATER;
-            static const float DEFAULT_DRAG_COEFFICIENT_AIR;
-            static const float DEFAULT_DRAG_COEFFICIENT_WATER;
-
-            BuoyancyCalculator();
-
-            void SetAirDensity( float density );
-            float GetAirDensity() const;
-
-            void SetWaterDensity( float density );
-            float GetWaterDensity() const;
-
-            void SetAirDragCoefficient( float dragCoefficient );
-            float GetAirDragCoefficient() const;
-
-            void SetWaterDragCoefficient( float dragCoefficient );
-            float GetWaterDragCoefficient() const;
-
-            float GetImmersedVolume( float waterHeight, float objectHeight,
-               float objectRadius ) const;
-
-            float GetDrag( float fluidDensity, float objectExposedArea,
-               float objectVelocity, float dragCoefficient ) const;
-
-            float GetBuoyancy( float waterDensity, float objectImmersedVolume,
-               float objectMass, float gravity ) const;
-
-            float GetFinalVelocity( float timeDelta, float waterHeight,
-               float objectHeight, float objectRadius,
-               float objectMass, float objectVelocity ) const;
-
-         protected:
-            virtual ~BuoyancyCalculator();
-
-         private:
-            float mDensityAir;
-            float mDensityWater;
-            float mDragCoefficientAir;
-            float mDragCoefficientWater;
-      };
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // CLASS CODE
-      //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT SurfacePointData
       {
          public:
@@ -198,8 +148,8 @@ namespace SimCore
                    * Get data pertaining to clamp points, used to track changes and modify
                    * final clamping points (for point oscillation) on a surface, usually that of liquid.
                    */
-                  SurfacePointData* GetSurfacePointData();
-                  const SurfacePointData* GetSurfacePointData() const;
+                  std::vector<SurfacePointData>& GetSurfacePointData();
+                  const std::vector<SurfacePointData>& GetSurfacePointData() const;
 
                   // HACK:
                   /**
@@ -218,7 +168,7 @@ namespace SimCore
                   float mMaxTimeStep;
 
                   // Data about the last clamping points.
-                  SurfacePointData mPointData[3];
+                  std::vector<SurfacePointData> mPointData;
 
                   // HACK:
                   // Back-reference to the parent Clamping Data.
@@ -402,17 +352,9 @@ namespace SimCore
             virtual bool HasValidSurface() const;
 
             /**
-             * Get the calculator object that is responsible for buoyancy effect
-             * calculations for water clamping.
-             */
-            BuoyancyCalculator& GetBuoyancyCalculator();
-            const BuoyancyCalculator& GetBuoyancyCalculator() const;
-
-            /**
              * Convenience method for updating points needing to be clamped to a water surface.
              * This method updates the buoyancy effect for such points.
              */
-            void UpdatePointBuoyancy( MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] );
             void UpdatePointBuoyancy_Simple( MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] );
 
          protected:
@@ -434,7 +376,6 @@ namespace SimCore
             double mCurrentSimTime;
             SimCore::Actors::BaseEntityActorProxy::DomainEnum* mDefaultDomain;
             dtCore::ObserverPtr<SimCore::Actors::BaseWaterActor> mSurfaceWater;
-            dtCore::RefPtr<BuoyancyCalculator> mBuoyancyCalc;
       };
    }
 

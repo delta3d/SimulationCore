@@ -43,182 +43,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
-      const float BuoyancyCalculator::DEFAULT_DENSITY_AIR = 0.1f;
-      const float BuoyancyCalculator::DEFAULT_DENSITY_WATER = 1000.0f;
-      const float BuoyancyCalculator::DEFAULT_DRAG_COEFFICIENT_AIR = 0.5f;
-      const float BuoyancyCalculator::DEFAULT_DRAG_COEFFICIENT_WATER = 2.0f;
-
-      //////////////////////////////////////////////////////////////////////////
-      BuoyancyCalculator::BuoyancyCalculator()
-         : mDensityAir(BuoyancyCalculator::DEFAULT_DENSITY_AIR)
-         , mDensityWater(BuoyancyCalculator::DEFAULT_DENSITY_WATER)
-         , mDragCoefficientAir(BuoyancyCalculator::DEFAULT_DRAG_COEFFICIENT_AIR)
-         , mDragCoefficientWater(BuoyancyCalculator::DEFAULT_DRAG_COEFFICIENT_WATER)
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      BuoyancyCalculator::~BuoyancyCalculator()
-      {
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void BuoyancyCalculator::SetAirDensity( float density )
-      {
-         mDensityAir = density;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetAirDensity() const
-      {
-         return mDensityAir;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void BuoyancyCalculator::SetWaterDensity( float density )
-      {
-         mDensityWater = density;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetWaterDensity() const
-      {
-         return mDensityWater;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void BuoyancyCalculator::SetAirDragCoefficient( float dragCoefficient )
-      {
-         mDragCoefficientAir = dragCoefficient;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetAirDragCoefficient() const
-      {
-         return mDragCoefficientAir;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void BuoyancyCalculator::SetWaterDragCoefficient( float dragCoefficient )
-      {
-         mDragCoefficientWater = dragCoefficient;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetWaterDragCoefficient() const
-      {
-         return mDragCoefficientWater;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetImmersedVolume(
-         float waterHeight, float objectHeight, float objectRadius ) const
-      {
-         float volume = 0.0f;
-         float bottom = objectHeight + objectRadius;
-         if( bottom > waterHeight )
-         {
-            // Get the full volume.
-            volume = objectRadius * objectRadius * osg::PI;
-
-            if( objectHeight - objectRadius <= waterHeight )
-            {
-               // Do nothing, the full volume is submerged.
-            }
-            else
-            {
-               float ratio = dtUtil::Abs(objectHeight - waterHeight) / objectRadius * 0.5f;
-
-               // Below water?
-               if( objectHeight < waterHeight )
-               {
-                  ratio += 0.5f;
-                  //std::cout << "Ratio( B ) is " << ratio << std::endl;
-               }
-               // Above water?
-               else
-               {
-                  ratio -= 0.5f;
-                  ratio = dtUtil::Abs(ratio);
-                  //std::cout << "Ratio( A ) is " << ratio << std::endl;
-               }
-
-               // Get the partial volume.
-               volume *= ratio;
-            }
-         }
-
-         // DEBUG:
-         if( volume != 0 )
-         {
-            //std::cout << "Volume is " << volume << std::endl;
-         }
-
-         return volume;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetDrag(
-         float fluidDensity, float objectExposedArea,
-         float objectVelocity, float dragCoefficient ) const
-      {
-         return (objectVelocity > 0.0f ? 0.5f : -0.5f)
-            * fluidDensity * (objectVelocity * objectVelocity)
-            * dragCoefficient * objectExposedArea;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetBuoyancy(
-         float waterDensity, float objectImmersedVolume,
-         float objectMass, float gravity ) const
-      {
-         return objectMass * gravity - waterDensity * objectImmersedVolume * gravity;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float BuoyancyCalculator::GetFinalVelocity( float timeDelta,
-         float waterHeight, float objectHeight, float objectRadius,
-         float objectMass, float objectVelocity ) const
-      {
-         float accel = -9.8;
-
-         float area = objectRadius;
-         area *= area;
-         area *= osg::PI;
-
-         float volume = GetImmersedVolume( objectRadius, objectHeight, waterHeight );
-         if( volume > 0.0f )
-         {
-            float bouyancy = GetBuoyancy( mDensityWater, volume, objectMass, accel );
-            if( bouyancy < -accel )
-            {
-               bouyancy = -accel;
-            }
-            accel -= bouyancy;
-         }
-
-         objectVelocity = objectVelocity + accel * timeDelta;
-
-         float drag = 0.0f;
-         if( volume > 0.0f )
-         {
-            drag = GetDrag( mDensityWater, area, objectVelocity, mDragCoefficientWater );
-         }
-         else
-         {
-            drag = GetDrag( mDensityAir, area, objectVelocity, mDragCoefficientAir );
-         }
-         std::cout << "Drag (" << (objectVelocity>0?"DOWN":"UP") << ") = " << drag << std::endl;
-         objectVelocity -= drag;
-
-         return objectVelocity;
-      }
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // CLASS CODE
-      //////////////////////////////////////////////////////////////////////////
       SurfacePointData::SurfacePointData()
          : mSolid(true) 
          , mVelocity(0.0f)
@@ -273,7 +97,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const float MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP = 1.0f/30.0f;
       const float MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_POINT_MASS = 1.0f;
-      const float MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_POINT_RADIUS = 1.0f;
+      const float MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_POINT_RADIUS = 0.5f;
       const float MultiSurfaceClamper::MultiSurfaceRuntimeData::MINIMUM_MAX_TIME_STEP = 0.001f;
       const float MultiSurfaceClamper::MultiSurfaceRuntimeData::MINIMUM_POINT_MASS = 0.001f;
       const float MultiSurfaceClamper::MultiSurfaceRuntimeData::MINIMUM_POINT_RADIUS = 0.001f;
@@ -287,6 +111,10 @@ namespace SimCore
          , mMaxTimeStep(MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP)
          , mClampingData(data)
       {
+         SurfacePointData pointData;
+         mPointData.push_back(pointData);
+         mPointData.push_back(pointData);
+         mPointData.push_back(pointData);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -361,15 +189,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      SurfacePointData* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData()
+      std::vector<SurfacePointData>& MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData()
       {
-         return &mPointData[0];
+         return mPointData;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const SurfacePointData* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData() const
+      const std::vector<SurfacePointData>& MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData() const
       {
-         return &mPointData[0];
+         return mPointData;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -411,12 +239,20 @@ namespace SimCore
       {
          dtGame::BaseGroundClamper::GroundClampingType* clampType = &suggestedClampType;
 
+         // Make sure all surface vessels always 3-point clamp to moving water
+         // even though they may not be moving on their own power.
+         if( IsWaterDomain( GetDomain( data ) ) )
+         {
+            clampType = &dtGame::BaseGroundClamper::GroundClampingType::RANGED;
+         }
          // NOTE: Animation component does not specify a velocity but does set
          // transformChanged flag to TRUE. Checking the flag will allow the animated
          // characters clamp as expected.
-         if( ! transformChanged && velocity.length2() == 0.0f )
+         else if( ! transformChanged && velocity.length2() == 0.0f )
          {
-            clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
+            // HACK: This will be enabled once intermittent clamping can
+            // orient the object properly.
+            //clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
          }
 
          return *clampType;
@@ -465,18 +301,6 @@ namespace SimCore
          MultiSurfaceClamper::GetDefaultDomainClamping() const
       {
          return *mDefaultDomain;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      BuoyancyCalculator& MultiSurfaceClamper::GetBuoyancyCalculator()
-      {
-         return *mBuoyancyCalc;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      const BuoyancyCalculator& MultiSurfaceClamper::GetBuoyancyCalculator() const
-      {
-         return *mBuoyancyCalc;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -600,7 +424,7 @@ namespace SimCore
             mSurfaceWater->GetHeightAndNormalAtPoint( inOutHit, surfaceHeight, outNormal );
 
             // Clamp to water only if it is above the Z height.
-            if( forceClamp 
+            if( forceClamp
                || ( surfaceHeight > objectHeight && ! clampUnderneath ) // Surface Clamp
                || ( surfaceHeight < objectHeight && clampUnderneath ) ) // Sub-surface Clamp
             {
@@ -645,55 +469,7 @@ namespace SimCore
          SimCore::Actors::BaseEntityActorProxy::DomainEnum& domain = GetDomain( data );
          if( IsWaterDomain( domain ) )
          {
-            //UpdatePointBuoyancy( *runtimeData, inOutPoints );
-
-            //UpdatePointBuoyancy_Simple( *runtimeData, inOutPoints );
-         }
-
-         // TODO: Update runtime data with final inertia.
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void MultiSurfaceClamper::UpdatePointBuoyancy(
-         MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] )
-      {
-         float timeStep = GetCurrentSimTime() - inOutData.GetLastClampedTime();
-
-         // Get the surface points and their data.
-         SurfacePointData* pointData = inOutData.GetSurfacePointData();
-
-         // Ensure that an unexpectedly large time step does not
-         // cause the bouyancy effect to go crazy.
-         if( timeStep > inOutData.GetMaxTimeStep() )
-         {
-            timeStep = inOutData.GetMaxTimeStep();
-         }
-
-         // Prepare variable to be used in the point update loop.
-         float curHeight = 0.0f;
-         float curVelocity = 0.0f;
-         float mass = inOutData.GetPointMass();
-         float radius = inOutData.GetPointRadius();
-         SurfacePointData* curData = NULL;
-
-         // For each point, update the buoyancy effect.
-         for( int i = 0; i < 3; ++i )
-         {
-            curData = &pointData[i];
-
-            // Get the point's current velocity and height.
-            curHeight = curData->GetLastClampPoint().z();
-            curVelocity = curData->GetVelocity();
-
-            // Calculate the velocity force on the current point.
-            curVelocity = mBuoyancyCalc->GetFinalVelocity(
-               timeStep, inOutPoints[i].z(), curHeight,
-               radius, mass, curVelocity );
-
-            // Update the point with the resulting velocity and final point.
-            inOutPoints[i] += osg::Vec3(0.0,0.0,curVelocity);
-            curData->SetVelocity( curVelocity );
-            curData->SetLastClampPoint( inOutPoints[i] );
+            UpdatePointBuoyancy_Simple( *runtimeData, inOutPoints );
          }
       }
 
@@ -704,7 +480,7 @@ namespace SimCore
          float timeStep = GetCurrentSimTime() - inOutData.GetLastClampedTime();
 
          // Get the surface points and their data.
-         SurfacePointData* pointData = inOutData.GetSurfacePointData();
+         std::vector<SurfacePointData>& pointData = inOutData.GetSurfacePointData();
          inOutPoints[0].z() += (inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * timeStep;
          inOutPoints[1].z() += (inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * timeStep;
          inOutPoints[2].z() += (inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * timeStep;
