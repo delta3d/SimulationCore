@@ -71,7 +71,7 @@ class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
 
    private:
      dtCore::RefPtr<dtGame::GameManager> mGM;
-     dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent;
+     dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
      dtCore::RefPtr<dtABC::Application> mApp;
      dtCore::RefPtr<dtUtil::Log> mLogger;
 };
@@ -105,15 +105,18 @@ void TerraPageLandActorTests::tearDown()
 
    dtCore::System::GetInstance().Stop();
 
+   dtCore::ObserverPtr<SimCore::Components::RenderingSupportComponent> rscOb = mRenderingSupportComponent.get();
+   mRenderingSupportComponent = NULL;
+
    if (mGM.valid())
    {
-      mGM->GetApplication().Quit();
       mGM->DeleteAllActors(true);
    }
 
    dtCore::ObserverPtr<dtGame::GameManager> gmOb = mGM.get();
    mGM = NULL;
    CPPUNIT_ASSERT(!gmOb.valid());
+   CPPUNIT_ASSERT(!rscOb.valid());
 
    mApp = NULL;
 }
@@ -121,14 +124,14 @@ void TerraPageLandActorTests::tearDown()
 /////////////////////////////////////////////////////////
 void TerraPageLandActorTests::TestFunction()
 {
-   renderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
-   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   mRenderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
+   mGM->AddComponent(*mRenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    // This method calls GetGameManager() so it needs to be added first
-   //CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
+   //CPPUNIT_ASSERT(mRenderingSupportComponent->UpdateCullVisitor() == false);
 
-   renderingSupportComponent->SetEnableCullVisitor(true);
-   //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   mRenderingSupportComponent->SetEnableCullVisitor(true);
+   //mGM->AddComponent(*mRenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    dtCore::System::GetInstance().Step();
 
@@ -148,7 +151,7 @@ void TerraPageLandActorTests::TestFunction()
    CPPUNIT_ASSERT(ourActor->FinalizeTerrain(1) == false);
 
    // component
-   CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == true);
+   CPPUNIT_ASSERT(mRenderingSupportComponent->UpdateCullVisitor() == true);
 
    // this will remind the user they probably shouldnt have changed the values
    // unless they know the consequences
