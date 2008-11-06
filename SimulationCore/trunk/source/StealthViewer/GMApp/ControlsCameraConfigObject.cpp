@@ -86,7 +86,7 @@ namespace StealthGM
    }
 
    ////////////////////////////////////////////////////////////
-   void ControlsCameraConfigObject::Reset(dtGame::GameManager &gameManager)
+   void ControlsCameraConfigObject::Reset(dtGame::GameManager& gameManager)
    {
       mCoordValid = FindCoordinatesObject(gameManager, mCoord);
 

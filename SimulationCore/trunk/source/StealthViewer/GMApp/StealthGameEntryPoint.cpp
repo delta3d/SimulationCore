@@ -365,7 +365,7 @@ namespace StealthGM
       gameManager.AddComponent(*stealthProcessor,
                                dtGame::GameManager::ComponentPriority::HIGHEST);
       gameManager.AddComponent(*new StealthGM::ViewerConfigComponent,
-                               dtGame::GameManager::ComponentPriority::HIGHER);
+                               dtGame::GameManager::ComponentPriority::LOWER);
 
       //this enables night vision
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
