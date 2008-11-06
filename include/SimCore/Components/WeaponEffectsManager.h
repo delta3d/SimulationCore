@@ -78,24 +78,24 @@ namespace SimCore
                const std::string& shaderName = DEFAULT_TRACER_SHADER.Get(),
                const std::string& shaderGroup = DEFAULT_TRACER_SHADER_GROUP.Get() );
 
-            void SetHasLight( bool hasLight ) { mHasLight = hasLight; }
-            bool HasLight() const { return mHasLight; }
+            void SetHasLight( bool hasLight );
+            bool HasLight() const;
 
-            void SetMaxLifeTime( float maxLifeTime ) { mMaxLifeTime = maxLifeTime; }
-            float GetMaxLifeTime() const { return mMaxLifeTime; }
+            void SetMaxLifeTime( float maxLifeTime );
+            float GetMaxLifeTime() const;
 
-            void SetSpeed( float speed ) { mSpeed = speed; }
-            float GetSpeed() const { return mSpeed; }
+            void SetSpeed( float speed );
+            float GetSpeed() const;
 
             void SetDirection( const osg::Vec3& direction );
-            const osg::Vec3& GetDirection() const { return mDirection; }
+            const osg::Vec3& GetDirection() const;
 
             void SetVelocity( const osg::Vec3& velocity );
             osg::Vec3 GetVelocity() const;
             void GetVelocity( osg::Vec3& outVelocity ) const;
 
             void SetPosition( const osg::Vec3& position );
-            const osg::Vec3& GetPosition() const { return mPosition; }
+            const osg::Vec3& GetPosition() const;
 
             void SetVisible( bool visible );
             bool IsVisible() const;
@@ -140,52 +140,30 @@ namespace SimCore
       {
          public:
             TracerEffectRequest( unsigned totalEffects, float cycleTime,
-               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
-               : mIsFirstEffect(true),
-               mTotalEffects(totalEffects),
-               mCycleTime(cycleTime),
-               mCurrentTime(0.0),
-               mEffectsInfo(&effectsInfo)
-            {
-            }
+               const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
 
-            void SetFirePoint( const osg::Vec3& firePoint ) { mFirePoint = firePoint; }
-            const osg::Vec3& GetFirePoint() const { return mFirePoint; }
+            void SetFirePoint( const osg::Vec3& firePoint );
+            const osg::Vec3& GetFirePoint() const;
 
-            void SetVelocity( const osg::Vec3& velocity ) { mVelocity = velocity; }
-            const osg::Vec3& GetVelocity() const { return mVelocity; }
+            void SetVelocity( const osg::Vec3& velocity );
+            const osg::Vec3& GetVelocity() const;
 
-            const SimCore::Actors::MunitionEffectsInfoActor& GetEffectsInfo() const { return *mEffectsInfo; }
+            const SimCore::Actors::MunitionEffectsInfoActor& GetEffectsInfo() const;
 
-            float GetCycleTime() const { return mCycleTime; }
+            float GetCycleTime() const;
 
-            unsigned GetTotalEffects() const { return mTotalEffects; }
+            unsigned GetTotalEffects() const;
 
-            bool IsFirstEffect() const { return mIsFirstEffect; }
+            bool IsFirstEffect() const;
 
-            bool IsEffectReady() const
-            {
-               return mTotalEffects > 0 && mCurrentTime > mCycleTime;
-            }
+            bool IsEffectReady() const;
 
-            void Update( float timeDelta )
-            {
-               mCurrentTime += timeDelta;
-            }
+            void Update( float timeDelta );
 
-            unsigned Decrement()
-            {
-               if( mTotalEffects > 0 )
-               {
-                  --mTotalEffects;
-               }
-               mCurrentTime = 0.0f;
-               mIsFirstEffect = false;
-               return mTotalEffects;
-            }
+            unsigned Decrement();
          
          protected:
-            virtual ~TracerEffectRequest() {}
+            virtual ~TracerEffectRequest();
 
          private:
             bool     mIsFirstEffect;
@@ -212,55 +190,52 @@ namespace SimCore
             // Set the probability that this object will execute a visible flash effect.
             // @param probability The probability (0.0 to 1.0) that a flash will
             //        be produced by this object. This value will be clamped automatically.
-            void SetFlashProbability( float probability )
-            { 
-               mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
-            }
-            float GetFlashProbability() const { return mFlashProbability; }
+            void SetFlashProbability( float probability );
+            float GetFlashProbability() const;
 
             // Setting the flash time will automatically make the flash visible.
             // @param flashTime The period of time the flash effect shall stay visible.
             void SetFlashTime( float flashTime );
-            float GetFlashTime() const { return mFlashTime; }
+            float GetFlashTime() const;
 
             void SetFlash( dtCore::ParticleSystem* flash );
-            dtCore::ParticleSystem* GetFlash() { return mFlash.get(); }
-            const dtCore::ParticleSystem* GetFlash() const { return mFlash.get(); }
+            dtCore::ParticleSystem* GetFlash();
+            const dtCore::ParticleSystem* GetFlash() const;
 
             // Assign the sound object.
             // @param sound The sound object
             // @param releaseOldSound Determines if this object should free
             //        the sound memory before assigning the new sound object.
             void SetSound( dtAudio::Sound* sound, bool releaseOldSound = true );
-            dtAudio::Sound* GetSound() { return mSound.get(); }
-            const dtAudio::Sound* GetSound() const { return mSound.get(); }
+            dtAudio::Sound* GetSound();
+            const dtAudio::Sound* GetSound() const;
 
             // Set the entity that will own this effect.
             // This MUST be set in order for a call to Attach to be successful.
             // @param owner The entity (usually remote) to which this effects 
             //        object will attach.
-            void SetOwner( SimCore::Actors::BaseEntity* owner ) { mOwner = owner; }
-            SimCore::Actors::BaseEntity* GetOwner() { return mOwner.get(); }
-            const SimCore::Actors::BaseEntity* GetOwner() const { return mOwner.get(); }
+            void SetOwner( SimCore::Actors::BaseEntity* owner );
+            SimCore::Actors::BaseEntity* GetOwner();
+            const SimCore::Actors::BaseEntity* GetOwner() const;
 
             // Set the visibility of the flash effect.
             // @param visible The visibility state of the flash effect.
             void SetVisible( bool visible );
-            bool IsVisible() const { return mVisible; }
+            bool IsVisible() const;
 
             // Access the referenced DOF that was set via Attach
-            osgSim::DOFTransform* GetDOF() { return mDOF.get(); }
-            const osgSim::DOFTransform* GetDOF() const { return mDOF.get(); }
+            osgSim::DOFTransform* GetDOF();
+            const osgSim::DOFTransform* GetDOF() const;
 
             // Get the time since the flash effect was executed.
             // This time is used by the WeaponEffectsManager to determine
             // if this effect object is old enough for recycling.
             // @return The time in seconds since the last flash execution.
-            float GetTimeSinceFlash() const { return mTimeSinceFlash; }
+            float GetTimeSinceFlash() const;
 
             // Determine if the sound part of the effect has been played.
             // @return TRUE if the sound had been executed.
-            bool IsSoundPlayed() const { return mSoundPlayed; }
+            bool IsSoundPlayed() const;
 
             // Get the time in seconds that sound will be played after Execute is called.
             // @return seconds from the instant Execute is called to the point the
@@ -271,7 +246,7 @@ namespace SimCore
             //       The delay is calculated after Execute is called in which the
             //       listener's world position is specified.
             //
-            float GetSoundDelay() const { return mSoundStartTime; }
+            float GetSoundDelay() const;
 
             // Determine the time delay of sound between to points.
             // @param sourcePosition World position at which the sound is emitted.
@@ -357,36 +332,36 @@ namespace SimCore
             // Set the game manager that has a scene to which tracer effects may be added.
             // @param gameManager The main scene that will render tracer effects.
             void SetGameManager( dtGame::GameManager* gameManager );
-            dtGame::GameManager* GetGameManager() { return mGM.get(); }
-            const dtGame::GameManager* GetGameManager() const { return mGM.get(); }
+            dtGame::GameManager* GetGameManager();
+            const dtGame::GameManager* GetGameManager() const;
 
             // Return the isector responsible for collision detection of tracer effects.
             // NOTE: This is intended for testing purposes only.
-            const dtCore::BatchIsector* GetIsector() const { return mIsector.get(); }
+            const dtCore::BatchIsector* GetIsector() const;
 
             // Set the maximum length of time that any WeaponEffect object should
             // live before being recycled.
             // @param effectTimeMax The max time in seconds that an effect is allowed to persist.
-            void SetEffectTimeMax( float effectTimeMax ) { mEffectTimeMax = effectTimeMax; }
-            float GetEffectTimeMax() const { return mEffectTimeMax; }
+            void SetEffectTimeMax( float effectTimeMax );
+            float GetEffectTimeMax() const;
 
             // Set the limit of effects allowed to exist at any one time.
             // @param maxEffectsAllowed The limit on effects allowed to be created.
             //        Negative values mean NO limit.
-            void SetMaxWeaponEffects( int maxEffectsAllowed ) { mMaxWeaponEffects = maxEffectsAllowed; }
-            int GetMaxWeaponEffects() const { return mMaxWeaponEffects; }
+            void SetMaxWeaponEffects( int maxEffectsAllowed );
+            int GetMaxWeaponEffects() const;
 
             // Set the limit of tracer effects allowed to exist at any one time.
             // @param maxEffectsAllowed The limit on effects allowed to be created.
             //        Negative values mean NO limit.
-            void SetMaxTracerEffects( int maxEffectsAllowed ) { mMaxTracerEffects = maxEffectsAllowed; }
-            int GetMaxTracerEffects() const { return mMaxTracerEffects; }
+            void SetMaxTracerEffects( int maxEffectsAllowed );
+            int GetMaxTracerEffects() const;
 
             // Set the cycle length between each call to Recycle.
             // @param recycleTime The time in seconds between each automatic
             //        call to Recycle.
-            void SetRecycleTime( float recycleTime ) { mRecycleTime = recycleTime; }
-            float GetRecycleTime() const { return mRecycleTime; }
+            void SetRecycleTime( float recycleTime );
+            float GetRecycleTime() const;
 
             // Update or create a WeaponEffect for the the specified owner entity.
             // @param owner The entity that will have the effects attached
