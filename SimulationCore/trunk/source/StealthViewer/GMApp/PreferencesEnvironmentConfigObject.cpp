@@ -34,21 +34,21 @@
 
 namespace StealthGM
 {
-   PreferencesEnvironmentConfigObject::PreferencesEnvironmentConfigObject() : 
-      mUseNetworkSettings(true), 
-      mUseThemedSettings(false), 
-      mUseCustomSettings(false), 
+   PreferencesEnvironmentConfigObject::PreferencesEnvironmentConfigObject() :
+      mUseNetworkSettings(true),
+      mUseThemedSettings(false),
+      mUseCustomSettings(false),
       mNetworkHour(0),
       mNetworkMinute(0),
       mNetworkSeconds(0),
       mCloudCover(&dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR),
       mVisibility(&dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED),
       mWeatherTheme(&dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM),
-      mTimeTheme(&dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY), 
-      mCustomHour(0), 
-      mCustomMinute(0), 
-      mCustomSeconds(0), 
-      mVisibilityDistance(0.0f), 
+      mTimeTheme(&dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY),
+      mCustomHour(0),
+      mCustomMinute(0),
+      mCustomSeconds(0),
+      mVisibilityDistance(0.0f),
       mPrecipitation(&SimCore::Actors::PrecipitationType::NONE)
    {
 
@@ -59,31 +59,31 @@ namespace StealthGM
 
    }
 
-   void PreferencesEnvironmentConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
+   void PreferencesEnvironmentConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
       // Special case
       // Updated flag is triggered when the user modifies a value in the UI
       // However, if receiving network weather, we need to make sure the values
-      // are set here from JSAF so they can be displayed in the UI. 
-      dtGame::GMComponent *component = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
+      // are set here from JSAF so they can be displayed in the UI.
+      dtGame::GMComponent* component = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
       if(component == NULL)
          return;
 
-      SimCore::Components::WeatherComponent &weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*component);
-      SimCore::Actors::UniformAtmosphereActorProxy *atmosphereProxy = weatherComp.GetAtmosphereActor();
-      SimCore::Actors::DayTimeActorProxy *dayTimeProxy = weatherComp.GetDayTimeActor();
-      SimCore::Actors::IGEnvironmentActor *igEnv = weatherComp.GetEphemerisEnvironment();
+      SimCore::Components::WeatherComponent& weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*component);
+      SimCore::Actors::UniformAtmosphereActorProxy* atmosphereProxy = weatherComp.GetAtmosphereActor();
+      SimCore::Actors::DayTimeActorProxy* dayTimeProxy = weatherComp.GetDayTimeActor();
+      SimCore::Actors::IGEnvironmentActor* igEnv = weatherComp.GetEphemerisEnvironment();
 
       // Special case
-      // If we are in network mode, our values need to be set from the 
-      // the weather component. This code does not need to be applied 
+      // If we are in network mode, our values need to be set from the
+      // the weather component. This code does not need to be applied
       // Since the weather component does this already
-      if(GetUseNetworkSettings())
+      if (GetUseNetworkSettings())
       {
          // Network time
-         if(dayTimeProxy != NULL)
+         if (dayTimeProxy != NULL)
          {
-            if(igEnv != NULL)
+            if (igEnv != NULL)
             {
                dtUtil::DateTime dt = igEnv->GetDateTime();
 
@@ -94,14 +94,14 @@ namespace StealthGM
          }
 
          // Visibility and weather (precipitation)
-         if(atmosphereProxy != NULL)
+         if (atmosphereProxy != NULL)
          {
-            SimCore::Actors::UniformAtmosphereActor &atmosphereActor = 
-               static_cast<SimCore::Actors::UniformAtmosphereActor&>(atmosphereProxy->GetGameActor());
+            SimCore::Actors::UniformAtmosphereActor* atmosphereActor = NULL;
+            atmosphereProxy->GetActor(atmosphereActor);
 
-            mVisibilityDistance = atmosphereActor.GetVisibilityDistance();
+            mVisibilityDistance = atmosphereActor->GetVisibilityDistance();
 
-            mPrecipitation = &atmosphereActor.GetPrecipitationType();
+            mPrecipitation = &atmosphereActor->GetPrecipitationType();
          }
       }
 
@@ -110,7 +110,7 @@ namespace StealthGM
          return;
 
 
-      // Turn updates in the component off or on 
+      // Turn updates in the component off or on
       weatherComp.SetUpdatesEnabled(GetUseNetworkSettings());
 
       if(igEnv != NULL && GetUseCustomSettings())
@@ -123,7 +123,7 @@ namespace StealthGM
          dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
          //igEnv->SetTimeFromSystem();
       }
-      
+
       SetIsUpdated(false);
    }
 
@@ -163,21 +163,21 @@ namespace StealthGM
 
    void PreferencesEnvironmentConfigObject::SetNetworkMinute(int min)
    {
-      if(min < 0 || min > 59) 
+      if(min < 0 || min > 59)
          dtUtil::Clamp(min, 0, 59);
 
       mNetworkMinute = min;
-      
+
       SetIsUpdated(true);
    }
 
    void PreferencesEnvironmentConfigObject::SetNetworkSecond(int sec)
    {
-      if(sec < 0 || sec > 59) 
+      if(sec < 0 || sec > 59)
          dtUtil::Clamp(sec, 0, 59);
-      
+
       mNetworkSeconds = sec;
-      
+
       SetIsUpdated(true);
    }
 
@@ -193,21 +193,21 @@ namespace StealthGM
 
    void PreferencesEnvironmentConfigObject::SetCustomMinute(int min)
    {
-      if(min < 0 || min > 59) 
+      if(min < 0 || min > 59)
          dtUtil::Clamp(min, 0, 59);
 
       mCustomMinute = min;
-      
+
       SetIsUpdated(true);
    }
 
    void PreferencesEnvironmentConfigObject::SetCustomSecond(int sec)
    {
-      if(sec < 0 || sec > 59) 
+      if(sec < 0 || sec > 59)
          dtUtil::Clamp(sec, 0, 59);
 
       mCustomSeconds = sec;
-      
+
       SetIsUpdated(true);
    }
 

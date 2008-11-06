@@ -82,7 +82,7 @@ namespace StealthGM
 
       SimCore::Tools::Binoculars* binos =
          static_cast<SimCore::Tools::Binoculars*>(sic->GetTool(SimCore::MessageType::BINOCULARS));
-      if (binos != NULL)
+      if (binos != NULL && binos->IsEnabled())
       {
          std::vector<dtDAL::ActorProxy*> proxies;
          gameManager.FindActorsByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, proxies);
