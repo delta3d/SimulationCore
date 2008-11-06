@@ -1,30 +1,30 @@
 /* -*-c++-*-
-* Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
-*
-* This library is free software; you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by the Free
-* Software Foundation; either version 2.1 of the License, or (at your option)
-* any later version.
-*
-* This library is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-* FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-* details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
-* 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software.
+ * Simulation Core
+ * Copyright 2007-2008, Alion Science and Technology
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * This software was developed by Alion Science and Technology Corporation under
+ * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers
  */
-#include <prefix/SimCorePrefix-src.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+#include <prefix/SimCorePrefix-src.h>
 #include <dtAudio/audiomanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/scene.h>
@@ -295,11 +295,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Weapon Effect Code
       //////////////////////////////////////////////////////////////////////////
-      const std::string WeaponEffect::CLASS_NAME("WeaponEffect");
+      const dtUtil::RefString WeaponEffect::CLASS_NAME("WeaponEffect");
 
       //////////////////////////////////////////////////////////////////////////
       WeaponEffect::WeaponEffect()
-         : dtCore::Transformable(WeaponEffect::CLASS_NAME)
+         : dtCore::Transformable(WeaponEffect::CLASS_NAME.Get())
          , mDynamicLightID(0)
          , mDynamicLightEnabled(false)
          , mVisible(true)
@@ -598,8 +598,7 @@ namespace SimCore
       // Weapon Effect Manager Code
       //////////////////////////////////////////////////////////////////////////
       WeaponEffectsManager::WeaponEffectsManager()
-         : dtCore::Base("WeaponEffectsManager")
-         , mEffectTimeMax(5.0f)
+         : mEffectTimeMax(5.0f)
          , mRecycleTime(1.0f)
          , mCurRecycleTime(0.0f)
          , mMaxWeaponEffects(-1) // no limit
@@ -950,13 +949,14 @@ namespace SimCore
       {
          unsigned recycleCount = 0;
 
+         typedef std::vector<dtCore::RefPtr<TracerEffect> > TracerEffectArray;
+
          // Remove any unused, extraneous effects
          if( ! mTracerEffects.empty() && mMaxTracerEffects > -1 
             && mTracerEffects.size() > unsigned(mMaxTracerEffects) )
          {
-            std::vector<dtCore::RefPtr<TracerEffect> >::iterator iter(--mTracerEffects.end());
-            std::vector<dtCore::RefPtr<TracerEffect> >::iterator begin = 
-				mTracerEffects.begin();
+            TracerEffectArray::iterator iter(--mTracerEffects.end());
+            TracerEffectArray::iterator begin = mTracerEffects.begin();
 
             for( ; iter != begin; )
             {
@@ -970,8 +970,7 @@ namespace SimCore
                      mGM->GetScene().RemoveDrawable( iter->get() );
                   }
 
-                  std::vector<dtCore::RefPtr<TracerEffect> >::iterator toDelete = 
-                     iter;
+                  TracerEffectArray::iterator toDelete = iter;
 
                   --iter;
                   mTracerEffects.erase(toDelete);
