@@ -59,6 +59,7 @@ namespace StealthGM
          gameManager.GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME, hud);
          SimCore::Components::LabelManager& lm = hud->GetLabelManager();
          lm.SetOptions(GetOptions());
+         SetIsUpdated(false);
       }
    }
 
