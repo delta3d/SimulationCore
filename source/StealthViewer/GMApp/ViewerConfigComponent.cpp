@@ -33,17 +33,20 @@ namespace StealthGM
 {
    const std::string ViewerConfigComponent::DEFAULT_NAME = "ViewerConfigComponent";
 
-   ViewerConfigComponent::ViewerConfigComponent(const std::string &name)
+   /////////////////////////////////////////////////////////////////////////
+   ViewerConfigComponent::ViewerConfigComponent(const std::string& name)
       : dtGame::GMComponent(name)
    {
 
    }
 
+   /////////////////////////////////////////////////////////////////////////
    ViewerConfigComponent::~ViewerConfigComponent()
    {
 
    }
 
+   /////////////////////////////////////////////////////////////////////////
    void ViewerConfigComponent::ProcessMessage(const dtGame::Message &msg)
    {
       if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
@@ -63,11 +66,13 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////
    void ViewerConfigComponent::AddConfigObject(ConfigurationObjectInterface &object)
    {
       mConfigurationObjects.push_back(&object);
    }
 
+   /////////////////////////////////////////////////////////////////////////
    void ViewerConfigComponent::RemoveConfigObject(ConfigurationObjectInterface &object)
    {
       for(size_t i = 0; i < mConfigurationObjects.size(); i++)
