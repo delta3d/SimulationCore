@@ -34,9 +34,10 @@
 #include <dtCore/base.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/observerptr.h>
+#include <dtUtil/refstring.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
-#include <SimCore/Components/MunitionDamage.h>
+#include <SimCore/Components/MunitionDamageTable.h>
 #include <SimCore/Components/MunitionTypeTable.h>
 #include <SimCore/Components/WeaponEffectsManager.h>
 #include <dtGame/gmcomponent.h>
@@ -74,57 +75,16 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      // Munition Damage Table Code
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionDamageTable : public dtCore::Base
-      {
-         public:
-
-            // Constructor 
-            // Note that munition data is specific to the interaction of certain
-            // munitions to a specific entity type; in other words, the same
-            // munition can be specified for multiple entity classes but the
-            // munition damage probabilities may not be the same, and usually
-            // are not.
-            // @param entityClassName The name of the table ought to be the name
-            //        of the entity class that has munition damage probability data.
-            //        NOTE: this name will be used for mapping in a MunitionsComponent.
-            MunitionDamageTable( const std::string& entityClassName );
-
-            unsigned int GetCount() const;
-
-            bool AddMunitionDamage( const dtCore::RefPtr<MunitionDamage>& newInfo );
-
-            bool RemoveMunitionDamage( const std::string& name );
-
-            bool HasMunitionDamage( const std::string& name ) const;
-
-            const MunitionDamage* GetMunitionDamage( const std::string& name ) const;
-
-            void Clear();
-
-         protected:
-
-            // Destructor
-            virtual ~MunitionDamageTable();
-
-         private:
-            std::map<std::string, dtCore::RefPtr<MunitionDamage> > mNameToMunitionMap;
-      };
-
-
-
-      //////////////////////////////////////////////////////////////////////////
       // Munitions Component Code
       //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT MunitionsComponent : public dtGame::GMComponent
       {
          public:
 
-            static const std::string DEFAULT_NAME;
+            static const dtUtil::RefString DEFAULT_NAME;
 
             /// Constructor
-            MunitionsComponent( const std::string& name = DEFAULT_NAME );
+            MunitionsComponent( const std::string& name = DEFAULT_NAME.Get() );
 
             bool Register( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true );
 
