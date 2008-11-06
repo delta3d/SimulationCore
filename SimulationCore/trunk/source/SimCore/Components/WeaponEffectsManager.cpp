@@ -70,9 +70,51 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetHasLight( bool hasLight )
+      {
+         mHasLight = hasLight;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      bool TracerEffect::HasLight() const
+      {
+         return mHasLight;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetMaxLifeTime( float maxLifeTime )
+      {
+         mMaxLifeTime = maxLifeTime;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float TracerEffect::GetMaxLifeTime() const
+      {
+         return mMaxLifeTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffect::SetSpeed( float speed )
+      {
+         mSpeed = speed;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float TracerEffect::GetSpeed() const
+      {
+         return mSpeed;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void TracerEffect::SetDirection( const osg::Vec3& direction )
       {
          mDirection = direction;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& TracerEffect::GetDirection() const
+      {
+         return mDirection;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -135,6 +177,12 @@ namespace SimCore
          GetTransform(xform,dtCore::Transformable::REL_CS);
          xform.SetTranslation(position);
          SetTransform(xform,dtCore::Transformable::REL_CS);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& TracerEffect::GetPosition() const
+      {
+         return mPosition;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -293,6 +341,98 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
+      // Tracer Effect Request Code
+      //////////////////////////////////////////////////////////////////////////
+      TracerEffectRequest::TracerEffectRequest( unsigned totalEffects, float cycleTime,
+         const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
+         : mIsFirstEffect(true)
+         , mTotalEffects(totalEffects)
+         , mCycleTime(cycleTime)
+         , mCurrentTime(0.0f)
+         , mEffectsInfo(&effectsInfo)
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      TracerEffectRequest::~TracerEffectRequest()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffectRequest::SetFirePoint( const osg::Vec3& firePoint )
+      {
+         mFirePoint = firePoint;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& TracerEffectRequest::GetFirePoint() const
+      {
+         return mFirePoint;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffectRequest::SetVelocity( const osg::Vec3& velocity )
+      {
+         mVelocity = velocity;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& TracerEffectRequest::GetVelocity() const
+      {
+         return mVelocity;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::MunitionEffectsInfoActor& TracerEffectRequest::GetEffectsInfo() const
+      {
+         return *mEffectsInfo;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float TracerEffectRequest::GetCycleTime() const
+      {
+         return mCycleTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned TracerEffectRequest::GetTotalEffects() const
+      {
+         return mTotalEffects;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool TracerEffectRequest::IsFirstEffect() const
+      {
+         return mIsFirstEffect;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool TracerEffectRequest::IsEffectReady() const
+      {
+         return mTotalEffects > 0 && mCurrentTime > mCycleTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffectRequest::Update( float timeDelta )
+      {
+         mCurrentTime += timeDelta;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      unsigned TracerEffectRequest::Decrement()
+      {
+         if( mTotalEffects > 0 )
+         {
+            --mTotalEffects;
+         }
+         mCurrentTime = 0.0f;
+         mIsFirstEffect = false;
+         return mTotalEffects;
+      }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
       // Weapon Effect Code
       //////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString WeaponEffect::CLASS_NAME("WeaponEffect");
@@ -343,6 +483,18 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::SetFlashProbability( float probability )
+      { 
+         mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffect::GetFlashProbability() const
+      {
+         return mFlashProbability;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::SetFlashTime( float flashTime )
       {
          mFlashTime = flashTime;
@@ -356,6 +508,12 @@ namespace SimCore
          }
 
          mTimeSinceFlash = 0.0f;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffect::GetFlashTime() const
+      {
+         return mFlashTime;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -378,6 +536,36 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      dtAudio::Sound* WeaponEffect::GetSound()
+      {
+         return mSound.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const dtAudio::Sound* WeaponEffect::GetSound() const
+      {
+         return mSound.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffect::SetOwner( SimCore::Actors::BaseEntity* owner )
+      {
+         mOwner = owner;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      SimCore::Actors::BaseEntity* WeaponEffect::GetOwner()
+      {
+         return mOwner.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::BaseEntity* WeaponEffect::GetOwner() const
+      {
+         return mOwner.get(); 
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::SetVisible( bool visible )
       {
          mVisible = visible;
@@ -395,6 +583,42 @@ namespace SimCore
                RemoveDynamicLight();
             }
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponEffect::IsVisible() const
+      {
+         return mVisible;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osgSim::DOFTransform* WeaponEffect::GetDOF()
+      {
+         return mDOF.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osgSim::DOFTransform* WeaponEffect::GetDOF() const
+      {
+         return mDOF.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffect::GetTimeSinceFlash() const
+      {
+         return mTimeSinceFlash;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool WeaponEffect::IsSoundPlayed() const
+      {
+         return mSoundPlayed;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffect::GetSoundDelay() const
+      {
+         return mSoundStartTime;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -425,6 +649,18 @@ namespace SimCore
          if( mFlash.valid() ) { mFlash->SetParent( NULL ); }
 
          mFlash = flash;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::ParticleSystem* WeaponEffect::GetFlash()
+      {
+         return mFlash.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const dtCore::ParticleSystem* WeaponEffect::GetFlash() const
+      {
+         return mFlash.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -628,6 +864,72 @@ namespace SimCore
          {
             mIsector->SetScene( &mGM->GetScene() );
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtGame::GameManager* WeaponEffectsManager::GetGameManager()
+      {
+         return mGM.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const dtGame::GameManager* WeaponEffectsManager::GetGameManager() const
+      {
+         return mGM.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const dtCore::BatchIsector* WeaponEffectsManager::GetIsector() const
+      {
+         return mIsector.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetEffectTimeMax( float effectTimeMax )
+      {
+         mEffectTimeMax = effectTimeMax;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffectsManager::GetEffectTimeMax() const
+      {
+         return mEffectTimeMax;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetMaxWeaponEffects( int maxEffectsAllowed )
+      {
+         mMaxWeaponEffects = maxEffectsAllowed;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      int WeaponEffectsManager::GetMaxWeaponEffects() const
+      {
+         return mMaxWeaponEffects;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetMaxTracerEffects( int maxEffectsAllowed )
+      {
+         mMaxTracerEffects = maxEffectsAllowed;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      int WeaponEffectsManager::GetMaxTracerEffects() const
+      {
+         return mMaxTracerEffects;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponEffectsManager::SetRecycleTime( float recycleTime )
+      {
+         mRecycleTime = recycleTime;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float WeaponEffectsManager::GetRecycleTime() const
+      {
+         return mRecycleTime;
       }
 
       //////////////////////////////////////////////////////////////////////////
