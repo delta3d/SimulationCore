@@ -37,6 +37,7 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Components/MunitionDamage.h>
+#include <SimCore/Components/MunitionTypeTable.h>
 #include <SimCore/Components/WeaponEffectsManager.h>
 #include <dtGame/gmcomponent.h>
 #include <deque>
@@ -46,15 +47,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
-namespace dtAudio
-{
-   class Sound;
-}
-
 namespace dtCore
 {
    class UniqueId;
-   class ParticleSystem;
 }
 namespace dtGame
 {
@@ -68,8 +63,6 @@ namespace SimCore
 
    namespace Actors
    {
-      class DISIdentifier;
-      class MunitionTypeActorProxy;
       class MunitionEffectsInfoActor;
    }
 
@@ -77,92 +70,6 @@ namespace SimCore
    {
       class DamageType;
       class DamageHelper;
-
-      //////////////////////////////////////////////////////////////////////////
-      // Munition Type Table Code
-      //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionTypeTable : public dtCore::Base
-      {
-      public:
-
-         // Constructor
-         MunitionTypeTable();
-
-         // Access the number of MunitionTypeActors contained in this table.
-         // @return Total MunitionTypeActors contained in this table
-         unsigned int GetCount() const;
-
-         // Add a new MunitionTypeActor to this table.
-         // @param newType The new MunitionTypeActor to be added to this table.
-         // @return TRUE if addition was successful. FALSE usually means another
-         //         entry with the same name exists in this table.
-         bool AddMunitionType( const dtCore::RefPtr<SimCore::Actors::MunitionTypeActorProxy>& newType );
-
-         // Remove a MunitionTypeActor by name.
-         // @param name The name of the MunitionTypeActor to be removed.
-         // @return TRUE if the entry existed and was successfully removed.
-         bool RemoveMunitionType( const std::string& name );
-
-         // Determine if a MunitionTypeActor exists within this table.
-         // @param name The name of the MunitionTypeActor in question.
-         // @return TRUE if this table contains a MunitionTypeActor with the specified name.
-         bool HasMunitionType( const std::string& name ) const;
-
-         // Access a MunitionTypeActor that is identified by the specified name.
-         // @param name The name of the MunitionTypeActor to be found.
-         // @return The MunitionTypeActor that has the specified name.
-         //         NULL if no MunitionTypeActor was found with the name.
-         SimCore::Actors::MunitionTypeActor* GetMunitionType( const std::string& name );
-         const SimCore::Actors::MunitionTypeActor* GetMunitionType( const std::string& name ) const;
-
-         // This function makes a closest match. DIS is not guaranteed to be exact.
-         // @param dis The DIS identifier used to find a MunitionTypeActor with
-         //        the closest matching DIS identifier
-         // @param exactMatch Determine if this function should perform an exact match.
-         // @return The MunitionTypeActor with the closest or exactly matching DIS
-         //         identifier as that specified by the parameter dis.
-         //         NULL if there was no match.
-         const SimCore::Actors::MunitionTypeActor* GetMunitionTypeByDIS( const SimCore::Actors::DISIdentifier& dis, bool exactMatch = false ) const;
-         const SimCore::Actors::MunitionTypeActor* GetMunitionTypeByDIS( const std::string& dis, bool exactMatch = false ) const;
-
-         // Access this table's sorted list directly.
-         // @return The list of MunitionTypeActors sorted by DIS identifiers,
-         //         from low to high numbers (identifier numbers are read from left to right).
-         const std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> >& GetOrderedList() const { return mOrderedList; }
-
-         // Query the number of entries in this table with in a separate sorted list.
-         // The list is sorted by DIS identifier.
-         // @return Total entries in the sorted list.
-         //
-         // NOTE: If the table is valid, the value returned should match the total
-         //       returned by GetCount.
-         unsigned int GetOrderedListSize() const;
-
-         // Remove all entries from this table.
-         void Clear();
-
-      protected:
-
-         // Destructor
-         virtual ~MunitionTypeTable();
-
-         // This function inserts the Munition Type Actor in the ordered list,
-         // sorted by DIS identifier.
-         // @param newType The new MunitionTypeActor that was recently added to this
-         //        table and that needs to be entered in a sorted list.
-         //
-         // NOTE: The sorted list is important in the quick comparison of DIS identifiers.
-         void InsertMunitionTypeToOrderedList( SimCore::Actors::MunitionTypeActor& newType );
-
-         // Remove a MunitionTypeActor from this table's sorted list before removal
-         // from the table itself.
-         // @param oldType The MunitionTypeActor to be removed from the sorted list.
-         void RemoveMunitionTypeFromOrderedList( const SimCore::Actors::MunitionTypeActor& oldType );
-
-      private:
-         std::map<std::string, dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> > mNameToMunitionMap;
-         std::vector<dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> > mOrderedList; // ordered list
-      };
 
 
 
