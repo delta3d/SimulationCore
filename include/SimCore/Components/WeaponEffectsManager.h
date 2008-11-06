@@ -28,8 +28,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
+#include <osg/Referenced>
 #include <osgSim/DOFTransform>
-#include <dtCore/base.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/observerptr.h>
 #include <dtUtil/refstring.h>
@@ -136,7 +136,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Request Code
       //////////////////////////////////////////////////////////////////////////
-      class TracerEffectRequest : public dtCore::Base
+      class TracerEffectRequest : public osg::Referenced
       {
          public:
             TracerEffectRequest( unsigned totalEffects, float cycleTime,
@@ -205,7 +205,7 @@ namespace SimCore
       class SIMCORE_EXPORT WeaponEffect : public dtCore::Transformable
       {
          public:
-            static const std::string CLASS_NAME;
+            static const dtUtil::RefString CLASS_NAME;
 
             WeaponEffect();
 
@@ -349,7 +349,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Weapon Effect Manager Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT WeaponEffectsManager : public dtCore::Base
+      class SIMCORE_EXPORT WeaponEffectsManager : public osg::Referenced
       {
          public:
             WeaponEffectsManager();
