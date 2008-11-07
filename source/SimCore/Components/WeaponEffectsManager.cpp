@@ -25,6 +25,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
+#include <osgDB/ReadFile>
 #include <dtAudio/audiomanager.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/scene.h>
@@ -93,25 +94,267 @@ namespace SimCore
          };
       }
 
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Munition Effect Code
+      //////////////////////////////////////////////////////////////////////////
+      MunitionEffect::MunitionEffect()
+         : mDynamicLightEnabled(false)
+         , mDynamicLightID(0)
+         , mLifeTime(0.0f)
+         , mMaxLifeTime(1.0f)
+      {
+         SetVisible( true ); // ensures node mask is set to the proper value.
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      MunitionEffect::~MunitionEffect()
+      {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetLightName( const std::string& lightName )
+      {
+         mTracerLightName = lightName;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& MunitionEffect::GetLightName() const
+      {
+         return mTracerLightName.Get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetMaxLifeTime( float maxLifeTime )
+      {
+         mMaxLifeTime = maxLifeTime;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float MunitionEffect::GetMaxLifeTime() const
+      {
+         return mMaxLifeTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetVelocity( const osg::Vec3& velocity )
+      { 
+         // If an external munition doesn't send the correct velocity vector, then we 
+         // just change it to be some sort of minimum. Otherwise, the tracer moves at like
+         // 1 m/s which is awful.
+         if( velocity.length() < 5.0f )
+         {
+            osg::Vec3 velocityNormal(velocity);
+            velocityNormal.normalize();
+            mVelocity = velocityNormal * 100.0f; 
+         }
+         else
+         {
+            mVelocity = velocity;
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& MunitionEffect::GetVelocity() const
+      {
+         return mVelocity;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetPosition( const osg::Vec3& position )
+      {
+         // Set the last position...
+         if( ! IsActive() )
+         {
+            // ...to the specified point if this effect is about to be executed again
+            mLastPosition.set(position);
+         }
+         else
+         {
+            // ...to remember the last point
+            mLastPosition.set( mPosition );
+         }
+
+         mPosition.set(position);
+
+         dtCore::Transform xform;
+         GetTransform(xform,dtCore::Transformable::REL_CS);
+         xform.SetTranslation(position);
+         SetTransform(xform,dtCore::Transformable::REL_CS);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& MunitionEffect::GetPosition() const
+      {
+         return mPosition;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetVisible( bool visible )
+      {
+         GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
+         if( visible && ! mTracerLightName.Get().empty() )
+         {
+            // TODO: Make tracer colors dynamic.
+            AddDynamicLight(osg::Vec3(1.0f, 0.2f, 0.2f)); // default color to red
+         }
+         else
+         {
+            RemoveDynamicLight();
+         }
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      bool MunitionEffect::IsVisible() const
+      {
+         return 0 != GetOSGNode()->getNodeMask();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool MunitionEffect::IsActive() const
+      {
+         return mLifeTime < mMaxLifeTime;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::Reset()
+      {
+         mLifeTime = 0.0f;
+         SetVisible( true );
+
+         // Start the tracer line with zero stretch
+         mLastPosition = mPosition;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::Execute( float maxLifeTime )
+      {
+         SetMaxLifeTime( maxLifeTime );
+         
+         Reset();
+
+         // Physically adjust orientation to match direction
+         dtCore::Transform xform;
+         GetTransform(xform,dtCore::Transformable::REL_CS);
+         osg::Matrix mtx;
+
+         osg::Vec3 velocityNormal(mVelocity);
+         if( velocityNormal.length2() > 0.0f )
+         {
+            velocityNormal.normalize();
+         }
+         else
+         {
+            velocityNormal.set(0.0f, 1.0f, 0.0f);
+         }
+
+         osg::Vec3 right = velocityNormal ^ osg::Vec3(0.0,0.0,1.0);
+         right.normalize();
+         osg::Vec3 up = right ^ velocityNormal;
+         up.normalize();
+         mtx.ptr()[0] = right[0];
+         mtx.ptr()[1] = right[1];
+         mtx.ptr()[2] = right[2];
+         mtx.ptr()[4] = velocityNormal[0];
+         mtx.ptr()[5] = velocityNormal[1];
+         mtx.ptr()[6] = velocityNormal[2];
+         mtx.ptr()[8] = up[0];
+         mtx.ptr()[9] = up[1];
+         mtx.ptr()[10] = up[2];
+         xform.SetRotation(mtx);
+         SetTransform(xform,dtCore::Transformable::REL_CS);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::Update( float deltaTime )
+      {
+         if( IsActive() )
+         {
+            mVelocity += osg::Vec3( 0.0f, 0.0f, -9.8f ) * deltaTime;
+            SetPosition( mPosition + (mVelocity * deltaTime) );
+            mLifeTime += deltaTime;
+         }
+         else if( IsVisible() )
+         {
+            SetVisible( false );
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::AddDynamicLight( const osg::Vec3& color )
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+            if( ! mDynamicLightEnabled )
+            {
+               dl = renderComp->AddDynamicLightByPrototypeName( mTracerLightName.Get() );
+               dl->mTarget = this;
+               dl->mColor = color;
+
+               mDynamicLightID = dl->mID;
+               mDynamicLightEnabled = true;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::RemoveDynamicLight()
+      {
+         if( ! mGM.valid() )
+         {
+            return;
+         }
+
+         SimCore::Components::RenderingSupportComponent* renderComp;
+         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+
+         if( renderComp != NULL )
+         {
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
+            if( dl != NULL && mDynamicLightEnabled )
+            {
+               dl->mIntensity = 0.0f;
+               renderComp->RemoveDynamicLight(mDynamicLightID);
+
+               mDynamicLightEnabled = false;
+               mDynamicLightID = 0;
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffect::SetGameManager( dtGame::GameManager* gameManager )
+      {
+         mGM = gameManager;
+      }
+
+
+
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Code
       //////////////////////////////////////////////////////////////////////////
+      const dtUtil::RefString TracerEffect::DEFAULT_TRACER_LIGHT("Light-Tracer");
       const dtUtil::RefString TracerEffect::DEFAULT_TRACER_SHADER("VolumetricLines");
       const dtUtil::RefString TracerEffect::DEFAULT_TRACER_SHADER_GROUP("TracerGroup");
 
       //////////////////////////////////////////////////////////////////////////
       TracerEffect::TracerEffect( float lineLength, float lineThickness,
          const std::string& shaderName, const std::string& shaderGroup )
-         : SimCore::Actors::VolumetricLine(lineLength,lineThickness,shaderName,shaderGroup)
-         , mHasLight(false)
-         , mDynamicLightEnabled(false)
-         , mDynamicLightID(0)
-         , mLifeTime(0.0f)
-         , mMaxLifeTime(1.0f)
-         , mSpeed(0.0f)
+         : MunitionEffect()
          , mMaxLength(10.0f)
+         , mLine(new SimCore::Actors::VolumetricLine(lineLength,lineThickness,shaderName,shaderGroup))
       {
-         SetVisible( true ); // ensures node mask is set to the proper value.
+         AddChild( mLine.get() );
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -120,85 +363,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetHasLight( bool hasLight )
+      void TracerEffect::SetMaxLength( float maxLength )
       {
-         mHasLight = hasLight;
-      }
-      
-      //////////////////////////////////////////////////////////////////////////
-      bool TracerEffect::HasLight() const
-      {
-         return mHasLight;
+         mMaxLength = maxLength;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetMaxLifeTime( float maxLifeTime )
+      float TracerEffect::GetMaxLength() const
       {
-         mMaxLifeTime = maxLifeTime;
-      }
-      
-      //////////////////////////////////////////////////////////////////////////
-      float TracerEffect::GetMaxLifeTime() const
-      {
-         return mMaxLifeTime;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetSpeed( float speed )
-      {
-         mSpeed = speed;
-      }
-      
-      //////////////////////////////////////////////////////////////////////////
-      float TracerEffect::GetSpeed() const
-      {
-         return mSpeed;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetDirection( const osg::Vec3& direction )
-      {
-         mDirection = direction;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      const osg::Vec3& TracerEffect::GetDirection() const
-      {
-         return mDirection;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetVelocity( const osg::Vec3& velocity )
-      {
-         if( velocity.length2() > 0.0 )
-         { 
-            mSpeed = velocity.length();
-            // If an external munition doesn't send the correct velocity vector, then we 
-            // just change it to be some sort of minimum. Otherwise, the tracer moves at like
-            // 1 m/s which is awful.
-            if (mSpeed < 5)
-               mSpeed = 100;
-            mDirection = velocity; 
-            mDirection.normalize();
-         }
-         else
-         {
-            mSpeed = 0.0;
-            mDirection.set(0.0,0.0,0.0);
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      osg::Vec3 TracerEffect::GetVelocity() const
-      {
-         return mDirection * mSpeed;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::GetVelocity( osg::Vec3& outVelocity ) const
-      {
-         outVelocity.set(mDirection);
-         outVelocity *= mSpeed;
+         return mMaxLength;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -230,68 +403,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const osg::Vec3& TracerEffect::GetPosition() const
+      void TracerEffect::Reset()
       {
-         return mPosition;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetVisible( bool visible )
-      {
-         GetOSGNode()->setNodeMask(visible?0xFFFFFFFF:0);
-         if( visible && mHasLight )
-         {
-            // TODO: Make tracer colors dynamic.
-            AddDynamicLight(osg::Vec3(1.0f, 0.2f, 0.2f)); // default color to red
-         }
-         else
-         {
-            RemoveDynamicLight();
-         }
-      }
-      
-      //////////////////////////////////////////////////////////////////////////
-      bool TracerEffect::IsVisible() const
-      {
-         return 0 != GetOSGNode()->getNodeMask();
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      bool TracerEffect::IsActive() const
-      {
-         return mLifeTime < mMaxLifeTime;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::Execute( float maxLifeTime )
-      {
-         SetMaxLifeTime( maxLifeTime );
-         mLifeTime = 0.0f;
-         SetVisible( true );
-
-         // Start the tracer line with zero stretch
-         mLastPosition = mPosition;
-         SetLength(0.001f);
-
-         // Physically adjust orientation to match direction
-         dtCore::Transform xform;
-         GetTransform(xform,dtCore::Transformable::REL_CS);
-         osg::Matrix mtx;
-         osg::Vec3 right = mDirection ^ osg::Vec3(0.0,0.0,1.0);
-         right.normalize();
-         osg::Vec3 up = right ^ mDirection;
-         up.normalize();
-         mtx.ptr()[0] = right[0];
-         mtx.ptr()[1] = right[1];
-         mtx.ptr()[2] = right[2];
-         mtx.ptr()[4] = mDirection[0];
-         mtx.ptr()[5] = mDirection[1];
-         mtx.ptr()[6] = mDirection[2];
-         mtx.ptr()[8] = up[0];
-         mtx.ptr()[9] = up[1];
-         mtx.ptr()[10] = up[2];
-         xform.SetRotation(mtx);
-         SetTransform(xform,dtCore::Transformable::REL_CS);
+         BaseClass::Reset();
+         mLine->SetLength(0.001f);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -299,18 +414,18 @@ namespace SimCore
       {
          if( IsActive() )
          {
-            SetPosition( mPosition + (mDirection * mSpeed * deltaTime) );
+            SetPosition( mPosition + (mVelocity * deltaTime) );
             mLifeTime += deltaTime;
 
             // Update the tracer length for stretching
             float length = (mLastPosition-mPosition).length();
             if( length > mMaxLength )
             {
-               SetLength( mMaxLength );
+               mLine->SetLength( mMaxLength );
             }
             else if( length > 0.0 && length < mMaxLength )
             {
-               SetLength( length );
+               mLine->SetLength( length );
             }
          }
          else if( IsVisible() )
@@ -319,81 +434,12 @@ namespace SimCore
          }
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::AddDynamicLight( const osg::Vec3& color )
-      {
-         if( ! mGM.valid() )
-         {
-            return;
-         }
-
-         SimCore::Components::RenderingSupportComponent* renderComp;
-         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-
-         if( renderComp != NULL )
-         {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
-            if( ! mDynamicLightEnabled )
-            {
-               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
-               dl->mTarget = this;
-               dl->mColor = color;
-
-               mDynamicLightID = dl->mID;
-               mDynamicLightEnabled = true;
-            }
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::RemoveDynamicLight()
-      {
-         if( ! mGM.valid() )
-         {
-            return;
-         }
-
-         SimCore::Components::RenderingSupportComponent* renderComp;
-         mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-
-         if( renderComp != NULL )
-         {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-            if( dl != NULL && mDynamicLightEnabled )
-            {
-               dl->mIntensity = 0.0f;
-               renderComp->RemoveDynamicLight(mDynamicLightID);
-
-               mDynamicLightEnabled = false;
-               mDynamicLightID = 0;
-            }
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetGameManager( dtGame::GameManager* gameManager )
-      {
-         mGM = gameManager;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TracerEffect::SetMaxLength( float maxLength )
-      {
-         mMaxLength = maxLength;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      float TracerEffect::GetMaxLength() const
-      {
-         return mMaxLength;
-      }
-
 
 
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Request Code
       //////////////////////////////////////////////////////////////////////////
-      TracerEffectRequest::TracerEffectRequest( unsigned totalEffects, float cycleTime,
+      MunitionEffectRequest::MunitionEffectRequest( unsigned totalEffects, float cycleTime,
          const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo )
          : mIsFirstEffect(true)
          , mTotalEffects(totalEffects)
@@ -404,90 +450,102 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      TracerEffectRequest::~TracerEffectRequest()
+      MunitionEffectRequest::~MunitionEffectRequest()
       {
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffectRequest::SetOwner( SimCore::Actors::BaseEntity* owner )
+      void MunitionEffectRequest::SetOwner( SimCore::Actors::BaseEntity* owner )
       {
          mOwner = owner;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      SimCore::Actors::BaseEntity* TracerEffectRequest::GetOwner()
+      SimCore::Actors::BaseEntity* MunitionEffectRequest::GetOwner()
       {
          return mOwner.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const SimCore::Actors::BaseEntity* TracerEffectRequest::GetOwner() const
+      const SimCore::Actors::BaseEntity* MunitionEffectRequest::GetOwner() const
       {
          return mOwner.get(); 
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffectRequest::SetFirePoint( const osg::Vec3& firePoint )
+      void MunitionEffectRequest::SetFirePoint( const osg::Vec3& firePoint )
       {
          mFirePoint = firePoint;
       }
       
       //////////////////////////////////////////////////////////////////////////
-      const osg::Vec3& TracerEffectRequest::GetFirePoint() const
+      const osg::Vec3& MunitionEffectRequest::GetFirePoint() const
       {
          return mFirePoint;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffectRequest::SetVelocity( const osg::Vec3& velocity )
+      void MunitionEffectRequest::SetVelocity( const osg::Vec3& velocity )
       {
          mVelocity = velocity;
       }
       
       //////////////////////////////////////////////////////////////////////////
-      const osg::Vec3& TracerEffectRequest::GetVelocity() const
+      const osg::Vec3& MunitionEffectRequest::GetVelocity() const
       {
          return mVelocity;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const SimCore::Actors::MunitionEffectsInfoActor& TracerEffectRequest::GetEffectsInfo() const
+      void MunitionEffectRequest::SetMunitionModelFile( const std::string& modelFile )
+      {
+         mMunitionModelFile = modelFile;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& MunitionEffectRequest::GetMunitionModelFile() const
+      {
+         return mMunitionModelFile.Get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::MunitionEffectsInfoActor& MunitionEffectRequest::GetEffectsInfo() const
       {
          return *mEffectsInfo;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      float TracerEffectRequest::GetCycleTime() const
+      float MunitionEffectRequest::GetCycleTime() const
       {
          return mCycleTime;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned TracerEffectRequest::GetTotalEffects() const
+      unsigned MunitionEffectRequest::GetTotalEffects() const
       {
          return mTotalEffects;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool TracerEffectRequest::IsFirstEffect() const
+      bool MunitionEffectRequest::IsFirstEffect() const
       {
          return mIsFirstEffect;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool TracerEffectRequest::IsEffectReady() const
+      bool MunitionEffectRequest::IsEffectReady() const
       {
          return mTotalEffects > 0 && mCurrentTime > mCycleTime;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TracerEffectRequest::Update( float timeDelta )
+      void MunitionEffectRequest::Update( float timeDelta )
       {
          mCurrentTime += timeDelta;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned TracerEffectRequest::Decrement()
+      unsigned MunitionEffectRequest::Decrement()
       {
          if( mTotalEffects > 0 )
          {
@@ -851,7 +909,7 @@ namespace SimCore
             if( ! mDynamicLightEnabled )
             {
                //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-               dl = renderComp->AddDynamicLightByPrototypeName("Light-Tracer");
+               dl = renderComp->AddDynamicLightByPrototypeName(TracerEffect::DEFAULT_TRACER_LIGHT.Get());
                dl->mColor = color;//a bright yellow
                //dl->mAttenuation.set(0.1, 0.05, 0.0002);
                //dl->mIntensity = 1.0f;
@@ -906,7 +964,7 @@ namespace SimCore
          , mRecycleTime(1.0f)
          , mCurRecycleTime(0.0f)
          , mMaxWeaponEffects(-1) // no limit
-         , mMaxTracerEffects(-1) // no limit
+         , mMaxMunitionEffects(-1) // no limit
          , mIsector(new dtCore::BatchIsector)
       {
       }
@@ -977,15 +1035,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponEffectsManager::SetMaxTracerEffects( int maxEffectsAllowed )
+      void WeaponEffectsManager::SetMaxMunitionEffects( int maxEffectsAllowed )
       {
-         mMaxTracerEffects = maxEffectsAllowed;
+         mMaxMunitionEffects = maxEffectsAllowed;
       }
       
       //////////////////////////////////////////////////////////////////////////
-      int WeaponEffectsManager::GetMaxTracerEffects() const
+      int WeaponEffectsManager::GetMaxMunitionEffects() const
       {
-         return mMaxTracerEffects;
+         return mMaxMunitionEffects;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1065,46 +1123,86 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool WeaponEffectsManager::ApplyTracerEffect(
+      bool WeaponEffectsManager::ApplyMunitionEffect(
          const osg::Vec3& weaponFirePoint,
          const osg::Vec3& intialVelocity,
          const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
-         SimCore::Actors::BaseEntity* owner,
-         bool useLight )
+         MunitionEffectRequest& effectRequest )
       {
+         // Avoid any unnecessary processing.
          if( ! mGM.valid() 
-            || (mMaxTracerEffects > -1 && (int)mTracerEffects.size() >= mMaxTracerEffects) )
+            || (mMaxMunitionEffects > -1 && int(mMunitionEffects.size()) >= mMaxMunitionEffects) )
          {
             return false;
          }
 
+         // Tracers are special case, since they rely on shaders.
+         bool isTracerEffect = ! effectsInfo.GetTracerShaderName().empty();
+
          // Find a recyclable effect.
-         TracerEffect* effect = NULL;
-         unsigned limit = mTracerEffects.size();
-         for( unsigned i = 0; i < limit; ++i )
+         MunitionEffect* effect = NULL;
+         MunitionEffect* curEffect = NULL;
+         MunitionEffectArray::iterator curEffectIter = mMunitionEffects.begin();
+         MunitionEffectArray::iterator endEffectArray = mMunitionEffects.end();
+         for( ; curEffectIter != endEffectArray; ++curEffectIter )
          {
-            if( mTracerEffects[i].valid() && ! mTracerEffects[i]->IsActive() )
+            curEffect = curEffectIter->get();
+            if( curEffect != NULL && ! curEffect->IsActive() )
             {
-               effect = mTracerEffects[i].get();
+               if( isTracerEffect == (dynamic_cast<TracerEffect*>(curEffect) != NULL) )
+               {
+                  effect = curEffect;
+                  break;
+               }
             }
          }
 
-         if( effect == NULL
-            && ( mMaxTracerEffects < 0 || (int)limit <= mMaxTracerEffects ) )
+         // Create a new effect if one could not be recycled.
+         if( effect == NULL )
          {
-            effect = new TracerEffect( 
-               0.001, // spawn tracer at a near-zero size; it will be stretched to max size during updates.
-               effectsInfo.GetTracerThickness(),
-               effectsInfo.GetTracerShaderName(),
-               effectsInfo.GetTracerShaderGroup() );
-            effect->SetMaxLength( effectsInfo.GetTracerLength() );
-            effect->SetGameManager( mGM.get() );
+            if( isTracerEffect )
+            {
+               TracerEffect* tracerEffect = new TracerEffect( 
+                  0.001, // spawn tracer at a near-zero size; it will be stretched to max size during updates.
+                  effectsInfo.GetTracerThickness(),
+                  effectsInfo.GetTracerShaderName(),
+                  effectsInfo.GetTracerShaderGroup() );
+               tracerEffect->SetMaxLength( effectsInfo.GetTracerLength() );
 
-            // Make sure the tracer is visible in the scene
-            mGM->GetScene().AddDrawable( effect );
+               effect = tracerEffect;
+            }
+            else
+            {
+               dtCore::RefPtr<osg::Node> modelNode
+                  = osgDB::readNodeFile( effectRequest.GetMunitionModelFile() );
 
-            // Track this tracer effect though out the life of the application
-            mTracerEffects.push_back( effect );
+               if( modelNode.valid() )
+               {
+                  effect = new MunitionEffect;
+
+                  osg::Group* group = dynamic_cast<osg::Group*>(effect->GetOSGNode());
+                  if( group != NULL )
+                  {
+                     group->addChild( modelNode.get() );
+                  }
+               }
+               else
+               {
+                  LOG_WARNING( ("Could not load munition effect model \""
+                     + effectRequest.GetMunitionModelFile() + "\"") );
+               }
+            }
+
+            if( effect != NULL )
+            {
+               effect->SetGameManager( mGM.get() );
+
+               // Make sure the munition is visible in the scene
+               mGM->GetScene().AddDrawable( effect );
+
+               // Track this effect though out the life of the application
+               mMunitionEffects.push_back( effect );
+            }
          }
 
          bool success = effect != NULL;
@@ -1115,20 +1213,47 @@ namespace SimCore
             effect->SetPosition( weaponFirePoint );
             effect->SetVelocity( intialVelocity );
 
-            // Setup tracer to update and render.
-            // This also sets the initial orientation of the tracer.
-            float tracerLifeTime = CalcTimeToImpact( 
-               weaponFirePoint, intialVelocity, 
-               effectsInfo.GetTracerLifeTime(), owner );
-            effect->SetHasLight( useLight );
-            effect->Execute( tracerLifeTime );
+            // Determine if the munition has a light effect.
+            if( effectRequest.IsFirstEffect() )
+            {
+               effect->SetLightName( effectsInfo.GetTracerLight() );
+
+               // Default the tracer light in case the map did not set the light name.
+               if( isTracerEffect && effect->GetLightName().empty() )
+               {
+                  effect->SetLightName( TracerEffect::DEFAULT_TRACER_LIGHT.Get() );
+               }
+            }
+            else
+            {
+               effect->SetLightName( "" );
+            }
+
+            // Execute the effect.
+            if( isTracerEffect )
+            {
+
+               // Determine how far the tracer has to go before it hits an obstacle.
+               float tracerLifeTime = CalcTimeToImpact( 
+                  weaponFirePoint, intialVelocity, 
+                  effectsInfo.GetTracerLifeTime(), effectRequest.GetOwner() );
+
+               // This also sets the initial orientation of the tracer.
+               // Setup tracer to update and render.
+               effect->Execute( tracerLifeTime );
+            }
+            else
+            {
+               // This may be a grenade effect of some kind.
+               effect->Execute( 10.0f );
+            }
          }
 
          return success;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool WeaponEffectsManager::AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest )
+      bool WeaponEffectsManager::AddMunitionEffectRequest( dtCore::RefPtr<MunitionEffectRequest>& effectRequest )
       {
          if( ! effectRequest.valid() )
          {
@@ -1141,7 +1266,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned WeaponEffectsManager::ClearTracerEffectRequests()
+      unsigned WeaponEffectsManager::ClearMunitionEffectRequests()
       {
          unsigned lastSize = mTracerRequests.size();
          mTracerRequests.clear();
@@ -1149,7 +1274,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponEffectsManager::UpdateTracerEffectRequests( float timeDelta )
+      void WeaponEffectsManager::UpdateMunitionEffectRequests( float timeDelta )
       {
          if( mTracerRequests.empty() )
          {
@@ -1158,8 +1283,8 @@ namespace SimCore
 
          bool deleteEffectRequest = false;
          bool firstEffectRequestProcessed = false;
-         TracerEffectRequest* curRequest = NULL;
-         TracerEffectRequestList::iterator iter(--mTracerRequests.end());
+         MunitionEffectRequest* curRequest = NULL;
+         MunitionEffectRequestList::iterator iter(--mTracerRequests.end());
          while( ! firstEffectRequestProcessed )
          {
             firstEffectRequestProcessed = iter == mTracerRequests.begin();
@@ -1169,19 +1294,18 @@ namespace SimCore
             if( curRequest == NULL ) // This should not happen
             {
                deleteEffectRequest = true;
-               LOG_WARNING( "WeaponEffectsManager acquired a NULL TracerEffectRequest" );
+               LOG_WARNING( "WeaponEffectsManager acquired a NULL MunitionEffectRequest" );
             }
             else
             {
                curRequest->Update( timeDelta );
                if( curRequest->IsEffectReady() )
                {
-                  ApplyTracerEffect(
+                  ApplyMunitionEffect(
                      curRequest->GetFirePoint(),
                      curRequest->GetVelocity(),
                      curRequest->GetEffectsInfo(),
-                     curRequest->GetOwner(),
-                     curRequest->IsFirstEffect() );
+                     *curRequest );
 
                   curRequest->Decrement();
                }
@@ -1194,7 +1318,7 @@ namespace SimCore
 
             if( deleteEffectRequest )
             {
-               TracerEffectRequestList::iterator deleteIter = iter;
+               MunitionEffectRequestList::iterator deleteIter = iter;
                if( ! firstEffectRequestProcessed )
                   --iter;
                mTracerRequests.erase(deleteIter);
@@ -1214,19 +1338,19 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned WeaponEffectsManager::GetTracerEffectCount() const
+      unsigned WeaponEffectsManager::GetMunitionEffectCount() const
       {
-         return mTracerEffects.size();
+         return mMunitionEffects.size();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned WeaponEffectsManager::GetTracerEffectActiveCount() const
+      unsigned WeaponEffectsManager::GetMunitionEffectActiveCount() const
       {
          unsigned activeCount = 0;
-         unsigned limit = mTracerEffects.size();
+         unsigned limit = mMunitionEffects.size();
          for( unsigned i = 0; i < limit; ++i )
          {
-            if( mTracerEffects[i].valid() && mTracerEffects[i]->IsActive() )
+            if( mMunitionEffects[i].valid() && mMunitionEffects[i]->IsActive() )
             {
                ++activeCount;
             }
@@ -1258,14 +1382,14 @@ namespace SimCore
             iter->second->Update( deltaTime );
          }
 
-         UpdateTracerEffectRequests( deltaTime );
+         UpdateMunitionEffectRequests( deltaTime );
 
-         unsigned limit = mTracerEffects.size();
+         unsigned limit = mMunitionEffects.size();
          for( unsigned effect = 0; effect < limit; ++effect )
          {
-            if( mTracerEffects[effect].valid() )
+            if( mMunitionEffects[effect].valid() )
             {
-               mTracerEffects[effect]->Update(deltaTime);
+               mMunitionEffects[effect]->Update(deltaTime);
             }
          }
       }
@@ -1320,35 +1444,35 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      unsigned WeaponEffectsManager::RecycleTracerEffects()
+      unsigned WeaponEffectsManager::RecycleMunitionEffects()
       {
          unsigned recycleCount = 0;
 
-         typedef std::vector<dtCore::RefPtr<TracerEffect> > TracerEffectArray;
-
          // Remove any unused, extraneous effects
-         if( ! mTracerEffects.empty() && mMaxTracerEffects > -1 
-            && mTracerEffects.size() > unsigned(mMaxTracerEffects) )
+         if( ! mMunitionEffects.empty() && mMaxMunitionEffects > -1 
+            && mMunitionEffects.size() > unsigned(mMaxMunitionEffects) )
          {
-            TracerEffectArray::iterator iter(--mTracerEffects.end());
-            TracerEffectArray::iterator begin = mTracerEffects.begin();
+            MunitionEffectArray::iterator iter(--mMunitionEffects.end());
+            MunitionEffectArray::iterator begin = mMunitionEffects.begin();
 
             for( ; iter != begin; )
             {
                // Remove all NULLs and unused effects that make the effects
                // vector longer than necessary.
-               if( ! iter->valid() || ( ! (*iter)->IsActive() && mTracerEffects.size() > unsigned(mMaxTracerEffects) ) )
+               if( ! iter->valid()
+                  || ( ! (*iter)->IsActive()
+                     && mMunitionEffects.size() > unsigned(mMaxMunitionEffects) ) )
                {
-                  // Ensure that the tracer is still not held by the scene.
+                  // Ensure that the munition is still not held by the scene.
                   if( mGM.valid() )
                   {
                      mGM->GetScene().RemoveDrawable( iter->get() );
                   }
 
-                  TracerEffectArray::iterator toDelete = iter;
+                  MunitionEffectArray::iterator toDelete = iter;
 
                   --iter;
-                  mTracerEffects.erase(toDelete);
+                  mMunitionEffects.erase(toDelete);
                }
                else
                {
@@ -1357,7 +1481,7 @@ namespace SimCore
             }
          }
 
-         // DEBUG: std::cout << "Tracers:\t" << mTracerEffects.size() << std::endl;
+         // DEBUG: std::cout << "Munition Effects:\t" << mMunitionEffects.size() << std::endl;
 
          return recycleCount;
       }
@@ -1365,7 +1489,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       unsigned WeaponEffectsManager::Recycle()
       {
-         return RecycleWeaponEffects() + RecycleTracerEffects();
+         return RecycleWeaponEffects() + RecycleMunitionEffects();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1384,20 +1508,20 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponEffectsManager::ClearTracerEffects()
+      void WeaponEffectsManager::ClearMunitionEffects()
       {
          if( mGM.valid() )
          {
-            unsigned limit = mTracerEffects.size();
+            unsigned limit = mMunitionEffects.size();
             for( unsigned tracer = 0; tracer < limit; ++tracer )
             {
-               mGM->GetScene().RemoveDrawable( mTracerEffects[tracer].get() );
+               mGM->GetScene().RemoveDrawable( mMunitionEffects[tracer].get() );
             }
          }
 
-         if( ! mTracerEffects.empty() )
+         if( ! mMunitionEffects.empty() )
          {
-            mTracerEffects.clear();
+            mMunitionEffects.clear();
          }
       }
 
@@ -1405,7 +1529,7 @@ namespace SimCore
       void WeaponEffectsManager::Clear()
       {
          ClearWeaponEffects();
-         ClearTracerEffects();
+         ClearMunitionEffects();
       }
 
       //////////////////////////////////////////////////////////////////////////

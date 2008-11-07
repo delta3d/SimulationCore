@@ -650,7 +650,6 @@ namespace SimCore
          }
 
          // Place tracers into the scene
-         if( ! effects->GetTracerShaderName().empty() )
          {
             unsigned quantity = message.GetQuantityFired();
 
@@ -675,10 +674,11 @@ namespace SimCore
                if( probability == 1.0f || dtUtil::RandFloat( 0.0f, 1.0 ) < probability )
                {
                   // ...generate a tracer effect request...
-                  dtCore::RefPtr<TracerEffectRequest> effectRequest
-                     = new TracerEffectRequest( quantity, 0.05f, *effects );
+                  dtCore::RefPtr<MunitionEffectRequest> effectRequest
+                     = new MunitionEffectRequest( quantity, 0.05f, *effects );
                   effectRequest->SetVelocity( message.GetInitialVelocityVector() );
                   effectRequest->SetOwner( entity );
+                  effectRequest->SetMunitionModelFile( munitionType.GetModel() );
 
                   if( entity != NULL && bestDof != NULL )
                   {
@@ -687,7 +687,7 @@ namespace SimCore
                      entity->GetAbsoluteMatrix( bestDof, mtx );
 
                      effectRequest->SetFirePoint( mtx.getTrans() );
-                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+                     mEffectsManager->AddMunitionEffectRequest( effectRequest );
 
                      //mEffectsManager->ApplyTracerEffect( 
                      //   mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
@@ -696,7 +696,7 @@ namespace SimCore
                   {
                      // ...from the firing location specified in the message.
                      effectRequest->SetFirePoint( message.GetFiringLocation() );
-                     mEffectsManager->AddTracerEffectRequest( effectRequest );
+                     mEffectsManager->AddMunitionEffectRequest( effectRequest );
 
                      //mEffectsManager->ApplyTracerEffect( 
                      //   message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );

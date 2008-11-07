@@ -68,46 +68,33 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT TracerEffect : public SimCore::Actors::VolumetricLine
+      class SIMCORE_EXPORT MunitionEffect : public dtCore::Transformable
       {
          public:
-            static const dtUtil::RefString DEFAULT_TRACER_SHADER;
-            static const dtUtil::RefString DEFAULT_TRACER_SHADER_GROUP;
+            MunitionEffect();
 
-            TracerEffect( float lineLength, float lineThickness,
-               const std::string& shaderName = DEFAULT_TRACER_SHADER.Get(),
-               const std::string& shaderGroup = DEFAULT_TRACER_SHADER_GROUP.Get() );
-
-            void SetHasLight( bool hasLight );
-            bool HasLight() const;
+            void SetLightName( const std::string& lightName );
+            const std::string& GetLightName() const;
 
             void SetMaxLifeTime( float maxLifeTime );
             float GetMaxLifeTime() const;
 
-            void SetSpeed( float speed );
-            float GetSpeed() const;
-
-            void SetDirection( const osg::Vec3& direction );
-            const osg::Vec3& GetDirection() const;
-
             void SetVelocity( const osg::Vec3& velocity );
-            osg::Vec3 GetVelocity() const;
-            void GetVelocity( osg::Vec3& outVelocity ) const;
+            const osg::Vec3& GetVelocity() const;
 
-            void SetPosition( const osg::Vec3& position );
+            virtual void SetPosition( const osg::Vec3& position );
             const osg::Vec3& GetPosition() const;
 
             void SetVisible( bool visible );
             bool IsVisible() const;
 
-            void SetMaxLength( float maxLength );
-            float GetMaxLength() const;
-
             bool IsActive() const;
+
+            virtual void Reset();
 
             void Execute( float maxLifeTime );
 
-            void Update( float deltaTime );
+            virtual void Update( float deltaTime );
 
             void AddDynamicLight( const osg::Vec3& color );
             void RemoveDynamicLight();
@@ -115,20 +102,52 @@ namespace SimCore
             void SetGameManager( dtGame::GameManager* gameManager );
 
          protected:
-            virtual ~TracerEffect();
+            virtual ~MunitionEffect();
 
-         private:
-            bool      mHasLight;
             bool      mDynamicLightEnabled;
             unsigned  mDynamicLightID;
             float     mLifeTime;
             float     mMaxLifeTime;
-            float     mSpeed; // aka Velocity Magnitude
-            float     mMaxLength;
             osg::Vec3 mLastPosition;
             osg::Vec3 mPosition;
-            osg::Vec3 mDirection;
+            osg::Vec3 mVelocity;
+            dtUtil::RefString mTracerLightName;
             dtCore::RefPtr<dtGame::GameManager> mGM; // for accessing the rendering support component (safer using GM)
+      };
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Tracer Effect Code
+      //////////////////////////////////////////////////////////////////////////
+      class SIMCORE_EXPORT TracerEffect : public MunitionEffect
+      {
+         public:
+            typedef MunitionEffect BaseClass;
+
+            static const dtUtil::RefString DEFAULT_TRACER_LIGHT;
+            static const dtUtil::RefString DEFAULT_TRACER_SHADER;
+            static const dtUtil::RefString DEFAULT_TRACER_SHADER_GROUP;
+
+            TracerEffect( float lineLength, float lineThickness,
+               const std::string& shaderName = DEFAULT_TRACER_SHADER.Get(),
+               const std::string& shaderGroup = DEFAULT_TRACER_SHADER_GROUP.Get() );
+
+            void SetMaxLength( float maxLength );
+            float GetMaxLength() const;
+
+            virtual void SetPosition( const osg::Vec3& position );
+
+            virtual void Reset();
+
+            virtual void Update( float deltaTime );
+
+         protected:
+            virtual ~TracerEffect();
+
+         private:
+            float mMaxLength;
+            dtCore::RefPtr<SimCore::Actors::VolumetricLine> mLine;
       };
 
 
@@ -136,10 +155,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Request Code
       //////////////////////////////////////////////////////////////////////////
-      class TracerEffectRequest : public osg::Referenced
+      class SIMCORE_EXPORT MunitionEffectRequest : public osg::Referenced
       {
          public:
-            TracerEffectRequest( unsigned totalEffects, float cycleTime,
+            MunitionEffectRequest( unsigned totalEffects, float cycleTime,
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
 
             void SetOwner( SimCore::Actors::BaseEntity* owner );
@@ -151,6 +170,9 @@ namespace SimCore
 
             void SetVelocity( const osg::Vec3& velocity );
             const osg::Vec3& GetVelocity() const;
+
+            void SetMunitionModelFile( const std::string& modelFile );
+            const std::string& GetMunitionModelFile() const;
 
             const SimCore::Actors::MunitionEffectsInfoActor& GetEffectsInfo() const;
 
@@ -167,7 +189,7 @@ namespace SimCore
             unsigned Decrement();
          
          protected:
-            virtual ~TracerEffectRequest();
+            virtual ~MunitionEffectRequest();
 
          private:
             bool     mIsFirstEffect;
@@ -176,6 +198,7 @@ namespace SimCore
             float    mCurrentTime;
             osg::Vec3 mFirePoint;
             osg::Vec3 mVelocity;
+            dtUtil::RefString mMunitionModelFile;
             dtCore::RefPtr<const SimCore::Actors::MunitionEffectsInfoActor> mEffectsInfo;
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
       };
@@ -356,11 +379,11 @@ namespace SimCore
             void SetMaxWeaponEffects( int maxEffectsAllowed );
             int GetMaxWeaponEffects() const;
 
-            // Set the limit of tracer effects allowed to exist at any one time.
+            // Set the limit of munition effects allowed to exist at any one time.
             // @param maxEffectsAllowed The limit on effects allowed to be created.
             //        Negative values mean NO limit.
-            void SetMaxTracerEffects( int maxEffectsAllowed );
-            int GetMaxTracerEffects() const;
+            void SetMaxMunitionEffects( int maxEffectsAllowed );
+            int GetMaxMunitionEffects() const;
 
             // Set the cycle length between each call to Recycle.
             // @param recycleTime The time in seconds between each automatic
@@ -389,39 +412,36 @@ namespace SimCore
             // @param intialVelocity The speed and direction in which the tracer travels.
             // @param effectsInfo The structure that holds parameters used in tracer creation,
             //        such as the tracer shader name, dimensions, and life span
-            // @param useLight Determines if the effect should use a dynamic light; this is
-            //        normally used for the first tracer in a group of tracer effects spawned
-            //        by a tracer effect request.
-            // @param owner Entity that shot the tracer effect. This is used to avoid self-collisions.
+            // @param effectRequest Object containing other parameters related to the effect,
+            //        such as the owner entity that fired the munition.
             // @return The success of the operation; FALSE means that
-            bool ApplyTracerEffect(
+            bool ApplyMunitionEffect(
                const osg::Vec3& weaponFirePoint,
                const osg::Vec3& intialVelocity,
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
-               SimCore::Actors::BaseEntity* owner = NULL,
-               bool useLight = false );
+               MunitionEffectRequest& effectRequest );
 
-            bool AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest );
+            bool AddMunitionEffectRequest( dtCore::RefPtr<MunitionEffectRequest>& effectRequest );
 
-            unsigned ClearTracerEffectRequests();
+            unsigned ClearMunitionEffectRequests();
             
-            void UpdateTracerEffectRequests( float timeDelta );
+            void UpdateMunitionEffectRequests( float timeDelta );
 
             // Get the total of effect objects in existence.
             // @return The number of effects objects contained by this effects manager.
             unsigned GetWeaponEffectCount() const;
 
-            // Get the number of tracer effects allocated within this manager.
-            // @return The total number of tracers allocated within this manager.
-            unsigned GetTracerEffectCount() const;
+            // Get the number of munition effects allocated within this manager.
+            // @return The total number of munition effects allocated within this manager.
+            unsigned GetMunitionEffectCount() const;
 
-            // Get the number of tracer effects that are currently active in the simulation.
-            // @return The number of active tracers opposed to the total
-            //         number of allocated tracers.
+            // Get the number of munition effects that are currently active in the simulation.
+            // @return The number of active munition effects opposed to the total
+            //         number of allocated munition effects.
             //
             // NOTE: This will return a number less than or equal to that returned
             //       by GetTracerEffectcount.
-            unsigned GetTracerEffectActiveCount() const;
+            unsigned GetMunitionEffectActiveCount() const;
 
             // Update time on all effects and execute a recycle when necessary.
             // @param deltaTime The time in seconds since the last call to Update
@@ -432,9 +452,9 @@ namespace SimCore
             // @return The number of effects objects recycled, both weapon and tracer effects.
             unsigned Recycle();
 
-            // Recycle only tracer effects.
-            // @return The number of tracer effects that were recycled.
-            unsigned RecycleTracerEffects();
+            // Recycle only munition effects.
+            // @return The number of munition effects that were recycled.
+            unsigned RecycleMunitionEffects();
 
             // Recycle only weapon effects.
             // @return The number of weapon effects that were recycled.
@@ -443,8 +463,8 @@ namespace SimCore
             // Clear out all weapon effects objects and their resources.
             void ClearWeaponEffects();
 
-            // Clear out all tracer effects objects and their resources.
-            void ClearTracerEffects();
+            // Clear out all munition effects objects and their resources.
+            void ClearMunitionEffects();
 
             // Clear all weapon and tracer effects
             void Clear();
@@ -460,15 +480,17 @@ namespace SimCore
             float mRecycleTime;
             float mCurRecycleTime; // increases to mRefreshTime
             int mMaxWeaponEffects;
-            int mMaxTracerEffects;
-            std::map<std::string, dtCore::RefPtr<WeaponEffect> > mEntityToEffectMap;
-            std::vector<dtCore::RefPtr<TracerEffect> > mTracerEffects;
+            int mMaxMunitionEffects;
+            typedef std::map<std::string, dtCore::RefPtr<WeaponEffect> > EntityToWeaponEffectMap;
+            EntityToWeaponEffectMap mEntityToEffectMap;
+            typedef std::vector<dtCore::RefPtr<MunitionEffect> > MunitionEffectArray;
+            MunitionEffectArray mMunitionEffects;
             dtCore::RefPtr<dtCore::BatchIsector> mIsector;
             dtCore::RefPtr<dtGame::GameManager> mGM;
 
-            typedef std::vector<dtCore::RefPtr<TracerEffectRequest> > TracerEffectRequestList;
-            TracerEffectRequestList mTracerRequests;
-            TracerEffectRequestList mTracerRequestsDeletable;
+            typedef std::vector<dtCore::RefPtr<MunitionEffectRequest> > MunitionEffectRequestList;
+            MunitionEffectRequestList mTracerRequests;
+            MunitionEffectRequestList mTracerRequestsDeletable;
       };
 
    }
