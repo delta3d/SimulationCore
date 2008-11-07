@@ -159,110 +159,107 @@ namespace SimCore
          public:
             MunitionEffectsInfoActor( MunitionEffectsInfoActorProxy& proxy );
 
-            virtual osg::Node* GetOSGNode() { return NULL; }
-            virtual const osg::Node* GetOSGNode() const { return NULL; }
+            virtual osg::Node* GetOSGNode();
+            virtual const osg::Node* GetOSGNode() const;
 
-            MunitionEffectsInfoActorProxy& GetProxy() { return *mProxy; }
-            const MunitionEffectsInfoActorProxy& GetProxy() const { return *mProxy; }
+            MunitionEffectsInfoActorProxy& GetProxy();
+            const MunitionEffectsInfoActorProxy& GetProxy() const;
 
             // MUNITION FLIGHT PROPERTIES
-            void SetFlyEffect( const std::string& fileName ) { mEffectFly = fileName; }
-            std::string GetFlyEffect() const { return mEffectFly; }
+            void SetFlyEffect( const std::string& fileName );
+            const std::string& GetFlyEffect() const;
 
-            void SetFlySound( const std::string& fileName ) { mSoundFly = fileName; }
-            std::string GetFlySound() const { return mSoundFly; }
+            void SetFlySound( const std::string& fileName );
+            const std::string& GetFlySound() const;
 
-            void SetFlySoundMinDistance( float distance ) { mSoundFly_Min = distance; }
-            float GetFlySoundMinDistance() const { return mSoundFly_Min; }
+            void SetFlySoundMinDistance( float distance );
+            float GetFlySoundMinDistance() const;
 
-            void SetFlySoundMaxDistance( float distance ) { mSoundFly_Max = distance; }
-            float GetFlySoundMaxDistance() const { return mSoundFly_Max; }
+            void SetFlySoundMaxDistance( float distance );
+            float GetFlySoundMaxDistance() const;
 
             // SHOT FIRED PROPERTIES
-            void SetFireEffect( const std::string& fileName ) { mEffectFire = fileName; }
-            std::string GetFireEffect() const { return mEffectFire; }
+            void SetFireEffect( const std::string& fileName );
+            const std::string& GetFireEffect() const;
 
-            void SetFireSound( const std::string& fileName ) { mSoundFire = fileName; }
-            std::string GetFireSound() const { return mSoundFire; }
+            void SetFireSound( const std::string& fileName );
+            const std::string& GetFireSound() const;
 
-            void SetFireSoundMinDistance( float distance ) { mSoundFire_Min = distance; }
-            float GetFireSoundMinDistance() const { return mSoundFire_Min; }
+            void SetFireSoundMinDistance( float distance );
+            float GetFireSoundMinDistance() const;
 
-            void SetFireSoundMaxDistance( float distance ) { mSoundFire_Max = distance; }
-            float GetFireSoundMaxDistance() const { return mSoundFire_Max; }
+            void SetFireSoundMaxDistance( float distance );
+            float GetFireSoundMaxDistance() const;
 
-            void SetFireFlashProbability( float probability )
-            {
-               mProbabilityFireFlash = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability;
-            }
-            float GetFireFlashProbability() const { return mProbabilityFireFlash; }
+            void SetFireFlashProbability( float probability );
+            float GetFireFlashProbability() const;
 
-            void SetFireFlashTime( float flashTime ) { mFireFlashTime = flashTime; }
-            float GetFireFlashTime() const { return mFireFlashTime; }
+            void SetFireFlashTime( float flashTime );
+            float GetFireFlashTime() const;
 
             // GROUND IMPACT PROPERTIES
-            void SetGroundImpactEffect( const std::string& fileName ) { mEffectImpactGround = fileName; }
-            std::string GetGroundImpactEffect() const { return mEffectImpactGround; }
+            void SetGroundImpactEffect( const std::string& fileName );
+            const std::string& GetGroundImpactEffect() const;
 
-            void SetGroundImpactSound( const std::string& fileName ) { mSoundImpactGround = fileName; }
-            std::string GetGroundImpactSound() const { return mSoundImpactGround; }
+            void SetGroundImpactSound( const std::string& fileName );
+            const std::string& GetGroundImpactSound() const;
 
-            void SetGroundImpactSoundMinDistance( float distance ) { mSoundImpactGround_Min = distance; }
-            float GetGroundImpactSoundMinDistance() const { return mSoundImpactGround_Min; }
+            void SetGroundImpactSoundMinDistance( float distance );
+            float GetGroundImpactSoundMinDistance() const;
 
-            void SetGroundImpactSoundMaxDistance( float distance ) { mSoundImpactGround_Max = distance; }
-            float GetGroundImpactSoundMaxDistance() const { return mSoundImpactGround_Max; }
+            void SetGroundImpactSoundMaxDistance( float distance );
+            float GetGroundImpactSoundMaxDistance() const;
 
             // ENTITY IMPACT PROPERTIES
-            void SetEntityImpactEffect( const std::string& fileName ) { mEffectImpactEntity = fileName; }
-            std::string GetEntityImpactEffect() const { return mEffectImpactEntity; }
-            bool HasEntityImpactEffect() const { return ! mEffectImpactEntity.empty(); }
+            void SetEntityImpactEffect( const std::string& fileName );
+            const std::string& GetEntityImpactEffect() const;
+            bool HasEntityImpactEffect() const;
 
-            void SetEntityImpactSound( const std::string& fileName ) { mSoundImpactEntity = fileName; }
-            std::string GetEntityImpactSound() const { return mSoundImpactEntity; }
-            bool HasEntityImpactSound() const { return ! mSoundImpactEntity.empty(); }
+            void SetEntityImpactSound( const std::string& fileName );
+            const std::string& GetEntityImpactSound() const;
+            bool HasEntityImpactSound() const;
 
-            void SetEntityImpactSoundMinDistance( float distance ) { mSoundImpactEntity_Min = distance; }
-            float GetEntityImpactSoundMinDistance() const { return mSoundImpactEntity_Min; }
+            void SetEntityImpactSoundMinDistance( float distance );
+            float GetEntityImpactSoundMinDistance() const;
 
-            void SetEntityImpactSoundMaxDistance( float distance ) { mSoundImpactEntity_Max = distance; }
-            float GetEntityImpactSoundMaxDistance() const { return mSoundImpactEntity_Max; }
+            void SetEntityImpactSoundMaxDistance( float distance );
+            float GetEntityImpactSoundMaxDistance() const;
 
             // SMOKE PROPERTIES
-            void SetSmokeEffect( const std::string& fileName ) { mEffectSmoke = fileName; }
-            std::string GetSmokeEffect() const { return mEffectSmoke; }
+            void SetSmokeEffect( const std::string& fileName );
+            const std::string& GetSmokeEffect() const;
 
-            void SetSmokeLifeTime( float lifeTime ) { mTimeSmoke = lifeTime; }
-            float GetSmokeLifeTime() const { return mTimeSmoke; }
+            void SetSmokeLifeTime( float lifeTime );
+            float GetSmokeLifeTime() const;
 
             // TRACER PROPERTIES
-            void SetTracerShaderName( const std::string& shaderName ) { mTracerShaderName = shaderName; }
-            std::string GetTracerShaderName() const { return mTracerShaderName; }
+            void SetTracerShaderName( const std::string& shaderName );
+            const std::string& GetTracerShaderName() const;
 
-            void SetTracerShaderGroup( const std::string& shaderGroup ) { mTracerShaderGroup = shaderGroup; }
-            std::string GetTracerShaderGroup() const { return mTracerShaderGroup; }
+            void SetTracerShaderGroup( const std::string& shaderGroup );
+            const std::string& GetTracerShaderGroup() const;
 
-            void SetTracerLifeTime( float lifeTime ) { mTracerLifeTime = lifeTime; }
-            float GetTracerLifeTime() const { return mTracerLifeTime; }
+            void SetTracerLifeTime( float lifeTime );
+            float GetTracerLifeTime() const;
 
-            void SetTracerLength( float tracerLength ) { mTracerLength = tracerLength; }
-            float GetTracerLength() const { return mTracerLength; }
+            void SetTracerLength( float tracerLength );
+            float GetTracerLength() const;
 
-            void SetTracerThickness( float tracerThickness ) { mTracerThickness = tracerThickness; }
-            float GetTracerThickness() const { return mTracerThickness; }
+            void SetTracerThickness( float tracerThickness );
+            float GetTracerThickness() const;
 
             // LIGHT PROPERTIES
-            void SetGroundImpactLight( const std::string& lightName ) { mLightImpactGround = lightName; }
-            std::string GetGroundImpactLight() const { return mLightImpactGround; }
+            void SetGroundImpactLight( const std::string& lightName );
+            const std::string& GetGroundImpactLight() const;
 
-            void SetEntityImpactLight( const std::string& lightName ) { mLightImpactEntity = lightName; }
-            std::string GetEntityImpactLight() const { return mLightImpactEntity; }
+            void SetEntityImpactLight( const std::string& lightName );
+            const std::string& GetEntityImpactLight() const;
 
-            void SetFireLight( const std::string& lightName ) { mLightFire = lightName; }
-            std::string GetFireLight() const { return mLightFire; }
+            void SetFireLight( const std::string& lightName );
+            const std::string& GetFireLight() const;
 
-            void SetTracerLight( const std::string& lightName ) { mLightTracer = lightName; }
-            std::string GetTracerLight() const { return mLightTracer; }
+            void SetTracerLight( const std::string& lightName );
+            const std::string& GetTracerLight() const;
 
          protected:
             virtual ~MunitionEffectsInfoActor();
