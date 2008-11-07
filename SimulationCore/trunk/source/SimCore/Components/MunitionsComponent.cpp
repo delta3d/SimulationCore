@@ -678,6 +678,7 @@ namespace SimCore
                   dtCore::RefPtr<TracerEffectRequest> effectRequest
                      = new TracerEffectRequest( quantity, 0.05f, *effects );
                   effectRequest->SetVelocity( message.GetInitialVelocityVector() );
+                  effectRequest->SetOwner( entity );
 
                   if( entity != NULL && bestDof != NULL )
                   {
