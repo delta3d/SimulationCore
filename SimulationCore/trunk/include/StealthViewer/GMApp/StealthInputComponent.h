@@ -126,6 +126,10 @@ namespace StealthGM
          void SetReconnectOnIdle( bool reconnect ) { mReconnectOnIdle = reconnect; }
          bool GetReconnectOnIdle() const { return mReconnectOnIdle; }
 
+         // Once a second (or so) it does processing that as required to keep the simulation
+         // in sync. For instance, updating the camera speed based on FoV, etc...
+         void HandlePeriodicProcessing(float deltaTime);
+
       protected:
 
          /// Destructor
@@ -166,6 +170,8 @@ namespace StealthGM
          bool mFirstPersonAttachMode;
          bool mHasUI;
          bool mCollideWithGround;
+
+         float mCountDownToPeriodicProcessing; 
 
          // Ensures stealth actor persists between map changes.
          dtCore::RefPtr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;
