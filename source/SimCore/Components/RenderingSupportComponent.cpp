@@ -434,7 +434,7 @@ namespace SimCore
          // The following code traps during the framesynch and forces the camera to update itself, and then
          // does our 'Post Camera' work.
          // This behavior was copied from LabalManager.cpp... if you change this, you should change that.
-         if( data->message == "framesynch" )
+         if( data->message == "framesynch" && GetGameManager() != NULL)
          {
             try
             {
