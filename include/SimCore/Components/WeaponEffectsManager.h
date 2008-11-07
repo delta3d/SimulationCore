@@ -142,6 +142,10 @@ namespace SimCore
             TracerEffectRequest( unsigned totalEffects, float cycleTime,
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo );
 
+            void SetOwner( SimCore::Actors::BaseEntity* owner );
+            SimCore::Actors::BaseEntity* GetOwner();
+            const SimCore::Actors::BaseEntity* GetOwner() const;
+
             void SetFirePoint( const osg::Vec3& firePoint );
             const osg::Vec3& GetFirePoint() const;
 
@@ -173,6 +177,7 @@ namespace SimCore
             osg::Vec3 mFirePoint;
             osg::Vec3 mVelocity;
             dtCore::RefPtr<const SimCore::Actors::MunitionEffectsInfoActor> mEffectsInfo;
+            dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mOwner;
       };
 
 
@@ -387,11 +392,13 @@ namespace SimCore
             // @param useLight Determines if the effect should use a dynamic light; this is
             //        normally used for the first tracer in a group of tracer effects spawned
             //        by a tracer effect request.
+            // @param owner Entity that shot the tracer effect. This is used to avoid self-collisions.
             // @return The success of the operation; FALSE means that
             bool ApplyTracerEffect(
                const osg::Vec3& weaponFirePoint,
                const osg::Vec3& intialVelocity,
                const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+               SimCore::Actors::BaseEntity* owner = NULL,
                bool useLight = false );
 
             bool AddTracerEffectRequest( dtCore::RefPtr<TracerEffectRequest>& effectRequest );
@@ -442,7 +449,8 @@ namespace SimCore
             // Clear all weapon and tracer effects
             void Clear();
 
-            float CalcTimeToImpact( const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime = 10.0f );
+            float CalcTimeToImpact( const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity,
+               float maxTime = 10.0f, SimCore::Actors::BaseEntity* owner = NULL );
 
          protected:
            virtual ~WeaponEffectsManager();

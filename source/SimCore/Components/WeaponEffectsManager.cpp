@@ -44,6 +44,56 @@ namespace SimCore
    namespace Components
    {
       //////////////////////////////////////////////////////////////////////////
+      // Utility Code
+      //////////////////////////////////////////////////////////////////////////
+      namespace WeaponEffectUtils
+      {
+         class EntityNodeVisitor : public osg::NodeVisitor
+         {
+            public:
+               EntityNodeVisitor()
+                  : mFoundNode(false)
+                  , mNode(NULL)
+               {
+                  setTraversalMode( osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
+               }
+
+               void SetGeodeToFind( const osg::Geode& node )
+               {
+                  mNode = &node;
+               }
+
+               bool HasFoundNode() const
+               {
+                  return mFoundNode;
+               }
+
+               virtual void apply( osg::Geode& node )
+               {
+                  if( ! mFoundNode )
+                  {
+                     mFoundNode = &node == mNode;
+                  }
+               }
+
+               void Reset()
+               {
+                  mFoundNode = false;
+                  mNode = NULL;
+               }
+
+            protected:
+               virtual ~EntityNodeVisitor()
+               {
+               }
+
+            private:
+               bool mFoundNode;
+               const osg::Geode* mNode;
+         };
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       // Tracer Effect Code
       //////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString TracerEffect::DEFAULT_TRACER_SHADER("VolumetricLines");
@@ -356,6 +406,24 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       TracerEffectRequest::~TracerEffectRequest()
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void TracerEffectRequest::SetOwner( SimCore::Actors::BaseEntity* owner )
+      {
+         mOwner = owner;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      SimCore::Actors::BaseEntity* TracerEffectRequest::GetOwner()
+      {
+         return mOwner.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const SimCore::Actors::BaseEntity* TracerEffectRequest::GetOwner() const
+      {
+         return mOwner.get(); 
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1001,6 +1069,7 @@ namespace SimCore
          const osg::Vec3& weaponFirePoint,
          const osg::Vec3& intialVelocity,
          const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo,
+         SimCore::Actors::BaseEntity* owner,
          bool useLight )
       {
          if( ! mGM.valid() 
@@ -1050,7 +1119,7 @@ namespace SimCore
             // This also sets the initial orientation of the tracer.
             float tracerLifeTime = CalcTimeToImpact( 
                weaponFirePoint, intialVelocity, 
-               effectsInfo.GetTracerLifeTime() );
+               effectsInfo.GetTracerLifeTime(), owner );
             effect->SetHasLight( useLight );
             effect->Execute( tracerLifeTime );
          }
@@ -1107,8 +1176,12 @@ namespace SimCore
                curRequest->Update( timeDelta );
                if( curRequest->IsEffectReady() )
                {
-                  ApplyTracerEffect( curRequest->GetFirePoint(),
-                     curRequest->GetVelocity(), curRequest->GetEffectsInfo(), curRequest->IsFirstEffect() );
+                  ApplyTracerEffect(
+                     curRequest->GetFirePoint(),
+                     curRequest->GetVelocity(),
+                     curRequest->GetEffectsInfo(),
+                     curRequest->GetOwner(),
+                     curRequest->IsFirstEffect() );
 
                   curRequest->Decrement();
                }
@@ -1337,7 +1410,8 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       float WeaponEffectsManager::CalcTimeToImpact( 
-         const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity, float maxTime )
+         const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity,
+         float maxTime, SimCore::Actors::BaseEntity* owner )
       {
          float speed = initialVelocity.length();
          if( speed == 0.0f )
@@ -1345,21 +1419,65 @@ namespace SimCore
             return maxTime;
          }
 
-         dtCore::BatchIsector::SingleISector& SingleISector = mIsector->EnableAndGetISector(0);
+         dtCore::RefPtr<WeaponEffectUtils::EntityNodeVisitor> subNodeVisitor
+            = new WeaponEffectUtils::EntityNodeVisitor;
+         dtCore::BatchIsector::SingleISector& isector = mIsector->EnableAndGetISector(0);
          osg::Vec3 endPoint( weaponFirePoint + (initialVelocity*maxTime) );
-         SingleISector.SetSectorAsLineSegment( weaponFirePoint, endPoint);
+         isector.SetSectorAsLineSegment( weaponFirePoint, endPoint);
 
          if( mIsector->Update( osg::Vec3(0,0,0), true ) )
          {
-            if( SingleISector.GetNumberOfHits() > 0 ) 
+            if( isector.GetNumberOfHits() > 0 ) 
             {
-               SingleISector.GetHitPoint( endPoint );
+               // Check for self-collision?
+               if( owner != NULL )
+               {
+                  const osg::Geode* geode = NULL;
+                  osgUtil::IntersectVisitor::HitList& hitList = isector.GetHitList();
+                  osgUtil::IntersectVisitor::HitList::iterator curHitIter = hitList.begin();
+                  osgUtil::IntersectVisitor::HitList::iterator endHitList = hitList.end();
+                  for( int index = 0; curHitIter != endHitList; ++curHitIter, ++index )
+                  {
+                     const osgUtil::Hit& hit = hitList[index];
 
-               maxTime = (endPoint-weaponFirePoint).length()/speed;
+                     // Get the drawable of the current hit.
+                     geode = hit.getGeode();
+                     if( geode == NULL )
+                     {
+                        continue;
+                     }
 
-               // Clear for next use
-               mIsector->Reset();
+                     // Determine if the hit drawable object is part of the
+                     // entity that generated this tracer effect.
+                     subNodeVisitor->SetGeodeToFind( *geode );
+                     owner->GetOSGNode()->traverse( *subNodeVisitor );
+                     bool foundNode = subNodeVisitor->HasFoundNode();
+                     subNodeVisitor->Reset();
+
+                     // If the object is part of the entity hierarchy, then
+                     // continue searching for other hit points that are not
+                     // hits on the entity itself.
+                     if( foundNode )
+                     {
+                        continue;
+                     }
+
+                     // Point was found. Get it and exit the loop.
+                     isector.GetHitPoint( endPoint, index );
+                     break;
+                  }
+               }
+               else
+               {
+                  // Get the first point, not checking for self-collision.
+                  isector.GetHitPoint( endPoint );
+               }
             }
+
+            maxTime = (endPoint-weaponFirePoint).length()/speed;
+
+            // Clear for next use
+            mIsector->Reset();
          }
 
          return maxTime;
