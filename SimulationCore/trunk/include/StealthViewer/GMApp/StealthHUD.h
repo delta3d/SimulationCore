@@ -195,7 +195,7 @@ namespace StealthGM
       dtCore::RefPtr<SimCore::Components::HUDGroup> mHUDOverlay;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mToolbarOverlay;
       dtCore::RefPtr<SimCore::Components::StealthCompassMeter> mCompass;
-      dtCore::RefPtr<SimCore::Components::StealthGPSMeter> mGPS;
+      dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mGPS;
       dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> mMGRSMeter;
       dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> mCartesianMeter;
       dtCore::RefPtr<SimCore::Components::StealthToolbar> mToolbar;
