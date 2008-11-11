@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<Imageset Name="EntityIcons" Imagefile="CEGUI/imagesets/EntityIcons.tga" NativeHorzRes="1920" NativeVertRes="1200" AutoScaled="true">
+   
+   <Image Name="DEFAULT" XPos="0" YPos="0" Width="256" Height="64" />
+   
+</Imageset>
+
