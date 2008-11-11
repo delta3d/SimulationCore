@@ -64,9 +64,12 @@ void RangeRadial::onCreated()
 ////////////////////////////////////////////////////////////////////////////////
 void RangeRadial::setStartAngle( double angle )
 {
-   mStart = angle;
-   emit changedStartAngle( mStart );
-   updateHandles();
+   if( mStart != angle )
+   {
+      mStart = angle;
+      emit changedStartAngle( mStart );
+      updateHandles();
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +81,12 @@ double RangeRadial::getStartAngle() const
 ////////////////////////////////////////////////////////////////////////////////
 void RangeRadial::setEndAngle( double angle )
 {
-   mEnd = angle;
-   emit changedEndAngle( mEnd );
-   updateHandles();
+   if( mEnd != angle )
+   {
+      mEnd = angle;
+      emit changedEndAngle( mEnd );
+      updateHandles();
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -239,7 +245,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
    {
       mStart = angle - mEnd * 0.5;
       mStart = mStart < 0.0 ? mStart + 360 : mStart;
-      changedStartAngle( mStart );
+      emit changedStartAngle( mStart );
    }
    else
    {
@@ -297,7 +303,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
 
             mStart = mStart < 0.0 ? mStart + 360.0 : mStart;
             mStart = mStart > 360.0 ? mStart - 360.0 : mStart;
-            changedStartAngle( mStart );
+            emit changedStartAngle( mStart );
          }
          else // This is the just end handle.
          {
@@ -308,7 +314,7 @@ void RangeRadial::mouseMoveEvent( QMouseEvent* mouseEvent )
          // It should not exceed one full revolution.
          mEnd = mEnd < 0.0 ? 0.0 : mEnd;
          mEnd = mEnd > 360.0 ? 360.0 : mEnd;
-         changedEndAngle( mEnd );
+         emit changedEndAngle( mEnd );
       }
    }
 
