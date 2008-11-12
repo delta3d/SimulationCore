@@ -217,6 +217,7 @@ namespace SimCore
          , mCurrentSimTime(0.0)
          , mDefaultDomain(&SimCore::Actors::BaseEntityActorProxy::DomainEnum::GROUND)
       {
+         SetIntermittentGroundClampingTimeDelta(2.0f);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -250,9 +251,7 @@ namespace SimCore
          // characters clamp as expected.
          else if( ! transformChanged && velocity.length2() == 0.0f )
          {
-            // HACK: This will be enabled once intermittent clamping can
-            // orient the object properly.
-            //clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
+            clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
          }
 
          return *clampType;
