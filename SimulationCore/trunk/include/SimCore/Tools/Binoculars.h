@@ -120,6 +120,8 @@ namespace SimCore
             void SetOriginalFar( float nearValue );
             float GetOriginalFar() const { return mOriginalFar; }
 
+            void SetOverlayImage( const std::string& imageset, const std::string& imageName );
+
          protected:
 
             /// Destructor

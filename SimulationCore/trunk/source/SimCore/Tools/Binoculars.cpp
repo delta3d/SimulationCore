@@ -78,9 +78,13 @@ namespace SimCore
             mRecticle->setProperty("FrameEnabled", "false");
 
             if(mCamera->GetAspectRatio() < 1.47)
-               mRecticle->setProperty("Image", "set:Binoculars4.3 image:Binoculars4.3");
+            {
+               SetOverlayImage("Binoculars4.3","Binoculars4.3");
+            }
             else
-               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5"); 
+            {
+               SetOverlayImage("Binoculars8.5","Binoculars8.5");
+            }
 
             mOverlay->addChildWindow(mRecticle);
 
@@ -376,5 +380,12 @@ namespace SimCore
             }
          }
       }
+
+      void Binoculars::SetOverlayImage( const std::string& imageset, const std::string& imageName )
+      {
+         std::string imageSetAndName("set:"+imageset+" image:"+imageName);
+         mRecticle->setProperty("Image", imageSetAndName);
+      }
+
    }
 }
