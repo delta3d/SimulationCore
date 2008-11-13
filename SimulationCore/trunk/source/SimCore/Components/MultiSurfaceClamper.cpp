@@ -188,6 +188,7 @@ namespace SimCore
       MultiSurfaceClamper::MultiSurfaceRuntimeData::MultiSurfaceRuntimeData(
          const dtGame::GroundClampingData& data )
          : BaseClass()
+         , mDebugMode(false)
          , mRadius(MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_POINT_RADIUS)
          , mMass(MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_POINT_MASS)
          , mMaxTimeStep(MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP)
