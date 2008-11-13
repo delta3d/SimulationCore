@@ -28,11 +28,14 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/MultiSurfaceClamper.h>
 #include <dtCore/batchisector.h>
+#include <dtCore/scene.h>
 #include <dtCore/transform.h>
 #include <dtCore/transformable.h>
 #include <dtDAL/actortype.h>
 #include <dtDAL/transformableactorproxy.h>
 #include <dtUtil/mathdefines.h>
+#include <osg/Geometry>
+#include <osg/array>
 
 
 
@@ -82,12 +85,91 @@ namespace SimCore
       void SurfacePointData::SetLastClampPoint( const osg::Vec3& clampPoint )
       {
          mClampLastKnown = clampPoint;
+         if( mDrawable.valid() )
+         {
+            osg::Matrix mtx( mDrawable->getMatrix() );
+            mtx.setTrans( clampPoint );
+            mDrawable->setMatrix( mtx );
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
       const osg::Vec3& SurfacePointData::GetLastClampPoint() const
       {
          return mClampLastKnown;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::MatrixTransform* SurfacePointData::GetDrawable()
+      {
+         return mDrawable.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osg::MatrixTransform* SurfacePointData::GetDrawable() const
+      {
+         return mDrawable.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool SurfacePointData::AddDrawableToScene( osg::Group& scene )
+      {
+         bool success = false;
+         if( ! mDrawable.valid() )
+         {  
+            // COLOR - used for other data: UVs , line thickness and length
+            dtCore::RefPtr<osg::Vec4Array> color = new osg::Vec4Array( 6 );
+            (*color)[0].set( 1.0f,  1.0f,  0.0f, 1.0f );
+            (*color)[1].set( 1.0f,  0.0f,  0.0f, 1.0f );
+            (*color)[2].set( 1.0f,  1.0f,  1.0f, 1.0f );
+            (*color)[3].set( 1.0f,  1.0f,  1.0f, 1.0f );
+            (*color)[4].set( 1.0f,  1.0f,  1.0f, 1.0f );
+            (*color)[5].set( 1.0f,  1.0f,  1.0f, 1.0f );
+
+            osg::Vec3 start( 0.0f, 0.0f, 0.0f );
+            osg::Vec3 end( 0.0f, 0.0f, 1.0f );
+
+            // VERTICES
+            dtCore::RefPtr<osg::Vec3Array> verts = new osg::Vec3Array( 6 );
+            (*verts)[0].set( start );
+            (*verts)[1].set( end );
+            (*verts)[2].set( start + osg::Vec3( 0.25f, 0.0f,  0.0f) );
+            (*verts)[3].set( start + osg::Vec3(-0.25f, 0.0f,  0.0f) );
+            (*verts)[4].set( start + osg::Vec3( 0.0f,  0.25f, 0.0f) );
+            (*verts)[5].set( start + osg::Vec3( 0.0f, -0.25f, 0.0f) );
+
+            dtCore::RefPtr<osg::StateSet> states = new osg::StateSet();
+            states->setMode(GL_BLEND,osg::StateAttribute::ON);
+            states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+            states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+
+            dtCore::RefPtr<osg::Geometry> geom = new osg::Geometry;
+            geom->setColorArray( color.get() ); // use colors for uvs and other parameters
+            geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+            geom->setVertexArray( verts.get() );
+            geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, verts->size()));
+
+            dtCore::RefPtr<osg::Geode> geode = new osg::Geode;
+            geode->addDrawable( geom.get() );
+            geode->setStateSet( states.get() );
+
+            mDrawable = new osg::MatrixTransform;
+            mDrawable->addChild( geode.get() );
+            success = scene.addChild( mDrawable.get() );
+         }
+         return success;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool SurfacePointData::RemoveDrawableFromScene( osg::Group& scene )
+      {
+         bool success = false;
+         if( mDrawable.valid() )
+         {
+            success = scene.removeChild( mDrawable.get() );
+            mDrawable = NULL;
+         }
+         return success;
       }
 
 
@@ -120,6 +202,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       MultiSurfaceClamper::MultiSurfaceRuntimeData::~MultiSurfaceRuntimeData()
       {
+         SetSceneNode( NULL );
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -189,13 +272,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      std::vector<SurfacePointData>& MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData()
+      SurfacePointDataArray&
+         MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData()
       {
          return mPointData;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::vector<SurfacePointData>& MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData() const
+      const SurfacePointDataArray&
+         MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSurfacePointData() const
       {
          return mPointData;
       }
@@ -205,6 +290,65 @@ namespace SimCore
          MultiSurfaceClamper::MultiSurfaceRuntimeData::GetClampingData() const
       {
          return mClampingData;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MultiSurfaceClamper::MultiSurfaceRuntimeData::SetSceneNode( osg::Group* sceneNode )
+      {
+         if( mScene.valid() && sceneNode == NULL )
+         {
+            mPointData[0].RemoveDrawableFromScene( *mScene );
+            mPointData[1].RemoveDrawableFromScene( *mScene );
+            mPointData[2].RemoveDrawableFromScene( *mScene );
+         }
+
+         mScene = sceneNode;
+
+         if( mScene.valid() )
+         {
+            // This will force the point drawables to be added to the current scene.
+            SetDebugMode( GetDebugMode() );
+         }
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      osg::Group* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSceneNode()
+      {
+         return mScene.get();
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Group* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSceneNode() const
+      {
+         return mScene.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MultiSurfaceClamper::MultiSurfaceRuntimeData::SetDebugMode( bool debugMode )
+      {
+         mDebugMode = debugMode;
+
+         if( mScene.valid() )
+         {
+            if( debugMode )
+            {
+               mPointData[0].AddDrawableToScene( *mScene );
+               mPointData[1].AddDrawableToScene( *mScene );
+               mPointData[2].AddDrawableToScene( *mScene );
+            }
+            else
+            {
+               mPointData[0].RemoveDrawableFromScene( *mScene );
+               mPointData[1].RemoveDrawableFromScene( *mScene );
+               mPointData[2].RemoveDrawableFromScene( *mScene );
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool MultiSurfaceClamper::MultiSurfaceRuntimeData::GetDebugMode() const
+      {
+         return mDebugMode;
       }
 
 
@@ -280,6 +424,10 @@ namespace SimCore
                SimCore::Actors::BaseEntity* entity = NULL;
                entityProxy->GetActor( entity );
                runtimeData.SetEntity( entity );
+
+               // DEBUG: Use drawables to show the clamp points.
+               //runtimeData.SetDebugMode( true );
+               //runtimeData.SetSceneNode( entityProxy->GetGameManager()->GetScene().GetSceneNode() );
             }
          }
 
@@ -479,7 +627,7 @@ namespace SimCore
          float timeStep = GetCurrentSimTime() - inOutData.GetLastClampedTime();
 
          // Get the surface points and their data.
-         std::vector<SurfacePointData>& pointData = inOutData.GetSurfacePointData();
+         SurfacePointDataArray& pointData = inOutData.GetSurfacePointData();
          inOutPoints[0].z() += (inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * timeStep;
          inOutPoints[1].z() += (inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * timeStep;
          inOutPoints[2].z() += (inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * timeStep;
