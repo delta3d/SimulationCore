@@ -103,6 +103,7 @@ namespace StealthGM
    const std::string StealthGameEntryPoint::CONFIG_HAS_GPS("HasGPS");
    const std::string StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION("HasNightVision");
    const std::string StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL("HasMapTool");
+   static const std::string CONFIG_BINOCS_IMAGE_OVERRIDE("Binoculars.ImageOverride");
 
    ///////////////////////////////////////////////////////////////////////////
    StealthGameEntryPoint::StealthGameEntryPoint() :
@@ -244,6 +245,12 @@ namespace StealthGM
 
          binos->SetPlayerActor(mStealth.get());
          mHudGUI->AddToolButton("Binoculars","F9");
+
+         std::string binocsImage = app.GetConfigPropertyValue(CONFIG_BINOCS_IMAGE_OVERRIDE);
+         if( ! binocsImage.empty() )
+         {
+            binos->SetOverlayImage( binocsImage, binocsImage );
+         }
       }
 //      if( mHasMap )
 //      {
