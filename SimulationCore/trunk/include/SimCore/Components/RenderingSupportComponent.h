@@ -182,13 +182,11 @@ namespace SimCore
             // with future stuff.
             bool UpdateCullVisitor();
 
-            void UpdateViewMatrix();
-
             ///by default we will always create a cullvisitor
             AgeiaTerrainCullVisitor* GetCullVisitor();
 
             void AddCamera(osg::Camera* cam);
-
+ 
             // This override is used as a hack for FrameSync to force the camera to be up to date.
             virtual void OnMessage(MessageData* data);
 
@@ -202,7 +200,7 @@ namespace SimCore
             void SetPosition(DynamicLight* dl);
 
             void InitializeCullVisitor();
-            void InitializeFrameBuffer();
+            void InitializeFrameBuffer();            
 
             // Finds all the dynamic light actor prototypes in the GM and holds onto them
             void LoadPrototypes();
@@ -210,6 +208,11 @@ namespace SimCore
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
             void UpdateDynamicLights(float dt);
+            void UpdateViewMatrix(dtCore::Camera& pCamera);
+            void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP); 
+            void ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill);
+            bool IntersectRayPlane(const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint);
+            float GetAngleBetweenVectors(const osg::Vec3& v1, const osg::Vec3& v2);
 
          public:
             //here we define constants for defining the render bins
