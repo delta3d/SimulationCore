@@ -29,6 +29,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
+#include <osg/MatrixTransform>
 #include <dtGame/defaultgroundclamper.h>
 #include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/BaseEntity.h>
@@ -73,11 +74,20 @@ namespace SimCore
             void SetLastClampPoint( const osg::Vec3& clampPoint );
             const osg::Vec3& GetLastClampPoint() const;
 
+            osg::MatrixTransform* GetDrawable();
+            const osg::MatrixTransform* GetDrawable() const;
+
+            bool AddDrawableToScene( osg::Group& scene );
+            bool RemoveDrawableFromScene( osg::Group& scene );
+
          private:
             bool mSolid;
             float mVelocity;
             osg::Vec3 mClampLastKnown;
+
+            dtCore::RefPtr<osg::MatrixTransform> mDrawable;
       };
+      typedef std::vector<SurfacePointData> SurfacePointDataArray;
 
 
 
@@ -148,8 +158,8 @@ namespace SimCore
                    * Get data pertaining to clamp points, used to track changes and modify
                    * final clamping points (for point oscillation) on a surface, usually that of liquid.
                    */
-                  std::vector<SurfacePointData>& GetSurfacePointData();
-                  const std::vector<SurfacePointData>& GetSurfacePointData() const;
+                  SurfacePointDataArray& GetSurfacePointData();
+                  const SurfacePointDataArray& GetSurfacePointData() const;
 
                   // HACK:
                   /**
@@ -158,17 +168,25 @@ namespace SimCore
                    */
                   const dtGame::GroundClampingData& GetClampingData() const;
 
+                  void SetSceneNode( osg::Group* sceneNode );
+                  osg::Group* GetSceneNode();
+                  const osg::Group* GetSceneNode() const;
+
+                  void SetDebugMode( bool debugMode );
+                  bool GetDebugMode() const;
+
                protected:
                   virtual ~MultiSurfaceRuntimeData();
 
                private:
 
+                  bool mDebugMode;
                   float mRadius;
                   float mMass;
                   float mMaxTimeStep;
 
                   // Data about the last clamping points.
-                  std::vector<SurfacePointData> mPointData;
+                  SurfacePointDataArray mPointData;
 
                   // HACK:
                   // Back-reference to the parent Clamping Data.
@@ -176,6 +194,7 @@ namespace SimCore
 
                   // Entity associated with this data.
                   dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
+                  dtCore::ObserverPtr<osg::Group> mScene;
             };
 
             MultiSurfaceClamper();
