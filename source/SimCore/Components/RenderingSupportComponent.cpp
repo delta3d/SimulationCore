@@ -49,6 +49,7 @@
 
 #include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
+#include <dtUtil/matrixutil.h>
 
 #include <osg/Camera>
 #include <osg/Geode>
@@ -450,7 +451,7 @@ namespace SimCore
                void (dtCore::Base::* method)(dtCore::Base::MessageData*) = &dtCore::Base::OnMessage;
                (deltaCamera->*method)(data);
 
-               UpdateViewMatrix();
+               UpdateViewMatrix(*deltaCamera);
             }
             catch (const dtUtil::Exception& ex)
             {
@@ -461,42 +462,161 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateViewMatrix()
+      void RenderingSupportComponent::UpdateViewMatrix(dtCore::Camera& pCamera)
       {
          osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-         osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
-         osg::Uniform* viewMatUniform = ss->getOrCreateUniform("viewMatrix", osg::Uniform::FLOAT_MAT4);
-         osg::Uniform* mvpUniform = ss->getOrCreateUniform("modelViewProjectionMatrix", osg::Uniform::FLOAT_MAT4);
-         osg::Uniform* forwardUniform = ss->getOrCreateUniform("cameraForward", osg::Uniform::FLOAT_VEC3);
-
-         osg::Camera* cam = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
-         //getViewMatrixAsLookAt (osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up, float lookDistance=1.0f)
-         osg::Vec3 eye, center, up;
-         cam->getViewMatrixAsLookAt(eye, center, up);
-         forwardUniform->set(center);
-
-         osg::Matrix mat(cam->getViewMatrix());
-         osg::Matrix matMVP(cam->getProjectionMatrix() * cam->getViewMatrix());
-         mvpUniform->set(matMVP);
-         viewMatUniform->set(mat);
-
-         osg::Matrix viewInverse;
-         viewInverse.invert(mat);
-         viewUniform->set(viewInverse);
-
+         osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
 
-         osg::Matrix proj = cam->getProjectionMatrix();
-         proj.invert(proj);
+         osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse, matViewProjScreenInverse, matScreen;
 
-         //these should be opposite but aren't always
-         //do to precision issues
-         proj(3,3) = -proj(2,3);
+         matView.set(pCamera.GetOSGCamera()->getViewMatrix());
+         matViewInverse.invert(matView);
 
-         osg::Matrix view = cam->getViewMatrix();
-         view.invert(view);
+         matProj.set(pCamera.GetOSGCamera()->getProjectionMatrix());
+         matProjInverse.invert(matProj);
 
-         mvpiUniform->set(proj * view);
+         matViewProj = matView * matProj;
+         matViewProjInverse.invert(matViewProj);
+
+         mvpiUniform->set(matViewProjInverse);
+         viewInverseUniform->set(matViewInverse);
+
+         dtCore::Transform trans;
+         pCamera.GetTransform(trans);
+
+         osg::Vec3 hpr;
+         trans.GetRotation(hpr);
+         hprUniform->set(hpr);
+
+         if(pCamera.GetOSGCamera()->getViewport() != NULL)
+         {
+            matScreen.set(pCamera.GetOSGCamera()->getViewport()->computeWindowMatrix());
+
+            matViewProjScreenInverse.invert(matView * matProj * matScreen);
+
+            UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP)
+      {
+         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+         osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
+
+         dtCore::Transform xform;
+         osg::Vec3d waterCenter, screenPosOut, camPos;
+         pCamera.GetTransform(xform);
+         xform.GetTranslation(camPos);
+
+         //TODO- USE ACTUAL WATER HEIGHT
+         float waterHeight = 0.0;
+
+         waterCenter.set(camPos.x(), camPos.y(), waterHeight);
+
+         if(camPos.z() < waterHeight || pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
+         {
+            //360 divided by 2 but add 0.5 to make the mesh overlap since it is no longer water tight
+            waterFOVUniform->set(180.5f);
+         }
+         else
+         {
+
+            int width = pCamera.GetOSGCamera()->getViewport()->width();
+            int height = pCamera.GetOSGCamera()->getViewport()->height();
+
+            osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
+
+            ComputeRay(0, 0, inverseMVP, bottomLeft);
+            ComputeRay(width, 0, inverseMVP, bottomRight);
+            ComputeRay(0, height, inverseMVP, topLeft);
+            ComputeRay(width, height, inverseMVP, topRight);
+
+            osg::Vec4 waterPlane(0.0, 0.0, 1.0, waterHeight);
+
+            bool bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeft);
+            bool bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRight);
+            bool topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeft);
+            bool topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRight);
+
+            bottomLeft = bottomLeft - waterCenter;
+            bottomLeft.normalize();
+
+            bottomRight = bottomRight - waterCenter;
+            bottomRight.normalize();
+
+            topLeft = topLeft - waterCenter;
+            topLeft.normalize();
+
+            topRight = topRight - waterCenter;
+            topRight.normalize();
+
+            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0;
+
+            if(bottomLeftIntersect && bottomRightIntersect)
+            {
+               maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
+            }
+            if(bottomLeftIntersect && topLeftIntersect)
+            {
+               maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
+            }
+            if(bottomRightIntersect && topRightIntersect)
+            {
+               maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
+            }
+            if(topLeftIntersect && topRightIntersect)
+            {
+               maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
+            }
+
+            float angle = dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4));
+            angle = osg::RadiansToDegrees(angle);
+            angle /= 2.0f;
+            waterFOVUniform->set(angle);
+
+            //std::cout << "Water Angle " << angle << std::endl;
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill )
+      {
+         osg::Vec3 rayFrom, rayTo;
+
+         rayFrom = osg::Vec3(x, y, 0.0f) * inverseMVPS;
+         rayTo = osg::Vec3(x, y, 1.0f) * inverseMVPS;
+
+         rayToFill = rayTo - rayFrom;
+         rayToFill.normalize();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      bool RenderingSupportComponent::IntersectRayPlane( const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint )
+      {
+         osg::Vec3 norm(plane.x(), plane.y(), plane.z());
+         float denominator = norm * rayDirection;
+
+         //the normal is near parallel
+         if(fabs(denominator) > FLT_EPSILON)
+         {
+            float t = -(norm * rayOrigin + plane.w());
+            t /= denominator;
+            intersectPoint = rayOrigin + (rayDirection * t);
+            return t > 0;
+         }
+
+         //std::cout << "No Intersect" << std::endl;
+         return false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      float RenderingSupportComponent::GetAngleBetweenVectors( const osg::Vec3& v1, const osg::Vec3& v2 )
+      {
+         return std::acos(v1 * v2);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
