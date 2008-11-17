@@ -124,6 +124,9 @@ namespace SimCore
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
       const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
+      const unsigned RenderingSupportComponent::MAIN_CAMERA_CULL_MASK = 0xFFFFFFFF;
+      const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
+      const unsigned RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK = 0x80000000;
 
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
@@ -164,7 +167,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::~RenderingSupportComponent()
       {
-         RemoveSender(&dtCore::System::GetInstance());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,13 +180,20 @@ namespace SimCore
          {
             InitializeCullVisitor();
          }
-         AddSender(&dtCore::System::GetInstance());
+
+         dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
+         osg::Camera* osgCam = cam->GetOSGCamera();
+         osgCam->setCullMask(MAIN_CAMERA_CULL_MASK);
+
+         ///Added a callback to the camera this can set uniforms on each camera.
+         dtCore::Camera::AddFrameSyncCallback(*this,
+                  dtCore::Camera::FrameSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnRemovedFromGM()
       {
-         RemoveSender(&dtCore::System::GetInstance());
+         dtCore::Camera::RemoveFrameSyncCallback(*this);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +205,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
-         mGUIRoot->addChild(gui->GetOSGNode());
+         osg::Node* node = gui->GetOSGNode();
+         mGUIRoot->addChild(node);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,9 +230,11 @@ namespace SimCore
          mSceneRoot->addChild(mGUIRoot.get());
          mSceneRoot->addChild(mDeltaScene.get());
 
+
          mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
          mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
+         mGUIRoot->setNodeMask(MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,41 +436,6 @@ namespace SimCore
       bool RenderingSupportComponent::GetEnableDynamicLights() const
       {
          return mEnableDynamicLights;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::OnMessage( MessageData *data )
-      {
-         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in
-         // our system: 1) Simulate, 2) Update Camera Pos, 3) Post Camera Update, and 4) Draw. Currently, we only
-         // have 1 (preframe), 2 (framesynch), &  4 (frame).
-         // The following code traps during the framesynch and forces the camera to update itself, and then
-         // does our 'Post Camera' work.
-         // This behavior was copied from LabalManager.cpp... if you change this, you should change that.
-         if( data->message == "framesynch" && GetGameManager() != NULL)
-         {
-            try
-            {
-               dtCore::Camera* deltaCamera = GetGameManager()->GetApplication().GetCamera();
-               if( deltaCamera == NULL)
-               {
-                  std::cout << "No Camera in RenderingSupportComponent"<< std::endl;
-                  return;
-               }
-
-               //HACK: Force the camera to sync its view matrix.  It's a protected method, but we're both
-               // instances of Base.  C++ doesn't REALLY let you do this, but you can work around it.
-               void (dtCore::Base::* method)(dtCore::Base::MessageData*) = &dtCore::Base::OnMessage;
-               (deltaCamera->*method)(data);
-
-               UpdateViewMatrix(*deltaCamera);
-            }
-            catch (const dtUtil::Exception& ex)
-            {
-               ex.LogException(dtUtil::Log::LOG_ERROR);
-               throw;
-            }
-         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////

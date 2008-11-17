@@ -23,6 +23,7 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/MainWindow.h>
+#include <StealthViewer/Qt/ViewDockWidget.h>
 #include <ui_MainWindowUi.h>
 
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
@@ -32,6 +33,8 @@
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 #include <SimCore/Components/LabelManager.h>
 
@@ -65,17 +68,10 @@ namespace StealthQt
       const QString StealthViewerSettings::ATTACH_ROTATION("ATTACH_ROTATION");
       const QString StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN("AUTO_ATTACH_TO_CALLSIGN");
       const QString StealthViewerSettings::SHOULD_AUTO_ATTACH("SHOULD_AUTO_ATTACH");
-      const QString StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL("FOV_ASPECT_OR_HORIZONTAL");
-      const QString StealthViewerSettings::FOV_ASPECT_RATIO("FOV_ASPECT_RATIO");
-      const QString StealthViewerSettings::FOV_HORIZONTAL("FOV_HORIZONTAL");
-      const QString StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT("FOV_VERTICAL_FOR_ASPECT");
-      const QString StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL("FOV_VERTICAL_FOR_HORIZONTAL");
       const QString StealthViewerSettings::CAMERA_COLLISION("CAMERA_COLLISION");
       const QString StealthViewerSettings::PERFORMANCE("PERFORMANCE");
       const QString StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS("SHOW_ADVANCED_GENERAL_OPTIONS");
       const QString StealthViewerSettings::LOD_SCALE("LOD_SCALE");
-      const QString StealthViewerSettings::NEAR_CLIPPING_PLANE("NEAR_CLIPPING_PLANE");
-      const QString StealthViewerSettings::FAR_CLIPPING_PLANE("FAR_CLIPPING_PLANE");
       const QString StealthViewerSettings::RECONNECT_ON_STARTUP("RECONNECT_ON_STARTUP");
       const QString StealthViewerSettings::STARTUP_CONNECTION_NAME("STARTUP_CONNECTION_NAME");
 
@@ -119,13 +115,25 @@ namespace StealthQt
       const QString StealthViewerSettings::PLAYBACK_INPUT_FILE("PLAYBACK_INPUT_FILE");
       const QString StealthViewerSettings::PLAYBACK_SPEED("PLAYBACK_SPEED");
 
-   StealthViewerSettings::StealthViewerSettings(const QString &applicationName) :
-      QSettings(QSettings::IniFormat,
+   const QString StealthViewerSettings::VIEW_WINDOW_GROUP("VIEW_WINDOW_GROUP");
+      const QString StealthViewerSettings::NEAR_CLIPPING_PLANE("NEAR_CLIPPING_PLANE");
+      const QString StealthViewerSettings::FAR_CLIPPING_PLANE("FAR_CLIPPING_PLANE");
+      const QString StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL("FOV_ASPECT_OR_HORIZONTAL");
+      const QString StealthViewerSettings::FOV_ASPECT_RATIO("FOV_ASPECT_RATIO");
+      const QString StealthViewerSettings::FOV_HORIZONTAL("FOV_HORIZONTAL");
+      const QString StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT("FOV_VERTICAL_FOR_ASPECT");
+      const QString StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL("FOV_VERTICAL_FOR_HORIZONTAL");
+
+      const QString StealthViewerSettings::ADDITIONAL_VIEW_NAME("ADDITIONAL_VIEW_NAME");
+      const QString StealthViewerSettings::ADDITIONAL_VIEW_TITLE("ADDITIONAL_VIEW_TITLE");
+
+   StealthViewerSettings::StealthViewerSettings(const QString &applicationName)
+   : QSettings(QSettings::IniFormat,
                 QSettings::UserScope,
                 StealthViewerSettings::ORGANIZATION,
-                applicationName),
-      mNumConnections(0),
-      mIsLoadingFromIni(false)
+                applicationName)
+   , mNumConnections(0)
+   , mIsLoadingFromIni(false)
    {
       ParseIniFile();
    }
@@ -144,7 +152,7 @@ namespace StealthQt
                                              const QString &ridFile,
                                              bool isEditMode)
    {
-      if(name.isEmpty() || mapResource.isEmpty() || configResource.isEmpty() ||
+      if (name.isEmpty() || mapResource.isEmpty() || configResource.isEmpty() ||
          fedResource.isEmpty() || fedex.isEmpty() || federateName.isEmpty() ||
          ridFile.isEmpty())
       {
@@ -152,7 +160,7 @@ namespace StealthQt
          return false;
       }
 
-      if(!isEditMode && !mIsLoadingFromIni)
+      if (!isEditMode && !mIsLoadingFromIni)
       {
          QStringList existingConnections = GetConnectionNames();
          for(int i = 0; i < existingConnections.size(); i++)
@@ -171,7 +179,7 @@ namespace StealthQt
          }
       }
 
-      if((!ContainsConnection(name) || mIsLoadingFromIni) && !isEditMode)
+      if ((!ContainsConnection(name) || mIsLoadingFromIni) && !isEditMode)
       {
          QString groupName = StealthViewerSettings::CONNECTION + QString::number(mNumConnections);
          beginGroup(groupName);
@@ -377,6 +385,8 @@ namespace StealthQt
 
       WriteControlsRecordGroupToFile();
       WriteControlsPlaybackGroupToFile();
+
+      WriteViewWindowGroupToFile();
    }
 
    void StealthViewerSettings::WritePreferencesGeneralGroupToFile()
@@ -394,19 +404,12 @@ namespace StealthQt
          setValue(StealthViewerSettings::ATTACH_ROTATION, ss.str().c_str());
          setValue(StealthViewerSettings::SHOULD_AUTO_ATTACH, genConfig.GetShouldAutoAttachToEntity());
          setValue(StealthViewerSettings::AUTO_ATTACH_TO_CALLSIGN, genConfig.GetAutoAttachEntityCallsign().c_str());
-         setValue(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL, genConfig.UseAspectRatioForFOV());
-         setValue(StealthViewerSettings::FOV_ASPECT_RATIO, genConfig.GetFOVAspectRatio());
-         setValue(StealthViewerSettings::FOV_HORIZONTAL, genConfig.GetFOVHorizontal());
-         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT, genConfig.GetFOVVerticalForAspect());
-         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, genConfig.GetFOVVerticalForHorizontal());
 
 
          setValue(StealthViewerSettings::CAMERA_COLLISION, genConfig.GetEnableCameraCollision());
          setValue(StealthViewerSettings::PERFORMANCE, genConfig.GetPerformanceMode().GetName().c_str());
          setValue(StealthViewerSettings::SHOW_ADVANCED_GENERAL_OPTIONS, genConfig.GetShowAdvancedOptions());
          setValue(StealthViewerSettings::LOD_SCALE, genConfig.GetLODScale());
-         setValue(StealthViewerSettings::NEAR_CLIPPING_PLANE, genConfig.GetNearClippingPlane());
-         setValue(StealthViewerSettings::FAR_CLIPPING_PLANE, genConfig.GetFarClippingPlane());
          setValue(StealthViewerSettings::RECONNECT_ON_STARTUP, genConfig.GetReconnectOnStartup());
          setValue(StealthViewerSettings::STARTUP_CONNECTION_NAME, genConfig.GetStartupConnectionName().c_str());
 
@@ -500,8 +503,59 @@ namespace StealthQt
       endGroup();
    }
 
+   void StealthViewerSettings::WriteViewWindowGroupToFile()
+   {
+      // General Preferences
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      StealthGM::ViewWindowWrapper& mainViewWrapper = viewConfig.GetMainViewWindow();
+
+      beginGroup(StealthViewerSettings::VIEW_WINDOW_GROUP);
+         setValue(StealthViewerSettings::NEAR_CLIPPING_PLANE, viewConfig.GetNearClippingPlane());
+         setValue(StealthViewerSettings::FAR_CLIPPING_PLANE, viewConfig.GetFarClippingPlane());
+
+         setValue(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL, mainViewWrapper.UseAspectRatioForFOV());
+         setValue(StealthViewerSettings::FOV_ASPECT_RATIO, mainViewWrapper.GetFOVAspectRatio());
+         setValue(StealthViewerSettings::FOV_HORIZONTAL, mainViewWrapper.GetFOVHorizontal());
+         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT, mainViewWrapper.GetFOVVerticalForAspect());
+         setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, mainViewWrapper.GetFOVVerticalForHorizontal());
+
+      endGroup();
+
+      std::vector<StealthGM::ViewWindowWrapper*> viewWrappers;
+      viewConfig.GetAllViewWindows(viewWrappers);
+
+      for (unsigned i=0; i < viewWrappers.size(); ++i)
+      {
+         QString currentViewGroup = StealthViewerSettings::VIEW_WINDOW_GROUP + QString::number(i);
+         StealthGM::ViewWindowWrapper& currViewWrapper = *viewWrappers[i];
+
+         beginGroup(currentViewGroup);
+            setValue(StealthViewerSettings::ADDITIONAL_VIEW_NAME, tr(currViewWrapper.GetName().c_str()));
+            setValue(StealthViewerSettings::ADDITIONAL_VIEW_TITLE, tr(currViewWrapper.GetWindowTitle().c_str()));
+
+            setValue(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL, currViewWrapper.UseAspectRatioForFOV());
+            setValue(StealthViewerSettings::FOV_ASPECT_RATIO, currViewWrapper.GetFOVAspectRatio());
+            setValue(StealthViewerSettings::FOV_HORIZONTAL, currViewWrapper.GetFOVHorizontal());
+            setValue(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT, currViewWrapper.GetFOVVerticalForAspect());
+            setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, currViewWrapper.GetFOVVerticalForHorizontal());
+         endGroup();
+      }
+   }
+
    void StealthViewerSettings::LoadPreferences()
    {
+      LoadPreferencesGeneral();
+      LoadPreferencesEnvironment();
+      LoadPreferencesTools();
+      LoadPreferencesVisibility();
+
+      LoadControlsRecord();
+      LoadControlsPlayback();
+      LoadViewWindowGroup();
+
+      // window state must be last so that additional views are created first.
       beginGroup(StealthViewerSettings::GENERAL_GROUP);
 
          if (contains(StealthViewerSettings::DOCK_STATE))
@@ -525,14 +579,6 @@ namespace StealthQt
          }
 
       endGroup();
-
-      LoadPreferencesGeneral();
-      LoadPreferencesEnvironment();
-      LoadPreferencesTools();
-      LoadPreferencesVisibility();
-
-      LoadControlsRecord();
-      LoadControlsPlayback();
    }
 
    void StealthViewerSettings::LoadPreferencesGeneral()
@@ -588,46 +634,6 @@ namespace StealthQt
             genConfig.SetShouldAutoAttachToEntity(savedValue);
          }
 
-         if (contains(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL))
-         {
-            bool savedValue =
-               value(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL).toBool();
-
-            genConfig.SetUseAspectRatioForFOV(savedValue);
-         }
-
-         if (contains(StealthViewerSettings::FOV_ASPECT_RATIO))
-         {
-            QString savedValue =
-               value(StealthViewerSettings::FOV_ASPECT_RATIO).toString();
-
-            genConfig.SetFOVAspectRatio(savedValue.toFloat());
-         }
-
-         if (contains(StealthViewerSettings::FOV_HORIZONTAL))
-         {
-            QString savedValue =
-               value(StealthViewerSettings::FOV_HORIZONTAL).toString();
-
-            genConfig.SetFOVHorizontal(savedValue.toFloat());
-         }
-
-         if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT))
-         {
-            QString savedValue =
-               value(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT).toString();
-
-            genConfig.SetFOVVerticalForAspect(savedValue.toFloat());
-         }
-
-         if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL))
-         {
-            QString savedValue =
-               value(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL).toString();
-
-            genConfig.SetFOVVerticalForHorizontal(savedValue.toFloat());
-         }
-
          if (contains(StealthViewerSettings::CAMERA_COLLISION))
          {
             bool savedValue = value(StealthViewerSettings::CAMERA_COLLISION).toBool();
@@ -650,20 +656,6 @@ namespace StealthQt
          {
             float savedValue = float(value(StealthViewerSettings::LOD_SCALE).toDouble());
             genConfig.SetLODScale(savedValue);
-         }
-
-         if (contains(StealthViewerSettings::NEAR_CLIPPING_PLANE))
-         {
-            double savedValue =
-               value(StealthViewerSettings::NEAR_CLIPPING_PLANE).toDouble();
-            genConfig.SetNearClippingPlane(savedValue);
-         }
-
-         if (contains(StealthViewerSettings::FAR_CLIPPING_PLANE))
-         {
-            double savedValue =
-               value(StealthViewerSettings::FAR_CLIPPING_PLANE).toDouble();
-            genConfig.SetFarClippingPlane(savedValue);
          }
 
          bool connectValue = true;
@@ -904,6 +896,108 @@ namespace StealthQt
       endGroup();
    }
 
+   void StealthViewerSettings::LoadFOVSettings(StealthGM::ViewWindowWrapper& viewWrapper)
+   {
+      if (contains(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL))
+      {
+         bool savedValue =
+            value(StealthViewerSettings::FOV_ASPECT_OR_HORIZONTAL).toBool();
+
+         viewWrapper.SetUseAspectRatioForFOV(savedValue);
+      }
+
+      if (contains(StealthViewerSettings::FOV_ASPECT_RATIO))
+      {
+         QString savedValue =
+            value(StealthViewerSettings::FOV_ASPECT_RATIO).toString();
+
+         viewWrapper.SetFOVAspectRatio(savedValue.toFloat());
+      }
+
+      if (contains(StealthViewerSettings::FOV_HORIZONTAL))
+      {
+         QString savedValue =
+            value(StealthViewerSettings::FOV_HORIZONTAL).toString();
+
+         viewWrapper.SetFOVHorizontal(savedValue.toFloat());
+      }
+
+      if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT))
+      {
+         QString savedValue =
+            value(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT).toString();
+
+         viewWrapper.SetFOVVerticalForAspect(savedValue.toFloat());
+      }
+
+      if (contains(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL))
+      {
+         QString savedValue =
+            value(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL).toString();
+
+         viewWrapper.SetFOVVerticalForHorizontal(savedValue.toFloat());
+      }
+
+   }
+
+   void StealthViewerSettings::LoadViewWindowGroup()
+   {
+      // General Preferences
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      StealthGM::ViewWindowWrapper& mainViewWrapper = viewConfig.GetMainViewWindow();
+
+      beginGroup(StealthViewerSettings::VIEW_WINDOW_GROUP);
+      if (contains(StealthViewerSettings::NEAR_CLIPPING_PLANE))
+      {
+         double savedValue =
+            value(StealthViewerSettings::NEAR_CLIPPING_PLANE).toDouble();
+         viewConfig.SetNearClippingPlane(savedValue);
+      }
+
+      if (contains(StealthViewerSettings::FAR_CLIPPING_PLANE))
+      {
+         double savedValue =
+            value(StealthViewerSettings::FAR_CLIPPING_PLANE).toDouble();
+         viewConfig.SetFarClippingPlane(savedValue);
+      }
+
+      LoadFOVSettings(mainViewWrapper);
+      endGroup();
+
+      for (unsigned i=0; i < 100; ++i)
+      {
+         QString currentViewGroup = StealthViewerSettings::VIEW_WINDOW_GROUP + QString::number(i);
+         if (childGroups().contains(currentViewGroup))
+         {
+            beginGroup(currentViewGroup);
+            std::string newViewName;
+            if (contains(StealthViewerSettings::ADDITIONAL_VIEW_NAME))
+            {
+               newViewName =
+                  value(StealthViewerSettings::ADDITIONAL_VIEW_NAME).toString().toStdString();
+            }
+
+            dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
+               StealthViewerData::GetInstance().GetMainWindow()->GetViewDockWidget().CreateNewViewWindow(newViewName);
+
+            if (contains(StealthViewerSettings::ADDITIONAL_VIEW_TITLE))
+            {
+               std::string savedValue =
+                  value(StealthViewerSettings::ADDITIONAL_VIEW_TITLE).toString().toStdString();
+
+               newViewWrapper->SetWindowTitle(savedValue);
+            }
+
+            LoadFOVSettings(*newViewWrapper);
+            newViewWrapper->SetAttachToCamera(viewConfig.GetMainViewWindow().GetView().GetCamera());
+            viewConfig.AddViewWindow(*newViewWrapper);
+            endGroup();
+         }
+      }
+   }
+
    void StealthViewerSettings::RemovePreferences(QStringList &groups)
    {
       for(int i = 0; i < groups.size(); i++)
@@ -916,7 +1010,8 @@ namespace StealthQt
             group == StealthViewerSettings::PREFERENCES_TOOLS_GROUP       ||
             group == StealthViewerSettings::CONTROLS_CAMERA_GROUP         ||
             group == StealthViewerSettings::CONTROLS_RECORD_GROUP         ||
-            group == StealthViewerSettings::CONTROLS_PLAYBACK_GROUP)
+            group == StealthViewerSettings::CONTROLS_PLAYBACK_GROUP       ||
+            group.left(StealthViewerSettings::VIEW_WINDOW_GROUP.size()) == StealthViewerSettings::VIEW_WINDOW_GROUP)
          {
             groups.erase(groups.begin() + i);
             i = 0;

@@ -1,5 +1,5 @@
 /* -*-c++-*-
- * Stealth Viewer - FederationFileResource (.h & .cpp) - Using 'The MIT License'
+ * Stealth Viewer - SimTicker (.h & .cpp) - Using 'The MIT License'
  * Copyright (C) 2007-2008, Alion Science and Technology Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,30 +23,31 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * @author Eddie Johnson
+ * David Guthrie
  */
-#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
-#include <ui_FederationFileResourceBrowserUi.h>
-#include <QtGui/QHeaderView>
+
+#include <StealthViewer/Qt/SimTicker.h>
+#include <dtCore/system.h>
 
 namespace StealthQt
 {
-   FederationFileResourceBrowser::FederationFileResourceBrowser(QWidget *parent) :
-      QDialog(parent),
-      mUi(new Ui::FederationFileResourceBrowser)
-      {
-      mUi->setupUi(this);
-      mUi->mFedrationFilesTreeWidget->header()->hide();
-      }
 
-   FederationFileResourceBrowser::~FederationFileResourceBrowser()
+   SimTicker::SimTicker()
    {
-      delete mUi;
-      mUi = NULL;
+      mTimer.setInterval(10);
+      connect(&mTimer, SIGNAL(timeout()), this, SLOT(Tick()), Qt::QueuedConnection);
+      mTimer.start();
    }
 
-   QTreeWidget& FederationFileResourceBrowser::GetTreeWidget()
+   SimTicker::~SimTicker()
    {
-      return *mUi->mFedrationFilesTreeWidget;
    }
+
+   void SimTicker::Tick()
+   {
+      dtCore::System& system = dtCore::System::GetInstance();
+      if (system.IsRunning())
+         system.StepWindow();
+   }
+
 }

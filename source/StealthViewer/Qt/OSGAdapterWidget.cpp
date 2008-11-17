@@ -36,12 +36,12 @@ namespace dtQt
       public:
          QtKeyboardMap()
          {
-            mKeyMap[Qt::Key_Escape     ] =  osgGA::GUIEventAdapter::KEY_Escape;
-            mKeyMap[Qt::Key_Home       ] =  osgGA::GUIEventAdapter::KEY_Home;
-            mKeyMap[Qt::Key_Enter      ] =  osgGA::GUIEventAdapter::KEY_KP_Enter;
-            mKeyMap[Qt::Key_End        ] =  osgGA::GUIEventAdapter::KEY_End;
-            mKeyMap[Qt::Key_Return     ] =  osgGA::GUIEventAdapter::KEY_Return;
-            mKeyMap[Qt::Key_PageUp     ] =  osgGA::GUIEventAdapter::KEY_Page_Up;
+            mKeyMap[Qt::Key_Escape     ] = osgGA::GUIEventAdapter::KEY_Escape;
+            mKeyMap[Qt::Key_Home       ] = osgGA::GUIEventAdapter::KEY_Home;
+            mKeyMap[Qt::Key_Enter      ] = osgGA::GUIEventAdapter::KEY_KP_Enter;
+            mKeyMap[Qt::Key_End        ] = osgGA::GUIEventAdapter::KEY_End;
+            mKeyMap[Qt::Key_Return     ] = osgGA::GUIEventAdapter::KEY_Return;
+            mKeyMap[Qt::Key_PageUp     ] = osgGA::GUIEventAdapter::KEY_Page_Up;
             mKeyMap[Qt::Key_PageDown   ] = osgGA::GUIEventAdapter::KEY_Page_Down;
             mKeyMap[Qt::Key_Left       ] = osgGA::GUIEventAdapter::KEY_Left;
             mKeyMap[Qt::Key_Right      ] = osgGA::GUIEventAdapter::KEY_Right;
@@ -72,10 +72,10 @@ namespace dtQt
             mKeyMap[Qt::Key_F18            ] = osgGA::GUIEventAdapter::KEY_F18;
             mKeyMap[Qt::Key_F19            ] = osgGA::GUIEventAdapter::KEY_F19;
             mKeyMap[Qt::Key_F20            ] = osgGA::GUIEventAdapter::KEY_F20;
-            
+
             mKeyMap[Qt::Key_hyphen         ] = '-';
             mKeyMap[Qt::Key_Equal         ] = '=';
-            
+
             mKeyMap[Qt::Key_division      ] = osgGA::GUIEventAdapter::KEY_KP_Divide;
             mKeyMap[Qt::Key_multiply      ] = osgGA::GUIEventAdapter::KEY_KP_Multiply;
             mKeyMap[Qt::Key_Minus         ] = '-';
@@ -105,7 +105,7 @@ namespace dtQt
             {
                return int(*(event->text().toAscii().data()));
             }
-            else 
+            else
                return itr->second;
          }
 
@@ -120,7 +120,7 @@ namespace dtQt
    //////////////////////////////////////////////////////////////////////////////////
    OSGAdapterWidget::OSGAdapterWidget(bool drawOnSeparateThread, QWidget * parent,
             const QGLWidget * shareWidget, Qt::WindowFlags f):
-               QGLWidget(parent, shareWidget, f), 
+               QGLWidget(parent, shareWidget, f),
                mThreadGLContext(NULL),
                mDrawOnSeparateThread(drawOnSeparateThread)
    {
@@ -134,22 +134,24 @@ namespace dtQt
       // no button is pressed.  The motion models depend
       // on tracking the mouse location to work properly.
       setMouseTracking(true);
-
    }
 
    //////////////////////////////////////////////////////////////////////////////////
-   OSGAdapterWidget::~OSGAdapterWidget() {}
-
-   //////////////////////////////////////////////////////////////////////////////////
-   osgViewer::GraphicsWindow& OSGAdapterWidget::GetGraphicsWindow() 
-   { 
-      return *mGraphicsWindow; 
+   OSGAdapterWidget::~OSGAdapterWidget()
+   {
+      std::cout << "deleting GL widget" << std::endl;
    }
 
    //////////////////////////////////////////////////////////////////////////////////
-   const osgViewer::GraphicsWindow& OSGAdapterWidget::GetGraphicsWindow() const 
-   { 
-      return *mGraphicsWindow; 
+   osgViewer::GraphicsWindow& OSGAdapterWidget::GetGraphicsWindow()
+   {
+      return *mGraphicsWindow;
+   }
+
+   //////////////////////////////////////////////////////////////////////////////////
+   const osgViewer::GraphicsWindow& OSGAdapterWidget::GetGraphicsWindow() const
+   {
+      return *mGraphicsWindow;
    }
 
    //////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +159,8 @@ namespace dtQt
    {
       if (!mDrawOnSeparateThread)
       {
-         connect(&mTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
-         mTimer.start();
+         //connect(&mTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+         //mTimer.start();
       }
    }
 
@@ -174,14 +176,14 @@ namespace dtQt
    {
       connect(&mTimer, SIGNAL(timeout()), this, SLOT(ThreadedUpdateGL()));
       mTimer.start();
-      
+
       //share the context on the other thread.
       mThreadGLContext = new QGLContext(QGLFormat::defaultFormat(), this);
       if (!mThreadGLContext->create(context()))
       {
          std::cerr << "broken!" << std::endl;
       }
-      
+
       setContext(mThreadGLContext, context(), false);
    }
 
@@ -218,9 +220,10 @@ namespace dtQt
    //////////////////////////////////////////////////////////////////////////////////
    void OSGAdapterWidget::paintGLImpl()
    {
-      dtCore::System& system = dtCore::System::GetInstance();
-      if (system.IsRunning())
-         system.StepWindow();
+      // No paint impl here. OSG is doing it for us.
+//      dtCore::System& system = dtCore::System::GetInstance();
+//      if (system.IsRunning())
+//         system.StepWindow();
    }
 
    //////////////////////////////////////////////////////////////////////////////////

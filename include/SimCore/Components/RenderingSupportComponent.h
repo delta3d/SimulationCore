@@ -80,6 +80,9 @@ namespace SimCore
          public:
             typedef unsigned LightID;
             static const unsigned MAX_LIGHTS;
+            static const unsigned MAIN_CAMERA_CULL_MASK;
+            static const unsigned ADDITIONAL_CAMERA_CULL_MASK;
+            static const unsigned MAIN_CAMERA_ONLY_FEATURE_NODE_MASK;
 
             struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
             {
@@ -186,9 +189,6 @@ namespace SimCore
             AgeiaTerrainCullVisitor* GetCullVisitor();
 
             void AddCamera(osg::Camera* cam);
- 
-            // This override is used as a hack for FrameSync to force the camera to be up to date.
-            virtual void OnMessage(MessageData* data);
 
          protected:
             /// Destructor
@@ -200,7 +200,7 @@ namespace SimCore
             void SetPosition(DynamicLight* dl);
 
             void InitializeCullVisitor();
-            void InitializeFrameBuffer();            
+            void InitializeFrameBuffer();
 
             // Finds all the dynamic light actor prototypes in the GM and holds onto them
             void LoadPrototypes();
@@ -209,7 +209,7 @@ namespace SimCore
 
             void UpdateDynamicLights(float dt);
             void UpdateViewMatrix(dtCore::Camera& pCamera);
-            void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP); 
+            void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP);
             void ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill);
             bool IntersectRayPlane(const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint);
             float GetAngleBetweenVectors(const osg::Vec3& v1, const osg::Vec3& v2);

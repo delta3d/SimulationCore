@@ -45,6 +45,8 @@
 #include <StealthViewer/Qt/OSGAdapterWidget.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
+#include <StealthViewer/Qt/ViewDockWidget.h>
 
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -56,6 +58,7 @@
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/SimCoreVersion.h>
@@ -64,7 +67,6 @@
 #include <dtUtil/fileutils.h>
 #include <dtUtil/datetime.h>
 
-#include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
 #include <dtCore/globals.h>
 #include <dtCore/transformable.h>
@@ -85,7 +87,6 @@
 
 #include <osgDB/FileNameUtils>
 
-#include <osgViewer/GraphicsWindow>
 #include <cmath>
 #include <cfloat>
 
@@ -124,7 +125,8 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
 
       virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
       {
-         return new osgViewer::GraphicsWindowEmbedded(traits);
+         return new StealthQt::OSGGraphicsWindowQt(traits);
+         //return new osgViewer::GraphicsWindowEmbedded(traits);
       }
 
    protected:
@@ -154,39 +156,28 @@ namespace StealthQt
    , mLonValidator(new QDoubleValidator(-180, 180, 10, this))
    , mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this))
    , mGtZeroValidator(new QDoubleValidator(0, DBL_MAX, 5, this))
-   , mFOVValidator(new QDoubleValidator(2.0, 179.0, 2, this))
    , mShowMissingEntityInfoErrorMessage(true)
    , mPreviousCustomHour(-1)
    , mPreviousCustomMinute(-1)
    , mPreviousCustomSecond(-1)
+   , mViewDockWidget(new ViewDockWidget)
    {
       mUi->setupUi(this);
-      ConnectSlots();
+      addDockWidget(Qt::LeftDockWidgetArea, mViewDockWidget);
 
+      ConnectSlots();
 
       ParseCommandLine();
 
       // Instantiate singletons
       StealthViewerData::GetInstance().SetMainWindow(*this);
 
-      QWidget* glParent = new QWidget(this);
-
-      //GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
-
-      dtQt::OSGAdapterWidget* oglWidget = new dtQt::OSGAdapterWidget(false, glParent);
-      oglWidget->setFocusPolicy(Qt::StrongFocus);
-
-      QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
-      hbLayout->setMargin(0);
-      glParent->setLayout(hbLayout);
-      hbLayout->addWidget(oglWidget);
-      setCentralWidget(glParent);
-
       PreShowUIControlInit();
 
-      show();
 
-      InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
+      InitGameApp(appArgc, appArgv, appLibName);
+
+      show();
 
       // This was coverted to a png from a jpg because of weird loading problems
       // on Windows XP
@@ -237,6 +228,12 @@ namespace StealthQt
    }
 
    //////////////////////////////////////////////////////////
+   ViewDockWidget& MainWindow::GetViewDockWidget()
+   {
+      return *mViewDockWidget;
+   }
+
+   //////////////////////////////////////////////////////////
    void MainWindow::ParseCommandLine()
    {
       // Support passing in the connection name on the command line
@@ -269,6 +266,7 @@ namespace StealthQt
       mUi->mControlsDockWidget->installEventFilter(this);
       mUi->mEntityInfoDockWidget->installEventFilter(this);
       mUi->mPreferencesDockWidget->installEventFilter(this);
+      mViewDockWidget->installEventFilter(this);
       mUi->mSearchCallSignLineEdit->installEventFilter(this);
       mUi->mSearchEntityTableWidget->installEventFilter(this);
 
@@ -307,6 +305,7 @@ namespace StealthQt
       mUi->mPreferencesDockWidget->setEnabled(false);
       mUi->mControlsDockWidget->setEnabled(false);
       mUi->mEntityInfoDockWidget->setEnabled(false);
+      mViewDockWidget->setEnabled(false);
 
       // Cannot start up in playback mode either
       EnablePlaybackButtons(false);
@@ -348,12 +347,6 @@ namespace StealthQt
       //The azimuth has the same range as a lat / lon
       mUi->mAttachAzimuth->setValidator(mLonValidator);
 
-      mUi->mFOVAspectRatioText->setValidator(mGtZeroValidator);
-
-      mUi->mFOVHorizontalText->setValidator(mFOVValidator);
-      mUi->mFOVVerticalwHorizontalText->setValidator(mFOVValidator);
-      mUi->mFOVVerticalwAspectText->setValidator(mFOVValidator);
-
       mUi->mControlsTabWidget->setUsesScrollButtons(true);
 
       mGenericTickTimer.setInterval(5000);
@@ -365,13 +358,22 @@ namespace StealthQt
       mRefreshEntityInfoTimer.start();
 
       // Disable full screen
-      mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
+      //mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
+   void MainWindow::InitGameApp(int appArgc, char* appArgv[],
             const std::string& appLibName)
+//   void MainWindow::InitGameApp(QGLWidget& oglWidget, int appArgc, char* appArgv[],
+//            const std::string& appLibName)
    {
+      QWidget* glParent = new QWidget(this);
+
+      QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
+      hbLayout->setMargin(0);
+      glParent->setLayout(hbLayout);
+      setCentralWidget(glParent);
+
       ///Reset the windowing system for osg to use
       osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
 
@@ -384,10 +386,28 @@ namespace StealthQt
       {
          mApp = new dtGame::GameApplication(appArgc, appArgv);
          mApp->SetGameLibraryName(appLibName);
-         oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
-         //hack to make sure the opengl context stuff gets resized to fit the window
-         oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
+         StealthQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<StealthQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+
+         if (graphicsWindow != NULL)
+         {
+            dtQt::OSGAdapterWidget* oglWidget = dynamic_cast<dtQt::OSGAdapterWidget*>(graphicsWindow->GetQGLWidget());
+            if (oglWidget != NULL)
+            {
+               graphicsWindow->resized(0, 0, oglWidget->width(), oglWidget->height());
+               oglWidget->hide();
+               hbLayout->addWidget(oglWidget);
+               oglWidget->show();
+            }
+         }
          mApp->Config();
+
+         StealthViewerData::GetInstance().GetViewWindowConfigObject().CreateMainViewWindow(*mApp->GetGameManager());
+//         dtCore::RefPtr<dtCore::View> newView = new dtCore::View("joe", false);
+//         newView->SetScene(mApp->GetScene());
+//         newView->SetCamera(new dtCore::Camera("joe"));
+//         mApp->AddView(*newView);
+//         newView->GetCamera()->SetWindow(new dtCore::DeltaWin("New View", 0, 0, 800, 600, true, false));
+//         mApp->GetCamera()->AddChild(newView->GetCamera());
       }
       catch (const dtUtil::Exception& ex)
       {
@@ -401,6 +421,8 @@ namespace StealthQt
    {
       delete mUi;
       mUi = NULL;
+      delete mViewDockWidget;
+      mViewDockWidget = NULL;
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -434,22 +456,24 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::showEvent(QShowEvent* event)
    {
+      mViewDockWidget->show();
       // The first, initial show event is not spontaneous because Qt sends it when the window is
       // made visible.  Minimizing or otherwise hiding windows and bringing them back can cause
       // spontaneous show events, which we don't want.
       if (!event->spontaneous())
       {
+         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
+         UpdateUIFromPreferences();
+
          mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
          mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
          mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());
-
-         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
-         UpdateUIFromPreferences();
+         mUi->mActionShowViewUI->setChecked(mViewDockWidget->isVisible());
       }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::closeEvent(QCloseEvent *e)
+   void MainWindow::closeEvent(QCloseEvent* e)
    {
       StealthViewerData::GetInstance().GetSettings().WritePreferencesToFile();
    }
@@ -465,6 +489,7 @@ namespace StealthQt
       connect(mUi->mActionShowControls,    SIGNAL(triggered()), this, SLOT(OnShowControlsActionTriggered()));
       connect(mUi->mActionShowEntityInfo,  SIGNAL(triggered()), this, SLOT(OnShowEntityInfoActionTriggered()));
       connect(mUi->mActionShowPreferences, SIGNAL(triggered()), this, SLOT(OnShowPreferencesActionTriggered()));
+      connect(mUi->mActionShowViewUI,      SIGNAL(triggered()), this, SLOT(OnShowViewUIActionTriggered()));
       /////////////////////////////////////////////////////////
 
       /////////////////////////////////////////////////////////
@@ -630,24 +655,8 @@ namespace StealthQt
                this,               SLOT(OnVisLabelsToggled(bool)));
       connect(mUi->mVisEntityChk,  SIGNAL(toggled(bool)),
                this,               SLOT(OnVisLabelsToggled(bool)));
-      connect(mUi->mVisMaxDistCombo, SIGNAL(toggled(bool)),
-               this,                 SLOT(OnVisLabelsToggled(bool)));
       connect(mUi->mVisMaxDistCombo, SIGNAL(currentIndexChanged(const QString&)),
                this,                 SLOT(OnVisLabelsDistanceChanged(const QString&)));
-
-      connect(mUi->mFOVAspectVerticalRadio, SIGNAL(toggled(bool)),
-               this,                        SLOT(OnFOVAspectVecticalToggled(bool)));
-      connect(mUi->mFOVAspectRatioText,     SIGNAL(textChanged(const QString&)),
-               this,                        SLOT(OnFOVChange(const QString&)));
-      connect(mUi->mFOVHorizontalText,      SIGNAL(textChanged(const QString&)),
-               this,                        SLOT(OnFOVChange(const QString&)));
-      connect(mUi->mFOVVerticalwAspectText, SIGNAL(textChanged(const QString&)),
-               this,                        SLOT(OnFOVChange(const QString&)));
-      connect(mUi->mFOVVerticalwHorizontalText, SIGNAL(textChanged(const QString&)),
-               this,                        SLOT(OnFOVChange(const QString&)));
-
-      connect(mUi->mFOVResetButton, SIGNAL(clicked(bool)),
-               this,                SLOT(OnFOVReset(bool)));
 
       ////////////////////////////////////////////////////
 
@@ -664,47 +673,42 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    bool MainWindow::eventFilter(QObject *object, QEvent *event)
    {
-      if (object == mUi->mControlsDockWidget)
+      if (event->type() == QEvent::Close)
       {
-         if (event->type() == QEvent::Close)
+         if (object == mUi->mControlsDockWidget)
          {
             mUi->mActionShowControls->setChecked(false);
             return true;
          }
-      }
-      else if (object == mUi->mEntityInfoDockWidget)
-      {
-         if (event->type() == QEvent::Close)
+         else if (object == mUi->mEntityInfoDockWidget)
          {
             mUi->mActionShowEntityInfo->setChecked(false);
             return true;
          }
-      }
-      else if (object == mUi->mPreferencesDockWidget)
-      {
-         if (event->type() == QEvent::Close)
+         else if (object == mUi->mPreferencesDockWidget)
          {
             mUi->mActionShowPreferences->setChecked(false);
             return true;
          }
-      }
-      else if (object == mUi->mSearchCallSignLineEdit)
-      {
-         if (event->type() == QEvent::KeyPress)
+         else if (object == mViewDockWidget)
          {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            mUi->mActionShowViewUI->setChecked(false);
+            return true;
+         }
+      }
+      else if (event->type() == QEvent::KeyPress)
+      {
+         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+         if (object == mUi->mSearchCallSignLineEdit)
+         {
             if (keyEvent->key() == Qt::Key_Return)
             {
                OnEntitySearchSearchButtonClicked();
                return true;
             }
          }
-      }
-      else if (object == mUi->mSearchEntityTableWidget)
-      {
-         if (event->type() == QEvent::KeyPress)
+         else if (object == mUi->mSearchEntityTableWidget)
          {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
             if (keyEvent->key() == Qt::Key_T)
             {
                Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
@@ -743,13 +747,20 @@ namespace StealthQt
    void MainWindow::OnFullScreenActionTriggered()
    {
       //mApp->GetWindow()->SetFullScreenMode(mUi->mActionFullScreen->isChecked());
+      if (mUi->mActionFullScreen->isChecked())
+      {
+         this->showFullScreen();
+      }
+      else
+      {
+         this->showNormal();
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowControlsActionTriggered()
    {
       bool showWindow = mUi->mActionShowControls->isChecked();
-      mUi->mActionShowControls->setChecked(showWindow);
 
       showWindow ? mUi->mControlsDockWidget->show() : mUi->mControlsDockWidget->hide();
    }
@@ -758,7 +769,6 @@ namespace StealthQt
    void MainWindow::OnShowEntityInfoActionTriggered()
    {
       bool showWindow = mUi->mActionShowEntityInfo->isChecked();
-      mUi->mActionShowEntityInfo->setChecked(showWindow);
 
       showWindow ? mUi->mEntityInfoDockWidget->show() : mUi->mEntityInfoDockWidget->hide();
    }
@@ -767,9 +777,16 @@ namespace StealthQt
    void MainWindow::OnShowPreferencesActionTriggered()
    {
       bool showWindow = mUi->mActionShowPreferences->isChecked();
-      mUi->mActionShowPreferences->setChecked(showWindow);
 
       showWindow ? mUi->mPreferencesDockWidget->show() : mUi->mPreferencesDockWidget->hide();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnShowViewUIActionTriggered()
+   {
+      bool showWindow = mUi->mActionShowViewUI->isChecked();
+
+      showWindow ? mViewDockWidget->show() : mViewDockWidget->hide();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1386,56 +1403,19 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnNearClippingPlaneChanged(const QString &text)
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      genConfig.SetNearClippingPlane(text.toDouble());
+      viewConfig.SetNearClippingPlane(text.toDouble());
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnFarClipplingPlaneChanged(const QString &text)
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      genConfig.SetFarClippingPlane(text.toDouble());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnFOVAspectVecticalToggled(bool checked)
-   {
-      StealthGM::PreferencesGeneralConfigObject& genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
-
-      genConfig.SetUseAspectRatioForFOV(checked);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnFOVChange(const QString&)
-   {
-      StealthGM::PreferencesGeneralConfigObject& genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
-
-      QString textValue = mUi->mFOVAspectRatioText->text();
-      genConfig.SetFOVAspectRatio(textValue.toFloat());
-
-      textValue = mUi->mFOVHorizontalText->text();
-      genConfig.SetFOVHorizontal(textValue.toFloat());
-
-      textValue = mUi->mFOVVerticalwAspectText->text();
-      genConfig.SetFOVVerticalForAspect(textValue.toFloat());
-
-      textValue = mUi->mFOVVerticalwHorizontalText->text();
-      genConfig.SetFOVVerticalForHorizontal(textValue.toFloat());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnFOVReset(bool)
-   {
-      StealthGM::PreferencesGeneralConfigObject& genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
-      genConfig.FOVReset();
-      AssignFOVUiValuesFromConfig();
+      viewConfig.SetFarClippingPlane(text.toDouble());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -1728,8 +1708,10 @@ namespace StealthQt
       viewComp.AddConfigObject(instance.GetCameraConfigObject());
       viewComp.AddConfigObject(instance.GetRecordConfigObject());
       viewComp.AddConfigObject(instance.GetPlaybackConfigObject());
+      viewComp.AddConfigObject(instance.GetViewWindowConfigObject());
    }
 
+   ///////////////////////////////////////////////////////////////////////////////
    static void SetVisibilityUIValuesFromConfig(Ui::MainWindow& ui)
    {
       StealthGM::PreferencesVisibilityConfigObject& visConfig =
@@ -1782,31 +1764,6 @@ namespace StealthQt
       }
    }
 
-   void MainWindow::AssignFOVUiValuesFromConfig()
-   {
-      // General Preferences
-       StealthGM::PreferencesGeneralConfigObject& genConfig =
-          StealthViewerData::GetInstance().GetGeneralConfigObject();
-
-      mUi->mFOVAspectRatioText->blockSignals(true);
-      mUi->mFOVHorizontalText->blockSignals(true);
-      mUi->mFOVVerticalwAspectText->blockSignals(true);
-      mUi->mFOVVerticalwHorizontalText->blockSignals(true);
-
-      mUi->mFOVAspectRatioText->setText(QString::number(genConfig.GetFOVAspectRatio(), 'g', 5));
-      mUi->mFOVHorizontalText->setText(QString::number(genConfig.GetFOVHorizontal(), 'g', 5));
-      mUi->mFOVVerticalwAspectText->setText(QString::number(genConfig.GetFOVVerticalForAspect(), 'g', 5));
-      mUi->mFOVVerticalwHorizontalText->setText(QString::number(genConfig.GetFOVVerticalForHorizontal(), 'g', 5));
-
-      mUi->mFOVAspectRatioText->blockSignals(false);
-      mUi->mFOVHorizontalText->blockSignals(false);
-      mUi->mFOVVerticalwAspectText->blockSignals(false);
-      mUi->mFOVVerticalwHorizontalText->blockSignals(false);
-
-      mUi->mFOVAspectVerticalRadio->setChecked(genConfig.UseAspectRatioForFOV());
-      mUi->mFOVHorizontalVerticalRadio->setChecked(!genConfig.UseAspectRatioForFOV());
-   }
-
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::UpdateUIFromPreferences()
    {
@@ -1826,15 +1783,18 @@ namespace StealthQt
 
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
-      int index = mUi->mGeneralFarClippingPlaneComboBox->findText(QString::number(genConfig.GetFarClippingPlane()));
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      int index = mUi->mGeneralFarClippingPlaneComboBox->findText(QString::number(viewConfig.GetFarClippingPlane()));
       if (index >= 0)
       {
          mUi->mGeneralFarClippingPlaneComboBox->setCurrentIndex(index);
       }
 
-      AssignFOVUiValuesFromConfig();
+      //AssignFOVUiValuesFromConfig();
 
-      index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(genConfig.GetNearClippingPlane()));
+      index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(viewConfig.GetNearClippingPlane()));
       if (index >= 0)
       {
          mUi->mGeneralNearClippingPlaneComboBox->setCurrentIndex(index);
@@ -1978,8 +1938,10 @@ namespace StealthQt
       mUi->mPlaybackPlayPushButton->setEnabled(enable);
 
       SetVisibilityUIValuesFromConfig(*mUi);
+      mViewDockWidget->LoadSettings();
    }
 
+   ///////////////////////////////////////////////////////////////
    void MainWindow::RecordKeyFrameSlot(const std::vector<dtGame::LogKeyframe>& keyFrames)
    {
       mUi->mRecordTimeMarkersLineTextBox->clear();
@@ -1991,6 +1953,7 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////
    void MainWindow::PlaybackKeyFrameSlot(const std::vector<dtGame::LogKeyframe>& keyFrames)
    {
       mUi->mPlaybackTimeMarkersTextBox->clear();
@@ -2033,6 +1996,7 @@ namespace StealthQt
       mUi->mPreferencesDockWidget->setEnabled(true);
       mUi->mControlsDockWidget->setEnabled(true);
       mUi->mEntityInfoDockWidget->setEnabled(true);
+      mViewDockWidget->setEnabled(true);
 
       mGenericTickTimer.start();
       mHLAErrorTimer.start();

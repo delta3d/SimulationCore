@@ -153,30 +153,6 @@ namespace StealthGM
          float GetLODScale() const { return mLODScale; }
 
          /**
-          * Sets the near clipping plane
-          * @param plane The new plane
-          */
-         void SetNearClippingPlane(double plane) { mNearClippingPlane = plane; SetIsUpdated(true); }
-
-         /**
-          * Gets the near clipping plane
-          * @return mNearClippingPlane
-          */
-         double GetNearClippingPlane() const { return mNearClippingPlane; }
-
-         /**
-          * Sets the far clipping plane
-          * @param plane The new plane
-          */
-         void SetFarClippingPlane(double plane) { mFarClippingPlane = plane; SetIsUpdated(true); }
-
-         /**
-          * Gets the far clipping plane
-          * @return mFarClippingPlane
-          */
-         double GetFarClippingPlane() const { return mFarClippingPlane; }
-
-         /**
           * Sets showing the advanced options
           * @param enable True if showing, false to disable
           */
@@ -260,24 +236,6 @@ namespace StealthGM
           */
          bool GetAutoRefreshEntityInfoWindow() const { return mAutoRefreshEntityInfo; }
 
-         /// Reset all the FOV stuff to defaults.
-         void FOVReset();
-
-         bool UseAspectRatioForFOV() const;
-         void SetUseAspectRatioForFOV(bool useAspect);
-
-         void SetFOVAspectRatio(float aspectRatio);
-         float GetFOVAspectRatio() const;
-
-         void SetFOVVerticalForAspect(float vertical);
-         float GetFOVVerticalForAspect() const;
-
-         void SetFOVHorizontal(float horizontal);
-         float GetFOVHorizontal() const;
-
-         void SetFOVVerticalForHorizontal(float vertical);
-         float GetFOVVerticalForHorizontal() const;
-
          void SetShouldAutoAttachToEntity(bool);
          bool GetShouldAutoAttachToEntity() const;
 
@@ -296,8 +254,6 @@ namespace StealthGM
          bool mEnableCameraCollision;
          const PerformanceMode* mPerformanceMode;
          float mLODScale;
-         double mNearClippingPlane;
-         double mFarClippingPlane;
          bool mShowAdvancedOptions;
          dtCore::UniqueId mAttachActorId;
          bool mReconnectOnStartup;
@@ -305,10 +261,6 @@ namespace StealthGM
          bool mAutoRefreshEntityInfo;
          bool mDetachFromActor;
          dtCore::RefPtr<StealthInputComponent> mInputComponent;
-
-         bool mUseAspectRatioForFOV;
-         osg::Vec2f mFOVAspectVertical;
-         osg::Vec2f mFOVHorizontalVertical;
 
          std::string mAttachPointNodeName;
          osg::Vec3 mInitialAttachRotationHPR;

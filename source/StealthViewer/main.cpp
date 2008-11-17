@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <QtGui/QApplication>
@@ -41,7 +41,7 @@
 #include <sstream>
 
 const int appArgc = 9;
-static char* appArgv[appArgc] = 
+static char* appArgv[appArgc] =
 {
    "GameStart",
    "--UI", "1",
@@ -69,13 +69,13 @@ int main(int argc, char *argv[])
       std::string path = info.path;
       LOG_INFO("The path to the executable is: " + path);
       LOG_INFO("Changing to directory \"" + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
-      try 
+      try
       {
          if(!info.path.empty())
             dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
 
          dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
-      } 
+      }
       catch(const dtUtil::Exception &ex)
       {
          ex.LogException(dtUtil::Log::LOG_ERROR);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
       //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_INFO);
 
       //Now that everything is initialized, show the main window.
-      //Construct the application... 
+      //Construct the application...
       std::string appLibName("StealthGMApp");
       StealthQt::MainWindow mainWindow(appArgc, appArgv, appLibName);
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
       e.LogException(dtUtil::Log::LOG_ERROR);
       std::ostringstream ss;
       ss << "Exception (" << e.TypeEnum() << "): " << e.What()
-         << "\n\tLine: " << e.Line() << " File: " << e.File(); 
+         << "\n\tLine: " << e.Line() << " File: " << e.File();
 
       QMessageBox::critical(NULL,"Exception",ss.str().c_str(),
                            QMessageBox::Ok,QMessageBox::NoButton);
@@ -133,13 +133,12 @@ int main(int argc, char *argv[])
    }
    catch(...)
    {
-      QString message("An unknown exception has been thrown. Please try restarting the application."); 
+      QString message("An unknown exception has been thrown. Please try restarting the application.");
 
       QMessageBox::critical(NULL, "Exception", message, QMessageBox::Ok);
 
       dtAudio::AudioManager::Destroy();
-
-      return 1;
+      throw;
    }
 
     dtAudio::AudioManager::Destroy();

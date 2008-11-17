@@ -44,6 +44,8 @@ namespace StealthGM
    class ControlsCameraConfigObject;
    class ControlsRecordConfigObject;
    class ControlsPlaybackConfigObject;
+
+   class ViewWindowConfigObject;
 }
 
 namespace StealthQt
@@ -112,6 +114,11 @@ namespace StealthQt
           */
          StealthGM::ControlsPlaybackConfigObject& GetPlaybackConfigObject();
 
+         /**
+          * Returns the View Window Config Object
+          * @return mViewWindowConfigObject
+          */
+         StealthGM::ViewWindowConfigObject& GetViewWindowConfigObject();
 
          /**
           * Returns a pointer to the main window of the application
@@ -165,6 +172,8 @@ namespace StealthQt
          StealthGM::ControlsCameraConfigObject* mCameraConfigObject;
          StealthGM::ControlsRecordConfigObject* mRecordConfigObject;
          StealthGM::ControlsPlaybackConfigObject* mPlaybackConfigObject;
+
+         StealthGM::ViewWindowConfigObject* mViewWindowConfigObject;
 
          MainWindow* mMainWindow;
 

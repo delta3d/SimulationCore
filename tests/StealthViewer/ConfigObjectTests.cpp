@@ -28,6 +28,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <StealthViewer/GMApp/ViewerConfigComponent.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesEnvironmentConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
@@ -35,6 +36,7 @@
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 
 #include <SimCore/Components/WeatherComponent.h>
@@ -56,11 +58,17 @@
 
 #include <dtCore/timer.h>
 
+#include <osgViewer/GraphicsWindow>
+
 #include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 class ConfigObjectTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ConfigObjectTests);
+
+      CPPUNIT_TEST(TestViewWindowConfigObject);
+      CPPUNIT_TEST(TestAdditionalViewWindows);
 
       CPPUNIT_TEST(TestPreferencesGeneralConfigObject);
       CPPUNIT_TEST(TestPreferencesEnvironmentConfigObject);
@@ -80,6 +88,8 @@ public:
    void setUp();
    void tearDown();
 
+   void TestViewWindowConfigObject();
+   void TestAdditionalViewWindows();
    void TestPreferencesGeneralConfigObject();
    void TestPreferencesEnvironmentConfigObject();
 
@@ -91,9 +101,19 @@ public:
    void TestControlsPlaybackConfigObject();
 
    void TestPreferencesEnvironmentApplyChanges();
-private:
-   void CheckFOVDefaults();
 
+
+private:
+   void CheckFOVDefaults(StealthGM::ViewWindowWrapper& viewConfig);
+
+   void InitCallbackTest(StealthGM::ViewWindowWrapper& vw);
+
+   void RemoveCallbackTest(StealthGM::ViewWindowWrapper& vw);
+
+   dtCore::RefPtr<dtGame::GameManager> mGM;
+
+   bool mInitCalled;
+   bool mRemoveCalled;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ConfigObjectTests);
@@ -101,32 +121,210 @@ CPPUNIT_TEST_SUITE_REGISTRATION(ConfigObjectTests);
 void ConfigObjectTests::setUp()
 {
    dtCore::System::GetInstance().Start();
+   mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   mGM->SetApplication(GetGlobalApplication());
 }
 
 void ConfigObjectTests::tearDown()
 {
+   if (mGM.valid())
+   {
+      dtCore::ObserverPtr<dtGame::GameManager> gmOb = mGM.get();
+      mGM = NULL;
+      CPPUNIT_ASSERT(!gmOb.valid());
+   }
    dtCore::System::GetInstance().Stop();
 }
 
-void ConfigObjectTests::CheckFOVDefaults()
+void ConfigObjectTests::CheckFOVDefaults(StealthGM::ViewWindowWrapper& viewWrapper)
 {
-   dtCore::RefPtr<StealthGM::PreferencesGeneralConfigObject> genConfig =
-      new StealthGM::PreferencesGeneralConfigObject;
-
    CPPUNIT_ASSERT_MESSAGE("Default Use aspect ratio for fov should true.",
-      genConfig->UseAspectRatioForFOV());
+      viewWrapper.UseAspectRatioForFOV());
 
    CPPUNIT_ASSERT_MESSAGE("The default aspect ratio should be 1.6.",
-      dtUtil::Equivalent(genConfig->GetFOVAspectRatio(), 1.6f));
+      dtUtil::Equivalent(viewWrapper.GetFOVAspectRatio(), 1.6f));
 
    CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 96.0.",
-      dtUtil::Equivalent(genConfig->GetFOVHorizontal(), 96.0f));
+      dtUtil::Equivalent(viewWrapper.GetFOVHorizontal(), 96.0f));
 
    CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 60.0.",
-      dtUtil::Equivalent(genConfig->GetFOVVerticalForAspect(), 60.0f));
+      dtUtil::Equivalent(viewWrapper.GetFOVVerticalForAspect(), 60.0f));
 
    CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 60.0.",
-      dtUtil::Equivalent(genConfig->GetFOVVerticalForHorizontal(), 60.0f));
+      dtUtil::Equivalent(viewWrapper.GetFOVVerticalForHorizontal(), 60.0f));
+
+   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The default far clipping plane should be the same as the binoculars",
+      viewWrapper.GetFarClippingPlane(), SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE, 1.0);
+
+   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The default near clipping plane should be the same as the binoculars",
+      viewWrapper.GetNearClippingPlane(), SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE, 0.1);
+}
+
+void ConfigObjectTests::TestViewWindowConfigObject()
+{
+   dtCore::RefPtr<StealthGM::ViewWindowConfigObject> viewConfig =
+      new StealthGM::ViewWindowConfigObject;
+
+   viewConfig->SetFarClippingPlane(10.0);
+   CPPUNIT_ASSERT_EQUAL(10.0, viewConfig->GetFarClippingPlane());
+   CPPUNIT_ASSERT(viewConfig->IsUpdated());
+   viewConfig->SetIsUpdated(false);
+
+   viewConfig->SetNearClippingPlane(1.0);
+   CPPUNIT_ASSERT_EQUAL(1.0, viewConfig->GetNearClippingPlane());
+   CPPUNIT_ASSERT(viewConfig->IsUpdated());
+   viewConfig->SetIsUpdated(false);
+
+   CPPUNIT_ASSERT_THROW(viewConfig->GetMainViewWindow(), dtUtil::Exception);
+
+   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   gm->SetApplication(GetGlobalApplication());
+   viewConfig->CreateMainViewWindow(*gm);
+
+   CPPUNIT_ASSERT_NO_THROW(viewConfig->GetMainViewWindow());
+
+   CheckFOVDefaults(viewConfig->GetMainViewWindow());
+
+   viewConfig->GetMainViewWindow().SetUseAspectRatioForFOV(false);
+   CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
+      !viewConfig->GetMainViewWindow().UseAspectRatioForFOV());
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetFOVAspectRatio(31.9f);
+   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should now be 31.9.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVAspectRatio(), 31.9f));
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetFOVHorizontal(9373.3f);
+   CPPUNIT_ASSERT_MESSAGE("The horizontal fov should now be 9373.3.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVHorizontal(), 9373.3f));
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetFOVVerticalForAspect(11.1f);
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 11.1.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForAspect(), 11.1f));
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetFOVVerticalForHorizontal(13.2f);
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 13.2.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForHorizontal(), 13.2f));
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetFarClippingPlane(10.0);
+   CPPUNIT_ASSERT_EQUAL(10.0, viewConfig->GetMainViewWindow().GetFarClippingPlane());
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   viewConfig->GetMainViewWindow().SetNearClippingPlane(1.0);
+   CPPUNIT_ASSERT_EQUAL(1.0, viewConfig->GetMainViewWindow().GetNearClippingPlane());
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+   viewConfig->GetMainViewWindow().SetIsUpdated(false);
+
+   //The FOV reset should set update to true and then the values should be the defaults again.
+   viewConfig->GetMainViewWindow().FOVReset();
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
+
+   viewConfig->GetMainViewWindow().SetFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE);
+   viewConfig->GetMainViewWindow().SetNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE);
+
+   CheckFOVDefaults(viewConfig->GetMainViewWindow());
+}
+
+void ConfigObjectTests::InitCallbackTest(StealthGM::ViewWindowWrapper& vw)
+{
+   mInitCalled = true;
+}
+
+void ConfigObjectTests::RemoveCallbackTest(StealthGM::ViewWindowWrapper& vw)
+{
+   mRemoveCalled = true;
+}
+
+void ConfigObjectTests::TestAdditionalViewWindows()
+{
+   std::string newViewOne("newView1");
+   std::string newViewTwo("newView2");
+
+   dtCore::RefPtr<dtCore::View> view = new dtCore::View("");
+   dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
+      new dtCore::DeltaWin("", 50, 50, 50, 50, true, false);
+
+   dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
+      new StealthGM::ViewWindowWrapper(newViewOne, *view, *deltaWin);
+
+   mInitCalled = false;
+   mRemoveCalled = false;
+
+   CPPUNIT_ASSERT(!newViewWrapper->GetInitCallback().valid());
+   newViewWrapper->SetInitCallback(StealthGM::ViewWindowWrapper::OperationCallback(this, &ConfigObjectTests::InitCallbackTest));
+   CPPUNIT_ASSERT(newViewWrapper->GetInitCallback().valid());
+
+   CPPUNIT_ASSERT(!newViewWrapper->GetRemoveCallback().valid());
+   newViewWrapper->SetRemoveCallback(StealthGM::ViewWindowWrapper::OperationCallback(this, &ConfigObjectTests::RemoveCallbackTest));
+   CPPUNIT_ASSERT(newViewWrapper->GetRemoveCallback().valid());
+
+   CPPUNIT_ASSERT(newViewWrapper->GetAttachToCamera() == NULL);
+   CPPUNIT_ASSERT(dtUtil::Equivalent(newViewWrapper->GetAttachCameraRotation(), osg::Vec3(0.0, 0.0, 0.0), 0.01f));
+
+   CPPUNIT_ASSERT(!newViewWrapper->IsAddedToApplication());
+
+   dtCore::RefPtr<StealthGM::ViewerConfigComponent> vcc = new StealthGM::ViewerConfigComponent;
+   dtCore::RefPtr<StealthGM::ViewWindowConfigObject> viewConfig =
+      new StealthGM::ViewWindowConfigObject;
+
+   vcc->AddConfigObject(*viewConfig);
+   mGM->AddComponent(*vcc, dtGame::GameManager::ComponentPriority::NORMAL);
+
+   viewConfig->CreateMainViewWindow(*mGM);
+   CPPUNIT_ASSERT(!viewConfig->GetMainViewWindow().IsAddedToApplication());
+
+   viewConfig->AddViewWindow(*newViewWrapper);
+   StealthGM::ViewWindowWrapper* lookedUpViewWrapper = viewConfig->GetViewWindow(newViewOne);
+   CPPUNIT_ASSERT(lookedUpViewWrapper != NULL);
+   CPPUNIT_ASSERT(lookedUpViewWrapper == newViewWrapper.get());
+
+   dtCore::System::GetInstance().Step();
+   CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsAddedToApplication());
+   CPPUNIT_ASSERT(newViewWrapper->IsAddedToApplication());
+   CPPUNIT_ASSERT(mInitCalled);
+   CPPUNIT_ASSERT(!mRemoveCalled);
+
+   dtCore::ObserverPtr<dtCore::DeltaWin> windowOb = &newViewWrapper->GetWindow();
+   dtCore::ObserverPtr<dtCore::Camera> cameraOb = newViewWrapper->GetView().GetCamera();
+   dtCore::ObserverPtr<dtCore::View> viewOb = &newViewWrapper->GetView();
+
+   CPPUNIT_ASSERT(newViewWrapper->GetView().GetScene() == &mGM->GetScene());
+
+   CPPUNIT_ASSERT(windowOb.valid());
+   CPPUNIT_ASSERT(cameraOb.valid());
+   CPPUNIT_ASSERT(viewOb.valid());
+
+   viewConfig->RemoveViewWindow(*newViewWrapper);
+   //
+   CPPUNIT_ASSERT_MESSAGE("Remove should be called on the next step, not now.", !mRemoveCalled);
+
+   lookedUpViewWrapper = viewConfig->GetViewWindow(newViewOne);
+   CPPUNIT_ASSERT(lookedUpViewWrapper == NULL);
+
+   dtCore::System::GetInstance().Step();
+   CPPUNIT_ASSERT(mRemoveCalled);
+
+   dtCore::ObserverPtr<StealthGM::ViewWindowWrapper> viewWrapperOb = newViewWrapper.get();
+   dtCore::ObserverPtr<osgViewer::GraphicsWindow> graphicsWindowOb = deltaWin->GetOsgViewerGraphicsWindow();
+   newViewWrapper = NULL;
+   deltaWin = NULL;
+   view = NULL;
+
+   CPPUNIT_ASSERT(!viewWrapperOb.valid());
+   CPPUNIT_ASSERT(!windowOb.valid());
+   CPPUNIT_ASSERT(!cameraOb.valid());
+   CPPUNIT_ASSERT(!viewOb.valid());
+   CPPUNIT_ASSERT(!graphicsWindowOb.valid());
 }
 
 void ConfigObjectTests::TestPreferencesGeneralConfigObject()
@@ -137,14 +335,8 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT_MESSAGE("The default camera collision flag should be true",
       genConfig->GetEnableCameraCollision());
 
-   CPPUNIT_ASSERT_MESSAGE("The default far clipping plane should be the same as the binoculars",
-      genConfig->GetFarClippingPlane() == SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE);
-
    CPPUNIT_ASSERT_MESSAGE("The default LOD scale should be 1",
       genConfig->GetLODScale() == 1);
-
-   CPPUNIT_ASSERT_MESSAGE("The default near clipping plane should be the same as the binoculars",
-      genConfig->GetNearClippingPlane() == SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE);
 
    CPPUNIT_ASSERT_MESSAGE("The default performance mode should be DEFAULT",
       genConfig->GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::DEFAULT);
@@ -158,8 +350,6 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
 
    CPPUNIT_ASSERT_MESSAGE("Auto attach to entity should default to false..",
       !genConfig->GetShouldAutoAttachToEntity());
-
-   CheckFOVDefaults();
 
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetShowAdvancedOptions());
 
@@ -188,53 +378,13 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
-   genConfig->SetUseAspectRatioForFOV(false);
-   CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
-      !genConfig->UseAspectRatioForFOV());
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
-   genConfig->SetFOVAspectRatio(31.9f);
-   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should now be 31.9.",
-      dtUtil::Equivalent(genConfig->GetFOVAspectRatio(), 31.9f));
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
-   genConfig->SetFOVHorizontal(9373.3f);
-   CPPUNIT_ASSERT_MESSAGE("The horizontal fov should now be 9373.3.",
-      dtUtil::Equivalent(genConfig->GetFOVHorizontal(), 9373.3f));
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
-   genConfig->SetFOVVerticalForAspect(11.1f);
-   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 11.1.",
-      dtUtil::Equivalent(genConfig->GetFOVVerticalForAspect(), 11.1f));
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
-   genConfig->SetFOVVerticalForHorizontal(13.2f);
-   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 13.2.",
-      dtUtil::Equivalent(genConfig->GetFOVVerticalForHorizontal(), 13.2f));
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
    genConfig->SetCameraCollision(false);
    CPPUNIT_ASSERT_EQUAL(false, genConfig->GetEnableCameraCollision());
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
-   genConfig->SetFarClippingPlane(10.0);
-   CPPUNIT_ASSERT_EQUAL(10.0, genConfig->GetFarClippingPlane());
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
    genConfig->SetLODScale(2.0f);
    CPPUNIT_ASSERT_EQUAL(2.0f, genConfig->GetLODScale());
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   genConfig->SetIsUpdated(false);
-
-   genConfig->SetNearClippingPlane(1.0);
-   CPPUNIT_ASSERT_EQUAL(1.0, genConfig->GetNearClippingPlane());
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
@@ -249,10 +399,6 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
-   //The FOV reset should set update to true and then the values should be the defaults again.
-   genConfig->FOVReset();
-   CPPUNIT_ASSERT(genConfig->IsUpdated());
-   CheckFOVDefaults();
 
    genConfig = NULL;
 }
