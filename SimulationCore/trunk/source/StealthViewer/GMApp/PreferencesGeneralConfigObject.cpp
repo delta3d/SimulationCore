@@ -25,10 +25,8 @@
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 
-#include <SimCore/Tools/Binoculars.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/WeatherComponent.h>
 
 #include <dtGame/gamemanager.h>
 
@@ -56,8 +54,6 @@ namespace StealthGM
    , mEnableCameraCollision(true)
    , mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT)
    , mLODScale(1.0f)
-   , mNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE)
-   , mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE)
    , mShowAdvancedOptions(false)
    , mAttachActorId("")
    , mReconnectOnStartup(true)
@@ -66,7 +62,6 @@ namespace StealthGM
    , mInputComponent(NULL)
    , mShouldAutoAttachToEntity(false)
    {
-      FOVReset();
    }
 
    PreferencesGeneralConfigObject::~PreferencesGeneralConfigObject()
@@ -105,28 +100,6 @@ namespace StealthGM
 
       // Update rendering options
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
-
-      // Send the Near/Far clipping plane to the weather component
-      dtGame::GMComponent *weatherGMComp = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
-      if(weatherGMComp != NULL)
-      {
-         SimCore::Components::WeatherComponent &weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*weatherGMComp);
-         weatherComp.SetNearClipPlane(GetNearClippingPlane());
-         weatherComp.SetFarClipPlane(GetFarClippingPlane());
-         weatherComp.UpdateFog();
-      }
-
-      // since we set the perspective,
-      if (mUseAspectRatioForFOV)
-      {
-         camera->SetPerspectiveParams(mFOVAspectVertical[1], mFOVAspectVertical[0],
-                  GetNearClippingPlane(), GetFarClippingPlane());
-      }
-      else
-      {
-         camera->SetPerspectiveParams(mFOVHorizontalVertical[1], mFOVHorizontalVertical[0]/mFOVHorizontalVertical[1],
-                  GetNearClippingPlane(), GetFarClippingPlane());
-      }
 
       // Updated the LOD scale
       camera->GetOSGCamera()->setLODScale(GetLODScale());
@@ -234,80 +207,6 @@ namespace StealthGM
          LOGN_ERROR("PreferencesGeneralConfigObject.cpp", "Unable to set the performance mode to \"" + mode
                   + "\", no such mode exists.");
       }
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::FOVReset()
-   {
-      mUseAspectRatioForFOV = true;
-      mFOVAspectVertical.set(1.6, 60.0);
-      mFOVHorizontalVertical.set(96.0, 60.0);
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::SetUseAspectRatioForFOV(bool useAspect)
-   {
-      mUseAspectRatioForFOV = useAspect;
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   bool PreferencesGeneralConfigObject::UseAspectRatioForFOV() const
-   {
-      return mUseAspectRatioForFOV;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::SetFOVAspectRatio(float aspectRatio)
-   {
-      mFOVAspectVertical[0] = aspectRatio;
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   float PreferencesGeneralConfigObject::GetFOVAspectRatio() const
-   {
-      return mFOVAspectVertical[0];
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::SetFOVVerticalForAspect(float vertical)
-   {
-      mFOVAspectVertical[1] = vertical;
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   float PreferencesGeneralConfigObject::GetFOVVerticalForAspect() const
-   {
-      return mFOVAspectVertical[1];
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::SetFOVHorizontal(float horizontal)
-   {
-      mFOVHorizontalVertical[0] = horizontal;
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   float PreferencesGeneralConfigObject::GetFOVHorizontal() const
-   {
-      return mFOVHorizontalVertical[0];
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void PreferencesGeneralConfigObject::SetFOVVerticalForHorizontal(float vertical)
-   {
-      mFOVHorizontalVertical[1] = vertical;
-      SetIsUpdated(true);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   float PreferencesGeneralConfigObject::GetFOVVerticalForHorizontal() const
-   {
-      return mFOVHorizontalVertical[1];
    }
 
    //////////////////////////////////////////////////////////////////////////

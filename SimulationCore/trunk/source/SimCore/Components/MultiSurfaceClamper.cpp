@@ -35,7 +35,7 @@
 #include <dtDAL/transformableactorproxy.h>
 #include <dtUtil/mathdefines.h>
 #include <osg/Geometry>
-#include <osg/array>
+#include <osg/Array>
 
 
 
@@ -47,7 +47,7 @@ namespace SimCore
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
       SurfacePointData::SurfacePointData()
-         : mSolid(true) 
+         : mSolid(true)
          , mVelocity(0.0f)
       {
       }
@@ -104,7 +104,7 @@ namespace SimCore
       {
          return mDrawable.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const osg::MatrixTransform* SurfacePointData::GetDrawable() const
       {
@@ -116,7 +116,7 @@ namespace SimCore
       {
          bool success = false;
          if( ! mDrawable.valid() )
-         {  
+         {
             // COLOR - used for other data: UVs , line thickness and length
             dtCore::RefPtr<osg::Vec4Array> color = new osg::Vec4Array( 6 );
             (*color)[0].set( 1.0f,  1.0f,  0.0f, 1.0f );
@@ -311,13 +311,13 @@ namespace SimCore
             SetDebugMode( GetDebugMode() );
          }
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       osg::Group* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSceneNode()
       {
          return mScene.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const osg::Group* MultiSurfaceClamper::MultiSurfaceRuntimeData::GetSceneNode() const
       {
@@ -519,7 +519,7 @@ namespace SimCore
 
          return success;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       bool MultiSurfaceClamper::GetMissingHit( const dtDAL::TransformableActorProxy& proxy,
          dtGame::GroundClampingData& data, float pointZ, osg::Vec3& inOutHit, osg::Vec3& outNormal )
@@ -536,7 +536,7 @@ namespace SimCore
          if( IsWaterDomain( domain ) )
          {
             bool isSub = domain == BaseEntityActorProxy::DomainEnum::SUBMARINE;
-            success = GetWaterSurfaceHit( pointZ, inOutHit, outNormal, 
+            success = GetWaterSurfaceHit( pointZ, inOutHit, outNormal,
                ! isSub, // Only force clamp surface vessels.
                isSub );
          }

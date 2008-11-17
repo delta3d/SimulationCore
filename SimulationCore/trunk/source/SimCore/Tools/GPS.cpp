@@ -35,13 +35,13 @@
 #undef None
 #endif
 
-#include <CEGUI/CEGUI.h> 
+#include <CEGUI/CEGUI.h>
 
 namespace SimCore
 {
    namespace Tools
    {
-      GPS::GPS(CEGUI::Window *mainWindow) : 
+      GPS::GPS(CEGUI::Window *mainWindow) :
          Tool(mainWindow),
          mPosText(NULL)
       {
@@ -49,12 +49,12 @@ namespace SimCore
          {
             CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
             mPosText = wm->createWindow("WindowsLook/StaticText", "GPSY_text");
-   
+
             if(mainWindow != NULL)
             {
                mainWindow->addChildWindow(mPosText);
             }
-   
+
             mPosText->setFont("DejaVuSans-10");
             mPosText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 1, 1)));
             mPosText->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.80f)));
@@ -67,28 +67,28 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI exception caught: " << e.getMessage().c_str();
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
+            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                oss.str(), __FILE__, __LINE__);
          }
          Enable(false);
-         
-         GetCoordinateConverter().SetLocalCoordinateType(dtUtil::LocalCoordinateType::CARTESIAN);
+
+         GetCoordinateConverter().SetLocalCoordinateType(dtUtil::LocalCoordinateType::CARTESIAN_UTM);
       }
-   
+
       GPS::~GPS()
       {
          if(mMainWindow != NULL)
             mMainWindow->removeChildWindow(mPosText);
          mPosText->destroy();
       }
-   
+
       void GPS::Enable(bool enable)
       {
          Tool::Enable(enable);
-   
+
          IsEnabled() ? mPosText->show() : mPosText->hide();
       }
-   
+
       void GPS::Update()
       {
          if (IsEnabled() && GetPlayerActor() != NULL)
@@ -97,20 +97,20 @@ namespace SimCore
             GetPlayerActor()->GetTransform(xform);
             osg::Vec3 loc;
             xform.GetTranslation(loc);
-            
+
             GetCoordinateConverter().SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
             osg::Vec3d latLonElev = GetCoordinateConverter().ConvertToRemoteTranslation(loc);
-            
+
             unsigned ewZone;
             char nsZone;
-   
+
             dtUtil::Coordinates::CalculateUTMZone(latLonElev[0], latLonElev[1], ewZone, nsZone);
-   
+
             GetCoordinateConverter().SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::UTM);
             osg::Vec3d eastingNorthingElev = GetCoordinateConverter().ConvertToRemoteTranslation(loc);
-   
+
             std::string milgrid = dtUtil::Coordinates::ConvertUTMToMGRS(eastingNorthingElev.x(), eastingNorthingElev.y(), ewZone, nsZone, 5);
-            
+
             mPosText->setText(milgrid);
          }
       }

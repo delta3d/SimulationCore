@@ -1,5 +1,5 @@
 /* -*-c++-*-
- * Stealth Viewer - FederationFileResource (.h & .cpp) - Using 'The MIT License'
+ * Stealth Viewer - ViewDockWidget (.h & .cpp) - Using 'The MIT License'
  * Copyright (C) 2007-2008, Alion Science and Technology Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,30 +23,51 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * @author Eddie Johnson
+ * David Guthrie
  */
-#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
-#include <ui_FederationFileResourceBrowserUi.h>
-#include <QtGui/QHeaderView>
+
+#ifndef VIEWDOCKWIDGET_H_
+#define VIEWDOCKWIDGET_H_
+
+#include <QtGui/QDockWidget>
+
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+#include <dtCore/refptr.h>
+
+#include <string>
+
+namespace Ui
+{
+   class ViewDockWidgetUi;
+}
 
 namespace StealthQt
 {
-   FederationFileResourceBrowser::FederationFileResourceBrowser(QWidget *parent) :
-      QDialog(parent),
-      mUi(new Ui::FederationFileResourceBrowser)
-      {
-      mUi->setupUi(this);
-      mUi->mFedrationFilesTreeWidget->header()->hide();
-      }
+   class FOVWidget;
+   class AdditionalViewDockWidget;
 
-   FederationFileResourceBrowser::~FederationFileResourceBrowser()
+   class ViewDockWidget: public QDockWidget
    {
-      delete mUi;
-      mUi = NULL;
-   }
+      Q_OBJECT
+   public:
+      ViewDockWidget();
+      virtual ~ViewDockWidget();
+      void LoadSettings();
 
-   QTreeWidget& FederationFileResourceBrowser::GetTreeWidget()
-   {
-      return *mUi->mFedrationFilesTreeWidget;
-   }
+      dtCore::RefPtr<StealthGM::ViewWindowWrapper> CreateNewViewWindow(const std::string& name);
+
+   public slots:
+      void OnNewViewClicked(bool);
+      void OnEditViewClicked(bool);
+      void OnDeleteViewClicked(bool);
+      void OnViewListSelectionChanged();
+      void OnAdditionalViewClosed(AdditionalViewDockWidget&);
+   private:
+      void Init();
+      void ResetList();
+      Ui::ViewDockWidgetUi* mUi;
+      FOVWidget* mFOVWidget;
+   };
 }
+
+#endif /* VIEWDOCKWIDGET_H_ */

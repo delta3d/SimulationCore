@@ -29,6 +29,7 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <SimCore/Components/LabelManager.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/mathdefines.h>
@@ -36,6 +37,9 @@
 #include <QtGui/QApplication>
 #include <QtCore/QStringList>
 #include <StealthViewer/Qt/StealthViewerData.h>
+
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 class SubStealthViewerSettings : public StealthQt::StealthViewerSettings
 {
@@ -116,6 +120,13 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    StealthGM::PreferencesGeneralConfigObject& genConfig =
       StealthQt::StealthViewerData::GetInstance().GetGeneralConfigObject();
 
+   StealthGM::ViewWindowConfigObject& viewConfig =
+      StealthQt::StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   gm->SetApplication(GetGlobalApplication());
+   viewConfig.CreateMainViewWindow(*gm);
+
    genConfig.SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
    genConfig.SetAttachPointNodeName("frank");
 
@@ -123,17 +134,22 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    genConfig.SetInitialAttachRotationHPR(newInitialAttachRot);
 
    genConfig.SetShouldAutoAttachToEntity(true);
-   genConfig.SetUseAspectRatioForFOV(false);
-   genConfig.SetFOVAspectRatio(31.9f);
-   genConfig.SetFOVHorizontal(9373.3f);
-   genConfig.SetFOVVerticalForAspect(11.1f);
-   genConfig.SetFOVVerticalForHorizontal(13.2f);
+
    genConfig.SetCameraCollision(false);
-   genConfig.SetFarClippingPlane(10.0);
    genConfig.SetLODScale(2.0f);
-   genConfig.SetNearClippingPlane(1.0);
    genConfig.SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
    genConfig.SetShowAdvancedOptions(true);
+
+   {
+      viewConfig.GetMainViewWindow().SetUseAspectRatioForFOV(false);
+      viewConfig.GetMainViewWindow().SetFOVAspectRatio(31.9f);
+      viewConfig.GetMainViewWindow().SetFOVHorizontal(9373.3f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForAspect(11.1f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForHorizontal(13.2f);
+   }
+
+   viewConfig.SetFarClippingPlane(10.0);
+   viewConfig.SetNearClippingPlane(1.0);
 
    SubStealthViewerSettings settings(QString("UnitTest"));
    settings.ClearAllSettings(true);
@@ -152,28 +168,32 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    CPPUNIT_ASSERT_MESSAGE("The auto attach to entity should new be true.",
       genConfig.GetShouldAutoAttachToEntity());
 
-   CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
-      !genConfig.UseAspectRatioForFOV());
+   {
+      CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
+         !viewConfig.GetMainViewWindow().UseAspectRatioForFOV());
 
-   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
-      dtUtil::Equivalent(genConfig.GetFOVAspectRatio(), 31.9f));
+      CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVAspectRatio(), 31.9f));
 
-   CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
-      dtUtil::Equivalent(genConfig.GetFOVHorizontal(), 9373.3f));
+      CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVHorizontal(), 9373.3f));
 
-   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
-      dtUtil::Equivalent(genConfig.GetFOVVerticalForAspect(), 11.1f));
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForAspect(), 11.1f));
 
-   CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
-      dtUtil::Equivalent(genConfig.GetFOVVerticalForHorizontal(), 13.2f));
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForHorizontal(), 13.2f));
+   }
+
+   CPPUNIT_ASSERT_EQUAL(10.0, viewConfig.GetFarClippingPlane());
+   CPPUNIT_ASSERT_EQUAL(1.0, viewConfig.GetNearClippingPlane());
+
 
    CPPUNIT_ASSERT_EQUAL(false, genConfig.GetEnableCameraCollision());
 
-   CPPUNIT_ASSERT_EQUAL(10.0, genConfig.GetFarClippingPlane());
 
    CPPUNIT_ASSERT_EQUAL(2.0f, genConfig.GetLODScale());
 
-   CPPUNIT_ASSERT_EQUAL(1.0, genConfig.GetNearClippingPlane());
 
    CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
       genConfig.GetPerformanceMode());

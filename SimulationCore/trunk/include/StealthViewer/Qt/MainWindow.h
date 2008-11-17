@@ -35,6 +35,8 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
+#include <StealthViewer/Qt/SimTicker.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 namespace dtGame
 {
@@ -61,6 +63,9 @@ class QComboBox;
 
 namespace StealthQt
 {
+
+   class ViewDockWidget;
+   class AdditionalViewDockWidget;
 
    /**
     * This class is the main window of the application.  It contains the menu bar,
@@ -97,6 +102,13 @@ namespace StealthQt
           * @param a list of the key frames
           */
          void PlaybackKeyFrameSlot(const std::vector<dtGame::LogKeyframe> &keyFrames);
+
+         /// @return the dock widget that handles views.
+         ViewDockWidget& GetViewDockWidget();
+
+      signals:
+         /// Fired when one of the additional 3D views is closed.
+         void AdditionalViewClosed(AdditionalViewDockWidget&);
 
       public slots:
 
@@ -174,16 +186,16 @@ namespace StealthQt
          void OnShowAdvancedPlaybackOptionsChanged(int state);
 
          /// Called when playback speed is adjusted
-         void OnPlaybackSpeedChanged(const QString &newText);
+         void OnPlaybackSpeedChanged(const QString& newText);
 
          /// Called when the jump to TM button is clicked
          void OnPlaybackJumpToTimeMarkerButtonClicked(bool checked = false);
 
          /// Called when the jump to TM button is clicked
-         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName);
+         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString& itemName);
 
          /// Called when a time marker is selected
-         void OnPlaybackTimeMarkerSelected(const QString &text);
+         void OnPlaybackTimeMarkerSelected(const QString& text);
          ///////////////////////////////////////////////////////////////////////
 
          ///////////////////////////////////////////////////////////////////////
@@ -218,6 +230,9 @@ namespace StealthQt
          /// Called when the show Preferences action is triggered
          void OnShowPreferencesActionTriggered();
 
+         /// Called when the menu option to show/hide the view ui is triggered
+         void OnShowViewUIActionTriggered();
+
          /////////////////////////////////////////////////////////////////////////
          // General Tab
          /////////////////////////////////////////////////////////////////////////
@@ -247,14 +262,6 @@ namespace StealthQt
 
          /// Called when the far clip plane is changed
          void OnFarClipplingPlaneChanged(const QString& text);
-
-         /// Fired when the aspect/vertical radio button is toggled.
-         void OnFOVAspectVecticalToggled(bool checked = false);
-         /// This is a catch all for all the different fov fields.
-         void OnFOVChange(const QString& text);
-
-         /// This handles the reset button for the field of view.
-         void OnFOVReset(bool checked = false);
 
          /////////////////////////////////////////////////////////////////////////
          // Environment Tab
@@ -374,8 +381,10 @@ namespace StealthQt
 
          void PreShowUIControlInit();
 
-         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
+         void InitGameApp(int appArgc, char* appArgv[],
                   const std::string& appLibName);
+//         void InitGameApp(QGLWidget& oglWidget, int appArgc, char* appArgv[],
+//                     const std::string& appLibName);
 
          /**
           * Connects the signals and slots the main window needs.
@@ -386,9 +395,6 @@ namespace StealthQt
           * Registers the configuration objects with the ViewerComponent
           */
          void AddConfigObjectsToViewerComponent();
-
-         /// Sets the Field of view UI values by reading them from the general config.
-         void AssignFOVUiValuesFromConfig();
 
          /**
           * Enables or disables all of the playback buttons at once
@@ -458,6 +464,7 @@ namespace StealthQt
 
          QString mCurrentConnectionName;
 
+         SimTicker mSimTicker;
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
          QTimer mRefreshEntityInfoTimer;
@@ -473,7 +480,6 @@ namespace StealthQt
          QDoubleValidator* mLonValidator;
          QDoubleValidator* mXYZValidator;
          QDoubleValidator* mGtZeroValidator;
-         QDoubleValidator* mFOVValidator;
 
          bool mShowMissingEntityInfoErrorMessage;
 
@@ -482,6 +488,8 @@ namespace StealthQt
          int mPreviousCustomHour;
          int mPreviousCustomMinute;
          int mPreviousCustomSecond;
+
+         ViewDockWidget* mViewDockWidget;
    };
 }
 

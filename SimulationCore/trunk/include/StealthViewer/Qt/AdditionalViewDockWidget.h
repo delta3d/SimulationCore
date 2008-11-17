@@ -1,5 +1,5 @@
 /* -*-c++-*-
- * Stealth Viewer - FederationFileResource (.h & .cpp) - Using 'The MIT License'
+ * Stealth Viewer - AdditionalViewDockWidget (.h & .cpp) - Using 'The MIT License'
  * Copyright (C) 2007-2008, Alion Science and Technology Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,30 +23,47 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * @author Eddie Johnson
+ * David Guthrie
  */
-#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
-#include <ui_FederationFileResourceBrowserUi.h>
-#include <QtGui/QHeaderView>
+
+
+#ifndef ADDITIONALVIEWDOCKWIDGET_H_
+#define ADDITIONALVIEWDOCKWIDGET_H_
+
+#include <QtGui/QDockWidget>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+
+class QGLWidget;
 
 namespace StealthQt
 {
-   FederationFileResourceBrowser::FederationFileResourceBrowser(QWidget *parent) :
-      QDialog(parent),
-      mUi(new Ui::FederationFileResourceBrowser)
-      {
-      mUi->setupUi(this);
-      mUi->mFedrationFilesTreeWidget->header()->hide();
-      }
 
-   FederationFileResourceBrowser::~FederationFileResourceBrowser()
+   /// Simple class to make it easy for code to tell if a dock window is an addition view.
+   class AdditionalViewDockWidget: public QDockWidget
    {
-      delete mUi;
-      mUi = NULL;
-   }
+      Q_OBJECT;
+   public:
+      AdditionalViewDockWidget(QWidget* parent = NULL);
+      virtual ~AdditionalViewDockWidget();
 
-   QTreeWidget& FederationFileResourceBrowser::GetTreeWidget()
-   {
-      return *mUi->mFedrationFilesTreeWidget;
-   }
+      void SetQGLWidget(QGLWidget* widgetChild);
+      QGLWidget* GetQGLWidget();
+
+      void SetViewWindowWrapper(StealthGM::ViewWindowWrapper*);
+      StealthGM::ViewWindowWrapper* GetViewWindowWrapper();
+
+      static void CreateAndInitFromViewWrapper(StealthGM::ViewWindowWrapper& wrapper);
+      static void ShutdownOnViewDestroy(StealthGM::ViewWindowWrapper& wrapper);
+      static AdditionalViewDockWidget* GetDockWidgetForViewWindow(StealthGM::ViewWindowWrapper& wrapper);
+
+   signals:
+      void closeRequested(AdditionalViewDockWidget&);
+   protected:
+      virtual void closeEvent(QCloseEvent *e);
+   private:
+      QGLWidget* mGLWidget;
+      dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWrapper;
+   };
 }
+
+#endif /* ADDITIONALVIEWDOCKWIDGET_H_ */

@@ -1,5 +1,5 @@
 /* -*-c++-*-
- * Stealth Viewer - FederationFileResource (.h & .cpp) - Using 'The MIT License'
+ * Stealth Viewer - AdditionalViewDockWidget (.h & .cpp) - Using 'The MIT License'
  * Copyright (C) 2007-2008, Alion Science and Technology Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,30 +23,55 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * @author Eddie Johnson
+ * David Guthrie
  */
-#include <StealthViewer/Qt/FederationFileResourceBrowser.h>
-#include <ui_FederationFileResourceBrowserUi.h>
-#include <QtGui/QHeaderView>
+
+#ifndef ADDITIONALVIEWEDITDIALOG_H_
+#define ADDITIONALVIEWEDITDIALOG_H_
+
+#include <QtGui/QDialog>
+
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+
+class QDoubleValidator;
+
+namespace Ui
+{
+   class AdditionalViewDialogUi;
+}
 
 namespace StealthQt
 {
-   FederationFileResourceBrowser::FederationFileResourceBrowser(QWidget *parent) :
-      QDialog(parent),
-      mUi(new Ui::FederationFileResourceBrowser)
-      {
-      mUi->setupUi(this);
-      mUi->mFedrationFilesTreeWidget->header()->hide();
-      }
+   class FOVWidget;
 
-   FederationFileResourceBrowser::~FederationFileResourceBrowser()
+   /**
+    * Editor dialog for additional views.
+    */
+   class AdditionalViewEditDialog : public QDialog
    {
-      delete mUi;
-      mUi = NULL;
-   }
+      Q_OBJECT
+   public:
 
-   QTreeWidget& FederationFileResourceBrowser::GetTreeWidget()
-   {
-      return *mUi->mFedrationFilesTreeWidget;
-   }
+      AdditionalViewEditDialog(StealthGM::ViewWindowWrapper& viewWindow,
+               QWidget *parent = NULL, Qt::WindowFlags f = 0);
+
+      virtual ~AdditionalViewEditDialog();
+
+   public slots:
+      void UpdateName(const QString& name);
+      void UpdateHeading(const QString& heading);
+      void UpdatePitch(const QString& pitch);
+   protected:
+      void closeEvent(QCloseEvent* e);
+   private:
+      void Init();
+
+      Ui::AdditionalViewDialogUi* mUi;
+      FOVWidget* mFOVWidget;
+      dtCore::RefPtr<StealthGM::ViewWindowWrapper> mViewWindow;
+      QDoubleValidator* mAngleValidator;
+   };
+
 }
+
+#endif /* ADDITIONALVIEWEDITDIALOG_H_ */

@@ -31,6 +31,7 @@
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 namespace StealthQt
 {
@@ -46,6 +47,7 @@ namespace StealthQt
    , mCameraConfigObject(new StealthGM::ControlsCameraConfigObject)
    , mRecordConfigObject(new StealthGM::ControlsRecordConfigObject)
    , mPlaybackConfigObject(new StealthGM::ControlsPlaybackConfigObject)
+   , mViewWindowConfigObject(new StealthGM::ViewWindowConfigObject)
    , mMainWindow(NULL)
    {
 
@@ -126,6 +128,12 @@ namespace StealthQt
    StealthGM::ControlsPlaybackConfigObject& StealthViewerData::GetPlaybackConfigObject()
    {
       return *mPlaybackConfigObject;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   StealthGM::ViewWindowConfigObject& StealthViewerData::GetViewWindowConfigObject()
+   {
+      return *mViewWindowConfigObject;
    }
 
    //////////////////////////////////////////////////////////////////////
