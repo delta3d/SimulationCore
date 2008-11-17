@@ -41,6 +41,9 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtGui/QMessageBox>
+
+//For an ugly hack...
+#include <dtCore/system.h>
 #include <vector>
 
 namespace StealthQt
@@ -505,6 +508,17 @@ namespace StealthQt
 
    void StealthViewerSettings::WriteViewWindowGroupToFile()
    {
+      // remove all view settings.
+      QStringList groups = childGroups();
+      for(int i = 0; i < groups.size(); i++)
+      {
+         QString group = groups[i];
+         if (group.left(StealthViewerSettings::VIEW_WINDOW_GROUP.size()) == StealthViewerSettings::VIEW_WINDOW_GROUP)
+         {
+            remove(group);
+         }
+      }
+
       // General Preferences
       StealthGM::ViewWindowConfigObject& viewConfig =
          StealthViewerData::GetInstance().GetViewWindowConfigObject();
@@ -542,6 +556,8 @@ namespace StealthQt
             setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, currViewWrapper.GetFOVVerticalForHorizontal());
          endGroup();
       }
+//      // ugly hack to make the windows initialize before the settings are read.
+//      dtCore::System::GetInstance().Step();
    }
 
    void StealthViewerSettings::LoadPreferences()

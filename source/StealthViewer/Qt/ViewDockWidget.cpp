@@ -91,9 +91,6 @@ namespace StealthQt
 
        ResetList();
 
-       // Must do this here because the main window may not be set in the <erk> singleton yet on init().
-       connect(StealthViewerData::GetInstance().GetMainWindow(), SIGNAL(AdditionalViewClosed(AdditionalViewDockWidget&)),
-                this,                                            SLOT(OnAdditionViewClosed(AdditionalViewDockWidget&)));
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -158,8 +155,18 @@ namespace StealthQt
 
       if (viewWindow != NULL)
       {
+         std::string oldName = viewWindow->GetName();
          AdditionalViewEditDialog dialog(*viewWindow, this);
          dialog.exec();
+
+         if (viewWindow->GetName() != oldName)
+         {
+            viewWindow->SetWindowTitle(viewWindow->GetName());
+            viewConfig.UpdateViewName(oldName);
+            AdditionalViewDockWidget* widget = AdditionalViewDockWidget::GetDockWidgetForViewWindow(*viewWindow);
+            widget->setWindowTitle(tr(viewWindow->GetName().c_str()));
+            ResetList();
+         }
       }
       else
       {

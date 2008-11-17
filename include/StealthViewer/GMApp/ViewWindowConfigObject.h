@@ -177,7 +177,11 @@ namespace StealthGM
       bool AddViewWindow(ViewWindowWrapper& vww);
       void RemoveViewWindow(ViewWindowWrapper& vww);
 
+      /// @return the view window with the given name.
       ViewWindowWrapper* GetViewWindow(const std::string& name);
+
+      /// Changes the name of the viewWindow in the set to match the one in the object.
+      void UpdateViewName(const std::string& oldName);
 
       void GetAllViewWindows(std::vector<ViewWindowWrapper* >& toFill);
 
