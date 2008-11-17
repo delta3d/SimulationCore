@@ -50,7 +50,7 @@ namespace StealthGM
 
       typedef dtUtil::Functor<void, TYPELIST_1(ViewWindowWrapper&)> OperationCallback;
 
-      ViewWindowWrapper::ViewWindowWrapper(const std::string& name, dtCore::View& view, dtCore::DeltaWin& window);
+      ViewWindowWrapper(const std::string& name, dtCore::View& view, dtCore::DeltaWin& window);
 
       bool IsAddedToApplication() const;
 
