@@ -187,7 +187,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void ViewWindowConfigObject::GetAllViewWindows(std::vector<ViewWindowWrapper*>& toFill)
    {
-      std::for_each(mViewWindows.begin(), mViewWindows.end(), PushBackSecond<ViewWindowContainer::value_type, typeof(toFill)>(toFill));
+      std::for_each(mViewWindows.begin(), mViewWindows.end(), PushBackSecond<ViewWindowContainer::value_type, std::vector<ViewWindowWrapper*> >(toFill));
    }
 
    //////////////////////////////////////////////////////////////////////////

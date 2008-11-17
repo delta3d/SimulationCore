@@ -262,35 +262,14 @@ namespace StealthQt
       }
    }
 
+
    ////////////////////////////////////////////////////////////
+   using osgViewer::GraphicsWindow;
    void OSGGraphicsWindowQt::setCursor(osgViewer::GraphicsWindow::MouseCursor mouseCursor)
    {
-      using osgViewer::GraphicsWindow;
 
       if (mQWidget != NULL)
       {
-//         ,
-//         UpArrowCursor,
-//         CrossCursor,
-//         WaitCursor,
-//         IBeamCursor,
-//         SizeVerCursor,
-//         SizeHorCursor,
-//         SizeBDiagCursor,
-//         SizeFDiagCursor,
-//         SizeAllCursor,
-//         BlankCursor,
-//         SplitVCursor,
-//         SplitHCursor,
-//         PointingHandCursor,
-//         ForbiddenCursor,
-//         WhatsThisCursor,
-//         BusyCursor,
-//         OpenHandCursor,
-//         ClosedHandCursor,
-//         LastCursor = ClosedHandCursor,
-//         BitmapCursor = 24,
-//         CustomCursor = 25
          switch (mouseCursor)
          {
             case InheritCursor:
