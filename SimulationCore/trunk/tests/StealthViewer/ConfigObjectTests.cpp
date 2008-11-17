@@ -294,6 +294,12 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    CPPUNIT_ASSERT(mInitCalled);
    CPPUNIT_ASSERT(!mRemoveCalled);
 
+   newViewWrapper->SetName(newViewTwo);
+   viewConfig->UpdateViewName(newViewOne);
+
+   CPPUNIT_ASSERT(viewConfig->GetViewWindow(newViewOne) == NULL);
+   CPPUNIT_ASSERT(viewConfig->GetViewWindow(newViewTwo) == newViewWrapper.get());
+
    dtCore::ObserverPtr<dtCore::DeltaWin> windowOb = &newViewWrapper->GetWindow();
    dtCore::ObserverPtr<dtCore::Camera> cameraOb = newViewWrapper->GetView().GetCamera();
    dtCore::ObserverPtr<dtCore::View> viewOb = &newViewWrapper->GetView();
@@ -308,7 +314,7 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    //
    CPPUNIT_ASSERT_MESSAGE("Remove should be called on the next step, not now.", !mRemoveCalled);
 
-   lookedUpViewWrapper = viewConfig->GetViewWindow(newViewOne);
+   lookedUpViewWrapper = viewConfig->GetViewWindow(newViewTwo);
    CPPUNIT_ASSERT(lookedUpViewWrapper == NULL);
 
    dtCore::System::GetInstance().Step();

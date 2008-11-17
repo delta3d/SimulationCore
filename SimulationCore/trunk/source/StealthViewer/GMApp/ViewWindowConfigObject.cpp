@@ -11,7 +11,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ *s
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -167,6 +167,21 @@ namespace StealthGM
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void ViewWindowConfigObject::UpdateViewName(const std::string& oldName)
+   {
+      ViewWindowContainer::iterator i = mViewWindows.find(oldName);
+      if (i != mViewWindows.end())
+      {
+         dtCore::RefPtr<ViewWindowWrapper> vwTemp = i->second;
+         if (oldName != vwTemp->GetName())
+         {
+            mViewWindows.erase(i);
+            AddViewWindow(*vwTemp);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    template <typename PairType, typename ContainerType>
    class PushBackSecond
    {
@@ -205,7 +220,6 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    ViewWindowWrapper::~ViewWindowWrapper()
    {
-
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -348,6 +362,7 @@ namespace StealthGM
          if (!cam.valid())
          {
             cam = new dtCore::Camera(mView->GetName());
+            cam->SetClearColor(osg::Vec4(0, 0, 0, 0));
             /// only set the mask if we create the camera.
             osg::Camera* osgCam = cam->GetOSGCamera();
             osgCam->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);

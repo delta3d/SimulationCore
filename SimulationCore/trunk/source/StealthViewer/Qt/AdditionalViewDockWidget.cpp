@@ -47,6 +47,14 @@ namespace StealthQt
    : QDockWidget(parent)
    , mGLWidget(NULL)
    {
+      // No docking allowed.
+      setAllowedAreas(Qt::NoDockWidgetArea);
+      connect(this, SIGNAL(topLevelChanged(bool)),
+              this, SLOT(OnTopLevelOrVisibilityChanged(bool))
+               );
+      connect(this, SIGNAL(visibilityChanged(bool)),
+              this, SLOT(OnTopLevelOrVisibilityChanged(bool))
+               );
    }
 
    ////////////////////////////////////////////////////////////
@@ -155,6 +163,15 @@ namespace StealthQt
          QGLWidget* glWidget = dockWidget->GetQGLWidget();
          glWidget->setParent(NULL);
          delete dockWidget;
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void AdditionalViewDockWidget::OnTopLevelOrVisibilityChanged(bool isTopLevelOrVisible)
+   {
+      if (!isTopLevelOrVisible)
+      {
+         emit closeRequested(*this);
       }
    }
 }
