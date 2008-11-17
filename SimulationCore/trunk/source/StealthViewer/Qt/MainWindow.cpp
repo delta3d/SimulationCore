@@ -125,8 +125,16 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
 
       virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
       {
-         return new StealthQt::OSGGraphicsWindowQt(traits);
          //return new osgViewer::GraphicsWindowEmbedded(traits);
+
+         if(traits->pbuffer)
+         {
+            return mInterface->createGraphicsContext(traits);
+         }
+         else
+         {
+            return new StealthQt::OSGGraphicsWindowQt(traits);
+         }
       }
 
    protected:
