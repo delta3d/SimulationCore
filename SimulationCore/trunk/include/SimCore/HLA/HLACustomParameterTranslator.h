@@ -21,8 +21,8 @@
  * @author Chris Rodgers
  */
 
-#ifndef _MUNITION_PARAMETER_TRANSLATOR_H_
-#define _MUNITION_PARAMETER_TRANSLATOR_H_
+#ifndef _HLA_CUSTOM_PARAMETER_TRANSLATOR_H_
+#define _HLA_CUSTOM_PARAMETER_TRANSLATOR_H_
 
 
 
@@ -74,6 +74,7 @@ namespace SimCore
             static const HLACustomAttributeType VEC3D_TYPE;
             /// time in milliseconds
             static const HLACustomAttributeType MILLISECOND_TIME_TYPE;
+            static const HLACustomAttributeType FLOAT_ARRAY_2D_TYPE;
 
          private:
             HLACustomAttributeType(const std::string& name, unsigned char id, size_t encodedLength)
@@ -141,6 +142,16 @@ namespace SimCore
                size_t& maxSize,
                const dtGame::MessageParameter& parameter,
                const dtDAL::DataType& parameterDataType) const;
+
+            void MapToParamFromFloatArray2D(
+               const char* buffer,
+               const size_t maxSize,
+               dtGame::MessageParameter& parameter) const;
+
+            void MapFromParamToFloatArray2D(
+               char* buffer,
+               size_t& maxSize,
+               const dtGame::MessageParameter& parameter) const;
 
 
             // This function allows the translator access to the table that
