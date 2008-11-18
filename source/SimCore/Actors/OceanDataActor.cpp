@@ -40,6 +40,7 @@ namespace SimCore
       OceanDataActor::OceanDataActor( OceanDataActorProxy &proxy )
          : BaseClass(proxy)
          , mWaveHeightSignificant(0.0f)
+         , mWaveDirectionPrimary(0.0f)
       {
       }
 
@@ -60,11 +61,24 @@ namespace SimCore
          return mWaveHeightSignificant;
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void OceanDataActor::SetWaveDirectionPrimary( float angleDegrees )
+      {
+         mWaveDirectionPrimary = angleDegrees;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float OceanDataActor::GetWaveDirectionPrimary() const
+      {
+         return mWaveDirectionPrimary;
+      }
+
       
 
       //////////////////////////////////////////////////////////////////////////
       // PROXY CODE
       //////////////////////////////////////////////////////////////////////////
+      const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY("Wave Direction Primary");
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT("Wave Height Significant");
       
       //////////////////////////////////////////////////////////////////////////
@@ -100,6 +114,14 @@ namespace SimCore
             dtDAL::MakeFunctor( *actor, &OceanDataActor::SetWaveHeightSignificant ), 
             dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetWaveHeightSignificant ), 
             "Wave height significant for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
+            GROUP));
+
+         AddProperty(new dtDAL::FloatActorProperty(
+            OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY,
+            OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY, 
+            dtDAL::MakeFunctor( *actor, &OceanDataActor::SetWaveDirectionPrimary ), 
+            dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetWaveDirectionPrimary ), 
+            "Wave direction (in degrees) for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
             GROUP));
       }
 
