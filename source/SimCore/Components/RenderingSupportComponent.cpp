@@ -206,7 +206,7 @@ namespace SimCore
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
          osg::Node* node = gui->GetOSGNode();
-         mGUIRoot->addChild(node);
+         //mGUIRoot->addChild(node);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -441,7 +441,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateViewMatrix(dtCore::Camera& pCamera)
       {
-         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
@@ -501,8 +501,8 @@ namespace SimCore
          else
          {
 
-            int width = pCamera.GetOSGCamera()->getViewport()->width();
-            int height = pCamera.GetOSGCamera()->getViewport()->height();
+            int width = int(pCamera.GetOSGCamera()->getViewport()->width());
+            int height = int(pCamera.GetOSGCamera()->getViewport()->height());
 
             osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
 
