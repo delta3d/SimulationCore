@@ -19,7 +19,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
@@ -41,7 +41,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // UNIT TESTS
 ////////////////////////////////////////////////////////////////////////////////
-class DataTypeTests : public CPPUNIT_NS::TestFixture 
+class DataTypeTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(DataTypeTests);
 
@@ -59,7 +59,7 @@ class DataTypeTests : public CPPUNIT_NS::TestFixture
          size_t dataSize = sizeof(T_Data);
          memcpy( &outValue, buffer, dataSize );
 
-         if( osg::getCpuByteOrder == osg::LittleEndian )
+         if( osg::getCpuByteOrder() == osg::LittleEndian )
          {
             osg::swapBytes( (char*)(&outValue), dataSize );
          }
@@ -89,12 +89,12 @@ class DataTypeTests : public CPPUNIT_NS::TestFixture
       void setUp()
       {
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void tearDown()
       {
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void TestFloatArray2D()
       {
@@ -161,7 +161,7 @@ class DataTypeTests : public CPPUNIT_NS::TestFixture
             // Test Encode
             arrayA->Encode( encodeBuffer );
             CPPUNIT_ASSERT( memcmp( decodeBuffer, encodeBuffer, bufferSize ) == 0 );
-            
+
             // Test Decode
             arrayB->Decode( decodeBuffer );
             CPPUNIT_ASSERT( arrayB->GetRowSize() == arrayA->GetRowSize() );
