@@ -168,7 +168,8 @@ namespace dtQt
    void OSGAdapterWidget::SetGraphicsWindow(osgViewer::GraphicsWindow& newWindow)
    {
       mGraphicsWindow = &newWindow;
-      mGraphicsWindow->resized(0,0, width(), height());
+      QRect r = geometry();
+      mGraphicsWindow->resized(r.left(), r.top(), r.width(), r.height());
    }
 
    //////////////////////////////////////////////////////////////////////////////////

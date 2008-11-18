@@ -30,8 +30,9 @@
 #ifndef ADDITIONALVIEWDOCKWIDGET_H_
 #define ADDITIONALVIEWDOCKWIDGET_H_
 
-#include <QtGui/QDockWidget>
+//#include <QtGui/QDockWidget>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+#include <StealthViewer/Qt/OSGAdapterWidget.h>
 
 class QGLWidget;
 
@@ -39,15 +40,15 @@ namespace StealthQt
 {
 
    /// Simple class to make it easy for code to tell if a dock window is an addition view.
-   class AdditionalViewDockWidget: public QDockWidget
+   class AdditionalViewDockWidget: public dtQt::OSGAdapterWidget
    {
       Q_OBJECT;
    public:
       AdditionalViewDockWidget(QWidget* parent = NULL);
       virtual ~AdditionalViewDockWidget();
 
-      void SetQGLWidget(QGLWidget* widgetChild);
-      QGLWidget* GetQGLWidget();
+//      void SetQGLWidget(QGLWidget* widgetChild);
+//      QGLWidget* GetQGLWidget();
 
       void SetViewWindowWrapper(StealthGM::ViewWindowWrapper*);
       StealthGM::ViewWindowWrapper* GetViewWindowWrapper();
@@ -56,6 +57,7 @@ namespace StealthQt
       static void ShutdownOnViewDestroy(StealthGM::ViewWindowWrapper& wrapper);
       static AdditionalViewDockWidget* GetDockWidgetForViewWindow(StealthGM::ViewWindowWrapper& wrapper);
 
+      void RequestClose();
    signals:
       void closeRequested(AdditionalViewDockWidget&);
    protected slots:

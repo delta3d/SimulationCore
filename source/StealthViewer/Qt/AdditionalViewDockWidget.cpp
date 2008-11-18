@@ -30,6 +30,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QMainWindow>
+#include <QtGui/QVBoxLayout>
 
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>
@@ -44,17 +45,19 @@ namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
    AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent)
-   : QDockWidget(parent)
+   : dtQt::OSGAdapterWidget(false, parent)
    , mGLWidget(NULL)
    {
+      setFocusPolicy(Qt::StrongFocus);
+      setLayout(new QVBoxLayout(this));
       // No docking allowed.
-      setAllowedAreas(Qt::NoDockWidgetArea);
-      connect(this, SIGNAL(topLevelChanged(bool)),
-              this, SLOT(OnTopLevelChanged(bool))
-               );
-      connect(this, SIGNAL(visibilityChanged(bool)),
-              this, SLOT(OnVisibilityChanged(bool))
-               );
+      //setAllowedAreas(Qt::NoDockWidgetArea);
+//      connect(this, SIGNAL(topLevelChanged(bool)),
+//              this, SLOT(OnTopLevelChanged(bool))
+//               );
+//      connect(this, SIGNAL(visibilityChanged(bool)),
+//              this, SLOT(OnVisibilityChanged(bool))
+//               );
    }
 
    ////////////////////////////////////////////////////////////
@@ -62,17 +65,30 @@ namespace StealthQt
    {
    }
 
-   ////////////////////////////////////////////////////////////
-   void AdditionalViewDockWidget::SetQGLWidget(QGLWidget* widgetChild)
-   {
-      mGLWidget = widgetChild;
-      setWidget(mGLWidget);
-   }
+//   ////////////////////////////////////////////////////////////
+//   void AdditionalViewDockWidget::SetQGLWidget(QGLWidget* widgetChild)
+//   {
+//      if (mGLWidget != NULL)
+//      {
+//         layout()->removeWidget(mGLWidget);
+//      }
+//      mGLWidget = widgetChild;
+//      //setWidget(mGLWidget);
+//      if (mGLWidget != NULL)
+//      {
+//         layout()->addWidget(mGLWidget);
+//      }
+//   }
+//
+//   ////////////////////////////////////////////////////////////
+//   QGLWidget* AdditionalViewDockWidget::GetQGLWidget()
+//   {
+//      return mGLWidget;
+//   }
 
-   ////////////////////////////////////////////////////////////
-   QGLWidget* AdditionalViewDockWidget::GetQGLWidget()
+   void AdditionalViewDockWidget::RequestClose()
    {
-      return mGLWidget;
+      emit closeRequested(*this);
    }
 
    ////////////////////////////////////////////////////////////
@@ -93,7 +109,7 @@ namespace StealthQt
       if (e->spontaneous())
       {
          e->ignore();
-         emit closeRequested(*this);
+         RequestClose();
       }
       else
       {
@@ -111,7 +127,8 @@ namespace StealthQt
          QGLWidget* widget = gwQt->GetQGLWidget();
          if (widget != NULL)
          {
-            return dynamic_cast<AdditionalViewDockWidget*>(widget->parentWidget());
+            //return dynamic_cast<AdditionalViewDockWidget*>(widget->parentWidget());
+            return dynamic_cast<AdditionalViewDockWidget*>(widget);
          }
       }
       return NULL;
@@ -132,14 +149,17 @@ namespace StealthQt
                      QMessageBox::Ok, QMessageBox::Ok);
             return;
          }
-         AdditionalViewDockWidget* dockWidget = new AdditionalViewDockWidget(StealthViewerData::GetInstance().GetMainWindow());
-         dockWidget->SetQGLWidget(widget);
+//         AdditionalViewDockWidget* dockWidget = new AdditionalViewDockWidget(StealthViewerData::GetInstance().GetMainWindow());
+         AdditionalViewDockWidget* dockWidget = static_cast<AdditionalViewDockWidget*>(widget);
+         dtCore::DeltaWin::PositionSize ps = wrapper.GetWindow().GetPosition();
+         dockWidget->setGeometry(ps.mX, ps.mY, ps.mWidth, ps.mHeight);
+         //dockWidget->SetQGLWidget(widget);
          dockWidget->SetViewWindowWrapper(&wrapper);
          //addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-         dockWidget->setFloating(true);
+         //dockWidget->setFloating(true);
          connect(dockWidget, SIGNAL(closeRequested(AdditionalViewDockWidget&)),
                   &StealthViewerData::GetInstance().GetMainWindow()->GetViewDockWidget(), SLOT(OnAdditionalViewClosed(AdditionalViewDockWidget&)));
-         dockWidget->setWindowTitle(wrapper.GetWindowTitle().c_str());
+         //dockWidget->setWindowTitle(wrapper.GetWindowTitle().c_str());
          dockWidget->show();
       }
 
@@ -152,16 +172,16 @@ namespace StealthQt
          AdditionalViewDockWidget::GetDockWidgetForViewWindow(wrapper);
       if (dockWidget != NULL)
       {
-         QMainWindow* qm = dynamic_cast<QMainWindow*>(dockWidget->parentWidget());
-         if (qm != NULL)
-         {
-            qm->removeDockWidget(dockWidget);
-         }
+//         QMainWindow* qm = dynamic_cast<QMainWindow*>(dockWidget->parentWidget());
+//         if (qm != NULL)
+//         {
+//            qm->removeDockWidget(dockWidget);
+//         }
 
-         dockWidget->setParent(NULL);
-         dockWidget->close();
-         QGLWidget* glWidget = dockWidget->GetQGLWidget();
-         glWidget->setParent(NULL);
+//         dockWidget->setParent(NULL);
+//         dockWidget->close();
+//         QGLWidget* glWidget = dockWidget->GetQGLWidget();
+//         glWidget->setParent(NULL);
          delete dockWidget;
       }
    }
@@ -169,18 +189,18 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void AdditionalViewDockWidget::OnTopLevelChanged(bool isTopLevel)
    {
-      if (!isTopLevel)
-      {
-         setFloating(true);
-      }
+//      if (!isTopLevel)
+//      {
+//         setFloating(true);
+//      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void AdditionalViewDockWidget::OnVisibilityChanged(bool isVisible)
    {
-      if (!isVisible)
-      {
-         emit closeRequested(*this);
-      }
+//      if (!isVisible)
+//      {
+//         emit closeRequested(*this);
+//      }
    }
 }

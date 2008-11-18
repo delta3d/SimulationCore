@@ -121,6 +121,7 @@ namespace StealthQt
             static const QString FOV_HORIZONTAL;
             static const QString FOV_VERTICAL_FOR_ASPECT;
             static const QString FOV_VERTICAL_FOR_HORIZONTAL;
+            static const QString ADDITIONAL_VIEW_ROTATION;
             static const QString ADDITIONAL_VIEW_NAME;
             static const QString ADDITIONAL_VIEW_TITLE;
 

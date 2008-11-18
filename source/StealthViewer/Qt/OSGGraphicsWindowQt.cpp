@@ -27,7 +27,7 @@
  */
 
 #include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
-#include <StealthViewer/Qt/OSGAdapterWidget.h>
+#include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 
 namespace StealthQt
 {
@@ -41,7 +41,7 @@ namespace StealthQt
    , mCursorShape(Qt::ArrowCursor)
    {
       _traits = traits;
-      dtQt::OSGAdapterWidget* adapter = new dtQt::OSGAdapterWidget(false, NULL);
+      dtQt::OSGAdapterWidget* adapter = new AdditionalViewDockWidget(NULL);
       adapter->SetGraphicsWindow(*this);
       adapter->setFocusPolicy(Qt::StrongFocus);
       SetQGLWidget(adapter);
@@ -180,6 +180,20 @@ namespace StealthQt
       if (mCloseRequested)
           getEventQueue()->closeWindow();
    }
+
+   ////////////////////////////////////////////////////////////
+   void OSGGraphicsWindowQt::getWindowRectangle(int& x, int& y, int& width, int& height)
+   {
+      if (mQWidget != NULL)
+      {
+         QRect r = mQWidget->geometry();
+         x = r.left();
+         y = r.top();
+         width = r.width();
+         height = r.height();
+      }
+   }
+
 
    ////////////////////////////////////////////////////////////
    bool OSGGraphicsWindowQt::setWindowRectangleImplementation(int x, int y, int width, int height)

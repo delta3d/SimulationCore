@@ -78,6 +78,9 @@ namespace StealthQt
       /** Check to see if any events have been generated.*/
       virtual void checkEvents();
 
+      /** Get the window's position and size.*/
+      virtual void getWindowRectangle(int& x, int& y, int& width, int& height);
+
       /** Set the window's position and size.*/
       virtual bool setWindowRectangleImplementation(int x, int y, int width, int height);
 

@@ -75,15 +75,18 @@ namespace StealthQt
                this,          SLOT(UpdateHeading(const QString&)));
       connect(mUi->mViewElevation, SIGNAL(textChanged(const QString&)),
                this,          SLOT(UpdatePitch(const QString&)));
+
+      UpdateName(mUi->mNameEdit->text());
    }
 
    ////////////////////////////////////////////////////////////////////////
-   static bool NameValid(const std::string& stdName)
+   bool AdditionalViewEditDialog::NameValid(const std::string& stdName)
    {
       StealthGM::ViewWindowConfigObject& viewConfig =
         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      return !(stdName.empty() || viewConfig.GetViewWindow(stdName) != NULL);
+      StealthGM::ViewWindowWrapper* vww = viewConfig.GetViewWindow(stdName);
+      return !stdName.empty() && (vww == NULL || vww == mViewWindow.get());
    }
 
    ////////////////////////////////////////////////////////////////////////

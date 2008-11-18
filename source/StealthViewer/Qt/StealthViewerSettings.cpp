@@ -6,7 +6,6 @@
 * the terms of the GNU Lesser General Public License as published by the Free
 * Software Foundation; either version 2.1 of the License, or (at your option)
 * any later version.
-*
 * This library is distributed in the hope that it will be useful, but WITHOUT
 * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
@@ -127,6 +126,7 @@ namespace StealthQt
       const QString StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT("FOV_VERTICAL_FOR_ASPECT");
       const QString StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL("FOV_VERTICAL_FOR_HORIZONTAL");
 
+      const QString StealthViewerSettings::ADDITIONAL_VIEW_ROTATION("ADDITIONAL_VIEW_ROTATION");
       const QString StealthViewerSettings::ADDITIONAL_VIEW_NAME("ADDITIONAL_VIEW_NAME");
       const QString StealthViewerSettings::ADDITIONAL_VIEW_TITLE("ADDITIONAL_VIEW_TITLE");
 
@@ -554,6 +554,22 @@ namespace StealthQt
             setValue(StealthViewerSettings::FOV_HORIZONTAL, currViewWrapper.GetFOVHorizontal());
             setValue(StealthViewerSettings::FOV_VERTICAL_FOR_ASPECT, currViewWrapper.GetFOVVerticalForAspect());
             setValue(StealthViewerSettings::FOV_VERTICAL_FOR_HORIZONTAL, currViewWrapper.GetFOVVerticalForHorizontal());
+
+            dtCore::DeltaWin::PositionSize ps;
+            ps = currViewWrapper.GetWindow().GetPosition();
+
+            std::ostringstream ss;
+            ss << ps.mX << " ";
+            ss << ps.mY << " ";
+            ss << ps.mWidth << " ";
+            ss << ps.mHeight;
+
+            setValue(StealthViewerSettings::WINDOW_GEOMETRY, tr(ss.str().c_str()));
+
+            ss.str("");
+            ss << currViewWrapper.GetAttachCameraRotation();
+            setValue(StealthViewerSettings::ADDITIONAL_VIEW_ROTATION, ss.str().c_str());
+
          endGroup();
       }
 //      // ugly hack to make the windows initialize before the settings are read.
@@ -1006,8 +1022,47 @@ namespace StealthQt
                newViewWrapper->SetWindowTitle(savedValue);
             }
 
+            if (contains(StealthViewerSettings::WINDOW_GEOMETRY))
+            {
+               std::string savedValue = value(StealthViewerSettings::WINDOW_GEOMETRY).toString().toStdString();
+
+               dtCore::DeltaWin::PositionSize ps;
+               std::istringstream iss;
+               iss.str(savedValue);
+               iss >> ps.mX;
+               iss >> ps.mY;
+               iss >> ps.mWidth;
+               iss >> ps.mHeight;
+
+               if (ps.mWidth < 20)
+               {
+                  ps.mWidth = 20;
+               }
+               if (ps.mHeight < 20)
+               {
+                  ps.mHeight = 20;
+               }
+
+               newViewWrapper->GetWindow().SetPosition(ps);
+            }
+
             LoadFOVSettings(*newViewWrapper);
+
+            if (contains(StealthViewerSettings::ADDITIONAL_VIEW_ROTATION))
+            {
+               std::string savedValue =
+                  value(StealthViewerSettings::ADDITIONAL_VIEW_ROTATION).toString().toStdString();
+               std::istringstream iss;
+               iss.str(savedValue);
+               osg::Vec3 value;
+               iss >> value.x();
+               iss >> value.y();
+               iss >> value.z();
+               newViewWrapper->SetAttachCameraRotation(value);
+            }
+
             newViewWrapper->SetAttachToCamera(viewConfig.GetMainViewWindow().GetView().GetCamera());
+
             viewConfig.AddViewWindow(*newViewWrapper);
             endGroup();
          }
