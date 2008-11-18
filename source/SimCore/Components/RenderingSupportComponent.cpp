@@ -445,6 +445,7 @@ namespace SimCore
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
+         osg::Uniform* mvpsInverseUniform = ss->getOrCreateUniform("modelViewProjectionScreenInverse", osg::Uniform::FLOAT_MAT4);
 
          osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse, matViewProjScreenInverse, matScreen;
 
@@ -471,7 +472,9 @@ namespace SimCore
          {
             matScreen.set(pCamera.GetOSGCamera()->getViewport()->computeWindowMatrix());
 
-            matViewProjScreenInverse.invert(matView * matProj * matScreen);
+            osg::Matrix mvps(matView * matProj * matScreen);
+            matViewProjScreenInverse.invert(mvps);
+            mvpsInverseUniform->set(matViewProjScreenInverse);
 
             UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
          }
@@ -480,7 +483,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP)
       {
-         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
          osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
 
          dtCore::Transform xform;
@@ -493,7 +496,7 @@ namespace SimCore
 
          waterCenter.set(camPos.x(), camPos.y(), waterHeight);
 
-         if(camPos.z() < waterHeight || pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
+         if(/*camPos.z() < waterHeight || */pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
          {
             //360 divided by 2 but add 0.5 to make the mesh overlap since it is no longer water tight
             waterFOVUniform->set(180.5f);
@@ -511,7 +514,7 @@ namespace SimCore
             ComputeRay(0, height, inverseMVP, topLeft);
             ComputeRay(width, height, inverseMVP, topRight);
 
-            osg::Vec4 waterPlane(0.0, 0.0, 1.0, waterHeight);
+            osg::Vec4 waterPlane(0.0, 0.0, 1.0, -waterHeight);
 
             bool bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeft);
             bool bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRight);
