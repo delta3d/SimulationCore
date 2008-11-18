@@ -44,8 +44,8 @@ namespace dtCore
 
 namespace SimCore
 {
-   namespace Tools 
-   {	
+   namespace Tools
+   {
       class SIMCORE_EXPORT Binoculars : public Tool
       {
          public:
@@ -183,4 +183,4 @@ namespace SimCore
       };
    }
 }
-#endif 
+#endif
