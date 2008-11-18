@@ -175,12 +175,6 @@ namespace SimCore
          InitializeCSM();
          InitializeFrameBuffer();
 
-         //we we are setup to use the cullvisitor then initialize it
-         if(mEnableCullVisitor)
-         {
-            InitializeCullVisitor();
-         }
-
          dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
          osg::Camera* osgCam = cam->GetOSGCamera();
          osgCam->setCullMask(MAIN_CAMERA_CULL_MASK);
@@ -244,9 +238,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::InitializeCullVisitor()
+      void RenderingSupportComponent::InitializeCullVisitor(dtCore::Camera& pCamera)
       {
-         osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
+         osg::Camera* camera = pCamera.GetOSGCamera();
          osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
          osgUtil::SceneView* sceneView = renderer->getSceneView(0);
 
@@ -478,6 +472,12 @@ namespace SimCore
 
             UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
          }
+
+         //we we are setup to use the cullvisitor then initialize it
+         if(mEnableCullVisitor)
+         {
+            InitializeCullVisitor(pCamera);
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -498,8 +498,7 @@ namespace SimCore
 
          if(/*camPos.z() < waterHeight || */pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
          {
-            //360 divided by 2 but add 0.5 to make the mesh overlap since it is no longer water tight
-            waterFOVUniform->set(180.5f);
+            waterFOVUniform->set(180.0f);
          }
          else
          {
@@ -832,12 +831,12 @@ namespace SimCore
             toFill.clear();
          }
 
-         if(mCullVisitor->GetTerrainNode() == NULL)
+         if(CustomCullVisitor::GetTerrainNode() == NULL)
          {
             GetGameManager()->FindActorsByName("Terrain", toFill);
             if(!toFill.empty())
             {
-               mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
+               CustomCullVisitor::SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
             }
          }
 
@@ -870,5 +869,16 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetDisabledFIDCodes( std::vector<int>& fidCodes )
+      {
+         CustomCullVisitor::SetDisabledFIDCodes(fidCodes);
+      }  
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      const std::vector<int>& RenderingSupportComponent::GetDisabledFIDCodes() const
+      {
+         return CustomCullVisitor::GetDisabledFIDCodes();
+      }
    } // end entity namespace.
 } // end dvte namespace.
