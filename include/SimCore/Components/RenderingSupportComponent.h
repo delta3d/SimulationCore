@@ -190,6 +190,9 @@ namespace SimCore
 
             void AddCamera(osg::Camera* cam);
 
+            void SetDisabledFIDCodes(std::vector<int>& fidCodes);
+            const std::vector<int>& GetDisabledFIDCodes() const;
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
@@ -199,7 +202,7 @@ namespace SimCore
 
             void SetPosition(DynamicLight* dl);
 
-            void InitializeCullVisitor();
+            void InitializeCullVisitor(dtCore::Camera& pCamera);
             void InitializeFrameBuffer();
 
             // Finds all the dynamic light actor prototypes in the GM and holds onto them

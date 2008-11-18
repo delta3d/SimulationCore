@@ -28,7 +28,7 @@
 namespace SimCore
 {
    ///////////////////////////////////////////////////////////////////////////
-   AgeiaTerrainCullVisitor::AgeiaTerrainCullVisitor() : CullVisitor()
+   AgeiaTerrainCullVisitor::AgeiaTerrainCullVisitor() : CustomCullVisitor()
       , mCurrentlyInTerrain(false)
       , mCameraPosition()
       , mRadius(1250)
@@ -115,7 +115,7 @@ namespace SimCore
          }
       }
 
-      osgUtil::CullVisitor::apply(node);
+      CustomCullVisitor::apply(node);
       
       if(&node == mTerrainNode.get())
       {
@@ -171,7 +171,7 @@ namespace SimCore
          }
       }
 
-      osgUtil::CullVisitor::apply(node);
+      CustomCullVisitor::apply(node);
    }
 
    /////////////////////////////////////////////////////////////////////////
@@ -184,14 +184,14 @@ namespace SimCore
          if(proxyNode != NULL)
          {
             mHitProxyNode = true;
-            osgUtil::CullVisitor::apply(node);
+            CustomCullVisitor::apply(node);
             hitframeDontCallOtherCull = true;
             mHitProxyNode = false;
          }
       }
 
       if(hitframeDontCallOtherCull == false)
-         osgUtil::CullVisitor::apply(node);
+         CustomCullVisitor::apply(node);
    }
 
    /////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ namespace SimCore
 
          if( position.length() > mPagingDistance)
          {
-            osgUtil::CullVisitor::apply(node);
+            CustomCullVisitor::apply(node);
             return;
          }
 
@@ -224,7 +224,7 @@ namespace SimCore
       }
       else
       {
-         osgUtil::CullVisitor::apply(node);
+         CustomCullVisitor::apply(node);
       }
    }
 
