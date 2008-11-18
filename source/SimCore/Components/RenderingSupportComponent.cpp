@@ -206,7 +206,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());//mDeltaScene.get());
+         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());
+         GetGameManager()->GetApplication().GetView()->SetScene(NULL);
+         GetGameManager()->GetApplication().GetView()->SetScene(GetGameManager()->GetApplication().GetScene());
 
          /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
@@ -873,7 +875,7 @@ namespace SimCore
       void RenderingSupportComponent::SetDisabledFIDCodes( std::vector<int>& fidCodes )
       {
          CustomCullVisitor::SetDisabledFIDCodes(fidCodes);
-      }  
+      }
 
       ///////////////////////////////////////////////////////////////////////////////////
       const std::vector<int>& RenderingSupportComponent::GetDisabledFIDCodes() const
