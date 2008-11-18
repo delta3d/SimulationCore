@@ -126,6 +126,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          xform.SetTranslation(0.0, 0.0, 0.0);
          xform.SetRotation(0.0, 0.0, 0.0);
          camera->SetTransform(xform);
+         camera->UpdateViewMatrixFromTransform();
       }
 
       //////////////////////////////////////////////////////////////
