@@ -50,10 +50,10 @@ namespace StealthQt
       // No docking allowed.
       setAllowedAreas(Qt::NoDockWidgetArea);
       connect(this, SIGNAL(topLevelChanged(bool)),
-              this, SLOT(OnTopLevelOrVisibilityChanged(bool))
+              this, SLOT(OnTopLevelChanged(bool))
                );
       connect(this, SIGNAL(visibilityChanged(bool)),
-              this, SLOT(OnTopLevelOrVisibilityChanged(bool))
+              this, SLOT(OnVisibilityChanged(bool))
                );
    }
 
@@ -167,9 +167,18 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void AdditionalViewDockWidget::OnTopLevelOrVisibilityChanged(bool isTopLevelOrVisible)
+   void AdditionalViewDockWidget::OnTopLevelChanged(bool isTopLevel)
    {
-      if (!isTopLevelOrVisible)
+      if (!isTopLevel)
+      {
+         setFloating(true);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void AdditionalViewDockWidget::OnVisibilityChanged(bool isVisible)
+   {
+      if (!isVisible)
       {
          emit closeRequested(*this);
       }

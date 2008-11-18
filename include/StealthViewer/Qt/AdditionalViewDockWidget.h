@@ -59,7 +59,8 @@ namespace StealthQt
    signals:
       void closeRequested(AdditionalViewDockWidget&);
    protected slots:
-      void OnTopLevelOrVisibilityChanged(bool isTopLevelOrVisible);
+      void OnVisibilityChanged(bool isVisible);
+      void OnTopLevelChanged(bool isTopLevel);
    protected:
       virtual void closeEvent(QCloseEvent *e);
    private:
