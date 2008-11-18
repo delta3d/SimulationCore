@@ -362,11 +362,14 @@ namespace StealthGM
          if (!cam.valid())
          {
             cam = new dtCore::Camera(mView->GetName());
+            cam->SetProjectionResizePolicy(osg::Camera::FIXED);
             cam->SetClearColor(osg::Vec4(0, 0, 0, 0));
             /// only set the mask if we create the camera.
             osg::Camera* osgCam = cam->GetOSGCamera();
             osgCam->setCullMask(SimCore::Components::RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK);
-
+            //osgCam->setClearMask( GL_NONE );
+            osgCam->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+            osgCam->setCullingMode(osg::CullSettings::ENABLE_ALL_CULLING);
             mView->SetCamera(cam.get());
          }
 
