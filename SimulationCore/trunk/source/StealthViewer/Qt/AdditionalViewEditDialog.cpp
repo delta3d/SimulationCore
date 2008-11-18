@@ -30,7 +30,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
 
-#include <StealthViewer/Qt/AdditionalViewEditDialog.h>`
+#include <StealthViewer/Qt/AdditionalViewEditDialog.h>
 #include <StealthViewer/Qt/FOVWidget.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <ui_AdditionalViewDialog.h>
