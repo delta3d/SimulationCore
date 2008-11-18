@@ -50,11 +50,15 @@ namespace SimCore
             void SetWaveHeightSignificant( float value );
             float GetWaveHeightSignificant() const;
 
+            void SetWaveDirectionPrimary( float angleDegrees );
+            float GetWaveDirectionPrimary() const;
+
          protected:
             virtual ~OceanDataActor();
 
          private:
             float mWaveHeightSignificant;
+            float mWaveDirectionPrimary;
       };
 
 
@@ -65,6 +69,7 @@ namespace SimCore
       class SIMCORE_EXPORT OceanDataActorProxy : public LatLongDataActorProxy
       {
          public:
+            static const dtUtil::RefString PROPERTY_WAVE_DIRECTION_PRIMARY;
             static const dtUtil::RefString PROPERTY_WAVE_HEIGHT_SIGNIFICANT;
 
             typedef LatLongDataActorProxy BaseClass;
