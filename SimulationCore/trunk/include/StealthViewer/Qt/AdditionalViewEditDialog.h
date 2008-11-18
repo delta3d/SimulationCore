@@ -65,6 +65,7 @@ namespace StealthQt
       void closeEvent(QCloseEvent* e);
    private:
       void Init();
+      bool NameValid(const std::string& stdName);
 
       Ui::AdditionalViewDialogUi* mUi;
       FOVWidget* mFOVWidget;

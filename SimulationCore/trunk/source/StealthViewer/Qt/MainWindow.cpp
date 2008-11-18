@@ -47,6 +47,7 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>
+#include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -484,6 +485,25 @@ namespace StealthQt
    void MainWindow::closeEvent(QCloseEvent* e)
    {
       StealthViewerData::GetInstance().GetSettings().WritePreferencesToFile();
+
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      std::vector<StealthGM::ViewWindowWrapper*> viewWindows;
+      viewConfig.GetAllViewWindows(viewWindows);
+      std::vector<StealthGM::ViewWindowWrapper*>::iterator i, iend;
+      i = viewWindows.begin();
+      iend = viewWindows.end();
+      for (; i != iend; ++i)
+      {
+         StealthGM::ViewWindowWrapper* vww = *i;
+         AdditionalViewDockWidget* widget = AdditionalViewDockWidget::GetDockWidgetForViewWindow(*vww);
+         if (widget != NULL)
+         {
+            widget->RequestClose();
+         }
+      }
+      QApplication::quit();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
