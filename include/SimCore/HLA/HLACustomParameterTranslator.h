@@ -72,8 +72,8 @@ namespace SimCore
             static const HLACustomAttributeType CONTINUOUS_CONTROL_ARRAY_TYPE;
             static const HLACustomAttributeType VEC3F_TYPE;
             static const HLACustomAttributeType VEC3D_TYPE;
-            /// time in milliseconds
             static const HLACustomAttributeType MILLISECOND_TIME_TYPE;
+            static const HLACustomAttributeType SHORT_ARRAY_2D_TYPE;
             static const HLACustomAttributeType FLOAT_ARRAY_2D_TYPE;
 
          private:
@@ -149,6 +149,16 @@ namespace SimCore
                dtGame::MessageParameter& parameter) const;
 
             void MapFromParamToFloatArray2D(
+               char* buffer,
+               size_t& maxSize,
+               const dtGame::MessageParameter& parameter) const;
+
+            void MapToParamFromShortArray2D(
+               const char* buffer,
+               const size_t maxSize,
+               dtGame::MessageParameter& parameter) const;
+
+            void MapFromParamToShortArray2D(
                char* buffer,
                size_t& maxSize,
                const dtGame::MessageParameter& parameter) const;
