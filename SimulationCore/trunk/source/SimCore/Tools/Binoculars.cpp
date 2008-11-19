@@ -195,8 +195,8 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         double vfov, aspect, near, far;
-         mCamera->GetPerspectiveParams(vfov, aspect, near, far);
+         double vfov, aspect, nearPlane, farPlane;
+         mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -247,7 +247,7 @@ namespace SimCore
 
          mCamera->GetOSGCamera()->setLODScale(newZoom);
          //mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
-         mCamera->SetPerspectiveParams(vfov, aspect, near, far);
+         mCamera->SetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
       }
 
       void Binoculars::ZoomOut()
@@ -261,8 +261,8 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         double vfov, aspect, near, far;
-         mCamera->GetPerspectiveParams(vfov, aspect, near, far);
+         double vfov, aspect, nearPlane, farPlane;
+         mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
 
          // TODO fix this algorithm later
          if(mIsDynamicZooming)
@@ -287,7 +287,7 @@ namespace SimCore
             return;
 
          mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-         mCamera->SetPerspectiveParams(vfov, aspect, near, far);
+         mCamera->SetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
       }
 
       void Binoculars::Update(dtCore::DeltaDrawable &terrain)
