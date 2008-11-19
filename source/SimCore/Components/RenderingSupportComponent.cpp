@@ -200,7 +200,7 @@ namespace SimCore
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
          osg::Node* node = gui->GetOSGNode();
-         //mGUIRoot->addChild(node);
+         mGUIRoot->addChild(node);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
