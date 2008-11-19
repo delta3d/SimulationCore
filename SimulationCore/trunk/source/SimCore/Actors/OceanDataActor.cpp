@@ -39,6 +39,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       OceanDataActor::OceanDataActor( OceanDataActorProxy &proxy )
          : BaseClass(proxy)
+         , mSeaState(0)
          , mWaveHeightSignificant(0.0f)
          , mWaveDirectionPrimary(0.0f)
       {
@@ -47,6 +48,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       OceanDataActor::~OceanDataActor()
       {
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void OceanDataActor::SetSeaState( int value )
+      {
+         mSeaState = value;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      int OceanDataActor::GetSeaState() const
+      {
+         return mSeaState;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -78,6 +91,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // PROXY CODE
       //////////////////////////////////////////////////////////////////////////
+      const dtUtil::RefString OceanDataActorProxy::PROPERTY_SEA_STATE("Sea State");
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY("Wave Direction Primary");
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT("Wave Height Significant");
       
@@ -106,6 +120,15 @@ namespace SimCore
 
          OceanDataActor* actor = NULL;
          GetActor( actor );
+
+         // INTEGER PEORPERTIES
+         AddProperty(new dtDAL::IntActorProperty(
+            OceanDataActorProxy::PROPERTY_SEA_STATE,
+            OceanDataActorProxy::PROPERTY_SEA_STATE, 
+            dtDAL::MakeFunctor( *actor, &OceanDataActor::SetSeaState ), 
+            dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetSeaState ), 
+            "Sea state for cell[0] at the specified latitude and longitude; this is originally a 2D enum array property will any number of cells.",
+            GROUP));
 
          // FLOAT PROPERTIES
          AddProperty(new dtDAL::FloatActorProperty(

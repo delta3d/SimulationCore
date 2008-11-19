@@ -47,6 +47,9 @@ namespace SimCore
 
             OceanDataActor(OceanDataActorProxy &proxy);
 
+            void SetSeaState( int value );
+            int GetSeaState() const;
+
             void SetWaveHeightSignificant( float value );
             float GetWaveHeightSignificant() const;
 
@@ -57,6 +60,7 @@ namespace SimCore
             virtual ~OceanDataActor();
 
          private:
+            int mSeaState;
             float mWaveHeightSignificant;
             float mWaveDirectionPrimary;
       };
@@ -69,6 +73,7 @@ namespace SimCore
       class SIMCORE_EXPORT OceanDataActorProxy : public LatLongDataActorProxy
       {
          public:
+            static const dtUtil::RefString PROPERTY_SEA_STATE;
             static const dtUtil::RefString PROPERTY_WAVE_DIRECTION_PRIMARY;
             static const dtUtil::RefString PROPERTY_WAVE_HEIGHT_SIGNIFICANT;
 
