@@ -54,6 +54,8 @@ namespace SimCore
          void Encode( char* buffer ) const;
          void Decode( const char* buffer );
 
+         int GetEncodeSize() const;
+
          void ClearData();
 
       protected:
