@@ -36,11 +36,15 @@ namespace StealthQt
    {
       mTimer.setInterval(10);
       connect(&mTimer, SIGNAL(timeout()), this, SLOT(Tick()), Qt::QueuedConnection);
-      mTimer.start();
    }
 
    SimTicker::~SimTicker()
    {
+   }
+
+   void SimTicker::Start()
+   {
+      mTimer.start();
    }
 
    void SimTicker::Tick()
