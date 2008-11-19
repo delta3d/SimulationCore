@@ -183,10 +183,30 @@ namespace StealthQt
 
       PreShowUIControlInit();
 
-
       InitGameApp(appArgc, appArgv, appLibName);
 
+      QWidget* glParent = new QWidget(this);
+
+      QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
+      hbLayout->setMargin(0);
+      glParent->setLayout(hbLayout);
+      setCentralWidget(glParent);
+
       show();
+
+      StealthQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<StealthQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+      if (graphicsWindow != NULL)
+      {
+         QGLWidget* oglWidget = graphicsWindow->GetQGLWidget();
+         if (oglWidget != NULL)
+         {
+            QRect r = oglWidget->geometry();
+            graphicsWindow->resized(r.left(), r.top(), r.width(), r.height());
+            //oglWidget->hide();
+            hbLayout->addWidget(oglWidget);
+            oglWidget->show();
+         }
+      }
 
       // This was coverted to a png from a jpg because of weird loading problems
       // on Windows XP
@@ -234,6 +254,8 @@ namespace StealthQt
 
       //Init the coordinate type.
       OnToolsCoordinateSystemChanged(mUi->mOptionsCoordinateSystemComboBox->currentText());
+
+      mSimTicker.Start();
    }
 
    //////////////////////////////////////////////////////////
@@ -376,13 +398,6 @@ namespace StealthQt
 //   void MainWindow::InitGameApp(QGLWidget& oglWidget, int appArgc, char* appArgv[],
 //            const std::string& appLibName)
    {
-      QWidget* glParent = new QWidget(this);
-
-      QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
-      hbLayout->setMargin(0);
-      glParent->setLayout(hbLayout);
-      setCentralWidget(glParent);
-
       ///Reset the windowing system for osg to use
       osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
 
@@ -395,28 +410,9 @@ namespace StealthQt
       {
          mApp = new dtGame::GameApplication(appArgc, appArgv);
          mApp->SetGameLibraryName(appLibName);
-         StealthQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<StealthQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
-
-         if (graphicsWindow != NULL)
-         {
-            dtQt::OSGAdapterWidget* oglWidget = dynamic_cast<dtQt::OSGAdapterWidget*>(graphicsWindow->GetQGLWidget());
-            if (oglWidget != NULL)
-            {
-               graphicsWindow->resized(0, 0, oglWidget->width(), oglWidget->height());
-               oglWidget->hide();
-               hbLayout->addWidget(oglWidget);
-               oglWidget->show();
-            }
-         }
          mApp->Config();
 
          StealthViewerData::GetInstance().GetViewWindowConfigObject().CreateMainViewWindow(*mApp->GetGameManager());
-//         dtCore::RefPtr<dtCore::View> newView = new dtCore::View("joe", false);
-//         newView->SetScene(mApp->GetScene());
-//         newView->SetCamera(new dtCore::Camera("joe"));
-//         mApp->AddView(*newView);
-//         newView->GetCamera()->SetWindow(new dtCore::DeltaWin("New View", 0, 0, 800, 600, true, false));
-//         mApp->GetCamera()->AddChild(newView->GetCamera());
       }
       catch (const dtUtil::Exception& ex)
       {

@@ -36,6 +36,7 @@ namespace StealthQt
    public:
       SimTicker();
       virtual ~SimTicker();
+      void Start();
    public slots:
       void Tick();
    private:
