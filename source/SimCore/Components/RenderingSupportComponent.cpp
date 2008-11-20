@@ -502,14 +502,11 @@ namespace SimCore
          }
          else
          {
-            //this has been temporarily inserted here until the code below can be fixed
-            waterFOVUniform->set(90.0f);
-            return;
-
             int width = int(pCamera.GetOSGCamera()->getViewport()->width());
             int height = int(pCamera.GetOSGCamera()->getViewport()->height());
 
             osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
+            osg::Vec3 bottomLeftIntersect, bottomRightIntersect, topLeftIntersect, topRightIntersect;
 
             ComputeRay(0, 0, inverseMVP, bottomLeft);
             ComputeRay(width, 0, inverseMVP, bottomRight);
@@ -518,43 +515,52 @@ namespace SimCore
 
             osg::Vec4 waterPlane(0.0, 0.0, 1.0, -waterHeight);
 
-            bool bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeft);
-            bool bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRight);
-            bool topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeft);
-            bool topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRight);
+            bool bool_bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeftIntersect);
+            bool bool_bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRightIntersect);
+            bool bool_topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeftIntersect);
+            bool bool_topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRightIntersect);
 
-            bottomLeft = bottomLeft - waterCenter;
-            bottomLeft.normalize();
-
-            bottomRight = bottomRight - waterCenter;
-            bottomRight.normalize();
-
-            topLeft = topLeft - waterCenter;
-            topLeft.normalize();
-
-            topRight = topRight - waterCenter;
-            topRight.normalize();
-
-            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0;
-
-            if(bottomLeftIntersect && bottomRightIntersect)
+            if(bool_bottomLeftIntersect)
             {
-               maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
+               bottomLeft = bottomLeftIntersect; 
+               bottomLeft = bottomLeft - waterCenter;
+               bottomLeft.normalize();
             }
-            if(bottomLeftIntersect && topLeftIntersect)
+            if(bool_bottomRightIntersect)
             {
-               maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
+               bottomRight = bottomRightIntersect;
+               bottomRight = bottomRight - waterCenter;
+               bottomRight.normalize();
+            } 
+            if(bool_topLeftIntersect)
+            {
+               topLeft = topLeftIntersect;
+               topLeft = topLeft - waterCenter;
+               topLeft.normalize();               
             }
-            if(bottomRightIntersect && topRightIntersect)
+            if(bool_topRightIntersect)
             {
-               maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
-            }
-            if(topLeftIntersect && topRightIntersect)
-            {
-               maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
+               topRight = topRightIntersect;
+               topRight = topRight - waterCenter;
+               topRight.normalize();
             }
 
-            float angle = dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4));
+            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0, maxAngle5 = 0.0, maxAngle6 = 0.0;
+
+            maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
+
+            maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
+
+            maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
+
+            maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
+
+            maxAngle5 = GetAngleBetweenVectors(bottomRight, topLeft);
+
+            maxAngle6 = GetAngleBetweenVectors(bottomLeft, topRight);
+
+            //take the max of the six angles
+            float angle = dtUtil::Max(dtUtil::Max(maxAngle5, maxAngle6), dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4)));
             angle = osg::RadiansToDegrees(angle);
             angle /= 2.0f;
             waterFOVUniform->set(angle);
