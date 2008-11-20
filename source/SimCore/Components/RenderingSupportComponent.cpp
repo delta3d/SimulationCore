@@ -502,6 +502,9 @@ namespace SimCore
          }
          else
          {
+            //this has been temporarily inserted here until the code below can be fixed
+            waterFOVUniform->set(90.0f);
+            return;
 
             int width = int(pCamera.GetOSGCamera()->getViewport()->width());
             int height = int(pCamera.GetOSGCamera()->getViewport()->height());
