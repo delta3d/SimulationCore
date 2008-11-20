@@ -171,7 +171,8 @@ namespace SimCore
             // Farthest distance you can zoom
             static const unsigned int MAX_ZOOM_DISTANCE = 1000;
             // The original settings of the perspectives and LOD
-            const float mOriginalVFOV;
+            float mOriginalVFOV;
+            float mOriginalAspect;
             float mOriginalNear;
             float mOriginalFar;
             //This is read each time one zooms in.
