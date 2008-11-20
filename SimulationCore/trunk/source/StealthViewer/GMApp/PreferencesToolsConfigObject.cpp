@@ -92,11 +92,6 @@ namespace StealthGM
                static_cast<SimCore::Actors::TerrainActorProxy*>(proxies[0]);
 
             binos->Update(*proxy->GetActor());
-
-            binos->SetShowReticle(GetShowBinocularImage());
-            binos->SetShowDistance(GetShowDistanceToObject());
-            binos->SetShowElevation(GetShowElevationOfObject());
-            binos->SetZoomFactor(GetMagnification());
          }
       }
       ////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +119,11 @@ namespace StealthGM
 
          }
       }
+
+      binos->SetShowReticle(GetShowBinocularImage());
+      binos->SetShowDistance(GetShowDistanceToObject());
+      binos->SetShowElevation(GetShowElevationOfObject());
+      binos->SetZoomFactor(GetMagnification());
 
       SetIsUpdated(false);
    }
