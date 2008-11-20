@@ -303,6 +303,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void ViewWindowWrapper::SetFOVAspectRatio(float aspectRatio)
    {
+      dtUtil::Clamp(aspectRatio, 0.2f, 10.0f);
       mFOVAspectVertical[0] = aspectRatio;
       SetIsUpdated(true);
    }
@@ -316,6 +317,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void ViewWindowWrapper::SetFOVVerticalForAspect(float vertical)
    {
+      dtUtil::Clamp(vertical, 1.0f, 160.0f);
       mFOVAspectVertical[1] = vertical;
       SetIsUpdated(true);
    }
@@ -329,6 +331,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void ViewWindowWrapper::SetFOVHorizontal(float horizontal)
    {
+      dtUtil::Clamp(horizontal, 0.2f, 179.0f);
       mFOVHorizontalVertical[0] = horizontal;
       SetIsUpdated(true);
    }
@@ -342,6 +345,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void ViewWindowWrapper::SetFOVVerticalForHorizontal(float vertical)
    {
+      dtUtil::Clamp(vertical, 1.0f, 160.0f);
       mFOVHorizontalVertical[1] = vertical;
       SetIsUpdated(true);
    }

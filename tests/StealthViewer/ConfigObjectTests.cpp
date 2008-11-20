@@ -192,26 +192,26 @@ void ConfigObjectTests::TestViewWindowConfigObject()
    viewConfig->GetMainViewWindow().SetIsUpdated(false);
 
    viewConfig->GetMainViewWindow().SetFOVAspectRatio(31.9f);
-   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should now be 31.9.",
-      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVAspectRatio(), 31.9f));
+   CPPUNIT_ASSERT_MESSAGE("The aspect ratio should now be clamped at 10.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVAspectRatio(), 10.0f));
    CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
    viewConfig->GetMainViewWindow().SetIsUpdated(false);
 
    viewConfig->GetMainViewWindow().SetFOVHorizontal(9373.3f);
-   CPPUNIT_ASSERT_MESSAGE("The horizontal fov should now be 9373.3.",
-      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVHorizontal(), 9373.3f));
+   CPPUNIT_ASSERT_MESSAGE("The horizontal fov should now be clamped at 179.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVHorizontal(), 179.0f));
    CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
    viewConfig->GetMainViewWindow().SetIsUpdated(false);
 
-   viewConfig->GetMainViewWindow().SetFOVVerticalForAspect(11.1f);
-   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 11.1.",
-      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForAspect(), 11.1f));
+   viewConfig->GetMainViewWindow().SetFOVVerticalForAspect(1100.1f);
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be clamped at 160.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForAspect(), 160.0f));
    CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
    viewConfig->GetMainViewWindow().SetIsUpdated(false);
 
-   viewConfig->GetMainViewWindow().SetFOVVerticalForHorizontal(13.2f);
-   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be 13.2.",
-      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForHorizontal(), 13.2f));
+   viewConfig->GetMainViewWindow().SetFOVVerticalForHorizontal(188.9f);
+   CPPUNIT_ASSERT_MESSAGE("The vertical fov should now be clamped at 160.",
+      dtUtil::Equivalent(viewConfig->GetMainViewWindow().GetFOVVerticalForHorizontal(), 160.0f));
    CPPUNIT_ASSERT(viewConfig->GetMainViewWindow().IsUpdated());
    viewConfig->GetMainViewWindow().SetIsUpdated(false);
 

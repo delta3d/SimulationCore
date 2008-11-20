@@ -144,8 +144,8 @@ void StealthViewerSettingsTests::TestGeneralSettings()
       viewConfig.GetMainViewWindow().SetUseAspectRatioForFOV(false);
       viewConfig.GetMainViewWindow().SetFOVAspectRatio(31.9f);
       viewConfig.GetMainViewWindow().SetFOVHorizontal(9373.3f);
-      viewConfig.GetMainViewWindow().SetFOVVerticalForAspect(11.1f);
-      viewConfig.GetMainViewWindow().SetFOVVerticalForHorizontal(13.2f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForAspect(300.0f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForHorizontal(-20.0f);
    }
 
    viewConfig.SetFarClippingPlane(10.0);
@@ -172,17 +172,17 @@ void StealthViewerSettingsTests::TestGeneralSettings()
       CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
          !viewConfig.GetMainViewWindow().UseAspectRatioForFOV());
 
-      CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 31.9.",
-         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVAspectRatio(), 31.9f));
+      CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 10.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVAspectRatio(), 10.0f));
 
-      CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 9373.3.",
-         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVHorizontal(), 9373.3f));
+      CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 179.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVHorizontal(), 179.0f));
 
-      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 11.1.",
-         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForAspect(), 11.1f));
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 160.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForAspect(), 160.0f));
 
-      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 13.2.",
-         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForHorizontal(), 13.2f));
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 1.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForHorizontal(), 1.0f));
    }
 
    CPPUNIT_ASSERT_EQUAL(10.0, viewConfig.GetFarClippingPlane());

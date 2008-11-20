@@ -1508,9 +1508,9 @@ namespace StealthQt
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
    }
 
-   void MainWindow::OnTimeThemeChanged(const QString &text)
+   void MainWindow::OnTimeThemeChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       QString hack = tr("Time ") + text;
@@ -1528,9 +1528,9 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    // Custom Weather Settings
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnTimeOfDayChanged(const QTime &newTime)
+   void MainWindow::OnTimeOfDayChanged(const QTime& newTime)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       int newHour = newTime.hour();
@@ -1612,9 +1612,9 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnVisibilityChanged(const QString &text)
+   void MainWindow::OnVisibilityChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       // Convert to match the name of the actor's enum. The full name
@@ -1646,7 +1646,7 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnToolsCoordinateSystemChanged(const QString &text)
+   void MainWindow::OnToolsCoordinateSystemChanged(const QString& text)
    {
       StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
@@ -1665,7 +1665,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowBinocularImageChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowBinocularImage(state == Qt::Checked);
@@ -1674,7 +1674,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowDistanceToObjectChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowDistanceToObject(state == Qt::Checked);
@@ -1683,7 +1683,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowElevationOfObjectChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowElevationOfObject(state == Qt::Checked);
@@ -1692,7 +1692,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnMagnificationChanged(int value)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetMagnification(float(value));
@@ -1701,7 +1701,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnAutoAttachOnSelectionChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetAutoAttachOnSelection(state == Qt::Checked);
@@ -1710,8 +1710,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::AddConfigObjectsToViewerComponent()
    {
-      dtGame::GameManager *gm = mApp->GetGameManager();
-      dtGame::GMComponent *gmComp =
+      dtGame::GameManager* gm = mApp->GetGameManager();
+      dtGame::GMComponent* gmComp =
          gm->GetComponentByName(StealthGM::ViewerConfigComponent::DEFAULT_NAME);
 
       if (gmComp == NULL)
@@ -1719,7 +1719,7 @@ namespace StealthQt
          LOG_ERROR("Failed to find the ViewerConfigComponent on the Game Manager.");
       }
 
-      StealthGM::ViewerConfigComponent &viewComp =
+      StealthGM::ViewerConfigComponent& viewComp =
          static_cast<StealthGM::ViewerConfigComponent&>(*gmComp);
 
       StealthViewerData &instance = StealthViewerData::GetInstance();
