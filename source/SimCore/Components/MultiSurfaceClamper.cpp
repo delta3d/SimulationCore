@@ -408,6 +408,11 @@ namespace SimCore
          dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity)
       {
+         if( type == GroundClampingType::NONE )
+         {
+            return;
+         }
+
          // Maintain the current simulation time across subsequent methods.
          mCurrentSimTime = currentTime;
 
