@@ -249,7 +249,7 @@ namespace SimCore
                            dataMetricField = &dofData->mPosition[1];
                            isNotRate = true;
                         }
-                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
+                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE;
                            dataMetricField = &dofData->mVelocity[1];
