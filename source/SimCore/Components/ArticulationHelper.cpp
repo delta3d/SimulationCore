@@ -59,7 +59,7 @@ namespace SimCore
          dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE);
 
       //////////////////////////////////////////////////////////////////////////
-      ArticulationMetricType::ArticulationMetricType( const std::string &name, const std::string& relatedRateName ) 
+      ArticulationMetricType::ArticulationMetricType( const std::string &name, const std::string& relatedRateName )
          : dtUtil::Enumeration(name),
          mRelatedRateName(relatedRateName)
       {
@@ -104,7 +104,7 @@ namespace SimCore
       bool ArticulationHelper::AddArticulatedParameter(
          dtDAL::NamedGroupParameter& outArticArrayProp,
          ArticulationMetricType& articulationType,
-         const std::string& paramName, 
+         const std::string& paramName,
          float value, unsigned valueChangeCount,
          float rate, unsigned rateChangeCount,
          const std::string& dofName, const std::string& dofParentName )
@@ -128,7 +128,7 @@ namespace SimCore
          extendedParamName = extendedParamName + PARAM_NAME_SUFFIX_RATE;
          // --- Create the parameter if it does not already exist
          articParam = new dtGame::GroupMessageParameter(extendedParamName);
-         articParam->AddParameter( *new dtDAL::NamedFloatParameter( 
+         articParam->AddParameter( *new dtDAL::NamedFloatParameter(
             articulationType.GetRelatedRateMetricName(), rate ) );
          articParam->AddParameter( *new dtDAL::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, rateChangeCount ) );
          articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
@@ -161,7 +161,7 @@ namespace SimCore
          const dtDAL::NamedGroupParameter& articArrayParam,
          dtCore::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
       {
-         if(nodeCollector.GetTransformNodeMap().empty()) 
+         if(nodeCollector.GetTransformNodeMap().empty())
          {
             return;
          }
@@ -173,7 +173,7 @@ namespace SimCore
          std::vector<const dtGame::MessageParameter*>::iterator iter = toFill.begin();
 
          for(;iter != toFill.end(); ++iter)
-         {             
+         {
             if((*iter)->GetDataType() == dtDAL::DataType::GROUP)
             {
                char switchLetter = (*iter)->GetName()[1]; // "ArticulatedPartMessageParam"
@@ -183,7 +183,7 @@ namespace SimCore
                   float value = 0.0f;
                   std::string dofName;
                   osgSim::DOFTransform *dof;
-                  const dtGame::GroupMessageParameter& curGroupParam 
+                  const dtGame::GroupMessageParameter& curGroupParam
                      = *static_cast<const dtGame::GroupMessageParameter*>(*iter);
 
                   if(GetArticulationDOFName(curGroupParam, dofName))
@@ -254,7 +254,7 @@ namespace SimCore
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE;
                            dataMetricField = &dofData->mVelocity[1];
                         }
-                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X, value))
                         {}
                         else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_XRATE, value))
                         {}
@@ -331,7 +331,7 @@ namespace SimCore
       bool ArticulationHelper::GetArticulation(const dtGame::GroupMessageParameter& articParam,
          const std::string& metricTypeName, float& outValue)
       {
-         const dtGame::FloatMessageParameter* metricParam 
+         const dtGame::FloatMessageParameter* metricParam
             = dynamic_cast<const dtGame::FloatMessageParameter*>
             (articParam.GetParameter(metricTypeName));
 
@@ -347,7 +347,7 @@ namespace SimCore
       bool ArticulationHelper::GetArticulationDOFName(
          const dtGame::GroupMessageParameter& articParam, std::string& outName)
       {
-         const dtGame::StringMessageParameter* dofNameParam 
+         const dtGame::StringMessageParameter* dofNameParam
             = dynamic_cast<const dtGame::StringMessageParameter*>
             (articParam.GetParameter(SimCore::Components::ArticulationHelper::PARAM_NAME_DOF));
 
