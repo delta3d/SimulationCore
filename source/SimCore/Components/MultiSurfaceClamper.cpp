@@ -385,18 +385,21 @@ namespace SimCore
       {
          dtGame::BaseGroundClamper::GroundClampingType* clampType = &suggestedClampType;
 
-         // Make sure all surface vessels always 3-point clamp to moving water
-         // even though they may not be moving on their own power.
-         if( IsWaterDomain( GetDomain( data ) ) )
+         if( suggestedClampType != GroundClampingType::NONE )
          {
-            clampType = &dtGame::BaseGroundClamper::GroundClampingType::RANGED;
-         }
-         // NOTE: Animation component does not specify a velocity but does set
-         // transformChanged flag to TRUE. Checking the flag will allow the animated
-         // characters clamp as expected.
-         else if( ! transformChanged && velocity.length2() == 0.0f )
-         {
-            clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
+            // Make sure all surface vessels always 3-point clamp to moving water
+            // even though they may not be moving on their own power.
+            if( IsWaterDomain( GetDomain( data ) ) )
+            {
+               clampType = &dtGame::BaseGroundClamper::GroundClampingType::RANGED;
+            }
+            // NOTE: Animation component does not specify a velocity but does set
+            // transformChanged flag to TRUE. Checking the flag will allow the animated
+            // characters clamp as expected.
+            else if( ! transformChanged && velocity.length2() == 0.0f )
+            {
+               clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
+            }
          }
 
          return *clampType;
@@ -408,11 +411,6 @@ namespace SimCore
          dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity)
       {
-         if( type == GroundClampingType::NONE )
-         {
-            return;
-         }
-
          // Maintain the current simulation time across subsequent methods.
          mCurrentSimTime = currentTime;
 
