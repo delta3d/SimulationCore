@@ -22,31 +22,29 @@
  * @author Chris Rodgers
  */
 
+#ifndef SIMCORE_WIDGET_COLLECTION_PLUGIN_H
+#define SIMCORE_WIDGET_COLLECTION_PLUGIN_H
+
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <SimCoreWidgets/SimCoreWidgetCollectionPlugin.h>
-#include <QtCore/QtPlugin>
-
-// Custom Widget Plugins
-#include <SimCoreWidgets/NonLinearSliderPlugin.h>
-#include <SimCoreWidgets/RangeRadialPlugin.h>
+#include <QtDesigner/QDesignerCustomWidgetInterface>
+#include <QtDesigner/QDesignerCustomWidgetCollectionInterface>
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // PLUGIN COLLECTION CODE
 ////////////////////////////////////////////////////////////////////////////////
-QList<QDesignerCustomWidgetInterface*> SimCoreWidgetCollectionPlugin::customWidgets() const
+class SimCoreWidgetCollectionPlugin : public QObject, public QDesignerCustomWidgetCollectionInterface
 {
-   QList<QDesignerCustomWidgetInterface *> plugins;
-   plugins
-      << new NonLinearSliderPlugin
-      << new RangeRadialPlugin;
-   return plugins;
-}
+   Q_OBJECT
+   Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
 
-////////////////////////////////////////////////////////////////////////////////
-// LIBRARY EXPORT MACRO
-////////////////////////////////////////////////////////////////////////////////
-Q_EXPORT_PLUGIN(SimCoreWidgetCollectionPlugin)
+   public:
+
+      // INTERFACE METHOD ------------------------------------------------------
+      QList<QDesignerCustomWidgetInterface*> customWidgets() const;
+};
+
+#endif
