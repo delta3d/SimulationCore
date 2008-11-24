@@ -63,6 +63,7 @@
 #include <osg/CullFace>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
+#include <osgGA/GUIEventAdapter>
 
 #include <osgViewer/GraphicsWindow>
 #include <osgEphemeris/EphemerisModel>
@@ -619,93 +620,75 @@ namespace SimCore
          mDeltaTime = dt;
          mElapsedTime += dt;
 
-
-   #ifdef DELTA_WIN32
          std::string developerMode;
          developerMode = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
          
-         //We moved this outside of the developer block so it could be used at the installation
-         if (GetAsyncKeyState(VK_HOME))
+         dtCore::Keyboard* kb = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
+        
+         static float keyTimeOut = 0.0f;
+         keyTimeOut -= dt;
+
+         if(kb != NULL && keyTimeOut <= 0.0f && developerMode == "true" || developerMode == "1")
          {
-            static int testChoppiness = 0;
-            testChoppiness++;
-            testChoppiness %= 4;
-
-            if (testChoppiness == 0)
-               SetChoppiness(ChoppinessSettings::CHOP_FLAT);
-            else if (testChoppiness == 1)
-               SetChoppiness(ChoppinessSettings::CHOP_MILD);
-            else if (testChoppiness == 2)
-               SetChoppiness(ChoppinessSettings::CHOP_MED);
-            else if (testChoppiness == 3)
-               SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
-
-            Sleep(100);
-        }
-
-         
-         if(developerMode == "true" || developerMode == "1")
-         {
-
-            if (GetAsyncKeyState('9'))
+            
+            if(kb->GetKeyState('9'))
             {
                mModForWaveLength *= 0.96f; // 10% less
                std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
             }
-            else if (GetAsyncKeyState('0'))
+            else if(kb->GetKeyState('0'))
             {
                mModForWaveLength *= 1.04f; // 10% more
                std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
             }
 
-            if (GetAsyncKeyState('7'))
+            if (kb->GetKeyState('7'))
             {
                mModForSpeed *= 0.96f; // 10% less
                std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
             }
-            else if (GetAsyncKeyState('8'))
+            else if (kb->GetKeyState('8'))
             {
                mModForSpeed *= 1.04f; // 10% more
                std::cout << "Speed mod changed to [" << mModForSpeed << "]." << std::endl;
             }
 
-            if (GetAsyncKeyState('5'))
+            if (kb->GetKeyState('5'))
             {
                mModForAmplitude *= 0.96f; // 10% less
                std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
             }
-            else if (GetAsyncKeyState('6'))
+            else if (kb->GetKeyState('6'))
             {
                mModForAmplitude *= 1.04f; // 10% more
                std::cout << "Amp mod changed to [" << mModForAmplitude << "]." << std::endl;
             }
 
-            if (GetAsyncKeyState('3'))
+            if (kb->GetKeyState('3'))
             {
                mModForDirectionInDegrees -= 2.00; // 10% less
                mModForDirectionInDegrees = (mModForDirectionInDegrees < 0.0f) ? (mModForDirectionInDegrees + 360.0f) : mModForDirectionInDegrees;
                std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
             }
-            else if (GetAsyncKeyState('4'))
+            else if (kb->GetKeyState('4'))
             {
                mModForDirectionInDegrees += 2.00f; // 10% more
                mModForDirectionInDegrees = (mModForDirectionInDegrees > 360.0f) ? (mModForDirectionInDegrees - 360.0f) : mModForDirectionInDegrees;
                std::cout << "Direction mod changed to [" << mModForDirectionInDegrees << "]." << std::endl;
             }
 
-            if (GetAsyncKeyState('1'))
+            if (kb->GetKeyState('1'))
             {
                mModForFOV *= 0.96f; // 10% less
                std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
             }
-            else if (GetAsyncKeyState('2'))
+            else if (kb->GetKeyState('2'))
             {
                mModForFOV *= 1.04f; // 10% more
                std::cout << "Mod For FOV changed to [" << mModForFOV << "]." << std::endl;
             }
 
-
-            if(GetAsyncKeyState(VK_RETURN))
+            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Return))
             {
                mModForWaveLength = 1.0f; // 10% less
                mModForFOV = 1.0f; // 10% more
@@ -716,9 +699,10 @@ namespace SimCore
 
                mRenderWaveTexture = !mRenderWaveTexture;
                SetRenderWaveTexture(mRenderWaveTexture);
-               dtCore::AppSleep(100);
+               keyTimeOut = 0.5;
             }
-            else if(GetAsyncKeyState(VK_SPACE))
+            
+            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
                mWireframe = !mWireframe;
 
@@ -734,12 +718,29 @@ namespace SimCore
                }
 
                mGeode->getOrCreateStateSet()->setAttributeAndModes(polymode.get(),osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
-               dtCore::AppSleep(100);
+               keyTimeOut = 0.5;
+            }
+            
+            if(kb->GetKeyState(osgGA::GUIEventAdapter::KEY_Home))
+            {
+               static int testChoppiness = 0;
+               testChoppiness++;
+               testChoppiness %= 4;
+
+               if (testChoppiness == 0)
+                  SetChoppiness(ChoppinessSettings::CHOP_FLAT);
+               else if (testChoppiness == 1)
+                  SetChoppiness(ChoppinessSettings::CHOP_MILD);
+               else if (testChoppiness == 2)
+                  SetChoppiness(ChoppinessSettings::CHOP_MED);
+               else if (testChoppiness == 3)
+                  SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
+
+               keyTimeOut = 0.5;
             }
 
       }
-   #endif
-      }
+   }
 
       osg::Geometry* WaterGridActor::BuildUniformGrid()
       {
