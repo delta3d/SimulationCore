@@ -49,6 +49,7 @@
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
 #include <SimCore/Actors/FlareActor.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
+#include <SimCore/Actors/WaterGridActor.h>
 
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -153,6 +154,10 @@ namespace SimCore
          = new dtDAL::ActorType("SurfaceHazeDataActor","SimCore",
          "Actor for capturing remote environmental data.", LAT_LONG_DATA_ACTOR_TYPE.get());
 
+      dtCore::RefPtr<dtDAL::ActorType> EntityActorRegistry::WATER_GRID_ACTOR_TYPE(
+         new dtDAL::ActorType("WaterGridActor", "SimCore", "This is the base water actor.",
+         SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE.get() ));
+
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -231,6 +236,8 @@ namespace SimCore
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",
                "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
+
+         mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
       }
    }
 }

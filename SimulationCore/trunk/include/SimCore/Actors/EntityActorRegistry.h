@@ -85,6 +85,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> LAT_LONG_DATA_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> OCEAN_DATA_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> SURFACE_HAZE_DATA_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> WATER_GRID_ACTOR_TYPE;
 
             /// Constructor
             EntityActorRegistry();
