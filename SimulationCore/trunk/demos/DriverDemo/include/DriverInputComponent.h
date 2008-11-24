@@ -118,11 +118,11 @@ namespace DriverDemo
             const std::string& fedFile,
             const std::string& federateName);
    
+         // GUI Tool Methods: to be moved to a new GUI Component.
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
          void RemoveTool(SimCore::MessageType &type);
          bool IsToolEnabled(SimCore::MessageType &type) const;
-         void UpdateTools( float timeDelta );
          void ToggleTool(SimCore::MessageType &msgType);
          SimCore::MessageType& GetEnabledTool() const;
          void DisableAllTools();

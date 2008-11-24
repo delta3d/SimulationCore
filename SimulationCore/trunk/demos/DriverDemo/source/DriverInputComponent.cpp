@@ -182,7 +182,6 @@ namespace DriverDemo
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
-         UpdateTools( tick.GetDeltaSimTime() );
          UpdateStates( tick.GetDeltaSimTime(), tick.GetDeltaRealTime() );
    
          // Update the view height distance - helps the fog decay nicely based on height.
@@ -197,8 +196,6 @@ namespace DriverDemo
             xform.GetTranslation(pos);
             weatherComp->SetViewElevation(pos[2]);
          }
-
-         //UpdateInteriorModel();
       }
 
       // Tool update message.
@@ -732,17 +729,6 @@ namespace DriverDemo
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void DriverInputComponent::UpdateTools( float timeDelta )
-   {
-      //SimCore::Tools::Compass* compass = static_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
-      //if( compass != NULL && compass->IsEnabled() )
-      //{
-   	//   compass->Update( timeDelta );
-      //}
-   
-  }
-   
-   /////////////////////////////////////////////////////////////////////////////////
    SimCore::MessageType& DriverInputComponent::GetEnabledTool() const
    {
       std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::const_iterator i;
@@ -801,7 +787,8 @@ namespace DriverDemo
    
       // Create the seat
       mSeat = new dtCore::Transformable("PlayerSeat");
-      }
+      mSeat->AddChild( mStealthActor.get() );
+   }
    
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
@@ -870,24 +857,7 @@ namespace DriverDemo
       {
          // Set the attach state.
          mPlayerAttached = true;
-   
-         // Remove from the scene
-         mStealthActor->Emancipate();
       }
-   
-      // Offset the player vantage point.
-      osg::Vec3 rotationOffset;
-
-      mStealthActor->SetAttachOffset( osg::Vec3(0.0, 0.0, 0.0) ); // GUNNER
-
-      // Position the seat DOF
-      dtCore::Transform xform;
-      xform.SetTranslation( mStealthActor->GetAttachOffset() );
-      xform.SetRotation(rotationOffset);
-      mSeat->SetTransform( xform, dtCore::Transformable::REL_CS );
-   
-      // Attach the player to the sitting view point by default
-      //SetViewMode( VIEW_MODE_SIT );
    
       // Setup the weapon actor if one needs to be attached.
       if( ! mWeapon.valid() )
@@ -955,11 +925,20 @@ namespace DriverDemo
          //     or the new mode set prior to this function being called; thus remove
          //     from both possible parents.
          mVehicle->RemoveChild( mSeat.get() );
-         if( mDOFSeat.valid() ) { mDOFSeat->removeChild( mSeat->GetOSGNode() ); }
+         if( mDOFSeat.valid() )
+         {
+            mDOFSeat->removeChild( mSeat->GetOSGNode() );
+         }
    
          // Reset the original orientations of the vehicle's DOFs.
-         if( mDOFRing.valid() ) { mDOFRing->setCurrentHPR( mDOFRingOriginalHPR ); }
-         if( mDOFWeapon.valid() ) { mDOFWeapon->setCurrentHPR( mDOFWeaponOriginalHPR ); }
+         if( mDOFRing.valid() )
+         {
+            mDOFRing->setCurrentHPR( mDOFRingOriginalHPR );
+         }
+         if( mDOFWeapon.valid() )
+         {
+            mDOFWeapon->setCurrentHPR( mDOFWeaponOriginalHPR );
+         }
    
          // Offset the player relative to the vehicle
          dtCore::Transform xform;
@@ -977,22 +956,11 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetViewMode()
    {
-      // Set NEW mode
-      if( mWeaponEyePoint.valid() )
-      {
-         dtCore::Transform xform;
-         mStealthActor->GetTransform( xform, dtCore::Transformable::REL_CS );
-         xform.SetRotation( osg::Vec3(0.0,0.0,0.0) );
-         mStealthActor->SetTransform( xform, dtCore::Transformable::REL_CS );
-         mWeaponEyePoint->AddChild( mStealthActor.get() );
-      }
-
       if( mWeaponMM.valid())
       {
          bool flamesPresent = mVehicle.valid() && mVehicle->IsFlamesPresent();
          mWeaponMM->SetEnabled( !flamesPresent);
       }
-   
    }
    
 
