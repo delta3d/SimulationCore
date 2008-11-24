@@ -75,7 +75,7 @@ namespace SimCore
          struct TextureWave
          {
             float mWaveLength;
-            float mDirection;
+            float mSteepness;
             float mSpeed;
 
          };
