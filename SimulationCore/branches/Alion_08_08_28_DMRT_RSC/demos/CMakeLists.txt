@@ -1,6 +1,4 @@
 
 if (USE_PHYSX)
    ADD_SUBDIRECTORY(DriverDemo)
-else (USE_PHYSX)
-   ADD_SUBDIRECTORY(Sphero)
 endif (USE_PHYSX)
