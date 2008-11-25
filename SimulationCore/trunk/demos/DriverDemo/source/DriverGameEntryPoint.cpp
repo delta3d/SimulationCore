@@ -216,7 +216,7 @@ namespace DriverDemo
          = new SimCore::Components::RenderingSupportComponent();
       //the cull visitor must be enabled before we add the rendering support component
       //doing this will swap out the original cullvisitor with our own that adds Ageia physics support
-      renderingSupportComponent->SetEnableCullVisitor(true);
+//      renderingSupportComponent->SetEnableCullVisitor(true);
       gm.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 
