@@ -12,7 +12,7 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 if(COMMAND cmake_policy)
-   cmake_policy(SET CMP0003 OLD)
+   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
@@ -150,17 +150,20 @@ ELSE (USE_PHYSX)
 
          FIND_PACKAGE(Pal REQUIRED)
  
-         INCLUDE_DIRECTORIES( ${PAL_INCLUDES} ${DTPHYSICS_INCLUDE_DIR} )
+         INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} ${DTPHYSICS_INCLUDE_DIR} )
          LINK_DIRECTORIES( ${DTPHYSICS_LIB_DIR} )
        ENDIF (DTPHYSICS_FOUND)
    else (USE_dtPhysics)
       MESSAGE("You must pick a physics engine.  Set USE_dtPhysics or USE_PHYSX to on")
-   endif (USE_dtPhysics)       
+   endif (USE_dtPhysics)
 ENDIF (USE_PHYSX)
 
 FIND_PACKAGE(Delta3D REQUIRED)
 
 IF (DELTA3D_FOUND)
+
+   MESSAGE("HELP2")
+
    #look for module loaders in delta3d CMakeModules
    SET(CMAKE_MODULE_PATH "${DELTA_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
@@ -189,10 +192,7 @@ IF (DELTA3D_FOUND)
    ENDIF (NOT WIN32 AND NOT APPLE)
 
    SET(QT_USE_QTOPENGL "true")
-   FIND_PACKAGE(Qt4)
-
-   FIND_PACKAGE(GDAL)
-   FIND_PACKAGE(DIS)
+   FIND_PACKAGE(Qt4 REQUIRED)
 
    if (BUILD_HLA)
       if (USE_RTIS)
