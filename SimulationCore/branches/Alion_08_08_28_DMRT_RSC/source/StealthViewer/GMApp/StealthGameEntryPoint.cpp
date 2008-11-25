@@ -370,7 +370,7 @@ namespace StealthGM
       dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent = new dtAgeiaPhysX::NxAgeiaWorldComponent();
       gameManager.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 #else
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
       gameManager.AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                dtGame::GameManager::ComponentPriority::NORMAL);
