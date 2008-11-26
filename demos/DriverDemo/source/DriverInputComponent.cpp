@@ -126,7 +126,7 @@ namespace DriverDemo
    DriverInputComponent::DriverInputComponent(const std::string& name) :
       BaseClass(name),
       DOF_NAME_WEAPON_PIVOT("dof_gun_01"),//"dof_gun_attach"),
-      DOF_NAME_WEAPON_STEM("dof_gun_01"),
+      DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01"),
       DOF_NAME_RINGMOUNT("dof_turret_01"),
       DOF_NAME_RINGMOUNT_SEAT("dof_view_02"),
       mIsConnected(false),
@@ -1169,9 +1169,9 @@ namespace DriverDemo
          mWeapon->SetTriggerHeld( false );
    
          // Remove the current weapon from both possible attach points.
-         if( mDOFWeapon.valid() )
+         if( mDOFFirePoint.valid() )
          {
-            mDOFWeapon->removeChild( mWeapon->GetOSGNode() );
+            mDOFFirePoint->removeChild( mWeapon->GetOSGNode() );
          }
    
          if( mWeaponEyePoint.valid() )
@@ -1188,9 +1188,9 @@ namespace DriverDemo
    
       if( mWeapon.valid() )
       {
-         if( mDOFWeapon.valid() )
+         if( mDOFFirePoint.valid() )
          {
-            mDOFWeapon->addChild( mWeapon->GetOSGNode() );
+            mDOFFirePoint->addChild( mWeapon->GetOSGNode() );
          }
    
          dtCore::Transform xform;
@@ -1204,8 +1204,8 @@ namespace DriverDemo
          }
    
          // Offset the weapon
-         xform.SetTranslation( 0.0, 0.0, 0.0 );
-         mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
+         //xform.SetTranslation( 0.0, 0.0, 0.0 );
+         //mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
 
          // Set the owner
          if (mVehicle.valid())
@@ -1385,7 +1385,7 @@ namespace DriverDemo
       mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT_SEAT);
       mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT);
       mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT);
-      //mDOFWeaponStem = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_STEM);
+      mDOFFirePoint = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_FIRE_POINT);
    }
    
    ////////////////////////////////////////////////////////////////////////////////
