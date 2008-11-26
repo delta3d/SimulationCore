@@ -18,10 +18,8 @@
 #include <dtUtil/mathdefines.h>
 #include <SimCore/CollisionGroupEnum.h>
 #include <dtUtil/matrixutil.h>
-#include <dtABC/application.h>
 
-// Curt - hack
-#include <dtCore/keyboard.h>
+
 
 namespace DriverDemo
 {
