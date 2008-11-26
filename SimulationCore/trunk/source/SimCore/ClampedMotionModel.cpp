@@ -56,7 +56,8 @@ namespace SimCore
       mEnabledUpDown(true),
       mEnabledLeftRight(true),
       mLeftRightLimit(-1.0),
-      mUpDownLimit(-1.0),
+      mUpLimit(-1.0),
+      mDownLimit(-1.0),
       mKeyboard(keyboard),
       mDOF(NULL),
       mTestMode(false)
@@ -163,16 +164,19 @@ namespace SimCore
             }
 
             // Clamp rotation
-            if( mUpDownLimit >= 0.0 || mLeftRightLimit >= 0.0 )
+            if( mUpLimit >= 0.0 || mDownLimit >= 0.0 || mLeftRightLimit >= 0.0 )
             {
                // Use a local variable to get around Vec3 Real-Type ambiguity (double vs. float)
                double value;
 
-               // Clamp up-down
-               if( mUpDownLimit >= 0.0 )
+               // Clamp up-down - independtly.
+               if( mUpLimit >= 0.0 || mDownLimit >= 0.0)
                {
                   value = hpr[1];
-                  dtUtil::Clamp( value, -mUpDownLimit, mUpDownLimit );
+                  if (mUpLimit >= 0.0)
+                     dtUtil::Clamp( value, -89.0, mUpLimit );
+                  if (mDownLimit >= 0.0)
+                     dtUtil::Clamp( value, -mDownLimit, 89.0 );
                   hpr[1] = value;
                }
 

@@ -1231,7 +1231,7 @@ namespace DriverDemo
       {
          mWeaponMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
          mWeaponMM->SetLeftRightLimit( 0.0f );
-         mWeaponMM->SetUpDownLimit( 45.0f );
+         mWeaponMM->SetUpDownLimit( 45.0f, 15.0f );
          mWeaponMM->SetName("WeaponMM");
       }
       mWeaponMM->SetEnabled( true );
