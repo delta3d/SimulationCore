@@ -26,7 +26,6 @@
 #include <SimCore/Export.h>
 #include <dtCore/observerptr.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
-#include <SimCore/CustomCullVisitor.h>
 #include <osgUtil/CullVisitor>
 #include <osg/Transform>
 #include <osg/Geode>
@@ -36,7 +35,7 @@
 namespace SimCore
 {
    ///////////////////////////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT AgeiaTerrainCullVisitor : public CustomCullVisitor
+   class SIMCORE_EXPORT AgeiaTerrainCullVisitor : public osgUtil::CullVisitor
    {
       public:
          /// Constructor
@@ -58,7 +57,11 @@ namespace SimCore
          void SetLandActor(SimCore::Actors::NxAgeiaTerraPageLandActor* _land) {mLandActor = _land;}
          SimCore::Actors::NxAgeiaTerraPageLandActor* GetLandActor() {return mLandActor.get();} 
 
-         /// Set and get for the camera transform
+         /// Set and get for the terrain node
+         void SetTerrainNode(osg::Transform* terrainNodeCheckAgainst){mTerrainNode = terrainNodeCheckAgainst;}
+         osg::Node* GetTerrainNode() {return mTerrainNode.get();}
+
+              /// Set and get for the camera transform
          void SetCameraTransform(const osg::Vec3& camTransform) {mCameraPosition = camTransform;}
          osg::Vec3 GetCameraTransform() const {return mCameraPosition;}
 
@@ -87,6 +90,10 @@ namespace SimCore
          /// we feed the terrain data through here, it loads the physics
          dtCore::ObserverPtr<SimCore::Actors::NxAgeiaTerraPageLandActor>  mLandActor;
 
+         /// this is the top level transform node of the terrain, for knowing when
+         /// we are in the terrain
+         dtCore::ObserverPtr<osg::Transform>             mTerrainNode;
+         
          /// are we in the terrain currently? mNodeWeCheckAgainst passed, so work 
          /// is being done this frame
          bool                                            mCurrentlyInTerrain;

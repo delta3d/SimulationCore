@@ -190,9 +190,6 @@ namespace SimCore
 
             void AddCamera(osg::Camera* cam);
 
-            void SetDisabledFIDCodes(std::vector<int>& fidCodes);
-            const std::vector<int>& GetDisabledFIDCodes() const;
-
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
