@@ -840,12 +840,12 @@ namespace SimCore
             toFill.clear();
          }
 
-         if(CustomCullVisitor::GetTerrainNode() == NULL)
+         if(mCullVisitor->GetTerrainNode() == NULL)
          {
             GetGameManager()->FindActorsByName("Terrain", toFill);
             if(!toFill.empty())
             {
-               CustomCullVisitor::SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
+               mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
             }
          }
 
@@ -878,16 +878,5 @@ namespace SimCore
          }
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::SetDisabledFIDCodes( std::vector<int>& fidCodes )
-      {
-         CustomCullVisitor::SetDisabledFIDCodes(fidCodes);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      const std::vector<int>& RenderingSupportComponent::GetDisabledFIDCodes() const
-      {
-         return CustomCullVisitor::GetDisabledFIDCodes();
-      }
    } // end entity namespace.
 } // end dvte namespace.
