@@ -257,7 +257,7 @@ namespace DriverDemo
 
          // The common DOF names found on most vehicle models 
          const std::string DOF_NAME_WEAPON_PIVOT;
-         const std::string DOF_NAME_WEAPON_STEM;
+         const std::string DOF_NAME_WEAPON_FIRE_POINT;
          const std::string DOF_NAME_RINGMOUNT;
          const std::string DOF_NAME_RINGMOUNT_SEAT;
    
@@ -299,6 +299,7 @@ namespace DriverDemo
          osg::observer_ptr<osgSim::DOFTransform> mDOFSeat;
          osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
          osg::observer_ptr<osgSim::DOFTransform> mDOFWeapon;
+         osg::observer_ptr<osgSim::DOFTransform> mDOFFirePoint;
          //osg::observer_ptr<osgSim::DOFTransform> mDOFWeaponStem;
          //float mDOFWeaponStemOffset; // offset up/down of the weapon mount
          //float mDOFWeaponStemOffsetLimit; // the maximum up/down displacement of the weapon mount (in meters)
