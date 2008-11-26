@@ -284,12 +284,6 @@ namespace DriverDemo
 
                // This method does all the cool stuff!!!
                AttachToVehicle(*vehicle);
-               // Tell the MotionModels about the articulation helper.
-               //if( mRingMM.valid() )
-               //   mRingMM->SetArticulationHelper( articHelper.get() );
-               //if( mWeaponMM.valid() )
-               //   mWeaponMM->SetArticulationHelper( articHelper.get() );
-
             }
             else 
             {
@@ -378,10 +372,6 @@ namespace DriverDemo
                   osg::Vec3 hpr = mWeaponMM->GetTargetsRotation();
                   hpr.y() = 0.0f;
                   mWeaponMM->SetTargetsRotation( hpr );
-               }
-               if( mRingMM.valid() )
-               {
-                  mRingMM->SetEnabled( false );
                }
             }
          }
@@ -552,6 +542,21 @@ namespace DriverDemo
                mWeapon->SetTriggerHeld( true );
             }
          }
+         // Right button should turn turret.
+         else if( button == dtCore::Mouse::RightButton )
+         {
+            if( ! mRingButtonHeld )
+            {
+               HandleTurretEnabled( true );
+               mRingButtonHeld = true;
+
+               if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
+               {
+                  mRingMM->SetTarget( NULL );
+                  mRingMM->SetTargetDOF( mDOFRing.get() );
+               }
+            }
+         }
       }
    
       if(!handled)
@@ -567,7 +572,7 @@ namespace DriverDemo
    
       GameAppComponent* gameAppComponent;
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
-      if( gameAppComponent != NULL)
+      if( gameAppComponent != NULL )
       {
          // stop firing
          if( button == dtCore::Mouse::LeftButton )
@@ -575,6 +580,21 @@ namespace DriverDemo
             if( mWeapon.valid() ) 
             { 
                mWeapon->SetTriggerHeld( false ); 
+            }
+         }
+         else if( button == dtCore::Mouse::RightButton )
+         {
+            if( mRingButtonHeld )
+            {
+               HandleTurretEnabled( false );
+               mRingButtonHeld = false;
+
+               if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
+               {
+                  mRingMM->SetTargetsRotation( osg::Vec3() );
+                  mRingMM->SetTarget( mVehicle.get() );
+                  mRingMM->SetTargetDOF( NULL );
+               }
             }
          }
       }
@@ -603,20 +623,24 @@ namespace DriverDemo
          mWeaponMM->SetLeftRightEnabled( false );
          if( ! fireEnabled )
          {
-            if (mSoundTurretTurnStart.valid())
+            if(mSoundTurretTurnStart.valid())
+            {
                mSoundTurretTurnStart->Play();
-            mRingMM->SetEnabled( true );
+            }
+            //mRingMM->SetEnabled( true );
          }
       }
       else
       {
-         mRingMM->SetEnabled( false );
+         //mRingMM->SetEnabled( false );
          if( ! fireEnabled )
          {
             //mAttachedMM->SetEnabled( true );
             mWeaponMM->SetLeftRightEnabled( true );
-            if (mSoundTurretTurnEnd.valid())
+            if(mSoundTurretTurnEnd.valid())
+            {
                mSoundTurretTurnEnd->Play();
+            }
          }
       }
    }
@@ -1049,10 +1073,10 @@ namespace DriverDemo
    {
       dtGame::GameManager* gm = GetGameManager();
    
-      std::vector<dtDAL::ActorProxy*> toFill;
-      gm->FindPrototypesByName( weaponName, toFill );
+      std::vector<dtDAL::ActorProxy*> proxyArray;
+      gm->FindPrototypesByName( weaponName, proxyArray );
    
-      if( toFill.empty() )
+      if( proxyArray.empty() )
       {
          LOG_ERROR( "No weapon actor prototype could be loaded from the map." );
          return false;
@@ -1061,7 +1085,7 @@ namespace DriverDemo
       // Create a new weapon proxy from the discovered prototype
       dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> weaponProxy 
          = dynamic_cast<SimCore::Actors::WeaponActorProxy*>
-         (gm->CreateActorFromPrototype(toFill[0]->GetId()).get());
+         (gm->CreateActorFromPrototype(proxyArray[0]->GetId()).get());
       outWeapon = weaponProxy.valid() ?
          static_cast<SimCore::Actors::WeaponActor*> (weaponProxy->GetActor()) : NULL;
    
@@ -1078,13 +1102,13 @@ namespace DriverDemo
       outWeapon->Emancipate();
    
       // Get ready to instantiate a shooter from a prototype.
-      toFill.clear();
-      gm->FindPrototypesByName( shooterName ,toFill);
+      proxyArray.clear();
+      gm->FindPrototypesByName( shooterName, proxyArray);
    
-      if( ! toFill.empty() )
+      if( ! proxyArray.empty() )
       {
          dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy 
-            = gm->CreateActorFromPrototype(toFill.front()->GetId());
+            = gm->CreateActorFromPrototype(proxyArray.front()->GetId());
    
          if(ourActualActorProxy != NULL)
          {
@@ -1184,7 +1208,14 @@ namespace DriverDemo
          mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
       }
    }
-   
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool DriverInputComponent::IsVehiclePivotable( const SimCore::Actors::BasePhysicsVehicleActor& vehicle ) const
+   {
+      const HoverVehicleActor* hoverActor = dynamic_cast<const HoverVehicleActor*>(&vehicle);
+      return hoverActor != NULL && hoverActor->GetVehicleIsTurret();
+   }
+
    ////////////////////////////////////////////////////////////////////////////////
    bool DriverInputComponent::AttachToRingmount( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
@@ -1214,8 +1245,7 @@ namespace DriverDemo
       // Is the turret 'hard-wired' to the vehicle? If so, the ring mount motion 
       // model turns the vehicle, not just the ring mount DoF. This is true for 
       // instance, with the Hover Vehicle. 
-      HoverVehicleActor *hoverActor = dynamic_cast<HoverVehicleActor *> (&vehicle);
-      if (hoverActor != NULL && hoverActor->GetVehicleIsTurret())
+      if(IsVehiclePivotable(vehicle))
          mRingMM->SetTarget(&vehicle);
       else
          mRingMM->SetTargetDOF( mDOFRing.get() );
