@@ -250,16 +250,13 @@ namespace DriverDemo
    
          void SetViewMode();
 
+         void ToggleView();
+         void AttachToView( const std::string& viewNodeName );
+
       private:
    
          // ?:???? void UpdateInteriorModel();
          void StopAnyWeaponsFiring();
-
-         // The common DOF names found on most vehicle models 
-         const std::string DOF_NAME_WEAPON_PIVOT;
-         const std::string DOF_NAME_WEAPON_FIRE_POINT;
-         const std::string DOF_NAME_RINGMOUNT;
-         const std::string DOF_NAME_RINGMOUNT_SEAT;
    
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
@@ -337,6 +334,9 @@ namespace DriverDemo
          bool mPlayerAttached;
          SimCore::Actors::BaseEntityActorProxy::DamageStateEnum* mLastDamageState; 
          // the last reported state of the vehicle
+
+         // View mode variable.
+         std::string mViewNodeName;
    
          // Initial starting position
          osg::Vec3 mStartPosition;
@@ -352,10 +352,18 @@ namespace DriverDemo
          dtCore::RefPtr<dtAudio::Sound> mSoundAmbient;
    
          // Sound file names
-         static const std::string SOUND_TURRET_TURN_START;
-         static const std::string SOUND_TURRET_TURN;
-         static const std::string SOUND_TURRET_TURN_END;
-         static const std::string SOUND_AMBIENT;
+         static const dtUtil::RefString SOUND_TURRET_TURN_START;
+         static const dtUtil::RefString SOUND_TURRET_TURN;
+         static const dtUtil::RefString SOUND_TURRET_TURN_END;
+         static const dtUtil::RefString SOUND_AMBIENT;
+
+         // The common DOF names found on most vehicle models 
+         static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
+         static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
+         static const dtUtil::RefString DOF_NAME_RINGMOUNT;
+         static const dtUtil::RefString DOF_NAME_VIEW_01;
+         static const dtUtil::RefString DOF_NAME_VIEW_02;
+         static const dtUtil::RefString DOF_NAME_VIEW_DEFAULT;
    };
 }
 #endif
