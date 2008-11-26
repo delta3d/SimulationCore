@@ -86,7 +86,6 @@ namespace DriverDemo
 
    }
 
-   //static float timeTillPrint = 0.0f;
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime,
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
@@ -100,7 +99,6 @@ namespace DriverDemo
       NxVec3 pos = physicsObject->getGlobalPosition();
       NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
 
-
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
       // massively helps smooth out the bouncyness
       osg::Vec3 location(pos.x, pos.y, pos.z);
@@ -109,29 +107,20 @@ namespace DriverDemo
       float distanceToHit = 0.0;
       float futureAdjustment = ComputeEstimatedForceCorrection(locationLookAhead, direction, distanceToHit);
       float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
-      //float futureAdjustment = currentAdjustment;
 
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
       float finalAdjustment = currentAdjustment * 0.90 + futureAdjustment * 0.10;
       NxVec3 dir(0.0, 0.0, 1.0);
       physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
-      //ApplyForceToActor(dir, weight * multiplier); // old method
 
-      // Debug code... delete me
-      //timeTillPrint += deltaTime;
-      //if (timeTillPrint > 0.2)
-      //{
-      //   timeTillPrint = 0.0f;
-      //   std::cout << "Height [" << (distanceToHit) << "], Multiplier[" << finalAdjustment << "]." << std::endl;
-      //}
-
-      // Figure out which way we are looking...
-      osg::Matrix cameraMatrix;
-      dtCore::Transformable::GetAbsoluteMatrix(GetPhysicsGameActorProxy().
-         GetGameManager()->GetApplication().GetCamera()->GetOSGNode(), cameraMatrix);
-      osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(cameraMatrix, 1);
-      osg::Vec3 rightDir = dtUtil::MatrixUtil::GetRow3(cameraMatrix, 0);
+      // Get the forward vector and the perpendicular side (right) vector. 
+      dtGame::GameActor* actor = NULL;
+      GetPhysicsGameActorProxy().GetActor( actor );
+      osg::Matrix matrix;
+      dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
+      osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(matrix, 1);
+      osg::Vec3 rightDir = dtUtil::MatrixUtil::GetRow3(matrix, 0);
       lookDir[2] = 0.0f; // remove Z component so we don't fly...
       lookDir.normalize();
       rightDir[2] = 0.0f; // remove Z component so we don't fly...
@@ -148,20 +137,20 @@ namespace DriverDemo
          physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
       }
       // REVERSE
-      else if (accelReverse)
+      else if(accelReverse)
       {
          NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
          physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
       }
 
       // LEFT
-      if (accelLeft)
+      if(accelLeft)
       {
          NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
          physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
       }
       // RIGHT
-      else if (accelRight)
+      else if(accelRight)
       {
          NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
          physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
@@ -169,19 +158,18 @@ namespace DriverDemo
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
       // prevents you from achieving unheard of velocities.
-      //NxVec3 velocity = physicsObject->getLinearVelocity();
       float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
-      if (speed > 0.001)
+      if(speed > 0.001)
       {
          float windResistance = speed * testCorrection;
 
          // If we aren't doing any movement, then add an extra flavor in there so that we 'coast' to a stop.
          // The slower we're going, the more the 'flavor' boost kicks in, else we get linearly less slowdown.
          // Don't slow down if we're in the air dummy!
-         if (!accelForward && !accelReverse && !accelLeft && !accelRight &&
+         if(!accelForward && !accelReverse && !accelLeft && !accelRight &&
             distanceToHit < (mGroundClearance + GetSphereRadius()))
          {
-            if (speed < 4.0f) // if we're almost stopped, shut us down fast
+            if(speed < 4.0f) // if we're almost stopped, shut us down fast
                windResistance *= 4.0f * (GetVehicleMaxForwardMPH() + 0.2f)/ (speed + 0.2f);
             else
                windResistance *= (GetVehicleMaxForwardMPH() + 0.2f)/ (speed + 0.2f);
@@ -190,32 +178,31 @@ namespace DriverDemo
          // Slow us down! Wind or coast effect
          physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
       }
- // test
-      // HACK STUFF
-      dtCore::Keyboard *keyboard = GetPhysicsGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
+
+      // TEST HACK STUFF
+      /*dtCore::Keyboard *keyboard = GetPhysicsGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
       if(keyboard == NULL)
          return;
-      if (keyboard->GetKeyState('q'))
+      if(keyboard->GetKeyState('q'))
       {
          testJumpBoost *= (1.0f - 0.3 * deltaTime);
          std::cout << "Jump Boost[" << testJumpBoost << "]." << std::endl;
       }
-      if (keyboard->GetKeyState('e'))
+      if(keyboard->GetKeyState('e'))
       {
          testJumpBoost *= (1.0f + 0.3 * deltaTime);
          std::cout << "Jump Boost[" << testJumpBoost << "]." << std::endl;
       }
-      if (keyboard->GetKeyState('y'))
+      if(keyboard->GetKeyState('y'))
       {
          mForceBoostFactor *= (1.0f - 0.3 * deltaTime);
          std::cout << "Force Boost[" << mForceBoostFactor << "]." << std::endl;
       }
-      if (keyboard->GetKeyState('u'))
+      if(keyboard->GetKeyState('u'))
       {
          mForceBoostFactor *= (1.0f + 0.3 * deltaTime);
          std::cout << "Force Boost[" << mForceBoostFactor << "]." << std::endl;
-      }
-
+      }*/
    }
 
    ////////////////////////////////////////////////////////////////////////////////
