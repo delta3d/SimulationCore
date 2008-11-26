@@ -347,6 +347,9 @@ namespace DriverDemo
             Mouse Left Btn - Fire\n\
             Mouse + Right Btn - Turn ring mount\n\
             H - Cycle weapon\n\
+            Space - Jump\n\
+            R - Reset Vehicle\n\
+            T - Drop Hover Target\n\
             \n\
             F1 - Help\n\
             \n\

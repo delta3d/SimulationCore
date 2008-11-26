@@ -368,7 +368,7 @@ void NxAgeiaMunitionsPSysActor::AddParticle()
          if( NULL != node && node->getNumChildren() == 0 )
          {
             dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
-               = new SimCore::Actors::VolumetricLine( 15.0f, 0.5f, "VolumetricLines", "TracerGroup" );
+               = new SimCore::Actors::VolumetricLine( 10.0f, 0.5f, "VolumetricLines", "TracerGroup" );
             _particle->mObj->AddChild( line.get() );
 
             node = (line->GetMatrixNode());

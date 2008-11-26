@@ -72,7 +72,7 @@ namespace DriverDemo
    // made into properties on the actor.
    static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
-   static float testJumpBoost = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
+   static float testJumpBoost = 3.0 * -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
 
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)

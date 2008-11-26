@@ -215,7 +215,7 @@ namespace DriverDemo
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
          {
             GetHoverPhysicsHelper()->DoJump(deltaTime);
-            mTimeTillJumpReady = 0.3f;
+            mTimeTillJumpReady = 3.0f;
          }
       }
    }
