@@ -117,18 +117,20 @@ namespace DriverDemo
    //       another actor that will allow these to be set by an xml file.
    //       For now, the referenced files are place holders for the real
    //       sound effects to be used.
-   const std::string DriverInputComponent::SOUND_TURRET_TURN_START("Sounds/RAW_SFX_Turrent_Slide.wav");
-   const std::string DriverInputComponent::SOUND_TURRET_TURN("Sounds/RAW_SFX_Turrent_Slide.wav");
-   const std::string DriverInputComponent::SOUND_TURRET_TURN_END("Sounds/RAW_SFX_Turrent_Slide.wav");
-   //const std::string DriverInputComponent::SOUND_AMBIENT("Sounds/Ambient_Crickets.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN_START("Sounds/RAW_SFX_Turrent_Slide.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN("Sounds/RAW_SFX_Turrent_Slide.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN_END("Sounds/RAW_SFX_Turrent_Slide.wav");
+
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_WEAPON_PIVOT("dof_gun_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_RINGMOUNT("dof_turret_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_01("dof_view_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_02("dof_view_02");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_DEFAULT(DriverInputComponent::DOF_NAME_VIEW_02.Get());
    
    ////////////////////////////////////////////////////////////////////////////////
    DriverInputComponent::DriverInputComponent(const std::string& name) :
       BaseClass(name),
-      DOF_NAME_WEAPON_PIVOT("dof_gun_01"),//"dof_gun_attach"),
-      DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01"),
-      DOF_NAME_RINGMOUNT("dof_turret_01"),
-      DOF_NAME_RINGMOUNT_SEAT("dof_view_02"),
       mIsConnected(false),
       mUsePhysicsDemoMode(false),
       mHorizontalFOV(60.0f),
@@ -140,6 +142,7 @@ namespace DriverDemo
       mMotionModelsEnabled(false),
       mPlayerAttached(false),
       mLastDamageState(&SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
+      mViewNodeName(DOF_NAME_VIEW_DEFAULT.Get()),
       mEnvUpdateTime(0.0f),
       mEnvUpdateAttempts(2)
    {
@@ -393,6 +396,12 @@ namespace DriverDemo
          case 't':
          {
             CreateTarget();
+         }
+         break;
+
+         case '.':
+         {
+            ToggleView();
          }
          break;
 
@@ -866,10 +875,7 @@ namespace DriverDemo
          // this is the GUNNER application
          // Attach the player root transformable to the vehicle's ring's seat DOF
          // rather than directly to the vehicle itself.
-         if( mDOFSeat.valid() )
-         {
-            mDOFSeat->addChild( mSeat->GetOSGNode() );
-         }
+         AttachToView( DOF_NAME_VIEW_DEFAULT.Get() );
    
          // Let this vehicle know it has a driver if the player is in driver mode.
          mVehicle->SetHasDriver( true );
@@ -949,10 +955,8 @@ namespace DriverDemo
          //     or the new mode set prior to this function being called; thus remove
          //     from both possible parents.
          mVehicle->RemoveChild( mSeat.get() );
-         if( mDOFSeat.valid() )
-         {
-            mDOFSeat->removeChild( mSeat->GetOSGNode() );
-         }
+
+         AttachToView( "" );
    
          // Reset the original orientations of the vehicle's DOFs.
          if( mDOFRing.valid() )
@@ -1382,10 +1386,10 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::GetVehicleDOFs( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
-      mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT_SEAT);
-      mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT);
-      mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT);
-      mDOFFirePoint = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_FIRE_POINT);
+      mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(mViewNodeName);
+      mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT.Get());
+      mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT.Get());
+      mDOFFirePoint = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_FIRE_POINT.Get());
    }
    
    ////////////////////////////////////////////////////////////////////////////////
@@ -1448,6 +1452,33 @@ namespace DriverDemo
       }
       else
          LOG_ERROR( "Failure creating Hover Target actor." );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::ToggleView()
+   {
+      AttachToView( mViewNodeName == DOF_NAME_VIEW_01.Get()
+         ? DOF_NAME_VIEW_02.Get() : DOF_NAME_VIEW_01.Get() );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::AttachToView( const std::string& viewNodeName )
+   {
+      if( mVehicle.valid() )
+      {
+         if( mDOFSeat.valid() )
+         {
+            mDOFSeat->removeChild( mSeat->GetOSGNode() );
+         }
+
+         mDOFSeat = mVehicle->GetNodeCollector()->GetDOFTransform(mViewNodeName);
+
+         if( mDOFSeat.valid() )
+         {
+            mViewNodeName = viewNodeName;
+            mDOFSeat->addChild( mSeat->GetOSGNode() );
+         }
+      }
    }
 
 }
