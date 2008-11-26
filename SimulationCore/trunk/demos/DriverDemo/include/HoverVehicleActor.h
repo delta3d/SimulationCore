@@ -36,6 +36,11 @@ namespace dtAudio
    class Sound;
 }
 
+namespace dtGame
+{
+   class Message;
+}
+
 namespace DriverDemo
 {
    class VehicleShield;
@@ -47,6 +52,8 @@ namespace DriverDemo
    class DRIVER_DEMO_EXPORT HoverVehicleActor : public SimCore::Actors::BasePhysicsVehicleActor
    {
       public:
+         typedef SimCore::Actors::BasePhysicsVehicleActor BaseClass;
+
          /// Constructor
          HoverVehicleActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
@@ -56,9 +63,6 @@ namespace DriverDemo
       
       // INHERITED PUBLIC
       public:
-         //virtual void TickLocal(const dtGame::Message &tickMessage);
-
-         //virtual void TickRemote(const dtGame::Message &tickMessage);
 
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -78,6 +82,9 @@ namespace DriverDemo
 
          /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
          virtual void AgeiaPostPhysicsUpdate();
+
+         virtual void TickLocal( const dtGame::Message& tickMessage );
+         virtual void TickRemote( const dtGame::Message& tickMessage );
 
 
       // PUBLIC METHODS
