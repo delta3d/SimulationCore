@@ -1206,7 +1206,12 @@ namespace DriverDemo
          // Offset the weapon
          xform.SetTranslation( 0.0, 0.0, 0.0 );
          mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
+
+         // Set the owner
+         if (mVehicle.valid())
+            mWeapon->SetOwner(&mVehicle->GetGameActorProxy());
       }
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////
