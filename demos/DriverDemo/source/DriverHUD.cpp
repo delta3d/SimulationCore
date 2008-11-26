@@ -350,6 +350,7 @@ namespace DriverDemo
             Space - Jump\n\
             R - Reset Vehicle\n\
             T - Drop Hover Target\n\
+            . - Toggle View Mode\
             \n\
             F1 - Help\n\
             \n\
