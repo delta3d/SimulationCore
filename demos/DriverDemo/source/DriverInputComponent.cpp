@@ -128,7 +128,7 @@ namespace DriverDemo
       DOF_NAME_WEAPON_PIVOT("dof_gun_01"),//"dof_gun_attach"),
       DOF_NAME_WEAPON_STEM("dof_gun_01"),
       DOF_NAME_RINGMOUNT("dof_turret_01"),
-      DOF_NAME_RINGMOUNT_SEAT("dof_seat_gunner"),
+      DOF_NAME_RINGMOUNT_SEAT("dof_view_01"),
       mIsConnected(false),
       mUsePhysicsDemoMode(false),
       mHorizontalFOV(60.0f),
