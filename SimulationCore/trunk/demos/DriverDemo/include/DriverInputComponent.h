@@ -145,7 +145,10 @@ namespace DriverDemo
          // sets the mVehicle, used through gameappcomponent
          void SetCurrentVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle) {mVehicle = &vehicle;}
    
-         // This function is called by Attach to vehicle when the
+         // Determines if the vehicle can be "turned on a dime".
+         bool IsVehiclePivotable( const SimCore::Actors::BasePhysicsVehicleActor& vehicle ) const;
+
+            // This function is called by Attach to vehicle when the
          // application is in GUNNER mode.
          // This does the dirty work of setting up the ring mount DOF
          // with a motion model.
