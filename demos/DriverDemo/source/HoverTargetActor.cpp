@@ -101,6 +101,8 @@ namespace DriverDemo
          // one frame in the wrong place. Very ugly.
          ourTransform.SetTranslation(startVec[0], startVec[1], startVec[2]);
          SetTransform(ourTransform);
+
+         SetEntityType("HoverTarget");
       }
       else // Remote -just grab position
       {

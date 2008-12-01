@@ -6,6 +6,8 @@
         <Imageset Name="RoundedRect" Filename="CEGUI/imagesets/RoundedRect.imageset" />
         <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
         <Imageset Name="WindowsLook" Filename="CEGUI/imagesets/WindowsLook.imageset" />
+        <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
+        <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
 
 	<LookNFeel Filename="CEGUI/looknfeel/WindowsLook.looknfeel" />
 	<LookNFeel Filename="CEGUI/looknfeel/Label.looknfeel" />

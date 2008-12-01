@@ -12,6 +12,7 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <DriverActorRegistry.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 
 #ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
@@ -28,9 +29,11 @@ namespace DriverDemo
 {
 
    RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
-      new dtDAL::ActorType("HoverActor", "DriverDemo", "A floaty drivable vehicle for Driver Demo"));
+      new dtDAL::ActorType("HoverActor", "DriverDemo", "A floaty drivable vehicle for Driver Demo", 
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
    RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE(
-      new dtDAL::ActorType("HoverTargetActor", "DriverDemo", "A floaty shootable target object for Driver Demo"));
+      new dtDAL::ActorType("HoverTargetActor", "DriverDemo", "A floaty shootable target object for Driver Demo",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" DRIVER_DEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()

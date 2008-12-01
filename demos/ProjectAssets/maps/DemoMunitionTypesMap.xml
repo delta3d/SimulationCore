@@ -325,7 +325,7 @@
       </property>
       <property>
         <name>Smoke Life Time</name>
-        <float>10</float>
+        <float>3</float>
       </property>
       <property>
         <name>Tracer Shader Name</name>
@@ -504,7 +504,7 @@
       </property>
       <property>
         <name>Smoke Life Time</name>
-        <float>10</float>
+        <float>5</float>
       </property>
       <property>
         <name>Tracer Shader Name</name>

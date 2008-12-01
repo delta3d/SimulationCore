@@ -9,6 +9,8 @@
    <Imageset Name="KeyLabels" Filename="CEGUI/imagesets/KeyLabels.imageset" />
    <Imageset Name="MeterBars" Filename="CEGUI/imagesets/MeterBars.imageset" />
    <Imageset Name="Toolbar" Filename="CEGUI/imagesets/Toolbar.imageset" />
+   <Imageset Name="Binoculars4.3" Filename="CEGUI/imagesets/Binoculars4.3.imageset" />
+   <Imageset Name="Binoculars8.5" Filename="CEGUI/imagesets/Binoculars8.5.imageset" />
 
    <!-- FONTS -->
    <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />

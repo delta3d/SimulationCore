@@ -550,12 +550,14 @@ namespace SimCore
       {
          mDRAlgorithm = &newAlgorithm;
          //if the entity is destroyed, it should be set to static unless DR is turned off altogether.
-         if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED
-         &&  newAlgorithm != dtGame::DeadReckoningAlgorithm::NONE)
+         //Removed this check - it was based on a false assumption that dead things don't move.  A falling, burning plane DOES move. Ships sink. 
+         /*if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED
+             && newAlgorithm != dtGame::DeadReckoningAlgorithm::NONE)
          {
             mDeadReckoningHelper->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
          }
          else
+         */
             mDeadReckoningHelper->SetDeadReckoningAlgorithm(newAlgorithm);
       }
 
