@@ -214,7 +214,9 @@ namespace SimCore
          }
 
          // execute instant fire
-         if( ! mTriggerHeld && hold )
+         // Removed this - Fire() accounts for how long it's been.  By resetting the timer, it 
+         // allows you to 'click' fast fire.
+         /*if( ! mTriggerHeld && hold )
          {
             // Set time variable to allow an instant fire
             mTriggerTime = mFireRate;
@@ -224,7 +226,8 @@ namespace SimCore
          else
          {
             mTriggerHeld = hold;
-         }
+         }*/
+         mTriggerHeld = hold;
          
       }
 

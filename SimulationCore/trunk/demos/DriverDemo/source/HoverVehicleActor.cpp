@@ -97,6 +97,8 @@ namespace DriverDemo
          GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT | 
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          //GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
+
+         SetEntityType("HoverTank");
       }
       //else // -- Flags set in the base class.
       //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
