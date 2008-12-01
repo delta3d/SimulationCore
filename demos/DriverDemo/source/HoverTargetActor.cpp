@@ -103,6 +103,11 @@ namespace DriverDemo
          SetTransform(ourTransform);
 
          SetEntityType("HoverTarget");
+
+         // Make a semi-unique name.
+         static int targetCounter = 0;
+         targetCounter ++;
+         SetName("Target " + dtUtil::ToString(targetCounter));
       }
       else // Remote -just grab position
       {

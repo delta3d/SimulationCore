@@ -263,6 +263,14 @@
                 <gameDataType>BOOLEAN</gameDataType>
                 <default>false</default>
             </attrToProp>
+            <attrToProp>
+                <hlaName>MAPPING_NAME</hlaName>
+                <hlaDataType>STRING_TYPE</hlaDataType>       
+                <hlaRequired>false</hlaRequired>
+                <gameName>Object Mapping Name</gameName>
+                <gameDataType>STRING</gameDataType> 
+                <default>false</default>
+            </attrToProp>
         </object>
 
         <!-- ****************************************************** -->
