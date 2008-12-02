@@ -136,6 +136,9 @@ namespace SimCore
          /*virtual*/ void TickLocal(const dtGame::Message& tickMessage);
          /*virtual*/ void OnEnteredWorld();
 
+         void ActorUpdate(const dtGame::Message& updateMessage);
+         void ActorCreated(const dtGame::Message& updateMessage);
+
          void SetSize(const osg::Vec2& pSize);
          osg::Vec2 GetSize() const;
 
@@ -204,6 +207,8 @@ namespace SimCore
          // This method populates mProcessedWaveData as well as sets mCameraFoVScalar.
          void DetermineCurrentWaveSet(dtCore::Camera& pCamera);
 
+         void OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight);
+
       private:
 
 
@@ -263,6 +268,8 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_RESOLUTION;
          static const dtUtil::RefString PROPERTY_CHOPPINESS;
          static const dtUtil::RefString INVOKABLE_MAP_LOADED;
+         static const dtUtil::RefString INVOKABLE_ACTOR_CREATED; 
+         static const dtUtil::RefString INVOKABLE_ACTOR_UPDATE;
          
 
          WaterGridActorProxy();
