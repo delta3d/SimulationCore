@@ -34,7 +34,7 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/invokable.h>
-
+#include <dtGame/actorupdatemessage.h>
 #include <cmath>
 
 #include <dtCore/shadermanager.h>
@@ -72,7 +72,8 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Actors/EphemerisEnvironmentActor.h>
-
+#include <SimCore/Actors/OceanDataActor.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 
 
 class UpdateReflectionCameraCallback : public osg::NodeCallback
@@ -1502,6 +1503,64 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::ActorUpdate(const dtGame::Message& msg)
+      {
+        const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(msg);
+        dtGame::GameActorProxy* proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+        
+        OceanDataActor* oceanDataActor = NULL;
+        proxy->GetActor(oceanDataActor);
+
+        if(oceanDataActor != NULL)
+        {
+           int seaState = oceanDataActor->GetSeaState();
+           float waveDirection = oceanDataActor->GetWaveDirectionPrimary();
+           float waveHeight = oceanDataActor->GetWaveHeightSignificant();
+
+           double lat = oceanDataActor->GetLatitude();
+           double llong = oceanDataActor->GetLongitude();
+
+           OceanDataUpdate(lat, llong, seaState, waveDirection, waveHeight);
+        }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::ActorCreated(const dtGame::Message& msg)
+      {
+         dtGame::GameActorProxy* proxy = NULL;
+         proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(msg.GetAboutActorId());
+
+         if(proxy != NULL && proxy->GetActorType() == *EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE)
+         {
+            GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, msg.GetAboutActorId(), WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight)
+      {
+         mModForDirectionInDegrees = waveDir;
+         
+         if(seaState < 2)
+         {
+            SetChoppiness(ChoppinessSettings::CHOP_FLAT);
+         }
+         else if(seaState < 4)
+         {
+            SetChoppiness(ChoppinessSettings::CHOP_MILD);
+         }
+         else if(seaState < 6)
+         {
+            SetChoppiness(ChoppinessSettings::CHOP_MED);
+         }
+         else
+         {
+            SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //WATER GRID PROXY
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        const dtUtil::RefString WaterGridActorProxy::CLASSNAME("WaterGridActor");
@@ -1509,6 +1568,8 @@ namespace SimCore
        const dtUtil::RefString WaterGridActorProxy::PROPERTY_RESOLUTION("Mesh Resolution");
        const dtUtil::RefString WaterGridActorProxy::PROPERTY_CHOPPINESS("Choppiness");
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_MAP_LOADED("Map Loaded");
+       const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_CREATED("Actor Created");
+       const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
 
       WaterGridActorProxy::WaterGridActorProxy()
       {
@@ -1537,6 +1598,12 @@ namespace SimCore
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
             dtDAL::MakeFunctor(wga, &WaterGridActor::Init)));
+
+         AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_UPDATE, 
+            dtDAL::MakeFunctor(wga, &WaterGridActor::ActorUpdate)));
+
+         AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_CREATED, 
+            dtDAL::MakeFunctor(wga, &WaterGridActor::ActorCreated)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1549,6 +1616,9 @@ namespace SimCore
 
          RegisterForMessages(dtGame::MessageType::INFO_MAP_LOADED,
             INVOKABLE_MAP_LOADED);
+
+         RegisterForMessages(dtGame::MessageType::INFO_ACTOR_CREATED, 
+            INVOKABLE_ACTOR_CREATED);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
