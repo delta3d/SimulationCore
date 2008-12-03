@@ -139,9 +139,11 @@ namespace SimCore
                   entityParent->SetIsPlayerAttached(false);
                   entityParent->SetDrawingModel(true);
                }
+
+               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, entityParent->GetUniqueId(), "Detach");
+               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
             }
-            GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, entityParent->GetUniqueId(), "Detach");
-            GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
+
             SetDeadReckoningAlgorithm(*mOldDRA);
             GetParent()->RemoveChild(this);
          }
