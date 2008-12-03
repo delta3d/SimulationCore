@@ -12,8 +12,9 @@ varying vec4 camPos;
 
 float deepWaterScalar = 0.5;
 float viewDistance = 10.0;
-vec3 waterColor = vec3(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0); 
-vec3 deepWaterColor = deepWaterScalar * waterColor;
+
+uniform vec4 WaterColor;
+vec4 deepWaterColor = deepWaterScalar * WaterColor;
 
 vec3 GetWaterColorAtDepth(float);
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
@@ -31,7 +32,7 @@ void main (void)
 
    
    vec3 color = lightContribFinal * GetWaterColorAtDepth(camPos.z);
-   color = mix(color, deepWaterColor, 0.5 * depthScalar);
+   color = mix(color, deepWaterColor.xyz, 0.5 * depthScalar);
 
    if(worldSpacePos.z < WaterHeight)
    {

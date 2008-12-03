@@ -4,6 +4,7 @@ uniform float diffuseRadiance;
 uniform float ambientRadiance;
 uniform float NVG_Enable;
 uniform float WaterHeight;// = 443.0;
+uniform vec4 WaterColor;
 
 
 varying vec3 vNormal;
@@ -19,8 +20,7 @@ void dynamic_light_fragment(vec3, vec3, out vec3);
 vec3 GetWaterColorAtDepth(float);
 float GetHeightOnWaterSuface(vec2);
 
-vec3 waterColor = vec3(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0); 
-vec3 deepWaterColor = 0.74 * waterColor;  
+vec3 deepWaterColor = 0.74 * WaterColor;  
 
 
 void main(void)
