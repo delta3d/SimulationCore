@@ -129,6 +129,7 @@ namespace SimCore
          static const dtUtil::RefString UNIFORM_WATER_HEIGHT;
          static const dtUtil::RefString UNIFORM_CENTER_OFFSET;
          static const dtUtil::RefString UNIFORM_WAVE_DIRECTION;
+         static const dtUtil::RefString UNIFORM_WATER_COLOR;
 
       public:
          WaterGridActor(WaterGridActorProxy& proxy);
@@ -139,14 +140,11 @@ namespace SimCore
          void ActorUpdate(const dtGame::Message& updateMessage);
          void ActorCreated(const dtGame::Message& updateMessage);
 
-         void SetSize(const osg::Vec2& pSize);
-         osg::Vec2 GetSize() const;
+         void SetWaterColor(const osg::Vec4& color);
+         osg::Vec4 GetWaterColor() const;
 
          void SetChoppiness(WaterGridActor::ChoppinessSettings &choppiness);
          WaterGridActor::ChoppinessSettings& GetChoppiness() const;
-
-         void SetResolution(const osg::Vec2& pRes);
-         osg::Vec2 GetResolution() const;
        
          void AddWave(Wave& pWave);
          void AddTextureWave(const TextureWave& pWave);
@@ -187,7 +185,6 @@ namespace SimCore
          void CreateGeometry();
          void UpdateWaveUniforms(dtCore::Camera& pCamera);
          osg::Vec3 GetPosition();
-         osg::Geometry* BuildUniformGrid();
          osg::Geometry* BuildRadialGrid();
          osg::Node* BuildSubmergedGeometry();
          void CreateWaveTexture();
@@ -210,30 +207,12 @@ namespace SimCore
          void OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight);
 
       private:
-
-
-         osg::Vec2 mSize;
-         osg::Vec2 mResolution;
-         osg::Vec3 mWater;
          
          float     mElapsedTime;
          float     mDeltaTime;
          bool      mRenderWaveTexture, mWireframe;
          float     mComputedRadialDistance;
          float     mTextureWaveAmpOverLength;
-
-         dtCore::RefPtr<osg::Camera> mWaveCamera;
-         dtCore::RefPtr<osg::Camera> mWaveCameraScreen;
-         dtCore::RefPtr<osg::Camera> mReflectionCamera;
-         dtCore::RefPtr<osg::Geometry> mGeometry;
-         dtCore::RefPtr<osg::Geode>	   mGeode;
-
-         dtCore::RefPtr<osg::Texture2D> mReflectionTexture;
-         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
-         dtCore::RefPtr<osg::Texture2D> mWaveTexture;
-
-         WaveArray mWaves;
-         TextureWaveArray mTextureWaves;
 
          // Modulation of the base wave structures.
          float mModForWaveLength;
@@ -251,9 +230,24 @@ namespace SimCore
          // Order is: waveLength, speed, amp, freq, steepness, UNUSED, dirX, dirY
          float mProcessedWaveData[MAX_WAVES][8];
 
-         ChoppinessSettings *mChoppinessEnum;
-
+         osg::Vec4 mWaterColor;
          osg::Vec3 mLastCameraOffsetPos; 
+
+         ChoppinessSettings* mChoppinessEnum;
+
+         dtCore::RefPtr<osg::Camera> mWaveCamera;
+         dtCore::RefPtr<osg::Camera> mWaveCameraScreen;
+         dtCore::RefPtr<osg::Camera> mReflectionCamera;
+         dtCore::RefPtr<osg::Geometry> mGeometry;
+         dtCore::RefPtr<osg::Geode>	   mGeode;
+
+         dtCore::RefPtr<osg::Texture2D> mReflectionTexture;
+         dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
+         dtCore::RefPtr<osg::Texture2D> mWaveTexture;
+         dtCore::ObserverPtr<dtGame::GameActorProxy> mOceanDataProxy; 
+
+         WaveArray mWaves;
+         TextureWaveArray mTextureWaves;
       };
 
 
@@ -264,9 +258,8 @@ namespace SimCore
          typedef SimCore::Actors::BaseWaterActorProxy BaseClass;
          
          static const dtUtil::RefString CLASSNAME;
-         static const dtUtil::RefString PROPERTY_SIZE;
-         static const dtUtil::RefString PROPERTY_RESOLUTION;
          static const dtUtil::RefString PROPERTY_CHOPPINESS;
+         static const dtUtil::RefString PROPERTY_WATER_COLOR;
          static const dtUtil::RefString INVOKABLE_MAP_LOADED;
          static const dtUtil::RefString INVOKABLE_ACTOR_CREATED; 
          static const dtUtil::RefString INVOKABLE_ACTOR_UPDATE;

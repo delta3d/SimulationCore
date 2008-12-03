@@ -30,6 +30,7 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 
+
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
@@ -181,6 +182,7 @@ namespace SimCore
       const dtUtil::RefString WaterGridActor::UNIFORM_WATER_HEIGHT("WaterHeight");
       const dtUtil::RefString WaterGridActor::UNIFORM_CENTER_OFFSET("cameraRecenter");
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_DIRECTION("waveDirection");
+      const dtUtil::RefString WaterGridActor::UNIFORM_WATER_COLOR("WaterColor");
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,9 +236,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       WaterGridActor::WaterGridActor(WaterGridActorProxy& proxy)
           : BaseClass(proxy)
-          , mSize(100.0f, 100.0f)
-          , mResolution(20.0f, 20.0f)
-          , mWater()
+          , mWaterColor(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0, 1.0)
           , mElapsedTime(0.0f)
           , mDeltaTime(0.0f)
           , mRenderWaveTexture(false)
@@ -290,27 +290,15 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void WaterGridActor::SetSize( const osg::Vec2& pSize )
+      void WaterGridActor::SetWaterColor( const osg::Vec4& color )
       {
-         mSize = pSize;
+         mWaterColor = color;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec2 WaterGridActor::GetSize() const
+      osg::Vec4 WaterGridActor::GetWaterColor() const
       {
-         return mSize;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void WaterGridActor::SetResolution( const osg::Vec2& pRes )
-      {
-         mResolution = pRes;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec2 WaterGridActor::GetResolution() const
-      {
-         return mResolution;
+         return mWaterColor;
       }
 
 
@@ -543,37 +531,6 @@ namespace SimCore
          AddWave(w);  // 26
 
 
-
-         //const float kArray[] = {1.33, 1.76, 2.0, 2.246,
-         //   1.0, 1.71, 1.0, 1.75,
-         //   1.5, 1.0, 1.0, 2.0,
-         //   2.2, 2.0, 1.113, 1.0,
-         //   1.33, 1.76, 3.0, 2.246,
-         //   1.0, 1.71, 1.0, 1.75,
-         //   1.5, 1.0, 1.0, 2.0,
-         //   1.9, 2.0, 1.113, 1.0};
-
-         //const float waveLengthArray[] = {0.218, 0.1535, 0.16186, 0.24,
-         //   0.19, 0.186844, 0.23437, 0.1805,
-         //   0.217, 0.2565, 0.17135 , 0.191,
-         //   0.185, 0.23917, 0.215, .248,
-         //   0.1788, 0.1835, 0.18186, 0.29,
-         //   0.22, 0.246844, 0.27437, 0.1805,
-         //   0.197, 0.2565, 0.2735 , 0.291,
-         //   0.214, 0.19917, 0.215, .248};
-
-         //const float waveSpeedArray[] = {0.0953, 0.083839, -0.0811, 0.08221,
-         //   -0.11497, 0.143213, 0.14571, 0.091181,
-
-         //   0.08473, 0.1331, -0.1731, 0.1021,
-         //   0.121497, 0.1313, 0.14571, 0.1181,
-         //   -0.1753, 0.09839, -0.1311, 0.09821,
-         //   0.09497, 0.093213, 0.13571, 0.121181,
-
-         //   -0.10473, 0.0931, 0.13131, -0.0921,
-         //   0.11497, -0.1313, 0.12571, -0.0931};  
-
-
          const float kArray[] = {1.33, 1.76, 3.0, 2.246,
                                        1.0, 3.71, 1.0, 1.75,
                                        1.5, 1.0, 1.0, 2.0,
@@ -783,90 +740,13 @@ namespace SimCore
             }
 
       }
-   }
-
-      osg::Geometry* WaterGridActor::BuildUniformGrid()
-      {
-         osg::Geometry* geometry = new osg::Geometry();
-
-         //the resolution is the number of verts to span the size
-         //so we must at least have 2
-         if(mResolution[0] < 2.0f) mResolution[0] = 2.0f;
-         if(mResolution[1] < 2.0f) mResolution[1] = 2.0f;
-
-         //since resolution must be an integer, we enforce this here
-         int resX = int(mResolution[0]);
-         int resY = int(mResolution[1]);
-         mResolution[0] = resX;
-         mResolution[1] = resY;
-
-         //calculate num verts and num indices
-         int numVerts = resX * resY;
-         int numIndices = (resX - 1) * (resY - 1) * 6;
-
-         //inc is the distance between the verts
-         osg::Vec2 inc;
-         inc[0] = mSize[0] / mResolution[0];
-         inc[1] = mSize[1] / mResolution[1];
-
-         // Our computed distance is half of the smaller of X or Y size.
-         mComputedRadialDistance = 0.5 * (dtUtil::Min(mSize[0], mSize[1]));
-         std::cout << "WaterGridActor - Max Grid Distance = " << mComputedRadialDistance << std::endl;
-
-         //used to center us at the origin
-         osg::Vec3 startPos(-1.0 * mSize[0] * 0.5, -1.0 * mSize[1] * 0.5, 0.0f);
-
-         //lets make the geometry
-         dtCore::RefPtr<osg::Vec3Array> pVerts = new osg::Vec3Array(numVerts);
-         dtCore::RefPtr<osg::Vec3Array> pNormals = new osg::Vec3Array(numVerts);
-         dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
-
-         for(int i = 0; i < resX; ++i)
-         {
-            for(int j = 0; j < resY; ++j)
-            {
-               osg::Vec3 p(i * inc[0], j * inc[1], 0.0f);
-               (*pVerts)[(i * resY) + j ].set(startPos + p);
-               (*pNormals)[(i * resY) + j ].set(0.0f, 0.0f, 1.0f);
-            }
-         }
-
-
-         int counter = 0;
-
-         for(int i = 0; i < resX - 1; ++i)
-         {
-            for(int j = 0; j < resY - 1; ++j)
-            {
-               (*pIndices)[counter] = (i * resX) + j;
-               (*pIndices)[counter + 1] = ((i + 1) * resX) + j;
-               (*pIndices)[counter + 2] = ((i + 1) * resX) + (j + 1);
-
-               (*pIndices)[counter + 3] = ((i + 1) * resX) + (j + 1);
-               (*pIndices)[counter + 4] = (i * resX) + (j + 1);
-               (*pIndices)[counter + 5] = (i * resX) + j;
-
-               counter += 6;
-            }
-         }
-
-
-         geometry->setVertexArray(pVerts.get());
-         geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
-         geometry->setNormalArray(pNormals.get());
-         geometry->setNormalIndices(pIndices.get());
-
-         geometry->setVertexIndices(pIndices.get());
-         geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, numIndices));
-         return geometry;
-      }
+   }     
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::CreateGeometry()
       {
          mGeode = new osg::Geode();
-         //mGeometry = BuildUniformGrid();
          mGeometry = BuildRadialGrid();
          mGeometry->setCullCallback(new WaterCullCallback());
 
@@ -983,6 +863,9 @@ namespace SimCore
          // Update the
          osg::Uniform* centerOffset = ss->getOrCreateUniform(UNIFORM_CENTER_OFFSET, osg::Uniform::FLOAT_VEC3);
          centerOffset->set(mLastCameraOffsetPos);
+
+         osg::Uniform* waterColor = ss->getOrCreateUniform(UNIFORM_WATER_COLOR, osg::Uniform::FLOAT_VEC4);
+         waterColor->set(mWaterColor);
 
 
          // Loop through the current list of waves and put them in the uniform
@@ -1528,12 +1411,16 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::ActorCreated(const dtGame::Message& msg)
       {
-         dtGame::GameActorProxy* proxy = NULL;
-         proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(msg.GetAboutActorId());
-
-         if(proxy != NULL && proxy->GetActorType() == *EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE)
+         if(!mOceanDataProxy.valid())
          {
-            GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, msg.GetAboutActorId(), WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE);
+            dtGame::GameActorProxy* proxy = NULL;
+            proxy = GetGameActorProxy().GetGameManager()->FindGameActorById(msg.GetAboutActorId());
+
+            if(proxy != NULL && proxy->GetActorType() == *EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE)
+            {
+               mOceanDataProxy = proxy;
+               GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, msg.GetAboutActorId(), WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE);
+            }
          }
       }
 
@@ -1564,9 +1451,8 @@ namespace SimCore
       //WATER GRID PROXY
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        const dtUtil::RefString WaterGridActorProxy::CLASSNAME("WaterGridActor");
-       const dtUtil::RefString WaterGridActorProxy::PROPERTY_SIZE("Water Size");
-       const dtUtil::RefString WaterGridActorProxy::PROPERTY_RESOLUTION("Mesh Resolution");
        const dtUtil::RefString WaterGridActorProxy::PROPERTY_CHOPPINESS("Choppiness");
+       const dtUtil::RefString WaterGridActorProxy::PROPERTY_WATER_COLOR("Water Color");
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_MAP_LOADED("Map Loaded");
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_CREATED("Actor Created");
        const dtUtil::RefString WaterGridActorProxy::INVOKABLE_ACTOR_UPDATE("Actor Updated");
@@ -1630,15 +1516,10 @@ namespace SimCore
 
          WaterGridActor& actor = static_cast<WaterGridActor&>(GetGameActor());
 
-         AddProperty(new dtDAL::Vec2ActorProperty(PROPERTY_SIZE,PROPERTY_SIZE,
-            dtDAL::MakeFunctor(actor,&WaterGridActor::SetSize),
-            dtDAL::MakeFunctorRet(actor,&WaterGridActor::GetSize),
-            "Sets the size of the water.", GROUPNAME));
-
-         AddProperty(new dtDAL::Vec2ActorProperty(PROPERTY_RESOLUTION, PROPERTY_RESOLUTION,
-            dtDAL::MakeFunctor(actor,&WaterGridActor::SetResolution),
-            dtDAL::MakeFunctorRet(actor,&WaterGridActor::GetResolution),
-            "Sets the number of verts per column contained by the mesh.", GROUPNAME));
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
+            dtDAL::MakeFunctor(actor,&WaterGridActor::SetWaterColor),
+            dtDAL::MakeFunctorRet(actor,&WaterGridActor::GetWaterColor),
+            "Sets the color of the water.", GROUPNAME));
       
          AddProperty(new dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>(PROPERTY_CHOPPINESS, PROPERTY_CHOPPINESS,
             dtDAL::MakeFunctor(actor, &WaterGridActor::SetChoppiness),

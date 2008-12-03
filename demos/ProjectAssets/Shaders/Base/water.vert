@@ -72,7 +72,7 @@ void main(void)
    pos.z = WaterHeight;
    vec2 offsetPos = pos.xy - cameraRecenter.xy;
 
-   //vertexNormal = vec3(0.0, 0.0, 0.0);
+   vertexNormal = vec3(0.0, 0.0, 0.0);
 
    //vec2 prevPos = pos.xy;
    float zModifier = 0.0;

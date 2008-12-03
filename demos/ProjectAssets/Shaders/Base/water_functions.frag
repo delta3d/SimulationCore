@@ -1,10 +1,10 @@
 
 uniform float WaterHeight;
+uniform vec4 WaterColor;
 
 const float cDeepWaterScalar = 0.74;
-const float cViewDistance = 100.0;
-const vec3 cWaterColor = vec3(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0); 
-const vec3 cDeepWaterColor = cDeepWaterScalar * cWaterColor;
+const float cViewDistance = 100.0; 
+const vec3 cDeepWaterColor = cDeepWaterScalar * WaterColor;
 
 
 vec3 GetWaterColorAtDepth(float pDepth)
@@ -13,7 +13,7 @@ vec3 GetWaterColorAtDepth(float pDepth)
    dist = clamp(dist, 0.0, cViewDistance);
    float depthScalar = (dist / cViewDistance);
 
-   vec3 color = mix(cWaterColor, cDeepWaterColor, depthScalar);
+   vec3 color = mix(WaterColor.xyz, cDeepWaterColor, depthScalar);
 
    return color;
 }
