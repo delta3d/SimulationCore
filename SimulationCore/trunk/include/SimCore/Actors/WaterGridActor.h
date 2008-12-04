@@ -221,7 +221,6 @@ namespace SimCore
          float mModForAmplitude; 
          float mModForDirectionInDegrees; 
          float mModForFOV;
-         //float mModForRotChoppinessInDegrees; // normally between 0.001 & 5.0
          float mCameraFoVScalar; // changes wave detail based on how much FoV is visible
 
          // Each frame (or as needed), the current set of waves is computed. This data 
