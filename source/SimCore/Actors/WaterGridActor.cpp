@@ -188,9 +188,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(WaterGridActor::ChoppinessSettings);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_FLAT("CHOP_FLAT", 1.0f, 0.0f, 1.0f, 1.0f, 15.0f);
+         CHOP_FLAT("CHOP_FLAT", 1.0f, 0.0f, 1.0f, 1.0f, 27.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
-         CHOP_MILD("CHOP_MILD", 1.33f, 1.51f, 1.0f, 1.0f, 35.0f);
+         CHOP_MILD("CHOP_MILD", 1.33f, 1.51f, 1.0f, 1.0f, 37.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
          CHOP_MED("CHOP_MED", 1.6f, 3.0f, 0.80f, 1.0f, 65.0f);
       WaterGridActor::ChoppinessSettings WaterGridActor::ChoppinessSettings::
@@ -252,7 +252,6 @@ namespace SimCore
           , mModForAmplitude(1.0f)
           , mModForDirectionInDegrees(0.0f)
           , mModForFOV(1.0f)
-          //, mModForRotChoppinessInDegrees(0.0001f)
           , mCameraFoVScalar(1.0f)
           , mChoppinessEnum(&WaterGridActor::ChoppinessSettings::CHOP_FLAT)
       {
