@@ -26,7 +26,7 @@ void main (void)
                                     
    
    float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z) / 5.0), 0.0, 8.0); 
-   float ampOverLength = 1.0 / (256.0 * resolutionScalar);
+   float ampOverLength = 1.0 / (512.0 * resolutionScalar);
 
    vec3 textureNormal = vec3(0.0, 0.0, 0.0);  
    for(int i = 0+CURWAVE; i < numWaves+CURWAVE; ++i)

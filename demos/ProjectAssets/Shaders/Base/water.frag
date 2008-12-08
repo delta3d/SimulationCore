@@ -78,13 +78,15 @@ void main (void)
    vec3 camPos = inverseViewMatrix[3].xyz;
    vec3 combinedPos = pos.xyz + vec3(camPos.x, camPos.y, 0.0);
    vec3 viewDir = normalize(combinedPos - camPos);
-   vec3 eye = normalize(-viewDir);
+   vec3 eye = -viewDir;
 
    /////////////////////////////////////////////////////////////////////////////
    ////This samples the wave texture in a way that will reduce tiling artifacts
    float fadeTransition = 0.05;
+   float distToFragment = length(pos.xy);
+   float textureScale = 15.0 + clamp((15.0 * floor(distToFragment / 15.0)), 0.0, 20.0);
    vec3 waveNormal = vec3(0.0, 0.0, 0.0); 
-   vec2 waveCoords = vec2(combinedPos.xy / 40.0);   
+   vec2 waveCoords = 0.025 * shaderVertexNormal.xy + vec2(combinedPos.xy / textureScale);   
    waveCoords = rotateTexCoords(waveCoords, waveDirection);
 
    float fadeAmt = edgeFade(fadeTransition, waveCoords);
@@ -98,7 +100,6 @@ void main (void)
    float fadeAmt3 = 1.0 - clamp(fadeAmt + fadeAmt2, 0.0, 1.0);
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
-
 
    waveNormal = normalize(waveNormal);
    vec3 normal = 0.5 * (normalize(shaderVertexNormal) + waveNormal);
