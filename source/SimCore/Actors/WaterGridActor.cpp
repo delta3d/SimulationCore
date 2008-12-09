@@ -1427,7 +1427,16 @@ namespace SimCore
       void WaterGridActor::OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight)
       {
          mModForDirectionInDegrees = waveDir;
+
+         //std::cout << "Ocean Update- Sea state: " << seaState << ", Wave Dir: " << waveDir << ", WaveHeight: " << waveHeight << ", Lat: " << lat << ", Long: " << llong << std::endl;
          
+         mModForAmplitude = waveHeight;
+         dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
+
+         mModForWaveLength = 1.0f + waveHeight * 0.3333334f;
+         dtUtil::Clamp(mModForWaveLength, 1.0f, 3.0f);
+
+
          if(seaState < 2)
          {
             SetChoppiness(ChoppinessSettings::CHOP_FLAT);
