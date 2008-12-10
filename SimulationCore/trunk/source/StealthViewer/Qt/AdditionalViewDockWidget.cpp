@@ -109,7 +109,13 @@ namespace StealthQt
       if (e->spontaneous())
       {
          e->ignore();
-         RequestClose();
+         if (QMessageBox::question(this, "Close",
+                  "Do you want to quit the Stealth Viewer?",
+                  QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+         {
+            StealthViewerData::GetInstance().GetMainWindow()->close();
+         }
+         //RequestClose();
       }
       else
       {
