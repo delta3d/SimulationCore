@@ -667,7 +667,7 @@ namespace SimCore
 
             if (floatArray.GetRows()== 0)
             {
-
+               return;
             }
 
             if (paramType == dtDAL::DataType::DOUBLE)
