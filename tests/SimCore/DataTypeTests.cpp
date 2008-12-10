@@ -33,8 +33,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <osg/Endian>
 #include <dtUtil/log.h>
-#include <SimCore/FloatArray2D.h>
-#include <SimCore/ShortArray2D.h>
+#include <dtUtil/exception.h>
+#include <SimCore/Array2DParser.h>
 #include <UnitTestMain.h>
 
 
@@ -46,46 +46,12 @@ class DataTypeTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(DataTypeTests);
 
-      CPPUNIT_TEST(TestShortArray2D);
-      CPPUNIT_TEST(TestFloatArray2D);
+      CPPUNIT_TEST(TestArray2DParser);
 
    CPPUNIT_TEST_SUITE_END();
 
 
    public:
-
-      //////////////////////////////////////////////////////////////////////////
-      template<class T_Data>
-      void GetValue( const char* buffer, T_Data& outValue )
-      {
-         size_t dataSize = sizeof(T_Data);
-         memcpy( &outValue, buffer, dataSize );
-
-         if( osg::getCpuByteOrder() == osg::LittleEndian )
-         {
-            osg::swapBytes( (char*)(&outValue), dataSize );
-         }
-      }
-
-      //////////////////////////////////////////////////////////////////////////
-      template<class T_Data>
-      void SetValue( const T_Data& value, char* buffer, size_t bufferSize )
-      {
-         size_t dataSize = sizeof(T_Data);
-         if( osg::getCpuByteOrder() == osg::LittleEndian )
-         {
-            T_Data tmp = value;
-            osg::swapBytes( (char*)(&tmp), dataSize );
-            memcpy( buffer, &tmp, dataSize );
-         }
-         else
-         {
-            for( size_t valueByte = 0; valueByte < dataSize && valueByte < bufferSize; ++valueByte )
-            {
-               buffer[valueByte] = ((const char*)(&value))[valueByte];
-            }
-         }
-      }
 
       //////////////////////////////////////////////////////////////////////////
       void setUp()
@@ -98,181 +64,51 @@ class DataTypeTests : public CPPUNIT_NS::TestFixture
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TestShortArray2D()
+      void TestArray2DParser()
       {
          try
          {
-            dtCore::RefPtr<SimCore::ShortArray2D> arrayA = new SimCore::ShortArray2D;
-            dtCore::RefPtr<SimCore::ShortArray2D> arrayB = new SimCore::ShortArray2D;
+            SimCore::Array2DParser<short> arrayA;
+            SimCore::Array2DParser<short> arrayB;
 
-            int rowSize = 5;
-            CPPUNIT_ASSERT( arrayA->GetRowSize() == 0 );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == 0 );
-            arrayA->SetRowSize( rowSize );
-            CPPUNIT_ASSERT( arrayA->GetRowSize() == rowSize );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == 0 );
+            CPPUNIT_ASSERT_EQUAL(size_t(0), arrayA.GetColumns());
+            arrayA.SetColumns(23);
+            CPPUNIT_ASSERT_EQUAL(size_t(23), arrayA.GetColumns());
+            arrayA.SetValue(37, 2, 19);
+            CPPUNIT_ASSERT_EQUAL(short(37), arrayA.GetValue(2, 19));
+            CPPUNIT_ASSERT_EQUAL(size_t(3), arrayA.GetRows());
+            CPPUNIT_ASSERT_EQUAL(size_t(3 * 23), arrayA.GetData().size());
+            //should do nothing since its past the column size.
+            arrayA.SetValue(37, 1, 96);
+            CPPUNIT_ASSERT_EQUAL(size_t(3 * 23), arrayA.GetData().size());
 
-            typedef std::vector<short> ArrayData;
-            ArrayData& dataA = arrayA->GetData();
-            ArrayData& dataB = arrayB->GetData();
+            arrayA.ClearData();
+            arrayA.SetColumns(2);
+            arrayA.SetValue(3, 0, 0);
+            arrayA.SetValue(4, 0, 1);
+            arrayA.SetValue(5, 1, 0);
+            arrayA.SetValue(6, 1, 1);
 
-            CPPUNIT_ASSERT( dataA.size() == 0 );
-            CPPUNIT_ASSERT( dataB.size() == 0 );
+            char encodeTo[100];
+            size_t actualSize = arrayA.Encode(encodeTo, sizeof(encodeTo));
+            CPPUNIT_ASSERT_EQUAL(arrayA.GetEncodedSize(), actualSize);
+            CPPUNIT_ASSERT_EQUAL((2 * sizeof(short)) + (4 * sizeof(short)), actualSize);
 
-            const size_t elementCount = size_t(rowSize * 3);
-            dataA.reserve( elementCount );
+            arrayB.Decode(encodeTo, actualSize);
+            CPPUNIT_ASSERT_EQUAL(arrayA.GetRows(), arrayB.GetRows());
+            CPPUNIT_ASSERT_EQUAL(arrayA.GetColumns(), arrayB.GetColumns());
+            CPPUNIT_ASSERT_EQUAL(arrayA.GetData().size(), arrayB.GetData().size());
 
-            short curValue = -2;
-            size_t element = 0;
-            for( ; element < elementCount; ++element )
+            for (unsigned i = 0; i < arrayA.GetData().size(); ++i)
             {
-               dataA.push_back( curValue );
-               curValue += 3;
-            }
-
-            CPPUNIT_ASSERT( dataA.size() == elementCount );
-            CPPUNIT_ASSERT( dataB.size() == 0 );
-
-
-
-            // Setup the test buffers.
-            // NOTE: 15 is the constant representation of elementCount.
-            char decodeBuffer[2+2+15*2]; // 2 unsigned shorts & 15 shorts
-            const size_t bufferSize = sizeof(decodeBuffer);
-            char encodeBuffer[2+2+15*2];
-            memset( decodeBuffer, 0, sizeof(decodeBuffer) );
-            memset( encodeBuffer, 0, sizeof(encodeBuffer) );
-
-            // Set the values for the decode buffer.
-            // --- Set the number of columns.
-            SetValue( (unsigned short)(rowSize), decodeBuffer, bufferSize );
-            int bufferOffset = 0;
-            bufferOffset += 2;
-            // --- Set the number of rows.
-            SetValue( (unsigned short)(int(elementCount)/rowSize), &decodeBuffer[bufferOffset], bufferSize-2 );
-            bufferOffset += 2;
-
-            // --- Set the array data.
-            element = 0;
-            for( ; element < elementCount; ++element, bufferOffset += 2 )
-            {
-               curValue = dataA[element];
-               SetValue( curValue, &decodeBuffer[bufferOffset], bufferSize - bufferOffset );
-            }
-
-            // Test Encode
-            arrayA->Encode( encodeBuffer );
-            CPPUNIT_ASSERT( memcmp( decodeBuffer, encodeBuffer, bufferSize ) == 0 );
-            CPPUNIT_ASSERT( arrayA->GetEncodeSize() == int(bufferSize) );
-
-            // Test Decode
-            arrayB->Decode( decodeBuffer );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == arrayA->GetRowSize() );
-            CPPUNIT_ASSERT( dataB.size() == dataA.size() );
-            CPPUNIT_ASSERT( dataB.size() == elementCount );
-            CPPUNIT_ASSERT( arrayB->GetEncodeSize() == int(bufferSize) );
-            element = 0;
-            for( ; element < elementCount; ++element )
-            {
-               std::ostringstream oss;
-               oss << "B Element[" << element << "] should match the element in A at the same index";
-               CPPUNIT_ASSERT_MESSAGE( oss.str(), dataA[element] == dataB[element] );
+               CPPUNIT_ASSERT_EQUAL(arrayA.GetData()[i], arrayB.GetData()[i]);
             }
          }
-         catch( std::exception& e )
+         catch(const dtUtil::Exception& e)
          {
-            LOG_ERROR( e.what() );
+            CPPUNIT_FAIL(e.ToString());
          }
       }
-
-      //////////////////////////////////////////////////////////////////////////
-      void TestFloatArray2D()
-      {
-         try
-         {
-            dtCore::RefPtr<SimCore::FloatArray2D> arrayA = new SimCore::FloatArray2D;
-            dtCore::RefPtr<SimCore::FloatArray2D> arrayB = new SimCore::FloatArray2D;
-
-            int rowSize = 5;
-            CPPUNIT_ASSERT( arrayA->GetRowSize() == 0 );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == 0 );
-            arrayA->SetRowSize( rowSize );
-            CPPUNIT_ASSERT( arrayA->GetRowSize() == rowSize );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == 0 );
-
-            typedef std::vector<float> ArrayData;
-            ArrayData& dataA = arrayA->GetData();
-            ArrayData& dataB = arrayB->GetData();
-
-            CPPUNIT_ASSERT( dataA.size() == 0 );
-            CPPUNIT_ASSERT( dataB.size() == 0 );
-
-            const size_t elementCount = size_t(rowSize * 3);
-            dataA.reserve( elementCount );
-
-            float curValue = -2.0f;
-            size_t element = 0;
-            for( ; element < elementCount; ++element )
-            {
-               dataA.push_back( curValue );
-               curValue += 3.5;
-            }
-
-            CPPUNIT_ASSERT( dataA.size() == elementCount );
-            CPPUNIT_ASSERT( dataB.size() == 0 );
-
-
-
-            // Setup the test buffers.
-            // NOTE: 15 is the constant representation of elementCount.
-            char decodeBuffer[2+2+15*4]; // 2 unsigned shorts & 15 floats
-            const size_t bufferSize = sizeof(decodeBuffer);
-            char encodeBuffer[2+2+15*4];
-            memset( decodeBuffer, 0, sizeof(decodeBuffer) );
-            memset( encodeBuffer, 0, sizeof(encodeBuffer) );
-
-            // Set the values for the decode buffer.
-            // --- Set the number of columns.
-            SetValue( (unsigned short)(rowSize), decodeBuffer, bufferSize );
-            int bufferOffset = 0;
-            bufferOffset += 2;
-            // --- Set the number of rows.
-            SetValue( (unsigned short)(int(elementCount)/rowSize), &decodeBuffer[bufferOffset], bufferSize-2 );
-            bufferOffset += 2;
-
-            // --- Set the array data.
-            element = 0;
-            for( ; element < elementCount; ++element, bufferOffset += 4 )
-            {
-               curValue = dataA[element];
-               SetValue( curValue, &decodeBuffer[bufferOffset], bufferSize - bufferOffset );
-            }
-
-            // Test Encode
-            arrayA->Encode( encodeBuffer );
-            CPPUNIT_ASSERT( memcmp( decodeBuffer, encodeBuffer, bufferSize ) == 0 );
-            CPPUNIT_ASSERT( arrayA->GetEncodeSize() == int(bufferSize) );
-
-            // Test Decode
-            arrayB->Decode( decodeBuffer );
-            CPPUNIT_ASSERT( arrayB->GetRowSize() == arrayA->GetRowSize() );
-            CPPUNIT_ASSERT( dataB.size() == dataA.size() );
-            CPPUNIT_ASSERT( dataB.size() == elementCount );
-            CPPUNIT_ASSERT( arrayB->GetEncodeSize() == int(bufferSize) );
-            element = 0;
-            for( ; element < elementCount; ++element )
-            {
-               std::ostringstream oss;
-               oss << "B Element[" << element << "] should match the element in A at the same index";
-               CPPUNIT_ASSERT_MESSAGE( oss.str(), dataA[element] == dataB[element] );
-            }
-         }
-         catch( std::exception& e )
-         {
-            LOG_ERROR( e.what() );
-         }
-      }
-
    private:
 };
 
