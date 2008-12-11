@@ -1294,8 +1294,8 @@ namespace SimCore
             mReflectionCamera = new osg::Camera();
             osg::Camera* sceneCam = GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
 
-            int width = 1024;//sceneCam->getViewport()->width();
-            int height = 768;//sceneCam->getViewport()->height();
+            int width = 512;//sceneCam->getViewport()->width();
+            int height = 512;//sceneCam->getViewport()->height();
 
 
             mReflectionTexture = CreateTexture(width, height);
