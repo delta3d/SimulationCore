@@ -1,0 +1,93 @@
+/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
+ *
+ * This library is open source and may be redistributed and/or modified under
+ * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * OpenSceneGraph Public License for more details.
+*/
+#ifndef OSG_EPHEMERIS_SPHERE_DEF
+#define OSG_EPHEMERIS_SPHERE_DEF
+
+#include <osg/Geode>
+#include <osg/LOD>
+
+namespace osgEphemeris {
+
+/** \class Sphere
+    \brief A geometric sphere containing a northern and southern hemisphere.
+
+    */
+           
+
+class Sphere : public osg::Group
+{
+    public:
+        enum Orientation
+        {
+            InnerOrientation,
+            OuterOrientation,
+        };
+
+        enum TesselationResolution 
+        {
+            TessHigh,
+            TessNormal,
+            TessLow
+        };
+
+        enum Hemisphere {
+            NorthernHemisphere = 1,
+            SouthernHemisphere = 2 ,
+            BothHemispheres = 3
+        };
+
+        bool _skyTexCoords;
+
+        Sphere( double radius=_defaultRadius,
+                TesselationResolution tr=TessNormal,
+                Orientation orientation=OuterOrientation,
+                Hemisphere hemisphere=BothHemispheres,
+                bool _skyTexCoords=false
+              );
+
+
+        osg::Geode *getNorthernHemisphere() { return _northernHemisphere.get(); }
+        osg::Geode *getSouthernHemisphere() { return _southernHemisphere.get(); }
+        static double getDefaultRadius();
+
+    protected:
+
+        osg::ref_ptr<osg::Geode> _northernHemisphere;
+        osg::ref_ptr<osg::Geode> _southernHemisphere;
+
+        static const double _defaultRadius;
+        
+    private:
+        
+        osg::Vec2 makeTexCoord(osg::Vec3 &normal, unsigned int sector);
+};
+
+
+/** \class SphereLOD
+    \brief A container class for three Sphere's representing progressional levels of detail.
+
+    */
+
+class SphereLOD : public osg::LOD
+{
+    public:
+        SphereLOD( double radius=Sphere::getDefaultRadius(), 
+                   Sphere::Orientation orientation=Sphere::OuterOrientation,
+                   Sphere::Hemisphere hemisphere=Sphere::BothHemispheres );
+
+};
+
+}
+
+#endif
+

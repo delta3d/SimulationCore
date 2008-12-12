@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+
+<!-- 
+
+This config file must be renamed to config.xml in order for StealthQt to
+find it.  It shows an example set of values one may set
+
+-->
+
+<Application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
+    <Window Name="Delta3D IG" X="100" Y="100" Width="1280" Height="800" PixelDepth="24" RefreshRate="60" ShowCursor="1" FullScreen="0" ChangeDisplayResolution="0" />
+    <Scene Name="defaultScene" />
+    <Camera Name="defaultCam" WindowInstance="Delta3D IG"  />
+    <View Name="defaultView" CameraInstance="defaultCam" 
+        SceneInstance="defaultScene" />    
+    
+    <Log Level="Info" />
+    <Log Name="gameactor.cpp" Level="Warn" />
+    <Log Name="hlafomconfigxml.cpp" Level="Warn" />
+    <Log Name="hlacomponent.cpp"  Level="Warn" />
+    <Log Name="ddmregioncalculator.cpp"  Level="Warn" />
+    <Log Name="ddmcameracalculatorgeographic.cpp"  Level="Warn" />
+    <Log Name="parametertranslator.cpp"  Level="Warn" />
+    <Log Name="deadreckoningcomponent.cpp"  Level="Warn" />
+    <Log Name="StealthInputComponent.cpp" Level="Warn" />
+    <Log Name="BaseInputComponent.cpp" Level="Warn" />
+    <Log Name="VFSTInputComponent.cpp" Level="Warn" />
+    <Log Name="ViewerMessageProcessor.cpp" Level="Warn" />
+    <Log Name="BaseEntity.cpp" Level="Warn" />
+    <Log Name="Platform.cpp" Level="Warn" />
+    <Log Name="Human.cpp" Level="Warn" />
+
+    <Properties>
+      <Property Name="ProjectPath">./ProjectAssets</Property>
+      <Property Name="AdditionalMap1">Prototypes</Property>
+      <Property Name="AdditionalMap2">Materials</Property>
+      <Property Name="AdditionalMap3">Global Actors</Property>
+      <Property Name="UseGPUCharacterSkinning">true</Property>
+      <Property Name="DeveloperMode">true</Property>
+      <Property Name="GameManager.Statistics.Interval">0</Property>
+      <Property Name="AspectRatio">1.6</Property>
+
+      <Property Name="System.SimFrameRate">60</Property>
+      <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
+      <Property Name="System.UseFixedTimeStep">false</Property>
+      
+      <!-- 
+           These are left commented out, so the defaults for the terrain
+           data base pager are preserved.  The values shown here are not
+           necessarily the defaults.
+      -->
+      <!--
+      <Property Name="System.DatabasePager.PrecompileObjects">true</Property>
+      <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">4</Property>
+      <Property Name="System.DatabasePager.MinObjectCompileTime">0.001</Property>
+      <Property Name="System.DatabasePager.TargetFrameRate">100</Property>
+      <Property Name="System.DatabasePager.DrawablePolicy">DoNotModify</Property>
+      <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
+      <Property Name="System.DatabasePager.ExpiryDelay">1.0</Property>
+      -->
+
+      <Property Name="HasBinocs">true</Property>
+      <Property Name="HasCompass">false</Property>
+      <Property Name="HasGPS">false</Property>
+      <Property Name="HasNightVision">false</Property>
+      <Property Name="HasMapTool">false</Property>
+    </Properties>
+
+</Application>

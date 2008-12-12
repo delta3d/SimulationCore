@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+   <qresource>
+      <file>icons/RangeRadial.png</file>
+      <file>icons/NonLinearSlider.png</file>
+   </qresource>
+</RCC>
