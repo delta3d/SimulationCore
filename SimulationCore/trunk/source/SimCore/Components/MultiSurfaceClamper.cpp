@@ -632,9 +632,9 @@ namespace SimCore
 
          // Get the surface points and their data.
          SurfacePointDataArray& pointData = inOutData.GetSurfacePointData();
-         inOutPoints[0].z() += (inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * timeStep;
-         inOutPoints[1].z() += (inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * timeStep;
-         inOutPoints[2].z() += (inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * timeStep;
+         inOutPoints[0].z() = pointData[0].GetLastClampPoint().z() + ((inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * timeStep) * 4.0f;
+         inOutPoints[1].z() = pointData[1].GetLastClampPoint().z() + ((inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * timeStep) * 4.0f;
+         inOutPoints[2].z() = pointData[2].GetLastClampPoint().z() + ((inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * timeStep) * 4.0f;      
 
          pointData[0].SetLastClampPoint( inOutPoints[0] );
          pointData[1].SetLastClampPoint( inOutPoints[1] );
