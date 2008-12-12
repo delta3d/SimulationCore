@@ -574,34 +574,38 @@ namespace SimCore
       bool WaterGridActor::GetHeightAndNormalAtPoint( const osg::Vec3& detectionPoint,
          float& outHeight, osg::Vec3& outNormal ) const
       {
-         outHeight = GetWaterHeight();
-         //WaveArray::const_iterator curWaveIter = mWaves.begin();
-         //WaveArray::const_iterator endWaveArray = mWaves.end();
-         //for( unsigned i = 0; curWaveIter != endWaveArray && i < 8; ++curWaveIter, ++i )
-         //{
-            //Wave &wave = *curWaveIter;
-            //outHeight += GetWaveAmplitudeAtPoint( *curWaveIter, detectionPoint );
+         float distanceToCamera = (detectionPoint - mCurrentCameraPos).length();
+         float heightScalar = 1.0f - std::min(1.0f, std::max(0.0001f, (distanceToCamera - 100.0f) / 200.0f));
+         outHeight = 0.0f;
 
-         float xPos = detectionPoint[0] - mLastCameraOffsetPos[0];
-         float yPos = detectionPoint[1] - mLastCameraOffsetPos[1];
-         // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's     
-         for(int i = 0; i < MAX_WAVES; i++)
-         {           
-            // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
-            float speed = mProcessedWaveData[i][1]; //waveArray[i].y;
-            float freq = mProcessedWaveData[i][3]; //waveArray[i].w;
-            float amp = mProcessedWaveData[i][2]; //waveArray[i].z;
-            float waveDirX = mProcessedWaveData[i][6]; //waveArray[i + 1].zw;
-            float waveDirY = mProcessedWaveData[i][7];
-            float k = mProcessedWaveData[i][4]; //(waveArray[i+1].x);
+         //we scale out the waves based on distance to keep the water from going through the terrain
+         if(heightScalar > 0.01)
+         {
+            float xPos = detectionPoint[0] - mLastCameraOffsetPos[0];
+            float yPos = detectionPoint[1] - mLastCameraOffsetPos[1];
+            // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's     
+            for(int i = 0; i < MAX_WAVES; i++)
+            {           
+               // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
+               float speed = mProcessedWaveData[i][1]; //waveArray[i].y;
+               float freq = mProcessedWaveData[i][3]; //waveArray[i].w;
+               float amp = mProcessedWaveData[i][2]; //waveArray[i].z;
+               float waveDirX = mProcessedWaveData[i][6]; //waveArray[i + 1].zw;
+               float waveDirY = mProcessedWaveData[i][7];
+               float k = mProcessedWaveData[i][4]; //(waveArray[i+1].x);
 
-            // This math MUST match the calculations done in water_functions.vert AND water.vert
-            float mPlusPhi = (freq * (speed * mElapsedTime + 
-               detectionPoint[0] * waveDirX + waveDirY * detectionPoint[1])); 
-            float sinDir = pow((std::sin(mPlusPhi) + 1.0f) / 2.0f, k);
+               // This math MUST match the calculations done in water_functions.vert AND water.vert
+               float mPlusPhi = (freq * (speed * mElapsedTime + 
+                  xPos * waveDirX + waveDirY * yPos)); 
+               float sinDir = pow((std::sin(mPlusPhi) + 1.0f) / 2.0f, k);
 
-            outHeight += amp * sinDir;                    
+               outHeight += amp * sinDir;                    
+            }
          }
+
+         outHeight = GetWaterHeight() + (outHeight * heightScalar);
+         
+         outNormal.set(0.0f, 0.0f, 1.0f);
 
          return true;
       }
@@ -928,7 +932,8 @@ namespace SimCore
          cameraHeight = (cameraHeight > 1.0) ? cameraHeight : 1.0;
 
          // Reset the camera center so thatwe get a LOT less jitter due to near/far clipping
-         osg::Vec3 camTrans = trans.GetTranslation();
+         mCurrentCameraPos = trans.GetTranslation();
+         osg::Vec3 camTrans(mCurrentCameraPos);
          camTrans[2] = 0.0;
          float distance = (camTrans - mLastCameraOffsetPos).length();
          if (distance > 9999.0)
@@ -1433,9 +1438,8 @@ namespace SimCore
          mModForAmplitude = waveHeight;
          dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
 
-         mModForWaveLength = 1.0f + waveHeight * 0.3333334f;
-         dtUtil::Clamp(mModForWaveLength, 1.0f, 3.0f);
-
+         mModForWaveLength = 1.0 + ((waveHeight - 1.0f) * 0.3333334f);
+         dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);
 
          if(seaState < 2)
          {
