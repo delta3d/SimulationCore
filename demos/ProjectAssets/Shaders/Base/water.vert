@@ -63,7 +63,7 @@ void main(void)
    distanceScale = (1.0 - clamp(distance / (maxDistance * modForFOV), 0.0, 1.0));   
    float distFromCamera = distance;
    float distBetweenVerts = gl_Vertex.z;
-   distBetweenVertsScalar = gl_Vertex.z * scalar * 3.0 / modForFOV;
+   distBetweenVertsScalar = gl_Vertex.z * scalar * 3.5 / modForFOV;
  
    pos = camPos + localVert;   
    pos.z = WaterHeight;
@@ -105,10 +105,9 @@ void main(void)
    shaderVertexNormal.y = -shaderVertexNormal.y;
    shaderVertexNormal = normalize(shaderVertexNormal);
 
-   pos.z = WaterHeight + zModifier;
-
-   float heightScalar = 1.0 - min(1.0, max(0.1, (distance - 100.0) / 200.0));
-   pos.z *= heightScalar;
+   //we scale out the waves based on distance to keep the water from going through the terrain
+   float heightScalar = 1.0 - min(1.0, max(0.0001, (distance - 100.0) / 200.0));
+   pos.z = WaterHeight + (zModifier * heightScalar);
 
    //transform our vector into screen space
    gl_Position = gl_ModelViewProjectionMatrix * pos;
