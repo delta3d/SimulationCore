@@ -230,7 +230,7 @@ namespace SimCore
          float mProcessedWaveData[MAX_WAVES][8];
 
          osg::Vec4 mWaterColor;
-         osg::Vec3 mLastCameraOffsetPos; 
+         osg::Vec3 mLastCameraOffsetPos, mCurrentCameraPos; 
 
          ChoppinessSettings* mChoppinessEnum;
 
