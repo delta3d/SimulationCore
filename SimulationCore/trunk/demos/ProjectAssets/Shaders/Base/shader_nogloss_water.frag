@@ -20,7 +20,7 @@ void dynamic_light_fragment(vec3, vec3, out vec3);
 vec3 GetWaterColorAtDepth(float);
 float GetHeightOnWaterSuface(vec2);
 
-vec3 deepWaterColor = 0.74 * WaterColor;  
+vec3 deep = 0.74 * WaterColor.xyz;  
 
 
 void main(void)
