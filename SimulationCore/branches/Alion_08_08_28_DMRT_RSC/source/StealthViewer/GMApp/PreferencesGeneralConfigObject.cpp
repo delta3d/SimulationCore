@@ -25,10 +25,8 @@
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 
-#include <SimCore/Tools/Binoculars.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/Components/WeatherComponent.h>
 
 #include <dtGame/gamemanager.h>
 
@@ -51,21 +49,19 @@ namespace StealthGM
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BETTER_SPEED("Better Speed");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BEST_SPEED("Best Speed");
 
-   PreferencesGeneralConfigObject::PreferencesGeneralConfigObject() :
-      mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON),
-      mEnableCameraCollision(true),
-      mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT),
-      mLODScale(1.0f),
-      mNearClippingPlane(SimCore::Tools::Binoculars::NEAR_CLIPPING_PLANE),
-      mFarClippingPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
-      mShowAdvancedOptions(false),
-      mAttachProxy(NULL),
-      mReconnectOnStartup(true),
-      mAutoRefreshEntityInfo(true),
-      mDetachFromActor(false),
-      mInputComponent(NULL)
+   PreferencesGeneralConfigObject::PreferencesGeneralConfigObject()
+   : mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
+   , mEnableCameraCollision(true)
+   , mPerformanceMode(&PreferencesGeneralConfigObject::PerformanceMode::DEFAULT)
+   , mLODScale(1.0f)
+   , mShowAdvancedOptions(false)
+   , mAttachActorId("")
+   , mReconnectOnStartup(true)
+   , mAutoRefreshEntityInfo(true)
+   , mDetachFromActor(false)
+   , mInputComponent(NULL)
+   , mShouldAutoAttachToEntity(false)
    {
-
    }
 
    PreferencesGeneralConfigObject::~PreferencesGeneralConfigObject()
@@ -73,12 +69,24 @@ namespace StealthGM
 
    }
 
-   void PreferencesGeneralConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
+   void PreferencesGeneralConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
+      if (GetShouldAutoAttachToEntity() && !IsStealthActorCurrentlyAttached()
+               && !GetAutoAttachEntityCallsign().empty())
+      {
+         dtDAL::ActorProxy* proxy = NULL;
+         gameManager.FindActorByName(GetAutoAttachEntityCallsign(), proxy);
+         if (proxy != NULL)
+         {
+            AttachToActor(proxy->GetId());
+         }
+      }
+
+
       if(!IsUpdated())
          return;
 
-      dtGame::GMComponent *component =
+      dtGame::GMComponent* component =
          gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
       mInputComponent = static_cast<StealthInputComponent*>(component);
 
@@ -91,30 +99,21 @@ namespace StealthGM
       mInputComponent->EnableCameraCollision(GetEnableCameraCollision());
 
       // Update rendering options
-      dtCore::Camera *camera = gameManager.GetApplication().GetCamera();
-
-      // Send the Near/Far clipping plane to the weather component
-      dtGame::GMComponent *weatherGMComp = gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME);
-      if(weatherGMComp != NULL)
-      {
-         SimCore::Components::WeatherComponent &weatherComp = static_cast<SimCore::Components::WeatherComponent&>(*weatherGMComp);
-         weatherComp.SetNearClipPlane(GetNearClippingPlane());
-         weatherComp.SetFarClipPlane(GetFarClippingPlane());
-         weatherComp.UpdateFog();
-      }
-      // no weather component, so we update the clip planes by hand
-      else
-      {
-         camera->SetPerspectiveParams(camera->GetVerticalFov(), camera->GetAspectRatio(),
-            GetNearClippingPlane(), GetFarClippingPlane());
-      }
+      dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
 
       // Updated the LOD scale
       camera->GetOSGCamera()->setLODScale(GetLODScale());
 
-      if(mAttachProxy != NULL && mInputComponent->GetStealthActor() != NULL)
+      AttachOrDetach(gameManager);
+
+      SetIsUpdated(false);
+   }
+
+   void PreferencesGeneralConfigObject::AttachOrDetach(dtGame::GameManager& gameManager)
+   {
+      if(!mAttachActorId.ToString().empty() && mInputComponent->GetStealthActor() != NULL)
       {
-         if(mAttachProxy->GetId() == mInputComponent->GetStealthActor()->GetUniqueId())
+         if(mAttachActorId == mInputComponent->GetStealthActor()->GetUniqueId())
          {
             LOG_ERROR("The stealth actor cannot attach to itself.");
          }
@@ -127,12 +126,14 @@ namespace StealthGM
                static_cast<SimCore::AttachToActorMessage&>(*msg);
 
             ataMsg.SetAboutActorId(mInputComponent->GetStealthActor()->GetUniqueId());
-            ataMsg.SetAttachToActor(mAttachProxy->GetId());
+            ataMsg.SetAttachToActor(mAttachActorId);
+            ataMsg.SetAttachPointNodeName(GetAttachPointNodeName());
+            ataMsg.SetInitialAttachRotationHPR(GetInitialAttachRotationHPR());
 
             gameManager.SendMessage(ataMsg);
          }
 
-         mAttachProxy = NULL;
+         mAttachActorId = "";
       }
 
       // DETACH - Send an attach message with no actor
@@ -149,7 +150,18 @@ namespace StealthGM
          mDetachFromActor = false;
       }
 
-      SetIsUpdated(false);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::Reattach()
+   {
+      if (mInputComponent.valid() && mInputComponent->GetStealthActor() != NULL)
+      {
+         if (mInputComponent->GetStealthActor()->IsAttachedToActor())
+         {
+            AttachToActor(mInputComponent->GetStealthActor()->GetParent()->GetUniqueId());
+         }
+      }
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -165,6 +177,7 @@ namespace StealthGM
       return result;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::SetAttachMode(const std::string &mode)
    {
       for(unsigned int i = 0; i < PreferencesGeneralConfigObject::AttachMode::Enumerate().size(); i++)
@@ -179,18 +192,74 @@ namespace StealthGM
       }
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void PreferencesGeneralConfigObject::SetPerformanceMode(const std::string &mode)
    {
-      for(unsigned int i = 0; i < PreferencesGeneralConfigObject::PerformanceMode::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current =
-            PreferencesGeneralConfigObject::PerformanceMode::Enumerate()[i];
+      PreferencesGeneralConfigObject::PerformanceMode* modeVal =
+         PreferencesGeneralConfigObject::PerformanceMode::GetValueForName(mode);
 
-         if(current->GetName() == mode)
-         {
-            SetPerformanceMode(
-               static_cast<const PreferencesGeneralConfigObject::PerformanceMode&>(*current));
-         }
+      if (modeVal != NULL)
+      {
+         SetPerformanceMode(*modeVal);
       }
+      else
+      {
+         LOGN_ERROR("PreferencesGeneralConfigObject.cpp", "Unable to set the performance mode to \"" + mode
+                  + "\", no such mode exists.");
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetShouldAutoAttachToEntity(bool shouldAttach)
+   {
+      mShouldAutoAttachToEntity = shouldAttach;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool PreferencesGeneralConfigObject::GetShouldAutoAttachToEntity() const
+   {
+      return mShouldAutoAttachToEntity;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetAutoAttachEntityCallsign(const std::string& callsign)
+   {
+      mAutoAttachEntityCallsign = callsign;
+      SetIsUpdated(true);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const std::string& PreferencesGeneralConfigObject::GetAutoAttachEntityCallsign() const
+   {
+      return mAutoAttachEntityCallsign;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetAttachPointNodeName(const std::string& name)
+   {
+      mAttachPointNodeName = name;
+      SetIsUpdated(true);
+      Reattach();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const std::string& PreferencesGeneralConfigObject::GetAttachPointNodeName() const
+   {
+      return mAttachPointNodeName;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void PreferencesGeneralConfigObject::SetInitialAttachRotationHPR(const osg::Vec3& hpr)
+   {
+      mInitialAttachRotationHPR = hpr;
+      SetIsUpdated(true);
+      Reattach();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const osg::Vec3& PreferencesGeneralConfigObject::GetInitialAttachRotationHPR() const
+   {
+      return mInitialAttachRotationHPR;
    }
 }

@@ -289,22 +289,23 @@ namespace DriverDemo
       mCoordinatesLabel->SetText("GPS");
       hudOverlay.Add( mCoordinatesLabel.get() );
 
-      // GPS Meter - Lat Lon
-      mGPSMeter = new SimCore::Components::StealthGPSMeter("DriverLatLonMeter");
-      mGPSMeter->SetPosition( rightOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
-      hudOverlay.Add( mGPSMeter.get() );
-
       // MGRS Meter
       mMGRSMeter = new SimCore::Components::StealthMGRSMeter("DriverMGRSMeter");
       mMGRSMeter->SetPosition( rightOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
       hudOverlay.Add(mMGRSMeter.get());
       mMGRSMeter->SetVisible( false );
 
-      // Cartesian Meter
-      mCartesianMeter = new SimCore::Components::StealthCartesianMeter("DriverCartesianMeter");
+      // GPS Meter - Lat Lon
       // NOTE: 22 is added to shift the meter right since the image is not a multiple
       // of 256. Currently the image is 362.
-      mCartesianMeter->SetPosition( (rightOffset+22.0f)/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
+      rightOffset += 22.0f;
+      mGPSMeter = new SimCore::Components::StealthCartesianMeter("DriverLatLonMeter");
+      mGPSMeter->SetPosition( rightOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
+      hudOverlay.Add( mGPSMeter.get() );
+
+      // Cartesian Meter
+      mCartesianMeter = new SimCore::Components::StealthCartesianMeter("DriverCartesianMeter");
+      mCartesianMeter->SetPosition( rightOffset/SCREEN_WIDTH, 0.0f, SimCore::Components::HUDAlignment::RIGHT_BOTTOM );
       hudOverlay.Add(mCartesianMeter.get());
       mCartesianMeter->SetVisible( false );
 
@@ -346,6 +347,10 @@ namespace DriverDemo
             Mouse Left Btn - Fire\n\
             Mouse + Right Btn - Turn ring mount\n\
             H - Cycle weapon\n\
+            Space - Jump\n\
+            R - Reset Vehicle\n\
+            T - Drop Hover Target\n\
+            . - Toggle View Mode\
             \n\
             F1 - Help\n\
             \n\
@@ -516,7 +521,9 @@ namespace DriverDemo
 
             mCoordinateConverter.SetIncomingCoordinateType( dtUtil::IncomingCoordinateType::GEODETIC );
             const osg::Vec3d& globePos = mCoordinateConverter.ConvertToRemoteTranslation( pos );
-            mGPSMeter->SetLatLong( globePos[0], globePos[1] );
+            mGPSMeter->SetX( globePos[0] );
+            mGPSMeter->SetY( globePos[1] );
+            mGPSMeter->SetZ( globePos[2] );
          }
 
          // Update the compass HUD element

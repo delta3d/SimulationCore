@@ -98,6 +98,8 @@ namespace StealthGM
       , mFirstPersonAttachMode(true)
       , mHasUI(hasUI)
       , mCollideWithGround(true)
+      , mCountDownToPeriodicProcessing(1.0)
+
    {
       mLogger = &dtUtil::Log::GetInstance("StealthInputComponent.cpp");
       mMachineInfo = new dtGame::MachineInfo;
@@ -152,6 +154,7 @@ namespace StealthGM
 
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
          UpdateTools( tick.GetDeltaSimTime() );
+         HandlePeriodicProcessing(tick.GetDeltaSimTime());
 
          if (mTicksToLogStateChange > 0 )
          {
@@ -429,6 +432,36 @@ namespace StealthGM
       }
    }
 
+   ////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::HandlePeriodicProcessing(float deltaTime)
+   {
+      mCountDownToPeriodicProcessing -= deltaTime;
+      
+      if (mCountDownToPeriodicProcessing < 0.0f)
+      {
+         // Slow down the camera based on how much view area we have. 
+         // Helps with binoculars and other FoV scale effects in Stealth View
+         dtCore::Camera *camera = GetGameManager()->GetApplication().GetCamera();
+         float avgFoV = 0.5f * (camera->GetHorizontalFov() + camera->GetVerticalFov());
+         float cameraFoVScalar = (75.0f / avgFoV);
+
+         if (mAttachedMM != NULL)
+         {
+            mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f / cameraFoVScalar);
+            mAttachedMM->SetKeyboardTurnSpeed(70.0f / cameraFoVScalar);
+         }
+         if (mStealthMM != NULL)
+         {
+            mStealthMM->SetMaximumTurnSpeed(90.0f / cameraFoVScalar);
+         }
+
+         // Reset count down
+         mCountDownToPeriodicProcessing = 1.0f;
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::SetupLogging()
    {
       if (mEnableLogging)
@@ -1288,7 +1321,7 @@ namespace StealthGM
       // differing field of view.
       if (mAttachedMM.valid())
       {
-         if (msgType == SimCore::MessageType::BINOCULARS ||
+         /*if (msgType == SimCore::MessageType::BINOCULARS ||
             msgType == SimCore::MessageType::LASER_RANGE_FINDER)
          {
             if (enable)
@@ -1312,7 +1345,7 @@ namespace StealthGM
             mAttachedMM->SetKeyboardTurnSpeed(70.0f);
 
             mStealthMM->SetMaximumTurnSpeed(90.0f);
-         }
+         }*/
       }
    }
 

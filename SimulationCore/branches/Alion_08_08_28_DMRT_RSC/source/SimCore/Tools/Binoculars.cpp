@@ -37,7 +37,7 @@
 #undef None
 #endif
 
-#include <CEGUI/CEGUI.h> 
+#include <CEGUI/CEGUI.h>
 
 namespace SimCore
 {
@@ -45,18 +45,19 @@ namespace SimCore
    {
       const float Binoculars::FAR_CLIPPING_PLANE  = 11000.0f;
       const float Binoculars::NEAR_CLIPPING_PLANE = 0.25f;
-     
-      Binoculars::Binoculars(dtCore::Camera &camera, CEGUI::Window *mainWindow, bool isLRF) :
+
+      Binoculars::Binoculars(dtCore::Camera& camera, CEGUI::Window* mainWindow, bool isLRF) :
          Tool(mainWindow),
-         mIntersectionText(NULL), 
+         mIntersectionText(NULL),
          mElevationText(NULL),
          mCamera(&camera),
          mOverlay(NULL),
          mOriginalVFOV(camera.GetVerticalFov()),
+         mOriginalAspect(camera.GetAspectRatio()),
          mOriginalNear(NEAR_CLIPPING_PLANE),
          mOriginalFar(FAR_CLIPPING_PLANE),
          mOriginalLODScale(camera.GetOSGCamera()->getLODScale()),
-         mIsDynamicZooming(false), 
+         mIsDynamicZooming(false),
          mZoomFactor(7.0f)
  	   {
          try
@@ -78,23 +79,27 @@ namespace SimCore
             mRecticle->setProperty("FrameEnabled", "false");
 
             if(mCamera->GetAspectRatio() < 1.47)
-               mRecticle->setProperty("Image", "set:Binoculars4.3 image:Binoculars4.3");
+            {
+               SetOverlayImage("Binoculars4.3","Binoculars4.3");
+            }
             else
-               mRecticle->setProperty("Image", "set:Binoculars8.5 image:Binoculars8.5"); 
+            {
+               SetOverlayImage("Binoculars8.5","Binoculars8.5");
+            }
 
             mOverlay->addChildWindow(mRecticle);
 
             if(!isLRF)
             {
                mIntersectionText = wm->createWindow("WindowsLook/StaticText", "binos_intersection_text");
-            
+
                mOverlay->addChildWindow(mIntersectionText);
                mIntersectionText->setFont("DejaVuSans-10");
                mIntersectionText->setProperty("TextColours", CEGUI::PropertyHelper::colourToString(CEGUI::colour(1, 1, 1)));
                mIntersectionText->setSize(CEGUI::UVector2(cegui_reldim(0.8f), cegui_reldim(0.25f)));
                mIntersectionText->setProperty("FrameEnabled", "false");
                mIntersectionText->setProperty("BackgroundEnabled", "false");
-               mIntersectionText->setHorizontalAlignment(CEGUI::HA_LEFT); 
+               mIntersectionText->setHorizontalAlignment(CEGUI::HA_LEFT);
                SetDistanceReadoutScreenPosition(0.925f,0.85f);
 
                mElevationText = wm->createWindow("WindowsLook/StaticText", "binos_elevation_text");
@@ -115,7 +120,7 @@ namespace SimCore
          {
             std::ostringstream oss;
             oss << "CEGUI exception caught: " << e.getMessage().c_str();
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR, 
+            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                oss.str(), __FILE__, __LINE__);
          }
  	   }
@@ -124,24 +129,24 @@ namespace SimCore
  	   {
          if(mMainWindow != NULL)
             mMainWindow->removeChildWindow(mOverlay);
-         
+
          CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
          wm->destroyWindow(mOverlay);
       }
 
       void Binoculars::SetOriginalNearFar( float nearValue, float farValue )
-      { 
+      {
          mOriginalNear = nearValue;
          mOriginalFar = farValue;
       }
 
       void Binoculars::SetOriginalNear( float nearValue )
-      { 
+      {
          mOriginalNear = nearValue;
       }
 
       void Binoculars::SetOriginalFar( float farValue )
-      { 
+      {
          mOriginalFar = farValue;
       }
 
@@ -158,7 +163,9 @@ namespace SimCore
          {
             mOverlay->hide();
             mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-            mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), mOriginalNear, mOriginalFar);
+            double vfov, aspect, nearPlane, farPlane;
+            mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
+            mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), nearPlane, farPlane);
          }
       }
 
@@ -191,9 +198,14 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         float vfov = mCamera->GetVerticalFov();
+         double vfov, aspect, nearPlane, farPlane;
 
-         // TODO fix this algorithm later
+         mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
+
+         mOriginalVFOV = vfov;
+         mOriginalAspect = aspect;
+
+            // TODO fix this algorithm later
          if(mIsDynamicZooming)
          {
             // Check for maximum zoom
@@ -222,27 +234,21 @@ namespace SimCore
             }
          }
 
-         // Check to see if we are already zoomed in
-         if(vfov == mOriginalVFOV)
+         if(mCamera->GetAspectRatio() < 1.47)
          {
-            if(mCamera->GetAspectRatio() < 1.47)
-            {
-               vfov /= (mZoomFactor *= 1.135f);
-            }
-            else
-            {
-               vfov /= (mZoomFactor *= 1.103f);
-            }
+            vfov /= (mZoomFactor *= 1.135f);
          }
-          else
-            return;
+         else
+         {
+            vfov /= (mZoomFactor *= 1.103f);
+         }
 
          mOriginalLODScale = mCamera->GetOSGCamera()->getLODScale();
          float newZoom = (1.0f / mZoomFactor) * mOriginalLODScale;
-         
+
          mCamera->GetOSGCamera()->setLODScale(newZoom);
          //mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
-         mCamera->SetPerspectiveParams(vfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+         mCamera->SetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
       }
 
       void Binoculars::ZoomOut()
@@ -256,9 +262,10 @@ namespace SimCore
             mZoomFactor = 1.0f;
          }
 
-         float vfov = mCamera->GetVerticalFov();
+         double vfov, aspect, nearPlane, farPlane;
+         mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
 
-         // TODO fix this algorithm later
+         // TODO fix this algorithm later, this is currently broken.
          if(mIsDynamicZooming)
          {
             if(vfov* mZoomFactor < mOriginalVFOV)
@@ -272,16 +279,8 @@ namespace SimCore
             }
          }
 
-         // Check to see if we are zoomed out already
-         if(vfov != mOriginalVFOV)
-         {
-            vfov *= mZoomFactor;
-         }
-         else
-            return;
-
          mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-         mCamera->SetPerspectiveParams(vfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
+         mCamera->SetPerspectiveParams(mOriginalVFOV, mOriginalAspect, nearPlane, farPlane);
       }
 
       void Binoculars::Update(dtCore::DeltaDrawable &terrain)
@@ -323,7 +322,7 @@ namespace SimCore
             // Convert to possibly negative mils, formula in dtUtil::Coordinates
             // forces mils to be positive
             int mils = int(CalculateMils(distance, elevation));
-            // Instead of converting to degrees to clamp between -45, and 45, 
+            // Instead of converting to degrees to clamp between -45, and 45,
             // clamp the mils between -800, 800
             dtUtil::Clamp(mils, -800, 800);
             mElevationText->setText(PadNumber(mils));
@@ -336,7 +335,7 @@ namespace SimCore
       }
 
       void Binoculars::SetShowReticle(bool enable)
-      { 
+      {
          if( enable )
          {
             mRecticle->show();
@@ -376,5 +375,12 @@ namespace SimCore
             }
          }
       }
+
+      void Binoculars::SetOverlayImage( const std::string& imageset, const std::string& imageName )
+      {
+         std::string imageSetAndName("set:"+imageset+" image:"+imageName);
+         mRecticle->setProperty("Image", imageSetAndName);
+      }
+
    }
 }

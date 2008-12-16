@@ -117,18 +117,20 @@ namespace DriverDemo
    //       another actor that will allow these to be set by an xml file.
    //       For now, the referenced files are place holders for the real
    //       sound effects to be used.
-   const std::string DriverInputComponent::SOUND_TURRET_TURN_START("Sounds/RAW_SFX_Turrent_Slide.wav");
-   const std::string DriverInputComponent::SOUND_TURRET_TURN("Sounds/RAW_SFX_Turrent_Slide.wav");
-   const std::string DriverInputComponent::SOUND_TURRET_TURN_END("Sounds/RAW_SFX_Turrent_Slide.wav");
-   //const std::string DriverInputComponent::SOUND_AMBIENT("Sounds/Ambient_Crickets.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN_START("Sounds/RAW_SFX_Turrent_Slide.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN("Sounds/RAW_SFX_Turrent_Slide.wav");
+   const dtUtil::RefString DriverInputComponent::SOUND_TURRET_TURN_END("Sounds/RAW_SFX_Turrent_Slide.wav");
+
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_WEAPON_PIVOT("dof_gun_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_WEAPON_FIRE_POINT("dof_hotspot_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_RINGMOUNT("dof_turret_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_01("dof_view_01");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_02("dof_view_02");
+   const dtUtil::RefString DriverInputComponent::DOF_NAME_VIEW_DEFAULT(DriverInputComponent::DOF_NAME_VIEW_02.Get());
    
    ////////////////////////////////////////////////////////////////////////////////
    DriverInputComponent::DriverInputComponent(const std::string& name) :
       BaseClass(name),
-      DOF_NAME_WEAPON_PIVOT("dof_gun_01"),//"dof_gun_attach"),
-      DOF_NAME_WEAPON_STEM("dof_gun_01"),
-      DOF_NAME_RINGMOUNT("dof_turret_01"),
-      DOF_NAME_RINGMOUNT_SEAT("dof_seat_gunner"),
       mIsConnected(false),
       mUsePhysicsDemoMode(false),
       mHorizontalFOV(60.0f),
@@ -140,6 +142,7 @@ namespace DriverDemo
       mMotionModelsEnabled(false),
       mPlayerAttached(false),
       mLastDamageState(&SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
+      mViewNodeName(DOF_NAME_VIEW_DEFAULT.Get()),
       mEnvUpdateTime(0.0f),
       mEnvUpdateAttempts(2)
    {
@@ -182,7 +185,6 @@ namespace DriverDemo
       if (msgType == dtGame::MessageType::TICK_LOCAL)
       {
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
-         UpdateTools( tick.GetDeltaSimTime() );
          UpdateStates( tick.GetDeltaSimTime(), tick.GetDeltaRealTime() );
    
          // Update the view height distance - helps the fog decay nicely based on height.
@@ -197,8 +199,6 @@ namespace DriverDemo
             xform.GetTranslation(pos);
             weatherComp->SetViewElevation(pos[2]);
          }
-
-         //UpdateInteriorModel();
       }
 
       // Tool update message.
@@ -287,12 +287,6 @@ namespace DriverDemo
 
                // This method does all the cool stuff!!!
                AttachToVehicle(*vehicle);
-               // Tell the MotionModels about the articulation helper.
-               //if( mRingMM.valid() )
-               //   mRingMM->SetArticulationHelper( articHelper.get() );
-               //if( mWeaponMM.valid() )
-               //   mWeaponMM->SetArticulationHelper( articHelper.get() );
-
             }
             else 
             {
@@ -382,10 +376,6 @@ namespace DriverDemo
                   hpr.y() = 0.0f;
                   mWeaponMM->SetTargetsRotation( hpr );
                }
-               if( mRingMM.valid() )
-               {
-                  mRingMM->SetEnabled( false );
-               }
             }
          }
          break;
@@ -406,6 +396,12 @@ namespace DriverDemo
          case 't':
          {
             CreateTarget();
+         }
+         break;
+
+         case '.':
+         {
+            ToggleView();
          }
          break;
 
@@ -555,6 +551,21 @@ namespace DriverDemo
                mWeapon->SetTriggerHeld( true );
             }
          }
+         // Right button should turn turret.
+         else if( button == dtCore::Mouse::RightButton )
+         {
+            if( ! mRingButtonHeld )
+            {
+               HandleTurretEnabled( true );
+               mRingButtonHeld = true;
+
+               if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
+               {
+                  mRingMM->SetTarget( NULL );
+                  mRingMM->SetTargetDOF( mDOFRing.get() );
+               }
+            }
+         }
       }
    
       if(!handled)
@@ -570,7 +581,7 @@ namespace DriverDemo
    
       GameAppComponent* gameAppComponent;
       GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
-      if( gameAppComponent != NULL)
+      if( gameAppComponent != NULL )
       {
          // stop firing
          if( button == dtCore::Mouse::LeftButton )
@@ -578,6 +589,21 @@ namespace DriverDemo
             if( mWeapon.valid() ) 
             { 
                mWeapon->SetTriggerHeld( false ); 
+            }
+         }
+         else if( button == dtCore::Mouse::RightButton )
+         {
+            if( mRingButtonHeld )
+            {
+               HandleTurretEnabled( false );
+               mRingButtonHeld = false;
+
+               if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
+               {
+                  mRingMM->SetTargetsRotation( osg::Vec3() );
+                  mRingMM->SetTarget( mVehicle.get() );
+                  mRingMM->SetTargetDOF( NULL );
+               }
             }
          }
       }
@@ -606,20 +632,24 @@ namespace DriverDemo
          mWeaponMM->SetLeftRightEnabled( false );
          if( ! fireEnabled )
          {
-            if (mSoundTurretTurnStart.valid())
+            if(mSoundTurretTurnStart.valid())
+            {
                mSoundTurretTurnStart->Play();
-            mRingMM->SetEnabled( true );
+            }
+            //mRingMM->SetEnabled( true );
          }
       }
       else
       {
-         mRingMM->SetEnabled( false );
+         //mRingMM->SetEnabled( false );
          if( ! fireEnabled )
          {
             //mAttachedMM->SetEnabled( true );
             mWeaponMM->SetLeftRightEnabled( true );
-            if (mSoundTurretTurnEnd.valid())
+            if(mSoundTurretTurnEnd.valid())
+            {
                mSoundTurretTurnEnd->Play();
+            }
          }
       }
    }
@@ -732,17 +762,6 @@ namespace DriverDemo
    }
    
    /////////////////////////////////////////////////////////////////////////////////
-   void DriverInputComponent::UpdateTools( float timeDelta )
-   {
-      //SimCore::Tools::Compass* compass = static_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
-      //if( compass != NULL && compass->IsEnabled() )
-      //{
-   	//   compass->Update( timeDelta );
-      //}
-   
-  }
-   
-   /////////////////////////////////////////////////////////////////////////////////
    SimCore::MessageType& DriverInputComponent::GetEnabledTool() const
    {
       std::map<SimCore::MessageType*, RefPtr<SimCore::Tools::Tool> >::const_iterator i;
@@ -801,7 +820,8 @@ namespace DriverDemo
    
       // Create the seat
       mSeat = new dtCore::Transformable("PlayerSeat");
-      }
+      mSeat->AddChild( mStealthActor.get() );
+   }
    
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
@@ -855,10 +875,7 @@ namespace DriverDemo
          // this is the GUNNER application
          // Attach the player root transformable to the vehicle's ring's seat DOF
          // rather than directly to the vehicle itself.
-         if( mDOFSeat.valid() )
-         {
-            mDOFSeat->addChild( mSeat->GetOSGNode() );
-         }
+         AttachToView( DOF_NAME_VIEW_DEFAULT.Get() );
    
          // Let this vehicle know it has a driver if the player is in driver mode.
          mVehicle->SetHasDriver( true );
@@ -870,24 +887,7 @@ namespace DriverDemo
       {
          // Set the attach state.
          mPlayerAttached = true;
-   
-         // Remove from the scene
-         mStealthActor->Emancipate();
       }
-   
-      // Offset the player vantage point.
-      osg::Vec3 rotationOffset;
-
-      mStealthActor->SetAttachOffset( osg::Vec3(0.0, 0.0, 0.0) ); // GUNNER
-
-      // Position the seat DOF
-      dtCore::Transform xform;
-      xform.SetTranslation( mStealthActor->GetAttachOffset() );
-      xform.SetRotation(rotationOffset);
-      mSeat->SetTransform( xform, dtCore::Transformable::REL_CS );
-   
-      // Attach the player to the sitting view point by default
-      //SetViewMode( VIEW_MODE_SIT );
    
       // Setup the weapon actor if one needs to be attached.
       if( ! mWeapon.valid() )
@@ -955,11 +955,18 @@ namespace DriverDemo
          //     or the new mode set prior to this function being called; thus remove
          //     from both possible parents.
          mVehicle->RemoveChild( mSeat.get() );
-         if( mDOFSeat.valid() ) { mDOFSeat->removeChild( mSeat->GetOSGNode() ); }
+
+         AttachToView( "" );
    
          // Reset the original orientations of the vehicle's DOFs.
-         if( mDOFRing.valid() ) { mDOFRing->setCurrentHPR( mDOFRingOriginalHPR ); }
-         if( mDOFWeapon.valid() ) { mDOFWeapon->setCurrentHPR( mDOFWeaponOriginalHPR ); }
+         if( mDOFRing.valid() )
+         {
+            mDOFRing->setCurrentHPR( mDOFRingOriginalHPR );
+         }
+         if( mDOFWeapon.valid() )
+         {
+            mDOFWeapon->setCurrentHPR( mDOFWeaponOriginalHPR );
+         }
    
          // Offset the player relative to the vehicle
          dtCore::Transform xform;
@@ -977,22 +984,11 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetViewMode()
    {
-      // Set NEW mode
-      if( mWeaponEyePoint.valid() )
-      {
-         dtCore::Transform xform;
-         mStealthActor->GetTransform( xform, dtCore::Transformable::REL_CS );
-         xform.SetRotation( osg::Vec3(0.0,0.0,0.0) );
-         mStealthActor->SetTransform( xform, dtCore::Transformable::REL_CS );
-         mWeaponEyePoint->AddChild( mStealthActor.get() );
-      }
-
       if( mWeaponMM.valid())
       {
          bool flamesPresent = mVehicle.valid() && mVehicle->IsFlamesPresent();
          mWeaponMM->SetEnabled( !flamesPresent);
       }
-   
    }
    
 
@@ -1081,10 +1077,10 @@ namespace DriverDemo
    {
       dtGame::GameManager* gm = GetGameManager();
    
-      std::vector<dtDAL::ActorProxy*> toFill;
-      gm->FindPrototypesByName( weaponName, toFill );
+      std::vector<dtDAL::ActorProxy*> proxyArray;
+      gm->FindPrototypesByName( weaponName, proxyArray );
    
-      if( toFill.empty() )
+      if( proxyArray.empty() )
       {
          LOG_ERROR( "No weapon actor prototype could be loaded from the map." );
          return false;
@@ -1093,7 +1089,7 @@ namespace DriverDemo
       // Create a new weapon proxy from the discovered prototype
       dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> weaponProxy 
          = dynamic_cast<SimCore::Actors::WeaponActorProxy*>
-         (gm->CreateActorFromPrototype(toFill[0]->GetId()).get());
+         (gm->CreateActorFromPrototype(proxyArray[0]->GetId()).get());
       outWeapon = weaponProxy.valid() ?
          static_cast<SimCore::Actors::WeaponActor*> (weaponProxy->GetActor()) : NULL;
    
@@ -1110,13 +1106,13 @@ namespace DriverDemo
       outWeapon->Emancipate();
    
       // Get ready to instantiate a shooter from a prototype.
-      toFill.clear();
-      gm->FindPrototypesByName( shooterName ,toFill);
+      proxyArray.clear();
+      gm->FindPrototypesByName( shooterName, proxyArray);
    
-      if( ! toFill.empty() )
+      if( ! proxyArray.empty() )
       {
          dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy 
-            = gm->CreateActorFromPrototype(toFill.front()->GetId());
+            = gm->CreateActorFromPrototype(proxyArray.front()->GetId());
    
          if(ourActualActorProxy != NULL)
          {
@@ -1177,9 +1173,9 @@ namespace DriverDemo
          mWeapon->SetTriggerHeld( false );
    
          // Remove the current weapon from both possible attach points.
-         if( mDOFWeapon.valid() )
+         if( mDOFFirePoint.valid() )
          {
-            mDOFWeapon->removeChild( mWeapon->GetOSGNode() );
+            mDOFFirePoint->removeChild( mWeapon->GetOSGNode() );
          }
    
          if( mWeaponEyePoint.valid() )
@@ -1196,9 +1192,9 @@ namespace DriverDemo
    
       if( mWeapon.valid() )
       {
-         if( mDOFWeapon.valid() )
+         if( mDOFFirePoint.valid() )
          {
-            mDOFWeapon->addChild( mWeapon->GetOSGNode() );
+            mDOFFirePoint->addChild( mWeapon->GetOSGNode() );
          }
    
          dtCore::Transform xform;
@@ -1212,11 +1208,23 @@ namespace DriverDemo
          }
    
          // Offset the weapon
-         xform.SetTranslation( 0.0, 0.0, 0.0 );
-         mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
+         //xform.SetTranslation( 0.0, 0.0, 0.0 );
+         //mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
+
+         // Set the owner
+         if (mVehicle.valid())
+            mWeapon->SetOwner(&mVehicle->GetGameActorProxy());
       }
+
    }
-   
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool DriverInputComponent::IsVehiclePivotable( const SimCore::Actors::BasePhysicsVehicleActor& vehicle ) const
+   {
+      const HoverVehicleActor* hoverActor = dynamic_cast<const HoverVehicleActor*>(&vehicle);
+      return hoverActor != NULL && hoverActor->GetVehicleIsTurret();
+   }
+
    ////////////////////////////////////////////////////////////////////////////////
    bool DriverInputComponent::AttachToRingmount( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
@@ -1227,7 +1235,7 @@ namespace DriverDemo
       {
          mWeaponMM = new SimCore::ClampedMotionModel( app.GetKeyboard(), app.GetMouse() );
          mWeaponMM->SetLeftRightLimit( 0.0f );
-         mWeaponMM->SetUpDownLimit( 45.0f );
+         mWeaponMM->SetUpDownLimit( 45.0f, 15.0f );
          mWeaponMM->SetName("WeaponMM");
       }
       mWeaponMM->SetEnabled( true );
@@ -1246,8 +1254,7 @@ namespace DriverDemo
       // Is the turret 'hard-wired' to the vehicle? If so, the ring mount motion 
       // model turns the vehicle, not just the ring mount DoF. This is true for 
       // instance, with the Hover Vehicle. 
-      HoverVehicleActor *hoverActor = dynamic_cast<HoverVehicleActor *> (&vehicle);
-      if (hoverActor != NULL && hoverActor->GetVehicleIsTurret())
+      if(IsVehiclePivotable(vehicle))
          mRingMM->SetTarget(&vehicle);
       else
          mRingMM->SetTargetDOF( mDOFRing.get() );
@@ -1379,10 +1386,10 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::GetVehicleDOFs( SimCore::Actors::BasePhysicsVehicleActor& vehicle )
    {
-      mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT_SEAT);
-      mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT);
-      mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT);
-      //mDOFWeaponStem = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_STEM);
+      mDOFSeat = vehicle.GetNodeCollector()->GetDOFTransform(mViewNodeName);
+      mDOFRing = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_RINGMOUNT.Get());
+      mDOFWeapon = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_PIVOT.Get());
+      mDOFFirePoint = vehicle.GetNodeCollector()->GetDOFTransform(DOF_NAME_WEAPON_FIRE_POINT.Get());
    }
    
    ////////////////////////////////////////////////////////////////////////////////
@@ -1445,6 +1452,33 @@ namespace DriverDemo
       }
       else
          LOG_ERROR( "Failure creating Hover Target actor." );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::ToggleView()
+   {
+      AttachToView( mViewNodeName == DOF_NAME_VIEW_01.Get()
+         ? DOF_NAME_VIEW_02.Get() : DOF_NAME_VIEW_01.Get() );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::AttachToView( const std::string& viewNodeName )
+   {
+      if( mVehicle.valid() )
+      {
+         if( mDOFSeat.valid() )
+         {
+            mDOFSeat->removeChild( mSeat->GetOSGNode() );
+         }
+
+         mDOFSeat = mVehicle->GetNodeCollector()->GetDOFTransform(mViewNodeName);
+
+         if( mDOFSeat.valid() )
+         {
+            mViewNodeName = viewNodeName;
+            mDOFSeat->addChild( mSeat->GetOSGNode() );
+         }
+      }
    }
 
 }

@@ -60,6 +60,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> WEAPON_FLASH_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> FLARE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> CONTROL_STATE_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> BASE_WATER_ACTOR_TYPE;
 
 #ifdef AGEIA_PHYSICS
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_PARTICLE_SYSTEM_TYPE;
@@ -80,6 +81,11 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> NECC_BOAT_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> BLIP_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> LAT_LONG_DATA_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> OCEAN_DATA_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> SURFACE_HAZE_DATA_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> WATER_GRID_ACTOR_TYPE;
 
             /// Constructor
             EntityActorRegistry();

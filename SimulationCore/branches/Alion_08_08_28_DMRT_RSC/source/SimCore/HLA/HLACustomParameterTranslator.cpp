@@ -38,7 +38,7 @@
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
 #include <SimCore/Components/MunitionsComponent.h>
-
+#include <SimCore/Array2DParser.h>
 #include <SimCore/HLA/HLACustomParameterTranslator.h>
 
 namespace SimCore
@@ -67,6 +67,10 @@ namespace SimCore
       const HLACustomAttributeType HLACustomAttributeType::VEC3D_TYPE("VEC3D_TYPE", 1, 24 );
 
       const HLACustomAttributeType HLACustomAttributeType::MILLISECOND_TIME_TYPE("MILLISECOND_TIME_TYPE", 1, 4 );
+
+      // DYNAMIC ARRAY TYPES
+      const HLACustomAttributeType HLACustomAttributeType::SHORT_ARRAY_2D_TYPE("SHORT_ARRAY_2D_TYPE", 1, (1024+4) ); // Size is NOT constant.
+      const HLACustomAttributeType HLACustomAttributeType::FLOAT_ARRAY_2D_TYPE("FLOAT_ARRAY_2D_TYPE", 1, (1024+4) ); // Size is NOT constant.
 
 
 
@@ -330,14 +334,22 @@ namespace SimCore
                // TODO: Log Error
             }
          }
-         else if (hlaType == HLACustomAttributeType::VEC3F_TYPE
+         else if(hlaType == HLACustomAttributeType::VEC3F_TYPE
             || hlaType == HLACustomAttributeType::VEC3D_TYPE )
          {
             MapFromParamToVec3(buffer, maxSize, parameter, parameter.GetDataType());
          }
-         else if (hlaType == HLACustomAttributeType::MILLISECOND_TIME_TYPE)
+         else if(hlaType == HLACustomAttributeType::MILLISECOND_TIME_TYPE)
          {
             MapFromParamToTime(buffer, maxSize, parameter, parameter.GetDataType());
+         }
+         else if(hlaType == HLACustomAttributeType::FLOAT_ARRAY_2D_TYPE)
+         {
+            MapFromParamToFloatArray2D(buffer, maxSize, parameter);
+         }
+         else if(hlaType == HLACustomAttributeType::SHORT_ARRAY_2D_TYPE)
+         {
+            MapFromParamToShortArray2D(buffer, maxSize, parameter);
          }
       }
 
@@ -422,18 +434,26 @@ namespace SimCore
                mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, oss.str().c_str() );
             }
          }
-         else if (hlaType == HLACustomAttributeType::VEC3F_TYPE
+         else if(hlaType == HLACustomAttributeType::VEC3F_TYPE
             || hlaType == HLACustomAttributeType::VEC3D_TYPE)
          {
             MapToParamFromVec3(buffer, size, parameter, parameter.GetDataType());
          }
-         else if (hlaType == HLACustomAttributeType::MILLISECOND_TIME_TYPE)
+         else if(hlaType == HLACustomAttributeType::MILLISECOND_TIME_TYPE)
          {
             MapToParamFromTime(buffer, size, parameter, parameter.GetDataType());
          }
+         else if(hlaType == HLACustomAttributeType::FLOAT_ARRAY_2D_TYPE)
+         {
+            MapToParamFromFloatArray2D(buffer, size, parameter);
+         }
+         else if(hlaType == HLACustomAttributeType::SHORT_ARRAY_2D_TYPE)
+         {
+            MapToParamFromShortArray2D(buffer, size, parameter);
+         }
       }
 
-      /////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       const HLACustomAttributeType* DetermineHLAVec3AtributeType( unsigned bufferSize )
       {
          if (bufferSize >= 24 )
@@ -447,7 +467,7 @@ namespace SimCore
          return NULL;
       }
 
-      /////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapToParamFromVec3(
          const char* buffer,
          const size_t size,
@@ -495,7 +515,7 @@ namespace SimCore
          }
       }
 
-      /////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapFromParamToVec3(
          char* buffer,
          const size_t maxSize,
@@ -583,6 +603,7 @@ namespace SimCore
             position.x(), position.y(), position.z());
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapToParamFromTime(
          const char* buffer,
          const size_t size,
@@ -606,6 +627,7 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
       void HLACustomParameterTranslator::MapFromParamToTime(
          char* buffer,
          size_t& maxSize,
@@ -627,6 +649,169 @@ namespace SimCore
             const dtGame::DoubleMessageParameter& dmp = static_cast<const dtGame::DoubleMessageParameter&>(parameter);
             ds << (unsigned long)(dmp.GetValue() * 1000.0);
          }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapToParamFromFloatArray2D(
+         const char* buffer,
+         const size_t maxSize,
+         dtGame::MessageParameter& parameter) const
+      {
+         const dtDAL::DataType& paramType = parameter.GetDataType();
+
+         if (paramType == dtDAL::DataType::FLOAT
+            || paramType == dtDAL::DataType::DOUBLE)
+         {
+            Array2DParser<float> floatArray;
+            floatArray.Decode(buffer, maxSize);
+
+            if (floatArray.GetRows()== 0)
+            {
+               return;
+            }
+
+            if (paramType == dtDAL::DataType::DOUBLE)
+            {
+               static_cast<dtGame::DoubleMessageParameter&>(parameter)
+                  .SetValue( double(floatArray.GetValue(0,0)));
+            }
+            else // FLOAT
+            {
+               static_cast<dtGame::FloatMessageParameter&>(parameter)
+                  .SetValue( floatArray.GetValue(0,0));
+            }
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapFromParamToFloatArray2D(
+         char* buffer,
+         size_t& maxSize,
+         const dtGame::MessageParameter& parameter ) const
+      {
+         const dtDAL::DataType& paramType = parameter.GetDataType();
+
+         Array2DParser<float> floatArray;
+         floatArray.SetColumns(1);
+
+         std::vector<float>& arrayData = floatArray.GetData();
+
+         float value = 0.0f;
+
+         if( paramType == dtDAL::DataType::FLOAT )
+         {
+            value = static_cast<const dtGame::FloatMessageParameter&>
+               (parameter).GetValue();
+         }
+         else if( paramType == dtDAL::DataType::DOUBLE )
+         {
+            value = float(static_cast<const dtGame::DoubleMessageParameter&>
+               (parameter).GetValue());
+         }
+
+         arrayData.push_back(value);
+         maxSize = floatArray.Encode(buffer, maxSize);
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapToParamFromShortArray2D(
+         const char* buffer,
+         const size_t maxSize,
+         dtGame::MessageParameter& parameter) const
+      {
+         const dtDAL::DataType& paramType = parameter.GetDataType();
+
+         // Integral Types
+         if (paramType == dtDAL::DataType::SHORTINT
+            || paramType == dtDAL::DataType::USHORTINT
+            || paramType == dtDAL::DataType::INT
+            || paramType == dtDAL::DataType::UINT)
+         {
+            Array2DParser<short> shortArray;
+            shortArray.Decode(buffer, maxSize);
+
+            if (shortArray.GetRows()== 0)
+            {
+               return;
+            }
+
+            if (paramType == dtDAL::DataType::USHORTINT)
+            {
+               static_cast<dtGame::UnsignedShortIntMessageParameter&>(parameter)
+                  .SetValue((unsigned short)(shortArray.GetValue(0, 0)));
+            }
+            else if (paramType == dtDAL::DataType::SHORTINT)
+            {
+               static_cast<dtGame::ShortIntMessageParameter&>(parameter)
+                  .SetValue(shortArray.GetValue(0, 0));
+            }
+            else if (paramType == dtDAL::DataType::UINT)
+            {
+               static_cast<dtGame::UnsignedIntMessageParameter&>(parameter)
+                  .SetValue((unsigned int)(shortArray.GetValue(0, 0)));
+            }
+            else // INT
+            {
+               static_cast<dtGame::IntMessageParameter&>(parameter)
+                  .SetValue(int(shortArray.GetValue(0, 0)));
+            }
+         }
+         // String Types
+         else if (paramType == dtDAL::DataType::ENUMERATION)
+         {
+            // TODO:
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void HLACustomParameterTranslator::MapFromParamToShortArray2D(
+         char* buffer,
+         size_t& maxSize,
+         const dtGame::MessageParameter& parameter) const
+      {
+         const dtDAL::DataType& paramType = parameter.GetDataType();
+
+         Array2DParser<short> shortArray;
+         shortArray.SetColumns(1);
+
+         std::vector<short>& arrayData = shortArray.GetData();
+
+         short value = 0;
+
+         if (paramType == dtDAL::DataType::SHORTINT
+            || paramType == dtDAL::DataType::USHORTINT
+            || paramType == dtDAL::DataType::INT
+            || paramType == dtDAL::DataType::UINT)
+         {
+            if (paramType == dtDAL::DataType::UINT)
+            {
+               value = short(static_cast<const dtGame::UnsignedIntMessageParameter&>
+                  (parameter).GetValue());
+            }
+            else if (paramType == dtDAL::DataType::INT)
+            {
+               value = short(static_cast<const dtGame::IntMessageParameter&>
+                  (parameter).GetValue());
+            }
+            else if (paramType == dtDAL::DataType::USHORTINT)
+            {
+               value = short(static_cast<const dtGame::UnsignedShortIntMessageParameter&>
+                  (parameter).GetValue());
+            }
+            else // SHORTINT
+            {
+               value = static_cast<const dtGame::ShortIntMessageParameter&>
+                  (parameter).GetValue();
+            }
+         }
+         // String Types
+         else if (paramType == dtDAL::DataType::ENUMERATION)
+         {
+            // TODO:
+         }
+
+         arrayData.push_back(value);
+         maxSize = shortArray.Encode(buffer, maxSize);
       }
 
    }

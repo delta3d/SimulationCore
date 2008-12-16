@@ -80,10 +80,12 @@ namespace SimCore
 
             /**
              * Helper method to actually do attaching and detaching
-             * @param attachMessage The AttachToActorMessage to use
-             * @param emancipate True to emancipate, false otherwise
+             * @param ataMsg A pointer to the attach message.  NULL, or an empty attach id mean to detach.
              */
-            void AttachOrDetachActor(const dtCore::UniqueId& id);
+            void AttachOrDetachActor(const AttachToActorMessage* ataMsg = NULL);
+
+            void DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga);
+            void DoDetach();
 
             /// This should be set to false in the PlayerActor subclass of this class
             bool mAttachAsThirdPerson;

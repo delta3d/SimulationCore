@@ -93,14 +93,23 @@ namespace SimCore
 
          /**
           * Set the max degrees this motion model can turn in relation to
-          * the parent transform.
+          * the parent transform. 
           *
-          * @param upDownLimit The max degrees the motion model can turn left and right
+          * @param upDownLimit The max degrees the motion model can turn up and down (matching)
           * from the attach-to object's heading.
-          * Values less than 0.0 mean no limit.
+          * Values less than 0.0 mean no limit. Pass in a positive.
           */
-         void SetUpDownLimit( double upDownLimit ) { mUpDownLimit = upDownLimit; }
-         double GetUpDownLimit() const { return mUpDownLimit; }
+         void SetUpDownLimit( double upDownLimit ) 
+         { 
+            mUpLimit = upDownLimit; 
+            mDownLimit = upDownLimit;
+         }
+         // Note - GetUpDownLimit makes no sense if they are not the same.
+         double GetUpDownLimit() const { return mUpLimit; }
+         void SetUpDownLimit( double upLimit, double downLimit) {
+            mUpLimit = upLimit; 
+            mDownLimit = downLimit;
+         }
 
          /**
           * Determines if this motion model needs a keyboard key held to
@@ -273,7 +282,9 @@ namespace SimCore
          // Max degrees the motion model can turn up and down
          // from the attach-to object's heading
          // Values less than 0.0 mean no limit.
-         double mUpDownLimit;
+         //double mUpDownLimit;
+         double mDownLimit;
+         double mUpLimit;
 
          // The default rest rotation (orientation) in degrees of heading-pitch-roll
          // to which the motion model should re-orient the target object, if

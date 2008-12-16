@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -29,10 +29,11 @@
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
 #include <dtDAL/datatype.h>
-#include <dtGame/gamemanager.h> 
+#include <dtGame/gamemanager.h>
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
+#include <dtCore/observerptr.h>
 #include <string>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
@@ -70,7 +71,7 @@ class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
 
    private:
      dtCore::RefPtr<dtGame::GameManager> mGM;
-     dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent;
+     dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> mRenderingSupportComponent;
      dtCore::RefPtr<dtABC::Application> mApp;
      dtCore::RefPtr<dtUtil::Log> mLogger;
 };
@@ -84,12 +85,12 @@ void TerraPageLandActorTests::setUp()
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
-   
+
    mApp = &GetGlobalApplication();
 
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication( *mApp );
- 
+
    dtCore::System::GetInstance().Config();
    dtCore::System::GetInstance().Step();
 
@@ -101,16 +102,21 @@ void TerraPageLandActorTests::setUp()
 /////////////////////////////////////////////////////////
 void TerraPageLandActorTests::tearDown()
 {
-  
+
    dtCore::System::GetInstance().Stop();
+
+   dtCore::ObserverPtr<SimCore::Components::RenderingSupportComponent> rscOb = mRenderingSupportComponent.get();
+   mRenderingSupportComponent = NULL;
 
    if (mGM.valid())
    {
-      mGM->GetApplication().Quit();
       mGM->DeleteAllActors(true);
    }
 
+   dtCore::ObserverPtr<dtGame::GameManager> gmOb = mGM.get();
    mGM = NULL;
+   CPPUNIT_ASSERT(!gmOb.valid());
+   CPPUNIT_ASSERT(!rscOb.valid());
 
    mApp = NULL;
 }
@@ -118,14 +124,14 @@ void TerraPageLandActorTests::tearDown()
 /////////////////////////////////////////////////////////
 void TerraPageLandActorTests::TestFunction()
 {
-   renderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
-   mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-   
-   // This method calls GetGameManager() so it needs to be added first
-   //CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == false);
+   mRenderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
+   mGM->AddComponent(*mRenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
-   renderingSupportComponent->SetEnableCullVisitor(true);
-   //mGM->AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+   // This method calls GetGameManager() so it needs to be added first
+   //CPPUNIT_ASSERT(mRenderingSupportComponent->UpdateCullVisitor() == false);
+
+   mRenderingSupportComponent->SetEnableCullVisitor(true);
+   //mGM->AddComponent(*mRenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
    dtCore::System::GetInstance().Step();
 
@@ -145,11 +151,12 @@ void TerraPageLandActorTests::TestFunction()
    CPPUNIT_ASSERT(ourActor->FinalizeTerrain(1) == false);
 
    // component
-   CPPUNIT_ASSERT(renderingSupportComponent->UpdateCullVisitor() == true);
+   CPPUNIT_ASSERT(mRenderingSupportComponent->UpdateCullVisitor() == true);
 
-   // this will remind the user they probably shouldnt have changed the values 
+   // this will remind the user they probably shouldnt have changed the values
    // unless they know the consequences
-   CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT        == -2);
+   CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT        == -5);
+   CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN            ==  5);
    CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_SKY_AND_ATMOSPHERE ==  9);
    CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_PRECIPITATION      == 11);
    CPPUNIT_ASSERT(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TRANSPARENT        == 10);
@@ -209,7 +216,7 @@ void TerraPageLandActorTests::TestFunction()
    //hashTable->InsertNode(nodeTest);
 
    //// get bucket for testing
-   //int bucket = nodeTest->GetHashCode() % hashTable->GetHashTableBucketAmount(); 
+   //int bucket = nodeTest->GetHashCode() % hashTable->GetHashTableBucketAmount();
 
    //// hash code should have been set
    //CPPUNIT_ASSERT(nodeTest->GetHashCode() != 0);
@@ -254,8 +261,8 @@ void TerraPageLandActorTests::TestFunction()
 
    //// do a check to make sure all 3 buckets have something in them... this is not a fail proof test
    //// it should almost always pass....unless the random number generator was hax0red
-   //CPPUNIT_ASSERT(hashTable->GetBucket(0) != NULL && 
-   //               hashTable->GetBucket(1) != NULL && 
+   //CPPUNIT_ASSERT(hashTable->GetBucket(0) != NULL &&
+   //               hashTable->GetBucket(1) != NULL &&
    //               hashTable->GetBucket(2) != NULL);
 
    //// should be able to find it
@@ -266,7 +273,7 @@ void TerraPageLandActorTests::TestFunction()
 
    //// lets see if its valid
    //CPPUNIT_ASSERT(newNode == hashTable->GetSimpleNameNode("subtiles0_125x125_0.txp"));
-  
+
    //// hopefully valid.
    //newNode = hashTable->GetNode(125,125);
    //CPPUNIT_ASSERT(newNode != NULL);

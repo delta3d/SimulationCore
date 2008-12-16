@@ -90,13 +90,15 @@ namespace DriverDemo
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform, 
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
-      NxActor *physActor = GetPhysicsHelper()->GetPhysXObject();
+      NxActor* physActor = GetPhysicsHelper()->GetPhysXObject();
 
       if(!IsRemote())
       {
          GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT | 
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          //GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
+
+         SetEntityType("HoverTank");
       }
       //else // -- Flags set in the base class.
       //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
@@ -109,12 +111,12 @@ namespace DriverDemo
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us 
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          physActor->clearBodyFlag(NX_BF_KINEMATIC);
-
-         // Add the swirly shield to remote vehicles.
-         mShield = new VehicleShield();
-         mShield->SetTranslation(osg::Vec3(0.0f, 0.0f, 0.5f));
-         AddChild(mShield.get());
       }
+
+      // Add the swirly shield to remote vehicles.
+      mShield = new VehicleShield();
+      mShield->SetTranslation(osg::Vec3(0.0f, 0.0f, 0.5f));
+      AddChild(mShield.get());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +217,7 @@ namespace DriverDemo
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
          {
             GetHoverPhysicsHelper()->DoJump(deltaTime);
-            mTimeTillJumpReady = 0.3f;
+            mTimeTillJumpReady = 3.0f;
          }
       }
    }
@@ -232,20 +234,15 @@ namespace DriverDemo
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
-   {
+   { 
       NxActor* physObject = GetPhysicsHelper()->GetPhysXObject();
 
       // The PRE physics update is only trapped if we are remote. It updates the physics 
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
       // We do this because we don't own remote vehicles and naturally can't just go 
-      // physically simulating them however we like. But, the physics scene needs them to interact with. 
+      // physically simulating them however we like. But, the physics scene needs them to interact with.
       if (IsRemote() && physObject != NULL)
       {
-         if(mShield.valid())
-         {
-            mShield->Update();
-         }
-
          osg::Matrix rot = GetMatrixNode()->getMatrix();
 
          // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of 
@@ -287,6 +284,28 @@ namespace DriverDemo
          }
       }
 
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void HoverVehicleActor::TickLocal( const dtGame::Message& tickMessage )
+   {
+      BaseClass::TickLocal( tickMessage );
+
+      if( mShield.valid() )
+      {
+         mShield->Update();
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void HoverVehicleActor::TickRemote( const dtGame::Message& tickMessage )
+   {
+      BaseClass::TickRemote( tickMessage );
+
+      if( mShield.valid() )
+      {
+         mShield->Update();
+      }
    }
 
    //////////////////////////////////////////////////////////////////////

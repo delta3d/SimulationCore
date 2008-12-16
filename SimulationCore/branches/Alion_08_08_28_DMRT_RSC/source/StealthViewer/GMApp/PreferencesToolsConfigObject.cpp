@@ -82,7 +82,7 @@ namespace StealthGM
 
       SimCore::Tools::Binoculars* binos =
          static_cast<SimCore::Tools::Binoculars*>(sic->GetTool(SimCore::MessageType::BINOCULARS));
-      if (binos != NULL)
+      if (binos != NULL && binos->IsEnabled())
       {
          std::vector<dtDAL::ActorProxy*> proxies;
          gameManager.FindActorsByType(*SimCore::Actors::EntityActorRegistry::TERRAIN_ACTOR_TYPE, proxies);
@@ -92,11 +92,6 @@ namespace StealthGM
                static_cast<SimCore::Actors::TerrainActorProxy*>(proxies[0]);
 
             binos->Update(*proxy->GetActor());
-
-            binos->SetShowReticle(GetShowBinocularImage());
-            binos->SetShowDistance(GetShowDistanceToObject());
-            binos->SetShowElevation(GetShowElevationOfObject());
-            binos->SetZoomFactor(GetMagnification());
          }
       }
       ////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +119,11 @@ namespace StealthGM
 
          }
       }
+
+      binos->SetShowReticle(GetShowBinocularImage());
+      binos->SetShowDistance(GetShowDistanceToObject());
+      binos->SetShowElevation(GetShowElevationOfObject());
+      binos->SetZoomFactor(GetMagnification());
 
       SetIsUpdated(false);
    }

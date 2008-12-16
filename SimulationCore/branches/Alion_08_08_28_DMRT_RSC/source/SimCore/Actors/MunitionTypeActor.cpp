@@ -327,8 +327,8 @@ namespace SimCore
             "The length of time that a flash effect shall remain visible", groupFire));
 
          AddProperty(new dtDAL::StringActorProperty("Fire Light", "Fire Light",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFireLight ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFireLight ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetFireLight ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetFireLight ),
             "The name of light effect for the weapon fire effect", groupFire));
 
          // GROUND IMPACT PROPERTIES
@@ -353,8 +353,8 @@ namespace SimCore
             "The maximum range in meters for ground impact sounds", groupGroundImpact));
 
          AddProperty(new dtDAL::StringActorProperty("Ground Impact Light", "Ground Impact Light",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetGroundImpactLight ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetGroundImpactLight ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetGroundImpactLight ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetGroundImpactLight ),
             "The name of light effect for the ground impact effect", groupGroundImpact));
 
          // ENTITY IMPACT PROPERTIES
@@ -379,8 +379,8 @@ namespace SimCore
             "The maximum range in meters for entity impact sounds", groupEntityImpact));
 
          AddProperty(new dtDAL::StringActorProperty("Entity Impact Light", "Entity Impact Light",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactLight ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetEntityImpactLight ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetEntityImpactLight ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetEntityImpactLight ),
             "The name of light effect for the entity impact effect", groupEntityImpact));
 
          // SMOKE PROPERTIES
@@ -396,13 +396,13 @@ namespace SimCore
 
          // TRACER PROPERTIES
          AddProperty(new dtDAL::StringActorProperty("Tracer Shader Name", "Tracer Shader Name",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetTracerShaderName ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetTracerShaderName ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderName ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderName ),
             "The name of the shader responsible for rendering the tracer", groupTracer));
 
          AddProperty(new dtDAL::StringActorProperty("Tracer Shader Group", "Tracer Shader Group",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetTracerShaderGroup ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetTracerShaderGroup ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerShaderGroup ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerShaderGroup ),
             "The shader group in which the tracer shader can be found", groupTracer));
 
          AddProperty(new dtDAL::FloatActorProperty("Tracer Life Time", "Tracer Life Time",
@@ -421,8 +421,8 @@ namespace SimCore
             "The visual thickness of the tracer in meters", groupTracer));
 
          AddProperty(new dtDAL::StringActorProperty("Tracer Light", "Tracer Light",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetTracerLight ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetTracerLight ),
+            dtDAL::StringActorProperty::SetFuncType( &actor, &MunitionEffectsInfoActor::SetTracerLight ),
+            dtDAL::StringActorProperty::GetFuncType( &actor, &MunitionEffectsInfoActor::GetTracerLight ),
             "The name of light effect for the tracer effect", groupTracer));
       }
 
@@ -455,6 +455,135 @@ namespace SimCore
       MunitionEffectsInfoActor::~MunitionEffectsInfoActor()
       {
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::Node* MunitionEffectsInfoActor::GetOSGNode() { return NULL; }
+      const osg::Node* MunitionEffectsInfoActor::GetOSGNode() const { return NULL; }
+
+      //////////////////////////////////////////////////////////////////////////
+      MunitionEffectsInfoActorProxy& MunitionEffectsInfoActor::GetProxy() { return *mProxy; }
+      const MunitionEffectsInfoActorProxy& MunitionEffectsInfoActor::GetProxy() const { return *mProxy; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFlyEffect( const std::string& fileName ) { mEffectFly = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetFlyEffect() const { return mEffectFly; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFlySound( const std::string& fileName ) { mSoundFly = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetFlySound() const { return mSoundFly; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFlySoundMinDistance( float distance ) { mSoundFly_Min = distance; }
+      float MunitionEffectsInfoActor::GetFlySoundMinDistance() const { return mSoundFly_Min; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFlySoundMaxDistance( float distance ) { mSoundFly_Max = distance; }
+      float MunitionEffectsInfoActor::GetFlySoundMaxDistance() const { return mSoundFly_Max; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireEffect( const std::string& fileName ) { mEffectFire = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetFireEffect() const { return mEffectFire; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireSound( const std::string& fileName ) { mSoundFire = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetFireSound() const { return mSoundFire; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireSoundMinDistance( float distance ) { mSoundFire_Min = distance; }
+      float MunitionEffectsInfoActor::GetFireSoundMinDistance() const { return mSoundFire_Min; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireSoundMaxDistance( float distance ) { mSoundFire_Max = distance; }
+      float MunitionEffectsInfoActor::GetFireSoundMaxDistance() const { return mSoundFire_Max; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireFlashProbability( float probability )
+      {
+         mProbabilityFireFlash = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability;
+      }
+      float MunitionEffectsInfoActor::GetFireFlashProbability() const { return mProbabilityFireFlash; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireFlashTime( float flashTime ) { mFireFlashTime = flashTime; }
+      float MunitionEffectsInfoActor::GetFireFlashTime() const { return mFireFlashTime; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetGroundImpactEffect( const std::string& fileName ) { mEffectImpactGround = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetGroundImpactEffect() const { return mEffectImpactGround; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetGroundImpactSound( const std::string& fileName ) { mSoundImpactGround = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetGroundImpactSound() const { return mSoundImpactGround; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetGroundImpactSoundMinDistance( float distance ) { mSoundImpactGround_Min = distance; }
+      float MunitionEffectsInfoActor::GetGroundImpactSoundMinDistance() const { return mSoundImpactGround_Min; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetGroundImpactSoundMaxDistance( float distance ) { mSoundImpactGround_Max = distance; }
+      float MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance() const { return mSoundImpactGround_Max; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetEntityImpactEffect( const std::string& fileName ) { mEffectImpactEntity = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetEntityImpactEffect() const { return mEffectImpactEntity; }
+      bool MunitionEffectsInfoActor::HasEntityImpactEffect() const { return ! mEffectImpactEntity.empty(); }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetEntityImpactSound( const std::string& fileName ) { mSoundImpactEntity = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetEntityImpactSound() const { return mSoundImpactEntity; }
+      bool MunitionEffectsInfoActor::HasEntityImpactSound() const { return ! mSoundImpactEntity.empty(); }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetEntityImpactSoundMinDistance( float distance ) { mSoundImpactEntity_Min = distance; }
+      float MunitionEffectsInfoActor::GetEntityImpactSoundMinDistance() const { return mSoundImpactEntity_Min; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance( float distance ) { mSoundImpactEntity_Max = distance; }
+      float MunitionEffectsInfoActor::GetEntityImpactSoundMaxDistance() const { return mSoundImpactEntity_Max; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetSmokeEffect( const std::string& fileName ) { mEffectSmoke = fileName; }
+      const std::string& MunitionEffectsInfoActor::GetSmokeEffect() const { return mEffectSmoke; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetSmokeLifeTime( float lifeTime ) { mTimeSmoke = lifeTime; }
+      float MunitionEffectsInfoActor::GetSmokeLifeTime() const { return mTimeSmoke; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerShaderName( const std::string& shaderName ) { mTracerShaderName = shaderName; }
+      const std::string& MunitionEffectsInfoActor::GetTracerShaderName() const { return mTracerShaderName; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerShaderGroup( const std::string& shaderGroup ) { mTracerShaderGroup = shaderGroup; }
+      const std::string& MunitionEffectsInfoActor::GetTracerShaderGroup() const { return mTracerShaderGroup; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerLifeTime( float lifeTime ) { mTracerLifeTime = lifeTime; }
+      float MunitionEffectsInfoActor::GetTracerLifeTime() const { return mTracerLifeTime; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerLength( float tracerLength ) { mTracerLength = tracerLength; }
+      float MunitionEffectsInfoActor::GetTracerLength() const { return mTracerLength; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerThickness( float tracerThickness ) { mTracerThickness = tracerThickness; }
+      float MunitionEffectsInfoActor::GetTracerThickness() const { return mTracerThickness; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetGroundImpactLight( const std::string& lightName ) { mLightImpactGround = lightName; }
+      const std::string& MunitionEffectsInfoActor::GetGroundImpactLight() const { return mLightImpactGround; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetEntityImpactLight( const std::string& lightName ) { mLightImpactEntity = lightName; }
+      const std::string& MunitionEffectsInfoActor::GetEntityImpactLight() const { return mLightImpactEntity; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetFireLight( const std::string& lightName ) { mLightFire = lightName; }
+      const std::string& MunitionEffectsInfoActor::GetFireLight() const { return mLightFire; }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionEffectsInfoActor::SetTracerLight( const std::string& lightName ) { mLightTracer = lightName; }
+      const std::string& MunitionEffectsInfoActor::GetTracerLight() const { return mLightTracer; }
 
 
 

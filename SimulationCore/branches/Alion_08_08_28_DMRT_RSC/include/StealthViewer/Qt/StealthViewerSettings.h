@@ -30,6 +30,11 @@
 
 #include <QtCore/QSettings>
 
+namespace StealthGM
+{
+   class ViewWindowWrapper;
+}
+
 namespace StealthQt
 {
    class StealthViewerSettings : public QSettings
@@ -57,12 +62,14 @@ namespace StealthQt
 
          static const QString PREFERENCES_GENERAL_GROUP;
             static const QString ATTACH_MODE;
+            static const QString ATTACH_POINT_NODE;
+            static const QString ATTACH_ROTATION;
+            static const QString AUTO_ATTACH_TO_CALLSIGN;
+            static const QString SHOULD_AUTO_ATTACH;
             static const QString CAMERA_COLLISION;
             static const QString PERFORMANCE;
             static const QString SHOW_ADVANCED_GENERAL_OPTIONS;
             static const QString LOD_SCALE;
-            static const QString NEAR_CLIPPING_PLANE;
-            static const QString FAR_CLIPPING_PLANE;
             static const QString RECONNECT_ON_STARTUP;
             static const QString STARTUP_CONNECTION_NAME;
 
@@ -106,8 +113,20 @@ namespace StealthQt
             static const QString PLAYBACK_INPUT_FILE;
             static const QString PLAYBACK_SPEED;
 
+         static const QString VIEW_WINDOW_GROUP;
+            static const QString NEAR_CLIPPING_PLANE;
+            static const QString FAR_CLIPPING_PLANE;
+            static const QString FOV_ASPECT_OR_HORIZONTAL;
+            static const QString FOV_ASPECT_RATIO;
+            static const QString FOV_HORIZONTAL;
+            static const QString FOV_VERTICAL_FOR_ASPECT;
+            static const QString FOV_VERTICAL_FOR_HORIZONTAL;
+            static const QString ADDITIONAL_VIEW_ROTATION;
+            static const QString ADDITIONAL_VIEW_NAME;
+            static const QString ADDITIONAL_VIEW_TITLE;
+
          /// Constructor
-         StealthViewerSettings(const QString &applicationName = StealthViewerSettings::APPLICATION);
+         StealthViewerSettings(const QString& applicationName = StealthViewerSettings::APPLICATION);
 
          /// Destructor
          virtual ~StealthViewerSettings();
@@ -227,6 +246,9 @@ namespace StealthQt
           */
          void WriteControlsPlaybackGroupToFile();
 
+         /// Writes the view/window configuration to a file.
+         void WriteViewWindowGroupToFile();
+
          /**
           * Loads the General preferences
           */
@@ -256,6 +278,12 @@ namespace StealthQt
           * Loads the controls playback
           */
          void LoadControlsPlayback();
+
+         /// Loads the view/window group settings from file.
+         void LoadViewWindowGroup();
+
+         /// Load the FOV settings into the view wrapper.
+         void LoadFOVSettings(StealthGM::ViewWindowWrapper& viewWrapper);
 
          /**
           * Removes preferences from child groups

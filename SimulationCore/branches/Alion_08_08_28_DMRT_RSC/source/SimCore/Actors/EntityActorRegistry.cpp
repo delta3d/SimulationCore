@@ -43,11 +43,13 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
+#include <SimCore/Actors/BaseWaterActor.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
 #include <SimCore/Actors/FlareActor.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
+#include <SimCore/Actors/WaterGridActor.h>
 
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -60,6 +62,9 @@
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <SimCore/Actors/oceanwater.h>
+#include <SimCore/Actors/LatLongDataActor.h>
+#include <SimCore/Actors/OceanDataActor.h>
+#include <SimCore/Actors/SurfaceHazeDataActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -105,6 +110,8 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::FLARE_ACTOR_TYPE(new dtDAL::ActorType("FlareActor", "Munitions", "The actor that represents a flare (illumination round)."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE(new dtDAL::ActorType("ControlState", "ControlState", "The base control state actor."));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::BASE_WATER_ACTOR_TYPE(new dtDAL::ActorType("BaseWaterActor", "SimCore.Actors", "The base class for water actors."));
+
 #ifdef AGEIA_PHYSICS
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaParticleSystemActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaMunitionsPSysActor", "NxAgeiaPhysicsModels"));
@@ -134,6 +141,22 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(
                new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels", "",
                         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::LAT_LONG_DATA_ACTOR_TYPE
+         = new dtDAL::ActorType("LatLongDataActor","SimCore",
+         "Actor for capturing remote environmental data.",NULL);
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::OCEAN_DATA_ACTOR_TYPE
+         = new dtDAL::ActorType("OceanDataActor","SimCore",
+         "Actor for capturing remote environmental data.", LAT_LONG_DATA_ACTOR_TYPE.get());
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::SURFACE_HAZE_DATA_ACTOR_TYPE
+         = new dtDAL::ActorType("SurfaceHazeDataActor","SimCore",
+         "Actor for capturing remote environmental data.", LAT_LONG_DATA_ACTOR_TYPE.get());
+
+      dtCore::RefPtr<dtDAL::ActorType> EntityActorRegistry::WATER_GRID_ACTOR_TYPE(
+         new dtDAL::ActorType("WaterGridActor", "SimCore", "This is the base water actor.",
+         SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE.get() ));
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -181,6 +204,7 @@ namespace SimCore
          mActorFactory->RegisterType<WeaponFlashActorProxy>(WEAPON_FLASH_ACTOR_TYPE.get());
          mActorFactory->RegisterType<FlareActorProxy>(FLARE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<BaseWaterActorProxy>(BASE_WATER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<OceanWaterActorProxy>(OCEAN_WATER_ACTOR_TYPE.get());
 
@@ -204,10 +228,16 @@ namespace SimCore
 
          mActorFactory->RegisterType<PositionMarkerActorProxy>(BLIP_ACTOR_TYPE.get());
 
+         mActorFactory->RegisterType<LatLongDataActorProxy>(LAT_LONG_DATA_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<OceanDataActorProxy>(OCEAN_DATA_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<SurfaceHazeDataActorProxy>(SURFACE_HAZE_DATA_ACTOR_TYPE.get());
+
          // OBSOLETE ACTOR TYPES - FOR backward compatible playbacks back to IPT2 (summer 2007).
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",
                "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
+
+         mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
       }
    }
 }

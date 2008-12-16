@@ -2819,7 +2819,7 @@
             </property>
             <property>
                 <name>Max Forward MPH</name>
-                <float>60</float>
+                <float>100</float>
             </property>
             <property>
                 <name>Max Strafe Or ReverseMPH</name>

@@ -34,14 +34,14 @@
 namespace StealthGM
 {
    ControlsRecordConfigObject::ControlsRecordConfigObject() :
-      mShowAdvancedOptions(false), 
-      mStartRecording(false), 
-      mStopRecording(false), 
-      mAutoKeyFrame(false), 
-      mAutoKeyFrameInterval(5), 
-      mAddKeyFrame(false), 
-      mIsRecording(false), 
-      mDisconnect(false), 
+      mShowAdvancedOptions(false),
+      mStartRecording(false),
+      mStopRecording(false),
+      mAutoKeyFrame(false),
+      mAutoKeyFrameInterval(5),
+      mAddKeyFrame(false),
+      mIsRecording(false),
+      mDisconnect(false),
       mJoinFederation(false),
       mLastRequestTime(5.0)
    {
@@ -53,12 +53,11 @@ namespace StealthGM
 
    }
 
-   void ControlsRecordConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
+   void ControlsRecordConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
-      dtGame::GMComponent *component = 
-         gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME);
-      StealthInputComponent *inputComponent = 
-         static_cast<StealthInputComponent*>(component);
+      StealthInputComponent* inputComponent = NULL;
+      gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME, inputComponent);
+
       // Shouldn't happen, but better safe than sorry
       if(inputComponent == NULL)
          return;
@@ -88,8 +87,8 @@ namespace StealthGM
 
          if(mAddKeyFrame)
          {
-            std::string time = dtUtil::DateTime::ToString(time_t(gameManager.GetSimulationClockTime() / 1000000LL), 
-               dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT); 
+            std::string time = dtUtil::DateTime::ToString(time_t(gameManager.GetSimulationClockTime() / 1000000LL),
+               dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT);
             std::ostringstream oss;
             oss << "KeyFrame " << time;
 
@@ -122,9 +121,9 @@ namespace StealthGM
                SimCore::HLA::HLAConnectionComponent* hlaConnectComp;
                gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaConnectComp);
 
-               inputComponent->SetConnectionParameters(hlaConnectComp->GetFedEx(), 
-                                                       hlaConnectComp->GetFedFile(), 
-                                                       hlaConnectComp->GetFedName(), 
+               inputComponent->SetConnectionParameters(hlaConnectComp->GetFedEx(),
+                                                       hlaConnectComp->GetFedFile(),
+                                                       hlaConnectComp->GetFedName(),
                                                        hlaConnectComp->GetRidFile());
                inputComponent->JoinFederation();
             }
@@ -134,7 +133,7 @@ namespace StealthGM
          // Convert from minutes to seconds
          // The UI gives the option in minutes, as this is recommended for performance
          // We don't want some user setting his auto interval to 10 seconds and thinking
-         // our app sucks. 
+         // our app sucks.
          if(mAutoKeyFrame)
          {
             inputComponent->HandleSetAutoKeyFrameInterval(double(mAutoKeyFrameInterval * 60.0));
@@ -147,7 +146,7 @@ namespace StealthGM
 
          mIsRecording = inputComponent->IsInRecord();
 
-         // If we stopped a recording, switched to playback, turned on auto markers, added a keyframe, 
+         // If we stopped a recording, switched to playback, turned on auto markers, added a keyframe,
          // or pretty much anything else, then we should get an updated keyframes
          inputComponent->HandleGetKeyFrames();
 

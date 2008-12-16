@@ -45,7 +45,6 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/nodecollector.h>
 #include <dtCore/camera.h>
-#include <dtCore/boundingboxvisitor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/groupactorproperty.h>
@@ -53,6 +52,7 @@
 #include <dtDAL/actortype.h>
 #include <dtDAL/namedparameter.h>
 
+#include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
 
@@ -127,12 +127,12 @@ namespace SimCore
             dtDAL::MakeFunctor(e, &Platform::SetMuzzleFlashPosition),
             dtDAL::MakeFunctorRet(e, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
-         
+
          static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
          AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
-            PROPERTY_ARTICULATION_PARAM_ARRAY, 
-            dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray), 
-            dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray), 
+            PROPERTY_ARTICULATION_PARAM_ARRAY,
+            dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray),
+            dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray),
             "The list of articulated parameters for modifying DOF's", ""));
 
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
@@ -168,19 +168,19 @@ namespace SimCore
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(e, 
+            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(e,
             &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();
-         
+
          Platform* actor = static_cast<Platform*>(GetActor());
 
-         AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE, 
+         AddInvokable(*new dtGame::Invokable(Platform::INVOKABLE_TICK_CONTROL_STATE,
             dtDAL::MakeFunctor(*actor, &Platform::TickControlState)));
 
          AddInvokable(*new dtGame::Invokable("TimeElapsedForSoundIdle",
@@ -296,7 +296,7 @@ namespace SimCore
             dtCore::NodeCollector* nodeCollector = GetNodeCollector();
 
             // ...and there is a head light DOF...
-            osgSim::DOFTransform* lightTrans = nodeCollector != NULL 
+            osgSim::DOFTransform* lightTrans = nodeCollector != NULL
                ? nodeCollector->GetDOFTransform( DOF_NAME_HEAD_LIGHTS )
                : NULL;
             if( lightTrans == NULL )
@@ -364,7 +364,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       osg::Vec3 ComputeDimensions( osg::Node& node )
       {
-         dtCore::BoundingBoxVisitor bbv;
+         dtUtil::BoundingBoxVisitor bbv;
          node.accept(bbv);
 
          osg::Vec3 modelDimensions;
@@ -400,7 +400,7 @@ namespace SimCore
             }
             else
             {
-               mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,  
+               mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "Damage state is not a valid state");
 
                setUseDimensions = false;
@@ -413,7 +413,7 @@ namespace SimCore
             //factor in any particle system attached to us with our bounding volume
             if(modelToCalcDims != NULL)
             {
-               GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));               
+               GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));
             }
 
             GetDeadReckoningHelper().SetUseModelDimensions(setUseDimensions);
@@ -444,7 +444,7 @@ namespace SimCore
       }
 
       /// For the different physics models
-      osg::Node* Platform::GetNonDamagedFileNode() 
+      osg::Node* Platform::GetNonDamagedFileNode()
       {
          return mNonDamagedFileNode.get()->getChild(0);
       }
@@ -459,12 +459,12 @@ namespace SimCore
       osg::Node* Platform::GetDestroyedFileNode()
       {
          return mDestroyedFileNode.get()->getChild(0);
-      }  
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<osg::Switch> Platform::GetSwitchNode() 
-      { 
-         return mSwitchNode; 
+      dtCore::RefPtr<osg::Switch> Platform::GetSwitchNode()
+      {
+         return mSwitchNode;
       }
 
       void Platform::HandleModelDrawToggle(bool draw)
@@ -483,19 +483,19 @@ namespace SimCore
             BaseEntityActorProxy::DamageStateEnum& damageState = GetDamageState();
             if(damageState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
                mSwitchNode->setSingleChildOn(0);
-            else if(damageState == BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE 
+            else if(damageState == BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE
                   || damageState == BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
                mSwitchNode->setSingleChildOn(1);
             else if(damageState == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
                mSwitchNode->setSingleChildOn(2);
            // mNode->asGroup()->addChild(mSwitchNode.get());
             if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Showing Model on Platform \"%s\" with damage state \"%s\".", 
+               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Showing Model on Platform \"%s\" with damage state \"%s\".",
                      GetName().c_str(), GetDamageState().GetName().c_str());
          }
 
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::LoadDamageableFile(const std::string &fileName, PlatformActorProxy::DamageStateEnum &state)
       {
@@ -506,17 +506,17 @@ namespace SimCore
                if (mNonDamagedFileNode->getNumChildren() > 0)
                {
                   std::ostringstream oss;
-                  oss << "Platform forced a reload of model files: File [" << fileName      << 
+                  oss << "Platform forced a reload of model files: File [" << fileName      <<
                          "], Actor Type[" << GetGameActorProxy().GetActorType().GetName() <<
                          "], Name[" << GetName() << "], Id[" << GetUniqueId().ToString()  <<
                          "].";
 
-                  mLogger->LogMessage(dtUtil::Log::LOG_WARNING, 
+                  mLogger->LogMessage(dtUtil::Log::LOG_WARNING,
                                       __FUNCTION__, __LINE__, oss.str().c_str());
 
-                  //std::cout << "Platform - Loading NO DAMAGE File [" << fileName  << "] for actor type[" << 
-                  //   GetGameActorProxy().GetActorType().GetName() << "].  Previous Num Children was[" << 
-                  //   mNonDamagedFileNode->getNumChildren() << "], name[" << GetName() << "], Id[" << 
+                  //std::cout << "Platform - Loading NO DAMAGE File [" << fileName  << "] for actor type[" <<
+                  //   GetGameActorProxy().GetActorType().GetName() << "].  Previous Num Children was[" <<
+                  //   mNonDamagedFileNode->getNumChildren() << "], name[" << GetName() << "], Id[" <<
                   //   GetUniqueId().ToString() << "]." << std::endl;
                }
                mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
@@ -524,7 +524,7 @@ namespace SimCore
                dtCore::RefPtr<osg::Node> cachedOriginalNode;
                dtCore::RefPtr<osg::Node> copiedNode;
                if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                   std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
                copiedNode->setName("No Damage");
                mNonDamagedFileNode->addChild(copiedNode.get());
@@ -534,7 +534,7 @@ namespace SimCore
                //osg::Node *node = mLoader.LoadFile(fileName, true);
                //if(node == NULL)
                //   throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, std::string("Model file could not be loaded: ") + fileName);
-              
+
                //node->setName("No Damage");
                //mNonDamagedFileNode->addChild(node);
                //LoadNodeCollector(node);
@@ -546,7 +546,7 @@ namespace SimCore
                dtCore::RefPtr<osg::Node> cachedOriginalNode;
                dtCore::RefPtr<osg::Node> copiedNode;
                if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                   std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
                copiedNode->setName("Slight Damage");
                mDamagedFileNode->addChild(copiedNode.get());
@@ -629,7 +629,7 @@ namespace SimCore
                mDestroyedFileNode->setUserData(NULL);
             }
             else
-               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                "Damage state is not supported", __FILE__, __LINE__);
          }
       }
@@ -639,14 +639,14 @@ namespace SimCore
       {
          if (GetShaderGroup().empty())
             return;
-         
+
          const dtCore::ShaderGroup *shaderGroup =
             dtCore::ShaderManager::GetInstance().FindShaderGroupPrototype(GetShaderGroup());
 
          //First get the shader group assigned to this actor.
          if (shaderGroup == NULL)
          {
-            //mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,  
+            //mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
             //   "Could not find shader group: [" + GetShaderGroup() + "].");
             return;
          }
@@ -673,7 +673,7 @@ namespace SimCore
                }
                else
                {
-                  //mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,  
+                  //mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,
                   //   "Could not find any shaders in shader group: [" + GetShaderGroup() + "].");
                   return;
                }
@@ -699,7 +699,7 @@ namespace SimCore
          }
          catch (const dtUtil::Exception &e)
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,  
+            mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,
                "Caught Exception while assigning shader: " + e.ToString());
             return;
          }
@@ -754,7 +754,7 @@ namespace SimCore
             mDamagedFileNode->accept(*visitor.get());
             mDestroyedFileNode->accept(*visitor.get());
          }
-         
+
          if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
             LoadSFXEngineIdleLoop();
       }
@@ -843,7 +843,7 @@ namespace SimCore
                newValue, *GetNodeCollector(), GetDeadReckoningHelper() );
          }
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtDAL::NamedGroupParameter> Platform::GetArticulatedParametersArray()
       {
@@ -863,7 +863,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      dtCore::NodeCollector* Platform::GetNodeCollector() 
+      dtCore::NodeCollector* Platform::GetNodeCollector()
       {
          return mNodeCollector.get();
       }
@@ -889,7 +889,7 @@ namespace SimCore
       {
          if( mTimeUntilControlStateUpdate >= 0.0f )
          {
-            mTimeUntilControlStateUpdate -= 
+            mTimeUntilControlStateUpdate -=
                static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaRealTime();
          }
 
@@ -906,7 +906,7 @@ namespace SimCore
             }
          }
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {

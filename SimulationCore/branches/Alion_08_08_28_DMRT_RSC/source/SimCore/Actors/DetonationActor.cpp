@@ -254,7 +254,7 @@ namespace SimCore
          mDelayTime(3.0f),
          mLingeringSmokeSecs(0.0f), 
          mRenderExplosionTimerSecs(2.0f), 
-         mDeleteActorTimerSecs(20.0f),
+         mDeleteActorTimerSecs(5.0f),
          mUsesPhysics(false)
       {
          AddChild(mExplosionSystem.get());

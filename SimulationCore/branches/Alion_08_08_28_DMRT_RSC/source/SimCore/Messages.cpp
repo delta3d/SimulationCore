@@ -187,25 +187,52 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////////////////////
    AttachToActorMessage::AttachToActorMessage()
+   : mAttachToActorParam(*new dtGame::ActorMessageParameter("AttachToActor"))
+   , mAttachPointNodeNameParam(*new dtGame::StringMessageParameter("Attach Point Node Name"))
+   , mInitialAttachRotationHPRParam(*new dtGame::Vec3MessageParameter("Initial Attach Rotation HPR"))
    {
-      AddParameter(new dtGame::ActorMessageParameter("AttachToActor"));
+      AddParameter(&mAttachToActorParam);
+      AddParameter(&mAttachPointNodeNameParam);
+      AddParameter(&mInitialAttachRotationHPRParam);
    }
 
    void AttachToActorMessage::SetAttachToActor(const dtCore::UniqueId& actorId)
    {
-      static_cast<dtGame::ActorMessageParameter*>(GetParameter("AttachToActor"))->SetValue(actorId);
+      mAttachToActorParam.SetValue(actorId);
    }
 
    const dtCore::UniqueId& AttachToActorMessage::GetAttachToActor() const
    {
-      return static_cast<const dtGame::ActorMessageParameter*>(GetParameter("AttachToActor"))->GetValue();
+      return mAttachToActorParam.GetValue();
+   }
+
+   void AttachToActorMessage::SetAttachPointNodeName(const std::string& name)
+   {
+      mAttachPointNodeNameParam.SetValue(name);
+   }
+
+   const std::string& AttachToActorMessage::GetAttachPointNodeName() const
+   {
+      return mAttachPointNodeNameParam.GetValue();
+   }
+
+   void AttachToActorMessage::SetInitialAttachRotationHPR(const osg::Vec3& hpr) const
+   {
+      mInitialAttachRotationHPRParam.SetValue(hpr);
+   }
+
+   const osg::Vec3& AttachToActorMessage::GetInitialAttachRotationHPR() const
+   {
+      return mInitialAttachRotationHPRParam.GetValue();
    }
 
    AttachToActorMessage::~AttachToActorMessage()
    {
    }
 
+   /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
    ShotFiredMessage::ShotFiredMessage()
    {

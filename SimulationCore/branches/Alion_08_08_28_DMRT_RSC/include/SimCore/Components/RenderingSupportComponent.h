@@ -82,6 +82,9 @@ namespace SimCore
          public:
             typedef unsigned LightID;
             static const unsigned MAX_LIGHTS;
+            static const unsigned MAIN_CAMERA_CULL_MASK;
+            static const unsigned ADDITIONAL_CAMERA_CULL_MASK;
+            static const unsigned MAIN_CAMERA_ONLY_FEATURE_NODE_MASK;
 
             struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
             {
@@ -183,15 +186,16 @@ namespace SimCore
 
             // loads cull visitor stuff.
             void OnAddedToGM();
+            void OnRemovedFromGM();
 
             // so its decoupled from tick local, and tick local is not cluttered
             // with future stuff.
             bool UpdateCullVisitor();
 
-            void UpdateViewMatrix();
-
             ///by default we will always create a cullvisitor
             AgeiaTerrainCullVisitor* GetCullVisitor();
+
+            void AddCamera(osg::Camera* cam);
 
          protected:
             /// Destructor
@@ -202,7 +206,7 @@ namespace SimCore
 
             void SetPosition(DynamicLight* dl);
 
-            void InitializeCullVisitor();
+            void InitializeCullVisitor(dtCore::Camera& pCamera);
             void InitializeFrameBuffer();
 
             // Finds all the dynamic light actor prototypes in the GM and holds onto them
@@ -211,11 +215,16 @@ namespace SimCore
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
             void UpdateDynamicLights(float dt);
+            void UpdateViewMatrix(dtCore::Camera& pCamera);
+            void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP);
+            void ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill);
+            bool IntersectRayPlane(const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint);
+            float GetAngleBetweenVectors(const osg::Vec3& v1, const osg::Vec3& v2);
 
          public:
             //here we define constants for defining the render bins
             //so we don't have hard coded render bin numbers all over the place
-            static const int RENDER_BIN_ENVIRONMENT       = -2;
+            static const int RENDER_BIN_ENVIRONMENT       = -5;
             static const int RENDER_BIN_TERRAIN           = 5;
             static const int RENDER_BIN_SKY_AND_ATMOSPHERE=  9;
             static const int RENDER_BIN_PRECIPITATION     = 11;

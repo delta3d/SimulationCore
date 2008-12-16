@@ -71,10 +71,12 @@ namespace SimCore
          EnableCloudPlane(true);
          AddChild(mEnvironment.get());
 
+         ChangeClouds(3, 2.0f, 2.0f);
+
          osg::Depth* depthState = new osg::Depth(osg::Depth::ALWAYS, 1.0f , 1.0f );
          osg::StateSet* cloudPlaneSS = mCloudPlane->GetOSGNode()->getOrCreateStateSet();
          cloudPlaneSS->setAttributeAndModes(depthState);
-         cloudPlaneSS->setRenderBinDetails( -1, "RenderBin" );
+         cloudPlaneSS->setRenderBinDetails( -3, "RenderBin" );
 
          //set default fog distance to a clear day
          mFog->setEnd( 600000 );

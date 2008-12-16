@@ -51,6 +51,33 @@
       </shader>
    </shadergroup>
 
+   <shadergroup name="UnderWaterTerrainShaderGroup">
+      <shader name="TerrainShader" default="yes">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/terrain_functions.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/terrain_functions.frag</source>
+         <source type="Vertex">Shaders/Base/terrain_underwater.vert</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/terrain_underwater.frag</source>
+         <parameter name="baseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="secondaryTexture">
+            <texture2D textureUnit="2">
+               <source type="Image">Textures/ShadersBase/terrain_detailmap.png</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="shaderInEffect">
+            <float defaultValue="1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
    <shadergroup name="EphemerisFogGroup">
       <shader name="EphemFog" default="yes">
 
@@ -80,6 +107,53 @@
                <source type="Auto"/>
             </texture2D>
          </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="SimpleWaterVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/water_functions.vert</source>
+         <source type="Vertex">Shaders/Base/shader_nogloss_water.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.vert</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/Base/shader_nogloss_water.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="WaterGroup">
+      <shader name="WaterShader" default="yes">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/water.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water.frag</source>
+      </shader>
+      <shader name="TextureWave" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/texture_wave.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/texture_wave.frag</source>
+      </shader>
+      <shader name="WaveTest" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/wave_test.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/wave_test.frag</source>
+      </shader>
+      <shader name="UnderWater" default="no">
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Vertex">Shaders/Base/underwater.vert</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/water_functions.frag</source>
+         <source type="Fragment">Shaders/Base/underwater.frag</source>
       </shader>
    </shadergroup>
 

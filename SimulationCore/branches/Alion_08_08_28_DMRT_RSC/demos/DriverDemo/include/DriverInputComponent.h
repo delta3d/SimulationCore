@@ -118,11 +118,11 @@ namespace DriverDemo
             const std::string& fedFile,
             const std::string& federateName);
    
+         // GUI Tool Methods: to be moved to a new GUI Component.
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
          void RemoveTool(SimCore::MessageType &type);
          bool IsToolEnabled(SimCore::MessageType &type) const;
-         void UpdateTools( float timeDelta );
          void ToggleTool(SimCore::MessageType &msgType);
          SimCore::MessageType& GetEnabledTool() const;
          void DisableAllTools();
@@ -145,7 +145,10 @@ namespace DriverDemo
          // sets the mVehicle, used through gameappcomponent
          void SetCurrentVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle) {mVehicle = &vehicle;}
    
-         // This function is called by Attach to vehicle when the
+         // Determines if the vehicle can be "turned on a dime".
+         bool IsVehiclePivotable( const SimCore::Actors::BasePhysicsVehicleActor& vehicle ) const;
+
+            // This function is called by Attach to vehicle when the
          // application is in GUNNER mode.
          // This does the dirty work of setting up the ring mount DOF
          // with a motion model.
@@ -247,16 +250,13 @@ namespace DriverDemo
    
          void SetViewMode();
 
+         void ToggleView();
+         void AttachToView( const std::string& viewNodeName );
+
       private:
    
          // ?:???? void UpdateInteriorModel();
          void StopAnyWeaponsFiring();
-
-         // The common DOF names found on most vehicle models 
-         const std::string DOF_NAME_WEAPON_PIVOT;
-         const std::string DOF_NAME_WEAPON_STEM;
-         const std::string DOF_NAME_RINGMOUNT;
-         const std::string DOF_NAME_RINGMOUNT_SEAT;
    
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
@@ -296,6 +296,7 @@ namespace DriverDemo
          osg::observer_ptr<osgSim::DOFTransform> mDOFSeat;
          osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
          osg::observer_ptr<osgSim::DOFTransform> mDOFWeapon;
+         osg::observer_ptr<osgSim::DOFTransform> mDOFFirePoint;
          //osg::observer_ptr<osgSim::DOFTransform> mDOFWeaponStem;
          //float mDOFWeaponStemOffset; // offset up/down of the weapon mount
          //float mDOFWeaponStemOffsetLimit; // the maximum up/down displacement of the weapon mount (in meters)
@@ -333,6 +334,9 @@ namespace DriverDemo
          bool mPlayerAttached;
          SimCore::Actors::BaseEntityActorProxy::DamageStateEnum* mLastDamageState; 
          // the last reported state of the vehicle
+
+         // View mode variable.
+         std::string mViewNodeName;
    
          // Initial starting position
          osg::Vec3 mStartPosition;
@@ -348,10 +352,18 @@ namespace DriverDemo
          dtCore::RefPtr<dtAudio::Sound> mSoundAmbient;
    
          // Sound file names
-         static const std::string SOUND_TURRET_TURN_START;
-         static const std::string SOUND_TURRET_TURN;
-         static const std::string SOUND_TURRET_TURN_END;
-         static const std::string SOUND_AMBIENT;
+         static const dtUtil::RefString SOUND_TURRET_TURN_START;
+         static const dtUtil::RefString SOUND_TURRET_TURN;
+         static const dtUtil::RefString SOUND_TURRET_TURN_END;
+         static const dtUtil::RefString SOUND_AMBIENT;
+
+         // The common DOF names found on most vehicle models 
+         static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
+         static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
+         static const dtUtil::RefString DOF_NAME_RINGMOUNT;
+         static const dtUtil::RefString DOF_NAME_VIEW_01;
+         static const dtUtil::RefString DOF_NAME_VIEW_02;
+         static const dtUtil::RefString DOF_NAME_VIEW_DEFAULT;
    };
 }
 #endif

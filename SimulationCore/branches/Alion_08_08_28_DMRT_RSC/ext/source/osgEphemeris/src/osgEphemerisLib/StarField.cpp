@@ -39,7 +39,7 @@ StarField::StarField( const std::string &fileName, double radius ):
          * can't use this method for Winders, because... well, you guessed it.
          * Previously, star_data was:
          *
-         *   static const char *star_data = 
+         *   static const char *star_data =
          *       "Sirius,1.767793,-0.291751,-1.46\n"
          *       "Canopus,1.675305,-0.919716,-0.72\n"
          *       "Arcturus,3.733528,0.334798,-0.04\n"
@@ -102,7 +102,7 @@ void StarField::_buildLabels()
 }
 
 
-std::string StarField::_vertexShaderProgram = 
+std::string StarField::_vertexShaderProgram =
     "uniform float starAlpha;"
     "uniform float pointSize;"
     "varying vec4 starColor;"
@@ -115,7 +115,7 @@ std::string StarField::_vertexShaderProgram =
     "}"
     ;
 
-std::string StarField::_fragmentShaderProgram = 
+std::string StarField::_fragmentShaderProgram =
     "varying vec4 starColor;"
     "void main( void )"
     "{"
@@ -158,8 +158,8 @@ void StarField::_buildGeometry()
     std::vector<StarData>::iterator p;
     for( p = _stars.begin(); p != _stars.end(); p++ )
     {
-        osg::Vec3 v = osg::Vec3(0,_radius,0) * 
-                        osg::Matrix::rotate( p->declination, 1, 0, 0 ) * 
+        osg::Vec3 v = osg::Vec3(0,_radius,0) *
+                        osg::Matrix::rotate( p->declination, 1, 0, 0 ) *
                         osg::Matrix::rotate( p->right_ascension, 0, 0, 1 );
 
 
@@ -184,14 +184,19 @@ void StarField::_buildGeometry()
     sset->setMode( GL_VERTEX_PROGRAM_POINT_SIZE, osg::StateAttribute::ON );
     osg::ref_ptr<osg::Program> program = new osg::Program;
 
-    program->addShader( new osg::Shader(osg::Shader::VERTEX, _vertexShaderProgram ));
+    osg::Shader* vshader = new osg::Shader(osg::Shader::VERTEX, _vertexShaderProgram );
+    vshader->setName("StarField Vertex Shader");
+    program->addShader(vshader);
     /*
     osg::ref_ptr<osg::Shader> vertexShader = new osg::Shader(osg::Shader::VERTEX);
     vertexShader->loadShaderSourceFromFile("./stars.vert");
     program->addShader( vertexShader.get() );
     */
 
-     program->addShader( new osg::Shader(osg::Shader::FRAGMENT, _fragmentShaderProgram ));
+    osg::Shader* fshader = new osg::Shader(osg::Shader::FRAGMENT, _fragmentShaderProgram );
+    fshader->setName("StarField Fragment Shader");
+    program->addShader( fshader );
+    program->setName("StarField Program");
      /*
      osg::ref_ptr<osg::Shader> fragmentShader = new osg::Shader(osg::Shader::FRAGMENT);
      fragmentShader->loadShaderSourceFromFile("./stars.frag");
@@ -238,7 +243,7 @@ void StarField::setSunAltitude( double sunAltitude )
         // Transparent stars to see the right color for the dark part of the moon.
         if( alpha > 1.0 )
             alpha = 1.0;
-        if( alpha < 0.0 ) 
+        if( alpha < 0.0 )
             alpha = 0.0;
 
         unsigned char calpha = (unsigned char)(alpha * 255.0);
@@ -253,15 +258,15 @@ void StarField::setSunAltitude( double sunAltitude )
 #endif
 
     float alpha = sunAltitude > 0.0 ? 0.0 : fabs(sunAltitude/10.0);
-    if( alpha > 1.0 ) 
+    if( alpha > 1.0 )
         alpha = 1.0;
     _starAlpha->set( alpha );
 }
 
 
-unsigned int StarField::getNumStars() 
-{ 
-    return _stars.size(); 
+unsigned int StarField::getNumStars()
+{
+    return _stars.size();
 }
 
 StarField::StarData::StarData( std::stringstream &ss )
@@ -288,7 +293,7 @@ void StarField::_parseStream( std::istream  &is )
         if( is.eof() )
             break;
 
-        if( line.empty() || line[0] == '#' ) 
+        if( line.empty() || line[0] == '#' )
             continue;
 
         std::stringstream ss(line);

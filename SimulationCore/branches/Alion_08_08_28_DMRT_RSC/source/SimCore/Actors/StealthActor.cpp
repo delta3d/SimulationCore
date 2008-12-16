@@ -45,10 +45,12 @@ namespace SimCore
          SetClassName("SimCore::Actors::StealthActor");
       }
 
+      //////////////////////////////////////////////////////
       StealthActorProxy::~StealthActorProxy()
       {
       }
 
+      //////////////////////////////////////////////////////
       void StealthActorProxy::BuildInvokables()
       {
          PlatformActorProxy::BuildInvokables();
@@ -69,6 +71,7 @@ namespace SimCore
 
       }
 
+      //////////////////////////////////////////////////////
       void StealthActorProxy::BuildPropertyMap()
       {
 	   	PlatformActorProxy::BuildPropertyMap();
@@ -81,6 +84,7 @@ namespace SimCore
              "Property for the attach offset."));
       }
 
+      //////////////////////////////////////////////////////
        void StealthActorProxy::CreateActor()
        {
           StealthActor* pEntity = new StealthActor(*this);
@@ -88,6 +92,7 @@ namespace SimCore
           pEntity->InitDeadReckoningHelper();
        }
 
+       //////////////////////////////////////////////////////
       void StealthActorProxy::OnEnteredWorld()
       {
          if (!IsRemote())
@@ -121,77 +126,121 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::AttachOrDetachActor(const dtCore::UniqueId& id)
+      void StealthActor::DoDetach()
       {
-         dtGame::GameActorProxy* ga = GetGameActorProxy().GetGameManager()->FindGameActorById(id);
+         // Unattach from the old parent or scene.
+         if (GetParent() != NULL)
+         {
+            BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
+            if (entityParent != NULL)
+            {
+               if(!mAttachAsThirdPerson)
+               {
+                  entityParent->SetIsPlayerAttached(false);
+                  entityParent->SetDrawingModel(true);
+               }
+
+               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, entityParent->GetUniqueId(), "Detach");
+               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
+            }
+
+            SetDeadReckoningAlgorithm(*mOldDRA);
+            GetParent()->RemoveChild(this);
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////////
+      void StealthActor::DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga)
+      {
+         dtCore::UniqueId id = ataMsg.GetAttachToActor();
+
+         GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, id, "Detach");
+         GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, id, "UpdateFromParent");
+
+         dtCore::Transform xform;
+         xform.MakeIdentity();
+         xform.SetRotation(ataMsg.GetInitialAttachRotationHPR());
+
+         BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetActor());
+         if (entity != NULL)
+         {
+            if(!mAttachAsThirdPerson)
+            {
+               entity->SetDrawingModel(false);
+               entity->SetIsPlayerAttached(true);
+            }
+            else
+            {
+               entity->SetDrawingModel(true);
+               entity->SetIsPlayerAttached(true);
+            }
+            SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
+
+         }
+
+         bool foundNode = false;
+         IGActor* igActor = dynamic_cast<IGActor*>(ga.GetActor());
+         if (igActor != NULL)
+         {
+            //we don't support named parts at his level.
+            if (GetSceneParent() != NULL)
+            {
+              GetSceneParent()->RemoveDrawable(this);
+            }
+            else if (GetParent() != NULL)
+            {
+              Emancipate();
+            }
+
+            foundNode = igActor->AddChild(this, ataMsg.GetAttachPointNodeName());
+         }
+
+         // Only set an offset if there is no attach node.
+         if (ataMsg.GetAttachPointNodeName().empty() || !foundNode)
+         {
+            //Set the translation first to be the same as the parent.
+            //Make an identity transform and move it up a bit.
+            osg::Vec3 translation = mAttachOffset;
+            xform.SetTranslation(translation);
+         }
+
+         SetTransform(xform, REL_CS);
+      }
+      //////////////////////////////////////////////////////////////////////////////
+      void StealthActor::AttachOrDetachActor(const AttachToActorMessage* ataMsg)
+      {
+         dtGame::GameActorProxy* ga = NULL;
+         dtCore::UniqueId id("");
+
+         if (ataMsg != NULL)
+         {
+            id = ataMsg->GetAttachToActor();
+            ga = GetGameActorProxy().GetGameManager()->FindGameActorById(id);
+         }
 
          dtCore::Transform originalTransform;
          GetTransform(originalTransform, dtCore::Transformable::ABS_CS);
 
          // If we have a new actor to attach to, or the caller explicitly passed in a NULL id
-         // to mark a detach, then...
+         // to mark a detach, then. detach from the old actor.
          if (ga != NULL || id.ToString().empty())
          {
-            // Unattach from the old parent or scene.
-            if (GetParent() != NULL)
-            {
-               BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
-               if (entityParent != NULL)
-               {
-                  if(!mAttachAsThirdPerson)
-                  {
-                     entityParent->SetIsPlayerAttached(false);
-                     entityParent->SetDrawingModel(true);
-                  }
-               }
-               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, entityParent->GetUniqueId(), "Detach");
-               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
-               SetDeadReckoningAlgorithm(*mOldDRA);
-            }
-            Emancipate();
+            DoDetach();
          }
 
          if (ga != NULL)
          {
-            // If we are for some reason attaching
-            if(GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL &&
-               GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetId() == id)
+            // If we are for some reason attaching to the environment actor.
+            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL &&
+                GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetId() == id)
             {
-               dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
+               dtGame::IEnvGameActor& ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
                ea.AddActor(*this);
                SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
             }
             else
             {
-               ga->GetGameActor().AddChild(this);
-
-               GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, ga->GetId(), "Detach");
-               GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, ga->GetId(), "UpdateFromParent");
-
-               //Set the translation first to be the same as the parent.
-               //Make an identity transform and move it up a bit.
-               dtCore::Transform xform;
-               osg::Vec3 translation;
-               xform.GetTranslation(translation);
-               translation += mAttachOffset;
-               xform.SetTranslation(translation);
-               SetTransform(xform, REL_CS);
-
-               BaseEntity* entity = dynamic_cast<BaseEntity*>(ga->GetActor());
-               if (entity != NULL)
-               {
-                  if(!mAttachAsThirdPerson)
-                  {
-                     entity->SetDrawingModel(false);
-                     entity->SetIsPlayerAttached(true);
-                  }
-                  else
-                  {
-                     entity->SetDrawingModel(true);
-                     entity->SetIsPlayerAttached(true);
-                  }
-                  SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
-               }
+               DoAttach(*ataMsg, *ga);
             }
          }
          else if (id.ToString().empty())
@@ -209,10 +258,14 @@ namespace SimCore
                   ea.AddActor(*this);
                }
                else
+               {
                   GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(this);
+               }
             }
             else
+            {
                SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
+            }
          }
       }
 
@@ -239,19 +292,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::AttachToActor(const dtGame::Message& attachMessage)
       {
-         AttachOrDetachActor(static_cast<const SimCore::AttachToActorMessage&>(attachMessage).GetAttachToActor());
+         AttachOrDetachActor(&static_cast<const SimCore::AttachToActorMessage&>(attachMessage));
       }
 
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::Detach(const dtGame::Message &msg)
       {
-         AttachOrDetachActor(dtCore::UniqueId(""));
+         AttachOrDetachActor(NULL);
       }
 
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::WarpToPosition(const dtGame::Message& warpToPosMessage)
       {
-         AttachOrDetachActor(dtCore::UniqueId(""));
+         AttachOrDetachActor(NULL);
          const SimCore::StealthActorUpdatedMessage& wtpMsg = static_cast<const SimCore::StealthActorUpdatedMessage&>(warpToPosMessage);
          dtCore::Transform xform;
          GetTransform(xform);
@@ -265,6 +318,5 @@ namespace SimCore
          BaseEntity* entityParent = dynamic_cast<BaseEntity*>(GetParent());
          return (entityParent != NULL);
       }
-
    }
 }

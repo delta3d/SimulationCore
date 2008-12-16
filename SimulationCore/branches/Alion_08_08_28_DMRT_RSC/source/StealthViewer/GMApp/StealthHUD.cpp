@@ -261,7 +261,7 @@ namespace StealthGM
       mCompass->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
 
       // GPS Meter
-      mGPS = new SimCore::Components::StealthGPSMeter("StealthGPSMeter");
+      mGPS = new SimCore::Components::StealthCartesianMeter("StealthGPSMeter");
       mHUDOverlay->Add(mGPS.get());
       mGPS->SetPosition( 512.0f/1920.0f, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
 
@@ -404,7 +404,9 @@ namespace StealthGM
 
             mCoordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
             const osg::Vec3d& globePos = mCoordinateConverter.ConvertToRemoteTranslation(pos);
-            mGPS->SetLatLong(globePos[0], globePos[1]);
+            mGPS->SetX(globePos[0]);
+            mGPS->SetY(globePos[1]);
+            mGPS->SetZ(globePos[2]);
          }
       }
 
