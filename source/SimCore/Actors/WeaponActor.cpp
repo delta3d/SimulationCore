@@ -214,7 +214,9 @@ namespace SimCore
          }
 
          // execute instant fire
-         if( ! mTriggerHeld && hold )
+         // Removed this - Fire() accounts for how long it's been.  By resetting the timer, it 
+         // allows you to 'click' fast fire.
+         /*if( ! mTriggerHeld && hold )
          {
             // Set time variable to allow an instant fire
             mTriggerTime = mFireRate;
@@ -224,7 +226,8 @@ namespace SimCore
          else
          {
             mTriggerHeld = hold;
-         }
+         }*/
+         mTriggerHeld = hold;
          
       }
 
@@ -322,6 +325,18 @@ namespace SimCore
             {
                NxAgeiaMunitionsPSysActor* particleSystem 
                   = dynamic_cast<NxAgeiaMunitionsPSysActor*>(mShooter->GetActor());
+
+               // Add the vehicles current velocity to the weapon.
+               osg::Vec3 vehicleVelocity;
+               BaseEntityActorProxy *entityProxy = dynamic_cast<BaseEntityActorProxy*>(mOwner.get());
+               //std::cout << "Weapon Actor shooting. Attempting to set parent velocity." << std::endl;
+               if (entityProxy != NULL)
+               {
+                  const BaseEntity &entity = static_cast<const BaseEntity&>(entityProxy->GetGameActor());
+                  vehicleVelocity = entity.GetVelocityVector();
+                  //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
+                  particleSystem->SetParentsWorldRelativeVelocityVector(vehicleVelocity);
+               }
                particleSystem->Fire();
             }
 #else

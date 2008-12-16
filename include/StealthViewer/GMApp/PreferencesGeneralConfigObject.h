@@ -26,9 +26,13 @@
 
 #include <dtUtil/enumeration.h>
 #include <dtCore/refptr.h>
+#include <dtCore/uniqueid.h>
 
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
+
+#include <osg/Vec2f>
+#include <osg/Vec3>
 
 namespace dtGame
 {
@@ -85,7 +89,7 @@ namespace StealthGM
          PreferencesGeneralConfigObject();
 
          /**
-          * Overridden base class method to apply the changes made to this class to the 
+          * Overridden base class method to apply the changes made to this class to the
           * game manager
           */
          virtual void ApplyChanges(dtGame::GameManager &gameManager);
@@ -149,30 +153,6 @@ namespace StealthGM
          float GetLODScale() const { return mLODScale; }
 
          /**
-          * Sets the near clipping plane
-          * @param plane The new plane
-          */
-         void SetNearClippingPlane(double plane) { mNearClippingPlane = plane; SetIsUpdated(true); }
-
-         /**
-          * Gets the near clipping plane
-          * @return mNearClippingPlane
-          */
-         double GetNearClippingPlane() const { return mNearClippingPlane; }
-
-         /**
-          * Sets the far clipping plane
-          * @param plane The new plane
-          */
-         void SetFarClippingPlane(double plane) { mFarClippingPlane = plane; SetIsUpdated(true); }
-
-         /**
-          * Gets the far clipping plane
-          * @return mFarClippingPlane
-          */
-         double GetFarClippingPlane() const { return mFarClippingPlane; }
-
-         /**
           * Sets showing the advanced options
           * @param enable True if showing, false to disable
           */
@@ -188,12 +168,26 @@ namespace StealthGM
           * Sends an attach to actor message on the next tick
           * @param proxy The proxy to attach to
           */
-         void AttachToActor(const dtGame::GameActorProxy &proxy) { mAttachProxy = &proxy; SetIsUpdated(true); }
-      
+         void AttachToActor(const dtCore::UniqueId& id) { mAttachActorId = id; SetIsUpdated(true); }
+
          /**
           * Tells the Stealth Actor to detach - sends an attach with a NULL actor.
           */
          void DetachFromActor() { mDetachFromActor = true; SetIsUpdated(true); }
+
+         /// Sets the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         void SetAttachPointNodeName(const std::string& name);
+
+         /// @return the node name to use as an attach point.  Empty means attach to the entity as a whole.
+         const std::string& GetAttachPointNodeName() const;
+
+         /// Sets the initial rotation offset in reference to the entity to which to attach.
+         void SetInitialAttachRotationHPR(const osg::Vec3& hpr);
+         /// @return the initial rotation offset in reference to the entity to which to attach.
+         const osg::Vec3& GetInitialAttachRotationHPR() const;
+
+         /// Resets the attachment of the stealth actor to it the current actor is attached to.
+         void Reattach();
 
          /**
           * Checks to see if the stealth actor is currently attached.
@@ -206,8 +200,8 @@ namespace StealthGM
           * @param enable True to connect, false to start ordinarily
           * @param name The name of the connection
           */
-         void SetReconnectOnStartup(bool enable, const std::string &name) 
-         { 
+         void SetReconnectOnStartup(bool enable, const std::string &name)
+         {
             mReconnectOnStartup = enable;
             SetStartupConnectionName(name);
          }
@@ -242,27 +236,37 @@ namespace StealthGM
           */
          bool GetAutoRefreshEntityInfoWindow() const { return mAutoRefreshEntityInfo; }
 
+         void SetShouldAutoAttachToEntity(bool);
+         bool GetShouldAutoAttachToEntity() const;
+
+         void SetAutoAttachEntityCallsign(const std::string& callsign);
+         const std::string& GetAutoAttachEntityCallsign() const;
+
       protected:
 
          /// Destructor
          virtual ~PreferencesGeneralConfigObject();
 
+         void AttachOrDetach(dtGame::GameManager& gameManager);
       private:
 
-         const AttachMode *mAttachMode;
+         const AttachMode* mAttachMode;
          bool mEnableCameraCollision;
-         const PerformanceMode *mPerformanceMode;
+         const PerformanceMode* mPerformanceMode;
          float mLODScale;
-         double mNearClippingPlane;
-         double mFarClippingPlane;
          bool mShowAdvancedOptions;
-         const dtGame::GameActorProxy *mAttachProxy;
+         dtCore::UniqueId mAttachActorId;
          bool mReconnectOnStartup;
          std::string mStartupConnectionName;
          bool mAutoRefreshEntityInfo;
-         bool mDetachFromActor; 
+         bool mDetachFromActor;
          dtCore::RefPtr<StealthInputComponent> mInputComponent;
 
+         std::string mAttachPointNodeName;
+         osg::Vec3 mInitialAttachRotationHPR;
+
+         bool mShouldAutoAttachToEntity;
+         std::string mAutoAttachEntityCallsign;
    };
 }
 #endif

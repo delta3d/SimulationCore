@@ -325,7 +325,7 @@
       </property>
       <property>
         <name>Smoke Life Time</name>
-        <float>10</float>
+        <float>3</float>
       </property>
       <property>
         <name>Tracer Shader Name</name>
@@ -363,8 +363,8 @@
       <property>
         <name>Model</name>
         <resourceType>StaticMeshes</resourceType>
-        <resourceDisplayName></resourceDisplayName>
-        <resource></resource>
+        <resourceDisplayName>StaticMeshes:ammunition:grenade.ive</resourceDisplayName>
+        <resource>StaticMeshes:ammunition:grenade.ive</resource>
       </property>
       <property>
         <name>Damage Type</name>
@@ -380,7 +380,7 @@
       </property>
       <property>
         <name>Tracer Frequency</name>
-        <integer>0</integer>
+        <integer>1</integer>
       </property>
       <property>
         <name>Family</name>
@@ -504,7 +504,7 @@
       </property>
       <property>
         <name>Smoke Life Time</name>
-        <float>10</float>
+        <float>5</float>
       </property>
       <property>
         <name>Tracer Shader Name</name>

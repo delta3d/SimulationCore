@@ -46,7 +46,7 @@ namespace StealthGM
    }
 
    ////////////////////////////////////////////////////////////
-   void ControlsCameraConfigObject::ApplyChanges(dtGame::GameManager &gameManager)
+   void ControlsCameraConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
       if(!IsUpdated())
          return;
@@ -86,7 +86,7 @@ namespace StealthGM
    }
 
    ////////////////////////////////////////////////////////////
-   void ControlsCameraConfigObject::Reset(dtGame::GameManager &gameManager)
+   void ControlsCameraConfigObject::Reset(dtGame::GameManager& gameManager)
    {
       mCoordValid = FindCoordinatesObject(gameManager, mCoord);
 
@@ -160,5 +160,15 @@ namespace StealthGM
    const dtCore::UniqueId& ControlsCameraConfigObject::GetStealthActorId() const
    {
       return mStealthActorId;
+   }
+
+   void ControlsCameraConfigObject::SetWarpPositionCountToSave(int positions)
+   {
+      mWarpPositionsToSave = positions;
+   }
+
+   int ControlsCameraConfigObject::GetWarpPositionCountToSave() const
+   {
+      return mWarpPositionsToSave;
    }
 }

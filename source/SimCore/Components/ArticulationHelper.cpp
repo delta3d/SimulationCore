@@ -59,7 +59,7 @@ namespace SimCore
          dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE);
 
       //////////////////////////////////////////////////////////////////////////
-      ArticulationMetricType::ArticulationMetricType( const std::string &name, const std::string& relatedRateName ) 
+      ArticulationMetricType::ArticulationMetricType( const std::string &name, const std::string& relatedRateName )
          : dtUtil::Enumeration(name),
          mRelatedRateName(relatedRateName)
       {
@@ -104,7 +104,7 @@ namespace SimCore
       bool ArticulationHelper::AddArticulatedParameter(
          dtDAL::NamedGroupParameter& outArticArrayProp,
          ArticulationMetricType& articulationType,
-         const std::string& paramName, 
+         const std::string& paramName,
          float value, unsigned valueChangeCount,
          float rate, unsigned rateChangeCount,
          const std::string& dofName, const std::string& dofParentName )
@@ -128,7 +128,7 @@ namespace SimCore
          extendedParamName = extendedParamName + PARAM_NAME_SUFFIX_RATE;
          // --- Create the parameter if it does not already exist
          articParam = new dtGame::GroupMessageParameter(extendedParamName);
-         articParam->AddParameter( *new dtDAL::NamedFloatParameter( 
+         articParam->AddParameter( *new dtDAL::NamedFloatParameter(
             articulationType.GetRelatedRateMetricName(), rate ) );
          articParam->AddParameter( *new dtDAL::NamedUnsignedShortIntParameter( PARAM_NAME_CHANGE, rateChangeCount ) );
          articParam->AddParameter( *new dtDAL::NamedStringParameter( PARAM_NAME_DOF, dofName ) );
@@ -146,8 +146,12 @@ namespace SimCore
             bool mRemove;
             osg::Vec3 mVelocity;
             osg::Vec3 mPosition;
+            std::string mMetricName;
 
-            DRDOFDataFromHLA() : mRemove(false) {}
+            DRDOFDataFromHLA()
+               : mRemove(false)
+            {
+            }
 
          protected:
             virtual ~DRDOFDataFromHLA() {}
@@ -157,35 +161,37 @@ namespace SimCore
          const dtDAL::NamedGroupParameter& articArrayParam,
          dtCore::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
       {
-         if(nodeCollector.GetTransformNodeMap().empty()) 
+         if(nodeCollector.GetTransformNodeMap().empty())
          {
             return;
          }
 
-         std::map<std::string,dtCore::RefPtr<DRDOFDataFromHLA> > toSendList;
+         typedef std::map<std::string,dtCore::RefPtr<DRDOFDataFromHLA> > NameToDOFDataMap;
+         NameToDOFDataMap toSendList;
          std::vector<const dtGame::MessageParameter*> toFill;
          articArrayParam.GetParameters(toFill);
          std::vector<const dtGame::MessageParameter*>::iterator iter = toFill.begin();
 
          for(;iter != toFill.end(); ++iter)
-         {             
+         {
             if((*iter)->GetDataType() == dtDAL::DataType::GROUP)
             {
                char switchLetter = (*iter)->GetName()[1]; // "ArticulatedPartMessageParam"
                if(switchLetter == 'r')
                {
+                  bool isNotRate = false;
                   float value = 0.0f;
                   std::string dofName;
                   osgSim::DOFTransform *dof;
-                  const dtGame::GroupMessageParameter& checkAgainstIter 
+                  const dtGame::GroupMessageParameter& curGroupParam
                      = *static_cast<const dtGame::GroupMessageParameter*>(*iter);
 
-                  if(GetArticulationDOFName(checkAgainstIter, dofName))
+                  if(GetArticulationDOFName(curGroupParam, dofName))
                   {
                      if((dof = nodeCollector.GetDOFTransform(dofName)) != NULL)
                      {
                         dtCore::RefPtr<DRDOFDataFromHLA> dofData = NULL;
-                        std::map<std::string,dtCore::RefPtr<DRDOFDataFromHLA> >::iterator iterDRDOF = toSendList.find(dofName);
+                        NameToDOFDataMap::iterator iterDRDOF = toSendList.find(dofName);
 
                         bool hadToMakeNew = iterDRDOF == toSendList.end();
 
@@ -200,56 +206,66 @@ namespace SimCore
 
                         osg::Vec3::value_type* dataMetricField = NULL;
                         const std::string* metricName = NULL;
-                        if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH, value))
+                        if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTH;
                            dataMetricField = &dofData->mPosition[0];
+                           isNotRate = true;
                         }
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_AZIMUTHRATE;
                            dataMetricField = &dofData->mVelocity[0];
                         }
-                        else if(GetArticulation(checkAgainstIter, dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION, value))
+                        else if(GetArticulation(curGroupParam, dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATION;
                            dataMetricField = &dofData->mPosition[1];
+                           isNotRate = true;
                         }
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ELEVATIONRATE;
                            dataMetricField = &dofData->mVelocity[1];
                         }
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATION;
                            dataMetricField = &dofData->mPosition[2];
+                           isNotRate = true;
                         }
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE, value))
                         {
                            metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ROTATIONRATE;
                            dataMetricField = &dofData->mVelocity[2];
                         }
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITION, value))
+                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITION, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_POSITIONRATE, value))
+                        {}*/
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION, value))
+                        {
+                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION;
+                           dataMetricField = &dofData->mPosition[1];
+                           isNotRate = true;
+                        }
+                        /*else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
+                        {
+                           metricName = &dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE;
+                           dataMetricField = &dofData->mVelocity[1];
+                        }
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSION, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_XRATE, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_EXTENSIONRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Y, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_X, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_YRATE, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_XRATE, value))
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Z, value))
                         {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Y, value))
-                        {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_YRATE, value))
-                        {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_Z, value))
-                        {}
-                        else if(GetArticulation(checkAgainstIter,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ZRATE, value))
-                        {}
+                        else if(GetArticulation(curGroupParam,  dtGame::DeadReckoningHelper::DeadReckoningDOF::REPRESENATION_ZRATE, value))
+                        {}*/
 
                         // Determine if this helper owns the metric to the specified DOF.
                         // If so, avoid sending it to the dead reckoning helper.
@@ -259,6 +275,12 @@ namespace SimCore
                            if( dataMetricField != NULL )
                            {
                               *dataMetricField = value;
+
+                              // Record the name of the non-rate part of the metric.
+                              if( isNotRate )
+                              {
+                                 dofData->mMetricName = *metricName;
+                              }
                            }
                         }
                         else
@@ -284,7 +306,7 @@ namespace SimCore
          }
 
          // after first for loop go through and delete all old messages
-         for(std::map<std::string,dtCore::RefPtr<DRDOFDataFromHLA> >::iterator iterDRDOF = toSendList.begin();
+         for(NameToDOFDataMap::iterator iterDRDOF = toSendList.begin();
             iterDRDOF != toSendList.end();
             ++iterDRDOF)
          {
@@ -296,7 +318,9 @@ namespace SimCore
                }
                else
                {
-                  deadReckoningHelper.AddToDeadReckonDOF(iterDRDOF->first, iterDRDOF->second->mPosition, iterDRDOF->second->mVelocity);
+                  deadReckoningHelper.AddToDeadReckonDOF(iterDRDOF->first,
+                     iterDRDOF->second->mPosition, iterDRDOF->second->mVelocity,
+                     iterDRDOF->second->mMetricName);
                }
             }
          }
@@ -307,11 +331,11 @@ namespace SimCore
       bool ArticulationHelper::GetArticulation(const dtGame::GroupMessageParameter& articParam,
          const std::string& metricTypeName, float& outValue)
       {
-         const dtGame::FloatMessageParameter* metricParam 
+         const dtGame::FloatMessageParameter* metricParam
             = dynamic_cast<const dtGame::FloatMessageParameter*>
             (articParam.GetParameter(metricTypeName));
 
-         if(metricParam)
+         if(metricParam != NULL)
          {
             outValue = metricParam->GetValue();
             return true;
@@ -323,10 +347,11 @@ namespace SimCore
       bool ArticulationHelper::GetArticulationDOFName(
          const dtGame::GroupMessageParameter& articParam, std::string& outName)
       {
-         const dtGame::StringMessageParameter* dofNameParam 
+         const dtGame::StringMessageParameter* dofNameParam
             = dynamic_cast<const dtGame::StringMessageParameter*>
             (articParam.GetParameter(SimCore::Components::ArticulationHelper::PARAM_NAME_DOF));
-         if(dofNameParam)
+
+         if(dofNameParam != NULL)
          {
             outName = dofNameParam->GetValue();
             return true;

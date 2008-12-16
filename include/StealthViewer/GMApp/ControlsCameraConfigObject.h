@@ -59,6 +59,10 @@ namespace StealthGM
          const osg::Vec3d& GetWarpToPosition() const;
          const dtCore::UniqueId& GetStealthActorId() const;
 
+         /// Sets the number of warp to history position to save.
+         void SetWarpPositionCountToSave(int positions);
+         /// @return the number of warp to history position to save.
+         int GetWarpPositionCountToSave() const;
       protected:
 
          /// Destructor
@@ -69,6 +73,8 @@ namespace StealthGM
          dtUtil::Coordinates mCoord;
          osg::Vec3d mWarpToPosition;
          dtCore::UniqueId mStealthActorId;
+         //std::deque<osg::Vec3d> mXYZWarpPositions;
+         int mWarpPositionsToSave;
    };
 }
 

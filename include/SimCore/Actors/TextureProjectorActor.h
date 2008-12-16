@@ -76,14 +76,14 @@ namespace SimCore
 
          public:
             
-            // gets
-            float GetCurrentTime() {return mCurrentTime;}
+            // gets -- Can't use 'GetCurrentTime' - reserved in WinBase.h
+            float GetCurrTime() {return mCurrentTime;}
             float GetMaxTime()     {return mMaxTime;}
             float GetCurrentAlpha(){return mCurrentAlpha;}
             std::string GetImageProjectorFile() {return mImageProjectorFile;}
 
             // sets
-            void SetCurrentTime(float value) {mCurrentTime = value;}
+            void SetCurrTime(float value) {mCurrentTime = value;}
             void SetMaxTime(float value)     {mMaxTime = value;}
             void SetCurrentAlpha(float value){mCurrentAlpha = value;}
             void SetImageProjectorFile(const std::string& value) {mImageProjectorFile = value;}

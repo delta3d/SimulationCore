@@ -42,12 +42,14 @@
 #include <dtCore/deltadrawable.h>
 #include <dtCore/mouse.h>
 #include <dtCore/globals.h>
+#include <dtCore/system.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
 
 #include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
+#include <dtUtil/matrixutil.h>
 
 #include <osg/Camera>
 #include <osg/Geode>
@@ -122,6 +124,9 @@ namespace SimCore
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
       const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
+      const unsigned RenderingSupportComponent::MAIN_CAMERA_CULL_MASK = 0xFFFFFFFF;
+      const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
+      const unsigned RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK = 0x80000000;
 
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
@@ -142,7 +147,6 @@ namespace SimCore
          , mAutoDeleteLightOnTargetNull(false)
          , mTarget(NULL)
       {
-
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,11 +175,19 @@ namespace SimCore
          InitializeSensors();
          InitializeFrameBuffer();
 
-         //we we are setup to use the cullvisitor then initialize it
-         if(mEnableCullVisitor)
-         {
-            InitializeCullVisitor();
-         }
+         dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
+         osg::Camera* osgCam = cam->GetOSGCamera();
+         osgCam->setCullMask(MAIN_CAMERA_CULL_MASK);
+
+         ///Added a callback to the camera this can set uniforms on each camera.
+         dtCore::Camera::AddFrameSyncCallback(*this,
+                  dtCore::Camera::FrameSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::OnRemovedFromGM()
+      {
+         dtCore::Camera::RemoveFrameSyncCallback(*this);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,13 +199,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
-         mGUIRoot->addChild(gui->GetOSGNode());
+         osg::Node* node = gui->GetOSGNode();
+         mGUIRoot->addChild(node);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());//mDeltaScene.get());
+         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());
 
          /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
@@ -212,14 +225,22 @@ namespace SimCore
          mSceneRoot->addChild(mDeltaScene.get());
 
          mSensorRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
+
          mGUIRoot->setRenderOrder(osg::Camera::POST_RENDER);
          mGUIRoot->setClearMask( GL_NONE );
+         mGUIRoot->setNodeMask(MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::InitializeCullVisitor()
+      void RenderingSupportComponent::AddCamera(osg::Camera* cam)
       {
-         osg::Camera* camera = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();/*->GetSceneView();*/
+         mSceneRoot->addChild(cam);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::InitializeCullVisitor(dtCore::Camera& pCamera)
+      {
+         osg::Camera* camera = pCamera.GetOSGCamera();
          osgViewer::Renderer* renderer = static_cast<osgViewer::Renderer*>(camera->getRenderer());
          osgUtil::SceneView* sceneView = renderer->getSceneView(0);
 
@@ -250,10 +271,10 @@ namespace SimCore
       void RenderingSupportComponent::SetEnableSensor(bool pEnable, RenderFeature::SensorType type)
       {
          if(mSensor.valid())
-         {    
-            // By default OSG set the notify level to NOTICE.  When ICSM is 
+         {
+            // By default OSG set the notify level to NOTICE.  When ICSM is
             // enabled inside of OSG, an OpenGL error is generated.  The Error
-            // is not harmful.  By changing the notify level to WARN, this 
+            // is not harmful.  By changing the notify level to WARN, this
             // error is not printed.
             if (osg::getNotifyLevel() == osg::NOTICE)
             {
@@ -392,7 +413,7 @@ namespace SimCore
          if(rf != NULL)
          {
             mSensor = rf;
-            mSensor->Init(mSensorRoot.get(), GetGameManager()->GetApplication().GetCamera());         
+            mSensor->Init(mSensorRoot.get(), GetGameManager()->GetApplication().GetCamera());
          }
       }
 
@@ -427,16 +448,178 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateViewMatrix()
+      void RenderingSupportComponent::UpdateViewMatrix(dtCore::Camera& pCamera)
       {
-         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-         osg::Uniform* viewUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
+         osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
+         osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
+         osg::Uniform* mvpsInverseUniform = ss->getOrCreateUniform("modelViewProjectionScreenInverse", osg::Uniform::FLOAT_MAT4);
 
-         osg::Matrix mat(GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getViewMatrix());
+         osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse, matViewProjScreenInverse, matScreen;
 
-         osg::Matrix viewInverse;
-         viewInverse.invert(mat);
-         viewUniform->set(viewInverse);
+         matView.set(pCamera.GetOSGCamera()->getViewMatrix());
+         matViewInverse.invert(matView);
+
+         matProj.set(pCamera.GetOSGCamera()->getProjectionMatrix());
+         matProjInverse.invert(matProj);
+
+         matViewProj = matView * matProj;
+         matViewProjInverse.invert(matViewProj);
+
+         mvpiUniform->set(matViewProjInverse);
+         viewInverseUniform->set(matViewInverse);
+
+         dtCore::Transform trans;
+         pCamera.GetTransform(trans);
+
+         osg::Vec3 hpr;
+         trans.GetRotation(hpr);
+         hprUniform->set(hpr);
+
+         if(pCamera.GetOSGCamera()->getViewport() != NULL)
+         {
+            matScreen.set(pCamera.GetOSGCamera()->getViewport()->computeWindowMatrix());
+
+            osg::Matrix mvps(matView * matProj * matScreen);
+            matViewProjScreenInverse.invert(mvps);
+            mvpsInverseUniform->set(matViewProjScreenInverse);
+
+            UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
+         }
+
+         //we we are setup to use the cullvisitor then initialize it
+         if(mEnableCullVisitor)
+         {
+            InitializeCullVisitor(pCamera);
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP)
+      {
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
+         osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
+
+         dtCore::Transform xform;
+         osg::Vec3d waterCenter, screenPosOut, camPos;
+         pCamera.GetTransform(xform);
+         xform.GetTranslation(camPos);
+
+         //TODO- USE ACTUAL WATER HEIGHT
+         float waterHeight = 0.0;
+
+         waterCenter.set(camPos.x(), camPos.y(), waterHeight);
+
+         if(/*camPos.z() < waterHeight || */pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
+         {
+            waterFOVUniform->set(180.0f);
+         }
+         else
+         {
+            int width = int(pCamera.GetOSGCamera()->getViewport()->width());
+            int height = int(pCamera.GetOSGCamera()->getViewport()->height());
+
+            osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
+            osg::Vec3 bottomLeftIntersect, bottomRightIntersect, topLeftIntersect, topRightIntersect;
+
+            ComputeRay(0, 0, inverseMVP, bottomLeft);
+            ComputeRay(width, 0, inverseMVP, bottomRight);
+            ComputeRay(0, height, inverseMVP, topLeft);
+            ComputeRay(width, height, inverseMVP, topRight);
+
+            osg::Vec4 waterPlane(0.0, 0.0, 1.0, -waterHeight);
+
+            bool bool_bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeftIntersect);
+            bool bool_bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRightIntersect);
+            bool bool_topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeftIntersect);
+            bool bool_topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRightIntersect);
+
+            if(bool_bottomLeftIntersect)
+            {
+               bottomLeft = bottomLeftIntersect;
+               bottomLeft = bottomLeft - waterCenter;
+               bottomLeft.normalize();
+            }
+            if(bool_bottomRightIntersect)
+            {
+               bottomRight = bottomRightIntersect;
+               bottomRight = bottomRight - waterCenter;
+               bottomRight.normalize();
+            }
+            if(bool_topLeftIntersect)
+            {
+               topLeft = topLeftIntersect;
+               topLeft = topLeft - waterCenter;
+               topLeft.normalize();
+            }
+            if(bool_topRightIntersect)
+            {
+               topRight = topRightIntersect;
+               topRight = topRight - waterCenter;
+               topRight.normalize();
+            }
+
+            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0, maxAngle5 = 0.0, maxAngle6 = 0.0;
+
+            maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
+
+            maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
+
+            maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
+
+            maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
+
+            maxAngle5 = GetAngleBetweenVectors(bottomRight, topLeft);
+
+            maxAngle6 = GetAngleBetweenVectors(bottomLeft, topRight);
+
+            //take the max of the six angles
+            float angle = dtUtil::Max(dtUtil::Max(maxAngle5, maxAngle6), dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4)));
+            angle = osg::RadiansToDegrees(angle);
+            angle /= 2.0f;
+            waterFOVUniform->set(angle);
+
+            //std::cout << "Water Angle " << angle << std::endl;
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill )
+      {
+         osg::Vec3 rayFrom, rayTo;
+
+         rayFrom = osg::Vec3(x, y, 0.0f) * inverseMVPS;
+         rayTo = osg::Vec3(x, y, 1.0f) * inverseMVPS;
+
+         rayToFill = rayTo - rayFrom;
+         rayToFill.normalize();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      bool RenderingSupportComponent::IntersectRayPlane( const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint )
+      {
+         osg::Vec3 norm(plane.x(), plane.y(), plane.z());
+         float denominator = norm * rayDirection;
+
+         //the normal is near parallel
+         if(fabs(denominator) > FLT_EPSILON)
+         {
+            float t = -(norm * rayOrigin + plane.w());
+            t /= denominator;
+            intersectPoint = rayOrigin + (rayDirection * t);
+            return t > 0;
+         }
+
+         //std::cout << "No Intersect" << std::endl;
+         return false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      float RenderingSupportComponent::GetAngleBetweenVectors( const osg::Vec3& v1, const osg::Vec3& v2 )
+      {
+         return std::acos(v1 * v2);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -450,14 +633,14 @@ namespace SimCore
          {
             if(mSensor.valid())
             {
-               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_NVG); 
+               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_NVG);
             }
          }
          else if(msg.GetMessageType() == SimCore::MessageType::FLIR)
          {
             if(mSensor.valid())
             {
-               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_FLIR);            
+               SetEnableSensor(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled(), RenderFeature::SENSOR_FLIR);
             }
          }
 
@@ -500,7 +683,7 @@ namespace SimCore
       void RenderingSupportComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
          //we update the view matrix for all the shaders
-         UpdateViewMatrix();
+         //UpdateViewMatrix(); //-- now called during the framesynch message.
 
          if(mSensor.valid())
          {

@@ -65,7 +65,6 @@ LINK_WITH_VARIABLES(${LIB_NAME}
                                    OSGFX_LIBRARY
                                    OSGSIM_LIBRARY
                                    OSGPARTICLE_LIBRARY
-                                   OSGEPHEMERIS_LIBRARY
                                    OSGTEXT_LIBRARY
                                    GDAL_LIBRARY
                                    CAL3D_LIBRARY
@@ -80,6 +79,7 @@ LINK_WITH_VARIABLES(${LIB_NAME}
                                    )
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} 
+   ${OSGEPHEMERIS_LIBRARY}
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
    ${PHYSX_LIBRARIES}

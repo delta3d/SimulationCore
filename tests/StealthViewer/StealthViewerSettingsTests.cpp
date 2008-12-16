@@ -27,13 +27,19 @@
 */
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <SimCore/Components/LabelManager.h>
 #include <dtUtil/fileutils.h>
+#include <dtUtil/mathdefines.h>
 #include <dtDAL/project.h>
 #include <QtGui/QApplication>
 #include <QtCore/QStringList>
 #include <StealthViewer/Qt/StealthViewerData.h>
+
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 class SubStealthViewerSettings : public StealthQt::StealthViewerSettings
 {
@@ -60,6 +66,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthViewerSettingsTests);
 
+      CPPUNIT_TEST(TestGeneralSettings);
       CPPUNIT_TEST(TestVisibilitySettings);
       CPPUNIT_TEST(TestParseIniFile);
       CPPUNIT_TEST(TestAddConnection);
@@ -73,6 +80,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 
       void tearDown();
 
+      void TestGeneralSettings();
       void TestVisibilitySettings();
       void TestParseIniFile();
       void TestAddConnection();
@@ -106,6 +114,94 @@ void StealthViewerSettingsTests::tearDown()
    delete mQApp;
    mQApp = NULL;
 }
+
+void StealthViewerSettingsTests::TestGeneralSettings()
+{
+   StealthGM::PreferencesGeneralConfigObject& genConfig =
+      StealthQt::StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+   StealthGM::ViewWindowConfigObject& viewConfig =
+      StealthQt::StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   gm->SetApplication(GetGlobalApplication());
+   viewConfig.CreateMainViewWindow(*gm);
+
+   genConfig.SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
+   genConfig.SetAttachPointNodeName("frank");
+
+   osg::Vec3 newInitialAttachRot(3.3, 9.7, 8.4);
+   genConfig.SetInitialAttachRotationHPR(newInitialAttachRot);
+
+   genConfig.SetShouldAutoAttachToEntity(true);
+
+   genConfig.SetCameraCollision(false);
+   genConfig.SetLODScale(2.0f);
+   genConfig.SetPerformanceMode(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS);
+   genConfig.SetShowAdvancedOptions(true);
+
+   {
+      viewConfig.GetMainViewWindow().SetUseAspectRatioForFOV(false);
+      viewConfig.GetMainViewWindow().SetFOVAspectRatio(31.9f);
+      viewConfig.GetMainViewWindow().SetFOVHorizontal(9373.3f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForAspect(300.0f);
+      viewConfig.GetMainViewWindow().SetFOVVerticalForHorizontal(-20.0f);
+   }
+
+   viewConfig.SetFarClippingPlane(10.0);
+   viewConfig.SetNearClippingPlane(1.0);
+
+   SubStealthViewerSettings settings(QString("UnitTest"));
+   settings.ClearAllSettings(true);
+   settings.WritePreferencesToFile(false);
+   settings.LoadPreferences();
+
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON,
+      genConfig.GetAttachMode());
+
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("The attach point node name should be frank",
+      genConfig.GetAttachPointNodeName(), std::string("frank"));
+
+   CPPUNIT_ASSERT_MESSAGE("The attach rotation should have changed.",
+      dtUtil::Equivalent(genConfig.GetInitialAttachRotationHPR(), newInitialAttachRot, 0.01f));
+
+   CPPUNIT_ASSERT_MESSAGE("The auto attach to entity should new be true.",
+      genConfig.GetShouldAutoAttachToEntity());
+
+   {
+      CPPUNIT_ASSERT_MESSAGE("Use aspect ratio for fov should now be false.",
+         !viewConfig.GetMainViewWindow().UseAspectRatioForFOV());
+
+      CPPUNIT_ASSERT_MESSAGE("The aspect ratio should be 10.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVAspectRatio(), 10.0f));
+
+      CPPUNIT_ASSERT_MESSAGE("The default horizontal fov should be 179.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVHorizontal(), 179.0f));
+
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 160.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForAspect(), 160.0f));
+
+      CPPUNIT_ASSERT_MESSAGE("The default vertical fov should be 1.0.",
+         dtUtil::Equivalent(viewConfig.GetMainViewWindow().GetFOVVerticalForHorizontal(), 1.0f));
+   }
+
+   CPPUNIT_ASSERT_EQUAL(10.0, viewConfig.GetFarClippingPlane());
+   CPPUNIT_ASSERT_EQUAL(1.0, viewConfig.GetNearClippingPlane());
+
+
+   CPPUNIT_ASSERT_EQUAL(false, genConfig.GetEnableCameraCollision());
+
+
+   CPPUNIT_ASSERT_EQUAL(2.0f, genConfig.GetLODScale());
+
+
+   CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
+      genConfig.GetPerformanceMode());
+
+   CPPUNIT_ASSERT_EQUAL(true, genConfig.GetShowAdvancedOptions());
+
+}
+
 
 void StealthViewerSettingsTests::TestVisibilitySettings()
 {

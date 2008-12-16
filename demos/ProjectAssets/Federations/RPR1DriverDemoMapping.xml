@@ -263,6 +263,14 @@
                 <gameDataType>BOOLEAN</gameDataType>
                 <default>false</default>
             </attrToProp>
+            <attrToProp>
+                <hlaName>MAPPING_NAME</hlaName>
+                <hlaDataType>STRING_TYPE</hlaDataType>       
+                <hlaRequired>false</hlaRequired>
+                <gameName>Object Mapping Name</gameName>
+                <gameDataType>STRING</gameDataType> 
+                <default>false</default>
+            </attrToProp>
         </object>
 
         <!-- ****************************************************** -->
@@ -498,17 +506,17 @@
              <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun.ive</default>
+                <default>StaticMeshes:HoverTank.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>VehiclesSeatConfigActorNameTable</gameName>
@@ -563,17 +571,17 @@
              <attrToProp>
                 <gameName>Non-damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun.ive</default>
+                <default>StaticMeshes:HoverTank.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Damaged actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                 <gameName>Destroyed actor</gameName>
                 <gameDataType>StaticMeshes</gameDataType>
-                <default>StaticMeshes:HoverTank_WithGun_Damaged.ive</default>
+                <default>StaticMeshes:HoverTank_Damaged.ive</default>
             </attrToProp>
             <attrToProp>
                <gameName>VehiclesSeatConfigActorNameTable</gameName>

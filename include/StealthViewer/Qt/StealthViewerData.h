@@ -44,6 +44,8 @@ namespace StealthGM
    class ControlsCameraConfigObject;
    class ControlsRecordConfigObject;
    class ControlsPlaybackConfigObject;
+
+   class ViewWindowConfigObject;
 }
 
 namespace StealthQt
@@ -57,6 +59,12 @@ namespace StealthQt
 
          /// Accessor to the instance
          static StealthViewerData& GetInstance();
+
+         /**
+          * Change the instance version of the Settings. This allows one to have multiple
+          * sets of setting/configurations.
+          */
+         void ChangeSettingsInstance(const std::string& instanceName);
 
          /// Accessor to the internal settings
          StealthViewerSettings& GetSettings();
@@ -106,6 +114,11 @@ namespace StealthQt
           */
          StealthGM::ControlsPlaybackConfigObject& GetPlaybackConfigObject();
 
+         /**
+          * Returns the View Window Config Object
+          * @return mViewWindowConfigObject
+          */
+         StealthGM::ViewWindowConfigObject& GetViewWindowConfigObject();
 
          /**
           * Returns a pointer to the main window of the application
@@ -159,6 +172,8 @@ namespace StealthQt
          StealthGM::ControlsCameraConfigObject* mCameraConfigObject;
          StealthGM::ControlsRecordConfigObject* mRecordConfigObject;
          StealthGM::ControlsPlaybackConfigObject* mPlaybackConfigObject;
+
+         StealthGM::ViewWindowConfigObject* mViewWindowConfigObject;
 
          MainWindow* mMainWindow;
 

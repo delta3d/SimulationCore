@@ -42,10 +42,12 @@
 #include <ui_MainWindowUi.h>
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
-#include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/OSGAdapterWidget.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
+#include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
+#include <StealthViewer/Qt/ViewDockWidget.h>
+#include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 
 #include <StealthViewer/GMApp/StealthHUD.h>
 
@@ -57,6 +59,7 @@
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/ControlsPlaybackConfigObject.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/SimCoreVersion.h>
@@ -65,7 +68,6 @@
 #include <dtUtil/fileutils.h>
 #include <dtUtil/datetime.h>
 
-#include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
 #include <dtCore/globals.h>
 #include <dtCore/transformable.h>
@@ -86,7 +88,6 @@
 
 #include <osgDB/FileNameUtils>
 
-#include <osgViewer/GraphicsWindow>
 #include <cmath>
 #include <cfloat>
 
@@ -125,7 +126,16 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
 
       virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
       {
-         return new osgViewer::GraphicsWindowEmbedded(traits);
+         //return new osgViewer::GraphicsWindowEmbedded(traits);
+
+         if(traits->pbuffer)
+         {
+            return mInterface->createGraphicsContext(traits);
+         }
+         else
+         {
+            return new StealthQt::OSGGraphicsWindowQt(traits);
+         }
       }
 
    protected:
@@ -144,136 +154,59 @@ namespace StealthQt
    static const std::string WINDOW_TITLE_MODE_RECORD( " [Record Mode]" );
 
    ///////////////////////////////////////////////////////////////////////////////
-   MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName):
-      mUi(new Ui::MainWindow),
-      mIsPlaybackMode(false),
-      mIsRecording(false),
-      mIsPlayingBack(false),
-      mRecordingStartTime(0.0),
-      mIsConnectedToHLA(false),
-      mLODScaleValidator(new QDoubleValidator(0, 10000, 5, this)),
-      mLatValidator(new QDoubleValidator(-90, 90, 10, this)),
-      mLonValidator(new QDoubleValidator(-180, 180, 10, this)),
-      mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this)),
-      mShowMissingEntityInfoErrorMessage(true),
-      mPreviousCustomHour(-1),
-      mPreviousCustomMinute(-1),
-      mPreviousCustomSecond(-1)
+   MainWindow::MainWindow(int appArgc, char* appArgv[], const std::string& appLibName)
+   : mUi(new Ui::MainWindow)
+   , mIsPlaybackMode(false)
+   , mIsRecording(false)
+   , mIsPlayingBack(false)
+   , mRecordingStartTime(0.0)
+   , mIsConnectedToHLA(false)
+   , mLatValidator(new QDoubleValidator(-90, 90, 10, this))
+   , mLonValidator(new QDoubleValidator(-180, 180, 10, this))
+   , mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this))
+   , mGtZeroValidator(new QDoubleValidator(0, DBL_MAX, 5, this))
+   , mShowMissingEntityInfoErrorMessage(true)
+   , mPreviousCustomHour(-1)
+   , mPreviousCustomMinute(-1)
+   , mPreviousCustomSecond(-1)
+   , mViewDockWidget(new ViewDockWidget)
    {
       mUi->setupUi(this);
+      addDockWidget(Qt::LeftDockWidgetArea, mViewDockWidget);
+
       ConnectSlots();
+
+      ParseCommandLine();
 
       // Instantiate singletons
       StealthViewerData::GetInstance().SetMainWindow(*this);
 
+      PreShowUIControlInit();
+
+      InitGameApp(appArgc, appArgv, appLibName);
+
       QWidget* glParent = new QWidget(this);
-
-      //GLWidgetRenderSurface* oglWidget = new GLWidgetRenderSurface(*app.GetWindow(), *app.GetCamera(), glParent);
-
-      dtQt::OSGAdapterWidget* oglWidget = new dtQt::OSGAdapterWidget(false, glParent);
-      oglWidget->setFocusPolicy(Qt::StrongFocus);
 
       QHBoxLayout* hbLayout = new QHBoxLayout(glParent);
       hbLayout->setMargin(0);
       glParent->setLayout(hbLayout);
-      hbLayout->addWidget(oglWidget);
       setCentralWidget(glParent);
-
-      mUi->mControlsDockWidget->installEventFilter(this);
-      mUi->mEntityInfoDockWidget->installEventFilter(this);
-      mUi->mPreferencesDockWidget->installEventFilter(this);
-      mUi->mSearchCallSignLineEdit->installEventFilter(this);
-      mUi->mSearchEntityTableWidget->installEventFilter(this);
-
-      mUi->mGeneralAdvancedPerformanceOptionsGroupBox->hide();
-      mUi->mRecordTimeMarkersGroupBox->hide();
-      mUi->mPlaybackTimeMarkersGroupBox->hide();
-
-      mUi->mWeatherUseNetworkSettingsRadioButton->setChecked(true);
-
-      ///////////////////////////////////////////////
-      // Temporarily disable the incompatible buttons
-      // @TODO These should be commented out when the
-      // weather component is refactored to be the
-      // finite place to handle weather changes
-      ///////////////////////////////////////////////
-      mUi->mWeatherThemedRadioButton->hide();
-      mUi->mCustomVisibilityLabel->hide();
-      mUi->mCustomVisibilityComboBox->hide();
-      mUi->mCustomCloudCoverLabel->hide();
-      mUi->mCustomCloudCoverComboBox->hide();
-      ///////////////////////////////////////////////
-
-      mUi->mNetSetGroupBox->show();
-      mUi->mThemedSettingsGroupBox->hide();
-      mUi->mCustomSettingsGroupBox->hide();
-      mUi->mPlaybackOptionsGroupBox->hide();
-
-      // Cannot start up in record mode
-      mUi->mRecordStartButton->setEnabled(false);
-      mUi->mRecordAddTimeMarkerButton->setEnabled(false);
-      mUi->mRecordAutomaticTimeMarkersCheckBox->setEnabled(false);
-      mUi->mRecordAutomaticTimeMarkersSpinBox->setEnabled(false);
-
-      // Disable the dock widgets until we connect since you can't actually do anything
-      // until a connection is made.
-      mUi->mPreferencesDockWidget->setEnabled(false);
-      mUi->mControlsDockWidget->setEnabled(false);
-      mUi->mEntityInfoDockWidget->setEnabled(false);
-
-      // Cannot start up in playback mode either
-      EnablePlaybackButtons(false);
-
-      WINDOW_TITLE_VERSION = " - [Rev " + SimCore::SIMCORE_SVN_REVISION;
-      if (!SimCore::SIMCORE_SVN_DATE.empty())
-         WINDOW_TITLE_VERSION += ", " + SimCore::SIMCORE_SVN_DATE.substr(0, 10);
-      WINDOW_TITLE_VERSION += "] ";
-      std::string WinTitle(StealthQt::WINDOW_TITLE + WINDOW_TITLE_VERSION);
-      setWindowTitle(tr(WinTitle.c_str()));
-
-      mUi->mRecordDurationLineEdit->setText("0");
-      mUi->mPlaybackDurationLineEdit->setText("0");
-
-      QStringList headers;
-      headers << "Call Sign" << "Force" << "Damage State";
-      mUi->mSearchEntityTableWidget->setHorizontalHeaderLabels(headers);
-      mUi->mSearchEntityTableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
-      mUi->mSearchEntityTableWidget->setRowCount(0);
-
-      mDurationTimer.setInterval(1000);
-      mDurationTimer.setSingleShot(false);
-
-      mHLAErrorTimer.setInterval(10000);
-      mHLAErrorTimer.setSingleShot(true);
-
-      mUi->mWarpToLat->setValidator(mLatValidator);
-      mUi->mWarpToLon->setValidator(mLonValidator);
-      mUi->mWarpToLLElev->setValidator(mXYZValidator);
-
-      mUi->mWarpToX->setValidator(mXYZValidator);
-      mUi->mWarpToY->setValidator(mXYZValidator);
-      mUi->mWarpToZ->setValidator(mXYZValidator);
-
-      mUi->mWarpToMGRSElev->setValidator(mXYZValidator);
-
-      mUi->mGeneralLODScaleLineEdit->setValidator(mLODScaleValidator);
-
-      mUi->mControlsTabWidget->setUsesScrollButtons(true);
-
-      mGenericTickTimer.setInterval(5000);
-      mGenericTickTimer.setSingleShot(false);
-      mGenericTickTimer.start();
-
-      mRefreshEntityInfoTimer.setInterval(1000);
-      mRefreshEntityInfoTimer.setSingleShot(false);
-      mRefreshEntityInfoTimer.start();
-
-      // Disable full screen
-      mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
 
       show();
 
-      InitGameApp(*oglWidget, appArgc, appArgv, appLibName);
+      StealthQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<StealthQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+      if (graphicsWindow != NULL)
+      {
+         QGLWidget* oglWidget = graphicsWindow->GetQGLWidget();
+         if (oglWidget != NULL)
+         {
+            QRect r = oglWidget->geometry();
+            graphicsWindow->resized(r.left(), r.top(), r.width(), r.height());
+            //oglWidget->hide();
+            hbLayout->addWidget(oglWidget);
+            oglWidget->show();
+         }
+      }
 
       // This was coverted to a png from a jpg because of weird loading problems
       // on Windows XP
@@ -320,12 +253,150 @@ namespace StealthQt
       mUi->mEntityInfoLastUpdateTimeLabel->hide();
 
       //Init the coordinate type.
-      OnToolsCoordinateSystemChanged(mUi->mToolsCoordinateSystemComboBox->currentText());
+      OnToolsCoordinateSystemChanged(mUi->mOptionsCoordinateSystemComboBox->currentText());
+
+      mSimTicker.Start();
+   }
+
+   //////////////////////////////////////////////////////////
+   ViewDockWidget& MainWindow::GetViewDockWidget()
+   {
+      return *mViewDockWidget;
+   }
+
+   //////////////////////////////////////////////////////////
+   void MainWindow::ParseCommandLine()
+   {
+      // Support passing in the connection name on the command line
+      int argc    = qApp->argc();
+      char **argv = qApp->argv();
+
+      // Parse the name from the command line
+      osg::ArgumentParser parser(&argc, argv);
+      parser.getApplicationUsage()->addCommandLineOption("-connectionName", "The name of the connection to auto connect to. ");
+      parser.getApplicationUsage()->addCommandLineOption("-configurationName", "The name of the configuration settings to use.  "
+               "This allows having separate sets of preferences on the same computer/login.");
+
+      std::string name;
+      if (parser.read("-configurationName", name))
+      {
+         StealthViewerData::GetInstance().ChangeSettingsInstance(name);
+      }
+
+      if (parser.read("-connectionName", name))
+      {
+         // Store the name here so it can be picked up later.
+         // It's not really the "current" connection name.
+         mCurrentConnectionName = name.c_str();
+      }
+   }
+
+   //////////////////////////////////////////////////////////
+   void MainWindow::PreShowUIControlInit()
+   {
+      mUi->mControlsDockWidget->installEventFilter(this);
+      mUi->mEntityInfoDockWidget->installEventFilter(this);
+      mUi->mPreferencesDockWidget->installEventFilter(this);
+      mViewDockWidget->installEventFilter(this);
+      mUi->mSearchCallSignLineEdit->installEventFilter(this);
+      mUi->mSearchEntityTableWidget->installEventFilter(this);
+
+      //mUi->mGeneralAdvancedPerformanceOptionsGroupBox->hide();
+      mUi->mRecordTimeMarkersGroupBox->hide();
+      mUi->mPlaybackTimeMarkersGroupBox->hide();
+
+      mUi->mWeatherUseNetworkSettingsRadioButton->setChecked(true);
+
+      ///////////////////////////////////////////////
+      // Temporarily disable the incompatible buttons
+      // @TODO These should be commented out when the
+      // weather component is refactored to be the
+      // finite place to handle weather changes
+      ///////////////////////////////////////////////
+      mUi->mWeatherThemedRadioButton->hide();
+      mUi->mCustomVisibilityLabel->hide();
+      mUi->mCustomVisibilityComboBox->hide();
+      mUi->mCustomCloudCoverLabel->hide();
+      mUi->mCustomCloudCoverComboBox->hide();
+      ///////////////////////////////////////////////
+
+      mUi->mNetSetGroupBox->show();
+      mUi->mThemedSettingsGroupBox->hide();
+      mUi->mCustomSettingsGroupBox->hide();
+      mUi->mPlaybackOptionsGroupBox->hide();
+
+      // Cannot start up in record mode
+      mUi->mRecordStartButton->setEnabled(false);
+      mUi->mRecordAddTimeMarkerButton->setEnabled(false);
+      mUi->mRecordAutomaticTimeMarkersCheckBox->setEnabled(false);
+      mUi->mRecordAutomaticTimeMarkersSpinBox->setEnabled(false);
+
+      // Disable the dock widgets until we connect since you can't actually do anything
+      // until a connection is made.
+      mUi->mPreferencesDockWidget->setEnabled(false);
+      mUi->mControlsDockWidget->setEnabled(false);
+      mUi->mEntityInfoDockWidget->setEnabled(false);
+      mViewDockWidget->setEnabled(false);
+
+      // Cannot start up in playback mode either
+      EnablePlaybackButtons(false);
+
+      WINDOW_TITLE_VERSION = " - [Rev " + SimCore::SIMCORE_SVN_REVISION;
+      if (!SimCore::SIMCORE_SVN_DATE.empty())
+         WINDOW_TITLE_VERSION += ", " + SimCore::SIMCORE_SVN_DATE.substr(0, 10);
+      WINDOW_TITLE_VERSION += "] ";
+      std::string WinTitle(StealthQt::WINDOW_TITLE + WINDOW_TITLE_VERSION);
+      setWindowTitle(tr(WinTitle.c_str()));
+
+      mUi->mRecordDurationLineEdit->setText("0");
+      mUi->mPlaybackDurationLineEdit->setText("0");
+
+      QStringList headers;
+      headers << "Call Sign" << "Force" << "Damage State";
+      mUi->mSearchEntityTableWidget->setHorizontalHeaderLabels(headers);
+      mUi->mSearchEntityTableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+      mUi->mSearchEntityTableWidget->setRowCount(0);
+
+      mDurationTimer.setInterval(1000);
+      mDurationTimer.setSingleShot(false);
+
+      mHLAErrorTimer.setInterval(10000);
+      mHLAErrorTimer.setSingleShot(true);
+
+      mUi->mWarpToLat->setValidator(mLatValidator);
+      mUi->mWarpToLon->setValidator(mLonValidator);
+      mUi->mWarpToLLElev->setValidator(mXYZValidator);
+
+      mUi->mWarpToX->setValidator(mXYZValidator);
+      mUi->mWarpToY->setValidator(mXYZValidator);
+      mUi->mWarpToZ->setValidator(mXYZValidator);
+
+      mUi->mWarpToMGRSElev->setValidator(mXYZValidator);
+
+      mUi->mGeneralLODScaleLineEdit->setValidator(mGtZeroValidator);
+
+      //The azimuth has the same range as a lat / lon
+      mUi->mAttachAzimuth->setValidator(mLonValidator);
+
+      mUi->mControlsTabWidget->setUsesScrollButtons(true);
+
+      mGenericTickTimer.setInterval(5000);
+      mGenericTickTimer.setSingleShot(false);
+      mGenericTickTimer.start();
+
+      mRefreshEntityInfoTimer.setInterval(1000);
+      mRefreshEntityInfoTimer.setSingleShot(false);
+      mRefreshEntityInfoTimer.start();
+
+      // Disable full screen
+      //mUi->mMenuWindow->removeAction(mUi->mActionFullScreen);
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
+   void MainWindow::InitGameApp(int appArgc, char* appArgv[],
             const std::string& appLibName)
+//   void MainWindow::InitGameApp(QGLWidget& oglWidget, int appArgc, char* appArgv[],
+//            const std::string& appLibName)
    {
       ///Reset the windowing system for osg to use
       osg::GraphicsContext::WindowingSystemInterface* winSys = osg::GraphicsContext::getWindowingSystemInterface();
@@ -339,10 +410,9 @@ namespace StealthQt
       {
          mApp = new dtGame::GameApplication(appArgc, appArgv);
          mApp->SetGameLibraryName(appLibName);
-         oglWidget.SetGraphicsWindow(*mApp->GetWindow()->GetOsgViewerGraphicsWindow());
-         //hack to make sure the opengl context stuff gets resized to fit the window
-         oglWidget.GetGraphicsWindow().resized(0, 0, oglWidget.width(), oglWidget.height());
          mApp->Config();
+
+         StealthViewerData::GetInstance().GetViewWindowConfigObject().CreateMainViewWindow(*mApp->GetGameManager());
       }
       catch (const dtUtil::Exception& ex)
       {
@@ -356,6 +426,8 @@ namespace StealthQt
    {
       delete mUi;
       mUi = NULL;
+      delete mViewDockWidget;
+      mViewDockWidget = NULL;
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -364,7 +436,7 @@ namespace StealthQt
       SimCore::HLA::HLAConnectionComponent* comp = NULL;
       mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, comp);
 
-      if(comp == NULL)
+      if (comp == NULL)
       {
          throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                   "Failed to locate the HLAConnectionComponent on the Game Manager. Aborting application.",
@@ -380,7 +452,7 @@ namespace StealthQt
       connect(&window, SIGNAL(ConnectedToHLA(QString)), this, SLOT(OnConnectToHLA(QString)));
       connect(&window, SIGNAL(DisconnectedFromHLA()), this, SLOT(OnDisconnectFromHLA()));
 
-      if(window.exec() == QDialog::Accepted)
+      if (window.exec() == QDialog::Accepted)
       {
          // Retrieve data from labels and process the input.
       }
@@ -389,24 +461,45 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::showEvent(QShowEvent* event)
    {
+      mViewDockWidget->show();
       // The first, initial show event is not spontaneous because Qt sends it when the window is
       // made visible.  Minimizing or otherwise hiding windows and bringing them back can cause
       // spontaneous show events, which we don't want.
       if (!event->spontaneous())
       {
+         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
+         UpdateUIFromPreferences();
+
          mUi->mActionShowControls->setChecked(mUi->mControlsDockWidget->isVisible());
          mUi->mActionShowEntityInfo->setChecked(mUi->mEntityInfoDockWidget->isVisible());
          mUi->mActionShowPreferences->setChecked(mUi->mPreferencesDockWidget->isVisible());
-
-         StealthViewerData::GetInstance().GetSettings().LoadPreferences();
-         UpdateUIFromPreferences();
+         mUi->mActionShowViewUI->setChecked(mViewDockWidget->isVisible());
       }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::closeEvent(QCloseEvent *e)
+   void MainWindow::closeEvent(QCloseEvent* e)
    {
       StealthViewerData::GetInstance().GetSettings().WritePreferencesToFile();
+
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      std::vector<StealthGM::ViewWindowWrapper*> viewWindows;
+      viewConfig.GetAllViewWindows(viewWindows);
+      std::vector<StealthGM::ViewWindowWrapper*>::iterator i, iend;
+      i = viewWindows.begin();
+      iend = viewWindows.end();
+      for (; i != iend; ++i)
+      {
+         StealthGM::ViewWindowWrapper* vww = *i;
+         AdditionalViewDockWidget* widget = AdditionalViewDockWidget::GetDockWidgetForViewWindow(*vww);
+         if (widget != NULL)
+         {
+            widget->RequestClose();
+         }
+      }
+      QApplication::quit();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -420,6 +513,7 @@ namespace StealthQt
       connect(mUi->mActionShowControls,    SIGNAL(triggered()), this, SLOT(OnShowControlsActionTriggered()));
       connect(mUi->mActionShowEntityInfo,  SIGNAL(triggered()), this, SLOT(OnShowEntityInfoActionTriggered()));
       connect(mUi->mActionShowPreferences, SIGNAL(triggered()), this, SLOT(OnShowPreferencesActionTriggered()));
+      connect(mUi->mActionShowViewUI,      SIGNAL(triggered()), this, SLOT(OnShowViewUIActionTriggered()));
       /////////////////////////////////////////////////////////
 
       /////////////////////////////////////////////////////////
@@ -490,96 +584,103 @@ namespace StealthQt
       connect(mUi->mGeneralAttachModeComboBox,          SIGNAL(currentIndexChanged(const QString&)),
                this,                                     SLOT(OnAttachModeChanged(const QString&)));
 
+      connect(mUi->mAttachNodeName,      SIGNAL(textChanged(const QString&)),
+               this,                     SLOT(OnAttachNodeNameChanged(const QString&)));
+
+      connect(mUi->mAttachAzimuth,       SIGNAL(textChanged(const QString&)),
+               this,                     SLOT(OnAttachAzimuthChanged(const QString&)));
+
+      connect(mUi->mAutoAttachCheckBox,  SIGNAL(toggled(bool)),
+               this,                     SLOT(OnAutoAttachToggled(bool)));
+
+      connect(mUi->mAutoAttachCallsign, SIGNAL(textChanged(const QString&)),
+               this,                              SLOT(OnAutoAttachEntityNameChanged(const QString&)));
+
       connect(mUi->mGeneralEnableCameraCollisionCheckBox, SIGNAL(stateChanged(int)),
-               this,                                       SLOT(OnCameraCollisionChanged(int)));
+               this,                                      SLOT(OnCameraCollisionChanged(int)));
 
       connect(mUi->mGeneralLODScaleLineEdit,              SIGNAL(textChanged(const QString&)),
-               this,                                       SLOT(OnLODScaleChanged(const QString&)));
+               this,                                      SLOT(OnLODScaleChanged(const QString&)));
 
       connect(mUi->mGeneralNearClippingPlaneComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                                   SLOT(OnNearClippingPlaneChanged(const QString&)));
+               this,                                  SLOT(OnNearClippingPlaneChanged(const QString&)));
 
       connect(mUi->mGeneralFarClippingPlaneComboBox,  SIGNAL(currentIndexChanged(const QString&)),
-               this,                                   SLOT(OnFarClipplingPlaneChanged(const QString&)));
+               this,                                  SLOT(OnFarClipplingPlaneChanged(const QString&)));
 
-      connect(mUi->mGeneralShowAdvancedOptionsCheckBox, SIGNAL(stateChanged(int)),
-               this,                                     SLOT(OnShowAdvancedGeneralOptions(int)));
-
-      connect(mUi->mToolsCoordinateSystemComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                                SLOT(OnToolsCoordinateSystemChanged(const QString&)));
+      connect(mUi->mOptionsCoordinateSystemComboBox, SIGNAL(currentIndexChanged(const QString&)),
+               this,                                 SLOT(OnToolsCoordinateSystemChanged(const QString&)));
 
       connect(mUi->mToolsMagnificationSpinBox, SIGNAL(valueChanged(int)),
-               this,                            SLOT(OnMagnificationChanged(int)));
+               this,                           SLOT(OnMagnificationChanged(int)));
 
       connect(mUi->mToolsAutoAttachOnSelectionCheckBox, SIGNAL(stateChanged(int)),
-               this,                                     SLOT(OnAutoAttachOnSelectionChanged(int)));
+               this,                                    SLOT(OnAutoAttachOnSelectionChanged(int)));
 
       connect(mUi->mToolsShowBinocularImageCheckBox, SIGNAL(stateChanged(int)),
-               this,                                  SLOT(OnShowBinocularImageChanged(int)));
+               this,                                 SLOT(OnShowBinocularImageChanged(int)));
 
       connect(mUi->mToolsShowDistanceToObjectCheckBox, SIGNAL(stateChanged(int)),
-               this,                                    SLOT(OnShowDistanceToObjectChanged(int)));
+               this,                                   SLOT(OnShowDistanceToObjectChanged(int)));
 
       connect(mUi->mToolsShowElevationOfObjectCheckBox, SIGNAL(stateChanged(int)),
-               this,                                     SLOT(OnShowElevationOfObjectChanged(int)));
+               this,                                    SLOT(OnShowElevationOfObjectChanged(int)));
 
       connect(mUi->mWeatherUseNetworkSettingsRadioButton, SIGNAL(clicked(bool)),
-               this,                                       SLOT(OnWeatherNetworkRadioButtonClicked(bool)));
+               this,                                      SLOT(OnWeatherNetworkRadioButtonClicked(bool)));
 
       connect(mUi->mWeatherCustomRadioButton, SIGNAL(clicked(bool)),
-               this,                           SLOT(OnWeatherCustomRadioButtonClicked(bool)));
+               this,                          SLOT(OnWeatherCustomRadioButtonClicked(bool)));
 
       connect(mUi->mWeatherThemedRadioButton, SIGNAL(clicked(bool)),
-               this,                           SLOT(OnWeatherThemedRadioButtonClicked(bool)));
+               this,                          SLOT(OnWeatherThemedRadioButtonClicked(bool)));
 
       connect(mUi->mCustomTimeEdit, SIGNAL(timeChanged(const QTime&)),
-               this,                 SLOT(OnTimeOfDayChanged(const QTime&)));
+               this,                SLOT(OnTimeOfDayChanged(const QTime&)));
 
       connect(mUi->mCustomVisibilityComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                           SLOT(OnVisibilityChanged(const QString&)));
+               this,                          SLOT(OnVisibilityChanged(const QString&)));
 
       connect(mUi->mCustomCloudCoverComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                           SLOT(OnCloudCoverChanged(const QString&)));
+               this,                          SLOT(OnCloudCoverChanged(const QString&)));
 
       connect(mUi->mTimeComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                           SLOT(OnTimeThemeChanged(const QString&)));
+               this,              SLOT(OnTimeThemeChanged(const QString&)));
 
       connect(mUi->mThemeComboBox, SIGNAL(currentIndexChanged(const QString&)),
-               this,                           SLOT(OnWeatherThemeChanged(const QString&)));
+               this,               SLOT(OnWeatherThemeChanged(const QString&)));
 
       connect(mUi->mSearchInfoPushButton, SIGNAL(clicked(bool)),
-               this,                       SLOT(PopulateEntityInfoWindow(bool)));
+               this,                      SLOT(PopulateEntityInfoWindow(bool)));
 
       connect(mUi->mSearchEntityTableWidget, SIGNAL(itemDoubleClicked(QTableWidgetItem*)),
-               this,                          SLOT(PopulateEntityInfoWindow(QTableWidgetItem*)));
+               this,                         SLOT(PopulateEntityInfoWindow(QTableWidgetItem*)));
 
       connect(mUi->mSearchSearchPushButton, SIGNAL(clicked(bool)),
                this,                         SLOT(OnEntitySearchSearchButtonClicked(bool)));
 
       connect(mUi->mSearchAttachPushButton, SIGNAL(clicked(bool)),
-               this,                         SLOT(OnEntitySearchAttachButtonClicked(bool)));
+               this,                        SLOT(OnEntitySearchAttachButtonClicked(bool)));
 
       connect(mUi->mSearchDetachPushButton, SIGNAL(clicked(bool)),
-               this,                         SLOT(OnEntitySearchDetachButtonClicked(bool)));
+               this,                        SLOT(OnEntitySearchDetachButtonClicked(bool)));
 
       connect(mUi->mEntityInfoAutoRefreshCheckBox, SIGNAL(stateChanged(int)),
-               this,                                SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
+               this,                               SLOT(OnAutoRefreshEntityInfoCheckBoxChanged(int)));
 
       connect(mUi->mPlaybackTimeMarkersTextBox, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-               this,                             SLOT(OnTimeMarkerDoubleClicked(QListWidgetItem*)));
+               this,                            SLOT(OnTimeMarkerDoubleClicked(QListWidgetItem*)));
 
       connect(mUi->mVisLabelGroup, SIGNAL(toggled(bool)),
                this,               SLOT(OnVisLabelsToggled(bool)));
-      connect(mUi->mVisTrackChk, SIGNAL(toggled(bool)),
+      connect(mUi->mVisTrackChk,   SIGNAL(toggled(bool)),
                this,               SLOT(OnVisLabelsToggled(bool)));
-      connect(mUi->mVisBlipChk, SIGNAL(toggled(bool)),
+      connect(mUi->mVisBlipChk,    SIGNAL(toggled(bool)),
                this,               SLOT(OnVisLabelsToggled(bool)));
-      connect(mUi->mVisEntityChk, SIGNAL(toggled(bool)),
-               this,               SLOT(OnVisLabelsToggled(bool)));
-      connect(mUi->mVisMaxDistCombo, SIGNAL(toggled(bool)),
+      connect(mUi->mVisEntityChk,  SIGNAL(toggled(bool)),
                this,               SLOT(OnVisLabelsToggled(bool)));
       connect(mUi->mVisMaxDistCombo, SIGNAL(currentIndexChanged(const QString&)),
-               this,               SLOT(OnVisLabelsDistanceChanged(const QString&)));
+               this,                 SLOT(OnVisLabelsDistanceChanged(const QString&)));
 
       ////////////////////////////////////////////////////
 
@@ -590,56 +691,52 @@ namespace StealthQt
       connect(&mRefreshEntityInfoTimer, SIGNAL(timeout()), this, SLOT(OnRefreshEntityInfoTimerElapsed()));
 
       connect(&mHLAErrorTimer, SIGNAL(timeout()), this, SLOT(OnHLAErrorTimerElapsed()));
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    bool MainWindow::eventFilter(QObject *object, QEvent *event)
    {
-      if(object == mUi->mControlsDockWidget)
+      if (event->type() == QEvent::Close)
       {
-         if(event->type() == QEvent::Close)
+         if (object == mUi->mControlsDockWidget)
          {
             mUi->mActionShowControls->setChecked(false);
             return true;
          }
-      }
-      else if(object == mUi->mEntityInfoDockWidget)
-      {
-         if(event->type() == QEvent::Close)
+         else if (object == mUi->mEntityInfoDockWidget)
          {
             mUi->mActionShowEntityInfo->setChecked(false);
             return true;
          }
-      }
-      else if(object == mUi->mPreferencesDockWidget)
-      {
-         if(event->type() == QEvent::Close)
+         else if (object == mUi->mPreferencesDockWidget)
          {
             mUi->mActionShowPreferences->setChecked(false);
             return true;
          }
-      }
-      else if(object == mUi->mSearchCallSignLineEdit)
-      {
-         if(event->type() == QEvent::KeyPress)
+         else if (object == mViewDockWidget)
          {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-            if(keyEvent->key() == Qt::Key_Return)
+            mUi->mActionShowViewUI->setChecked(false);
+            return true;
+         }
+      }
+      else if (event->type() == QEvent::KeyPress)
+      {
+         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+         if (object == mUi->mSearchCallSignLineEdit)
+         {
+            if (keyEvent->key() == Qt::Key_Return)
             {
                OnEntitySearchSearchButtonClicked();
                return true;
             }
          }
-      }
-      else if(object == mUi->mSearchEntityTableWidget)
-      {
-         if(event->type() == QEvent::KeyPress)
+         else if (object == mUi->mSearchEntityTableWidget)
          {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-            if(keyEvent->key() == Qt::Key_T)
+            if (keyEvent->key() == Qt::Key_T)
             {
                Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
-               if(modifiers & Qt::ControlModifier)
+               if (modifiers & Qt::ControlModifier)
                {
                   OnEntitySearchAttachButtonClicked();
                   return true;
@@ -674,13 +771,20 @@ namespace StealthQt
    void MainWindow::OnFullScreenActionTriggered()
    {
       //mApp->GetWindow()->SetFullScreenMode(mUi->mActionFullScreen->isChecked());
+      if (mUi->mActionFullScreen->isChecked())
+      {
+         this->showFullScreen();
+      }
+      else
+      {
+         this->showNormal();
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowControlsActionTriggered()
    {
       bool showWindow = mUi->mActionShowControls->isChecked();
-      mUi->mActionShowControls->setChecked(showWindow);
 
       showWindow ? mUi->mControlsDockWidget->show() : mUi->mControlsDockWidget->hide();
    }
@@ -689,7 +793,6 @@ namespace StealthQt
    void MainWindow::OnShowEntityInfoActionTriggered()
    {
       bool showWindow = mUi->mActionShowEntityInfo->isChecked();
-      mUi->mActionShowEntityInfo->setChecked(showWindow);
 
       showWindow ? mUi->mEntityInfoDockWidget->show() : mUi->mEntityInfoDockWidget->hide();
    }
@@ -698,9 +801,16 @@ namespace StealthQt
    void MainWindow::OnShowPreferencesActionTriggered()
    {
       bool showWindow = mUi->mActionShowPreferences->isChecked();
-      mUi->mActionShowPreferences->setChecked(showWindow);
 
       showWindow ? mUi->mPreferencesDockWidget->show() : mUi->mPreferencesDockWidget->hide();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnShowViewUIActionTriggered()
+   {
+      bool showWindow = mUi->mActionShowViewUI->isChecked();
+
+      showWindow ? mViewDockWidget->show() : mViewDockWidget->hide();
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -714,6 +824,7 @@ namespace StealthQt
       double lat = mUi->mWarpToLat->text().toDouble();
       double lon = mUi->mWarpToLon->text().toDouble();
       double elev = mUi->mWarpToLLElev->text().toDouble();
+
       try
       {
          cameraObject.WarpToPosition(lat, lon, elev);
@@ -734,6 +845,7 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetCameraConfigObject();
       const std::string MGRS = mUi->mWarpToMGRS->text().toStdString();
       double elev = mUi->mWarpToMGRSElev->text().toDouble();
+
       try
       {
          cameraObject.WarpToPosition(MGRS, elev);
@@ -778,7 +890,7 @@ namespace StealthQt
       StealthGM::ControlsRecordConfigObject& recordObject =
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
-      if(recordObject.GetOutputFilename().empty())
+      if (recordObject.GetOutputFilename().empty())
       {
          QMessageBox::warning(this, tr("Please select an output file"),
                   tr("Please select an output file to send record data to."),
@@ -789,7 +901,7 @@ namespace StealthQt
 
       mIsRecording = !mIsRecording;
 
-      if(mIsRecording)
+      if (mIsRecording)
       {
          recordObject.StartRecording();
          mUi->mRecordStartButton->setText(tr("Stop"));
@@ -832,16 +944,16 @@ namespace StealthQt
       QString msgFile = QFileDialog::getSaveFileName(this, tr("Select an output message file"),
                tr(""), tr("*.dlm"));
 
-      if(msgFile.isEmpty())
+      if (msgFile.isEmpty())
          return;
 
       dtUtil::FileUtils &instance = dtUtil::FileUtils::GetInstance();
-      if(!instance.FileExists(msgFile.toStdString()))
+      if (!instance.FileExists(msgFile.toStdString()))
       {
          // The file selected does not exist.
          // So, create it and prompt if the create fails.
          std::ofstream out(msgFile.toStdString().c_str());
-         if(!out.is_open())
+         if (!out.is_open())
          {
             QMessageBox::warning(this, tr("Error"),
                      tr("An error occurred trying to create the \
@@ -854,7 +966,7 @@ namespace StealthQt
 
       std::string msg = osgDB::getStrippedName(msgFile.toStdString());
 
-      if(!msg.empty())
+      if (!msg.empty())
       {
          recordObject.SetOutputFilename(msgFile.toStdString());
 
@@ -913,7 +1025,7 @@ namespace StealthQt
 
       mIsPlaybackMode = !mIsPlaybackMode;
 
-      if(mIsPlaybackMode)
+      if (mIsPlaybackMode)
       {
          recConfig.DisconnectFromFederation();
          mUi->mPlaybackOptionsGroupBox->show();
@@ -923,7 +1035,7 @@ namespace StealthQt
       {
          // Turn off paused in case the playback ended and paused the GM.
          // It will continue to be paused afterward.
-         if(mApp->GetGameManager()->IsPaused())
+         if (mApp->GetGameManager()->IsPaused())
             mApp->GetGameManager()->SetPaused(false);
 
          recConfig.JoinFederation();
@@ -941,27 +1053,27 @@ namespace StealthQt
 
       //mUi->mEntityInfoDockWidget->setEnabled(!mIsPlaybackMode);
 
-      if(!mIsPlaybackMode)
+      if (!mIsPlaybackMode)
       {
-         if(mUi->mPlaybackShowAdvancedOptionsCheckBox->checkState() == Qt::Checked)
+         if (mUi->mPlaybackShowAdvancedOptionsCheckBox->checkState() == Qt::Checked)
             mUi->mPlaybackTimeMarkersGroupBox->hide();
       }
       else
       {
-         if(mUi->mPlaybackShowAdvancedOptionsCheckBox->checkState() == Qt::Checked)
+         if (mUi->mPlaybackShowAdvancedOptionsCheckBox->checkState() == Qt::Checked)
             mUi->mPlaybackTimeMarkersGroupBox->show();
       }
 
-      if(mIsPlaybackMode)
+      if (mIsPlaybackMode)
       {
-         //if(recConfig.GetIsRecording())
+         //if (recConfig.GetIsRecording())
          {
             //recConfig.StopRecording();
          }
       }
 
       // Restore default state. Exited without clicking Stop
-      if(mIsPlayingBack)
+      if (mIsPlayingBack)
          OnPlaybackPlayButtonClicked();
 
       // Prevent network connection changes if in playback mode.
@@ -980,7 +1092,7 @@ namespace StealthQt
       QString msgFile = QFileDialog::getOpenFileName(this, tr("Select an input message file"),
                tr(""), tr("*.dlm"));
 
-      if(msgFile.isEmpty())
+      if (msgFile.isEmpty())
          return;
 
       std::string msg = osgDB::getStrippedName(msgFile.toStdString());
@@ -1001,7 +1113,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      if(pbObject.GetInputFilename().empty())
+      if (pbObject.GetInputFilename().empty())
       {
          QMessageBox::warning(this, tr("Please select an input file"),
                   tr("Please select an input file that contains record data to playback"),
@@ -1028,7 +1140,7 @@ namespace StealthQt
       StealthGM::ControlsPlaybackConfigObject &pbObject =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
-      if(mUi->mPlaybackFileLineEdit->text().isEmpty())
+      if (mUi->mPlaybackFileLineEdit->text().isEmpty())
       {
          QMessageBox::warning(this, tr("Please select an input file"),
                   tr("Please select an input file that contains record data to playback"),
@@ -1039,7 +1151,7 @@ namespace StealthQt
 
       mIsPlayingBack = !mIsPlayingBack;
 
-      if(mIsPlayingBack)
+      if (mIsPlayingBack)
       {
          mUi->mPlaybackPlayPushButton->setText(tr("Stop"));
          mUi->mPlaybackDurationLineEdit->setText("0");
@@ -1077,7 +1189,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowAdvancedPlaybackOptionsChanged(int state)
    {
-      if(state == Qt::Checked && mIsPlayingBack)
+      if (state == Qt::Checked && mIsPlayingBack)
       {
          mUi->mPlaybackTimeMarkersGroupBox->show();
       }
@@ -1112,7 +1224,7 @@ namespace StealthQt
    void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(bool checked)
    {
       QListWidgetItem *currentItem = mUi->mPlaybackTimeMarkersTextBox->currentItem();
-      if(currentItem != NULL)
+      if (currentItem != NULL)
       {
          OnPlaybackJumpToTimeMarkerButtonClicked(currentItem->text());
       }
@@ -1121,7 +1233,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName)
    {
-      if(!itemName.isEmpty())
+      if (!itemName.isEmpty())
       {
          StealthGM::ControlsPlaybackConfigObject &pbObject =
             StealthViewerData::GetInstance().GetPlaybackConfigObject();
@@ -1197,21 +1309,21 @@ namespace StealthQt
       // (This should never happen, but better safe than sorry)
       // Current row should return an unsigned int. Not sure why it doesn't.
       unsigned int row = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
-      if(row >= mFoundActors.size())
+      if (row >= mFoundActors.size())
          return;
 
       // Get the name item from the current row, which stores the unique ID as
       // its data.
       QTableWidgetItem *item = mUi->mSearchEntityTableWidget->currentItem();
-      if(item != NULL)
+      if (item != NULL)
       {
-         QString id = item->data(Qt::UserRole).toString();
+         const dtCore::UniqueId id(item->data(Qt::UserRole).toString().toStdString());
 
-         // Retrieve proxy from the GM
-         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
-         if(proxy != NULL)
+         // Retrieve proxy from the GM just to make sure it exists.
+         dtGame::GameActorProxy* proxy = mApp->GetGameManager()->FindGameActorById(id);
+         if (proxy != NULL)
          {
-            StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(*proxy);
+            StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(id);
          }
          else
          {
@@ -1221,8 +1333,8 @@ namespace StealthQt
             QTableWidgetItem *itemAt = mUi->mSearchEntityTableWidget->item(row, 0);
 
             QString message = tr("Could not attach to the actor named: ") +
-            (itemAt != NULL ? itemAt->text() : item->text()) +
-            tr(" because this actor has been removed from the scenario. Please select another actor");
+               (itemAt != NULL ? itemAt->text() : item->text()) +
+               tr(" because this actor has been removed from the scenario. Please select another actor");
 
             QMessageBox::warning(this, tr("Error attaching to actor"), message, QMessageBox::Ok);
          }
@@ -1235,13 +1347,63 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnAttachModeChanged(const QString &text)
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
          StealthViewerData::GetInstance().GetGeneralConfigObject();
 
-      if(text.toStdString() == StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON.GetName())
-         genConfig.SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON);
+      StealthGM::PreferencesGeneralConfigObject::AttachMode* mode =
+         StealthGM::PreferencesGeneralConfigObject::AttachMode::GetValueForName(text.toStdString());
+      if (mode != NULL)
+      {
+         genConfig.SetAttachMode(*mode);
+      }
       else
+      {
+         QString message = tr("Unknown attach mode: \"") +
+            (text) +
+            tr("\". This implies a coding error");
+
+         QMessageBox::warning(this, tr("Error setting attach mode"), message, QMessageBox::Ok);
+
          genConfig.SetAttachMode(StealthGM::PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnAttachNodeNameChanged(const QString& text)
+   {
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
+         StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+      genConfig.SetAttachPointNodeName(text.toStdString());
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnAttachAzimuthChanged(const QString& text)
+   {
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
+         StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+      // We use the negative azimuth because the military does azimuth clockwise while hpr has a
+      // counter-clockwise heading.
+      genConfig.SetInitialAttachRotationHPR(osg::Vec3(-(text.toFloat()), 0.0, 0.0));
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnAutoAttachToggled(bool checked)
+   {
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
+         StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+      genConfig.SetShouldAutoAttachToEntity(checked);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnAutoAttachEntityNameChanged(const QString& text)
+   {
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
+         StealthViewerData::GetInstance().GetGeneralConfigObject();
+
+      genConfig.SetAutoAttachEntityCallsign(text.toStdString());
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1265,37 +1427,25 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnNearClippingPlaneChanged(const QString &text)
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      genConfig.SetNearClippingPlane(text.toDouble());
+      viewConfig.SetNearClippingPlane(text.toDouble());
    }
 
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnFarClipplingPlaneChanged(const QString &text)
    {
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
-      genConfig.SetFarClippingPlane(text.toDouble());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnShowAdvancedGeneralOptions(int state)
-   {
-      state == Qt::Checked ? mUi->mGeneralAdvancedPerformanceOptionsGroupBox->show() :
-         mUi->mGeneralAdvancedPerformanceOptionsGroupBox->hide();
-
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
-         StealthViewerData::GetInstance().GetGeneralConfigObject();
-
-      genConfig.SetShowAdvancedOptions(state == Qt::Checked);
+      viewConfig.SetFarClippingPlane(text.toDouble());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnWeatherThemedRadioButtonClicked(bool checked)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       mUi->mThemedSettingsGroupBox->show();
@@ -1346,30 +1496,30 @@ namespace StealthQt
 
       QString hack = tr("Theme ") + text;
 
-      if(hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM.GetName())
+      if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM.GetName())
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR.GetName())
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR.GetName())
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY.GetName())
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY);
       else
          envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
    }
 
-   void MainWindow::OnTimeThemeChanged(const QString &text)
+   void MainWindow::OnTimeThemeChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       QString hack = tr("Time ") + text;
 
-      if(hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN.GetName())
+      if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN.GetName())
          envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY.GetName())
          envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK.GetName())
          envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK);
       else
          envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_NIGHT);
@@ -1378,9 +1528,9 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    // Custom Weather Settings
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnTimeOfDayChanged(const QTime &newTime)
+   void MainWindow::OnTimeOfDayChanged(const QTime& newTime)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       int newHour = newTime.hour();
@@ -1462,22 +1612,22 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnVisibilityChanged(const QString &text)
+   void MainWindow::OnVisibilityChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       // Convert to match the name of the actor's enum. The full name
       // doesn't look pretty in the UI, so we shortened it
       QString hack = "Visibility " + text;
 
-      if(hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED.GetName())
+      if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED.GetName())
          envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR.GetName())
          envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE.GetName())
          envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE);
-      else if(hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED.GetName())
+      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED.GetName())
          envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED);
       else
          envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_CLOSE);
@@ -1496,7 +1646,7 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnToolsCoordinateSystemChanged(const QString &text)
+   void MainWindow::OnToolsCoordinateSystemChanged(const QString& text)
    {
       StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
@@ -1504,7 +1654,7 @@ namespace StealthQt
       const std::string coordType = text.toStdString();
       StealthGM::PreferencesToolsConfigObject::CoordinateSystem* coordSystem =
          StealthGM::PreferencesToolsConfigObject::CoordinateSystem::GetValueForName(coordType);
-      if(coordSystem!= NULL)
+      if (coordSystem!= NULL)
       {
          toolsConfig.SetCoordinateSystem(*coordSystem);
          SelectCorrectWarpToUI(*coordSystem);
@@ -1515,7 +1665,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowBinocularImageChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowBinocularImage(state == Qt::Checked);
@@ -1524,7 +1674,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowDistanceToObjectChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowDistanceToObject(state == Qt::Checked);
@@ -1533,7 +1683,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowElevationOfObjectChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetShowElevationOfObject(state == Qt::Checked);
@@ -1542,15 +1692,16 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnMagnificationChanged(int value)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetMagnification(float(value));
    }
+
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnAutoAttachOnSelectionChanged(int state)
    {
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       toolsConfig.SetAutoAttachOnSelection(state == Qt::Checked);
@@ -1559,16 +1710,16 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::AddConfigObjectsToViewerComponent()
    {
-      dtGame::GameManager *gm = mApp->GetGameManager();
-      dtGame::GMComponent *gmComp =
+      dtGame::GameManager* gm = mApp->GetGameManager();
+      dtGame::GMComponent* gmComp =
          gm->GetComponentByName(StealthGM::ViewerConfigComponent::DEFAULT_NAME);
 
-      if(gmComp == NULL)
+      if (gmComp == NULL)
       {
          LOG_ERROR("Failed to find the ViewerConfigComponent on the Game Manager.");
       }
 
-      StealthGM::ViewerConfigComponent &viewComp =
+      StealthGM::ViewerConfigComponent& viewComp =
          static_cast<StealthGM::ViewerConfigComponent&>(*gmComp);
 
       StealthViewerData &instance = StealthViewerData::GetInstance();
@@ -1581,8 +1732,10 @@ namespace StealthQt
       viewComp.AddConfigObject(instance.GetCameraConfigObject());
       viewComp.AddConfigObject(instance.GetRecordConfigObject());
       viewComp.AddConfigObject(instance.GetPlaybackConfigObject());
+      viewComp.AddConfigObject(instance.GetViewWindowConfigObject());
    }
 
+   ///////////////////////////////////////////////////////////////////////////////
    static void SetVisibilityUIValuesFromConfig(Ui::MainWindow& ui)
    {
       StealthGM::PreferencesVisibilityConfigObject& visConfig =
@@ -1621,38 +1774,51 @@ namespace StealthQt
       }
    }
 
+   ////////////////////////////////////////////////////////////////////////////////
+   void MainWindow::FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums, QComboBox& combo, const dtUtil::Enumeration& enumValue)
+   {
+      for (size_t i = 0; i < enums.size(); ++i)
+      {
+         dtUtil::Enumeration* currEnum = enums[i];
+         combo.addItem(QString(currEnum->GetName().c_str()));
+         if (*currEnum == enumValue)
+         {
+            combo.setCurrentIndex(i);
+         }
+      }
+   }
 
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::UpdateUIFromPreferences()
    {
       // General Preferences
-      StealthGM::PreferencesGeneralConfigObject &genConfig =
+      StealthGM::PreferencesGeneralConfigObject& genConfig =
          StealthViewerData::GetInstance().GetGeneralConfigObject();
 
-      if(genConfig.GetAttachMode() == StealthGM::PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON)
-      {
-         mUi->mGeneralAttachModeComboBox->setCurrentIndex(0);
-      }
-      else if(genConfig.GetAttachMode() == StealthGM::PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
-      {
-         mUi->mGeneralAttachModeComboBox->setCurrentIndex(1);
-      }
-      else
-      {
-         LOG_ERROR("Unknown attach mode: " + genConfig.GetAttachMode().GetName());
-      }
+      FillAndSetComboBox(StealthGM::PreferencesGeneralConfigObject::AttachMode::Enumerate(),
+               *mUi->mGeneralAttachModeComboBox, genConfig.GetAttachMode());
+
+      mUi->mAutoAttachCheckBox->setChecked(genConfig.GetShouldAutoAttachToEntity());
+      mUi->mAutoAttachCallsign->setText(tr(genConfig.GetAutoAttachEntityCallsign().c_str()));
+      mUi->mAttachNodeName->setText(tr(genConfig.GetAttachPointNodeName().c_str()));
+      mUi->mAttachAzimuth->setText(tr(dtUtil::ToString(-genConfig.GetInitialAttachRotationHPR()[0]).c_str()));
 
       mUi->mEntityInfoAutoRefreshCheckBox->setChecked(genConfig.GetAutoRefreshEntityInfoWindow());
 
       mUi->mGeneralEnableCameraCollisionCheckBox->setChecked(genConfig.GetEnableCameraCollision());
 
-      int index = mUi->mGeneralFarClippingPlaneComboBox->findText(QString::number(genConfig.GetFarClippingPlane()));
+      StealthGM::ViewWindowConfigObject& viewConfig =
+         StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+      int index = mUi->mGeneralFarClippingPlaneComboBox->findText(QString::number(viewConfig.GetFarClippingPlane()));
       if (index >= 0)
       {
          mUi->mGeneralFarClippingPlaneComboBox->setCurrentIndex(index);
       }
 
-      index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(genConfig.GetNearClippingPlane()));
+      //AssignFOVUiValuesFromConfig();
+
+      index = mUi->mGeneralNearClippingPlaneComboBox->findText(QString::number(viewConfig.GetNearClippingPlane()));
       if (index >= 0)
       {
          mUi->mGeneralNearClippingPlaneComboBox->setCurrentIndex(index);
@@ -1660,31 +1826,8 @@ namespace StealthQt
 
       mUi->mGeneralLODScaleLineEdit->setText(QString::number(genConfig.GetLODScale()));
 
-      if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS)
-      {
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(0);
-      }
-      else if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BETTER_GRAPHICS)
-      {
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(1);
-      }
-      else if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::DEFAULT)
-      {
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(2);
-      }
-      else if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BETTER_SPEED)
-      {
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(3);
-      }
-      else if(genConfig.GetPerformanceMode() == StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_SPEED)
-      {
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(4);
-      }
-      else
-      {
-         LOG_ERROR("Unknown performance mode: " + genConfig.GetPerformanceMode().GetName());
-         mUi->mGeneralPerformanceComboBox->setCurrentIndex(2);
-      }
+      FillAndSetComboBox(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::Enumerate(),
+               *mUi->mGeneralPerformanceComboBox, genConfig.GetPerformanceMode());
 
       mUi->mGeneralShowAdvancedOptionsCheckBox->setChecked(genConfig.GetShowAdvancedOptions());
 
@@ -1693,144 +1836,46 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       // Ensure the correct box displays. Invoke the slot manually
-      if(envConfig.GetUseNetworkSettings())
+      if (envConfig.GetUseNetworkSettings())
       {
          mUi->mWeatherUseNetworkSettingsRadioButton->setChecked(true);
          OnWeatherNetworkRadioButtonClicked();
       }
-      else if(envConfig.GetUseThemedSettings())
+      else if (envConfig.GetUseThemedSettings())
       {
          mUi->mWeatherThemedRadioButton->setChecked(true);
          OnWeatherThemedRadioButtonClicked();
       }
-      else if(envConfig.GetUseCustomSettings())
+      else if (envConfig.GetUseCustomSettings())
       {
          mUi->mWeatherCustomRadioButton->setChecked(true);
          OnWeatherCustomRadioButtonClicked();
       }
 
-      if(envConfig.GetCloudCover() == dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR)
-      {
-         mUi->mCustomCloudCoverComboBox->setCurrentIndex(0);
-      }
-      else if(envConfig.GetCloudCover() == dtActors::BasicEnvironmentActor::CloudCoverEnum::FEW)
-      {
-         mUi->mCustomCloudCoverComboBox->setCurrentIndex(1);
-      }
-      else if(envConfig.GetCloudCover() == dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED)
-      {
-         mUi->mCustomCloudCoverComboBox->setCurrentIndex(2);
-      }
-      else if(envConfig.GetCloudCover() == dtActors::BasicEnvironmentActor::CloudCoverEnum::BROKEN)
-      {
-         mUi->mCustomCloudCoverComboBox->setCurrentIndex(3);
-      }
-      else if(envConfig.GetCloudCover() == dtActors::BasicEnvironmentActor::CloudCoverEnum::OVERCAST)
-      {
-         mUi->mCustomCloudCoverComboBox->setCurrentIndex(4);
-      }
-      else
-      {
-         LOG_ERROR("Unknown cloud cover: " + envConfig.GetCloudCover().GetName());
-      }
+      FillAndSetComboBox(dtActors::BasicEnvironmentActor::CloudCoverEnum::Enumerate(),
+               *mUi->mCustomCloudCoverComboBox, envConfig.GetCloudCover());
 
       QTime time(envConfig.GetCustomHour(),
                envConfig.GetCustomMinute(),
                envConfig.GetCustomSecond());
       mUi->mCustomTimeEdit->setTime(time);
 
-      if(envConfig.GetTimeTheme() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN)
-      {
-         mUi->mTimeComboBox->setCurrentIndex(0);
-      }
-      else if(envConfig.GetTimeTheme() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY)
-      {
-         mUi->mTimeComboBox->setCurrentIndex(1);
-      }
-      else if(envConfig.GetTimeTheme() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK)
-      {
-         mUi->mTimeComboBox->setCurrentIndex(2);
-      }
-      else if(envConfig.GetTimeTheme() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_NIGHT)
-      {
-         mUi->mTimeComboBox->setCurrentIndex(3);
-      }
-      else
-      {
-         LOG_ERROR("Unknown time theme: " + envConfig.GetTimeTheme().GetName());
-      }
+      FillAndSetComboBox(dtActors::BasicEnvironmentActor::TimePeriodEnum::Enumerate(),
+               *mUi->mTimeComboBox, envConfig.GetTimeTheme());
 
-      if(envConfig.GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR)
-      {
-         mUi->mThemeComboBox->setCurrentIndex(0);
-      }
-      else if(envConfig.GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM)
-      {
-         mUi->mThemeComboBox->setCurrentIndex(1);
-      }
-      else if(envConfig.GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR)
-      {
-         mUi->mThemeComboBox->setCurrentIndex(2);
-      }
-      else if(envConfig.GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY)
-      {
-         mUi->mThemeComboBox->setCurrentIndex(3);
-      }
-      else if(envConfig.GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY)
-      {
-         mUi->mThemeComboBox->setCurrentIndex(4);
-      }
-      else
-      {
-         LOG_ERROR("Unknown weather theme: " + envConfig.GetWeatherTheme().GetName());
-      }
+      FillAndSetComboBox(dtActors::BasicEnvironmentActor::WeatherThemeEnum::Enumerate(),
+               *mUi->mThemeComboBox, envConfig.GetWeatherTheme());
 
-      if(envConfig.GetVisibility() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED)
-      {
-         mUi->mCustomVisibilityComboBox->setCurrentIndex(0);
-      }
-      else if(envConfig.GetVisibility() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR)
-      {
-         mUi->mCustomVisibilityComboBox->setCurrentIndex(1);
-      }
-      else if(envConfig.GetVisibility() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE)
-      {
-         mUi->mCustomVisibilityComboBox->setCurrentIndex(2);
-      }
-      else if(envConfig.GetVisibility() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED)
-      {
-         mUi->mCustomVisibilityComboBox->setCurrentIndex(3);
-      }
-      else if(envConfig.GetVisibility() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_CLOSE)
-      {
-         mUi->mCustomVisibilityComboBox->setCurrentIndex(4);
-      }
-      else
-      {
-         LOG_ERROR("Unknown visibility theme: " + envConfig.GetVisibility().GetName());
-      }
+      FillAndSetComboBox(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::Enumerate(),
+               *mUi->mCustomVisibilityComboBox, envConfig.GetVisibility());
 
-      StealthGM::PreferencesToolsConfigObject &toolsConfig =
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
 
       mUi->mToolsAutoAttachOnSelectionCheckBox->setChecked(toolsConfig.GetAutoAttachOnSelection());
 
-      if(toolsConfig.GetCoordinateSystem() == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
-      {
-         mUi->mToolsCoordinateSystemComboBox->setCurrentIndex(0);
-      }
-      else if(toolsConfig.GetCoordinateSystem() == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
-      {
-         mUi->mToolsCoordinateSystemComboBox->setCurrentIndex(1);
-      }
-      else if(toolsConfig.GetCoordinateSystem() == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
-      {
-         mUi->mToolsCoordinateSystemComboBox->setCurrentIndex(2);
-      }
-      else
-      {
-         LOG_ERROR("Unknown coordinate system: " + toolsConfig.GetCoordinateSystem().GetName());
-      }
+      FillAndSetComboBox(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::Enumerate(),
+               *mUi->mOptionsCoordinateSystemComboBox, toolsConfig.GetCoordinateSystem());
 
       mUi->mToolsMagnificationSpinBox->setValue(int(toolsConfig.GetMagnification()));
       mUi->mToolsShowBinocularImageCheckBox->setChecked(toolsConfig.GetShowBinocularImage());
@@ -1840,12 +1885,12 @@ namespace StealthQt
       // Camera controls
 
       // Record controls
-      StealthGM::ControlsRecordConfigObject &recordConfig =
+      StealthGM::ControlsRecordConfigObject& recordConfig =
          StealthViewerData::GetInstance().GetRecordConfigObject();
 
       mUi->mRecordShowAdvancedOptionsCheckBox->setChecked(recordConfig.GetShowAdvancedOptions());
       bool enable = !recordConfig.GetOutputFilename().empty();
-      if(enable)
+      if (enable)
       {
          mUi->mRecordFileLineEdit->setText(tr(recordConfig.GetOutputFilename().c_str()));
       }
@@ -1858,50 +1903,50 @@ namespace StealthQt
       mUi->mRecordAutomaticTimeMarkersSpinBox->setValue(recordConfig.GetAutoKeyFrameInterval());
 
       // Playback controls
-      StealthGM::ControlsPlaybackConfigObject &playbackConfig =
+      StealthGM::ControlsPlaybackConfigObject& playbackConfig =
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
       mUi->mPlaybackShowAdvancedOptionsCheckBox->setChecked(playbackConfig.GetShowAdvancedOptions());
-      if(!playbackConfig.GetInputFilename().empty())
+      if (!playbackConfig.GetInputFilename().empty())
       {
          mUi->mPlaybackFileLineEdit->setText(tr(playbackConfig.GetInputFilename().c_str()));
          mUi->mPlaybackPlayPushButton->setEnabled(true);
       }
 
       float value = playbackConfig.GetPlaybackSpeed();
-      if(value == 0.1f)
+      if (value == 0.1f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(0);
       }
-      else if(value == 0.25f)
+      else if (value == 0.25f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(1);
       }
-      else if(value == 0.5f)
+      else if (value == 0.5f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(2);
       }
-      else if(value == 1.0f)
+      else if (value == 1.0f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(3);
       }
-      else if(value == 1.5f)
+      else if (value == 1.5f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(4);
       }
-      else if(value == 2.0f)
+      else if (value == 2.0f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(5);
       }
-      else if(value == 4.0f)
+      else if (value == 4.0f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(6);
       }
-      else if(value == 8.0f)
+      else if (value == 8.0f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(7);
       }
-      else if(value == 16.0f)
+      else if (value == 16.0f)
       {
          mUi->mPlaybackPlaybackSpeedComboBox->setCurrentIndex(8);
       }
@@ -1917,11 +1962,11 @@ namespace StealthQt
       mUi->mPlaybackPlayPushButton->setEnabled(enable);
 
       SetVisibilityUIValuesFromConfig(*mUi);
+      mViewDockWidget->LoadSettings();
    }
 
-
-
-   void MainWindow::RecordKeyFrameSlot(const std::vector<dtGame::LogKeyframe> &keyFrames)
+   ///////////////////////////////////////////////////////////////
+   void MainWindow::RecordKeyFrameSlot(const std::vector<dtGame::LogKeyframe>& keyFrames)
    {
       mUi->mRecordTimeMarkersLineTextBox->clear();
 
@@ -1932,7 +1977,8 @@ namespace StealthQt
       }
    }
 
-   void MainWindow::PlaybackKeyFrameSlot(const std::vector<dtGame::LogKeyframe> &keyFrames)
+   ///////////////////////////////////////////////////////////////
+   void MainWindow::PlaybackKeyFrameSlot(const std::vector<dtGame::LogKeyframe>& keyFrames)
    {
       mUi->mPlaybackTimeMarkersTextBox->clear();
 
@@ -1955,12 +2001,12 @@ namespace StealthQt
 
    void MainWindow::ConnectSigSlots()
    {
-      dtGame::GMComponent *gmComp =
+      dtGame::GMComponent* gmComp =
          mApp->GetGameManager()->GetComponentByName("LogController");
-      if(gmComp == NULL)
+      if (gmComp == NULL)
          return;
 
-      dtGame::LogController &logController = static_cast<dtGame::LogController&>(*gmComp);
+      dtGame::LogController& logController = static_cast<dtGame::LogController&>(*gmComp);
 
       logController.SignalReceivedKeyframes().connect_slot(this, &MainWindow::RecordKeyFrameSlot);
       logController.SignalReceivedKeyframes().connect_slot(this, &MainWindow::PlaybackKeyFrameSlot);
@@ -1974,6 +2020,7 @@ namespace StealthQt
       mUi->mPreferencesDockWidget->setEnabled(true);
       mUi->mControlsDockWidget->setEnabled(true);
       mUi->mEntityInfoDockWidget->setEnabled(true);
+      mViewDockWidget->setEnabled(true);
 
       mGenericTickTimer.start();
       mHLAErrorTimer.start();
@@ -1997,10 +2044,10 @@ namespace StealthQt
 
    void MainWindow::OnSecondTimerElapsed()
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
-      if(envConfig.GetUseNetworkSettings())
+      if (envConfig.GetUseNetworkSettings())
       {
          // Time of day
          int hour = envConfig.GetNetworkHour(),
@@ -2021,13 +2068,13 @@ namespace StealthQt
 
    void MainWindow::OnDurationTimerElapsed()
    {
-      dtGame::GameManager &gm = *mApp->GetGameManager();
+      dtGame::GameManager& gm = *mApp->GetGameManager();
       double curSimtime = gm.GetSimulationTime();
       mRecordingStopTime = curSimtime;
 
       if (mIsRecording || mIsPlayingBack)
       {
-         if(mIsRecording)
+         if (mIsRecording)
          {
             std::string duration = dtUtil::DateTime::ToString(time_t(mRecordingStopTime - mRecordingStartTime),
                      dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT);
@@ -2035,10 +2082,10 @@ namespace StealthQt
             //mUi->mRecordDurationLineEdit->setText(!gm.IsPaused() ? QString(duration.c_str()): tr("Paused"));
             mUi->mRecordDurationLineEdit->setText(QString(duration.c_str()));
          }
-         else if(mIsPlayingBack)
+         else if (mIsPlayingBack)
          {
             // Get the log controller
-            dtGame::GMComponent *component = gm.GetComponentByName(dtGame::LogController::DEFAULT_NAME);
+            dtGame::GMComponent* component = gm.GetComponentByName(dtGame::LogController::DEFAULT_NAME);
             if (component == NULL)
                return ; // Shouldn't happen, but just to be safe.
             dtGame::LogController &logController = static_cast<dtGame::LogController&>(*component);
@@ -2052,13 +2099,14 @@ namespace StealthQt
       }
    }
 
+   ///////////////////////////////////////////////////////////////////
    void MainWindow::OnHLAErrorTimerElapsed()
    {
-      SimCore::HLA::HLAConnectionComponent *comp =
+      SimCore::HLA::HLAConnectionComponent* comp =
          static_cast<SimCore::HLA::HLAConnectionComponent*>
       (mApp->GetGameManager()->GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME));
 
-      if(comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
+      if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
          QMessageBox::critical(this, tr("Error"),
                   tr("An error occurred while connecting to HLA. ") +
@@ -2083,32 +2131,32 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::PopulateEntityInfoWindow(bool notUsed)
    {
-      QTableWidgetItem *currentItem = mUi->mSearchEntityTableWidget->currentItem();
-      if(currentItem == NULL)
+      QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
+      if (currentItem == NULL)
          return;
 
       PopulateEntityInfoWindow(currentItem);
    }
 
    ///////////////////////////////////////////////////////////////////
-   void MainWindow::PopulateEntityInfoWindow(QTableWidgetItem *currentItem)
+   void MainWindow::PopulateEntityInfoWindow(QTableWidgetItem* currentItem)
    {
       unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
-      if(index > mFoundActors.size() || currentItem == NULL)
+      if (index > mFoundActors.size() || currentItem == NULL)
          return;
 
       QString id = currentItem->data(Qt::UserRole).toString();
 
       // Retrieve proxy from the GM
       dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
-      if(proxy != NULL)
+      if (proxy != NULL)
       {
          UpdateEntityInfoData(*proxy);
 
          // This is the special case. See also OnRefreshEntityInfoTimerElapsed() for similar code and explanation.
-         if(mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
+         if (mUi->mToolsAutoAttachOnSelectionCheckBox->checkState() == Qt::Checked)
          {
-            StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(*proxy);
+            StealthViewerData::GetInstance().GetGeneralConfigObject().AttachToActor(proxy->GetId());
          }
       }
       else
@@ -2136,33 +2184,26 @@ namespace StealthQt
       mUi->mVisibilityLineEdit->setText(QString::number(visMeters) + tr(" KM"));
 
       mUi->mWeatherLineEdit->setText(tr(envConfig.GetPrecipitationAsString().c_str()));
+
    }
 
    ///////////////////////////////////////////////////////////////////
    void MainWindow::ReconnectToHLA()
    {
-      // Support passing in the connection name on the command line
-      int argc    = qApp->argc();
-      char **argv = qApp->argv();
-
-      // Parse the name from the command line
-      osg::ArgumentParser parser(&argc, argv);
-      parser.getApplicationUsage()->addCommandLineOption("-connectionName","The name of the connection to auto connect to. ");
-
-      std::string name;
-      if(!parser.read("-connectionName", name))
+      std::string name = mCurrentConnectionName.toStdString();
+      mCurrentConnectionName.clear();
+      if (name.empty())
       {
          // If you do NOT read from the command line, see if it is stored in the
          // preferences file
-         if(StealthViewerData::GetInstance().GetGeneralConfigObject().GetReconnectOnStartup())
+         if (StealthViewerData::GetInstance().GetGeneralConfigObject().GetReconnectOnStartup())
          {
-            name =
-               StealthViewerData::GetInstance().GetGeneralConfigObject().GetStartupConnectionName();
+            name = StealthViewerData::GetInstance().GetGeneralConfigObject().GetStartupConnectionName();
          }
       }
 
       // Nothing either way, peace out and start like normal
-      if(name.empty() || QString(name.c_str()).toLower() == "none")
+      if (name.empty() || QString(name.c_str()).toLower() == "none")
          return;
 
       // Look up the properties for the name
@@ -2171,7 +2212,7 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetSettings().GetConnectionProperties(connectionName);
 
       // Was the name in the file or on the command line actually valid?
-      if(!StealthViewerData::GetInstance().GetSettings().ContainsConnection(connectionName) ||
+      if (!StealthViewerData::GetInstance().GetSettings().ContainsConnection(connectionName) ||
                connectionProps.isEmpty())
       {
          // Apparently not
@@ -2206,7 +2247,7 @@ namespace StealthQt
       mUi->mSearchDetachPushButton->setEnabled(attached);
 
       // Now, update the entity info window
-      if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+      if (mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
       {
          // Nasty duplicated code.
          // This is a quick fix to stop the entity info window from
@@ -2227,14 +2268,14 @@ namespace StealthQt
          //PopulateEntityInfoWindow();
          QTableWidgetItem* currentItem = mUi->mSearchEntityTableWidget->currentItem();
          unsigned int index = (unsigned int)(mUi->mSearchEntityTableWidget->currentRow());
-         if(index > mFoundActors.size() || currentItem == NULL)
+         if (index > mFoundActors.size() || currentItem == NULL)
             return;
 
          QString id = currentItem->data(Qt::UserRole).toString();
 
          // Retrieve proxy from the GM
          dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
-         if(proxy != NULL)
+         if (proxy != NULL)
          {
             UpdateEntityInfoData(*proxy);
          }
@@ -2248,9 +2289,9 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::ShowEntityErrorMessage(QTableWidgetItem *currentItem)
    {
-      if(mShowMissingEntityInfoErrorMessage)
+      if (mShowMissingEntityInfoErrorMessage)
       {
-         if(mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
+         if (mUi->mEntityInfoAutoRefreshCheckBox->isChecked())
             mShowMissingEntityInfoErrorMessage = false;
 
          QString message =
@@ -2269,7 +2310,7 @@ namespace StealthQt
       // Get the StealthHUD so we can get the coordinate Converter. Makes our coordinates be location specific.
       StealthGM::StealthHUD* hudComponent = dynamic_cast<StealthGM::StealthHUD*>
       (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
-      if(hudComponent == NULL)
+      if (hudComponent == NULL)
       {
          throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                   "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
@@ -2512,15 +2553,15 @@ namespace StealthQt
       mUi->mWarpToLatLonGroup->hide();
       mUi->mWarpToMGRSGroup->hide();
       mUi->mWarpToXYZGroup->hide();
-      if(enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
+      if (enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
       {
          mUi->mWarpToMGRSGroup->show();
       }
-      else if(enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
+      else if (enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
       {
          mUi->mWarpToXYZGroup->show();
       }
-      else if(enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
+      else if (enumValue == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
       {
          mUi->mWarpToLatLonGroup->show();
       }

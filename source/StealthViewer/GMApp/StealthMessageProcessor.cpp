@@ -13,12 +13,12 @@
 * details.
 *
 * You should have received a copy of the GNU Lesser General Public License
-* along with this library; if not, write to the Free Software Foundation, Inc.,
+* along with this librasry; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #include <StealthViewer/GMApp/StealthMessageProcessor.h>
 #include <dtGame/actorupdatemessage.h>
@@ -29,25 +29,25 @@ namespace StealthGM
 
    StealthMessageProcessor::StealthMessageProcessor()
    {
-   
+
    }
-   
+
    StealthMessageProcessor::~StealthMessageProcessor()
    {
-   
+
    }
-   
-   
-   dtCore::RefPtr<dtGame::GameActorProxy> StealthMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg) 
-   {  
-      if (msg.GetSource() != GetGameManager()->GetMachineInfo() && 
+
+
+   dtCore::RefPtr<dtGame::GameActorProxy> StealthMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg)
+   {
+      if (msg.GetSource() != GetGameManager()->GetMachineInfo() &&
             msg.GetActorTypeName() == "Environment" && msg.GetActorTypeCategory() == "dtcore.Environment")
       {
          // ignore the remote environment
          std::cerr << "HACK - Ignoring create of remote environment - this is a playback Hack" << std::endl;
          return NULL;
       }
-   
+
       dtCore::RefPtr<dtGame::GameActorProxy> gameActorProxy = SimCore::Components::ViewerMessageProcessor::ProcessRemoteCreateActor(msg);
       return gameActorProxy;
    }

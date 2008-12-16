@@ -39,7 +39,6 @@ namespace SimCore
 {
    namespace Actors
    {
-
       class SIMCORE_EXPORT BaseEntityActorProxy : public dtGame::GameActorProxy
       {
          public:
@@ -59,11 +58,32 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_FLYING;
             static const dtUtil::RefString PROPERTY_DAMAGE_STATE;
             static const dtUtil::RefString PROPERTY_DEFAULT_SCALE;
+            static const dtUtil::RefString PROPERTY_DOMAIN;
             static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR;
             static const dtUtil::RefString PROPERTY_MODEL_SCALE;
             static const dtUtil::RefString PROPERTY_MODEL_ROTATION;
             static const dtUtil::RefString PROPERTY_ENTITY_TYPE;
             static const dtUtil::RefString PROPERTY_MAPPING_NAME;
+
+            class SIMCORE_EXPORT DomainEnum : public dtUtil::Enumeration
+            {
+               DECLARE_ENUM(DomainEnum);
+
+               public:
+                  static DomainEnum AIR;
+                  static DomainEnum AMPHIBIOUS;
+                  static DomainEnum GROUND;
+                  static DomainEnum SPACE;
+                  static DomainEnum SUBMARINE;
+                  static DomainEnum SURFACE;
+                  static DomainEnum MULTI;
+
+               private:
+                  DomainEnum(const std::string& name) : dtUtil::Enumeration(name)
+                  {
+                     AddInstance(this);
+                  }
+            };
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
             {
@@ -168,6 +188,18 @@ namespace SimCore
              * @return the damage state
              */
             BaseEntityActorProxy::DamageStateEnum& GetDamageState() const;
+
+            /**
+             * Set the environment the entity is specialized in navigating.
+             * @param domain Type of domain to be set.
+             */
+            void SetDomain(BaseEntityActorProxy::DomainEnum& domain);
+
+            /**
+             * Get the environment the entity is specialized in navigating.
+             * @return Type of domain in which this entity is specialized.
+             */
+            BaseEntityActorProxy::DomainEnum& GetDomain() const;
 
             /**
              * Sets this entity's minimum Dead Reckoning Algorithm.
@@ -581,6 +613,9 @@ namespace SimCore
             std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;
             ///The entity's DIS/RPR-FOM damage state.
             BaseEntityActorProxy::DamageStateEnum* mDamageState;
+
+            /// Environment the entity is specialized in navigating.
+            BaseEntityActorProxy::DomainEnum* mDomain;
 
             /// The name of the munition damage table as found in Configs/MunitionsConfig.xml
             std::string mMunitionTableName;

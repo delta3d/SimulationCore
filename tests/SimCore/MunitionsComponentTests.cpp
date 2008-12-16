@@ -2009,25 +2009,11 @@ namespace SimCore
          tracer->SetMaxLifeTime( maxLife );
          CPPUNIT_ASSERT( tracer->GetMaxLifeTime() == maxLife );
 
-         CPPUNIT_ASSERT( tracer->GetSpeed() == 0.0 );
-         tracer->SetSpeed( speed );
-         CPPUNIT_ASSERT( tracer->GetSpeed() == speed );
-
-         CPPUNIT_ASSERT( tracer->GetDirection().length() == 0.0 );
-         tracer->SetDirection( direction );
-         CPPUNIT_ASSERT( tracer->GetDirection() == direction );
-
          CPPUNIT_ASSERT( tracer->GetPosition().length() == 0.0 );
          tracer->SetPosition( position );
          CPPUNIT_ASSERT( tracer->GetPosition() == position );
 
          // Test velocity
-         CPPUNIT_ASSERT( tracer->GetSpeed() != 0.0 );
-         tracer->SetVelocity( osg::Vec3(0.0,0.0,0.0) );
-         CPPUNIT_ASSERT( tracer->GetSpeed() == 0.0 );
-         CPPUNIT_ASSERT( tracer->GetDirection().length() == 0.0 );
-         CPPUNIT_ASSERT( tracer->GetPosition() == position ); // should not be affected by velocity without a call to Update.
-
          CPPUNIT_ASSERT( tracer->GetVelocity().length() == 0.0 );
          tracer->SetVelocity( velocity );
          float tolerance = 0.001f;
@@ -2035,17 +2021,7 @@ namespace SimCore
          CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[0], testVec1[0], tolerance );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[1], testVec1[1], tolerance );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[2], testVec1[2], tolerance );
-         osg::Vec3 testVec2;
-         tracer->GetVelocity( testVec2 );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[0], testVec2[0], tolerance );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[1], testVec2[1], tolerance );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( velocity[2], testVec2[2], tolerance );
-
-         testVec1 = tracer->GetDirection();
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( direction[0], testVec1[0], tolerance );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( direction[1], testVec1[1], tolerance );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( direction[2], testVec1[2], tolerance );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( speed, tracer->GetSpeed(), tolerance );
+         CPPUNIT_ASSERT( tracer->GetPosition() == position ); // should not be affected by velocity without a call to Update.
 
          CPPUNIT_ASSERT( tracer->IsVisible() );
          tracer->SetVisible( false );
@@ -2367,6 +2343,9 @@ namespace SimCore
             = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(effectInfoProxy->GetActor());
          CPPUNIT_ASSERT( effectsInfo != NULL );
          effectsInfo->SetFireFlashTime( 0.5f );
+         effectsInfo->SetTracerLight( SimCore::Components::TracerEffect::DEFAULT_TRACER_LIGHT.Get() );
+         effectsInfo->SetTracerShaderName( SimCore::Components::TracerEffect::DEFAULT_TRACER_SHADER.Get() );
+         effectsInfo->SetTracerShaderGroup( SimCore::Components::TracerEffect::DEFAULT_TRACER_SHADER_GROUP.Get() );
 
          // Test ApplyWeaponEffect
          CPPUNIT_ASSERT_MESSAGE("WeaponEffectsManager should have 0 effects by default",
@@ -2471,109 +2450,114 @@ namespace SimCore
          effectMgr->SetGameManager( mGM.get() );
          CPPUNIT_ASSERT( effectMgr->GetGameManager() == mGM.get() );
 
-         CPPUNIT_ASSERT( effectMgr->GetMaxTracerEffects() < 0 ); // Negative numbers mean no limit
-         effectMgr->SetMaxTracerEffects( maxTracerEffects );
-         CPPUNIT_ASSERT( effectMgr->GetMaxTracerEffects() == maxTracerEffects );
+         CPPUNIT_ASSERT( effectMgr->GetMaxMunitionEffects() < 0 ); // Negative numbers mean no limit
+         effectMgr->SetMaxMunitionEffects( maxTracerEffects );
+         CPPUNIT_ASSERT( effectMgr->GetMaxMunitionEffects() == maxTracerEffects );
+
+         // --- Create a Munition Effects Request to satisfy the parameters of the
+         //     calls to method ApplyMunitionEffect.
+         dtCore::RefPtr<SimCore::Components::MunitionEffectRequest> effectRequest
+            = new SimCore::Components::MunitionEffectRequest(1, 1.0f, *effectsInfo);
 
          // --- Add effects with a limit in place
          osg::Vec3 pos(0.0,0.0,0.0), initialVelocity(5.0,0.0,0.0);
          effectsInfo->SetTracerLifeTime( 3.0f );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 0 );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == unsigned(maxTracerEffects) );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == unsigned(maxTracerEffects) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 0 );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == unsigned(maxTracerEffects) );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == unsigned(maxTracerEffects) );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount + maxTracerEffects );
 
          // --- Add effects without a limit
-         effectMgr->SetMaxTracerEffects( -1 );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == maxTracerEffects + 3 );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == maxTracerEffects + 6 );
+         effectMgr->SetMaxMunitionEffects( -1 );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == maxTracerEffects + 3 );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == maxTracerEffects + 6 );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount + maxTracerEffects + 6 );
 
          // --- Add effects with a limit in place again
-         effectMgr->SetMaxTracerEffects( maxTracerEffects );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( ! effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == maxTracerEffects + 6 );
+         effectMgr->SetMaxMunitionEffects( maxTracerEffects );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( ! effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == maxTracerEffects + 6 );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount + maxTracerEffects + 6 );
 
          // --- Update a few time to make sure that the number of effects are trimmed down
          //     NOTE: This also tests RecycleTracerEffects().
          unsigned activeCount = maxTracerEffects + 6;
          updateDelta = 1.0f;
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == activeCount );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == activeCount );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == activeCount );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == activeCount );
          effectMgr->Update( updateDelta );
          effectMgr->Update( updateDelta );
-         unsigned curActiveCount = effectMgr->GetTracerEffectActiveCount();
+         unsigned curActiveCount = effectMgr->GetMunitionEffectActiveCount();
          CPPUNIT_ASSERT( curActiveCount == activeCount );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == activeCount );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == activeCount );
          effectMgr->Update( updateDelta ); // age the effects to be in active
          effectMgr->Update( updateDelta ); // calls recycle this iteration
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 0 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == unsigned(maxTracerEffects) ); // overage should have been recycled
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 0 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == unsigned(maxTracerEffects) ); // overage should have been recycled
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount + maxTracerEffects );
 
-         effectMgr->ClearTracerEffects();
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 0 );
+         effectMgr->ClearMunitionEffects();
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 0 );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount );
 
          // --- Re-add some tracer effects and test the effects manager's update function
          effectsInfo->SetTracerLifeTime( 4.0f );
-         effectMgr->SetMaxTracerEffects( -1 ); // no limit to test recycling
+         effectMgr->SetMaxMunitionEffects( -1 ); // no limit to test recycling
 
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 1 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 1 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 1 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 1 );
 
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 2 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 2 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 2 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 2 );
 
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 3 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
-
-         effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 2 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
-
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
-         effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 2 ); // one re-activates while another deactivates
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
 
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 1 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 2 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
+
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         effectMgr->Update( updateDelta );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 2 ); // one re-activates while another deactivates
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
 
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 1 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 1 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
 
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 0 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 1 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
 
-         CPPUNIT_ASSERT( effectMgr->ApplyTracerEffect( pos, initialVelocity, *effectsInfo ) );
          effectMgr->Update( updateDelta );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectActiveCount() == 1 );
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 3 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 0 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
+
+         CPPUNIT_ASSERT( effectMgr->ApplyMunitionEffect( pos, initialVelocity, *effectsInfo, *effectRequest ) );
+         effectMgr->Update( updateDelta );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectActiveCount() == 1 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 3 );
 
          // Ensure no more tracers have been added to the scene.
          // NOTE: Tracers remain in the scene even though they are inactive.
@@ -2582,7 +2566,7 @@ namespace SimCore
 
          // Test that Clear calls ClearTracerEffects.
          effectMgr->Clear();
-         CPPUNIT_ASSERT( effectMgr->GetTracerEffectCount() == 0 );
+         CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 0 );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount );
       }
 

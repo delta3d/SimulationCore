@@ -35,6 +35,8 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
+#include <StealthViewer/Qt/SimTicker.h>
+#include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 namespace dtGame
 {
@@ -57,9 +59,13 @@ class QDateTime;
 class QTableWidgetItem;
 class QDoubleValidator;
 class QListWidgetItem;
+class QComboBox;
 
 namespace StealthQt
 {
+
+   class ViewDockWidget;
+   class AdditionalViewDockWidget;
 
    /**
     * This class is the main window of the application.  It contains the menu bar,
@@ -96,6 +102,13 @@ namespace StealthQt
           * @param a list of the key frames
           */
          void PlaybackKeyFrameSlot(const std::vector<dtGame::LogKeyframe> &keyFrames);
+
+         /// @return the dock widget that handles views.
+         ViewDockWidget& GetViewDockWidget();
+
+      signals:
+         /// Fired when one of the additional 3D views is closed.
+         void AdditionalViewClosed(AdditionalViewDockWidget&);
 
       public slots:
 
@@ -173,16 +186,16 @@ namespace StealthQt
          void OnShowAdvancedPlaybackOptionsChanged(int state);
 
          /// Called when playback speed is adjusted
-         void OnPlaybackSpeedChanged(const QString &newText);
+         void OnPlaybackSpeedChanged(const QString& newText);
 
          /// Called when the jump to TM button is clicked
          void OnPlaybackJumpToTimeMarkerButtonClicked(bool checked = false);
 
          /// Called when the jump to TM button is clicked
-         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString &itemName);
+         void OnPlaybackJumpToTimeMarkerButtonClicked(const QString& itemName);
 
          /// Called when a time marker is selected
-         void OnPlaybackTimeMarkerSelected(const QString &text);
+         void OnPlaybackTimeMarkerSelected(const QString& text);
          ///////////////////////////////////////////////////////////////////////
 
          ///////////////////////////////////////////////////////////////////////
@@ -217,26 +230,38 @@ namespace StealthQt
          /// Called when the show Preferences action is triggered
          void OnShowPreferencesActionTriggered();
 
+         /// Called when the menu option to show/hide the view ui is triggered
+         void OnShowViewUIActionTriggered();
+
          /////////////////////////////////////////////////////////////////////////
          // General Tab
          /////////////////////////////////////////////////////////////////////////
          /// Called when the attach mode is changed
-         void OnAttachModeChanged(const QString &text);
+         void OnAttachModeChanged(const QString& text);
+
+         /// Called when the Attach Node Name control changes.
+         void OnAttachNodeNameChanged(const QString& text);
+
+         /// Called when the relative attach azimuth angle control changes.
+         void OnAttachAzimuthChanged(const QString& text);
+
+         /// turned on when auto attach is enabled.
+         void OnAutoAttachToggled(bool checked);
+
+         /// turned on when auto attach is enabled.
+         void OnAutoAttachEntityNameChanged(const QString& text);
 
          /// Called when camera collision is enabled
          void OnCameraCollisionChanged(int state);
 
          /// Called when LOD scale is changed
-         void OnLODScaleChanged(const QString &text);
+         void OnLODScaleChanged(const QString& text);
 
          /// Called when the near clip plane is changed
-         void OnNearClippingPlaneChanged(const QString &text);
+         void OnNearClippingPlaneChanged(const QString& text);
 
          /// Called when the far clip plane is changed
-         void OnFarClipplingPlaneChanged(const QString &text);
-
-         /// Called when the show advanced options check box is checked
-         void OnShowAdvancedGeneralOptions(int state);
+         void OnFarClipplingPlaneChanged(const QString& text);
 
          /////////////////////////////////////////////////////////////////////////
          // Environment Tab
@@ -336,12 +361,30 @@ namespace StealthQt
           */
          void closeEvent(QCloseEvent *e);
 
+         /**
+          * Many of the combo boxes are backed by an enumeration, this fills the combo box and sets it to
+          * point to the given value.
+          */
+         virtual void FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums,
+                  QComboBox& combo, const dtUtil::Enumeration& enumValue);
+         /**
+          * Updates UI controls from the loaded preferences
+          */
+         virtual void UpdateUIFromPreferences();
+
+
          Ui::MainWindow* mUi;
 
       private:
 
-         void InitGameApp(dtQt::OSGAdapterWidget& oglWidget, int appArgc, char* appArgv[],
+         void ParseCommandLine();
+
+         void PreShowUIControlInit();
+
+         void InitGameApp(int appArgc, char* appArgv[],
                   const std::string& appLibName);
+//         void InitGameApp(QGLWidget& oglWidget, int appArgc, char* appArgv[],
+//                     const std::string& appLibName);
 
          /**
           * Connects the signals and slots the main window needs.
@@ -352,11 +395,6 @@ namespace StealthQt
           * Registers the configuration objects with the ViewerComponent
           */
          void AddConfigObjectsToViewerComponent();
-
-         /**
-          * Updates UI controls from the loaded preferences
-          */
-         void UpdateUIFromPreferences();
 
          /**
           * Enables or disables all of the playback buttons at once
@@ -426,6 +464,7 @@ namespace StealthQt
 
          QString mCurrentConnectionName;
 
+         SimTicker mSimTicker;
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
          QTimer mRefreshEntityInfoTimer;
@@ -440,6 +479,7 @@ namespace StealthQt
          QDoubleValidator* mLatValidator;
          QDoubleValidator* mLonValidator;
          QDoubleValidator* mXYZValidator;
+         QDoubleValidator* mGtZeroValidator;
 
          bool mShowMissingEntityInfoErrorMessage;
 
@@ -448,6 +488,8 @@ namespace StealthQt
          int mPreviousCustomHour;
          int mPreviousCustomMinute;
          int mPreviousCustomSecond;
+
+         ViewDockWidget* mViewDockWidget;
    };
 }
 

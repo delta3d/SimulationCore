@@ -25,8 +25,12 @@
 #include <SimCore/Actors/IGActor.h>
 
 #include <osg/Node>
+#include <osg/MatrixTransform>
+#include <osgSim/DOFTransform>
 
 #include <dtCore/particlesystem.h>
+#include <dtCore/nodecollector.h>
+#include <dtCore/scene.h>
 
 #include <dtGame/gamemanager.h>
 
@@ -39,7 +43,6 @@ namespace SimCore
 {
    namespace Actors
    {
-
       ///////////////////////////////////////////////////////////////////////////
       IGActor::IGActor(dtGame::GameActorProxy &proxy) :
          GameActor(proxy)
@@ -131,5 +134,55 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////////////////////////////////
+      bool IGActor::AddChild(dtCore::DeltaDrawable* child, const std::string& nodeName)
+      {
+         if (nodeName.empty())
+         {
+            BaseClass::AddChild(child);
+            return true;
+         }
+
+         osg::Group* group = NULL;
+         dtCore::RefPtr<dtCore::NodeCollector> nc = new dtCore::NodeCollector(GetOSGNode(),
+                  dtCore::NodeCollector::MatrixTransformFlag |
+                  dtCore::NodeCollector::DOFTransformFlag);
+         group = nc->GetMatrixTransform(nodeName);
+
+         if (group == NULL)
+         {
+            group = nc->GetDOFTransform(nodeName);
+         }
+
+         bool result = false;
+         if (group != NULL)
+         {
+            group->addChild(child->GetOSGNode());
+            result = true;
+         }
+         else
+         {
+            GetOSGNode()->asGroup()->addChild(child->GetOSGNode());
+         }
+
+         dtCore::DeltaDrawable::AddChild(child);
+         return result;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void IGActor::RemoveChild(dtCore::DeltaDrawable* child)
+      {
+         osg::Node* node = child->GetOSGNode();
+
+         if (!GetMatrixNode()->removeChild(node))
+         {
+            osg::Node::ParentList parents = node->getParents();
+            for (size_t i = 0; i != parents.size(); ++i)
+            {
+               parents[i]->removeChild(node);
+            }
+         }
+         dtCore::DeltaDrawable::RemoveChild(child);
+      }
     }
 }
