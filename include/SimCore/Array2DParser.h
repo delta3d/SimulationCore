@@ -60,7 +60,7 @@ namespace SimCore
             return;
          }
 
-         if (actualIndex > mData.size())
+         if (actualIndex >= mData.size())
          {
             size_t remainder = (actualIndex + 1) % mColumns;
             size_t rows = (actualIndex + 1) / mColumns;
