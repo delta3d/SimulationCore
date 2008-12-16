@@ -61,7 +61,6 @@
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
-#include <SimCore/Actors/oceanwater.h>
 #include <SimCore/Actors/LatLongDataActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
@@ -131,7 +130,6 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE(new dtDAL::ActorType("LM_OpenFlightTerrain", "DVTETerrain"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::OCEAN_WATER_ACTOR_TYPE(new dtDAL::ActorType("OceanWaterActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
@@ -206,7 +204,6 @@ namespace SimCore
          mActorFactory->RegisterType<ControlStateProxy>(CONTROL_STATE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<BaseWaterActorProxy>(BASE_WATER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<OceanWaterActorProxy>(OCEAN_WATER_ACTOR_TYPE.get());
 
 #ifdef AGEIA_PHYSICS
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
