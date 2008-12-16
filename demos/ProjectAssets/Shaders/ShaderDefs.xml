@@ -220,41 +220,6 @@
       </shader>
    </shadergroup>
 
-   <shadergroup name="OceanWaterGroup">
-      <shader name="OceanWaterShader" default="yes">
-         <source type="Vertex">Shaders/Base/oceanwater.vert</source>
-         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
-         <source type="Fragment">Shaders/Base/oceanwater.frag</source>
-         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
-         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
-         <parameter name="normalMap">
-            <texture2D textureUnit="0">
-               <source type="Image">Textures/ShadersBase/wavesbump.bmp</source>
-               <wrap axis="S" mode="Repeat"/>
-               <wrap axis="T" mode="Repeat"/>
-            </texture2D>
-         </parameter>
-         <parameter name="texIncPrevX">
-            <float defaultValue="0.0"/>
-         </parameter>
-         <parameter name="texIncPrevY">
-            <float defaultValue="0.0"/>
-         </parameter>
-         <parameter name="texIncX">
-            <float defaultValue="0.0"/>
-         </parameter>
-         <parameter name="texIncY">
-            <float defaultValue="0.0"/>
-         </parameter>
-         <parameter name="blend">
-            <float defaultValue="0.0"/>
-         </parameter>
-         <parameter name="currentAngle">
-            <float defaultValue="0.0"/>
-         </parameter>
-      </shader>
-   </shadergroup>
-
    <shadergroup name="PlaceholderVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
          <source type="Vertex">Shaders/Base/shader_gloss_reflect.vert</source>
