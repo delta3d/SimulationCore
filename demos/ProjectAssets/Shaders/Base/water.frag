@@ -78,10 +78,9 @@ void main (void)
    vec3 camPos = inverseViewMatrix[3].xyz;
    vec3 combinedPos = pos.xyz + vec3(camPos.x, camPos.y, 0.0);
    vec3 viewDir = normalize(combinedPos - camPos);
-   vec3 eye = -viewDir;
 
    /////////////////////////////////////////////////////////////////////////////
-   ////This samples the wave texture in a way that will reduce tiling artifacts
+   ////This samples the wave texture in a way that will remove tiling artifacts
    float fadeTransition = 0.05;
    float distToFragment = length(pos.xy);
    float textureScale = 15.0 + clamp((15.0 * floor(distToFragment / 15.0)), 0.0, 20.0);
@@ -110,7 +109,7 @@ void main (void)
    //this inverts the normal if we are underwater
    normal.z *= -1.0 * (float(gl_FrontFacing) * -1.0);
 
-   float waveNDotL = max(0.0, dot(eye, normal));   
+   float waveNDotL = max(0.0, dot(-viewDir, normal));   
    float fresnel = FastFresnel(waveNDotL, 0.05, 6.0);
 
    if(gl_FrontFacing)
@@ -118,7 +117,8 @@ void main (void)
       vec3 refTexCoords = vec3(gl_FragCoord.x / ScreenWidth, gl_FragCoord.y / ScreenHeight, gl_FragCoord.z);
       refTexCoords.xy = clamp(refTexCoords.xy + 0.4 * normal.xy, 0.0, 1.0);
       vec3 reflectColor = texture2D(reflectionMap, refTexCoords.xy).rgb;
-
+      reflectColor = (WaterColor.xyz + fresnel * (reflectColor - WaterColor.xyz));
+      
       vec3 lightVect = normalize(lightVector);
       
       vec3 lightContribFinal;
@@ -126,18 +126,19 @@ void main (void)
          gl_LightSource[0].ambient.xyz, lightContribFinal);
       lightContribFinal = pow(lightContribFinal, 0.5);
 
-      vec3 waterColorContrib = lightContribFinal * mix(WaterColor.xyz, reflectColor, fresnel);
+      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz, waveNDotL);
       
       //calculates a specular contribution
       vec3 normRefLightVec = reflect(lightVect, normal);
       float specularContrib = max(0.0, dot(normRefLightVec, viewDir));
       specularContrib = (0.2 * pow(specularContrib, 4.0)) + (0.25 * pow(specularContrib, 28.0));
-      vec3 specularResult = vec3(gl_LightSource[0].specular.xyz * specularContrib);     
+      vec3 resultSpecular = vec3(gl_LightSource[0].specular.xyz * specularContrib);     
       
       //adds in the fog contribution
-      vec3 finalColor = mix(waterColorContrib + specularResult, gl_Fog.color.rgb, vFog.x);
+      vec3 finalColor = mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x);
 
       gl_FragColor = vec4(finalColor, WaterColor.a);
+      //gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
    }
    else
    {
