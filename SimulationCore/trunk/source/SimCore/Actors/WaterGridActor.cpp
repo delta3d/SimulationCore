@@ -1438,18 +1438,18 @@ namespace SimCore
          mModForAmplitude = waveHeight;
          dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
 
-         mModForWaveLength = 1.0 + ((waveHeight - 1.0f) * 0.3333334f);
-         dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);
+         //mModForWaveLength = 1.0 + ((waveHeight - 1.0f) * 0.2f);
+         //dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);
 
-         if(seaState < 2)
+         if(seaState <= 5)
          {
             SetChoppiness(ChoppinessSettings::CHOP_FLAT);
          }
-         else if(seaState < 4)
+         else if(seaState <= 6)
          {
             SetChoppiness(ChoppinessSettings::CHOP_MILD);
          }
-         else if(seaState < 6)
+         else if(seaState <= 7)
          {
             SetChoppiness(ChoppinessSettings::CHOP_MED);
          }
