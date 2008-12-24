@@ -201,7 +201,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       {
          double time[] = {timeDelta,timeDelta}; // motion model accesses index 1
          dtCore::Base::MessageData msg;
-         msg.message = "preframe";
+         msg.message = dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL;
          msg.userData = &time;
 
          // Bypass the whole message system and send the message

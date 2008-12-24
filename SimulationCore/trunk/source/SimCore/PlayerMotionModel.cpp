@@ -28,6 +28,7 @@
 #include <dtCore/logicalinputdevice.h>
 #include <dtCore/mouse.h>
 #include <dtCore/scene.h>
+#include <dtCore/system.h>
 #include <dtCore/transform.h>
 #include <dtABC/application.h>
 
@@ -132,7 +133,7 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    void PlayerMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe" &&
+      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
          GetTarget() != NULL &&
          IsEnabled())
       {

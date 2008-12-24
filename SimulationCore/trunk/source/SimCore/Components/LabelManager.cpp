@@ -759,7 +759,7 @@ namespace SimCore
          // The following code traps during the framesynch and forces the camera to update itself, and then
          // does our 'Post Camera' work.
          // This behavior is duplicated in RenderingSupportComponent. If you change this, you should change that...
-         if( data->message == "framesynch" )
+         if( data->message == dtCore::System::MESSAGE_FRAME_SYNCH)
          {
             try
             {

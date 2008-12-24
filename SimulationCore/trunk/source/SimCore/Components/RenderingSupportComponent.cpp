@@ -180,14 +180,14 @@ namespace SimCore
          osgCam->setCullMask(MAIN_CAMERA_CULL_MASK);
 
          ///Added a callback to the camera this can set uniforms on each camera.
-         dtCore::Camera::AddFrameSyncCallback(*this,
-                  dtCore::Camera::FrameSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
+         dtCore::Camera::AddCameraSyncCallback(*this,
+                  dtCore::Camera::CameraSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::OnRemovedFromGM()
       {
-         dtCore::Camera::RemoveFrameSyncCallback(*this);
+         dtCore::Camera::RemoveCameraSyncCallback(*this);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
