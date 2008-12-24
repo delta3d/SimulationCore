@@ -308,8 +308,8 @@ namespace SimCore
          CreateGeometry();
 
          ///Added a callback to the camera this can set uniforms on each camera.
-         dtCore::Camera::AddFrameSyncCallback(*this,
-            dtCore::Camera::FrameSyncCallback(this, &WaterGridActor::UpdateWaveUniforms));
+         dtCore::Camera::AddCameraSyncCallback(*this,
+            dtCore::Camera::CameraSyncCallback(this, &WaterGridActor::UpdateWaveUniforms));
 
          Wave w;
 

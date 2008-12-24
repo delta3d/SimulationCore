@@ -82,33 +82,41 @@ namespace SimCore
 
          /**
           * Set the max degrees this motion model can turn in relation to
-          * the parent transform.
+          * the parent transform. Left/Right limits are tied together currently.
+          * Setting the limit overrides the use of SetEnabledLeftRight().
           *
           * @param leftRightLimit The max degrees the motion model can turn left and right
           * from the attach-to object's heading.
-          * Values less than 0.0 mean no limit.
+          * Values <= 0.0 mean no movement allowed.
           */
-         void SetLeftRightLimit( double leftRightLimit ) { mLeftRightLimit = leftRightLimit; }
+         void SetLeftRightLimit( double leftRightLimit ) 
+         { 
+            mLeftRightLimit = leftRightLimit; 
+            SetLeftRightEnabled(leftRightLimit > 0.0);
+         }
          double GetLeftRightLimit() const { return mLeftRightLimit; }
 
          /**
           * Set the max degrees this motion model can turn in relation to
           * the parent transform. 
+          * Setting the limit overrides the use of SetEnabledUpDown().
           *
           * @param upDownLimit The max degrees the motion model can turn up and down (matching)
           * from the attach-to object's heading.
-          * Values less than 0.0 mean no limit. Pass in a positive.
+          * Values <= 0.0 mean no movement. Pass in a positive.
           */
          void SetUpDownLimit( double upDownLimit ) 
          { 
-            mUpLimit = upDownLimit; 
-            mDownLimit = upDownLimit;
+            SetUpDownLimit(upDownLimit, upDownLimit);
          }
+
          // Note - GetUpDownLimit makes no sense if they are not the same.
+         // Setting the limit overrides the use of SetEnabledUpDown()
          double GetUpDownLimit() const { return mUpLimit; }
          void SetUpDownLimit( double upLimit, double downLimit) {
             mUpLimit = upLimit; 
             mDownLimit = downLimit;
+            SetUpDownEnabled(upLimit > 0.0 || downLimit > 0.0);
          }
 
          /**
@@ -302,8 +310,10 @@ namespace SimCore
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
 
          bool mTestMode;
-
+         float mTestTimeSincePrint;
+         int mTestNumberOfZeros;
+         int mTestNumberOfCalls;
    };
 }
-
+ 
 #endif

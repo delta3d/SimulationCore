@@ -147,7 +147,7 @@ namespace SimCore
             
    void AttachedMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe" &&
+      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL &&
          GetTarget() != NULL &&
          IsEnabled())
       {

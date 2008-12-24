@@ -27,6 +27,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <dtCore/keyboard.h>
 #include <dtCore/mouse.h>
+#include <dtCore/system.h>
 #include <dtCore/transform.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltadrawable.h>
@@ -208,7 +209,7 @@ namespace SimCore
 
       // Collide with ground
       if(mScene.valid() && GetTarget() != NULL && IsEnabled() &&
-            (data->message == "preframe" || data->message == "pause"))
+            (data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL || data->message == dtCore::System::MESSAGE_PAUSE))
       {
          if (mCollideWithGround)
             CollideWithGround();

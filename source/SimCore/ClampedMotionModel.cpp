@@ -30,7 +30,7 @@
 #include <dtCore/transform.h>
 #include <dtCore/transformable.h>
 #include <dtUtil/mathdefines.h>
-
+ 
 #include <SimCore/ClampedMotionModel.h>
 
 namespace SimCore
@@ -42,25 +42,28 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    ClampedMotionModel::ClampedMotionModel(dtCore::Keyboard* keyboard,
                                     dtCore::Mouse* mouse) 
-      : AttachedMotionModel(keyboard,mouse),
-      mFreeLookKey(osgGA::GUIEventAdapter::KEY_Control_L),
-      mFreeLookMouseButton(dtCore::Mouse::RightButton),
-      mFreeLookByKey(false),
-      mFreeLookByMouseButton(false),
-      mFreeLookWasHeld(false),
-      mFreeLookMouseButtonWasHeld(false),
-      mRecenterMouse(false),
-      mResetRotation(false),
-      mReverseLeftRight(false),
-      mReverseUpDown(false),
-      mEnabledUpDown(true),
-      mEnabledLeftRight(true),
-      mLeftRightLimit(-1.0),
-      mUpLimit(-1.0),
-      mDownLimit(-1.0),
-      mKeyboard(keyboard),
-      mDOF(NULL),
-      mTestMode(false)
+      : AttachedMotionModel(keyboard,mouse)
+      , mFreeLookKey(osgGA::GUIEventAdapter::KEY_Control_L)
+      , mFreeLookMouseButton(dtCore::Mouse::RightButton)
+      , mFreeLookByKey(false)
+      , mFreeLookByMouseButton(false)
+      , mFreeLookWasHeld(false)
+      , mFreeLookMouseButtonWasHeld(false)
+      , mRecenterMouse(false)
+      , mResetRotation(false)
+      , mReverseLeftRight(false)
+      , mReverseUpDown(false)
+      , mEnabledUpDown(true)
+      , mEnabledLeftRight(true)
+      , mLeftRightLimit(-1.0)
+      , mUpLimit(-1.0)
+      , mDownLimit(-1.0)
+      , mKeyboard(keyboard)
+      , mDOF(NULL)
+      , mTestMode(false)
+      , mTestTimeSincePrint(0.0f)
+      , mTestNumberOfZeros(0)
+      , mTestNumberOfCalls(0)
    {
    }
 
@@ -69,39 +72,40 @@ namespace SimCore
    {
    }
 
-   // Curt Hack - Mouse update test code
-   //static float testTimeSincePrint = 0.0;
-   //static int testNumberOfZeros = 0;
-   //static int testNumberOfCalls = 0;
-
    //////////////////////////////////////////////////////////////////////////         
    void ClampedMotionModel::OnMessage(MessageData *data)
    {
-      if(data->message == "preframe"
+      if(data->message == dtCore::System::MESSAGE_POST_EVENT_TRAVERSAL
          && (GetTarget() != NULL || GetTargetDOF() != NULL) 
          && IsEnabled() 
          && ( GetMouse()->GetHasFocus() || mTestMode ) )
       {
-         // Curt Hack - Mouse update test code
-         /*
-         const double myTime = static_cast<const double*>(data->userData)[1];
+         // Curt hack
+         float xCurPos,yCurPos;
+         GetMouse()->GetPosition(xCurPos, yCurPos); 
+         //if (xCurPos != 0.0f || yCurPos != 0.0f)
+           // std::cout << "    -- Non zero POS x[" << xCurPos << "], y[" << yCurPos << "]." << std::endl;
+         //else 
+            //std::cout << "    -- ZERO ZERO ZERO cur pos." << std::endl;
 
-         // CURT TEST
-         testNumberOfCalls ++;
-         testTimeSincePrint += myTime;
-         if (GetUpDownMouseAxis()->GetState() < 0.0001)
-            testNumberOfZeros++;
-
-         if (testTimeSincePrint > 5.0f)
-         {
-            std::cout << "Attached Motion Model Report [" << testTimeSincePrint << "s] Zeros["
-               << testNumberOfZeros << "] Calls [" << testNumberOfCalls << "] FPS [" << 
-               (int) (testNumberOfCalls/testTimeSincePrint) << "] UP-PS[" << 
-               (int) ((testNumberOfCalls-testNumberOfZeros)/testTimeSincePrint) << "]." << std::endl;
-            testNumberOfZeros = 0;
-            testNumberOfCalls = 0;
-            testTimeSincePrint = 0.0f;
-         }*/
+         // Curt Hack - Mouse update test code         
+         //const double myTime = static_cast<const double*>(data->userData)[1];
+         //mTestNumberOfCalls ++;
+         //mTestTimeSincePrint += myTime;
+         //if (std::abs(GetUpDownMouseAxis()->GetState()) < 0.0001 && 
+         //      std::abs(GetLeftRightMouseAxis()->GetState()) < 0.0001)
+         //   mTestNumberOfZeros++; 
+         //if (mTestTimeSincePrint > 1.0f)
+         //{
+         //   std::cout << "ClampMotionStats [" << mTestTimeSincePrint << "s] Calls[" << mTestNumberOfCalls << 
+         //      "] NonZeros[" << (mTestNumberOfCalls - mTestNumberOfZeros) << "] FPS [" << 
+         //      (int) (mTestNumberOfCalls/mTestTimeSincePrint) << "] UpdatesPerSec[" << 
+         //      (float) ((mTestNumberOfCalls-mTestNumberOfZeros)/mTestTimeSincePrint) << "]." << std::endl;
+         //   mTestNumberOfZeros = 0;
+         //   mTestNumberOfCalls = 0;
+         //   mTestTimeSincePrint = 0.0f;
+         //}
+         //// End Curt Mouse Test
 
 
          if( ! IsFreeLookHeld() )
@@ -125,7 +129,7 @@ namespace SimCore
             // Reset the mouse position back to the center
             if( mRecenterMouse )
             {
-               //GetMouse()->SetPosition(0.0f,0.0f);
+               GetMouse()->SetPosition(0.0f,0.0f);
             }
 
             // Do the original rotation
@@ -142,12 +146,10 @@ namespace SimCore
                setHPR = true;
                double change = GetLeftRightMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
 
-               //std::cout << "Change LR: " << GetLeftRightMouseAxis()->GetState() << std::endl;
                //prevent huge jumps.
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[0] -= mReverseLeftRight ? -change : change;
                GetLeftRightMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             if( mEnabledUpDown && GetUpDownMouseAxis()->GetState() != 0)
@@ -156,11 +158,9 @@ namespace SimCore
                double change = GetUpDownMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
 
                //prevent huge jumps.
-               //std::cout << "Change UD: " << GetUpDownMouseAxis()->GetState() << std::endl;
                dtUtil::Clamp(change, -15.0, 15.0);
                hpr[1] += mReverseUpDown ? -change : change;
                GetUpDownMouseAxis()->SetState(0.0);//necessary to stop camera drifting down
-               //GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
             }
 
             // Clamp rotation
@@ -193,7 +193,7 @@ namespace SimCore
             {
                hpr[2] = 0.0f;
                SetTargetsRotation(hpr);   
-               if( ! mTestMode )
+               if (!mTestMode) // Don't move the mouse in unit tests...
                {
                   GetMouse()->SetPosition(0.0f,0.0f);//keeps cursor at center of screen
                }
