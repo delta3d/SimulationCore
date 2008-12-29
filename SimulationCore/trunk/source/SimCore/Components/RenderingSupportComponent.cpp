@@ -439,9 +439,8 @@ namespace SimCore
          osg::Uniform* viewInverseUniform = ss->getOrCreateUniform("inverseViewMatrix", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* mvpiUniform = ss->getOrCreateUniform("modelViewProjectionInverse", osg::Uniform::FLOAT_MAT4);
          osg::Uniform* hprUniform = ss->getOrCreateUniform("cameraHPR", osg::Uniform::FLOAT_VEC3);
-         osg::Uniform* mvpsInverseUniform = ss->getOrCreateUniform("modelViewProjectionScreenInverse", osg::Uniform::FLOAT_MAT4);
 
-         osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse, matViewProjScreenInverse, matScreen;
+         osg::Matrix matView, matViewInverse, matProj, matProjInverse, matViewProj, matViewProjInverse;
 
          matView.set(pCamera.GetOSGCamera()->getViewMatrix());
          matViewInverse.invert(matView);
@@ -462,17 +461,6 @@ namespace SimCore
          trans.GetRotation(hpr);
          hprUniform->set(hpr);
 
-         if(pCamera.GetOSGCamera()->getViewport() != NULL)
-         {
-            matScreen.set(pCamera.GetOSGCamera()->getViewport()->computeWindowMatrix());
-
-            osg::Matrix mvps(matView * matProj * matScreen);
-            matViewProjScreenInverse.invert(mvps);
-            mvpsInverseUniform->set(matViewProjScreenInverse);
-
-            UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
-         }
-
          //we we are setup to use the cullvisitor then initialize it
          if(mEnableCullVisitor)
          {
@@ -480,132 +468,6 @@ namespace SimCore
          }
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP)
-      {
-         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
-         osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
-
-         dtCore::Transform xform;
-         osg::Vec3d waterCenter, screenPosOut, camPos;
-         pCamera.GetTransform(xform);
-         xform.GetTranslation(camPos);
-
-         //TODO- USE ACTUAL WATER HEIGHT
-         float waterHeight = 0.0;
-
-         waterCenter.set(camPos.x(), camPos.y(), waterHeight);
-
-         if(/*camPos.z() < waterHeight || */pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
-         {
-            waterFOVUniform->set(180.0f);
-         }
-         else
-         {
-            int width = int(pCamera.GetOSGCamera()->getViewport()->width());
-            int height = int(pCamera.GetOSGCamera()->getViewport()->height());
-
-            osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
-            osg::Vec3 bottomLeftIntersect, bottomRightIntersect, topLeftIntersect, topRightIntersect;
-
-            ComputeRay(0, 0, inverseMVP, bottomLeft);
-            ComputeRay(width, 0, inverseMVP, bottomRight);
-            ComputeRay(0, height, inverseMVP, topLeft);
-            ComputeRay(width, height, inverseMVP, topRight);
-
-            osg::Vec4 waterPlane(0.0, 0.0, 1.0, -waterHeight);
-
-            bool bool_bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeftIntersect);
-            bool bool_bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRightIntersect);
-            bool bool_topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeftIntersect);
-            bool bool_topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRightIntersect);
-
-            if(bool_bottomLeftIntersect)
-            {
-               bottomLeft = bottomLeftIntersect; 
-               bottomLeft = bottomLeft - waterCenter;
-               bottomLeft.normalize();
-            }
-            if(bool_bottomRightIntersect)
-            {
-               bottomRight = bottomRightIntersect;
-               bottomRight = bottomRight - waterCenter;
-               bottomRight.normalize();
-            } 
-            if(bool_topLeftIntersect)
-            {
-               topLeft = topLeftIntersect;
-               topLeft = topLeft - waterCenter;
-               topLeft.normalize();               
-            }
-            if(bool_topRightIntersect)
-            {
-               topRight = topRightIntersect;
-               topRight = topRight - waterCenter;
-               topRight.normalize();
-            }
-
-            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0, maxAngle5 = 0.0, maxAngle6 = 0.0;
-
-            maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
-
-            maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
-
-            maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
-
-            maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
-
-            maxAngle5 = GetAngleBetweenVectors(bottomRight, topLeft);
-
-            maxAngle6 = GetAngleBetweenVectors(bottomLeft, topRight);
-
-            //take the max of the six angles
-            float angle = dtUtil::Max(dtUtil::Max(maxAngle5, maxAngle6), dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4)));
-            angle = osg::RadiansToDegrees(angle);
-            angle /= 2.0f;
-            waterFOVUniform->set(angle);
-
-            //std::cout << "Water Angle " << angle << std::endl;
-         }
-
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill )
-      {
-         osg::Vec3 rayFrom, rayTo;
-
-         rayFrom = osg::Vec3(x, y, 0.0f) * inverseMVPS;
-         rayTo = osg::Vec3(x, y, 1.0f) * inverseMVPS;
-
-         rayToFill = rayTo - rayFrom;
-         rayToFill.normalize();
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      bool RenderingSupportComponent::IntersectRayPlane( const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint )
-      {
-         osg::Vec3 norm(plane.x(), plane.y(), plane.z());
-         float denominator = norm * rayDirection;
-
-         //the normal is near parallel
-         if(fabs(denominator) > FLT_EPSILON)
-         {
-            float t = -(norm * rayOrigin + plane.w());
-            t /= denominator;
-            intersectPoint = rayOrigin + (rayDirection * t);
-            return t > 0;
-         }
-
-         //std::cout << "No Intersect" << std::endl;
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      float RenderingSupportComponent::GetAngleBetweenVectors( const osg::Vec3& v1, const osg::Vec3& v2 )
-      {
-         return std::acos(v1 * v2);
-      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::ProcessMessage(const dtGame::Message &msg)

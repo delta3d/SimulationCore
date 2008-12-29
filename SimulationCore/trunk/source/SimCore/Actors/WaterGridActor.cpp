@@ -241,6 +241,7 @@ namespace SimCore
           , mDeltaTime(0.0f)
           , mRenderWaveTexture(false)
           , mWireframe(false)
+          , mDeveloperMode(false)
           , mComputedRadialDistance(0.0)
           , mTextureWaveAmpOverLength(1.0 / 64.0)
           , mGeometry()
@@ -310,6 +311,11 @@ namespace SimCore
          ///Added a callback to the camera this can set uniforms on each camera.
          dtCore::Camera::AddCameraSyncCallback(*this,
             dtCore::Camera::CameraSyncCallback(this, &WaterGridActor::UpdateWaveUniforms));
+
+         std::string developerMode;
+         developerMode = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
+         mDeveloperMode = (developerMode == "true" || developerMode == "1");
+
 
          Wave w;
 
@@ -622,16 +628,13 @@ namespace SimCore
       {
          mDeltaTime = dt;
          mElapsedTime += dt;
-
-         std::string developerMode;
-         developerMode = GetGameActorProxy().GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
          
          dtCore::Keyboard* kb = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
         
          static float keyTimeOut = 0.0f;
          keyTimeOut -= dt;
 
-         if(kb != NULL && keyTimeOut <= 0.0f && developerMode == "true" || developerMode == "1")
+         if(kb != NULL && mDeveloperMode && keyTimeOut <= 0.0f)
          {
             
             if(kb->GetKeyState('9'))
@@ -837,6 +840,20 @@ namespace SimCore
 
          osg::Camera* sceneCam = pCamera.GetOSGCamera();
          osg::StateSet* ss = sceneCam->getOrCreateStateSet();      
+
+         if(pCamera.GetOSGCamera()->getViewport() != NULL)
+         {
+            osg::Matrix matView, matProj, matViewProjScreenInverse, matScreen;
+
+            matView.set(pCamera.GetOSGCamera()->getViewMatrix());
+            matProj.set(pCamera.GetOSGCamera()->getProjectionMatrix());
+            matScreen.set(pCamera.GetOSGCamera()->getViewport()->computeWindowMatrix());
+
+            osg::Matrix mvps(matView * matProj * matScreen);
+            matViewProjScreenInverse.invert(mvps);
+
+            UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
+         }
 
          osg::Uniform* screenWidth = ss->getOrCreateUniform(UNIFORM_SCREEN_WIDTH, osg::Uniform::FLOAT);
          osg::Uniform* screenHeight = ss->getOrCreateUniform(UNIFORM_SCREEN_HEIGHT, osg::Uniform::FLOAT);
@@ -1458,6 +1475,133 @@ namespace SimCore
             SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
          }
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP)
+      {
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
+         osg::Uniform* waterFOVUniform = ss->getOrCreateUniform("waterPlaneFOV", osg::Uniform::FLOAT);
+
+         dtCore::Transform xform;
+         osg::Vec3d waterCenter, screenPosOut, camPos;
+         pCamera.GetTransform(xform);
+         xform.GetTranslation(camPos);
+
+         float waterHeight = GetWaterHeight();
+
+         waterCenter.set(camPos.x(), camPos.y(), waterHeight);
+
+         if(pCamera.ConvertWorldCoordinateToScreenCoordinate(waterCenter, screenPosOut))
+         {
+            waterFOVUniform->set(180.0f);
+         }
+         else
+         {
+            int width = int(pCamera.GetOSGCamera()->getViewport()->width());
+            int height = int(pCamera.GetOSGCamera()->getViewport()->height());
+
+            osg::Vec3 bottomLeft, bottomRight, topLeft, topRight;
+            osg::Vec3 bottomLeftIntersect, bottomRightIntersect, topLeftIntersect, topRightIntersect;
+
+            ComputeRay(0, 0, inverseMVP, bottomLeft);
+            ComputeRay(width, 0, inverseMVP, bottomRight);
+            ComputeRay(0, height, inverseMVP, topLeft);
+            ComputeRay(width, height, inverseMVP, topRight);
+
+            osg::Vec4 waterPlane(0.0, 0.0, 1.0, -waterHeight);
+
+            bool bool_bottomLeftIntersect = IntersectRayPlane(waterPlane, camPos, bottomLeft, bottomLeftIntersect);
+            bool bool_bottomRightIntersect = IntersectRayPlane(waterPlane, camPos, bottomRight, bottomRightIntersect);
+            bool bool_topLeftIntersect = IntersectRayPlane(waterPlane, camPos, topLeft, topLeftIntersect);
+            bool bool_topRightIntersect = IntersectRayPlane(waterPlane, camPos, topRight, topRightIntersect);
+
+            if(bool_bottomLeftIntersect)
+            {
+               bottomLeft = bottomLeftIntersect; 
+               bottomLeft = bottomLeft - waterCenter;
+               bottomLeft.normalize();
+            }
+            if(bool_bottomRightIntersect)
+            {
+               bottomRight = bottomRightIntersect;
+               bottomRight = bottomRight - waterCenter;
+               bottomRight.normalize();
+            } 
+            if(bool_topLeftIntersect)
+            {
+               topLeft = topLeftIntersect;
+               topLeft = topLeft - waterCenter;
+               topLeft.normalize();               
+            }
+            if(bool_topRightIntersect)
+            {
+               topRight = topRightIntersect;
+               topRight = topRight - waterCenter;
+               topRight.normalize();
+            }
+
+            float maxAngle1 = 0.0, maxAngle2 = 0.0, maxAngle3 = 0.0, maxAngle4 = 0.0, maxAngle5 = 0.0, maxAngle6 = 0.0;
+
+            maxAngle1 = GetAngleBetweenVectors(bottomLeft, bottomRight);
+
+            maxAngle2 = GetAngleBetweenVectors(bottomLeft, topLeft);
+
+            maxAngle3 = GetAngleBetweenVectors(bottomRight, topRight);
+
+            maxAngle4 = GetAngleBetweenVectors(topLeft, topRight);
+
+            maxAngle5 = GetAngleBetweenVectors(bottomRight, topLeft);
+
+            maxAngle6 = GetAngleBetweenVectors(bottomLeft, topRight);
+
+            //take the max of the six angles
+            float angle = dtUtil::Max(dtUtil::Max(maxAngle5, maxAngle6), dtUtil::Max(dtUtil::Max(maxAngle1, maxAngle2), dtUtil::Max(maxAngle3, maxAngle4)));
+            angle = osg::RadiansToDegrees(angle);
+            angle /= 2.0f;
+            waterFOVUniform->set(angle);
+
+            //std::cout << "Water Angle " << angle << std::endl;
+         }
+
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill )
+      {
+         osg::Vec3 rayFrom, rayTo;
+
+         rayFrom = osg::Vec3(x, y, 0.0f) * inverseMVPS;
+         rayTo = osg::Vec3(x, y, 1.0f) * inverseMVPS;
+
+         rayToFill = rayTo - rayFrom;
+         rayToFill.normalize();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      bool WaterGridActor::IntersectRayPlane( const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint )
+      {
+         osg::Vec3 norm(plane.x(), plane.y(), plane.z());
+         float denominator = norm * rayDirection;
+
+         //the normal is near parallel
+         if(fabs(denominator) > FLT_EPSILON)
+         {
+            float t = -(norm * rayOrigin + plane.w());
+            t /= denominator;
+            intersectPoint = rayOrigin + (rayDirection * t);
+            return t > 0;
+         }
+
+         //std::cout << "No Intersect" << std::endl;
+         return false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      float WaterGridActor::GetAngleBetweenVectors( const osg::Vec3& v1, const osg::Vec3& v2 )
+      {
+         return std::acos(v1 * v2);
+      }
+
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //WATER GRID PROXY
