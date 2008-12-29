@@ -5,10 +5,12 @@
 
 uniform float WaterHeight;
 uniform mat4 inverseViewMatrix;
+uniform vec3 waterHeightScreenSpace;
 
 varying vec4 worldSpacePos;
 varying vec3 lightVector;
 varying vec4 camPos;
+varying float height;
 
 float deepWaterScalar = 0.5;
 float viewDistance = 10.0;
@@ -22,7 +24,7 @@ void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void main (void)
 {     
 
-   float depth = WaterHeight - (viewDistance * worldSpacePos.z);
+   float depth = worldSpacePos.y - waterHeightScreenSpace.y;//WaterHeight - (viewDistance * worldSpacePos.z);
    depth = clamp(depth, 0.0, viewDistance);
    float depthScalar = (depth / viewDistance);
 
@@ -34,7 +36,11 @@ void main (void)
    vec3 color = lightContribFinal * GetWaterColorAtDepth(camPos.z);
    color = mix(color, deepWaterColor.xyz, 0.5 * depthScalar);
 
-   if(worldSpacePos.z < WaterHeight)
+   //this is a little hacky but it is used to remove the line above the water
+   float dist = (WaterHeight + 0.35) - camPos.z;
+   dist = clamp(dist, -0.005, 0.005);
+
+   if(worldSpacePos.y < (waterHeightScreenSpace.y + dist))
    {
       //gl_FragColor = vec4(vec3(lightContribFinal), 1.0);      
       gl_FragColor = vec4(color, 1.0);     

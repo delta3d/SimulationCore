@@ -853,6 +853,7 @@ namespace SimCore
             matViewProjScreenInverse.invert(mvps);
 
             UpdateWaterPlaneFOV(pCamera, matViewProjScreenInverse);
+            UpdateScreenSpaceWaterHeight(pCamera, matView * matProj);
          }
 
          osg::Uniform* screenWidth = ss->getOrCreateUniform(UNIFORM_SCREEN_WIDTH, osg::Uniform::FLOAT);
@@ -1602,6 +1603,30 @@ namespace SimCore
          return std::acos(v1 * v2);
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::UpdateScreenSpaceWaterHeight(dtCore::Camera& pCamera, const osg::Matrix& MVP)
+      {
+         osg::StateSet* ss = pCamera.GetOSGCamera()->getOrCreateStateSet();
+         osg::Uniform* waterHeightScreenSpace = ss->getOrCreateUniform("waterHeightScreenSpace", osg::Uniform::FLOAT_VEC3);
+
+         dtCore::Transform xform;
+         osg::Vec3d waterCenter, screenPosOut, camPos;
+         osg::Vec3 right, up, forward;
+         pCamera.GetTransform(xform);
+         xform.GetTranslation(camPos);
+         xform.GetOrientation(right, up, forward);
+
+         double vfov, aspect, nearClip, farClip;
+         pCamera.GetPerspectiveParams(vfov, aspect, nearClip, farClip);
+
+         osg::Vec3 posOnFarPlane = camPos + (forward * farClip);
+         posOnFarPlane[2] = GetWaterHeight();
+
+         posOnFarPlane = posOnFarPlane * MVP;
+
+         waterHeightScreenSpace->set(posOnFarPlane);
+         
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //WATER GRID PROXY

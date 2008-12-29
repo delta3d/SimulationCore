@@ -197,7 +197,8 @@ namespace SimCore
          void BindShader(osg::Node* node, const std::string& shaderName);
 
          void UpdateViewMatrix(dtCore::Camera& pCamera);
-         void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP);
+         void UpdateWaterPlaneFOV(dtCore::Camera& pCamera, const osg::Matrix& MVP);
+         void UpdateScreenSpaceWaterHeight(dtCore::Camera& pCamera, const osg::Matrix& inverseMVP);
          void ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill);
          bool IntersectRayPlane(const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint);
          float GetAngleBetweenVectors(const osg::Vec3& v1, const osg::Vec3& v2);
