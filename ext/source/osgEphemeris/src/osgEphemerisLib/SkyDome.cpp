@@ -24,6 +24,8 @@
 #include <osg/TexGen>
 #include <osg/TexEnv>
 
+#include <osg/Version>
+
 #include <osgEphemeris/SkyDome>
 
 
@@ -49,9 +51,9 @@ SkyDome::SkyDome():
 {
     unsigned int nsectors = _northernHemisphere->getNumDrawables();
 
-    // This sets up the "state culling" of the projected texture for the sun.  
+    // This sets up the "state culling" of the projected texture for the sun.
     // We want to avoid projecting the sun texture on any other sphere sectors
-    // than where the sun is positioned, thus avoiding the "back projected" 
+    // than where the sun is positioned, thus avoiding the "back projected"
     // anomaly that occurs from projected textures.
     for( unsigned int sector = 0; sector < nsectors; sector++ )
     {
@@ -226,7 +228,7 @@ void SkyDome::_buildStateSet()
 
     sset->setRenderBinDetails(-9,"RenderBin");
 
-    ///////////////////////  Sky Texture unit 
+    ///////////////////////  Sky Texture unit
     {
         /*unsigned char *data = new unsigned char[256*3];
         unsigned char *ptr = data;
@@ -257,7 +259,7 @@ void SkyDome::_buildStateSet()
         sset->setTextureMode( _skyTextureUnit, GL_TEXTURE_GEN_R, osg::StateAttribute::OFF );
         sset->setTextureMode( _skyTextureUnit, GL_TEXTURE_GEN_Q, osg::StateAttribute::OFF );
         sset->setTextureAttributeAndModes( _skyTextureUnit, texGen, osg::StateAttribute::ON );*/
-		  
+
         unsigned char *data = new unsigned char[SKY_DOME_X_SIZE * SKY_DOME_Y_SIZE * 3];
         unsigned char *ptr = data;
         for( int i = 0; i < SKY_DOME_X_SIZE * SKY_DOME_Y_SIZE; i++ )
@@ -266,7 +268,7 @@ void SkyDome::_buildStateSet()
             *(ptr++) = 0x30;
             *(ptr++) = 0xFF;
         }
-        
+
         osg::Image *skyImage = new osg::Image;
         skyImage->setImage( SKY_DOME_X_SIZE, SKY_DOME_Y_SIZE, 1, GL_RGB, GL_RGB,
             GL_UNSIGNED_BYTE, data, osg::Image::USE_NEW_DELETE );
@@ -279,12 +281,12 @@ void SkyDome::_buildStateSet()
         //sset->setTextureMode( _skyTextureUnit, GL_TEXTURE_2D, osg::StateAttribute::ON);
     }
 
-    ///////////////////// Sun Texture unit 
+    ///////////////////// Sun Texture unit
     {
         //_sunImage = osgDB::readImageFile( "sun.rgba" );
         _sunImage = new osg::Image;
-        _sunImage->setImage( 
-            _sunImageWidth, 
+        _sunImage->setImage(
+            _sunImageWidth,
             _sunImageHeight, 1,
             _sunImageInternalTextureFormat,
             _sunImagePixelFormat,
@@ -373,7 +375,7 @@ bool SkyDome::SectorCullCallback::_withinDeg( double x, double min, double max )
 
 void SkyDome::_updateDistributionCoefficients()
 {
-    // Preetham   
+    // Preetham
 /*    _Ax = _T * -0.0193f + -0.2592f;
     _Bx = _T * -0.0665f +  0.0008f;
     _Cx = _T * -0.0004f +  0.2125f;
@@ -424,7 +426,7 @@ void SkyDome::_updateZenithxyY()
     _xz = T2 * (0.00166f * ths3 + -0.00375f * ths2 + 0.00209f * _theta_sun)
         + _T * (-0.02903f * ths3 + 0.06377f * ths2 + -0.03202f * _theta_sun + 0.00394f)
         + (0.11693f * ths3 + -0.21196f * ths2 + 0.06052f * _theta_sun + 0.25886f);
-    
+
     _yz = T2 * (0.00275f * ths3 + -0.0061f * ths2 + 0.00317f * _theta_sun)
         + _T * (-0.04214f * ths3 + 0.0897f * ths2 + -0.04153f * _theta_sun + 0.00516f)
         + (0.15346f * ths3 + -0.26756f * ths2 + 0.0667f * _theta_sun + 0.26688f);
@@ -526,7 +528,7 @@ void SkyDome::_computeSkyTexture()
         while(_current_tex_row < end_row)
         //for(int j=0; j<SKY_DOME_Y_SIZE; j++)
         {
-            const float texel_alt( 1.57079633f - 
+            const float texel_alt( 1.57079633f -
                 ((float(_current_tex_row) + 0.5f) * 1.57079633f / float(SKY_DOME_Y_SIZE)) );
             const float cos_texel_alt( cosf(texel_alt) );
             const float sin_texel_alt( sinf(texel_alt) );
@@ -537,7 +539,7 @@ void SkyDome::_computeSkyTexture()
 
             for(int i=0; i<SKY_DOME_X_SIZE; ++i)
             {
-                const float texel_azi( -1.57079633f - 
+                const float texel_azi( -1.57079633f -
                     (float(i) + 0.5f) * 6.28318531f / float(SKY_DOME_X_SIZE) );
                 const float cos_texel_azi( cosf(texel_azi) );
                 const float sin_texel_azi( sinf(texel_azi) );
@@ -574,7 +576,7 @@ void SkyDome::_computeSkyTexture()
                 float R( _RedFunction(theta, theta_0_1, gamma, weighted_gamma_1_0) );
                 float G( _GreenFunction(theta, theta_0_1, gamma, weighted_gamma_1_0) );
                 float B( _BlueFunction(theta, theta_0_1, gamma, weighted_gamma_1_0) );
-                
+
                 // tone mapping
                 const float exposure( 5.0f );
                 const float luminance( R * 0.299f + G * 0.587f + B * 0.114f );
@@ -589,19 +591,23 @@ void SkyDome::_computeSkyTexture()
                 R = (R > 1.0f) ? 1.0f : R;
                 G = (G > 1.0f) ? 1.0f : G;
                 B = (B > 1.0f) ? 1.0f : B;
-                
+
                 *(ptr++) = (unsigned char)(R * 255.0f);
                 *(ptr++) = (unsigned char)(G * 255.0f);
                 *(ptr++) = (unsigned char)(B * 255.0f);
             }
-            
+
             _current_tex_row ++;
         }
-        
+
         if(_current_tex_row >= SKY_DOME_Y_SIZE)
             _current_tex_row = 0;
-        
+
+#if (OSG_VERSION_MAJOR >= 2) && (OSG_VERSION_MINOR >= 6)
+        image->dirty();
+#else
         _skyTexture->setImage( image );
+#endif
     }
   }
 
@@ -609,6 +615,8 @@ void SkyDome::_computeSkyTexture()
     *
     */
   else
+  {
       // Set to compute again
       _overrideSkyImage = false;
+  }
 }
