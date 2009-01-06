@@ -47,23 +47,23 @@ ENDIF (BUILD_HLA)
 INCLUDE(ModuleInstall OPTIONAL)
 
 #We do want tests in bin.
-IF (WIN32)
+IF (MSVC)
 SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../../bin/")
-ENDIF (WIN32)
+ENDIF (MSVC)
 
 #This will automatically run the unit test executable upon successfull compile/link
 IF (AUTO_RUN_TESTS)
-  IF (WIN32)
+  IF (MSVC)
     ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
                           COMMAND "\"$(TargetPath)\""
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} -nochdir
                           COMMENT "Run the unit tests")  
-  ELSE (WIN32)
+  ELSE (MSVC)
      ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
                           COMMAND ${CMAKE_BINARY_DIR}/bin/allTests -nochdir
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                           COMMENT Run the unit tests)
-  ENDIF (WIN32)
+  ENDIF (MSVC)
 ENDIF (AUTO_RUN_TESTS)
