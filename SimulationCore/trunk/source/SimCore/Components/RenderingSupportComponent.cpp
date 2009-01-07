@@ -150,7 +150,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::RenderingSupportComponent(const std::string &name)
+      RenderingSupportComponent::RenderingSupportComponent(const std::string& name)
          : dtGame::GMComponent(name)
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
@@ -323,7 +323,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      RenderingSupportComponent::DynamicLight *RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string &prototypeName)
+      RenderingSupportComponent::DynamicLight* RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string& prototypeName)
       {
          DynamicLight *result = NULL;
 
@@ -692,14 +692,15 @@ namespace SimCore
 
          if(mCullVisitor->GetLandActor() == NULL)
          {
-            GetGameManager()->FindActorsByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, toFill);
-            SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
-            if(!toFill.empty())
+            SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
+            GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
+
+            if (landActorProxy != NULL)
             {
-               landActor = dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor*>(toFill[0]->GetActor());
+               SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+               landActorProxy->GetActor(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
-            toFill.clear();
          }
 
          if(mCullVisitor->GetTerrainNode() == NULL)

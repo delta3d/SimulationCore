@@ -42,7 +42,7 @@ namespace SimCore
          AgeiaTerrainCullVisitor();
 
          /// In Here we load objects within radius to physics
-           virtual void apply(osg::Geode& node);
+         virtual void apply(osg::Geode& node);
 
          /// In here we check the top lvl node and finalize the physics terrain
          virtual void apply(osg::Transform& node);
@@ -54,7 +54,7 @@ namespace SimCore
          virtual void apply(osg::Group& node);
 
          /// Set and Get For the land Actor
-         void SetLandActor(SimCore::Actors::NxAgeiaTerraPageLandActor* _land) {mLandActor = _land;}
+         void SetLandActor(SimCore::Actors::NxAgeiaTerraPageLandActor* land) {mLandActor = land;}
          SimCore::Actors::NxAgeiaTerraPageLandActor* GetLandActor() {return mLandActor.get();} 
 
          /// Set and get for the terrain node
