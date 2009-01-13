@@ -43,6 +43,7 @@ namespace DriverDemo
 #ifdef AGEIA_PHYSICS
          static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> HOVER_TARGET_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> HOVER_EXPLODING_TARGET_ACTOR_TYPE;
 #endif
 
          /// Constructor

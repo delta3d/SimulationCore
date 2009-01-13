@@ -37,8 +37,13 @@ namespace dtGame
 
 namespace SimCore
 {
+   class DetonationMessage;
+
    namespace Actors
    {
+      class MunitionTypeActor;
+
+
       class SIMCORE_EXPORT BaseEntityActorProxy : public dtGame::GameActorProxy
       {
          public:
@@ -551,6 +556,16 @@ namespace SimCore
 
             void SetEntityType( const std::string& entityType );
             std::string GetEntityType() const;
+
+            /** 
+             * Gives a local entity an opportunity to respond to damage from a munition. 
+             * Called from the MunitionsComponent via the DamageHelper. Typically called 
+             * from ProcessDetonationMessage().
+             * NOTE - Damage and forces have already been applied before this method is called. 
+             */
+            virtual void RespondToHit(const SimCore::DetonationMessage& message, 
+               const SimCore::Actors::MunitionTypeActor& munition);
+
 
          protected:
             virtual ~BaseEntity();

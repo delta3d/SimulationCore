@@ -373,6 +373,9 @@ namespace SimCore
                LOG_ERROR(oss.str());
             }
          }
+
+         // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't 
+         // do any damage. For direct & indirect, the damage occurs on the Detonation message.
          else if( type == SimCore::MessageType::SHOT_FIRED )
          {
             const ShotFiredMessage& shotMessage = 

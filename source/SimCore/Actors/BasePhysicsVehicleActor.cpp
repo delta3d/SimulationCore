@@ -167,7 +167,7 @@ namespace SimCore
          NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
          if(physicsObject == NULL)
          {
-            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE!");
+            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
          }
 
