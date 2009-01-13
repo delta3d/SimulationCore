@@ -72,7 +72,8 @@ namespace DriverDemo
    // made into properties on the actor.
    static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
-   static float testJumpBoost = 3.0 * -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
+   static float testJumpBoost = 2.3 * -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
+   static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
@@ -108,9 +109,11 @@ namespace DriverDemo
 
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
-      float finalAdjustment = currentAdjustment * 0.90 + futureAdjustment * 0.10;
+      float finalAdjustment = currentAdjustment * 0.95 + futureAdjustment * 0.05;
       NxVec3 dir(0.0, 0.0, 1.0);
-      physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
+      float upForce = weight * finalAdjustment * deltaTime;
+      //std::cout << " **** Up Force [" << upForce << "]." << std::endl;
+      physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
 
       // Get the forward vector and the perpendicular side (right) vector. 
       dtGame::GameActor* actor = NULL;
@@ -124,9 +127,9 @@ namespace DriverDemo
       rightDir[2] = 0.0f; // remove Z component so we don't fly...
       rightDir.normalize();
 
-      // basic force calc
-      float speedModifier = GetVehicleMaxForwardMPH() * GetForceBoostFactor();
-      float strafeModifier = GetVehicleMaxStrafeMPH() * GetForceBoostFactor();
+      // basic force calc - the 2.0 makes it handle 'quicker' and wind below takes that out.
+      float speedModifier = testQuicknessAdjustment * GetVehicleMaxForwardMPH() * GetForceBoostFactor();
+      float strafeModifier = testQuicknessAdjustment * GetVehicleMaxStrafeMPH() * GetForceBoostFactor();
 
       // FORWARD
       if(accelForward)
@@ -159,7 +162,7 @@ namespace DriverDemo
       float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
       if(speed > 0.001)
       {
-         float windResistance = speed * testCorrection;
+         float windResistance = testQuicknessAdjustment * speed * testCorrection;
 
          // If we aren't doing any movement, then add an extra flavor in there so that we 'coast' to a stop.
          // The slower we're going, the more the 'flavor' boost kicks in, else we get linearly less slowdown.
@@ -225,8 +228,8 @@ namespace DriverDemo
          }
          else if (distanceToCorrect > -1.0f) // if we are slightly too high, then slow down our force
             estimatedForceAdjustment *= (0.01f + ((1.0f+distanceToCorrect) * 0.99)); // part gravity, part reduced
-         else // counteract half of gravity :)
-            estimatedForceAdjustment *= 0.01f;
+         else // opportunity to counteract free fall if we want.
+            estimatedForceAdjustment = 0.0f;//0.01f;
       }
       else
          estimatedForceAdjustment = 0.0f;

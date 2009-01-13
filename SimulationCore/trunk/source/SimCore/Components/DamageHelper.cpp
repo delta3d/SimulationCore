@@ -200,6 +200,9 @@ namespace SimCore
                LOG_DEBUG( ss.str() );
                mEntity->ApplyForce( force, message.GetDetonationLocation() );
             }
+
+            // Give the entity a chance to react. Damage & forces have already been applied.
+            mEntity->RespondToHit(message, munition);
          }
       }
 

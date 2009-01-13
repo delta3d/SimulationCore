@@ -252,7 +252,7 @@ namespace DriverDemo
             {
                // WE'RE TOTALLY HOSED IF SOMEONE DELETES OUR VEHICLE AT THIS POINT!
                mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, 
-                  "Someone deleted our vehicle! OMG! How rude! We're in big trouble!!!");
+                  "Someone deleted our vehicle! OMG! How rude! We're in big trouble!!! Ignore this if in the process of shutting down.");
                mVehicle = NULL;
             }
          }
@@ -1431,7 +1431,21 @@ namespace DriverDemo
       dtGame::GameManager* gm = GetGameManager();
       std::vector<dtDAL::ActorProxy*> foundProxies;
       
-      gm->FindPrototypesByName("Hover_Target_Prototype", foundProxies);
+      float randChance = dtUtil::RandFloat(0.0, 1.0);
+      std::string prototypeName("UNKNOWN");
+
+      // 90% chance for a regular target, 10% for an exploding one
+      if (randChance < 0.90)
+      {
+         prototypeName = "Hover_Target_Prototype";
+      }
+      else
+      {
+         prototypeName = "Hover_Exploding_Target_Prototype";
+      }
+
+
+      gm->FindPrototypesByName(prototypeName, foundProxies);
       if( foundProxies.empty() )
       {
          LOG_ERROR( "No Hover Target prototype could be loaded from the map." );
@@ -1439,15 +1453,13 @@ namespace DriverDemo
       }
 
       // Create a new target from the discovered prototype
-      dtCore::RefPtr<DriverDemo::HoverTargetActorProxy> newTargetProxy 
-         = dynamic_cast<DriverDemo::HoverTargetActorProxy*>
+      dtCore::RefPtr<dtGame::GameActorProxy> newTargetProxy 
+         = dynamic_cast<dtGame::GameActorProxy*>
          (gm->CreateActorFromPrototype(foundProxies[0]->GetId()).get());
 
       // Add the actor to the game manager.
       if (newTargetProxy.valid())
       {
-         //DriverDemo::HoverTargetActor* targetActor;
-         //targetProxy->GetActor(targetActor);
          GetGameManager()->AddActor(*newTargetProxy.get(), false, true);
       }
       else

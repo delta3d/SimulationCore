@@ -1,6 +1,6 @@
 /* -*-c++-*-
-* Driver Demo - HoverTargetActor (.cpp & .h) - Using 'The MIT License'
-* Copyright (C) 2008, Alion Science and Technology Corporation
+* Driver Demo - HoverExplodingTargetActor (.cpp & .h) - Using 'The MIT License'
+* Copyright (C) 2009, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,14 @@
 * @author Curtiss Murphy
 */
 #ifdef AGEIA_PHYSICS
-#ifndef _HOVER_TARGET_ACTOR_
-#define _HOVER_TARGET_ACTOR_
+#ifndef _HOVER_EXPLODING_TARGET_ACTOR_
+#define _HOVER_EXPLODING_TARGET_ACTOR_
 
 #include <DriverExport.h>
 
 #include <HoverTargetPhysicsHelper.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
+#include <dtCore/shaderprogram.h>
 
 namespace dtAudio
 {
@@ -45,15 +46,15 @@ namespace DriverDemo
    /* This class extends BasePhysicsVehicle. It is intended to be a simple target 
     * that you can shoot at. It will publish itself and can be shot by remote players.
     */
-   class DRIVER_DEMO_EXPORT HoverTargetActor : public SimCore::Actors::BasePhysicsVehicleActor
+   class DRIVER_DEMO_EXPORT HoverExplodingTargetActor : public SimCore::Actors::BasePhysicsVehicleActor
    {
       public:
          /// Constructor
-         HoverTargetActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
+         HoverExplodingTargetActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
       protected:
          /// Destructor
-         virtual ~HoverTargetActor();
+         virtual ~HoverExplodingTargetActor();
       
       // INHERITED PUBLIC
       public:
@@ -76,19 +77,27 @@ namespace DriverDemo
          /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
          virtual void AgeiaPostPhysicsUpdate();
 
+         virtual void DoExplosion();
+
+         virtual void RespondToHit(const SimCore::DetonationMessage& message, 
+            const SimCore::Actors::MunitionTypeActor& munition);
+
+         // Overridden from Platform to bypass the damaged/nodamage/destroyed shaders
+         void OnShaderGroupChanged();
+
+         void SetChasingModeActive(bool newMode);
+         bool GetChasingModeActive() { return mChasingModeActive; }
+
          //////////////// PROPERTIES
 
-
-      // PUBLIC METHODS
+         
+         // PUBLIC METHODS
       public:
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
             const osg::Vec3 &direction, float &distanceToHit);
 
          /// Reset to starting position In additional to base behavior, it turns off sounds.
          //virtual void ResetVehicle();
-
-         //HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-         //   return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
          HoverTargetPhysicsHelper* GetTargetPhysicsHelper() {
             return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
@@ -117,28 +126,29 @@ namespace DriverDemo
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
-         float  mVehicleBaseWeight;     /// How much does the vehicle weight
-         float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
-         float  mGroundClearance;       /// How far above the ground we should be.
-
          osg::Vec3 mGoalLocation;       /// The general location we want to be.
+         dtCore::ObserverPtr<SimCore::Actors::BasePhysicsVehicleActor> mPlayerWeAreChasing;
 
          float mTimeSinceKilled;        /// How long it's been since the target was killed, delete after like 20 seconds
          float mTimeSinceBorn;          /// How long we've been alive - so we can time out after a while.
+         float mTimeSinceWasHit;        /// How long since a player hit us - so we can blow up while chasing the player. 
 
+         bool mChasingModeActive;     // When active, we are chasing a player and highlighted red.
+         dtCore::RefPtr<dtCore::ShaderProgram> mCurrentShader;
+         std::string mCurrentShaderName;
 
          dtCore::RefPtr<VehicleShield> mShield;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
-   class DRIVER_DEMO_EXPORT HoverTargetActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
+   class DRIVER_DEMO_EXPORT HoverExplodingTargetActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
    {
       public:
-         HoverTargetActorProxy();
+         HoverExplodingTargetActorProxy();
          virtual void BuildPropertyMap();
 
       protected:
-         virtual ~HoverTargetActorProxy();
+         virtual ~HoverExplodingTargetActorProxy();
          void CreateActor();
          virtual void OnEnteredWorld();
    };

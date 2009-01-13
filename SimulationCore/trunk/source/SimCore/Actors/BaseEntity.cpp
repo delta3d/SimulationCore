@@ -36,6 +36,8 @@
 #include <osg/Group>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Actors/MunitionTypeActor.h>
+#include <SimCore/Messages.h>
 
 namespace SimCore
 {
@@ -1099,6 +1101,15 @@ namespace SimCore
       {
          return mIsFrozen;
       }
-   }
 
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::RespondToHit(const DetonationMessage& message, 
+         const SimCore::Actors::MunitionTypeActor& munition)
+      {
+         // An opportunity to respond to damage. Only called on local entities that have been
+         // damaged by a munition hit of some sort. Damage & forces have already been
+         // applied by the time this method is called. 
+      }
+
+   }
 }

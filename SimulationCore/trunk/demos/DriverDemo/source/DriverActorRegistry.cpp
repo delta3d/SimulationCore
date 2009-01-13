@@ -17,6 +17,7 @@
 #ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverTargetActor.h>
+#include <HoverExplodingTargetActor.h>
 #include <NxAgeiaWorldComponent.h>
 #endif
 
@@ -33,6 +34,9 @@ namespace DriverDemo
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
    RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE(
       new dtDAL::ActorType("HoverTargetActor", "DriverDemo", "A floaty shootable target object for Driver Demo",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+   RefPtr<dtDAL::ActorType> DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE(
+      new dtDAL::ActorType("HoverExplodingTargetActor", "DriverDemo", "A floaty shootable target that explodes for Driver Demo",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    ///////////////////////////////////////////////////////////////////////////
@@ -58,5 +62,6 @@ namespace DriverDemo
    {
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<HoverTargetActorProxy>(HOVER_TARGET_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<HoverExplodingTargetActorProxy>(HOVER_EXPLODING_TARGET_ACTOR_TYPE.get());
    }
 }
