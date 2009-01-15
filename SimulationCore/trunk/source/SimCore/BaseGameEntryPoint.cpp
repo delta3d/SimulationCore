@@ -266,7 +266,7 @@ namespace SimCore
          if(!fileUtils.DirExists(mProjectPath))
          {
            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
-                  "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application."
+                  "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
                   , __FILE__, __LINE__);
          }
          else
@@ -285,7 +285,7 @@ namespace SimCore
             {
                throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                   "The data directory " + PROJECT_CONTEXT_DIR +
-                  " could not be located in the working directory or its parent directory. Aborting application."
+                  " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
                   , __FILE__, __LINE__);
             }
             else
