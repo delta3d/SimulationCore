@@ -325,6 +325,12 @@ namespace SimCore
          {
             SetCoordinates();
 
+            if (mEphemerisEnvironmentActor == NULL)
+            {
+               LOG_ERROR("No environment actor exists after MAP_LOADED. It is possible you did not include any AdditionalMaps in your config.xml.");
+               return;
+            }
+
             // This sets the time the very first time a map changes to NOON. Without this,
             // the game ends up in some weird time zone offset from the current time clock. It's confusing.
             dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
