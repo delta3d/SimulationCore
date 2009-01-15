@@ -53,7 +53,12 @@ static char* appArgv[appArgc] =
 int main(int argc, char *argv[])
 {
    // Log to log file, and not to console
-   dtUtil::Log::GetInstance().SetOutputStreamBit(dtUtil::Log::TO_FILE);
+   //dtUtil::Log::GetInstance().SetOutputStreamBit(dtUtil::Log::TO_FILE);
+   // If you turn off console logging, most users will miss important messages - example, they crash
+   // on startup and will have NO understanding of why they have crashed. We get posts all the time about
+   // how users crashed Stealth Viewer with no idea what happened! At the very most, you
+   // should set the log level to ERROR only like this: 
+   //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_ERROR);
 
 #ifdef DELTA_WIN32
 

@@ -120,10 +120,13 @@ namespace StealthGM
          }
       }
 
-      binos->SetShowReticle(GetShowBinocularImage());
-      binos->SetShowDistance(GetShowDistanceToObject());
-      binos->SetShowElevation(GetShowElevationOfObject());
-      binos->SetZoomFactor(GetMagnification());
+      if (binos != NULL && binos->IsEnabled())
+      {
+         binos->SetShowReticle(GetShowBinocularImage());
+         binos->SetShowDistance(GetShowDistanceToObject());
+         binos->SetShowElevation(GetShowElevationOfObject());
+         binos->SetZoomFactor(GetMagnification());
+      }
 
       SetIsUpdated(false);
    }
