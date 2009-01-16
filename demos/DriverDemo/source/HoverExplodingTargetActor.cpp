@@ -269,7 +269,19 @@ namespace DriverDemo
                (shooterProxy->GetActor());
 
             // Turn on highlight if not already on
+            bool wasChasingActive = mChasingModeActive;
             SetChasingModeActive(true);
+
+            // We publish the 'chasing' mode via the 'engine smoke on' property. 
+            // Since we are local, we set EngineSmokeOn and then publish.
+            if (!wasChasingActive)
+            {
+               InnerSetEngineSmokeOn(true);
+               // Note, we could probably do a partial here, but some systems require certain 
+               // minimum properties (such as velocity and trans) in order to publish, so just do them all 
+               // to be safe. This is a rare event anyway.
+               GetGameActorProxy().NotifyFullActorUpdate();
+            }
          }
 
          // debugging stuff
@@ -322,6 +334,14 @@ namespace DriverDemo
 
          mChasingModeActive = newMode;
       }
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void HoverExplodingTargetActor::SetEngineSmokeOn(bool enable)
+   {
+      // The engine smoke property is what we publish over the network for
+      // Chasing Mode since there is no HLA equivalent.  
+      SetChasingModeActive(enable);
    }
 
    //////////////////////////////////////////////////////////////////////

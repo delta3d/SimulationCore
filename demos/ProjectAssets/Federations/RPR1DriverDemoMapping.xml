@@ -622,11 +622,6 @@
                 <specific>4</specific>
                 <extra>0</extra>
             </disEntityEnum>
-            <attrToProp>
-               <gameName>EntityType</gameName>
-               <gameDataType>STRING</gameDataType>
-               <default>HoverTargetActor</default>
-            </attrToProp>
              <attrToProp>
                <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
                <gameDataType>Sounds</gameDataType>
@@ -648,27 +643,53 @@
                 <default>StaticMeshes:physics_happy_sphere.ive</default>
             </attrToProp>
             <attrToProp>
-               <gameName>VehiclesSeatConfigActorNameTable</gameName>
-               <gameDataType>STRING</gameDataType>
-               <default></default>
-            </attrToProp>
-            <attrToProp>
                <gameName>ShaderGroup</gameName>
                <gameDataType>STRING</gameDataType>
                <default>SimpleVehicleShaderGroup</default>
             </attrToProp>
-            <attrToProp>
-               <gameName>Ground Offset</gameName>
-               <gameDataType>FLOAT</gameDataType>
-               <default>1.0</default>
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 4th tier object. Heirarchy is:                              -->
+        <!--    BaseEntity <- PhysicalEntity <- Aircraft <- HoverExplodingTarget           -->
+        <!-- ****************************************************** -->    
+           <object extends="Aircraft" name="HoverExplodingTarget">
+            <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
+            <actorType>DriverDemo.HoverExplodingTargetActor</actorType>
+            <remoteOnly>false</remoteOnly>
+            <disEntityEnum>
+                <kind>1</kind>
+                <domain>1</domain>
+                <country>225</country>
+                <category>5</category>
+                <subcategory>5</subcategory>
+                <specific>5</specific>
+                <extra>0</extra>
+            </disEntityEnum>
+             <attrToProp>
+                <gameName>Non-damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:boulder.ive</default>
             </attrToProp>
             <attrToProp>
-               <gameName>Munition Damage Table</gameName>
+                <gameName>Damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:boulder.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Destroyed actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:boulder.ive</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>ShaderGroup</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>HoverTarget</default>
+               <default>ExplodingTargetShaderGroup</default>
             </attrToProp>
         </object>
 
+
+	
 
        <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                     -->

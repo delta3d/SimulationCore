@@ -77,19 +77,16 @@ namespace DriverDemo
          /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
          virtual void AgeiaPostPhysicsUpdate();
 
-         virtual void DoExplosion();
-
          virtual void RespondToHit(const SimCore::DetonationMessage& message, 
             const SimCore::Actors::MunitionTypeActor& munition);
 
          // Overridden from Platform to bypass the damaged/nodamage/destroyed shaders
          void OnShaderGroupChanged();
 
-         void SetChasingModeActive(bool newMode);
-         bool GetChasingModeActive() { return mChasingModeActive; }
-
          //////////////// PROPERTIES
 
+         // Overridden from BaseEntity. Instead of smoke, show 'Chasing' mode. This is a published property
+         virtual void SetEngineSmokeOn(bool enable);
          
          // PUBLIC METHODS
       public:
@@ -102,6 +99,13 @@ namespace DriverDemo
          HoverTargetPhysicsHelper* GetTargetPhysicsHelper() {
             return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
          }
+
+         virtual void DoExplosion();
+
+         // Chasing mode means we're following someone until we're not (explode or entity gone)
+         // Our chasing status is published via the 'EngineSmoke' HLA property
+         void SetChasingModeActive(bool newMode);
+         bool GetChasingModeActive() { return mChasingModeActive; }
 
 
       protected: 
