@@ -245,7 +245,7 @@ namespace SimCore
              * Toggles engine smoke on and off
              * @param enable True to enable, false to not
              */
-            void SetEngineSmokeOn(bool enable);
+            virtual void SetEngineSmokeOn(bool enable);
 
             /**
              * Gets if engine smoke is currently enabled
@@ -604,6 +604,10 @@ namespace SimCore
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
             virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
+
+            // Allows a sub-class to set the engine smoke value without doing all the engine
+            // smoke 'stuff'. 
+            void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
          private:
             ///a sub-matrix node just for doing scale on the model.
