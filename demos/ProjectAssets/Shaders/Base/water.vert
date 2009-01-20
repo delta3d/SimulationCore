@@ -73,7 +73,7 @@ void main(void)
 
    shaderVertexNormal = vec3(0.0, 0.0, 1.0);
    // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's
-   for(int i = 2.0 * WAVE_OFFSET; i < NUMWAVES * 2; i+=2)
+   for(int i = 2 * WAVE_OFFSET; i < NUMWAVES * 2; i+=2)
    {           
       float waveLen = waveArray[i].x;
       float speed = waveArray[i].y;

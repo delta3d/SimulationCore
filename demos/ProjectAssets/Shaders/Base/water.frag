@@ -124,7 +124,9 @@ void main (void)
       vec3 lightContribFinal;
       lightContribution(normal, lightVector, gl_LightSource[0].diffuse.xyz, 
          gl_LightSource[0].ambient.xyz, lightContribFinal);
-      lightContribFinal = pow(lightContribFinal, 0.5);
+      lightContribFinal.x = pow(lightContribFinal.x, 0.5);
+      lightContribFinal.y = pow(lightContribFinal.y, 0.5);
+      lightContribFinal.z = pow(lightContribFinal.z, 0.5);
 
       vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz, waveNDotL);
       
@@ -151,7 +153,7 @@ void main (void)
       lightContribution(vec3(0.0, 0.0, 1.0), lightVector, gl_LightSource[0].diffuse.xyz, 
          gl_LightSource[0].ambient.xyz, lightContribFinal);
 
-      float alpha = clamp(vFog + 0.95, 0.0, 1.0);      
+      float alpha = clamp(vFog.x + 0.95, 0.0, 1.0);      
       vec3 combinedColor = lightContribFinal * mix(resultColor, waterColorAtDepth, vFog.y);
       gl_FragColor = vec4(combinedColor, WaterColor.a);
    }
