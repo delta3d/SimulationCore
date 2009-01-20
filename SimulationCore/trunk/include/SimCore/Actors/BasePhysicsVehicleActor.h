@@ -44,12 +44,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       /* This class provides the basic physics behavior for vehicles. It makes some assumptions
        * about the types of things a vehicle would need, but also allows you to override just about
-       * everything. This class can be used to wildy divergent vehicles (from a formal 4 wheel 
-       * jeep to a hover craft to a 2 wheel bicycle). 
+       * everything. This class can be used to wildy divergent vehicles (from a formal 4 wheel
+       * jeep to a hover craft to a 2 wheel bicycle).
        * This class is abstract. Makes no sense to have a base instantiation...
        */
-      class SIMCORE_EXPORT BasePhysicsVehicleActor : public Platform, 
-                                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
+      class SIMCORE_EXPORT BasePhysicsVehicleActor : public Platform,
+                                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
                                                        public VehicleInterface
       {
          public:
@@ -59,7 +59,7 @@ namespace SimCore
          protected:
             /// Destructor
             virtual ~BasePhysicsVehicleActor();
-         
+
          // INHERITED PUBLIC
          public:
             /**
@@ -67,14 +67,14 @@ namespace SimCore
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             /**
             * This method is an invokable called when an object is remote and
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
+            virtual void OnTickRemote(const dtGame::TickMessage &tickMessage);
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -88,12 +88,12 @@ namespace SimCore
             virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
                NxActor& ourSelf, NxActor& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
                const NxActor& whatWeHit){}
 
             /**
@@ -119,7 +119,7 @@ namespace SimCore
             virtual void RepositionVehicle(float deltaTime);
 
             virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-           
+
             void SetPhysicsHelper(dtAgeiaPhysX::NxAgeiaPhysicsHelper* newHelper) {mPhysicsHelper = newHelper;}
             dtAgeiaPhysX::NxAgeiaPhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
 
@@ -130,7 +130,7 @@ namespace SimCore
 
             void SetPerformAboveGroundSafetyCheck( bool enable )  { mPerformAboveGroundSafetyCheck = enable; }
             bool GetPerformAboveGroundSafetyCheck() const  { return mPerformAboveGroundSafetyCheck;}
-               
+
             virtual void SetTimeForSendingDeadReckoningInfoOut( float timeForSendingDeadReckoningInfoOut )           { mTimeForSendingDeadReckoningInfoOut = timeForSendingDeadReckoningInfoOut; }
             virtual float GetTimeForSendingDeadReckoningInfoOut() const       { return mTimeForSendingDeadReckoningInfoOut; }
 
@@ -144,7 +144,7 @@ namespace SimCore
             bool GetPublishAngularVelocity() const { return mPublishAngularVelocity; }
 
 
-         protected: 
+         protected:
             /// Angles/ steering moving etc done here. Of the updates, this is called first.
             /// This does nothing by default.
             virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -187,7 +187,7 @@ namespace SimCore
 
          // Private vars
          private:
-            
+
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPhysicsHelper> mPhysicsHelper;
 
 

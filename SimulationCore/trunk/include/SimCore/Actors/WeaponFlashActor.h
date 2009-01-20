@@ -97,7 +97,7 @@ namespace SimCore
 
             virtual void OnEnteredWorld();
 
-            virtual void TickLocal( const dtGame::Message& tickMessage );
+            virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
 
             void SetShader( const std::string& shaderName, const std::string& shaderGroup );
 

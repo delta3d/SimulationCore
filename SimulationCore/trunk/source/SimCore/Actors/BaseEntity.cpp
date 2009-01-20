@@ -115,6 +115,9 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FORCE("Force Affiliation");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_GROUND_OFFSET("Ground Offset");
+
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
@@ -253,20 +256,24 @@ namespace SimCore
             "Specifies the type of environment an entity is specialized in navigating.",
             BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>("Dead Reckoning Algorithm", "Dead Reckoning Algorithm",
+         AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>("Dead Reckoning Algorithm"
+                  , "Dead Reckoning Algorithm",
             dtDAL::MakeFunctor(e, &BaseEntity::SetDeadReckoningAlgorithm),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDeadReckoningAlgorithm),
             "Sets the enumerated dead reckoning algorithm to use.", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>("Force Affiliation", "Force Affiliation",
+         static const dtUtil::RefString PROPERTY_FORCE_DESC("The force for which the entity is fighting.");
+         AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
             dtDAL::MakeFunctor(e, &BaseEntity::SetForceAffiliation),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetForceAffiliation),
-            "The force for which the entity is fighting.", BASE_ENTITY_GROUP));
+            PROPERTY_FORCE_DESC, BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::FloatActorProperty("Ground Offset", "Ground Offset",
+         static const dtUtil::RefString PROPERTY_GROUND_OFFSET_DESC("Sets the offset from the ground "
+                  "this entity should have.  This only matters if it is not flying.");
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_GROUND_OFFSET, PROPERTY_GROUND_OFFSET,
             dtDAL::MakeFunctor(e, &BaseEntity::SetGroundOffset),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetGroundOffset),
-            "Sets the offset from the ground this entity should have.  This only matters if it is not flying.", BASE_ENTITY_GROUP));
+            PROPERTY_GROUND_OFFSET_DESC, BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
             dtDAL::MakeFunctor(e, &BaseEntity::SetService),
@@ -552,7 +559,7 @@ namespace SimCore
       {
          mDRAlgorithm = &newAlgorithm;
          //if the entity is destroyed, it should be set to static unless DR is turned off altogether.
-         //Removed this check - it was based on a false assumption that dead things don't move.  A falling, burning plane DOES move. Ships sink. 
+         //Removed this check - it was based on a false assumption that dead things don't move.  A falling, burning plane DOES move. Ships sink.
          /*if (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED
              && newAlgorithm != dtGame::DeadReckoningAlgorithm::NONE)
          {
@@ -805,10 +812,6 @@ namespace SimCore
             }
          }
       }
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::TickRemote(const dtGame::Message& tickMessage)
-      {
-      }
 
       ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
@@ -913,11 +916,11 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::TickLocal(const dtGame::Message& tickMessage)
+      void BaseEntity::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         mTimeUntilNextUpdate -= static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         mTimeUntilNextUpdate -= tickMessage.GetDeltaSimTime();
 
-         GameActor::TickLocal(tickMessage);
+         GameActor::OnTickLocal(tickMessage);
 
          bool forceUpdate = false;
          bool fullUpdate = false;
@@ -1103,12 +1106,12 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::RespondToHit(const DetonationMessage& message, 
+      void BaseEntity::RespondToHit(const DetonationMessage& message,
          const SimCore::Actors::MunitionTypeActor& munition)
       {
          // An opportunity to respond to damage. Only called on local entities that have been
          // damaged by a munition hit of some sort. Damage & forces have already been
-         // applied by the time this method is called. 
+         // applied by the time this method is called.
       }
 
    }

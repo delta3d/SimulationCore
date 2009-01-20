@@ -95,17 +95,16 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::TickLocal( const dtGame::Message& tickMessage )
+      void WeaponActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
       {
-         const dtGame::TickMessage& tickMsg = dynamic_cast<const dtGame::TickMessage&> (tickMessage);
-         float timeDelta = tickMsg.GetDeltaSimTime();
+         float timeDelta = tickMessage.GetDeltaSimTime();
 
          // Update trigger timer
          if( mTriggerTime < mFireRate )
          {
             mTriggerTime += timeDelta;
          }
-         
+
          if( mTriggerHeld && mTriggerTime >= mFireRate )
          {
             Fire();
@@ -152,26 +151,26 @@ namespace SimCore
                initialVelocity *= mFireVelocity;
 
                // Send the fire message
-               SendFireMessage( 
+               SendFireMessage(
                   // if no hit reports were received and not using bullet physics, send the shots that were fired
-                  mShotsFired, 
-                  initialVelocity, 
+                  mShotsFired,
+                  initialVelocity,
                   mLastTargetObject.get() );
             }
             else // Direct Fire (instant fire & hit)
             {
                bool directHit = mLastTargetObject.valid();
                // Send the fire message
-               SendFireMessage( 
+               SendFireMessage(
                   // if no hit reports were received and not using bullet physics, send the shots that were fired
-                  directHit ? mHitCount : mShotsFired, 
-                  mLastVelocity, 
+                  directHit ? mHitCount : mShotsFired,
+                  mLastVelocity,
                   mLastTargetObject.get() );
 
                // Send a detonation as well
-               SendDetonationMessage( 
-                  directHit ? mHitCount : mShotsFired, 
-                  mLastVelocity, 
+               SendDetonationMessage(
+                  directHit ? mHitCount : mShotsFired,
+                  mLastVelocity,
                   mLastHitLocation,
                   mLastTargetObject.get() );
             }
@@ -186,7 +185,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SetFireRate( float rate ) 
+      void WeaponActor::SetFireRate( float rate )
       {
          // Determine if this is a transition from automatic mode
          // to single-shot mode.
@@ -214,7 +213,7 @@ namespace SimCore
          }
 
          // execute instant fire
-         // Removed this - Fire() accounts for how long it's been.  By resetting the timer, it 
+         // Removed this - Fire() accounts for how long it's been.  By resetting the timer, it
          // allows you to 'click' fast fire.
          /*if( ! mTriggerHeld && hold )
          {
@@ -228,7 +227,7 @@ namespace SimCore
             mTriggerHeld = hold;
          }*/
          mTriggerHeld = hold;
-         
+
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -241,7 +240,7 @@ namespace SimCore
 
          if(renderComp != NULL)
          {
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = 
+            SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                   renderComp->GetDynamicLight(mDynamicLightID);
             if(dl == NULL)
             {
@@ -262,7 +261,7 @@ namespace SimCore
             dl->mTarget = transformable;
             //dl->mAutoDeleteAfterMaxTime = true;
             //dl->mMaxTime = 0.5f;
-            
+
          }
       }
 
@@ -283,7 +282,7 @@ namespace SimCore
 
          // Reset re-fire timer
          mTriggerHeld = mFireRate > 0.0f; // allow re-fire if fire rate does not specify single-shot mode (rate of 0.0)
-         mTriggerTime = mTriggerHeld && mFireRate < mTriggerTime 
+         mTriggerTime = mTriggerHeld && mFireRate < mTriggerTime
             ? mTriggerTime - ((int)(mTriggerTime/mFireRate)) * mFireRate // float mod; leave the difference over fire rate
             : 0.0f;
 
@@ -296,7 +295,7 @@ namespace SimCore
          else if( mAmmoCount == 0 )
          {
             effectType = WEAPON_EFFECT_DRY_FIRE;
-         } 
+         }
 
          // Determine if the weapon is jammed or should become jammed.
          // The jamming probability should only be used with local simulations.
@@ -323,7 +322,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             if( mShooter.valid() )
             {
-               NxAgeiaMunitionsPSysActor* particleSystem 
+               NxAgeiaMunitionsPSysActor* particleSystem
                   = dynamic_cast<NxAgeiaMunitionsPSysActor*>(mShooter->GetActor());
 
                // Add the vehicles current velocity to the weapon.
@@ -358,12 +357,12 @@ namespace SimCore
                {
                   // Setting visible to TRUE will cause the flash
                   // to restart its age time. The age time will progress
-                  // and cause the flash to automatically turn invisible when 
+                  // and cause the flash to automatically turn invisible when
                   // it passes its life time, if life time has been set
                   // greater than 0.
                   mFlash->SetVisible( true );
                   mFlash->SetFlashTime( GetFlashTime() );
-                  
+
                   // Randomly roll the flash effect to a different orientation
                   // so that the spawned particles do not spawn at the same orientation
                   // every time a weapon flash is executed. Currently, OSG particles
@@ -377,7 +376,7 @@ namespace SimCore
 
                   AddDynamicLight();
                }
-               
+
                SoundPlay( mSoundFire );
                break;
             }
@@ -421,7 +420,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       bool WeaponActor::LoadMunitionType( const std::string& munitionTypeName )
-      { 
+      {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
 
          if( gm != NULL )
@@ -432,7 +431,7 @@ namespace SimCore
             gm->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
 
             if( NULL == comp )
-            { 
+            {
                LOG_ERROR( "WeaponActor could not access the MunitionsComponent." );
                return false;
             }
@@ -462,7 +461,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetMunitionType( MunitionTypeActor* munitionType )
-      { 
+      {
          mMunitionType = munitionType;
 
          if( mMunitionType.valid() )
@@ -473,8 +472,8 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetMunitionTypeProxy( dtDAL::ActorProxy* proxy )
-      { 
-         mMunitionType = proxy != NULL ? 
+      {
+         mMunitionType = proxy != NULL ?
             dynamic_cast<MunitionTypeActor*> (proxy->GetActor()) : NULL;
          GetGameActorProxy().SetLinkedActor("Munition Type", proxy);
 
@@ -486,54 +485,54 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       dtCore::DeltaDrawable* WeaponActor::GetMunitionTypeDrawable()
-      { 
+      {
          dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Munition Type");
          return proxy != NULL ? proxy->GetActor() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetOwner( dtDAL::ActorProxy* proxy )
-      { 
+      {
          mOwner = proxy;
          GetGameActorProxy().SetLinkedActor("Owner", proxy);
       }
 
       //////////////////////////////////////////////////////////////////////////
       dtCore::DeltaDrawable* WeaponActor::GetOwner()
-      { 
+      {
          dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("Owner");
          return proxy != NULL ? proxy->GetActor() : NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetFlashActor( WeaponFlashActor* flashActor )
-      { 
+      {
          mFlash = flashActor;
       }
 
       //////////////////////////////////////////////////////////////////////////
       WeaponFlashActor* WeaponActor::GetFlashActor()
-      { 
+      {
          return mFlash.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
       const WeaponFlashActor* WeaponActor::GetFlashActor() const
-      { 
+      {
          return mFlash.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetFlashActorProxy( dtDAL::ActorProxy* flashProxy )
-      { 
-         mFlash = flashProxy != NULL ? 
+      {
+         mFlash = flashProxy != NULL ?
             dynamic_cast<WeaponFlashActor*> (flashProxy->GetActor()) : NULL;
          GetGameActorProxy().SetLinkedActor("FlashActor", flashProxy );
       }
 
       //////////////////////////////////////////////////////////////////////////
       dtCore::DeltaDrawable* WeaponActor::GetFlashActorDrawable()
-      { 
+      {
          dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("FlashActor");
          return proxy != NULL ? proxy->GetActor() : NULL;
       }
@@ -544,7 +543,7 @@ namespace SimCore
       {
          ++mHitCount;
 
-         // TODO: change the normal to the force vector (currently the force 
+         // TODO: change the normal to the force vector (currently the force
          //       vector is coming in as 0).
          const NxVec3& vec = report.nxVec3crContactNormal;
          mLastVelocity.set( vec[0], vec[1], vec[2] );
@@ -559,7 +558,7 @@ namespace SimCore
 
          // Get the target ID
          mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
-         std::string targetID( mLastTargetObject.valid() ? 
+         std::string targetID( mLastTargetObject.valid() ?
             mLastTargetObject->GetUniqueId().ToString() : "" );
 
          // Send a message if a target has changed or the time allows.
@@ -570,8 +569,8 @@ namespace SimCore
          }
 
          // Check type to see if it is grenade - Indirect Fire type
-         if( ( mMunitionType.valid() 
-             && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE 
+         if( ( mMunitionType.valid()
+             && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE
                 || mMunitionType->GetFamily() == MunitionFamily::FAMILY_EXPLOSIVE_ROUND) )
              || ( mUseBulletPhysics && ( mTargetChanged || mDetMessageTime >= mMessageCycleTime ) ) )
          {
@@ -582,7 +581,7 @@ namespace SimCore
 #endif
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SendFireMessage( unsigned short quantity, 
+      void WeaponActor::SendFireMessage( unsigned short quantity,
          const osg::Vec3& initialVelocity, const dtCore::Transformable* target )
       {
          //printf("Sending SHOT FIRED\r\n");
@@ -637,7 +636,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActor::SendDetonationMessage( unsigned short quantity, 
+      void WeaponActor::SendDetonationMessage( unsigned short quantity,
          const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
       {
          //printf("Sending DETONATION\r\n");
@@ -701,7 +700,7 @@ namespace SimCore
          if( GetNodeCollector() == NULL )
          {
             std::stringstream ss;
-            ss << "Weapon actor cannot add object \"" << object.GetName() 
+            ss << "Weapon actor cannot add object \"" << object.GetName()
                << "\" to DOF \"" << dofName << "\" because no weapon model was loaded.";
             LOG_ERROR(ss.str());
             return false;
@@ -770,7 +769,7 @@ namespace SimCore
          if( resourcePath.empty() )
          {
             std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \"" 
+            ss << "Failure: WeaponActor.LoadFireSound could not locate \""
                << resourcePath.c_str() << "\"" << std::endl;
             LOG_ERROR( ss.str() );
             return;
@@ -850,19 +849,19 @@ namespace SimCore
          // --- RESOURCE PROPERTIES --- //
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Fire Sound", "Fire Sound", 
+            "Fire Sound", "Fire Sound",
             dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundFire),
             "The sound produced when this weapon fires.",
             groupResources));
 
          /*AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Dry Fire Sound", "Dry Fire Sound", 
+            "Dry Fire Sound", "Dry Fire Sound",
             dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundDryFire),
             "The sound produced when this weapon attempts to fire nothing.",
             groupResources));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Jammed Sound", "Jammed Sound", 
+            "Jammed Sound", "Jammed Sound",
             dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundJammed),
             "The sound produced when this weapon fires unsuccessfully, jamming on its internal ammunition or parts.",
             groupResources));*/
@@ -952,7 +951,7 @@ namespace SimCore
             dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoCount),
             "The current count of ammo this weapon is holding (this clamped by Ammo Max).",
             groupStatus));
-         
+
          AddProperty(new dtDAL::IntActorProperty( "Ammo Max", "Ammo Max",
             dtDAL::MakeFunctor( actor, &WeaponActor::SetAmmoMax),
             dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoMax),
@@ -968,22 +967,22 @@ namespace SimCore
          // --- ACTOR PROPERTIES --- //
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Munition Type", "Munition Type",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeProxy ), 
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeDrawable ), 
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeProxy ),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeDrawable ),
             MunitionTypeActorProxy::CLASS_NAME,
             "A reference to the MunitionTypeActor that will have data related to the munition this weapon will fire.",
             groupMunitions));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Owner", "Owner",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetOwner ), 
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetOwner ), 
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetOwner ),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetOwner ),
             "", // anything might be able to own a weapon
             "A reference to the owning actor that is published on the network and that will need to send its ID in weapon fire messages.",
             groupActors));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Flash Actor", "Flash Actor",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashActorProxy ), 
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashActorDrawable ), 
+            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashActorProxy ),
+            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashActorDrawable ),
             WeaponFlashActorProxy::CLASS_NAME,
             "A reference to the flash actor responsible for timing and rendering flash effects.",
             groupActors));

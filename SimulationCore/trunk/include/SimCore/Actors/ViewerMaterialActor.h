@@ -50,9 +50,9 @@ namespace SimCore
       class ViewerMaterialComponent;
       class ViewerMaterialActorProxy;
       /**
-       * This is a simple data actor.  It holds the physics properties for Ageia materials. 
+       * This is a simple data actor.  It holds the physics properties for Ageia materials.
        * You should create a few of these in your map and then link to them with your Ageia Actor.
-       * It holds the restitution, static friction, and dynamic friction coefficients (see 
+       * It holds the restitution, static friction, and dynamic friction coefficients (see
        * the properties for more information).
        */
       class SIMCORE_EXPORT ViewerMaterialActor : public dtGame::GameActor
@@ -62,25 +62,25 @@ namespace SimCore
          public:
 
             ///@return The value of m_VISL_Shininess
-            float GetShinyness()                            {return m_VISL_Shininess;}          
+            float GetShinyness()                            {return m_VISL_Shininess;}
             ///@return The value of m_OTHR_Wetness
-            float GetWetness()                              {return m_OTHR_Wetness;}            
+            float GetWetness()                              {return m_OTHR_Wetness;}
             ///@return The value of m_VISL_Reflectivity
-            float GetReflectivity()                         {return m_VISL_Reflectivity;}     
+            float GetReflectivity()                         {return m_VISL_Reflectivity;}
             ///@return The value of m_OTHR_Softness
-            float GetSoftness()                             {return m_OTHR_Softness;}           
+            float GetSoftness()                             {return m_OTHR_Softness;}
             ///@return The value of m_OTHR_Stretchiness
-            float GetStretchiness()                         {return m_OTHR_Stretchiness;}       
+            float GetStretchiness()                         {return m_OTHR_Stretchiness;}
             ///@return The value of m_OTHR_Flammability
-            float GetFlammibility()                         {return m_OTHR_Flammability;}       
+            float GetFlammibility()                         {return m_OTHR_Flammability;}
             ///@return The value of m_OTHR_WindResistance
-            float GetWindResistance()                       {return m_OTHR_WindResistance;}     
+            float GetWindResistance()                       {return m_OTHR_WindResistance;}
             ///@return The value of m_SHAD_Bumpiness
-            float GetBumpiness()                            {return m_SHAD_Bumpiness;}          
+            float GetBumpiness()                            {return m_SHAD_Bumpiness;}
             ///@return The value of m_VISL_SelfIlluminating
-            float GetSelfIlluminating()                     {return m_VISL_SelfIlluminating;}   
+            float GetSelfIlluminating()                     {return m_VISL_SelfIlluminating;}
             ///@return The value of m_OTHR_Inflatableness
-            float GetInflatableness()                       {return m_OTHR_Inflatableness;} 
+            float GetInflatableness()                       {return m_OTHR_Inflatableness;}
             ///@return The value of m_VISL_Refraction
             float GetRefractionAmount()                     {return m_VISL_Refraction;}
             ///@return The value of m_OTHR_Pressurization
@@ -120,11 +120,11 @@ namespace SimCore
             ///@return The value of m_PART_LargeHit
             std::string GetLargeHitEffect()                {return m_PART_LargeHit;}
             ///@return The value of restituion [0, 1) (0.2 default)
-            float    GetRestitution()                      {return m_PHYS_Restitution;}                 
+            float    GetRestitution()                      {return m_PHYS_Restitution;}
             ///@return The value of static friction (0.5 default)
-            float    GetStaticFriction()                    {return m_PHYS_StaticFriction;}                 
+            float    GetStaticFriction()                    {return m_PHYS_StaticFriction;}
             ///@return The value of dynamic friction (0.5 default)
-            float    GetDynamicFriction()                   {return m_PHYS_DynamicFriction;}       
+            float    GetDynamicFriction()                   {return m_PHYS_DynamicFriction;}
             /// @return The scene name the physics is loaded in.
             std::string GetSceneName() const                {return m_PHYS_SceneName;}
             /// @return The physics particle system to use
@@ -139,25 +139,25 @@ namespace SimCore
             std::string GetPhysicsParticleLookupStringFive(){return m_VISL_PhysicsParticleFive;}
 
             ///@param value The value for shinyness - shader / visual for an object
-            void SetShinyness(float value)                        {m_VISL_Shininess = value;}          
+            void SetShinyness(float value)                        {m_VISL_Shininess = value;}
             ///@param value The value for moisture / wetness of an object
-            void SetWetness(float value)                          {m_OTHR_Wetness = value;}            
+            void SetWetness(float value)                          {m_OTHR_Wetness = value;}
             ///@param value The value for reflectivity - visual
-            void SetReflectivity(float value)                     {m_VISL_Reflectivity = value;}     
+            void SetReflectivity(float value)                     {m_VISL_Reflectivity = value;}
             ///@param value The value it is soft, physics / visual / auditory
-            void SetSoftness(float value)                         {m_OTHR_Softness = value;}           
+            void SetSoftness(float value)                         {m_OTHR_Softness = value;}
             ///@param value The value that a value can stretch - post processing shader or physics
-            void SetStretchiness(float value)                     {m_OTHR_Stretchiness = value;}       
+            void SetStretchiness(float value)                     {m_OTHR_Stretchiness = value;}
             ///@param value The value if it can catch on fire
-            void SetFlammibility(float value)                     {m_OTHR_Flammability = value;}       
+            void SetFlammibility(float value)                     {m_OTHR_Flammability = value;}
             ///@param value The value for wind resistance - dont know what this could be used for.
-            void SetWindResistance(float value)                   {m_OTHR_WindResistance = value;}     
+            void SetWindResistance(float value)                   {m_OTHR_WindResistance = value;}
             ///@param value The value for bumpmapping or not - shader
-            void SetBumpiness(float value)                        {m_SHAD_Bumpiness = value;}          
+            void SetBumpiness(float value)                        {m_SHAD_Bumpiness = value;}
             ///@param value The value if it self illuminates - shader maybe?
-            void SetSelfIlluminating(float value)                 {m_VISL_SelfIlluminating = value;}   
+            void SetSelfIlluminating(float value)                 {m_VISL_SelfIlluminating = value;}
             ///@param value The value of inflatability of an object (balloon)
-            void SetInflatableness(float value)                   {m_OTHR_Inflatableness = value;} 
+            void SetInflatableness(float value)                   {m_OTHR_Inflatableness = value;}
             ///@param value The value of refraction for use.
             void SetRefractionAmount(float value)                 {m_VISL_Refraction = value;}
             ///@param value The value Pressurization of an object, terrain code you can read in.
@@ -184,7 +184,7 @@ namespace SimCore
             void SetDecalLargeHit(const std::string& value)       {m_VISL_DecalLargeHit = value;}
             ///@param value The value for use with decals / particles
             void SetBaseColorvalue(const osg::Vec4& value)        {m_VISL_BaseColor = value;}
-            ///@param value The value for use with decals / particles 
+            ///@param value The value for use with decals / particles
             void SetHighlighteColorvalue(const osg::Vec4& value)  {m_VISL_HighlightColor = value;}
             ///@param value The value to use with particle spouts.
             void SetParticleSpoutAmount(float value)              {m_PART_SpoutAmount = value;}
@@ -197,11 +197,11 @@ namespace SimCore
             ///@param value The value of the large hit particle effect to load in.
             void SetLargeHitEffect(const std::string& value)      {m_PART_LargeHit = value;}
             ///@param value The value of restituion [0, 1) (0.2 default)
-            void SetRestitution(float value)                      {m_PHYS_Restitution = value;}                 
+            void SetRestitution(float value)                      {m_PHYS_Restitution = value;}
             ///@param value The value of static friction (0.5 default)
-            void SetStaticFriction(float value)                   {m_PHYS_StaticFriction = value;}                 
+            void SetStaticFriction(float value)                   {m_PHYS_StaticFriction = value;}
             ///@param value The value of dynamic friction (0.5 default)
-            void SetDynamicFriction(float value)                  {m_PHYS_DynamicFriction = value;}                 
+            void SetDynamicFriction(float value)                  {m_PHYS_DynamicFriction = value;}
             /// @param value The value of the scene name (default is "Default").
             void SetSceneName(const std::string& name)            {m_PHYS_SceneName=name;}
             /// @param value The name of the physics particle system prototype to look up in the map
@@ -215,30 +215,10 @@ namespace SimCore
             /// @param value The name of the physics particle system prototype to look up in the map
             void SetPhysicsParticleLookupStringFive(const std::string& name) {m_VISL_PhysicsParticleFive = name;}
 
-            /**
-            * This method is an invokable called when an object is local and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
-
-            /**
-            * This method is an invokable called when an object is remote and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
-
-            /**
-            * Generic handler for messages. Overridden from base class.
-            * This is the default invokable on GameActorProxy.
-            */
-            virtual void ProcessMessage(const dtGame::Message &message);
-
             virtual void OnEnteredWorld();
 
          protected:
-          
+
             // Constructor
             ViewerMaterialActor(dtGame::GameActorProxy &proxy);
 
@@ -253,24 +233,24 @@ namespace SimCore
 
             /**
             * Dynamic Friction is a Physics material property for objects.  It defines
-            * how easy or hard it is to keep something sliding. 0 means a frictionless 
-            * environment (space).  
-            */ 
+            * how easy or hard it is to keep something sliding. 0 means a frictionless
+            * environment (space).
+            */
             float m_PHYS_DynamicFriction;
 
             /**
             * Static Friction is a Physics material property for objects.  It defines
-            * how easy or hard it is to get moving when it is stopped. 0 means 
-            * a frictionless environment (space).  
+            * how easy or hard it is to get moving when it is stopped. 0 means
+            * a frictionless environment (space).
             */
             float m_PHYS_StaticFriction;
 
             /**
-            * Restitution is a Physics material property for objects. It defines the 'bouncy-ness' of 
-            * objects. It should be [0,1).  Values close to 0 mean almost NO bounce. Values close to 1 
+            * Restitution is a Physics material property for objects. It defines the 'bouncy-ness' of
+            * objects. It should be [0,1).  Values close to 0 mean almost NO bounce. Values close to 1
             * will retain all energy (possibly increase).
             */
-            float m_PHYS_Restitution;  
+            float m_PHYS_Restitution;
 
             /// The scene name which the physics material is in.
             std::string m_PHYS_SceneName;
@@ -278,16 +258,16 @@ namespace SimCore
             //////////////////////////////////////////////////////////////////////////////////////////////
             //                               Other & Multi Values                                       //
             //////////////////////////////////////////////////////////////////////////////////////////////
-            float m_OTHR_Wetness;            /*  Water / moisture amount on an object, his can be read in 
+            float m_OTHR_Wetness;            /*  Water / moisture amount on an object, his can be read in
                                                    through FID/SMC/STP/SWC codes. */
             float m_OTHR_Softness;           /// How soft the model is, could be used for physics, + w/e
-            float m_OTHR_Stretchiness;       /*  Mostly for physics use, but have found post processing 
+            float m_OTHR_Stretchiness;       /*  Mostly for physics use, but have found post processing
                                                    Effect that looks cool and stretches objects. */
-            float m_OTHR_Flammability;       /// The amount it can catch on fire... burn baby burn 
+            float m_OTHR_Flammability;       /// The amount it can catch on fire... burn baby burn
             float m_OTHR_Temperature;        /// The temperature of an object.
-            float m_OTHR_WindResistance;     /*  Wind resistance of an object, physics mostly, but i could 
+            float m_OTHR_WindResistance;     /*  Wind resistance of an object, physics mostly, but i could
                                                    see visual or sound effects taking use of this. */
-            float m_OTHR_Inflatableness;     /*  Mostly for physics use, but have found post processing 
+            float m_OTHR_Inflatableness;     /*  Mostly for physics use, but have found post processing
                                                    Effect that looks cool and inflates objects. */
             float m_OTHR_Pressurization;     /// This can be read in through FID/SMC/STP/SWC codes.
 
@@ -310,9 +290,9 @@ namespace SimCore
             //                                  Visual Values                                           //
             //////////////////////////////////////////////////////////////////////////////////////////////
             float m_VISL_Shininess;                               /// Shininess of an object.
-            float m_VISL_Reflectivity;                            /// Reflection amount... I see you 
+            float m_VISL_Reflectivity;                            /// Reflection amount... I see you
             float m_VISL_Refraction;                              /// refraction amount.
-            float m_VISL_SelfIlluminating;                        /*  Does light come from this object, 
+            float m_VISL_SelfIlluminating;                        /*  Does light come from this object,
                                                                         like from the inside? */
             std::string m_VISL_DecalSmallHit;                     /// Decal Texture for use for hit with obj.
             std::string m_VISL_DecalMediumHit;                    /// Decal Texture for use for hit with obj.
@@ -320,16 +300,16 @@ namespace SimCore
             osg::Vec4   m_VISL_BaseColor;                         /// Base color for decals / particles.
             osg::Vec4   m_VISL_HighlightColor;                    /// Hlight color for decals/particles.
             std::string m_VISL_PhysicsParticleOne;                /* name of the physics model that could be
-                                                                     loaded from a template in the map    */ 
+                                                                     loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleTwo;                /* name of the physics model that could be
-                                                                     loaded from a template in the map    */ 
+                                                                     loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleThr;                /* name of the physics model that could be
-                                                                     loaded from a template in the map    */ 
+                                                                     loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleFour;               /* name of the physics model that could be
-                                                                     loaded from a template in the map    */ 
+                                                                     loaded from a template in the map    */
             std::string m_VISL_PhysicsParticleFive;               /* name of the physics model that could be
-                                                                     loaded from a template in the map    */ 
-            
+                                                                     loaded from a template in the map    */
+
             //////////////////////////////////////////////////////////////////////////////////////////////
             //                                  PARTICLE Values                                         //
             //////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +321,7 @@ namespace SimCore
       };
 
       /**
-       * Proxy for the ViewerMaterialActor. 
+       * Proxy for the ViewerMaterialActor.
        */
       class SIMCORE_EXPORT ViewerMaterialActorProxy : public dtGame::GameActorProxy
       {

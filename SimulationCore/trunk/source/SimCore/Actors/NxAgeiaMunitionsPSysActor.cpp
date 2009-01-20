@@ -179,11 +179,11 @@ NxAgeiaMunitionsPSysActor::~NxAgeiaMunitionsPSysActor()
 }
 
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaMunitionsPSysActor::TickRemote(const dtGame::Message &tickMessage){}
+void NxAgeiaMunitionsPSysActor::OnTickRemote(const dtGame::TickMessage& tickMessage){}
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaMunitionsPSysActor::TickLocal(const dtGame::Message &tickMessage)
+void NxAgeiaMunitionsPSysActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
 {
-   float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+   float ElapsedTime = tickMessage.GetDeltaSimTime();
 
    std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
    for(;iter!= mOurParticleList.end();)

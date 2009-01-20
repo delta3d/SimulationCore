@@ -1,10 +1,20 @@
 #include <SimCore/Actors/PositionMarker.h>
+#include <dtGame/basemessages.h>
+#include <dtGame/invokable.h>
+
 #include <dtDAL/enginepropertytypes.h>
+
+#include <dtUtil/functor.h>
+#include <dtUtil/log.h>
+#include <dtUtil/datetime.h>
+#include <dtUtil/mathdefines.h>
+
 #include <osg/BlendFunc>
 #include <osg/Texture2D>
-#include <osgDB/ReadFile>
 #include <osg/Uniform>
 #include <osg/MatrixTransform>
+
+#include <osgDB/ReadFile>
 
 namespace SimCore
 {
@@ -36,6 +46,10 @@ namespace SimCore
       PositionMarker::PositionMarker(dtGame::GameActorProxy& proxy)
          : BaseClass(proxy)
          , mReportTime(0.0)
+         , mStaleTime(0.0)
+         , mFadeOutTime(0.0)
+         , mInitialAlpha(1.0)
+         , mDeleteOnFadeOut(false)
          , mAssociatedEntity(NULL)
          , mSourceForce(&BaseEntityActorProxy::ForceEnum::OTHER)
          , mSourceService(&BaseEntityActorProxy::ServiceEnum::OTHER)
@@ -43,6 +57,7 @@ namespace SimCore
          , mNeutralColor(0.1, 1.0, 0.1, 1.0)
          , mOpposingColor(1.0, 0.1, 0.1, 1.0)
          , mOtherColor(0.5, 0.5, 0.5, 1.0)
+         , mStaleColor(0.6, 0.6, 0.6, 1.0)
       {
          dtCore::RefPtr<osg::Node> original, copied;
          IGActor::LoadFileStatic("StaticMeshes/Hemisphere.ive", original, copied);
@@ -60,11 +75,12 @@ namespace SimCore
          ss->setMode(GL_BLEND,osg::StateAttribute::ON);
          dtCore::RefPtr<osg::BlendFunc> trans = new osg::BlendFunc();
          trans->setFunction( osg::BlendFunc::SRC_ALPHA ,osg::BlendFunc::ONE_MINUS_SRC_ALPHA );
-         ss->setAttributeAndModes( trans.get() );
+         ss->setAttributeAndModes(trans.get());
          ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 
          //Need to call the current incarnation to make it set the color.
          SetForceAffiliation(GetForceAffiliation());
+         mLogger = &dtUtil::Log::GetInstance("PositionMarker.cpp");
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -75,7 +91,27 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       void PositionMarker::SetReportTime(double reportTime)
       {
-         mReportTime = reportTime;
+         //mReportTime = reportTime;
+
+         mReportTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
+         if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_INFO))
+         {
+            std::ostringstream ss;
+            ss << GetMappingName() << ": " << reportTime << " " << GetGameActorProxy().GetGameManager()->GetSimulationTime();
+            mLogger->LogMessage(dtUtil::Log::LOG_INFO, __FILE__, __LINE__,  ss.str());
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetStaleTime(float timeToFadeOut)
+      {
+         mStaleTime = timeToFadeOut;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::GetStaleTime() const
+      {
+         return mStaleTime;
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -85,10 +121,35 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      void PositionMarker::SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce)
+      void PositionMarker::SetFadeOutTime(float time)
       {
-         BaseClass::SetForceAffiliation(markerForce);
+         mFadeOutTime = time;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::GetFadeOutTime() const
+      {
+         return mFadeOutTime;
+      }
+
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetDeleteOnFadeOut(bool deleteOnFadeOut)
+      {
+         mDeleteOnFadeOut = deleteOnFadeOut;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      bool PositionMarker::GetDeleteOnFadeOut() const
+      {
+         return mDeleteOnFadeOut;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::UpdateColorForForce()
+      {
          osg::Vec4 newColor;
+         BaseEntityActorProxy::ForceEnum& markerForce = GetForceAffiliation();
          if (markerForce == BaseEntityActorProxy::ForceEnum::FRIENDLY)
          {
             newColor = GetFriendlyColor();
@@ -106,8 +167,15 @@ namespace SimCore
          {
             newColor = GetOtherColor();
          }
-         newColor.a() = 0.8;
-         SetColor(newColor);
+         osg::Vec3 newColor3(newColor.x(), newColor.y(), newColor.z());
+         SetInitialColor(newColor3);
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetForceAffiliation(BaseEntityActorProxy::ForceEnum& markerForce)
+      {
+         BaseClass::SetForceAffiliation(markerForce);
+         UpdateColorForForce();
       }
 
 
@@ -166,7 +234,85 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      void PositionMarker::SetColor(const osg::Vec4& vec)
+      void PositionMarker::SetInitialAlpha(float alpha)
+      {
+         dtUtil::Clamp(alpha, 0.0f, 1.0f);
+         mInitialAlpha = alpha;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::GetInitialAlpha() const
+      {
+         return mInitialAlpha;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::CalculateCurrentAlpha() const
+      {
+         float fadeOutFraction = CalculateFadeOutFraction();
+         float alpha = 1.0 - (fadeOutFraction * fadeOutFraction);
+         return alpha;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      osg::Vec3 PositionMarker::CalculateCurrentColor() const
+      {
+         osg::Vec3 staleVec3(mStaleColor.x(), mStaleColor.y(), mStaleColor.z());
+         osg::Vec3 colorDiff = staleVec3 - mInitialColor;
+         float fadeOutFraction = CalculateStaleFraction();
+         colorDiff *= fadeOutFraction;
+         return mInitialColor + colorDiff;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::CalculateFadeOutFraction() const
+      {
+         if (GetFadeOutTime() <= 0.0)
+         {
+            return 0.0;
+         }
+         double simTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
+         float ageOfMarker = simTime - GetReportTime();
+         float fadeOutFraction = ageOfMarker / (double(GetFadeOutTime()) * 60.0);
+         dtUtil::Clamp(fadeOutFraction, 0.0f, 1.0f);
+         return fadeOutFraction;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      float PositionMarker::CalculateStaleFraction() const
+      {
+         if (GetStaleTime() <= 0.0)
+         {
+            return 0.0;
+         }
+         double simTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
+         float ageOfMarker = simTime - GetReportTime();
+         float fadeOutFraction = ageOfMarker / (double(GetStaleTime()) * 60.0);;
+         dtUtil::Clamp(fadeOutFraction, 0.0f, 1.0f);
+         return fadeOutFraction;
+      }
+
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetInitialColor(const osg::Vec3& vec)
+      {
+         mInitialColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec3& PositionMarker::GetInitialColor() const
+      {
+         return mInitialColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      osg::Vec4 PositionMarker::GetInitialColorWithAlpha() const
+      {
+         return osg::Vec4(mInitialColor, mInitialAlpha);
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetCurrentColorUniform(const osg::Vec4& vec)
       {
          osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
          osg::Uniform* uniform = ss->getOrCreateUniform(COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4, 1);
@@ -174,7 +320,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4 PositionMarker::GetColor()
+      osg::Vec4 PositionMarker::GetCurrentColorUniform()
       {
          osg::StateSet* ss = GetOSGNode()->getOrCreateStateSet();
          osg::Uniform* uniform = ss->getOrCreateUniform(COLOR_UNIFORM, osg::Uniform::FLOAT_VEC4, 1);
@@ -187,10 +333,11 @@ namespace SimCore
       void PositionMarker::SetFriendlyColor(const osg::Vec4& vec)
       {
          mFriendlyColor = vec;
+         UpdateColorForForce();
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetFriendlyColor()
+      const osg::Vec4& PositionMarker::GetFriendlyColor() const
       {
          return mFriendlyColor;
       }
@@ -199,10 +346,11 @@ namespace SimCore
       void PositionMarker::SetNeutralColor(const osg::Vec4& vec)
       {
          mNeutralColor = vec;
+         UpdateColorForForce();
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetNeutralColor()
+      const osg::Vec4& PositionMarker::GetNeutralColor() const
       {
          return mNeutralColor;
       }
@@ -211,10 +359,11 @@ namespace SimCore
       void PositionMarker::SetOpposingColor(const osg::Vec4& vec)
       {
          mOpposingColor = vec;
+         UpdateColorForForce();
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetOpposingColor()
+      const osg::Vec4& PositionMarker::GetOpposingColor() const
       {
          return mOpposingColor;
       }
@@ -223,12 +372,25 @@ namespace SimCore
       void PositionMarker::SetOtherColor(const osg::Vec4& vec)
       {
          mOtherColor = vec;
+         UpdateColorForForce();
       }
 
       ////////////////////////////////////////////////////////////////////////
-      const osg::Vec4& PositionMarker::GetOtherColor()
+      const osg::Vec4& PositionMarker::GetOtherColor() const
       {
          return mOtherColor;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::SetStaleColor(const osg::Vec4& vec)
+      {
+         mStaleColor = vec;
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      const osg::Vec4& PositionMarker::GetStaleColor() const
+      {
+         return mStaleColor;
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -277,6 +439,29 @@ namespace SimCore
       {
          BaseClass::OnEnteredWorld();
          RegisterWithDeadReckoningComponent();
+         // Register always.  this could be revisited, but the logic is somewhat complex;
+         GetGameActorProxy().RegisterForMessagesAboutSelf(
+                  dtGame::MessageType::INFO_TIMER_ELAPSED,
+                  PositionMarkerActorProxy::INVOKABLE_TIME_ELAPSED);
+
+         GetGameActorProxy().GetGameManager()->SetTimer(__FILE__, &GetGameActorProxy(), 8.0, true, true);
+
+         SetCurrentColorUniform(osg::Vec4(CalculateCurrentColor(), CalculateCurrentAlpha()));
+      }
+
+      ////////////////////////////////////////////////////////////////////////
+      void PositionMarker::OnTimer(const dtGame::TimerElapsedMessage& timerElapsed)
+      {
+         if (CalculateFadeOutFraction() >= 1.0 && GetDeleteOnFadeOut())
+         {
+            //Bug, this won't record properly.  The actor is remote, but it must time itself out.
+            // I could probably send myself a delete message :-).
+            GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+         }
+         else
+         {
+            SetCurrentColorUniform(osg::Vec4(CalculateCurrentColor(), CalculateCurrentAlpha()));
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -289,13 +474,20 @@ namespace SimCore
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SOURCE_FORCE("Source Force");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_SOURCE_SERVICE("Source Service");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_REPORT_TIME("Report Time");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_FADE_OUT_TIME("Fade Out Time");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_STALE_TIME("Stale Time");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_DELETE_ON_FADE_OUT("Delete After Fade Out");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ASSOCIATED_ENTITY("Associated Real Entity");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_MARKER_COLOR("Marker Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_FRIENDLY_COLOR("Friendly Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_NEUTRAL_COLOR("Neutral Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_OPPOSING_COLOR("Opposing Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_OTHER_COLOR("Other Color");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_STALE_COLOR("Stale Color");
       const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_ICON_IMAGE("Icon Image");
+      const dtUtil::RefString PositionMarkerActorProxy::PROPERTY_INITIAL_ALPHA("Initial Alpha");
+
+      const dtUtil::RefString PositionMarkerActorProxy::INVOKABLE_TIME_ELAPSED("Time elapsed PM");
 
       ////////////////////////////////////////////////////////////////////////
       PositionMarkerActorProxy::PositionMarkerActorProxy()
@@ -353,9 +545,30 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_REPORT_TIME_DESC("The time the entity reported this.");
          AddProperty(new dtDAL::DoubleActorProperty(
             PROPERTY_REPORT_TIME, PROPERTY_REPORT_TIME,
-            dtDAL::MakeFunctor(*pm, &PositionMarker::SetReportTime),
-            dtDAL::MakeFunctorRet(*pm, &PositionMarker::GetReportTime),
+            dtDAL::DoubleActorProperty::SetFuncType(pm, &PositionMarker::SetReportTime),
+            dtDAL::DoubleActorProperty::GetFuncType(pm, &PositionMarker::GetReportTime),
             PROPERTY_REPORT_TIME_DESC, POSITION_MARKER_GROUP));
+
+         static const dtUtil::RefString PROPERTY_FADE_OUT_TIME_DESC("The time in minutes it takes for the marker to fade out.");
+         AddProperty(new dtDAL::FloatActorProperty(
+            PROPERTY_FADE_OUT_TIME, PROPERTY_FADE_OUT_TIME,
+            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetFadeOutTime),
+            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetFadeOutTime),
+            PROPERTY_FADE_OUT_TIME_DESC, POSITION_MARKER_GROUP));
+
+         static const dtUtil::RefString PROPERTY_STALE_TIME_DESC("The time in minutes it takes for the marker to become stale/old.");
+         AddProperty(new dtDAL::FloatActorProperty(
+            PROPERTY_STALE_TIME, PROPERTY_STALE_TIME,
+            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetStaleTime),
+            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetStaleTime),
+            PROPERTY_STALE_TIME_DESC, POSITION_MARKER_GROUP));
+
+         static const dtUtil::RefString PROPERTY_DELETE_ON_FADE_OUT_DESC("Delete this position marker when actor fades out.");
+         AddProperty(new dtDAL::BooleanActorProperty(
+            PROPERTY_DELETE_ON_FADE_OUT, PROPERTY_DELETE_ON_FADE_OUT,
+            dtDAL::BooleanActorProperty::SetFuncType(pm, &PositionMarker::SetDeleteOnFadeOut),
+            dtDAL::BooleanActorProperty::GetFuncType(pm, &PositionMarker::GetDeleteOnFadeOut),
+            PROPERTY_DELETE_ON_FADE_OUT_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_ASSOCIATED_ENTITY_DESC("The entity this position marker represents.");
          AddProperty(new dtDAL::ActorActorProperty(*this,
@@ -369,7 +582,7 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_MARKER_COLOR_DESC("The color of the marker.");
          AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_MARKER_COLOR, PROPERTY_MARKER_COLOR,
                   dtDAL::ColorRgbaActorProperty::SetFuncType(),
-                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetInitialColorWithAlpha),
                   PROPERTY_MARKER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
          GetProperty(PROPERTY_MARKER_COLOR)->SetReadOnly(true);
@@ -402,6 +615,13 @@ namespace SimCore
                   PROPERTY_OTHER_COLOR_DESC, POSITION_MARKER_GROUP
          ));
 
+         static const dtUtil::RefString PROPERTY_STALE_COLOR_DESC("The color if the force is other.");
+         AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_STALE_COLOR, PROPERTY_STALE_COLOR,
+                  dtDAL::ColorRgbaActorProperty::SetFuncType(pm, &PositionMarker::SetStaleColor),
+                  dtDAL::ColorRgbaActorProperty::GetFuncType(pm, &PositionMarker::GetStaleColor),
+                  PROPERTY_STALE_COLOR_DESC, POSITION_MARKER_GROUP
+         ));
+
          static const dtUtil::RefString PROPERTY_ICON_IMAGE_DESC("This image represents the rough "
                   "type of the entity marked by this position.");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TEXTURE,
@@ -409,6 +629,25 @@ namespace SimCore
                   dtDAL::ResourceActorProperty::SetFuncType(pm, &PositionMarker::LoadImage),
                   PROPERTY_ICON_IMAGE_DESC, POSITION_MARKER_GROUP
          ));
+
+         static const dtUtil::RefString PROPERTY_INITIAL_ALPHA_DESC("The initial alpha, i.e. transparency, of the marker."
+                  "Valid values are 0.0 - 1.0 where 0.0 is invisible.");
+         AddProperty(new dtDAL::FloatActorProperty(
+            PROPERTY_INITIAL_ALPHA, PROPERTY_INITIAL_ALPHA,
+            dtDAL::MakeFunctor(*pm, &PositionMarker::SetInitialAlpha),
+            dtDAL::MakeFunctorRet(*pm, &PositionMarker::GetInitialAlpha),
+            PROPERTY_INITIAL_ALPHA_DESC, POSITION_MARKER_GROUP));
+      }
+
+      void PositionMarkerActorProxy::BuildInvokables()
+      {
+         BaseClass::BuildInvokables();
+
+         PositionMarker* pm = NULL;
+         GetActor(pm);
+
+         AddInvokable(*new dtGame::Invokable(INVOKABLE_TIME_ELAPSED,
+                  dtUtil::MakeFunctor(&PositionMarker::OnTimer, pm)));
       }
 
       ////////////////////////////////////////////////////////////////////////

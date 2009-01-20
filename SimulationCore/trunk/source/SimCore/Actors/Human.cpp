@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author David Guthrie 
+ * @author David Guthrie
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/Human.h>
@@ -93,8 +93,8 @@ namespace SimCore
                   , mWalkStop(pWR.mWalkStop)
                   , mWalkFadeOut(pWR.mWalkFadeOut)
                   , mRunStart(pWR.mRunStart)
-                  , mRunFadeIn(pWR.mRunFadeIn) 
-                  , mRunStop(pWR.mRunStop) 
+                  , mRunFadeIn(pWR.mRunFadeIn)
+                  , mRunStop(pWR.mRunStop)
                   , mRunFadeOut(pWR.mRunFadeOut)
                   , mParentHuman(pWR.mParentHuman)
                {
@@ -135,7 +135,7 @@ namespace SimCore
                   mRunStart = start;
                   mRunFadeIn = fadeIn;
                   mRunStop = stop;
-                  mRunFadeOut = fadeOut;               
+                  mRunFadeOut = fadeOut;
                }
 
                void SetCurrentSpeed(float pSpeed)
@@ -189,7 +189,7 @@ namespace SimCore
                {
                   return new WRController(*this);
                }
-               
+
             protected:
                ~WRController()
                {
@@ -202,7 +202,7 @@ namespace SimCore
                   //which basically just saves us another if check
                   float weight = 1.0f;
 
-                  //if we are out of bounds 
+                  //if we are out of bounds
                   if(mSpeed < startSpeed || mSpeed > stopSpeed)
                   {
                      weight = 0.0f;
@@ -213,7 +213,7 @@ namespace SimCore
                   }
                   else if(mSpeed > (stopSpeed - fadeOut)) //else we are fading out
                   {
-                     weight = (stopSpeed - mSpeed) / fadeOut;      
+                     weight = (stopSpeed - mSpeed) / fadeOut;
                   }
 
                   dtUtil::Clamp(weight, 0.0f, 1.0f);
@@ -319,7 +319,7 @@ namespace SimCore
       HumanActorProxy::StanceEnum HumanActorProxy::StanceEnum::WADING("WADING",
             BasicStanceEnum::STANDING);
 
-      HumanActorProxy::StanceEnum::StanceEnum(const std::string& name, BasicStanceEnum& assocBasicStance) 
+      HumanActorProxy::StanceEnum::StanceEnum(const std::string& name, BasicStanceEnum& assocBasicStance)
          : dtUtil::Enumeration(name)
       {
          AddInstance(this);
@@ -348,7 +348,7 @@ namespace SimCore
       const dtUtil::RefString HumanActorProxy::PROPERTY_PRIMARY_WEAPON_STATE("Primary Weapon State");
       const dtUtil::RefString HumanActorProxy::PROPERTY_MIN_RUN_VELOCITY("Minimum Run Velocity");
       const dtUtil::RefString HumanActorProxy::PROPERTY_FULL_RUN_VELOCITY("Full Run Velocity");
-      
+
       HumanActorProxy::HumanActorProxy()
       {
          SetClassName("SimCore::Actors::Human");
@@ -374,14 +374,14 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_SKELETAL_MESH_DESC
             ("The skeletal mesh file that defines the human's look and animation set.");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SKELETAL_MESH,
-               PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH, 
+               PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH,
                dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
                PROPERTY_SKELETAL_MESH_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_STANCE_DESC
             ("The stance of the human.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>(
-               PROPERTY_STANCE, PROPERTY_STANCE, 
+               PROPERTY_STANCE, PROPERTY_STANCE,
                dtDAL::MakeFunctor(human, &Human::SetStance),
                dtDAL::MakeFunctorRet(human, &Human::GetStance),
                PROPERTY_STANCE_DESC, HUMAN_GROUP));
@@ -389,7 +389,7 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE_DESC
             ("The state/availability of the primary weapon.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
-               PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE, 
+               PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE,
                dtDAL::MakeFunctor(human, &Human::SetPrimaryWeaponState),
                dtDAL::MakeFunctorRet(human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
@@ -397,7 +397,7 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_WEAPON_MESH_DESC
             ("The name of the mesh in the skeletal mesh that refers to the weapon");
          AddProperty(new dtDAL::StringActorProperty(
-               PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH, 
+               PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH,
                dtDAL::MakeFunctor(human, &Human::SetWeaponMeshName),
                dtDAL::MakeFunctorRet(human, &Human::GetWeaponMeshName),
                PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
@@ -406,7 +406,7 @@ namespace SimCore
 //            ("The Minimum velocity at which the human will begin running");
 //
 //         AddProperty(new dtDAL::FloatActorProperty(*this,
-//               PROPERTY_MIN_RUN_VELOCITY, PROPERTY_MIN_RUN_VELOCITY, 
+//               PROPERTY_MIN_RUN_VELOCITY, PROPERTY_MIN_RUN_VELOCITY,
 //               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
 //               PROPERTY_MIN_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
@@ -414,12 +414,12 @@ namespace SimCore
 //            ("The velocity at which the human will be fully running");
 //
 //         AddProperty(new dtDAL::FloatActorProperty(*this,
-//               PROPERTY_FULL_RUN_VELOCITY, PROPERTY_FULL_RUN_VELOCITY, 
+//               PROPERTY_FULL_RUN_VELOCITY, PROPERTY_FULL_RUN_VELOCITY,
 //               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
 //               PROPERTY_FULL_RUN_VELOCITY_DESC, HUMAN_GROUP));
 //
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void HumanActorProxy::BuildInvokables()
       {
@@ -448,7 +448,7 @@ namespace SimCore
       const std::string Human::STATE_SHOT("ShotState");
 
       ////////////////////////////////////////////////////////////////////////////
-      Human::Human(dtGame::GameActorProxy& proxy) 
+      Human::Human(dtGame::GameActorProxy& proxy)
          : BaseEntity(proxy)
          , mWeaponMeshName("PrimaryWeapon")
          , mAnimationHelper(new dtAnim::AnimationHelper)
@@ -465,7 +465,7 @@ namespace SimCore
          SetDrawingModel(true);
          SetName("Human");
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       Human::~Human()
       {
@@ -475,10 +475,10 @@ namespace SimCore
       void Human::SetupPlannerHelper()
       {
          dtAI::WorldState initialState;
-         
+
          BasicStanceState* stanceState = new BasicStanceState();
          stanceState->SetStance(BasicStanceEnum::STANDING);
-         
+
          initialState.AddState(STATE_BASIC_STANCE, stanceState);
 
          WeaponState* weaponState = new WeaponState();
@@ -494,18 +494,18 @@ namespace SimCore
 
          mPlannerHelper.SetCurrentState(initialState);
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void Human::SetSkeletalMeshFile(const std::string& fileName)
       {
          if (mSkeletalMeshFileName != fileName)
          {
             mSkeletalMeshFileName = fileName;
-   
+
             osg::MatrixTransform& transform = GetScaleMatrixTransform();
             transform.removeChildren(0, transform.getNumChildren());
             mModelNode = NULL;
-   
+
             if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
@@ -552,7 +552,7 @@ namespace SimCore
             }
          }
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       const std::string& Human::GetSkeletalMeshFile()
       {
@@ -578,7 +578,7 @@ namespace SimCore
       void Human::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         
+
          //No burning or smoking people.
          //SetFlamesPresentFile("");
          //SetSmokePlumesFile("");
@@ -589,7 +589,7 @@ namespace SimCore
          {
             UpdatePlanAndAnimations();
          }
-         
+
          dtAnim::AnimationComponent* animComponent = NULL;
 
          GetGameActorProxy().GetGameManager()->
@@ -622,9 +622,9 @@ namespace SimCore
       {
          mCurrentPlan.clear();
          mPlanner.Reset(&mPlannerHelper);
-         
+
          mPlanner.GetConfig().mMaxTimePerIteration = mMaxTimePerIteration;
-         
+
          dtAI::Planner::PlannerResult result = mPlanner.GeneratePlan();
          if (result == dtAI::Planner::PLAN_FOUND)
          {
@@ -639,15 +639,15 @@ namespace SimCore
                << "]\n\nGoing from:\n\n"
                << *mPlannerHelper.GetCurrentState()
                << "\n\n Going To:\n\n"
-               << "Stance:  \"" << GetStance().GetName() 
+               << "Stance:  \"" << GetStance().GetName()
                << "\" Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
-               << "\" Damage: \"" << GetDamageState().GetName() 
+               << "\" Damage: \"" << GetDamageState().GetName()
                << "\" Velocty: \"" << GetVelocityVector() << "\"";
             mLogger.LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, ss.str());
          }
          return false;
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       const dtAI::Planner::OperatorList& Human::GetCurrentPlan()
       {
@@ -772,18 +772,18 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void Human::TickRemote(const dtGame::Message& tickRemote)
+      void Human::OnTickRemote(const dtGame::TickMessage& tickRemote)
       {
          //just in case
-         BaseClass::TickRemote(tickRemote);
+         BaseClass::OnTickRemote(tickRemote);
          CheckAndUpdateAnimationState();
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      void Human::TickLocal(const dtGame::Message& tickLocal)
+      void Human::OnTickLocal(const dtGame::TickMessage& tickLocal)
       {
          //just in case
-         BaseClass::TickLocal(tickLocal);
+         BaseClass::OnTickLocal(tickLocal);
          CheckAndUpdateAnimationState();
       }
 
@@ -820,7 +820,7 @@ namespace SimCore
             SetupPlannerHelper();
             gottaSequence = GenerateNewAnimationSequence();
          }
-         
+
          if (gottaSequence)
          {
             dtAI::Planner::OperatorList::iterator i, iend;
@@ -888,7 +888,7 @@ namespace SimCore
                      newAnim = NULL;
                   }
                }
-               
+
                seqMixer.ClearActiveAnimations(blendTime);
                seqMixer.PlayAnimation(generatedSequence.get());
             }
@@ -900,7 +900,7 @@ namespace SimCore
             mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BasicStanceEnum);
@@ -937,7 +937,7 @@ namespace SimCore
       {
          return *mStance;
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void BasicStanceState::SetStance(BasicStanceEnum& newStance)
       {
@@ -969,13 +969,13 @@ namespace SimCore
       {
          return *mWeaponStateEnum;
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       void WeaponState::SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum& newWeaponStateEnum)
       {
          mWeaponStateEnum = &newWeaponStateEnum;
       }
- 
+
 
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////
@@ -984,7 +984,7 @@ namespace SimCore
       {
          public:
             typedef typename StateVarType::EnumValueType StateVarEnumType;
-            
+
             EnumerationConditional(const std::string& pName, StateVarEnumType& pData): mName(pName), mData(pData) {}
             ~EnumerationConditional() {}
 
@@ -1008,7 +1008,7 @@ namespace SimCore
             std::string mName;
             StateVarEnumType& mData;
       };
-      
+
       template <typename StateVarType>
       class EnumeratedEffect: public dtAI::IEffect
       {
@@ -1016,7 +1016,7 @@ namespace SimCore
          typedef typename StateVarType::EnumValueType StateVarEnumType;
 
          EnumeratedEffect(const std::string& pName, StateVarEnumType& pData): mName(pName), mData(pData){}
-          
+
          const std::string& GetName() const
          {
             return mName;
@@ -1032,10 +1032,10 @@ namespace SimCore
             }
             return true;
          }
-         
+
       protected:
          ~EnumeratedEffect(){}
-         
+
       private:
          std::string mName;
          StateVarEnumType& mData;
@@ -1049,18 +1049,18 @@ namespace SimCore
 
             typedef EnumerationConditional<BasicStanceState> BasicStanceEnumConditional;
             typedef EnumerationConditional<WeaponState> WeaponStateEnumConditional;
-                  
+
             typedef EnumeratedEffect<BasicStanceState> BasicStanceEnumEffect;
             typedef EnumeratedEffect<WeaponState> WeaponStateEnumEffect;
-            
+
          public:
             HumanOperator(const std::string& pName)
             : Operator(pName, Operator::ApplyOperatorFunctor(this, &HumanOperator::Apply))
             , mCost(1.0f)
             {}
-            
+
             void SetCost(float pcost){mCost = pcost;}
-            
+
             void AddEffect(EffectType* pEffect){mEffects.push_back(pEffect);}
 
             bool Apply(const dtAI::Operator* oper, dtAI::WorldState* pWSIn) const
@@ -1090,7 +1090,7 @@ namespace SimCore
       const std::string AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
       const std::string AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
       const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
-      
+
       const std::string AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
       const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
 
@@ -1120,18 +1120,18 @@ namespace SimCore
       const std::string AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");
       const std::string AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
 
-      AnimationOperators::AnimationOperators(dtAI::PlannerHelper& plannerHelper, 
+      AnimationOperators::AnimationOperators(dtAI::PlannerHelper& plannerHelper,
             dtAnim::AnimationHelper& animHelper):
          mPlannerHelper(plannerHelper), mAnimHelper(&animHelper)
       {
          CreateOperators();
       }
-      
+
       ////////////////////////////////////////////////////////////////////////////
       AnimationOperators::~AnimationOperators()
       {
       }
-      
+
 
       ////////////////////////////////////////////////////////////////////////////
       HumanOperator* AnimationOperators::AddOperator(const std::string& name)
@@ -1145,19 +1145,19 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       void AnimationOperators::CreateOperators()
       {
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> standing 
-            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::STANDING); 
+         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> standing
+            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::STANDING);
 
          dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional>  kneeling
-            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::KNEELING); 
-         
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> prone
-            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::PRONE); 
-         
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> idle
-            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::IDLE); 
+            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::KNEELING);
 
-         
+         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> prone
+            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::PRONE);
+
+         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> idle
+            = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::IDLE);
+
+
          dtCore::RefPtr<HumanOperator::WeaponStateEnumConditional> deployed
             = new HumanOperator::WeaponStateEnumConditional(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
@@ -1165,7 +1165,7 @@ namespace SimCore
             = new HumanOperator::WeaponStateEnumConditional(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
 
-         dtCore::RefPtr<dtAI::Precondition> isMoving 
+         dtCore::RefPtr<dtAI::Precondition> isMoving
             = new dtAI::Precondition(Human::STATE_MOVING, true);
 
          dtCore::RefPtr<dtAI::Precondition> notMoving
@@ -1181,7 +1181,7 @@ namespace SimCore
 
          dtCore::RefPtr<dtAI::Precondition> isTransition
             = new dtAI::Precondition(Human::STATE_TRANSITION, true);
-         
+
          dtCore::RefPtr<dtAI::Precondition> notTransition
             = new dtAI::Precondition(Human::STATE_TRANSITION, false);
 
@@ -1202,29 +1202,29 @@ namespace SimCore
             = new HumanOperator::WeaponStateEnumEffect(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
 
-         dtCore::RefPtr<dtAI::Effect> 
+         dtCore::RefPtr<dtAI::Effect>
             movingEff = new dtAI::Effect(Human::STATE_MOVING, true);
-         
-         dtCore::RefPtr<dtAI::Effect> 
+
+         dtCore::RefPtr<dtAI::Effect>
             notMovingEff = new dtAI::Effect(Human::STATE_MOVING, false);
 
-         dtCore::RefPtr<dtAI::Effect> 
+         dtCore::RefPtr<dtAI::Effect>
             deadEff = new dtAI::Effect(Human::STATE_DEAD, true);
-         
-         dtCore::RefPtr<dtAI::Effect> 
+
+         dtCore::RefPtr<dtAI::Effect>
             shotEff = new dtAI::Effect(Human::STATE_SHOT, true);
-         
-         dtCore::RefPtr<dtAI::Effect> 
+
+         dtCore::RefPtr<dtAI::Effect>
             transitionEff = new dtAI::Effect(Human::STATE_TRANSITION, true);
 
-         dtCore::RefPtr<dtAI::Effect> 
+         dtCore::RefPtr<dtAI::Effect>
             notTransitionEff = new dtAI::Effect(Human::STATE_TRANSITION, false);
-         
+
          HumanOperator* newOp;
          newOp = AddOperator(ANIM_STAND_READY);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(ready.get());
-         
+
          newOp->AddEffect(standingEff.get());
          newOp->AddEffect(notMovingEff.get());
          newOp->AddEffect(notTransitionEff.get());
@@ -1236,7 +1236,7 @@ namespace SimCore
          newOp->AddEffect(standingEff.get());
          newOp->AddEffect(notMovingEff.get());
          newOp->AddEffect(notTransitionEff.get());
-         
+
          newOp = AddOperator(ANIM_WALK_READY);
          newOp->AddPreCondition(standing.get());
          newOp->AddPreCondition(ready.get());

@@ -69,21 +69,21 @@ class SIMCORE_EXPORT NxAgeiaMunitionsPSysActor: public NxAgeiaParticleSystemActo
 {
    public:
       /// constructor for NxAgeiaBaseActor
-      NxAgeiaMunitionsPSysActor(dtGame::GameActorProxy &proxy);
-     
+      NxAgeiaMunitionsPSysActor(dtGame::GameActorProxy& proxy);
+
       /**
       * This method is an invokable called when an object is local and
       * receives a tick.
       * @param tickMessage A message containing tick related information.
       */
-      virtual void TickLocal(const dtGame::Message &tickMessage);
+      virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
       /**
       * This method is an invokable called when an object is remote and
       * receives a tick.
       * @param tickMessage A message containing tick related information.
       */
-      virtual void TickRemote(const dtGame::Message &tickMessage);
+      virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
       // Called when the actor has been added to the game manager.
       // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -125,7 +125,7 @@ class SIMCORE_EXPORT NxAgeiaMunitionsPSysActor: public NxAgeiaParticleSystemActo
       int  GetFrequencyOfTracers()           {return mFrequencyOfTracers;}
 
       bool ResolveISectorCollision(MunitionsPhysicsParticle& particleToCheck);
-      
+
    protected:
 
       //////////////////////////////////////////////////////////////////
@@ -133,8 +133,8 @@ class SIMCORE_EXPORT NxAgeiaMunitionsPSysActor: public NxAgeiaParticleSystemActo
       //////////////////////////////////////////////////////////////////
       virtual void RemoveParticle(PhysicsParticle& whichOne);
 
-   private: 
-      bool           mUseTracers;               /// Do we use tracers for this particle system?      
+   private:
+      bool           mUseTracers;               /// Do we use tracers for this particle system?
       int            mCurrentTracerRoundNumber; /// Current count for knowing when to create a tracer
       int            mFrequencyOfTracers;       /// Everytime it hits this number it will reset mCurrentTracerRoundNumber
                                                 /// to 0 and set the curr particle to be tracer

@@ -29,6 +29,10 @@
 
 #include <SimCore/Actors/IGActor.h>
 //#include <SimCore/Actors/ViewerMaterialActor.h>
+namespace dtGame
+{
+   class TimerElapsedMessage;
+}
 
 namespace SimCore
 {
@@ -73,7 +77,7 @@ namespace SimCore
              * @param fileName The name of the sound file
              */
             void LoadSoundFile(const std::string &fileName);
-            
+
             /**
              * Loads in a particle system file for the detonation
              * @param fileName The name of the file to load
@@ -87,7 +91,7 @@ namespace SimCore
             void LoadSmokeFile(const std::string &fileName);
 
             // Invoked when a actor is added to the Game Manager
-            virtual void OnEnteredWorld(); 
+            virtual void OnEnteredWorld();
 
             /**
              * Gets the delay time to be used for flash bang
@@ -110,39 +114,39 @@ namespace SimCore
             //static void SetLingeringShotSecs(const float secs) { mLingeringShotSecs = secs; }
 
             /**
-             * Gets the length that the smoke particle system stays alive.  Zero means do NOT 
+             * Gets the length that the smoke particle system stays alive.  Zero means do NOT
              * use smoke particle. Default is zero.
              * @return mLingeringSmokeSecs
              */
             float GetLingeringSmokeSecs() const { return mLingeringSmokeSecs; }
 
             /**
-             * Sets the length that the smoke particle system stays alive.  Zero means do NOT 
+             * Sets the length that the smoke particle system stays alive.  Zero means do NOT
              * use smoke particle. Default is zero.
              * @param lingeringSmokeSecs the length, in seconds that the smoke stays up.
              */
             void SetLingeringSmokeSecs(float lingeringSmokeSecs) { mLingeringSmokeSecs = lingeringSmokeSecs; }
 
             /**
-             * Sets the explosion render seconds 
+             * Sets the explosion render seconds
              * @param secs The timer seconds
              */
             void SetExplosionTimerSecs(float secs) { mRenderExplosionTimerSecs = secs; }
 
             /**
-             * Sets the delete actor seconds 
+             * Sets the delete actor seconds
              * @param secs The timer seconds
              */
             void SetDeleteActorTimerSecs(float secs) { mDeleteActorTimerSecs = secs; }
-      
+
             /**
-             * Sets the explosion render seconds 
+             * Sets the explosion render seconds
              * @param secs The timer seconds
              */
             float GetExplosionTimerSecs() const { return mRenderExplosionTimerSecs; }
 
             /**
-             * Sets the delete actor seconds 
+             * Sets the delete actor seconds
              * @param secs The timer seconds
              */
             float GetDeleteActorTimerSecs() const { return mDeleteActorTimerSecs; }
@@ -176,7 +180,7 @@ namespace SimCore
              * @param distance The new distance
              */
             float GetMinimumSoundDistance() const { return mSound.valid() ? mSound->GetMinDistance() : 0; }
-            
+
             /**
              * Get the explosion particle system. This allows the proxy
              * to register the particle system in HandleDetonationActorTimers.
@@ -271,7 +275,7 @@ namespace SimCore
             void BuildInvokables();
 
             /// Invokable that tells the game manager to delete ourselves and play our sound
-            void HandleDetonationActorTimers(const dtGame::Message &msg);
+            void HandleDetonationActorTimers(const dtGame::TimerElapsedMessage& timeMsg);
 
             /// Set common property values with one function call
             void SetDetonationProperties(
@@ -285,7 +289,7 @@ namespace SimCore
 
             /// Clear all timers from the GameManager
             void ClearTimers();
-         
+
          protected:
 
             /// Destructor

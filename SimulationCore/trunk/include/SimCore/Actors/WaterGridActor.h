@@ -67,8 +67,8 @@ namespace SimCore
             osg::Vec2 mDirection; // This is computed from mDirectionInDegrees
             float mDirectionInDegrees;
 
-            float mFreq;      
-            float mAmplitude; 
+            float mFreq;
+            float mAmplitude;
 
          };
 
@@ -105,7 +105,7 @@ namespace SimCore
 
          private:
             //////////////////////////////////////////////
-            ChoppinessSettings( const std::string &name,  float speedMod, 
+            ChoppinessSettings( const std::string &name,  float speedMod,
                float rotationSpread, float waveLengthModifier, float ampModifier, float texMod)
                : dtUtil::Enumeration(name) , mSpeedMod(speedMod) , mRotationSpread(rotationSpread)
                , mWaveLengthModifier(waveLengthModifier) , mAmpModifier(ampModifier), mTextureWaveModifier(texMod)
@@ -134,7 +134,7 @@ namespace SimCore
       public:
          WaterGridActor(WaterGridActorProxy& proxy);
 
-         /*virtual*/ void TickLocal(const dtGame::Message& tickMessage);
+         /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
          /*virtual*/ void OnEnteredWorld();
 
          void ActorUpdate(const dtGame::Message& updateMessage);
@@ -145,7 +145,7 @@ namespace SimCore
 
          void SetChoppiness(WaterGridActor::ChoppinessSettings &choppiness);
          WaterGridActor::ChoppinessSettings& GetChoppiness() const;
-       
+
          void AddWave(Wave& pWave);
          void AddTextureWave(const TextureWave& pWave);
 
@@ -208,14 +208,14 @@ namespace SimCore
 
          void AddReflectionScene(osg::Camera* cam);
 
-         // Loops through the total wave set and determines which N waves will be marked as the 'current'. 
+         // Loops through the total wave set and determines which N waves will be marked as the 'current'.
          // This method populates mProcessedWaveData as well as sets mCameraFoVScalar.
          void DetermineCurrentWaveSet(dtCore::Camera& pCamera);
 
          void OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight);
 
       private:
-         
+
          float     mElapsedTime;
          float     mDeltaTime;
          bool      mRenderWaveTexture, mWireframe, mDeveloperMode;
@@ -226,19 +226,19 @@ namespace SimCore
          float mModForWaveLength;
          float mModForSpeed;
          float mModForSteepness;
-         float mModForAmplitude; 
-         float mModForDirectionInDegrees; 
+         float mModForAmplitude;
+         float mModForDirectionInDegrees;
          float mModForFOV;
          float mCameraFoVScalar; // changes wave detail based on how much FoV is visible
 
-         // Each frame (or as needed), the current set of waves is computed. This data 
+         // Each frame (or as needed), the current set of waves is computed. This data
          // is pulled from the mWaves list based on the current camera height and wavelengths
          // The data is put in mProcessedWaveData and used for ocean shaders and ground clamping
          // Order is: waveLength, speed, amp, freq, steepness, UNUSED, dirX, dirY
          float mProcessedWaveData[MAX_WAVES][8];
 
          osg::Vec4 mWaterColor;
-         osg::Vec3 mLastCameraOffsetPos, mCurrentCameraPos; 
+         osg::Vec3 mLastCameraOffsetPos, mCurrentCameraPos;
 
          ChoppinessSettings* mChoppinessEnum;
 
@@ -251,7 +251,7 @@ namespace SimCore
          dtCore::RefPtr<osg::Texture2D> mReflectionTexture;
          dtCore::RefPtr<osg::Texture3D> mNoiseTexture;
          dtCore::RefPtr<osg::Texture2D> mWaveTexture;
-         dtCore::ObserverPtr<dtGame::GameActorProxy> mOceanDataProxy; 
+         dtCore::ObserverPtr<dtGame::GameActorProxy> mOceanDataProxy;
 
          WaveArray mWaves;
          TextureWaveArray mTextureWaves;
@@ -263,14 +263,14 @@ namespace SimCore
       {
       public:
          typedef SimCore::Actors::BaseWaterActorProxy BaseClass;
-         
+
          static const dtUtil::RefString CLASSNAME;
          static const dtUtil::RefString PROPERTY_CHOPPINESS;
          static const dtUtil::RefString PROPERTY_WATER_COLOR;
          static const dtUtil::RefString INVOKABLE_MAP_LOADED;
-         static const dtUtil::RefString INVOKABLE_ACTOR_CREATED; 
+         static const dtUtil::RefString INVOKABLE_ACTOR_CREATED;
          static const dtUtil::RefString INVOKABLE_ACTOR_UPDATE;
-         
+
 
          WaterGridActorProxy();
 

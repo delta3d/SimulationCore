@@ -40,8 +40,8 @@ namespace SimCore
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT NECCBoatActor : public Platform, 
-                                           public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
+      class SIMCORE_EXPORT NECCBoatActor : public Platform,
+                                           public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
                                            public VehicleInterface
       {
          public:
@@ -51,7 +51,7 @@ namespace SimCore
          protected:
             /// Destructor
             virtual ~NECCBoatActor();
-         
+
          // INHERITED PUBLIC
          public:
             /**
@@ -59,14 +59,14 @@ namespace SimCore
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage &tickMessage);
 
             /**
             * This method is an invokable called when an object is remote and
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
+            virtual void OnTickRemote(const dtGame::TickMessage &tickMessage);
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -79,12 +79,12 @@ namespace SimCore
             virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
                NxActor& ourSelf, NxActor& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
                const NxActor& whatWeHit){}
 
             /**
@@ -107,21 +107,21 @@ namespace SimCore
 
             dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
 
-            void SetSound_effect_ignition(const std::string& value){SOUND_EFFECT_IGNITION=value;}     
-            void SetSound_effect_vehicle_loop(const std::string& value){SOUND_EFFECT_VEHICLE_LOOP=value;} 
+            void SetSound_effect_ignition(const std::string& value){SOUND_EFFECT_IGNITION=value;}
+            void SetSound_effect_vehicle_loop(const std::string& value){SOUND_EFFECT_VEHICLE_LOOP=value;}
             void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
             void SetSound_Effect_Horn(const std::string& value) {SOUND_EFFECT_HORN_SOUND = value;}
             virtual void SetHasDriver( bool hasDriver )           { mHasDriver = hasDriver; }
-               
-            std::string GetSound_effect_ignition() const {return SOUND_EFFECT_IGNITION;}     
-            std::string GetSound_effect_vehicle_loop() const {return SOUND_EFFECT_VEHICLE_LOOP;} 
+
+            std::string GetSound_effect_ignition() const {return SOUND_EFFECT_IGNITION;}
+            std::string GetSound_effect_vehicle_loop() const {return SOUND_EFFECT_VEHICLE_LOOP;}
             std::string GetSound_effect_collision_hit() const {return SOUND_EFFECT_COLLISION_HIT;}
             std::string GetSound_Effect_Horn() const {return SOUND_EFFECT_HORN_SOUND;}
             virtual bool GetHasDriver() const       { return mHasDriver; }
-           
+
          // Private vars
          private:
-            
+
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
 
             ///////////////////////////////////////////////////
@@ -147,10 +147,10 @@ namespace SimCore
             float mVehicleMPH;
 
             /// The max mph you want your vehicle to have
-            float mVehicleMaxMPH;            
+            float mVehicleMaxMPH;
 
-            /// The max reverse mph you can go 
-            float mVehicleMaxReverseMPH;     
+            /// The max reverse mph you can go
+            float mVehicleMaxReverseMPH;
 
             // for the front wheel
             float mCurrentSteeringAngle;

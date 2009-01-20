@@ -38,7 +38,7 @@
 #include <osg/Geode>
 
 // Forward declares
-namespace dtCore 
+namespace dtCore
 {
    class Transformable;
 }
@@ -51,26 +51,19 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
    public:
       /// constructor for NxAgeiaBaseActor
       NxAgeiaParticleSystemActor(dtGame::GameActorProxy &proxy);
-     
+
       /**
       * This method is an invokable called when an object is local and
       * receives a tick.
       * @param tickMessage A message containing tick related information.
       */
-      virtual void TickLocal(const dtGame::Message &tickMessage);
-
-      /**
-      * This method is an invokable called when an object is remote and
-      * receives a tick.
-      * @param tickMessage A message containing tick related information.
-      */
-      virtual void TickRemote(const dtGame::Message &tickMessage);
+      virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
       // Called when the actor has been added to the game manager.
       // You can respond to OnEnteredWorld on either the proxy or actor or both.
       virtual void OnEnteredWorld();
 
-      class SIMCORE_EXPORT TwoDOrThreeDTypeEnum : public dtUtil::Enumeration 
+      class SIMCORE_EXPORT TwoDOrThreeDTypeEnum : public dtUtil::Enumeration
       {
          DECLARE_ENUM(TwoDOrThreeDTypeEnum);
          public:
@@ -78,7 +71,7 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
             static TwoDOrThreeDTypeEnum THREED;
 
          private:
-            TwoDOrThreeDTypeEnum(const std::string &name) : dtUtil::Enumeration(name) 
+            TwoDOrThreeDTypeEnum(const std::string &name) : dtUtil::Enumeration(name)
             {
                AddInstance(this);
             }
@@ -104,12 +97,12 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
       // so no flag associated with it.
       virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, const NxActor& whatWeHit){}
 
-     
+
    public:
 
       /// turn it on or off from spawning...
       void ToggleEmitter(bool value) {mIsCurrentlyOn = value; mSystemsTimeTotalTimeLength = 0;}
-      
+
       /// return if the emitter is currently running
       bool GetIsEmitterRunning() {return mIsCurrentlyOn;}
 
@@ -202,7 +195,7 @@ class SIMCORE_EXPORT NxAgeiaParticleSystemActor: public dtGame::GameActor, publi
 
          int result = (rand() % (Max - Min + 1) + Min);
          float Result = (float)result / 100;
-         return Result; 
+         return Result;
       }
 
       TwoDOrThreeDTypeEnum*   mParticleEnumForObjectType;      /// The Type of object actor this should be.
@@ -259,9 +252,9 @@ class SIMCORE_EXPORT PhysicsParticle : public osg::Referenced
 {
 public:
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   PhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f, float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f) 
+   PhysicsParticle(const std::string& name, float ParticleLengthOfTimeOut = 10.0f, float InverseDeletionAlphaTime = 3.0f, float alphaInTime = 0.0f)
    {
-      mSpawnTimer = 0; 
+      mSpawnTimer = 0;
       mParticleLengthOfTimeOut = ParticleLengthOfTimeOut;
       mInverseDeletionAlphaTime = InverseDeletionAlphaTime;
       mAlphaInStartTime = alphaInTime;
@@ -274,15 +267,15 @@ public:
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
    void UpdateTime(float elapsedTime) {mSpawnTimer += elapsedTime;}
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   bool ShouldBeRemoved() 
+   bool ShouldBeRemoved()
    {
-      if(mSpawnTimer > mParticleLengthOfTimeOut || mNeedsToBeDeleted == true) 
-         return true; 
+      if(mSpawnTimer > mParticleLengthOfTimeOut || mNeedsToBeDeleted == true)
+         return true;
       return false;
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   void HitReceived() 
+   void HitReceived()
    {
       if(mBeenHit == false)
       {
@@ -292,7 +285,7 @@ public:
    }
 
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-   void UpdateAlphaAmount();    
+   void UpdateAlphaAmount();
    /////////////////////////////////////////////////////////////////////////////////////////////////////////
    void FlagToDelete(){mNeedsToBeDeleted = true;}
    /////////////////////////////////////////////////////////////////////////////////////////////////////////

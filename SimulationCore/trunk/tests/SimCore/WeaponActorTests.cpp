@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -107,7 +107,7 @@ namespace SimCore
             // @param target The actor that was hit
             // @param trajectory The velocity vector of the impacting munition
             // @param location The location in the world that the target was hit
-            void SimulateTargetHit( dtGame::GameActor* target, 
+            void SimulateTargetHit( dtGame::GameActor* target,
                const osg::Vec3* trajectory = NULL,
                const osg::Vec3* location = NULL );
 
@@ -158,7 +158,7 @@ namespace SimCore
       };
 
       //////////////////////////////////////////////////////////////////////////
-      ListeningComponent::ListeningComponent() 
+      ListeningComponent::ListeningComponent()
          : dtGame::GMComponent( "TestListeningComponent" ),
          mShotCount(0),
          mShotMessageCount(0),
@@ -255,7 +255,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponActorTests::SimulateTargetHit( dtGame::GameActor* target, 
+      void WeaponActorTests::SimulateTargetHit( dtGame::GameActor* target,
          const osg::Vec3* trajectory,
          const osg::Vec3* location )
       {
@@ -277,8 +277,8 @@ namespace SimCore
          // Set the location
          if( location != NULL )
          {
-            report.lsContactPoints.push_back( 
-               NxVec3( (*location)[0], (*location)[1], (*location)[2] ) 
+            report.lsContactPoints.push_back(
+               NxVec3( (*location)[0], (*location)[1], (*location)[2] )
                );
          }
 
@@ -407,7 +407,7 @@ namespace SimCore
          mWeapon->SetAmmoCount( 10 );
          CPPUNIT_ASSERT( mWeapon->GetAmmoCount() == 10 );
          mWeapon->SetAmmoCount( mWeapon->GetAmmoMax() + 100 );
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to the ammo max if set beyond the ammo max", 
+         CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to the ammo max if set beyond the ammo max",
             mWeapon->GetAmmoCount() == mWeapon->GetAmmoMax() );
          mWeapon->SetAmmoCount( -10 );
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to 0 if set to a negative number",
@@ -471,7 +471,7 @@ namespace SimCore
          mWeapon->SetFlashTime( value );
          CPPUNIT_ASSERT( mWeapon->GetFlashTime() == value );
          // --- Ensure the returned value is not the default value
-         float newValue = value * 0.5f; 
+         float newValue = value * 0.5f;
          mWeapon->SetFlashTime( newValue );
          CPPUNIT_ASSERT( mWeapon->GetFlashTime() == newValue );
       }
@@ -493,7 +493,7 @@ namespace SimCore
          // so that the WeaponActor can find them when entering the world.
          mMunitionsComp->LoadMunitionTypeTable( "UnitTestMunitionTypesMap" );
 
-         // Create a tick message used for testing WeaponActor::TickLocal
+         // Create a tick message used for testing WeaponActor::OnTickLocal
          dtCore::RefPtr<dtGame::TickMessage> tickMsg;
          mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::TICK_LOCAL, tickMsg );
 
@@ -536,8 +536,8 @@ namespace SimCore
          mWeapon->SetTimeBetweenMessages(timeDelta); // attempt to send a message every tick
          mWeapon->SetAutoSleepTime( 2.0f );
          mWeapon->SetTriggerHeld( true ); // causes an instant shot
-         mWeapon->TickLocal( *tickMsg );
-         mWeapon->TickLocal( *tickMsg ); // again to make sure the weapon only fires once
+         mWeapon->OnTickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg ); // again to make sure the weapon only fires once
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
          CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotMessageCount());
@@ -548,19 +548,19 @@ namespace SimCore
          mTestComp->ResetShotCount();
 
          // --- Test auto sleep (previous test ticked the weapon forward 1 second)
-         mWeapon->TickLocal( *tickMsg );
-         mWeapon->TickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg );
          CPPUNIT_ASSERT( mWeapon->IsSleeping() );
          // --- Test ticking during sleep mode
-         mWeapon->TickLocal( *tickMsg );
-         mWeapon->TickLocal( *tickMsg );
-         mWeapon->TickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg );
+         mWeapon->OnTickLocal( *tickMsg );
          CPPUNIT_ASSERT_MESSAGE( "Ticking the weapon actor should not cause it to wake if nothing has been done to it.",
             mWeapon->IsSleeping() );
 
          // --- Test wake up
          mWeapon->SetTriggerHeld( true );
-         mWeapon->TickLocal( *tickMsg ); // 0.5
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5
          dtCore::System::GetInstance().Step(); // process all queued messages
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
          CPPUNIT_ASSERT_EQUAL(1U, mTestComp->GetShotMessageCount());
@@ -571,10 +571,10 @@ namespace SimCore
 
          // --- Test without auto sleep time (will not sleep)
          mWeapon->SetAutoSleepTime( 0.0f );
-         mWeapon->TickLocal( *tickMsg ); // 1.0
-         mWeapon->TickLocal( *tickMsg ); // 1.5
-         mWeapon->TickLocal( *tickMsg ); // 2.0
-         mWeapon->TickLocal( *tickMsg ); // 2.5
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0
+         mWeapon->OnTickLocal( *tickMsg ); // 2.5
          dtCore::System::GetInstance().Step(); // process all queued messages
          CPPUNIT_ASSERT( ! mWeapon->IsSleeping() );
 
@@ -590,18 +590,18 @@ namespace SimCore
          mWeapon->SetFireRate( 0.5f );
          mWeapon->SetTimeBetweenMessages( 1.0f );
          mWeapon->SetTriggerHeld( true );
-         mWeapon->TickLocal( *tickMsg ); // 0.25
-         mWeapon->TickLocal( *tickMsg ); // 0.5   // shot 1
-         mWeapon->TickLocal( *tickMsg ); // 0.75
-         mWeapon->TickLocal( *tickMsg ); // 1.0   // shot 2
-         mWeapon->TickLocal( *tickMsg ); // 1.25
-         mWeapon->TickLocal( *tickMsg ); // 1.5   // shot 3
-         mWeapon->TickLocal( *tickMsg ); // 1.75
-         mWeapon->TickLocal( *tickMsg ); // 2.0   // shot 4
-         mWeapon->TickLocal( *tickMsg ); // 2.25
-         mWeapon->TickLocal( *tickMsg ); // 2.5   // shot 5
-         mWeapon->TickLocal( *tickMsg ); // 2.75
-         mWeapon->TickLocal( *tickMsg ); // 3.0   // shot 6
+         mWeapon->OnTickLocal( *tickMsg ); // 0.25
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5   // shot 1
+         mWeapon->OnTickLocal( *tickMsg ); // 0.75
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0   // shot 2
+         mWeapon->OnTickLocal( *tickMsg ); // 1.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5   // shot 3
+         mWeapon->OnTickLocal( *tickMsg ); // 1.75
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0   // shot 4
+         mWeapon->OnTickLocal( *tickMsg ); // 2.25
+         mWeapon->OnTickLocal( *tickMsg ); // 2.5   // shot 5
+         mWeapon->OnTickLocal( *tickMsg ); // 2.75
+         mWeapon->OnTickLocal( *tickMsg ); // 3.0   // shot 6
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.
          //     Extra ticks could call TickLocal more times than expected, thus
@@ -621,14 +621,14 @@ namespace SimCore
          // --- Set re-fire rate less than the time step.
          //     The weapon will only fire as fast as it can be stepped
          mWeapon->SetFireRate( 0.125f ); // twice per 0.25
-         mWeapon->TickLocal( *tickMsg ); // 0.25
-         mWeapon->TickLocal( *tickMsg ); // 0.5
-         mWeapon->TickLocal( *tickMsg ); // 0.75
-         mWeapon->TickLocal( *tickMsg ); // 1.0
-         mWeapon->TickLocal( *tickMsg ); // 1.25
-         mWeapon->TickLocal( *tickMsg ); // 1.5
-         mWeapon->TickLocal( *tickMsg ); // 1.75
-         mWeapon->TickLocal( *tickMsg ); // 2.0
+         mWeapon->OnTickLocal( *tickMsg ); // 0.25
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5
+         mWeapon->OnTickLocal( *tickMsg ); // 0.75
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0
+         mWeapon->OnTickLocal( *tickMsg ); // 1.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5
+         mWeapon->OnTickLocal( *tickMsg ); // 1.75
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.
          //     Extra ticks could call TickLocal more times than expected, thus
@@ -650,7 +650,7 @@ namespace SimCore
 
 
 
-         // NOTE: 
+         // NOTE:
          // The following test requires AGEIA_PHYSICS pre-processor symbol to
          // be defined so that the WeaponActor can receive contact reports.
          // Messages will not be sent as expected if a change in targets has
@@ -662,25 +662,25 @@ namespace SimCore
          mWeapon->SetUsingBulletPhysics( true ); // means detonations are sent separately from fire messages
 
          // --- Test switching targets faster than message cycle time
-         mWeapon->TickLocal( *tickMsg ); // 0.25
+         mWeapon->OnTickLocal( *tickMsg ); // 0.25
          SimulateTargetHit( target );            // det 1
-         mWeapon->TickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1
          SimulateTargetHit( NULL );              // det 2
-         mWeapon->TickLocal( *tickMsg ); // 0.75
-         mWeapon->TickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2
-         mWeapon->TickLocal( *tickMsg ); // 1.25
-         mWeapon->TickLocal( *tickMsg ); // 1.5            // shot 3
+         mWeapon->OnTickLocal( *tickMsg ); // 0.75
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2
+         mWeapon->OnTickLocal( *tickMsg ); // 1.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5            // shot 3
          SimulateTargetHit( target );            // det 3
-         mWeapon->TickLocal( *tickMsg ); // 1.75
-         SimulateTargetHit( target );            // det 3 (within same detonation message cycle time of 1.0 seconds acting on same target)          
-         mWeapon->TickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4
-         mWeapon->TickLocal( *tickMsg ); // 2.25
-         mWeapon->TickLocal( *tickMsg ); // 2.5            // shot 5
-         mWeapon->TickLocal( *tickMsg ); // 2.75
-         mWeapon->TickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6
-         mWeapon->TickLocal( *tickMsg ); // 3.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.75
+         SimulateTargetHit( target );            // det 3 (within same detonation message cycle time of 1.0 seconds acting on same target)
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4
+         mWeapon->OnTickLocal( *tickMsg ); // 2.25
+         mWeapon->OnTickLocal( *tickMsg ); // 2.5            // shot 5
+         mWeapon->OnTickLocal( *tickMsg ); // 2.75
+         mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6
+         mWeapon->OnTickLocal( *tickMsg ); // 3.25
          SimulateTargetHit( NULL );              // det 4 (target change causes a shot fired message on next message or trigger time)
-         mWeapon->TickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7
+         mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.
          //     Extra ticks could call TickLocal more times than expected, thus
@@ -708,25 +708,25 @@ namespace SimCore
          // Has same fire rate of 0.5.
 
          // --- Test switching targets faster than message cycle time
-         mWeapon->TickLocal( *tickMsg ); // 0.25
-         SimulateTargetHit( target );            
-         mWeapon->TickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1 & detonation
-         SimulateTargetHit( NULL );              
-         mWeapon->TickLocal( *tickMsg ); // 0.75
-         mWeapon->TickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2 & detonation
-         mWeapon->TickLocal( *tickMsg ); // 1.25
-         mWeapon->TickLocal( *tickMsg ); // 1.5            // shot 3
-         SimulateTargetHit( target );            
-         mWeapon->TickLocal( *tickMsg ); // 1.75
-         SimulateTargetHit( target );            
-         mWeapon->TickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4 & detonation
-         mWeapon->TickLocal( *tickMsg ); // 2.25
-         mWeapon->TickLocal( *tickMsg ); // 2.5            // shot 5
-         mWeapon->TickLocal( *tickMsg ); // 2.75
-         mWeapon->TickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6 & detonation
-         mWeapon->TickLocal( *tickMsg ); // 3.25
-         SimulateTargetHit( NULL );              
-         mWeapon->TickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7 & detonation
+         mWeapon->OnTickLocal( *tickMsg ); // 0.25
+         SimulateTargetHit( target );
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1 & detonation
+         SimulateTargetHit( NULL );
+         mWeapon->OnTickLocal( *tickMsg ); // 0.75
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2 & detonation
+         mWeapon->OnTickLocal( *tickMsg ); // 1.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5            // shot 3
+         SimulateTargetHit( target );
+         mWeapon->OnTickLocal( *tickMsg ); // 1.75
+         SimulateTargetHit( target );
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4 & detonation
+         mWeapon->OnTickLocal( *tickMsg ); // 2.25
+         mWeapon->OnTickLocal( *tickMsg ); // 2.5            // shot 5
+         mWeapon->OnTickLocal( *tickMsg ); // 2.75
+         mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6 & detonation
+         mWeapon->OnTickLocal( *tickMsg ); // 3.25
+         SimulateTargetHit( NULL );
+         mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7 & detonation
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.
          //     Extra ticks could call TickLocal more times than expected, thus

@@ -43,27 +43,14 @@ namespace SimCore
       {
          public:
             /// constructor for NxAgeiaBaseActor
-            TextureProjectorActor(dtGame::GameActorProxy &proxy);
-         
+            TextureProjectorActor(dtGame::GameActorProxy& proxy);
+
             /**
             * This method is an invokable called when an object is local and
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
-
-            /**
-            * This method is an invokable called when an object is remote and
-            * receives a tick.
-            * @param tickMessage A message containing tick related information.
-            */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
-
-            /**
-            * Generic handler for messages. Overridden from base class.
-            * This is the default invokable on GameActorProxy.
-            */
-            virtual void ProcessMessage(const dtGame::Message &message);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             // SUPER NEEDS TO BE CALLED AFTER YOUR OTHER CODE, MODEL MUST BE LOADED IN!
             // Called when the actor has been added to the game manager.
@@ -75,7 +62,7 @@ namespace SimCore
             virtual ~TextureProjectorActor(void);
 
          public:
-            
+
             // gets -- Can't use 'GetCurrentTime' - reserved in WinBase.h
             float GetCurrTime() {return mCurrentTime;}
             float GetMaxTime()     {return mMaxTime;}
@@ -89,7 +76,7 @@ namespace SimCore
             void SetImageProjectorFile(const std::string& value) {mImageProjectorFile = value;}
             void SetAttachementEntity(osg::Node* nodeToAttachTo) { mEntityToAttachTo = nodeToAttachTo;}
 
-         private: 
+         private:
             float                      mCurrentTime;
             float                      mMaxTime;
             float                      mCurrentAlpha;

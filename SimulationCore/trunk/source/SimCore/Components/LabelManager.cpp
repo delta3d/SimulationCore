@@ -763,15 +763,6 @@ namespace SimCore
          {
             try
             {
-               dtCore::Camera* deltaCamera = mGM->GetApplication().GetCamera();
-               if( deltaCamera == NULL)
-               {
-                  std::cout << "No Camera" << std::endl;
-                  return;
-               }
-
-               deltaCamera->UpdateViewMatrixFromTransform();
-
                Update(*static_cast<const double*>(data->userData));
             }
             catch (const dtUtil::Exception& ex)

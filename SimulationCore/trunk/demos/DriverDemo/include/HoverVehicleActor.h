@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifdef AGEIA_PHYSICS
@@ -60,7 +60,7 @@ namespace DriverDemo
       protected:
          /// Destructor
          virtual ~HoverVehicleActor();
-      
+
       // INHERITED PUBLIC
       public:
 
@@ -69,12 +69,12 @@ namespace DriverDemo
          virtual void OnEnteredWorld();
 
          /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
          //   NxActor& ourSelf, NxActor& whatWeHit);
 
          // You would have to make a new raycast to get this report,
          // so no flag associated with it.
-         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
          //   const NxActor& whatWeHit){}
 
          /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
@@ -83,8 +83,8 @@ namespace DriverDemo
          /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
          virtual void AgeiaPostPhysicsUpdate();
 
-         virtual void TickLocal( const dtGame::Message& tickMessage );
-         virtual void TickRemote( const dtGame::Message& tickMessage );
+         virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
+         virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
 
 
       // PUBLIC METHODS
@@ -95,7 +95,7 @@ namespace DriverDemo
 
          /// Turns it up and moves up
          //void RepositionVehicle(float deltaTime);
-         
+
          HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
             return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
@@ -106,15 +106,15 @@ namespace DriverDemo
          /// Turns it up and moves up
          virtual void RepositionVehicle(float deltaTime);
 
-         /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is 
-         /// separate from the vehicle. On others, the turret is hard attached to the vehicle. 
+         /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is
+         /// separate from the vehicle. On others, the turret is hard attached to the vehicle.
          /// In this case, turning the motion model will rotate the vehicle.
          void SetVehicleIsTurret( bool vehicleIsTurret ) { mVehicleIsTurret = vehicleIsTurret; }
          bool GetVehicleIsTurret() const { return mVehicleIsTurret; }
 
          virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
 
-      protected: 
+      protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          /// This does nothing by default.
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -130,7 +130,7 @@ namespace DriverDemo
 
       // Private vars
       private:
-         
+
          //GearSoundLevel    mLastGearChange;     /// So we know when to play a sound.
 
          ///////////////////////////////////////////////////

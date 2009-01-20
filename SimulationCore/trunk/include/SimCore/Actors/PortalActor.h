@@ -36,8 +36,8 @@ namespace SimCore
       class SIMCORE_EXPORT Portal : public dtGame::GameActor
       {
          public:
-            Portal(dtGame::GameActorProxy &proxy) :  
-               dtGame::GameActor(proxy), 
+            Portal(dtGame::GameActorProxy &proxy) :
+               dtGame::GameActor(proxy),
                mIsOpen(false)
             {
                mTimeToSendOut = 10.0f;
@@ -75,7 +75,7 @@ namespace SimCore
             bool GetIsOpen() {return mIsOpen;}
             void SetIsOpen(bool value) {mIsOpen = value;}
 
-            virtual void TickLocal(const dtGame::Message& tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
          protected:
             virtual ~Portal(){}

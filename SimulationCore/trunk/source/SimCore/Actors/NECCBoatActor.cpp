@@ -73,7 +73,7 @@ namespace SimCore
          /////////////////////////////////////////////////////////////////////////////////////////////
          virtual bool onHit(const NxRaycastHit& hit)
          {
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
                (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
 
             dtCore::DeltaDrawable *hitTarget = NULL;
@@ -84,9 +84,9 @@ namespace SimCore
                hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
             }
 
-            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take 
+            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
             // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor 
+            if (mOwnerActor == NULL || hitTarget != mOwnerActor
                // So we dont want to return false if collision is off, this onHit is called for
                // every hit along the line, and returning false tells it to stop the raycast
                // report, its amazing how rereading the sdk can help so much :(
@@ -101,7 +101,7 @@ namespace SimCore
             }
 
             return true;
-         }	
+         }
 
       public:
          bool mGotAHit;
@@ -111,7 +111,7 @@ namespace SimCore
       };
 
       ///////////////////////////////////////////////////////////////////////////////////
-      NECCBoatActor ::NECCBoatActor(PlatformActorProxy &proxy) 
+      NECCBoatActor ::NECCBoatActor(PlatformActorProxy &proxy)
          : Platform(proxy)
       , mVehicleMPH(0.0f)
       , mVehicleMaxMPH(60.0f)
@@ -157,7 +157,7 @@ namespace SimCore
             RemoveChild(mSndHorn.get());
             mSndHorn.release();
          }
-         
+
          if(!IsRemote() && mVehiclesPortal.valid() )
          {
             Portal* portal = dynamic_cast<Portal*>(mVehiclesPortal->GetActor());
@@ -213,7 +213,7 @@ namespace SimCore
 
          // Create Physics model here!
          CreateBoatVehicle();
-         
+
          if(!IsRemote())
          {
             GetGameActorProxy().GetGameManager()->CreateActor(
@@ -243,7 +243,7 @@ namespace SimCore
          // change matrix at top or down below, but its only made in ident currently
          dtCore::Transform ourTransform, lastTransform;
          GetTransform(ourTransform);
-         
+
          NxMat34 sendInMatrix;
          sendInMatrix.id();
 
@@ -268,7 +268,7 @@ namespace SimCore
          //////////////////////////////////////////////
          //Find the material, or make a new one
          std::string NameofMaterial = "WheelWithFrictionMaterial";
-         dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent = 
+         dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =
             dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
          if(worldComponent != NULL)
          {
@@ -280,12 +280,12 @@ namespace SimCore
          positions[0].set(0, 3, 0);
          positions[1].set(3, -5, 0);
          positions[2].set(-3, -5, 0);
-       
+
          // fill in all the data for the wheel
          for(int i = 0 ; i < 3 ; ++i)
          {
-            positions[i].set(positions[i].x, 
-                             positions[i].y, 
+            positions[i].set(positions[i].x,
+                             positions[i].y,
                              positions[i].z);
 
             NxWheelShapeDesc wheelShapeDesc;
@@ -297,13 +297,13 @@ namespace SimCore
                wheelDesc.wheelApproximation  = 10;
                wheelDesc.wheelRadius         = 0.5;
                wheelDesc.wheelWidth          = 0.3;  // 0.1
-               wheelDesc.wheelSuspension     = 1.0;  
+               wheelDesc.wheelSuspension     = 1.0;
                wheelDesc.springRestitution   = 100;
                wheelDesc.springDamping       = 0.5;
-               wheelDesc.springBias          = 0;  
+               wheelDesc.springBias          = 0;
                wheelDesc.maxBrakeForce       = 1;
-               
-               NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF | NX_WF_ACCELERATED | 
+
+               NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF | NX_WF_ACCELERATED |
                NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT
             */
 
@@ -319,14 +319,14 @@ namespace SimCore
             wheelShapeDesc.suspension.damper       = mWheelSpringDamping*heightModifier;
             wheelShapeDesc.suspension.targetValue  = mWheelSpringBias*heightModifier;
             wheelShapeDesc.radius                  = mWheelSizeRadius;
-            wheelShapeDesc.suspensionTravel        = mWheelSuspensionAmount; 
-            wheelShapeDesc.inverseWheelMass        = mWheelInverseMass;	
+            wheelShapeDesc.suspensionTravel        = mWheelSuspensionAmount;
+            wheelShapeDesc.inverseWheelMass        = mWheelInverseMass;
 
             mWheels[i] = static_cast<NxWheelShape*>(actor->createShape(wheelShapeDesc));
-            
+
             if(mWheels[i] != NULL)
             {
-               mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF 
+               mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF
                | NX_WF_ACCELERATED | NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT);
 
                NxMat33 orient;
@@ -342,7 +342,7 @@ namespace SimCore
             {
                // throw exception
             }
-         } 
+         }
 
          //actor->raiseBodyFlag(NX_BF_FROZEN_ROT_Y);
          actor->setCMassOffsetLocalPosition(NxVec3(0,-1, -3));
@@ -362,7 +362,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NECCBoatActor::TickLocal(const dtGame::Message &tickMessage)
+      void NECCBoatActor::OnTickLocal(const dtGame::TickMessage &tickMessage)
       {
          NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
          if(physicsObject == NULL)
@@ -372,8 +372,8 @@ namespace SimCore
             return;
          }
 
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-         
+         float ElapsedTime = tickMessage.GetDeltaSimTime();
+
          if(mBobbingUp)
             mBobbingTimer += ElapsedTime;
          else
@@ -392,7 +392,7 @@ namespace SimCore
 
          if(physicsObject->isSleeping())   physicsObject->wakeUp(1e30);
 
-         // check and see if we are intersection with land, if so, we need to slow down drastically to no 
+         // check and see if we are intersection with land, if so, we need to slow down drastically to no
          // movement left for the player.
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -408,7 +408,7 @@ namespace SimCore
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
          //       The base TickLocal currently queries the vehicle's position and orientation.
-         Platform::TickLocal(tickMessage);
+         Platform::OnTickLocal(tickMessage);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -428,7 +428,7 @@ namespace SimCore
             float minpitchBend   = 1.0f;
             float maxpitchBend   = 1.5f;
             float pitchBend      = 1.0f;
-            
+
             pitchBend = minpitchBend + ((GetMPH() / mVehicleMaxMPH) * (maxpitchBend - minpitchBend));
 
             if(pitchBend > maxpitchBend)
@@ -525,7 +525,7 @@ namespace SimCore
 
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
-            mNotifyFullUpdate = true; 
+            mNotifyFullUpdate = true;
          }
          else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
          {
@@ -541,7 +541,7 @@ namespace SimCore
          fullUpdate = mNotifyFullUpdate;
 
          // A full update or a dirty articulation will allow for at least a partial update.
-         bool forceUpdate = fullUpdate 
+         bool forceUpdate = fullUpdate
             || mNotifyPartialUpdate;
 
          return forceUpdate;
@@ -560,9 +560,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NECCBoatActor::TickRemote(const dtGame::Message &tickMessage)
+      void NECCBoatActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float ElapsedTime = tickMessageGetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);
       }
 
@@ -570,7 +570,7 @@ namespace SimCore
       void NECCBoatActor::AgeiaPrePhysicsUpdate()
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
-         
+
          NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
 
          if(toFillIn != NULL)
@@ -595,7 +595,7 @@ namespace SimCore
          if(mWheels[0] != NULL)
          {
             NxReal value = mWheels[0]->getSteerAngle();
-            osg::Matrix ourMatrix; 
+            osg::Matrix ourMatrix;
             ourTransform.GetRotation(ourMatrix);
 
             osg::Vec3 hpr;
@@ -615,7 +615,7 @@ namespace SimCore
          ourTransform.GetRotation(ourMatrix);
 
          float mphScale = (value / mVehicleMaxMPH);
-         
+
          // to prevent a divide by 0
          if(mphScale == 0)
             mphScale += 0.001f;
@@ -634,7 +634,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NECCBoatActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& 
+      void NECCBoatActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport&
          contactReport, NxActor& ourSelf, NxActor& whatWeHit)
       {
          //printf("VehicleCollision\n");
@@ -647,7 +647,7 @@ namespace SimCore
 
          //osg::ref_ptr<osgSim::DOFTransform> Wheel[4];
          //osg::ref_ptr<osgSim::DOFTransform> steeringWheel;
-         
+
          /*if(!insideVehicle)
          {
             Wheel[BACK_RIGHT] = GetNodeCollector()->GetDOFTransform("dof_wheel_rt_02");
@@ -705,7 +705,7 @@ namespace SimCore
          ourMatrix.M.id();
          GetPhysicsHelper()->GetPhysXObject()->setGlobalPosition(ourMatrix.t);
          GetPhysicsHelper()->GetPhysXObject()->setGlobalOrientation(ourMatrix.M);
-         
+
          // reset forces.
          GetPhysicsHelper()->ResetForces();
 
@@ -717,7 +717,7 @@ namespace SimCore
                mWheels[i]->setMotorTorque(0);
             }
          }
-         
+
          if(mSndIgnition != NULL)
          {
             if(!mSndIgnition->IsPlaying())
@@ -824,7 +824,7 @@ namespace SimCore
                else
                   mCurrentSteeringAngle = 0;
                //steeredThisFrame = false;
-            } 
+            }
          }
          else
          {
@@ -885,7 +885,7 @@ namespace SimCore
          // Make sure we DO hit hte terrain appropriatelys
          BoatToLandReport myReport(this);
          //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = GetPhysicsHelper()->GetPhysXObject()->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, 
+         NxU32 numHits = GetPhysicsHelper()->GetPhysXObject()->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES,
             (1 << 0) | (1 << 23) | (1 << 26) | (1 << 30) | (1 << 31) );
          if(numHits > 0 && myReport.mGotAHit)
          {
@@ -918,24 +918,24 @@ namespace SimCore
          actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());
-       
+
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_ignition),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_VEHICLE_LOOP", "SFX Vehicle Idle Path", dtDAL::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_vehicle_loop),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_COLLISION_HIT", "SFX Collision Hit Path", dtDAL::MakeFunctor(actor,
             &NECCBoatActor::SetSound_effect_collision_hit),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "SOUND_EFFECT_HORN_SOUND", "SFX Horn Path", dtDAL::MakeFunctor(actor, 
+            "SOUND_EFFECT_HORN_SOUND", "SFX Horn Path", dtDAL::MakeFunctor(actor,
             &NECCBoatActor::SetSound_Effect_Horn),
             "What is the filepath / string of the sound effect", SOUND_GROUP));
       }
@@ -960,12 +960,12 @@ namespace SimCore
          RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
 
          if (IsRemote())
-            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, 
+            RegisterForMessages(dtGame::MessageType::TICK_REMOTE,
             dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
       }
 
-   } // namespace 
-}// namespace 
+   } // namespace
+}// namespace
 #endif

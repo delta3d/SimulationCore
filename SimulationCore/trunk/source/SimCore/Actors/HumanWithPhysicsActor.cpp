@@ -61,12 +61,12 @@ namespace SimCore
       , mNotifyChangePosition(false)
       , mNotifyChangeOrient(false)
       , mNotifyChangeVelocity(false)
-      , mMoveRateConstant(30.0f, 30.0f, 0.0f) 
-      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint 
-      // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH 
-      // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be 
+      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
+      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
+      // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH
+      // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be
       // irrelevant of FPS.
-      {  
+      {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
 #ifdef AGEIA_PHYSICS
@@ -91,7 +91,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::TickLocal(const dtGame::Message &tickMessage)
+      void HumanWithPhysicsActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
          mNotifyChangePosition = false;
          mNotifyChangeOrient = false;
@@ -153,8 +153,8 @@ namespace SimCore
                osg::Vec3 globalOrientation;
                dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
                osg::Vec3 nxVecTemp;
-               nxVecTemp.set( mPhysicsHelper->GetActor()->getGlobalPosition().x, 
-                              mPhysicsHelper->GetActor()->getGlobalPosition().y, 
+               nxVecTemp.set( mPhysicsHelper->GetActor()->getGlobalPosition().x,
+                              mPhysicsHelper->GetActor()->getGlobalPosition().y,
                               mPhysicsHelper->GetActor()->getGlobalPosition().z);
 
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
@@ -180,7 +180,7 @@ namespace SimCore
                   if( velocityNearZero )
                   {
                      // DEBUG:
-                     /*std::cout << "\tStopping" 
+                     /*std::cout << "\tStopping"
                         << "\n\tDifference:\t" << velocityDiff
                         << "\n\tOld velocity:\t" << velocityVec
                         << "\n\tNew velocity:\t" << linearVelocity << std::endl;//*/
@@ -192,7 +192,7 @@ namespace SimCore
             }
          }
 #endif
-         Human::TickLocal(tickMessage);
+         Human::OnTickLocal(tickMessage);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ namespace SimCore
          {
             float zValue = mPhysicsHelper->GetCharacterExtents()[2];
 
-            // Note this should really be zValue /= 2. However, jsaf doesnt use 
+            // Note this should really be zValue /= 2. However, jsaf doesnt use
             // the float value for w/e reason. so it has to round the number,
             // this being that the number is 1.5 which turns out to move the character down
             // correctly (well reporting it down correctly). Without subtracting,
@@ -247,14 +247,14 @@ namespace SimCore
             mNotifyChangeOrient = true;
          }
 
-         // DEBUG: 
+         // DEBUG:
          /*if( mNotifyChangeVelocity )
          {
             std::cout << "\n\tUpdate Velocity:\t" << GetVelocityVector() << std::endl;
          }//*/
 
          // Do full updates for now until partial updates are required.
-         return mNotifyChangeVelocity || 
+         return mNotifyChangeVelocity ||
             mNotifyChangeOrient || mNotifyChangePosition;
       }
 
@@ -283,24 +283,24 @@ namespace SimCore
          displacementVector.z = currentTransform[2] - mPreviousTransform[2];
          mPreviousTransform = currentTransform;
 
-         dtGame::GMComponent *comp = 
+         dtGame::GMComponent *comp =
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
 
-         dtAgeiaPhysX::NxAgeiaWorldComponent &ageiaComp = 
+         dtAgeiaPhysX::NxAgeiaWorldComponent &ageiaComp =
             static_cast<dtAgeiaPhysX::NxAgeiaWorldComponent&>(*comp);
          NxVec3 gravity = ageiaComp.GetGravity(mPhysicsHelper->GetSceneName());
-         
+
          displacementVector.x *= mMoveRateConstant[0];
          displacementVector.y *= mMoveRateConstant[1];
-         
-         // Changed by Eddie. This Z value should be set from the gravity of the world, 
+
+         // Changed by Eddie. This Z value should be set from the gravity of the world,
          // not hardcoded to -9.8, as this would overwrite the value supplied by the user
-         // This still isn't entirely correct, as gravity can be set in any direction, 
-         // and should be applied to all values of the displacement vector, 
+         // This still isn't entirely correct, as gravity can be set in any direction,
+         // and should be applied to all values of the displacement vector,
          // not just the Z
          displacementVector.z = gravity[2];//-9.8f;
          //displacementVector.z = 0.0;
-  
+
          //printf("%f %f %f\n", displacementVector.x, displacementVector.y, displacementVector.z);
 
          // Note time needs to be send in here correctly.
@@ -309,19 +309,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::TickRemote(const dtGame::Message &tickMessage)
+      void HumanWithPhysicsActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
-         Human::TickRemote(tickMessage);
+         Human::OnTickRemote(tickMessage);
 #ifdef AGEIA_PHYSICS
          dtCore::Transform transform;
          GetTransform(transform);
-       
-         transform.GetTranslation(mPreviousTransform); 
+
+         transform.GetTranslation(mPreviousTransform);
 
          osg::Vec3 offset = mPhysicsHelper->GetDimensions();
          osg::Vec3 xyz;
          transform.GetTranslation(xyz);
-         
+
          mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(xyz[0], xyz[1], xyz[2] + ( offset[2] / 2 ) ) );
 #endif
       }
@@ -413,7 +413,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, NxActor& ourSelf, NxActor& whatWeHit)
       {
-         
+
       }
 
       //////////////////////////////////////////////////////////////////////////////
@@ -421,7 +421,7 @@ namespace SimCore
       {
          if(shapeHit.shape->getActor().userData != NULL)
          {
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper = 
+            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
                (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(shapeHit.shape->getActor().userData);
             NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
             if (physicsHelper != NULL)
@@ -458,10 +458,10 @@ namespace SimCore
       }
 
       /// Instantiates the actor this proxy encapsulated
-      void HumanWithPhysicsActorProxy::CreateActor() 
-      { 
+      void HumanWithPhysicsActorProxy::CreateActor()
+      {
          HumanWithPhysicsActor* p = new HumanWithPhysicsActor(*this);
-         SetActor(*p); 
+         SetActor(*p);
 
          if(!IsRemote())
          {

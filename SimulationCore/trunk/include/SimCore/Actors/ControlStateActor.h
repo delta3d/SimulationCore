@@ -99,7 +99,7 @@ namespace SimCore
             static const std::string PARAM_NAME_VALUE_MAX;
             static const std::string PARAM_NAME_VALUE;
 
-            ContinuousControl( const std::string& name = "", 
+            ContinuousControl( const std::string& name = "",
                double minValue = 0.0, double maxValue = 0.0, double value = 0.0 );
 
             void SetMinValue( double minValue );
@@ -211,7 +211,7 @@ namespace SimCore
             bool RemoveControl( BaseControl* control );
             bool RemoveDiscreteControl( const std::string& controlName );
             bool RemoveContinuousControl( const std::string& controlName );
-            
+
             DiscreteControl* GetDiscreteControl( const std::string& controlName );
             const DiscreteControl* GetDiscreteControl( const std::string& controlName ) const;
 
@@ -237,7 +237,7 @@ namespace SimCore
             void Clear();
 
             // Periodically do a full actor publish
-            virtual void TickLocal(const dtGame::Message& tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
          protected:
             virtual ~ControlStateActor();
@@ -245,28 +245,28 @@ namespace SimCore
             // NOTE: The following functions are protected in case a subclass
             // needs to operate on new maps for new control types.
             template<class baseType>
-            bool AddControlToMap( baseType& control, 
+            bool AddControlToMap( baseType& control,
                std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap );
 
             template<class baseType>
-            bool RemoveControlFromMap( const std::string& controlName, 
+            bool RemoveControlFromMap( const std::string& controlName,
                std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap );
 
             template<class baseType>
-            baseType* GetControlFromMap( const std::string& controlName, 
+            baseType* GetControlFromMap( const std::string& controlName,
                std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap );
 
             template<class baseType>
-            const baseType* GetControlFromMap( const std::string& controlName, 
+            const baseType* GetControlFromMap( const std::string& controlName,
                const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap ) const;
 
             template<class baseType>
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetMapAsGroupParameter( 
+            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetMapAsGroupParameter(
                const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
                const std::string& groupName ) const;
 
             template<class baseType>
-            void SetMapByGroupParameter( 
+            void SetMapByGroupParameter(
                std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
                const dtDAL::NamedGroupParameter& groupParam );
 
@@ -315,7 +315,7 @@ namespace SimCore
       // TEMPLATE FUNCTION DEFINITIONS
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
-      bool ControlStateActor::AddControlToMap( 
+      bool ControlStateActor::AddControlToMap(
          baseType& control, std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap )
       {
          if (controlMap.insert( std::make_pair( control.GetEncodableName(), &control ) ).second)
@@ -323,13 +323,13 @@ namespace SimCore
             mChanged = true;
             return true;
          }
-         
+
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
-      bool ControlStateActor::RemoveControlFromMap( const std::string& controlName, 
+      bool ControlStateActor::RemoveControlFromMap( const std::string& controlName,
          std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap )
       {
          if (controlMap.erase( controlName ))
@@ -343,7 +343,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
       baseType* ControlStateActor::GetControlFromMap(
-         const std::string& controlName, 
+         const std::string& controlName,
          std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap )
       {
          typedef typename std::map<const std::string, dtCore::RefPtr<baseType> >::iterator iterType;
@@ -355,7 +355,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
       const baseType* ControlStateActor::GetControlFromMap(
-         const std::string& controlName, 
+         const std::string& controlName,
          const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap ) const
       {
          typedef typename std::map<const std::string, dtCore::RefPtr<baseType> >::const_iterator constIterType;
@@ -366,7 +366,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
-      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetMapAsGroupParameter( 
+      dtCore::RefPtr<dtDAL::NamedGroupParameter> ControlStateActor::GetMapAsGroupParameter(
          const std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
          const std::string& groupName ) const
       {
@@ -374,7 +374,7 @@ namespace SimCore
             return NULL;
 
          // Create the group parameter that will represent the control array (map)
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> controlArrayParams 
+         dtCore::RefPtr<dtDAL::NamedGroupParameter> controlArrayParams
             = new dtDAL::NamedGroupParameter( groupName );
 
          // Iterate through the control map and acquire a group parameter representation
@@ -401,7 +401,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       template<class baseType>
-      void ControlStateActor::SetMapByGroupParameter( 
+      void ControlStateActor::SetMapByGroupParameter(
          std::map<const std::string, dtCore::RefPtr<baseType> >& controlMap,
          const dtDAL::NamedGroupParameter& groupParam )
       {
