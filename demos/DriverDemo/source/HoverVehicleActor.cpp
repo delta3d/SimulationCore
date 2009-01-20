@@ -1,13 +1,13 @@
 /*
 * Copyright, 2008, Alion Science and Technology Corporation, all rights reserved.
-* 
+*
 * See the .h file for complete licensing information.
-* 
+*
 * Alion Science and Technology Corporation
 * 5365 Robin Hood Road
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
-* 
+*
 * @author Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
@@ -44,7 +44,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverVehicleActor ::HoverVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy) 
+   HoverVehicleActor ::HoverVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    //, SOUND_GEAR_CHANGE_HIGH(0.0f)
    , mTimeTillJumpReady(0.0f)
@@ -56,7 +56,7 @@ namespace DriverDemo
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(false);
 
-      // create my unique physics helper.  almost all of the physics is on the helper.  
+      // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       HoverVehiclePhysicsHelper *helper = new HoverVehiclePhysicsHelper(proxy);
       helper->SetBaseInterfaceClass(this);
@@ -72,7 +72,7 @@ namespace DriverDemo
       //   RemoveChild(mSndBrake.get());
       //   mSndBrake.release();
       //}
-      
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -87,14 +87,14 @@ namespace DriverDemo
       //std::cout << nodes.c_str() << std::endl;
 
       //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
-      GetHoverPhysicsHelper()->CreateVehicle(ourTransform, 
+      GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
       NxActor* physActor = GetPhysicsHelper()->GetPhysXObject();
 
       if(!IsRemote())
       {
-         GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT | 
+         GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          //GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
 
@@ -108,7 +108,7 @@ namespace DriverDemo
 
       if(IsRemote() && physActor != NULL)
       {
-         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us 
+         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          physActor->clearBodyFlag(NX_BF_KINEMATIC);
       }
@@ -161,7 +161,7 @@ namespace DriverDemo
    void HoverVehicleActor::ResetVehicle()
    {
       SimCore::Actors::BasePhysicsVehicleActor::ResetVehicle();
-      
+
       //if(mSndIgnition != NULL)
       //{
       //   if(!mSndIgnition->IsPlaying())
@@ -190,24 +190,24 @@ namespace DriverDemo
       if( ! IsMobilityDisabled() && GetHasDriver() )
       {
          // FORWARD OR BACKWARD
-         if (keyboard->GetKeyState('w') || (keyboard->GetKeyState('W')) || 
+         if (keyboard->GetKeyState('w') || (keyboard->GetKeyState('W')) ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             accelForward = true;
-         else if (keyboard->GetKeyState('s') || keyboard->GetKeyState('S') || 
+         else if (keyboard->GetKeyState('s') || keyboard->GetKeyState('S') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             accelReverse = true;
 
          // LEFT OR RIGHT
-         if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') || 
+         if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') ||
               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
             accelLeft = true;
-         else if(keyboard->GetKeyState('d') || keyboard->GetKeyState('D') || 
+         else if(keyboard->GetKeyState('d') || keyboard->GetKeyState('D') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
             accelRight = true;
 
       }
 
-      GetHoverPhysicsHelper()->UpdateVehicle(deltaTime, 
+      GetHoverPhysicsHelper()->UpdateVehicle(deltaTime,
          accelForward, accelReverse, accelLeft, accelRight);
 
       // Jump button
@@ -225,7 +225,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::RepositionVehicle(float deltaTime)
    {
-      // Note - this should be refactored. There should be a base physics vehicle HELPER. 
+      // Note - this should be refactored. There should be a base physics vehicle HELPER.
       // See nxageiaFourWheelActor::RepositionVehicle() for more info.
 
       SimCore::Actors::BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
@@ -234,19 +234,19 @@ namespace DriverDemo
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
-   { 
+   {
       NxActor* physObject = GetPhysicsHelper()->GetPhysXObject();
 
-      // The PRE physics update is only trapped if we are remote. It updates the physics 
+      // The PRE physics update is only trapped if we are remote. It updates the physics
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
-      // We do this because we don't own remote vehicles and naturally can't just go 
+      // We do this because we don't own remote vehicles and naturally can't just go
       // physically simulating them however we like. But, the physics scene needs them to interact with.
       if (IsRemote() && physObject != NULL)
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
 
-         // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of 
-         // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating), 
+         // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
+         // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
          // but we want to act like their not.
          osg::Vec3 velocity = GetVelocityVector();
          NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
@@ -267,18 +267,18 @@ namespace DriverDemo
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
       if (!IsRemote())
       {
-         // Pull the position/rotation from the physics scene and put it on our actor in Delta3D. 
-         // This allows attached cameras and other visuals to align. It also enables 
-         // dead reckoning, which causes our position to be published automatically. 
+         // Pull the position/rotation from the physics scene and put it on our actor in Delta3D.
+         // This allows attached cameras and other visuals to align. It also enables
+         // dead reckoning, which causes our position to be published automatically.
 
-         // For this hover vehicle, we really only want to push our translation, not our rotation. 
+         // For this hover vehicle, we really only want to push our translation, not our rotation.
          // We want to bounce in place and move as a sphere. But, we don't want the roll.... ugh... seasick ... vomit!
          NxActor* physXActor = GetHoverPhysicsHelper()->GetPhysXObject();
          if(!physXActor->isSleeping())
          {
             dtCore::Transform ourTransform;
             GetTransform(ourTransform);
-            ourTransform.SetTranslation(physXActor->getGlobalPosition()[0], 
+            ourTransform.SetTranslation(physXActor->getGlobalPosition()[0],
                physXActor->getGlobalPosition()[1], physXActor->getGlobalPosition()[2]);
             SetTransform(ourTransform);
          }
@@ -287,9 +287,9 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::TickLocal( const dtGame::Message& tickMessage )
+   void HoverVehicleActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
-      BaseClass::TickLocal( tickMessage );
+      BaseClass::OnTickLocal( tickMessage );
 
       if( mShield.valid() )
       {
@@ -298,9 +298,9 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::TickRemote( const dtGame::Message& tickMessage )
+   void HoverVehicleActor::OnTickRemote( const dtGame::TickMessage& tickMessage )
    {
-      BaseClass::TickRemote( tickMessage );
+      BaseClass::OnTickRemote( tickMessage );
 
       if( mShield.valid() )
       {
@@ -327,17 +327,17 @@ namespace DriverDemo
       HoverVehicleActor  &actor = static_cast<HoverVehicleActor &>(GetGameActor());
 
       //AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-      //   "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor, 
+      //   "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor,
       //   &HoverVehicleActor::SetVehicleInsideModel),
       //   "What is the filepath / string of the inside model", VEH_GROUP));
-      
+
       //AddProperty(new dtDAL::FloatActorProperty("SOUND_BRAKE_SQUEAL_AMOUNT", "How much MPH for Squeal Brake",
       //   dtDAL::MakeFunctor(actor, &HoverVehicleActor ::SetSound_brake_squeal_amount),
       //   dtDAL::MakeFunctorRet(actor, &HoverVehicleActor ::GetSound_brake_squeal_amount),
       //   "How many mph does the car have to go to squeal used with BRAKE_STOP_NOW_BRAKE_TIME", SOUND_GROUP));
 
       //AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-      //   "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor, 
+      //   "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
       //   &HoverVehicleActor::SetSound_effect_ignition),
       //   "What is the filepath / string of the sound effect", SOUND_GROUP));
 
@@ -369,5 +369,5 @@ namespace DriverDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
    }
 
-} // namespace 
+} // namespace
 #endif

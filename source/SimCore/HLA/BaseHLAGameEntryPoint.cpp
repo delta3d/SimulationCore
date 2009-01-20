@@ -55,7 +55,7 @@ namespace SimCore
       BaseHLAGameEntryPoint::~BaseHLAGameEntryPoint()
       {
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void BaseHLAGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
       {
@@ -107,13 +107,17 @@ namespace SimCore
          camCalc->SetCamera(gm.GetApplication().GetCamera());
          camCalc->SetName("Lifeform");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
-         
+
          camCalc = new dtHLAGM::DDMCameraCalculatorGeographic;
          camCalc->SetCamera(gm.GetApplication().GetCamera());
          camCalc->SetName("Stealth");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*camCalc);
 
          RefPtr<dtHLAGM::DDMMultiEnumeratedCalculator> multiCalc;
+
+         multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
+         multiCalc->SetName("Blip");
+         hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
 
          multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
          multiCalc->SetName("Fire");
@@ -134,10 +138,10 @@ namespace SimCore
          multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
          multiCalc->SetName("TimeValue");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
-         
+
          return hft;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void BaseHLAGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
       {
@@ -152,7 +156,7 @@ namespace SimCore
                      "Name of the federation execution to use");
             parser->getApplicationUsage()->addCommandLineOption("--fedFileName",
                      "Name of the federation file to use");
-            parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource", 
+            parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource",
                      "Name of the federation mapping resource file to load.");
             parser->getApplicationUsage()->addCommandLineOption("--federateName",
                      "A string used to identify this application in a list of federates. It does not have to be unique.");
@@ -201,7 +205,7 @@ namespace SimCore
          else
          {
             // Create a munition specific parameter translator
-            dtCore::RefPtr<HLACustomParameterTranslator> munitionParamTranslator 
+            dtCore::RefPtr<HLACustomParameterTranslator> munitionParamTranslator
                = new HLACustomParameterTranslator;
             // Allow the translator access to the table that maps
             // munition DIS identifiers to the munition names.
@@ -209,7 +213,7 @@ namespace SimCore
             // Enable the HLA component to translate MUNITION_TYPE parameters from network.
             hft->AddParameterTranslator( *munitionParamTranslator );
          }
-         
+
          // called virtual, will get ur overridden version first.
          HLAConnectionComponentSetup(gm);
       }
@@ -218,7 +222,7 @@ namespace SimCore
       void BaseHLAGameEntryPoint::OnShutdown(dtGame::GameApplication &app)
       {
          dtGame::GameManager &gameManager = *app.GetGameManager();//*GetGameManager();
-         dtHLAGM::HLAComponent* hft = 
+         dtHLAGM::HLAComponent* hft =
             static_cast<dtHLAGM::HLAComponent*>(gameManager.GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
 
          gameManager.RemoveComponent(*hft);

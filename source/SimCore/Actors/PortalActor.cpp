@@ -109,9 +109,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////
-      void Portal::TickLocal(const dtGame::Message& tickMessage)
+      void Portal::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         mTimeToSendOut -= static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         mTimeToSendOut -= tickMessage.GetDeltaSimTime();
          if(mTimeToSendOut < 0.0f)
          {
             GetGameActorProxy().NotifyFullActorUpdate();

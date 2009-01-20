@@ -38,7 +38,7 @@ namespace SimCore
       ViewerMaterialActorProxy::ViewerMaterialActorProxy()
       {
          SetClassName("ViewerMaterialActor");
-         
+
       }
 
       //////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ namespace SimCore
             dtDAL::MakeFunctorRet(*actor, &ViewerMaterialActor::GetSceneName),
             "What is the name of the scene this material resides in; only need for physics materials.", PHYSGROUP));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND, 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "SmallHitSoundEffect", "SmallHitSoundEffect",  dtDAL::MakeFunctor(*actor, &ViewerMaterialActor::SetSmallHitSoundEffect),
             "", SFXGROUP));
 
@@ -242,8 +242,8 @@ namespace SimCore
       }
 
       // Creates the actor
-      void ViewerMaterialActorProxy::CreateActor() 
-      { 
+      void ViewerMaterialActorProxy::CreateActor()
+      {
          SetActor(*new ViewerMaterialActor(*this));
       }
 
@@ -279,18 +279,6 @@ namespace SimCore
          SetPhysicsParticleLookupStringFive("");
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void ViewerMaterialActor::TickLocal(const dtGame::Message &tickMessage)
-      {}
-
-      //////////////////////////////////////////////////////////////////////////
-      void ViewerMaterialActor::TickRemote(const dtGame::Message &tickMessage)
-      {}
-
-      //////////////////////////////////////////////////////////////////////////
-      void ViewerMaterialActor::ProcessMessage(const dtGame::Message &message)
-      {}
-
       void ViewerMaterialActor::OnEnteredWorld()
       {
          SimCore::Components::ViewerMaterialComponent* materialComponent = dynamic_cast<SimCore::Components::ViewerMaterialComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("ViewerMaterialComponent"));
@@ -299,7 +287,7 @@ namespace SimCore
             LOG_ERROR("materialComponent Is not initialized, make sure a new one was made before loading a map in");
          }
          else
-            materialComponent->RegisterAMaterialWithComponent(this);    
+            materialComponent->RegisterAMaterialWithComponent(this);
       }
    }
 }

@@ -85,7 +85,7 @@ namespace SimCore
                WEAPON_EFFECT_DRY_FIRE,
                WEAPON_EFFECT_JAM,
                WEAPON_EFFECT_BROKEN,
-               WEAPON_EFFECT_MAX 
+               WEAPON_EFFECT_MAX
             };
 
             // Constructor
@@ -96,7 +96,7 @@ namespace SimCore
 
             // This override function updates time variables in the weapon that
             // cause it to re-fire or go into sleep mode (unregistering from TickMessages)
-            virtual void TickLocal( const dtGame::Message& tickMessage );
+            virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
 
             // Set whether this weapon should send detonation messages for
             // rounds when they impact.
@@ -188,13 +188,13 @@ namespace SimCore
             const MunitionTypeActor* GetMunitionType() const { return mMunitionType.get(); }
 
             // The following two functions are similar to SetMunitionType and GetMunitionType.
-            // However, these functions are used by ActorActorProperties so that the 
+            // However, these functions are used by ActorActorProperties so that the
             // MunitionTypeActor can be set from STAGE or by playback mode in AAR.
             // @param proxy The MunitionTypeActorProxy to be referenced.
             void SetMunitionTypeProxy( dtDAL::ActorProxy* proxy );
             dtCore::DeltaDrawable* GetMunitionTypeDrawable();
 
-            // This function helps to load the MunitionTypeActor that this weapon 
+            // This function helps to load the MunitionTypeActor that this weapon
             // will need for messaging. The actor will attempt to access the
             // MunitionsComponent that contains the MunitionTypeActor.
             // @param munitionTypeName The name of the MunitionTypeActor to be
@@ -238,7 +238,7 @@ namespace SimCore
             // Set the frequency of tracers.
             // @param frequency Every nth round that will be a tracer.
             //
-            // Examples: 
+            // Examples:
             //    0 (no tracers)
             //    1 (every round fired will be a tracer)
             //   10 (every 10th round fired will be a tracer)
@@ -250,7 +250,7 @@ namespace SimCore
             //
             // NOTE: This function caps the value to the shooter's AmmoMax
             void SetAmmoCount( int count )
-            { 
+            {
                mAmmoCount = count <= mAmmoMax ? count < 0 ? 0 : count : mAmmoMax;
             }
             int GetAmmoCount() const { return mAmmoCount; }
@@ -265,7 +265,7 @@ namespace SimCore
             // @param probability The probability ranging from 0.0 to 1.0; 1.0 is 100%
             void SetJamProbability( float probability )
             {
-               mJamProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
+               mJamProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability;
             }
             float GetJamProbability() const { return mJamProbability; }
 
@@ -274,7 +274,7 @@ namespace SimCore
             // @param probability The probability ranging from 0.0 to 1.0; 1.0 is 100%
             void SetFlashProbability( float probability )
             {
-               mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
+               mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability;
             }
             float GetFlashProbability() const { return mFlashProbability; }
 
@@ -315,22 +315,22 @@ namespace SimCore
             // This function will send the message that represents multiple rounds fired.
             // @param quantity The number of rounds fired.
             // @param initialVelocity The velocity of the round when leaving the weapon.
-            // @param target The object that was targeted and that should receive a 
+            // @param target The object that was targeted and that should receive a
             //               Direct Fire message. Specify NULL if this is Indirect Fire.
-            void SendFireMessage( unsigned short quantity, const osg::Vec3& initialVelocity, 
+            void SendFireMessage( unsigned short quantity, const osg::Vec3& initialVelocity,
                const dtCore::Transformable* target = NULL );
 
             // This function is used for sending messages about grenade type rounds
             // @param quantity The number of rounds fired.
             // @param location The world location of the detonation.
             // @param finalVelocity The velocity of the round on impact.
-            // @param target The object that was targeted and that should receive a 
+            // @param target The object that was targeted and that should receive a
             //               Direct Fire message. Specify NULL if this is Indirect Fire.
             //
             // NOTE: proximity type munitions like missiles and mines who
             //       have actual Entity representations are responsible
             //       for sending their own detonation messages.
-            void SendDetonationMessage( unsigned short quantity, const osg::Vec3& finalVelocity, 
+            void SendDetonationMessage( unsigned short quantity, const osg::Vec3& finalVelocity,
                const osg::Vec3& location, const dtCore::Transformable* target = NULL );
 
             void LoadSoundFire( const std::string& filePath );
@@ -369,7 +369,7 @@ namespace SimCore
             bool mSleeping;
 
             // State that can prevent a weapon from firing.
-            bool mJammed; 
+            bool mJammed;
 
             bool mTriggerHeld;
 
@@ -377,15 +377,15 @@ namespace SimCore
             bool mFired;
 
             // Triggers a message to be sent prematurely in TickLocal, ignoring message time.
-            bool mTargetChanged; 
+            bool mTargetChanged;
 
             // Time before another shot can be fired.
             // This time grows from 0 to the target time delta equal or greater than fire rate.
             float mTriggerTime;
 
             // The distance the weapon back up when fired (in meters)
-            float mRecoilDistance; 
-            
+            float mRecoilDistance;
+
             // Time in seconds for the weapon to travel back to rest position.
             float mRecoilRestTime;
 
@@ -459,13 +459,13 @@ namespace SimCore
             std::string mLastTargetID;
 
             // The name of the currently referenced munition type.
-            // This can be used to automatically acquire the 
+            // This can be used to automatically acquire the
             // MunitionTypeActor during OnEnteredWorld
             std::string mMunitionTypeName;
 
             dtCore::ObserverPtr<dtCore::Transformable> mLastTargetObject;
 
-            // The MunitionTypeActor that contains all data describing the 
+            // The MunitionTypeActor that contains all data describing the
             // munition that this weapon fires.
             dtCore::RefPtr<MunitionTypeActor> mMunitionType;
 

@@ -389,11 +389,12 @@ namespace SimCore
                Actors::DayTimeActor* timeActor =
                   static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
 
-               dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
-               dt.SetGMTOffset(-1.0f * dt.GetGMTOffset(), false);
+               float offset = mEphemerisEnvironmentActor->GetDateTime().GetGMTOffset();
+               dtUtil::DateTime dt(dtUtil::DateTime::TimeOrigin::GMT_TIME);
                dt.SetTime(timeActor->GetTime());
+               dt.AdjustTimeZone(offset);
 
-               dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetGMTTime()) * 1000000);
+               dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTimeInSeconds() * 1e6));
             }
          }
          else

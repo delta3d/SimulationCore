@@ -162,7 +162,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::TickLocal(const dtGame::Message &tickMessage)
+      void BasePhysicsVehicleActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
          NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
          if(physicsObject == NULL)
@@ -198,7 +198,7 @@ namespace SimCore
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
          //       The base TickLocal currently queries the vehicle's position and orientation.
-         Platform::TickLocal(tickMessage);
+         Platform::OnTickLocal(tickMessage);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +398,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::TickRemote(const dtGame::Message &tickMessage)
+      void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
       {
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);

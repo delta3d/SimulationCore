@@ -70,12 +70,12 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////
-      void PlatformWithPhysics::TickLocal(const dtGame::Message& tickMessage)
+      void PlatformWithPhysics::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
          // this is so buildings dont get entities tick local method.
          if(!mLoadGeomFromNode)
          {
-            Platform::TickLocal(tickMessage);
+            Platform::OnTickLocal(tickMessage);
          }
       }
 

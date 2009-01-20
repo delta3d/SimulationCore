@@ -53,15 +53,11 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void TextureProjectorActor::TickLocal(const dtGame::Message &tickMessage)
+      void TextureProjectorActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         mCurrentTime += 
-            (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         mCurrentTime +=
+            tickMessage.GetDeltaSimTime();
       }
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void TextureProjectorActor::TickRemote(const dtGame::Message &tickMessage){}
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void TextureProjectorActor::ProcessMessage(const dtGame::Message &message){}
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void TextureProjectorActor::OnEnteredWorld()
       {
@@ -72,7 +68,7 @@ namespace SimCore
             return;
          }
 
-         Components::TextureProjectorComponent* tpComponent = 
+         Components::TextureProjectorComponent* tpComponent =
             dynamic_cast<Components::TextureProjectorComponent*>(
                      GetGameActorProxy().GetGameManager()->GetComponentByName(
                               Components::TextureProjectorComponent::DEFAULT_NAME));
@@ -82,7 +78,7 @@ namespace SimCore
                       make sure it was initialized first!");
             return;
          }
-   
+
          osg::ref_ptr<osg::Image> spotImage  = osgDB::readImageFile( mImageProjectorFile );
          if(spotImage == NULL)
          {
@@ -100,12 +96,12 @@ namespace SimCore
          ourTransform.GetTranslation(currentPos);
          ourTransform.SetLookAt(currentPos, lookAtPos, osg::Vec3(0,0,1));
          ourTransform.Get(ourMatrix);
-         
+
          osg::ref_ptr<osg::Texture2D> tex    = new osg::Texture2D;
          tex->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP );
          tex->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
          tex->setImage( spotImage.get() );
- 
+
          //tx1->setMatrix(ourMatrix);
 
          //osg::ref_ptr<osg::MatrixTransform> tx2 = new osg::MatrixTransform;
@@ -115,13 +111,13 @@ namespace SimCore
 
          //osg::Quat quaterion;
          //quaterion.set(ourMatrix);
-         
+
          mProjector = new Projector(tex.get(), 2);
          mProjector->setPositionAndAttitude(ourMatrix);
          //mProjector->setPositionAndAttitude(ourTransform.GetTranslation(), quaterion);
          mProjector->setFOV(75 * (M_PI/180));
          mProjector->on();
-         
+
          //mProjector->setPositionAndAttitude(ourMatrix);
          mEntityToAttachTo->setStateSet(mProjector.get());
          //mEntityToAttachTo->getParent(0)->addChild(tx2.get());

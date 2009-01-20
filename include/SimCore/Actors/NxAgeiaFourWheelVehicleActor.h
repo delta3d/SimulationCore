@@ -40,7 +40,7 @@ namespace SimCore
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////
-      /* This class extends BasePhysicsVehicle and has behavior specific to just the 4 wheeled 
+      /* This class extends BasePhysicsVehicle and has behavior specific to just the 4 wheeled
        * variety of vehicle. It provides for sounds, brakes, etc...
        */
       class SIMCORE_EXPORT NxAgeiaFourWheelVehicleActor : public BasePhysicsVehicleActor
@@ -52,12 +52,9 @@ namespace SimCore
          protected:
             /// Destructor
             virtual ~NxAgeiaFourWheelVehicleActor();
-         
+
          // INHERITED PUBLIC
          public:
-            //virtual void TickLocal(const dtGame::Message &tickMessage);
-
-            //virtual void TickRemote(const dtGame::Message &tickMessage);
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -70,12 +67,12 @@ namespace SimCore
             //virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
             //   NxActor& ourSelf, NxActor& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+            //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
             //   const NxActor& whatWeHit){}
 
             /**
@@ -98,36 +95,36 @@ namespace SimCore
             //virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
             enum WHEEL_NAMES {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT};
-            
+
             dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper() {
                return static_cast<dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
-            void SetSound_brake_squeal_amount( float value)       {SOUND_BRAKE_SQUEAL_AMOUNT=value;}    
+            void SetSound_brake_squeal_amount( float value)       {SOUND_BRAKE_SQUEAL_AMOUNT=value;}
             void SetSound_gear_change_low( float value)           {SOUND_GEAR_CHANGE_LOW=value;}
-            void SetSound_gear_change_medium( float value)        {SOUND_GEAR_CHANGE_MEDIUM=value;}        
-            void SetSound_gear_change_high( float value)          {SOUND_GEAR_CHANGE_HIGH=value;}          
-            void SetSound_effect_ignition(const std::string& value){SOUND_EFFECT_IGNITION=value;}     
-            void SetSound_effect_vehicle_loop(const std::string& value){SOUND_EFFECT_VEHICLE_LOOP=value;} 
-            void SetSound_effect_brake(const std::string& value)  {SOUND_EFFECT_BRAKE=value;}        
-            void SetSound_effect_acceleration(const std::string& value){SOUND_EFFECT_ACCELERATION=value;} 
+            void SetSound_gear_change_medium( float value)        {SOUND_GEAR_CHANGE_MEDIUM=value;}
+            void SetSound_gear_change_high( float value)          {SOUND_GEAR_CHANGE_HIGH=value;}
+            void SetSound_effect_ignition(const std::string& value){SOUND_EFFECT_IGNITION=value;}
+            void SetSound_effect_vehicle_loop(const std::string& value){SOUND_EFFECT_VEHICLE_LOOP=value;}
+            void SetSound_effect_brake(const std::string& value)  {SOUND_EFFECT_BRAKE=value;}
+            void SetSound_effect_acceleration(const std::string& value){SOUND_EFFECT_ACCELERATION=value;}
             void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
             void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
-               
-            float  GetSound_brake_squeal_amount()   {return SOUND_BRAKE_SQUEAL_AMOUNT;}    
+
+            float  GetSound_brake_squeal_amount()   {return SOUND_BRAKE_SQUEAL_AMOUNT;}
             float  GetSound_gear_change_low()       {return SOUND_GEAR_CHANGE_LOW;}
-            float  GetSound_gear_change_medium()    {return SOUND_GEAR_CHANGE_MEDIUM;}        
-            float  GetSound_gear_change_high()      {return SOUND_GEAR_CHANGE_HIGH;}          
-            const std::string& GetSound_effect_ignition() {return SOUND_EFFECT_IGNITION;}     
-            const std::string& GetSound_effect_vehicle_loop(){return SOUND_EFFECT_VEHICLE_LOOP;} 
-            const std::string& GetSound_effect_brake()    {return SOUND_EFFECT_BRAKE;}        
-            const std::string& GetSound_effect_acceleration(){return SOUND_EFFECT_ACCELERATION;} 
+            float  GetSound_gear_change_medium()    {return SOUND_GEAR_CHANGE_MEDIUM;}
+            float  GetSound_gear_change_high()      {return SOUND_GEAR_CHANGE_HIGH;}
+            const std::string& GetSound_effect_ignition() {return SOUND_EFFECT_IGNITION;}
+            const std::string& GetSound_effect_vehicle_loop(){return SOUND_EFFECT_VEHICLE_LOOP;}
+            const std::string& GetSound_effect_brake()    {return SOUND_EFFECT_BRAKE;}
+            const std::string& GetSound_effect_acceleration(){return SOUND_EFFECT_ACCELERATION;}
             const std::string& GetSound_effect_collision_hit(){return SOUND_EFFECT_COLLISION_HIT;}
 
 
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);
 
-         protected: 
+         protected:
             /// Angles/ steering moving etc done here. Of the updates, this is called first.
             /// This does nothing by default.
             virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -143,7 +140,7 @@ namespace SimCore
 
          // Private vars
          private:
-            
+
             ///////////////////////////////////////////////////
             // for sound
             enum GearSoundLevel {FIRST_GEAR = 1, SECOND_GEAR, THIRD_GEAR, FOURTH_GEAR};

@@ -41,18 +41,18 @@ namespace SimCore
    namespace Actors
    {
       #ifdef AGEIA_PHYSICS
-      class SIMCORE_EXPORT PlatformWithPhysics : public Platform, 
-                                                         public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
+      class SIMCORE_EXPORT PlatformWithPhysics : public Platform,
+                                                         public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
                                                          public VehicleInterface
       #else
-      class SIMCORE_EXPORT PlatformWithPhysics : public Platform, 
+      class SIMCORE_EXPORT PlatformWithPhysics : public Platform,
                                                          public VehicleInterface
       #endif
       {
          public:
             /// constructor for NxAgeiaBaseActor
             PlatformWithPhysics(PlatformActorProxy &proxy);
-           
+
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
@@ -61,7 +61,7 @@ namespace SimCore
             virtual void SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState);
 
             /// your basic tick local
-            virtual void TickLocal(const dtGame::Message& tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             /// since it derives off vehicle interface
             virtual float GetMPH() {return 0.0f;}
@@ -75,17 +75,17 @@ namespace SimCore
             virtual void AgeiaPostPhysicsUpdate() {};
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
                NxActor& ourSelf, NxActor& whatWeHit) {};
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
                const NxActor& whatWeHit){}
 
             // returns the physics helper for use
             dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
-       
+
 
 #else
             void PrePhysicsUpdate();

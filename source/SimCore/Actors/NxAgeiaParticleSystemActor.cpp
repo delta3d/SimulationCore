@@ -91,22 +91,19 @@ NxAgeiaParticleSystemActor::NxAgeiaParticleSystemActor(dtGame::GameActorProxy &p
 ////////////////////////////////////////////////////////////////////
 NxAgeiaParticleSystemActor::~NxAgeiaParticleSystemActor()
 {
-   ResetParticleSystem(); 
+   ResetParticleSystem();
 }
 
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaParticleSystemActor::TickRemote(const dtGame::Message &tickMessage){}
-
-////////////////////////////////////////////////////////////////////
-void NxAgeiaParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
+void NxAgeiaParticleSystemActor::OnTickLocal(const dtGame::Message& tickMessage)
 {
-   float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+   float ElapsedTime = tickMessage.GetDeltaSimTime();
    mSystemsTimeTotalTimeLength += ElapsedTime;
 
    if(mOurParticleList.size() > mAmountofParticlesWeWantSpawned)
       mHitOutParticleLimitDontSpawnAnymore = true;
 
-   while(mOurParticleList.size() > mAmountofParticlesWeWantSpawned)
+   while (mOurParticleList.size() > mAmountofParticlesWeWantSpawned)
    {
       mPhysicsHelper->ReleasePhysXObject(mOurParticleList.front()->GetName().c_str());
       RemoveParticle(*mOurParticleList.front());
@@ -138,7 +135,7 @@ void NxAgeiaParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
       {
          NxActor* physXActor = (*iter)->GetPhysicsActor();
          physXActor->addForce(
-            NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]), 
+            NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]),
                      GetRandBetweenTwoFloats(mForceVectorMax[1], mForceVectorMin[1]),
                      GetRandBetweenTwoFloats(mForceVectorMax[2], mForceVectorMin[2])));
       }*/
@@ -151,7 +148,7 @@ void NxAgeiaParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
          ++iter;
          mOurParticleList.erase(toDelete);
          continue;
-      }   
+      }
       else
       {
          ++iter;
@@ -211,22 +208,22 @@ void NxAgeiaParticleSystemActor::AddParticle()
    ourTranslation[0] = xyz[0];
    ourTranslation[1] = xyz[1];
    ourTranslation[2] = xyz[2];
-   osg::Matrix ourRotationMatrix; 
+   osg::Matrix ourRotationMatrix;
    ourTransform.GetRotation(ourRotationMatrix);
-   
+
    NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
 
    osg::Vec4 positionRandMax;
    positionRandMax.set(mStartingPositionRandMax[0], mStartingPositionRandMax[1], mStartingPositionRandMax[2], 0);
    osg::Vec4 positionRandMin;
    positionRandMin.set(mStartingPositionRandMin[0], mStartingPositionRandMin[1], mStartingPositionRandMin[2], 0);
-   
+
    positionRandMax = ourRotationMatrix.preMult(positionRandMax);
    positionRandMin = ourRotationMatrix.preMult(positionRandMin);
- 
+
    ourTranslation[0] = GetRandBetweenTwoFloats(ourTranslation[0] + positionRandMax[0], ourTranslation[0] + positionRandMin[0]);
-   ourTranslation[1] = GetRandBetweenTwoFloats(ourTranslation[1] + positionRandMax[1], ourTranslation[1] + positionRandMin[1]); 
-   ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]); 
+   ourTranslation[1] = GetRandBetweenTwoFloats(ourTranslation[1] + positionRandMax[1], ourTranslation[1] + positionRandMin[1]);
+   ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]);
 
    NxCollisionGroup collisionGroupToSendIn = 0;
    if(!mSelfInteracting)
@@ -262,27 +259,27 @@ void NxAgeiaParticleSystemActor::AddParticle()
    // Set up the physics values for the object
    if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE)
    {
-      newActor = mPhysicsHelper->SetCollisionBox(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), dimensions, 
+      newActor = mPhysicsHelper->SetCollisionBox(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), dimensions,
                                        mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::SPHERE)
    {
       // load sphere
       newActor = mPhysicsHelper->SetCollisionSphere(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                                          (dimensions[0] + dimensions[1] + dimensions[2]) / 3, 
+                                          (dimensions[0] + dimensions[1] + dimensions[2]) / 3,
                                           mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CAPSULE)
    {
       // load capsule
-      newActor = mPhysicsHelper->SetCollisionCapsule(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
-                                          dimensions[2], (dimensions[0] + dimensions[1]) / 2, 
+      newActor = mPhysicsHelper->SetCollisionCapsule(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
+                                          dimensions[2], (dimensions[0] + dimensions[1]) / 2,
                                           mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(),
                                           _id.ToString().c_str());
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::FLATPLAIN)
    {
-      // load flat plain            
+      // load flat plain
       newActor = mPhysicsHelper->SetCollisionFlatSurface(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
                                              dimensions, collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
    }
@@ -293,13 +290,13 @@ void NxAgeiaParticleSystemActor::AddParticle()
       GetTransform(initialTransform);
       SetTransform(identityTransform);
       // load triangle mesh
-      newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(), 
-		         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)), 
-               NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])), 
-                 mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), 
-				 mPhysicsHelper->GetLoadAsCached(), referenceString, 
+      newActor = mPhysicsHelper->SetCollisionConvexMesh(_particle->mObj->GetOSGNode(),
+		         NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)),
+               NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])),
+                 mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(),
+				 mPhysicsHelper->GetLoadAsCached(), referenceString,
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str());
-      
+
 	  SetTransform(initialTransform);
    }
    else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::TRIANGLEMESH)
@@ -309,23 +306,23 @@ void NxAgeiaParticleSystemActor::AddParticle()
       GetTransform(initialTransform);
       SetTransform(identityTransform);
       // load triangle mesh
-      newActor = mPhysicsHelper->SetCollisionStaticMesh(_particle->mObj->GetOSGNode(), 
-		         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]), 
-                 mPhysicsHelper->GetLoadAsCached(), referenceString, 
+      newActor = mPhysicsHelper->SetCollisionStaticMesh(_particle->mObj->GetOSGNode(),
+		         NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
+                 mPhysicsHelper->GetLoadAsCached(), referenceString,
 				 mPhysicsHelper->GetSceneName(), _id.ToString().c_str(), collisionGroupToSendIn);
 
       SetTransform(initialTransform);
    }
-   
+
    //////////////////////////////////////////////////////////////////////////
    // Set up emitter values on the particle...
    //pNewActor =  mPhysicsHelper->GetPhysXObject(_id.ToString().c_str());
-   
+
    osg::Vec4 linearVelocities;
    linearVelocities[0] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[0], mStartingLinearVelocityScaleMin[0]);
    linearVelocities[1] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[1], mStartingLinearVelocityScaleMin[1]);
    linearVelocities[2] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[2], mStartingLinearVelocityScaleMin[2]);
-   
+
    //linearVelocities = ourRotationMatrix.preMult(linearVelocities);
 
    linearVelocities[0] += mParentsWorldRelativeVelocityVector[0];
@@ -339,7 +336,7 @@ void NxAgeiaParticleSystemActor::AddParticle()
    //   {
    //      float diffone = (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]);
    //      float difftwo = (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]);
-   //      
+   //
    //      if(diffone > difftwo)
    //      {
    //         linearVelocities[i] = -mStartingLinearVelocityScaleInnerConeCap[i];
@@ -354,13 +351,13 @@ void NxAgeiaParticleSystemActor::AddParticle()
    NxVec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
    newActor->setLinearVelocity(vRandVec);
 
-   vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]), 
-                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]), 
+   vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
+                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
                   GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[2], mStartingAngularVelocityScaleMin[2]));
    newActor->setAngularVelocity(vRandVec);
-   if(!mGravityEnabled) 
+   if(!mGravityEnabled)
       newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-   
+
    GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(_particle->mObj.get());
 
    ++mAmountOfParticlesThatHaveSpawnedTotal;
@@ -373,7 +370,7 @@ void NxAgeiaParticleSystemActor::AddParticle()
 }
 
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle, 
+void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
                                                       const std::string &resourceFile)
 {
    // LOAD Object File - most of the time, it will be in the cache
@@ -381,7 +378,7 @@ void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
    dtCore::RefPtr<osg::Node> copiedNode;
    if (!SimCore::Actors::IGActor::LoadFileStatic(resourceFile, cachedOriginalNode, copiedNode, true))
    {
-      /*throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+      /*throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
       std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile, __FILE__, __LINE__);*/
       LOG_WARNING(std::string("Physics Particle System - mesh could not be loaded: ") + resourceFile);
    }
@@ -390,7 +387,7 @@ void NxAgeiaParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
    osg::Group* g = particle.mObj->GetOSGNode()->asGroup();
    g->addChild(copiedNode.get());
    // hold a reference to the cached original to force it to stay in the cache
-   g->setUserData(cachedOriginalNode.get()); 
+   g->setUserData(cachedOriginalNode.get());
 
    // old way
    //_particle->mObj->LoadFile(referenceString);
@@ -440,7 +437,7 @@ void PhysicsParticle::UpdateAlphaAmount()
    //if(mParticleLengthOfTimeOut - mInverseDeletionAlphaTime < mSpawnTimer)
    //{
    //   float alphaAmount = 1.0f * ((mParticleLengthOfTimeOut - mSpawnTimer) / mParticleLengthOfTimeOut);
-      
+
       /*osg::ref_ptr<BlendVisitor> aVis = new BlendVisitor(alphaAmount);
       mObj->GetOSGNode()->accept(*aVis);*/
 
@@ -460,7 +457,7 @@ void NxAgeiaParticleSystemActor::OnEnteredWorld()
    component->RegisterAgeiaHelper(*mPhysicsHelper.get());
 
    // this way we dont turn off defaults to the scene.....
-   // your particle system may not work the way you wanted if this 
+   // your particle system may not work the way you wanted if this
    // wasnt set for w/e reason.
    if(mPhysicsHelper->GetCollisionGroup() != 0)
    {
@@ -475,10 +472,10 @@ void NxAgeiaParticleSystemActor::OnEnteredWorld()
       if (mObjectsStayStaticWhenHit)
          // turn off contact reports
          nxScene.setActorGroupPairFlags(mPhysicsHelper->GetCollisionGroup(), 0,  NX_IGNORE_PAIR);
-      else 
+      else
          // only enable collision flags if the objects should be deleted when they collide with something
          nxScene.setActorGroupPairFlags(mPhysicsHelper->GetCollisionGroup(), 0,  NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
-      */ 
+      */
    }
    else
    {
@@ -487,7 +484,7 @@ void NxAgeiaParticleSystemActor::OnEnteredWorld()
 
    if (mObjectsStayStaticWhenHit)
       mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-   else 
+   else
       mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT);
 }
 
@@ -551,7 +548,7 @@ void NxAgeiaParticleSystemActorProxy::BuildPropertyMap()
    const std::string GROUP = "NxAgeiaParticleSystem";
    const std::string EMMITER_GROUP = "Emitter Properties";
    const std::string PARTICLE_GROUP = "Particle Properties";
-   
+
    dtGame::GameActorProxy::BuildPropertyMap();
 
    //RemoveProperty("Enable Dynamics");
@@ -609,7 +606,7 @@ void NxAgeiaParticleSystemActorProxy::BuildPropertyMap()
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetObjectsStayStaticWhenHit),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetObjectsStayStaticWhenHit),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::FloatActorProperty("ParticleFadeOutInverseDeletion", "ParticleFadeOutInverseDeletion",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetParticleFadeOutInverseDeletion),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetParticleFadeOutInverseDeletion),
@@ -654,37 +651,37 @@ void NxAgeiaParticleSystemActorProxy::BuildPropertyMap()
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetStartingPositionMin),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetStartingPositionMin),
       "", PARTICLE_GROUP ));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("StartingPositionMax", "StartingPositionMax",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetStartingPositionMax),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetStartingPositionMax),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMin", "LinearVelocityStartMin",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetLinearVelocityStartMin),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetLinearVelocityStartMin),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMax", "LinearVelocityStartMax",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetLinearVelocityStartMax),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetLinearVelocityStartMax),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("EmitterNoZoneEmitterCone", "EmitterNoZoneEmitterCone",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetEmitterNoZoneEmitteerCone),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetEmitterNoZoneEmitteerCone),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMin", "AngularVelocityStartMin",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetAngularVelocityStartMin),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetAngularVelocityStartMin),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMax", "AngularVelocityStartMax",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetAngularVelocityStartMax),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetAngularVelocityStartMax),
       "", PARTICLE_GROUP));
-   
+
    AddProperty(new dtDAL::Vec3ActorProperty("OverTimeForceVecMin", "OverTimeForceVecMin",
       dtDAL::MakeFunctor(actor, &NxAgeiaParticleSystemActor::SetOverTimeForceVecMin),
       dtDAL::MakeFunctorRet(actor, &NxAgeiaParticleSystemActor::GetOverTimeForceVecMin),

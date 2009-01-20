@@ -42,7 +42,7 @@ namespace SimCore
    {
       // actor
 #ifdef AGEIA_PHYSICS
-      class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human, public dtAgeiaPhysX::NxAgeiaPhysicsInterface, 
+      class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human, public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
                                                                              public dtAgeiaPhysX::NxAgeiaCharacterInterface
 #else
       class SIMCORE_EXPORT  HumanWithPhysicsActor : public Human
@@ -51,24 +51,24 @@ namespace SimCore
          public:
 
             /// Constructor
-            HumanWithPhysicsActor(dtGame::GameActorProxy &proxy);
+            HumanWithPhysicsActor(dtGame::GameActorProxy& proxy);
 
             /// Destructor
             virtual ~HumanWithPhysicsActor();
-      
+
             /**
             * This method is an invokable called when an object is local and
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickLocal(const dtGame::Message &tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             /**
             * This method is an invokable called when an object is remote and
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void TickRemote(const dtGame::Message &tickMessage);
+            virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
             virtual void SetPosition( const osg::Vec3& position );
 
@@ -78,8 +78,8 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
-            virtual void SetLastKnownRotation(const osg::Vec3 &vec);
-            virtual void SetLastKnownTranslation(const osg::Vec3 &vec);
+            virtual void SetLastKnownRotation(const osg::Vec3& vec);
+            virtual void SetLastKnownTranslation(const osg::Vec3& vec);
 
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
@@ -88,7 +88,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
 
             //////////////////////////////////////////////////////////////////////////////
-            //Ageia Callbacks 
+            //Ageia Callbacks
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
             virtual void AgeiaPrePhysicsUpdate();
 
@@ -110,7 +110,7 @@ namespace SimCore
             //////////////////////////////////////////////////////////////////////////////
 
             dtAgeiaPhysX::NxAgeiaCharacterHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
-            
+
          private:
             /// our helper
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
@@ -118,10 +118,10 @@ namespace SimCore
 
          public:
             void SetMovementTransform(const osg::Vec3& movement);
-            
+
          private:
 
-            bool        mAcceptInput;     // for ai vs human. 
+            bool        mAcceptInput;     // for ai vs human.
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;
             bool        mNotifyChangeVelocity;
@@ -130,7 +130,7 @@ namespace SimCore
             osg::Vec3   mSentOverTransform;
             float mTimeForSendingDeadReckoningInfoOut;
             float mTimesASecondYouCanSendOutAnUpdate;
-      }; 
+      };
 
       // proxy
       class SIMCORE_EXPORT HumanWithPhysicsActorProxy : public HumanActorProxy

@@ -141,7 +141,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponFlashActor::SetShaderName( const std::string& shaderName )
-      { 
+      {
          mShaderName = shaderName;
 
          if( ! mShaderName.empty() && ! mShaderGroup.empty() )
@@ -171,10 +171,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponFlashActor::TickLocal( const dtGame::Message& tickMessage )
+      void WeaponFlashActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         const dtGame::TickMessage& tickMsg = dynamic_cast<const dtGame::TickMessage&> (tickMessage);
-         float timeDelta = tickMsg.GetDeltaSimTime();
+         float timeDelta = tickMessage.GetDeltaSimTime();
 
          if( mFlashTime > 0.0 && mCurTime < mFlashTime )
          {
@@ -242,7 +241,7 @@ namespace SimCore
             "The group name of the volumetric line shader to be used."));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Particle Effect", "Particle Effect", 
+            "Particle Effect", "Particle Effect",
             dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetParticleEffect),
             "The particle system that will represent the flash effect."));
       }

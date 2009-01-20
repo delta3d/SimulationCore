@@ -69,6 +69,8 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_MODEL_ROTATION;
             static const dtUtil::RefString PROPERTY_ENTITY_TYPE;
             static const dtUtil::RefString PROPERTY_MAPPING_NAME;
+            static const dtUtil::RefString PROPERTY_FORCE;
+            static const dtUtil::RefString PROPERTY_GROUND_OFFSET;
 
             class SIMCORE_EXPORT DomainEnum : public dtUtil::Enumeration
             {
@@ -517,14 +519,9 @@ namespace SimCore
             osg::Vec3 GetModelRotation() const;
 
             /**
-             * Overridden to handle dead-reckoning and other such issues related to rendering a remote actor.
-             */
-            virtual void TickRemote(const dtGame::Message& tickMessage);
-
-            /**
              * Overridden to handle dead-reckoning and other such issues related to rendering a local actor.
              */
-            virtual void TickLocal(const dtGame::Message& tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             virtual void ProcessMessage(const dtGame::Message& message);
 
@@ -557,13 +554,13 @@ namespace SimCore
             void SetEntityType( const std::string& entityType );
             std::string GetEntityType() const;
 
-            /** 
-             * Gives a local entity an opportunity to respond to damage from a munition. 
-             * Called from the MunitionsComponent via the DamageHelper. Typically called 
+            /**
+             * Gives a local entity an opportunity to respond to damage from a munition.
+             * Called from the MunitionsComponent via the DamageHelper. Typically called
              * from ProcessDetonationMessage().
-             * NOTE - Damage and forces have already been applied before this method is called. 
+             * NOTE - Damage and forces have already been applied before this method is called.
              */
-            virtual void RespondToHit(const SimCore::DetonationMessage& message, 
+            virtual void RespondToHit(const SimCore::DetonationMessage& message,
                const SimCore::Actors::MunitionTypeActor& munition);
 
 

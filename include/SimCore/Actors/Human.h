@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author David Guthrie 
+ * @author David Guthrie
  */
 #ifndef HUMAN_H_
 #define HUMAN_H_
@@ -114,7 +114,7 @@ namespace SimCore
          private:
             void CreateOperators();
             HumanOperator* AddOperator(const std::string& name);
-            
+
             dtAI::PlannerHelper& mPlannerHelper;
             dtCore::RefPtr<dtAnim::AnimationHelper> mAnimHelper;
             NameOperMap mOperators;
@@ -204,12 +204,12 @@ namespace SimCore
 
             /// Changes the human's stance
             void SetStance(HumanActorProxy::StanceEnum& stance);
-            /// @return the human's stance 
+            /// @return the human's stance
             HumanActorProxy::StanceEnum& GetStance() const;
 
             /// Changes the human's first weapon state
             void SetPrimaryWeaponState(HumanActorProxy::WeaponStateEnum& weaponState);
-            /// @return the human's first weapon state 
+            /// @return the human's first weapon state
             HumanActorProxy::WeaponStateEnum& GetPrimaryWeaponState() const;
 
             /// When the state is updated, this is called internally to update the plan.
@@ -223,14 +223,14 @@ namespace SimCore
             const dtAI::Planner::OperatorList& GetCurrentPlan();
 
             /**
-             * Sets the maximum amount of time per iteration the planner 
+             * Sets the maximum amount of time per iteration the planner
              * can use to try and generate an animation sequence
              * @param time The new time to use
              */
             void SetMaxTimePerIteration(double time) { mMaxTimePerIteration = time; }
 
             /**
-             * Returns the maximum amount of time to take generating 
+             * Returns the maximum amount of time to take generating
              * animation sequences
              * @return mMaxTimePerIteration
              */
@@ -242,8 +242,8 @@ namespace SimCore
             void SetWeaponMeshName(const std::string& meshName) { mWeaponMeshName = meshName; }
 
             /*virtual*/ void OnEnteredWorld();
-            /*virtual*/ void TickRemote(const dtGame::Message& tickRemote);
-            /*virtual*/ void TickLocal(const dtGame::Message& tickLocal);
+            /*virtual*/ void OnTickRemote(const dtGame::TickMessage& tickRemote);
+            /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickLocal);
 
          protected:
             virtual ~Human();
@@ -284,7 +284,7 @@ namespace SimCore
       {
          public:
             typedef BasicStanceEnum EnumValueType;
-            
+
             BasicStanceState();
             ~BasicStanceState();
 
@@ -292,7 +292,7 @@ namespace SimCore
 
             BasicStanceEnum& GetValue() const { return GetStance(); }
             void SetValue(BasicStanceEnum& pStance){ SetStance(pStance); }
-            
+
             BasicStanceEnum& GetStance() const;
             void SetStance(BasicStanceEnum& newStance);
 
