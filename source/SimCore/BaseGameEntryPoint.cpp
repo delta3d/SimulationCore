@@ -251,7 +251,7 @@ namespace SimCore
    }
 
 
-   void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager &gm)
+   void BaseGameEntryPoint::AssignProjectContext(dtGame::GameManager& gm)
    {
       dtUtil::FileUtils& fileUtils = dtUtil::FileUtils::GetInstance();
       std::string finalProjectPath;
@@ -302,9 +302,6 @@ namespace SimCore
          }
          finalProjectPath = PROJECT_CONTEXT_DIR;
       }
-      //The project sets this and setting CEGUI is no longer necessary.
-      //dtCore::SetDataFilePathList(dtCore::GetDataFilePathList() + ":" + finalProjectPath + "/CEGUI");
-
    }
 
    void BaseGameEntryPoint::PreLoadMap()

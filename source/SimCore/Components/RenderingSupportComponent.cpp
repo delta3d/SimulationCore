@@ -690,7 +690,7 @@ namespace SimCore
 
          std::vector<dtDAL::ActorProxy*> toFill;
 
-         if(mCullVisitor->GetLandActor() == NULL)
+         if (mCullVisitor->GetLandActor() == NULL)
          {
             SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
             GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
@@ -703,7 +703,7 @@ namespace SimCore
             }
          }
 
-         if(mCullVisitor->GetTerrainNode() == NULL)
+         if (mCullVisitor->GetTerrainNode() == NULL)
          {
             GetGameManager()->FindActorsByName("Terrain", toFill);
             if(!toFill.empty())
