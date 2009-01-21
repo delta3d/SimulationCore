@@ -208,7 +208,7 @@ void NxAgeiaTests::TestParticleSystemPerformance()
       {
          NxAgeiaParticleSystemActor* partActor = particleActors[j];
          if (partActor != NULL)
-            partActor->OnTickLocal(*tickMessage.get());
+            partActor->OnTickLocal(*tickMessage);
       }
    }
    timerEnd = timer.Tick();
