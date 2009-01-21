@@ -562,7 +562,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
-         float ElapsedTime = tickMessageGetDeltaSimTime();
+         float ElapsedTime = tickMessage.GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);
       }
 

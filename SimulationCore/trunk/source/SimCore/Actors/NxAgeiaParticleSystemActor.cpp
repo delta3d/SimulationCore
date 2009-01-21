@@ -95,7 +95,7 @@ NxAgeiaParticleSystemActor::~NxAgeiaParticleSystemActor()
 }
 
 ////////////////////////////////////////////////////////////////////
-void NxAgeiaParticleSystemActor::OnTickLocal(const dtGame::Message& tickMessage)
+void NxAgeiaParticleSystemActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
 {
    float ElapsedTime = tickMessage.GetDeltaSimTime();
    mSystemsTimeTotalTimeLength += ElapsedTime;
