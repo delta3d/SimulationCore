@@ -250,7 +250,7 @@ namespace SimCore
       float PositionMarker::CalculateCurrentAlpha() const
       {
          float fadeOutFraction = CalculateFadeOutFraction();
-         float alpha = 1.0 - (fadeOutFraction * fadeOutFraction);
+         float alpha = mInitialAlpha - (fadeOutFraction * fadeOutFraction);
          return alpha;
       }
 
