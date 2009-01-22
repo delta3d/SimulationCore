@@ -241,6 +241,13 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////
       void TestOrientationLimits( float limitLeftRight, float limitUpDown )
       {
+         // Reset the actual values before we try to move and test.
+         dtCore::Transform attachedTrans;
+         mAttachable->GetTransform(attachedTrans, dtCore::Transformable::REL_CS);
+         attachedTrans.SetTranslation(0.0f, 0.0f, 0.0f);
+         attachedTrans.SetRotation(0.0f, 0.0f, 0.0f);
+         mAttachable->SetTransform(attachedTrans, dtCore::Transformable::REL_CS);
+
          mMotionModel->SetLeftRightLimit(limitLeftRight);
          mMotionModel->SetUpDownLimit(limitUpDown);
 
