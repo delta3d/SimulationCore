@@ -57,7 +57,7 @@ IF (AUTO_RUN_TESTS)
   IF (MSVC)
     ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
-                          COMMAND "\"$(TargetPath)\""
+                          COMMAND $(TargetPath)
                           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} -nochdir
                           COMMENT "Run the unit tests")  
   ELSE (MSVC)
