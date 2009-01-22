@@ -91,9 +91,9 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////
       void PositionMarker::SetReportTime(double reportTime)
       {
-         //mReportTime = reportTime;
+         mReportTime = reportTime;
 
-         mReportTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
+         //mReportTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_INFO))
          {
             std::ostringstream ss;
