@@ -47,7 +47,7 @@ namespace SimCore
     */
    AttachedMotionModel::AttachedMotionModel(dtCore::Keyboard* keyboard,
                                     dtCore::Mouse* mouse) : MotionModel("AttachedMotionModel"),
-      mMaximumMouseTurnSpeed(1440.0f),
+      mMaximumMouseTurnSpeed(90.0f), // 1440.0f - old value when we used time
       mKeyboardTurnSpeed(70.0f), 
       mCenterMouse(true)
    {
@@ -151,7 +151,7 @@ namespace SimCore
          GetTarget() != NULL &&
          IsEnabled())
       {
-         //get the real time.
+         //get the real time. 
          const double deltaFrameTime = static_cast<const double*>(data->userData)[1];
    
          dtCore::Transform transform;
@@ -168,7 +168,7 @@ namespace SimCore
          }
          else if (mTurnLeftRightMouseAxis->GetState() != 0)
          {
-            float change = float(mTurnLeftRightMouseAxis->GetState() * mMaximumMouseTurnSpeed * deltaFrameTime);
+            float change = float(mTurnLeftRightMouseAxis->GetState() * mMaximumMouseTurnSpeed);// * deltaFrameTime);
             //prevent huge jumps.
             dtUtil::Clamp(change, -15.0f, 15.0f);
             hpr[0] -= change;
@@ -183,7 +183,7 @@ namespace SimCore
          } 
          else if (mLookUpDownMouseAxis->GetState() != 0)
          {
-            float change = float(mLookUpDownMouseAxis->GetState() * mMaximumMouseTurnSpeed * deltaFrameTime);
+            float change = float(mLookUpDownMouseAxis->GetState() * mMaximumMouseTurnSpeed);// * deltaFrameTime);
             //prevent huge jumps.
             dtUtil::Clamp(change, -15.0f, 15.0f);
             hpr[1] += change;

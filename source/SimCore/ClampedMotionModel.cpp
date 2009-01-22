@@ -144,7 +144,7 @@ namespace SimCore
             if( mEnabledLeftRight && GetLeftRightMouseAxis()->GetState() != 0)
             {
                setHPR = true;
-               double change = GetLeftRightMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
+               double change = GetLeftRightMouseAxis()->GetState() * GetMaximumMouseTurnSpeed();// * deltaFrameTime;
 
                //prevent huge jumps.
                dtUtil::Clamp(change, -15.0, 15.0);
@@ -155,7 +155,7 @@ namespace SimCore
             if( mEnabledUpDown && GetUpDownMouseAxis()->GetState() != 0)
             {
                setHPR = true;
-               double change = GetUpDownMouseAxis()->GetState() * GetMaximumMouseTurnSpeed() * deltaFrameTime;
+               double change = GetUpDownMouseAxis()->GetState() * GetMaximumMouseTurnSpeed();// * deltaFrameTime;
 
                //prevent huge jumps.
                dtUtil::Clamp(change, -15.0, 15.0);
@@ -169,7 +169,7 @@ namespace SimCore
                // Use a local variable to get around Vec3 Real-Type ambiguity (double vs. float)
                double value;
 
-               // Clamp up-down - independtly.
+               // Clamp up-down - independently.
                if( mUpLimit >= 0.0 || mDownLimit >= 0.0)
                {
                   value = hpr[1];
