@@ -444,15 +444,16 @@ namespace StealthGM
          dtCore::Camera *camera = GetGameManager()->GetApplication().GetCamera();
          float avgFoV = 0.5f * (camera->GetHorizontalFov() + camera->GetVerticalFov());
          float cameraFoVScalar = (75.0f / avgFoV);
+         float maxMouseTurnSpeed = 70.0f / cameraFoVScalar;
 
          if (mAttachedMM != NULL)
          {
-            mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f / cameraFoVScalar);
-            mAttachedMM->SetKeyboardTurnSpeed(70.0f / cameraFoVScalar);
+            mAttachedMM->SetMaximumMouseTurnSpeed(maxMouseTurnSpeed); // old used to be 1440 before time was removed
+            mAttachedMM->SetKeyboardTurnSpeed(maxMouseTurnSpeed);
          }
          if (mStealthMM != NULL)
          {
-            mStealthMM->SetMaximumTurnSpeed(90.0f / cameraFoVScalar);
+            mStealthMM->SetMaximumTurnSpeed(maxMouseTurnSpeed);
          }
 
          // Reset count down
@@ -1311,36 +1312,6 @@ namespace StealthGM
 
       GetGameManager()->SendMessage(*msg);
 
-      // Update the camera rotation speed if the tool has
-      // differing field of view.
-      if (mAttachedMM.valid())
-      {
-         /*if (msgType == SimCore::MessageType::BINOCULARS ||
-            msgType == SimCore::MessageType::LASER_RANGE_FINDER)
-         {
-            if (enable)
-            {
-               mAttachedMM->SetMaximumMouseTurnSpeed(200.0);
-               mAttachedMM->SetKeyboardTurnSpeed(10.0);
-
-               mStealthMM->SetMaximumTurnSpeed(90.0f/7.0f);
-            }
-            else
-            {
-               mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
-               mAttachedMM->SetKeyboardTurnSpeed(70.0f);
-
-               mStealthMM->SetMaximumTurnSpeed(90.0f);
-            }
-         }
-         else
-         {
-            mAttachedMM->SetMaximumMouseTurnSpeed(1440.0f);
-            mAttachedMM->SetKeyboardTurnSpeed(70.0f);
-
-            mStealthMM->SetMaximumTurnSpeed(90.0f);
-         }*/
-      }
    }
 
    /////////////////////////////////////////////////////////////////////////////////
@@ -1367,6 +1338,8 @@ namespace StealthGM
             i->second->Enable(false);
          }
       }
+      
+      // Note - The motion model turn speeds was moved to HandlePeriodicProcessing()
    }
 
    /////////////////////////////////////////////////////////////////////////////////
