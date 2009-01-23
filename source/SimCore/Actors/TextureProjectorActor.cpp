@@ -94,7 +94,7 @@ namespace SimCore
          ourTransform.GetTranslation(lookAtPos);
          lookAtPos[2] -= 10;
          ourTransform.GetTranslation(currentPos);
-         ourTransform.SetLookAt(currentPos, lookAtPos, osg::Vec3(0,0,1));
+         ourTransform.Set(currentPos, lookAtPos, osg::Vec3(0,0,1));
          ourTransform.Get(ourMatrix);
 
          osg::ref_ptr<osg::Texture2D> tex    = new osg::Texture2D;
