@@ -25,6 +25,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 #include <SimCoreWidgets/SimCoreWidgetCollectionPlugin.h>
 #include <QtCore/QtPlugin>
 
@@ -50,3 +53,4 @@ QList<QDesignerCustomWidgetInterface*> SimCoreWidgetCollectionPlugin::customWidg
 // LIBRARY EXPORT MACRO
 ////////////////////////////////////////////////////////////////////////////////
 Q_EXPORT_PLUGIN(SimCoreWidgetCollectionPlugin)
+*/

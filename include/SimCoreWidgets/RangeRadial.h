@@ -24,6 +24,9 @@
 
 #ifndef RANGE_RADIAL_H
 #define RANGE_RADIAL_H
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
@@ -121,5 +124,5 @@ class QDESIGNER_WIDGET_EXPORT RangeRadial : public QWidget
       QColor mColorPie;
       QColor mColorPieFocus;
 };
-
+*/
 #endif

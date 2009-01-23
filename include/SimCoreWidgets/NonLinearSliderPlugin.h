@@ -24,6 +24,9 @@
 
 #ifndef NONLINEAR_SLIDER_PLUGIN_H
 #define NONLINEAR_SLIDER_PLUGIN_H
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
@@ -48,5 +51,5 @@ class NonLinearSliderPlugin : public SimCoreWidgetsPlugin
    protected:
    private:
 };
-
+*/
 #endif

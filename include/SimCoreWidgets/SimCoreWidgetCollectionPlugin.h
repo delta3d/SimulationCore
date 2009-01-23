@@ -25,6 +25,10 @@
 #ifndef SIMCORE_WIDGET_COLLECTION_PLUGIN_H
 #define SIMCORE_WIDGET_COLLECTION_PLUGIN_H
 
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
+
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,5 +50,5 @@ class SimCoreWidgetCollectionPlugin : public QObject, public QDesignerCustomWidg
       // INTERFACE METHOD ------------------------------------------------------
       QList<QDesignerCustomWidgetInterface*> customWidgets() const;
 };
-
+*/
 #endif
