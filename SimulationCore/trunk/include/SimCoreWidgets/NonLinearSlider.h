@@ -21,6 +21,9 @@
  *
  * @author Chris Rodgers
  */
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 
 #ifndef NONLINEAR_SLIDER_H
 #define NONLINEAR_SLIDER_H
@@ -138,5 +141,5 @@ class QDESIGNER_WIDGET_EXPORT NonLinearSlider : public QWidget
       QLabel* mLabelMax;
       QLabel* mLabelMiddle;
 };
-
+*/
 #endif

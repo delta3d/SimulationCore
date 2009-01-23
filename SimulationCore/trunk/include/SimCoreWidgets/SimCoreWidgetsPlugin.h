@@ -28,6 +28,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 
 
@@ -64,5 +68,5 @@ class SimCoreWidgetsPlugin : public QObject, public QDesignerCustomWidgetInterfa
       QString mWhatsThis;
       QString mToolTip;
 };
-
+*/
 #endif

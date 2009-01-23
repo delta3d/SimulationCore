@@ -21,6 +21,9 @@
  *
  * @author Chris Rodgers
  */
+// Commented this out. This has build problems on a lot of computers. So, commenting it out 
+// until that is eventually resolved.
+/*
 
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
@@ -471,3 +474,4 @@ void RangeRadial::updateHandles()
 
    update();
 }
+*/
