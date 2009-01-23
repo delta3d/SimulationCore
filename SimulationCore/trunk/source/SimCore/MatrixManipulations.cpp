@@ -34,12 +34,12 @@ namespace SimCore
    namespace Components
    {
       ///////////////////////////////////////////////////////////////////////////////////
-      void Matrix_Manipulations::ToggleCamera(MATRIX_MANIPULATIONS_MODES camTypeToUse)         
+      void Matrix_Manipulations::ToggleCamera(MATRIX_MANIPULATIONS_MODES camTypeToUse)
       {
          mCurrentMode = camTypeToUse;
 
          // if outside what we want to use right now, put it back to a default mode
-         if(mCurrentMode >= REARVIEW || mCurrentMode <= FLY_MODE) 
+         if(mCurrentMode >= REARVIEW || mCurrentMode <= FLY_MODE)
             mCurrentMode =  ATTACH_TO_UNLOCKED;
 
          mHPROffset.set(0,0);
@@ -60,7 +60,7 @@ namespace SimCore
                   LOG_WARNING("ourMouse passed into Matrix_Manipulations was null, and i need that for my math.");
                   return;
                }
-            
+
                ////////////////////////////////////////////////////////////////////////////
                //       THIS CODE WILL DO ROTATION FROM ACTOR SENT IN                    //
                ////////////////////////////////////////////////////////////////////////////
@@ -78,8 +78,8 @@ namespace SimCore
                dtUtil::MatrixUtil::MatrixToHpr(hpr, additionRotMatrix);
 
                osg::Vec3 originalLoc;
-               originalLoc.set(inMatrix[12],inMatrix[13],inMatrix[14]);               
-               
+               originalLoc.set(inMatrix[12],inMatrix[13],inMatrix[14]);
+
                osg::Matrix temporaryRotMatrix(&inMatrix);
                mHPROffset -= mousePos;
                osg::Matrix xMatrix = temporaryRotMatrix.rotate(mousePos[0], 0.0f, 0.0f, -1.0f);
@@ -111,7 +111,7 @@ namespace SimCore
                position[0]= inMatrix[12];
                position[1]= inMatrix[13];
                position[2]= inMatrix[14];
-               
+
                //// Move in the X vector
                osg::Vec3 moveX;
                moveX[0] = inMatrix[0];
@@ -119,7 +119,7 @@ namespace SimCore
                moveX[2] = inMatrix[2];
                moveX *= inoutOffset[0];
                position += moveX;
-               
+
                //// Move in the Y vector
                osg::Vec3 movey;
                movey[0] = inMatrix[4];
@@ -141,14 +141,14 @@ namespace SimCore
                outMatrix[14] = position[2];
 
                // very last
-               ourMouse->SetPosition(osg::Vec2(0.0f, 0.0f));              
+               ourMouse->SetPosition(osg::Vec2(0.0f, 0.0f));
             }
             break;
 
             case HARDATTACH_MODE:
             {
                dtCore::Transform camera2;
-               
+
                osg::Vec3 position;
                position[0]= inMatrix[12];
                position[1]= inMatrix[13];
@@ -231,7 +231,7 @@ namespace SimCore
                {
                   osg::Matrix matrixLoving = mSoftAttachList.front();
                   mSoftAttachList.pop_front();
-                  
+
                   for(int i = 0 ; i < 16; ++i)
                      outMatrix[i] = matrixLoving.ptr()[i];
                }
@@ -284,7 +284,7 @@ namespace SimCore
                inMatrix[14] = position[2];
 
                osg::Matrix currentMatrix(&inMatrix);
-               camera2.SetLookAt(inMatrix[12], inMatrix[13], inMatrix[14], originalPosition[0], 
+               camera2.Set(inMatrix[12], inMatrix[13], inMatrix[14], originalPosition[0],
                                                                   originalPosition[1],
                                                                   originalPosition[2],0,0,1);
 
@@ -318,8 +318,8 @@ namespace SimCore
                   {
                      //set our new position/rotation
                      xyz[2] = hitPt[2];
-                     camera2.SetTranslation(xyz);  
-                     camera2.SetLookAt(xyz, originalPosition, osg::Vec3(0,0,1));
+                     camera2.SetTranslation(xyz);
+                     camera2.Set(xyz, originalPosition, osg::Vec3(0,0,1));
                   }
                }
 
@@ -344,7 +344,7 @@ namespace SimCore
          }
       }
 
-      void Matrix_Manipulations::HPRClamp(osg::Vec3& clampValues, osg::Vec3& originalOrientateClamp, 
+      void Matrix_Manipulations::HPRClamp(osg::Vec3& clampValues, osg::Vec3& originalOrientateClamp,
                                           osg::Vec3& modifiedOrientateClamp, osg::Vec3& outGoingOrientateClamp)
       {
          float CapArray[3][2];
@@ -371,7 +371,7 @@ namespace SimCore
 
          osg::Vec3 newOrientateClamp = modifiedOrientateClamp;
          bool hadToNegate[] = {false, false, false};
-         
+
          for(int i = 0 ; i < 2; i++)
          {
             if(modifiedOrientateClamp[i] < 0)
@@ -387,14 +387,14 @@ namespace SimCore
                {
                   float aValue = sqrt((newOrientateClamp[i] - CapArray[i][1]) * (newOrientateClamp[i] - CapArray[i][1]));
                   float bValue = sqrt((newOrientateClamp[i] - CapArray[i][0]) * (newOrientateClamp[i] - CapArray[i][0]));
-                  
+
                   if(aValue < bValue)
                   {
-                     newOrientateClamp[i] = CapArray[i][1];   
+                     newOrientateClamp[i] = CapArray[i][1];
                   }
                   else
                   {
-                     newOrientateClamp[i] = CapArray[i][0];   
+                     newOrientateClamp[i] = CapArray[i][0];
                   }
 
                   newOrientateClamp[i] += subTractAmount[i];

@@ -52,8 +52,8 @@ namespace SimCore
       const std::string HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP("AdditionalMap");
 
       ///////////////////////////////////////////////////////////////////////
-      HLAConnectionComponent::HLAConnectionComponent(const std::string &name) : 
-         dtGame::GMComponent(name), 
+      HLAConnectionComponent::HLAConnectionComponent(const std::string &name) :
+         dtGame::GMComponent(name),
          mRidFile("RTI.rid"), // default to an RTI.rid file so that there is something to find.
          mState(&ConnectionState::STATE_NOT_CONNECTED)
       {
@@ -69,19 +69,19 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       dtHLAGM::HLAComponent& HLAConnectionComponent::GetHLAComponent()
       {
-         dtHLAGM::HLAComponent* component; 
+         dtHLAGM::HLAComponent* component;
          GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME, component);
 
          if(component == NULL)
          {
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
-               "Failed to find the HLAComponent on the GameManager. Aborting application.", 
+            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+               "Failed to find the HLAComponent on the GameManager. Aborting application.",
                __FILE__, __LINE__);
          }
 
          return *component;
       }
-      
+
       ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::ProcessMessage(const dtGame::Message &msg)
       {
@@ -89,7 +89,7 @@ namespace SimCore
          {
             dtHLAGM::HLAComponent& hlaComp = GetHLAComponent();
             hlaComp.ClearConfiguration();
-            
+
             dtHLAGM::HLAComponentConfig componentConfig;
             try
             {
@@ -112,7 +112,7 @@ namespace SimCore
                return;
             }
 
-            dtActors::CoordinateConfigActor* ccActor; 
+            dtActors::CoordinateConfigActor* ccActor;
             proxies[0]->GetActor(ccActor);
 
             hlaComp.GetCoordinateConverter() = ccActor->GetCoordinateConverter();
@@ -153,13 +153,13 @@ namespace SimCore
       {
          if(mMapNames.empty())
          {
-            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA, 
+            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA,
                "You have tried to connect when no maps have been specified. \
                 Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
          else if (GetGameManager() == NULL)
          {
-            throw dtUtil::Exception( 
+            throw dtUtil::Exception(
                "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
          }
 
@@ -182,7 +182,7 @@ namespace SimCore
             throw dtUtil::Exception( oss.str(),
                __FUNCTION__, __LINE__ );
          }
-         
+
 
          // Get the other map names used in loading prototypes
          // and other application data.
@@ -193,7 +193,7 @@ namespace SimCore
 
          try
          {
-            GetGameManager()->ChangeMapSet(mMapNames, false, true);
+            GetGameManager()->ChangeMapSet(mMapNames, false);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
          catch(const dtUtil::Exception& e)
