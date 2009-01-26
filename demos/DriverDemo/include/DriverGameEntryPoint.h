@@ -19,13 +19,20 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifndef DRIVER_GAME_ENTRY_POINT_H_
 #define DRIVER_GAME_ENTRY_POINT_H_
 
+#ifdef BUILD_HLA
+#define DRIVER_DEMO_BASE_GAME_ENTRY_CLASS SimCore::HLA::BaseHLAGameEntryPoint
 #include <SimCore/HLA/BaseHLAGameEntryPoint.h>
+#else
+#define DRIVER_DEMO_BASE_GAME_ENTRY_CLASS SimCore::BaseGameEntryPoint
+#include <SimCore/BaseGameEntryPoint.h>
+#endif
+
 #include <GameAppComponent.h>
 #include <DriverExport.h>
 
@@ -43,10 +50,10 @@ class StealthInputComponent;
 
 namespace DriverDemo
 {
-   class DRIVER_DEMO_EXPORT DriverGameEntryPoint: public SimCore::HLA::BaseHLAGameEntryPoint
+   class DRIVER_DEMO_EXPORT DriverGameEntryPoint: public DRIVER_DEMO_BASE_GAME_ENTRY_CLASS
    {
       public:
-         typedef SimCore::HLA::BaseHLAGameEntryPoint BaseClass;
+         typedef DRIVER_DEMO_BASE_GAME_ENTRY_CLASS BaseClass;
          DriverGameEntryPoint();
          virtual ~DriverGameEntryPoint();
 
@@ -68,8 +75,6 @@ namespace DriverDemo
          virtual void OnStartup(dtGame::GameApplication& app);
 
          virtual void InitializeComponents(dtGame::GameManager &gm);
-
-         virtual void HLAConnectionComponentSetup(dtGame::GameManager &gm);
 
       private:
 
