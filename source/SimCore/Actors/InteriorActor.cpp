@@ -24,7 +24,7 @@
 #include <SimCore/Actors/InteriorActor.h>
 
 #include <osgSim/DOFTransform>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 namespace SimCore
 {
    namespace Actors

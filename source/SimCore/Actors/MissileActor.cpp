@@ -23,7 +23,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <dtActors/particlesystemactorproxy.h>
 #include <dtActors/engineactorregistry.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtCore/particlesystem.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>

@@ -35,7 +35,7 @@
 #include <dtCore/environment.h>
 #include <dtCore/camera.h>
 #include <dtCore/system.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/log.h>
 #include <dtDAL/project.h>

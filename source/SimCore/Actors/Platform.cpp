@@ -38,12 +38,12 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/messageparameter.h>
 
-#include <dtCore/tangentspacevisitor.h>
+#include <dtUtil/tangentspacevisitor.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderparamfloat.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/particlesystem.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtCore/camera.h>
 
 #include <dtDAL/enginepropertytypes.h>
@@ -293,7 +293,7 @@ namespace SimCore
          if( ! headLightPoint.valid() )
          {
             // If there is a node collector...
-            dtCore::NodeCollector* nodeCollector = GetNodeCollector();
+            dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
 
             // ...and there is a head light DOF...
             osgSim::DOFTransform* lightTrans = nodeCollector != NULL
@@ -726,7 +726,7 @@ namespace SimCore
 
          if (IsRemote())
          {
-            dtCore::NodeCollector* nodeCollector = GetNodeCollector();
+            dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
             if(nodeCollector != NULL && !nodeCollector->GetTransformNodeMap().empty())
                GetDeadReckoningHelper().SetNodeCollector(*nodeCollector);
          }
@@ -748,7 +748,7 @@ namespace SimCore
          // if bump mapping is turned on, generate the tangents to be passed to the shader
          if (useBumpmappingParam != NULL && useBumpmappingParam->GetValue() == 1.0f)
          {
-            dtCore::RefPtr<dtCore::TangentSpaceVisitor> visitor = new dtCore::TangentSpaceVisitor
+            dtCore::RefPtr<dtUtil::TangentSpaceVisitor> visitor = new dtUtil::TangentSpaceVisitor
                ("vTangent", (osg::Program*)defaultShader->GetShaderProgram(), 6);
             mNonDamagedFileNode->accept(*visitor.get());
             mDamagedFileNode->accept(*visitor.get());
@@ -858,18 +858,18 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::LoadNodeCollector(osg::Node* dofModel)
       {
-         mNodeCollector = new dtCore::NodeCollector(dofModel, dtCore::NodeCollector::AllNodeTypes);
+         mNodeCollector = new dtUtil::NodeCollector(dofModel, dtUtil::NodeCollector::AllNodeTypes);
          GetDeadReckoningHelper().SetNodeCollector(*mNodeCollector);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      dtCore::NodeCollector* Platform::GetNodeCollector()
+      dtUtil::NodeCollector* Platform::GetNodeCollector()
       {
          return mNodeCollector.get();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      const dtCore::NodeCollector* Platform::GetNodeCollector() const
+      const dtUtil::NodeCollector* Platform::GetNodeCollector() const
       {
          return mNodeCollector.get();
       }

@@ -159,7 +159,7 @@ namespace SimCore
 
       void ArticulationHelper::HandleArticulatedParametersArray(
          const dtDAL::NamedGroupParameter& articArrayParam,
-         dtCore::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
+         dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
       {
          if(nodeCollector.GetTransformNodeMap().empty())
          {

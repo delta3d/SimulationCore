@@ -28,7 +28,7 @@
 #include <osg/Node>
 #include <osgSim/DOFTransform>
 #include <dtCore/uniqueid.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtDAL/actorproxy.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
@@ -418,7 +418,7 @@ namespace SimCore
          osg::Node& model, SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
          // DEBUG: std::cout << "AttachModelOnVehicle: " << dofName << std::endl;
-         dtCore::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
+         dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
          if( nodeCollector != NULL )
          {
             osgSim::DOFTransform* dof = nodeCollector->GetDOFTransform( dofName );
@@ -434,8 +434,8 @@ namespace SimCore
                if( dofName == DOF_NAME_WEAPON )
                {
                   // Get access to the hot spot on the weapon model
-                  dtCore::RefPtr<dtCore::NodeCollector> weaponNodeCollector
-                     = new dtCore::NodeCollector(&model,dtCore::NodeCollector::DOFTransformFlag);
+                  dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector
+                     = new dtUtil::NodeCollector(&model,dtUtil::NodeCollector::DOFTransformFlag);
                   osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
 
                   if( hotspotDof != NULL )
@@ -455,7 +455,7 @@ namespace SimCore
          osg::Node& model, SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
          // DEBUG: std::cout << "DetachModelOnVehicle: " << dofName << std::endl;
-         dtCore::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
+         dtUtil::NodeCollector* nodeCollector = vehicle.GetNodeCollector();
          if( nodeCollector != NULL )
          {
             osgSim::DOFTransform* dof = nodeCollector->GetDOFTransform( dofName );

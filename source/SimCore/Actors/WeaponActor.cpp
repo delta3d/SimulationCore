@@ -27,7 +27,7 @@
 
 #include <dtUtil/mathdefines.h>
 
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtCore/scene.h>
 
 #include <dtDAL/enginepropertytypes.h>

@@ -34,7 +34,7 @@
 #include <dtCore/system.h>
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtDAL/namedparameter.h>
 #include <dtDAL/project.h>
 #include <dtGame/gamemanager.h>
@@ -121,7 +121,7 @@ namespace SimCore
             // Inherited Override Functions
             virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
 
-            virtual void UpdateDOFReferences( dtCore::NodeCollector* nodeCollector );
+            virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 
             virtual bool HasDOF( osgSim::DOFTransform& dof ) const;
 
@@ -191,7 +191,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void TestArticHelper::UpdateDOFReferences( dtCore::NodeCollector* nodeCollector )
+      void TestArticHelper::UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector )
       {
          if( nodeCollector == NULL )
          {
