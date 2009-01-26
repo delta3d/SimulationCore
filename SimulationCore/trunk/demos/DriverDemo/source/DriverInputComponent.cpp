@@ -31,7 +31,7 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 
 #include <dtUtil/enumeration.h>
 #include <dtUtil/nodeprintout.h>

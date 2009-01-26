@@ -41,7 +41,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
-namespace dtCore
+namespace dtUtil
 {
    class NodeCollector;
 }
@@ -169,7 +169,7 @@ namespace SimCore
              *       The model's DOFs are recommended to have the same names across
              *       different versions of the model.
              */
-            virtual void UpdateDOFReferences( dtCore::NodeCollector* nodeCollector ) = 0;
+            virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector ) = 0;
 
             /**
              * Determine if the specified DOF is referenced by this object.
@@ -237,7 +237,7 @@ namespace SimCore
              *        and the physical movement of the entity's DOFs.
              */
             void HandleArticulatedParametersArray( const dtDAL::NamedGroupParameter& articArrayParam,
-               dtCore::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper );
+               dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper );
 
             /**
              * Modify articulations of an entity by receiving data from the

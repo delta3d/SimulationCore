@@ -26,7 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
 #include <osgSim/DOFTransform>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtDAL/namedparameter.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
@@ -58,7 +58,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      void DefaultArticulationHelper::UpdateDOFReferences( dtCore::NodeCollector* nodeCollector )
+      void DefaultArticulationHelper::UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector )
       {
       }
 

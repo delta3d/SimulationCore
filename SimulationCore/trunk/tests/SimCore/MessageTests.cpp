@@ -37,7 +37,7 @@
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
@@ -379,7 +379,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
 
             if (useSubNode)
             {
-               dtCore::RefPtr<dtCore::NodeCollector> nc = new dtCore::NodeCollector(t80Actor->GetOSGNode(), dtCore::NodeCollector::DOFTransformFlag);
+               dtCore::RefPtr<dtUtil::NodeCollector> nc = new dtUtil::NodeCollector(t80Actor->GetOSGNode(), dtUtil::NodeCollector::DOFTransformFlag);
                osg::Group* group = nc->GetDOFTransform(parentSubNodeName);
                CPPUNIT_ASSERT_MESSAGE("The dof node \"" + parentSubNodeName +
                         "\" should exist on the model, or the test won't work..", group != NULL);

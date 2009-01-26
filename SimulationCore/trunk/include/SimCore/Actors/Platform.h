@@ -40,6 +40,11 @@ namespace dtCore
    class NodeCollector;
 }
 
+namespace dtUtil
+{
+   class NodeCollector;
+}
+
 namespace dtAudio
 {
    class Sound;
@@ -188,9 +193,9 @@ namespace SimCore
             void LoadNodeCollector(osg::Node* dofModel);
 
             /// Get the node utility class for hotspots and dofs
-            dtCore::NodeCollector*  GetNodeCollector();
+            dtUtil::NodeCollector*  GetNodeCollector();
             /// Get the node utility class for hotspots and dofs
-            const dtCore::NodeCollector*  GetNodeCollector() const;
+            const dtUtil::NodeCollector*  GetNodeCollector() const;
 
             /**
              * Called when this entity is added to the game manager.
@@ -335,7 +340,7 @@ namespace SimCore
             void InternalSetDamageState(PlatformActorProxy::DamageStateEnum &damageState);
 
             /// The entities main dof container that objects get moved around with 
-            dtCore::RefPtr<dtCore::NodeCollector> mNodeCollector;
+            dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
 
             /// The name of the munition damage table as found in Configs/MunitionsConfig.xml
             std::string mMunitionTableName;

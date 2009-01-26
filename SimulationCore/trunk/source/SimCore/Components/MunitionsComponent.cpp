@@ -593,7 +593,7 @@ namespace SimCore
 
          // Access the node collector that will be used for finding DOF attach
          // points on the entity's model geometry.
-         dtCore::NodeCollector* nodeCollector = entity->GetNodeCollector();
+         dtUtil::NodeCollector* nodeCollector = entity->GetNodeCollector();
 
          if( nodeCollector == NULL ) { return; }
 

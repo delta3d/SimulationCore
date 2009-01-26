@@ -62,7 +62,7 @@ namespace SimCore
 
             virtual dtCore::RefPtr<dtDAL::NamedGroupParameter> BuildGroupProperty();
 
-            virtual void UpdateDOFReferences( dtCore::NodeCollector* nodeCollector );
+            virtual void UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector );
 
             virtual bool HasDOF( osgSim::DOFTransform& dof ) const;
 

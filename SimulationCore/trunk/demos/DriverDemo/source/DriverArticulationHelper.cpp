@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtCore/nodecollector.h>
+#include <dtUtil/nodecollector.h>
 #include <dtDAL/namedparameter.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtUtil/mathdefines.h>
@@ -96,7 +96,7 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void DriverArticulationHelper::UpdateDOFReferences( dtCore::NodeCollector* nodeCollector )
+   void DriverArticulationHelper::UpdateDOFReferences( dtUtil::NodeCollector* nodeCollector )
    {
       if( nodeCollector == NULL )
       {
