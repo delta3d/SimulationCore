@@ -125,12 +125,6 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void DriverGameEntryPoint::HLAConnectionComponentSetup(dtGame::GameManager &gm)
-   {
-      BaseClass::HLAConnectionComponentSetup(gm);
-   }
-
-   ///////////////////////////////////////////////////////////////////////////
    void DriverGameEntryPoint::InitializeComponents(dtGame::GameManager &gm)
    {
       // This call does a fair bit of work. For one thing, it causes the HLA component
