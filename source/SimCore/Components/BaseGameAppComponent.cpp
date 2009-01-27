@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
-* @author Allen Danklefsen
+* @author Allen Danklefsen, Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/BaseGameAppComponent.h>
@@ -31,6 +31,8 @@
 
 #include <SimCore/CommandLineObject.h>
 #include <SimCore/AgeiaTerrainCullVisitor.h>
+#include <SimCore/IGExceptionEnum.h>
+#include <SimCore/Utilities.h>
 
 ///////////////////////////////////
 // for command line parsing
@@ -152,7 +154,37 @@ namespace SimCore
             mCommandLineObject->AddParameter(parameter.get());
          }
       }
+      //////////////////////////////////////////////////////////////////////////
+      void BaseGameAppComponent::LoadMaps(const std::string& inMapName)
+      {
+         // This behavior is similar to what happens in the HLAConnectionComponent.
+         // Apps that use the HLAConnectionComponent should NOT need to call this. 
+
+         // look up the map name from the command line args. If none supplied, we error out.
+         std::string mapName = inMapName;
+         if (inMapName.empty())
+         {
+            // The BaseGameEntryPoint seems to pull mapname off of the command line options
+            // so it usually isn't here by this time, but we will check as a last resort.
+            SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
+            const dtDAL::NamedStringParameter* mapNameParam = dynamic_cast<const dtDAL::NamedStringParameter*>
+               (commandLineObject->GetParameter(CMD_LINE_MAP_NAME));
+            if( mapNameParam != NULL )
+            {
+               mapName = mapNameParam->GetValue();
+            }
+         }
+
+         if(mapName.empty())
+         {
+            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA,
+               "No base Map Name found. Please specify a map in the command line options with --mapName MyMap.", __FILE__, __LINE__);
+         }
+
+         SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
+      }
 
 
-   } // end entity namespace.
-} // end dvte namespace.
+
+   } 
+}
