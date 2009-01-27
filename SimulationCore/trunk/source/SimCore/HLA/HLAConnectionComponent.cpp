@@ -18,11 +18,12 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
+ * @author Eddie Johnson, Curtiss Murphy
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/IGExceptionEnum.h>
+#include <SimCore/Utilities.h>
 
 #include <dtHLAGM/hlacomponentconfig.h>
 #include <dtHLAGM/hlacomponent.h>
@@ -49,7 +50,6 @@ namespace SimCore
       const HLAConnectionComponent::ConnectionState HLAConnectionComponent::ConnectionState::STATE_ERROR("ERROR");
 
       const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
-      const std::string HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP("AdditionalMap");
 
       ///////////////////////////////////////////////////////////////////////
       HLAConnectionComponent::HLAConnectionComponent(const std::string &name) :
@@ -130,25 +130,6 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void HLAConnectionComponent::GetAdditionalMaps(std::vector<std::string>& toFill) const
-      {
-         std::ostringstream oss;
-         std::string addMap;
-         unsigned i = 1;
-         do
-         {
-            if (i > 1)
-               toFill.push_back(addMap);
-
-            oss << CONFIG_PROP_ADDITIONAL_MAP << i;
-            addMap = GetGameManager()->GetConfiguration().GetConfigPropertyValue(oss.str());
-            oss.str("");
-            ++i;
-         }
-         while (!addMap.empty());
-      }
-
-      ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::Connect()
       {
          if(mMapNames.empty())
@@ -163,44 +144,22 @@ namespace SimCore
                "You have tried to connect without adding this component to the Game Manager.", __FILE__, __LINE__);
          }
 
+         // Start in NOT connected state - set to connected when we succeed.
+         mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
          // Determine if the specified map is valid.
-         const std::string& mapName = mMapNames[0];
-         typedef std::set<std::string> MapNameList;
-         const MapNameList& names = dtDAL::Project::GetInstance().GetMapNames();
-         if( names.find( mapName ) == names.end() )
+         std::string& mapName = mMapNames[0];
+
+         try 
          {
-            mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
-
-            std::ostringstream oss;
-            oss << "Cannot connect to network because \"" << mapName
-            << "\" is not a valid map name." << std::endl;
-
-            // Avoid trying to reconnect to the failing map name.
-            mMapNames.clear();
-
-            throw dtUtil::Exception( oss.str(),
-               __FUNCTION__, __LINE__ );
-         }
-
-
-         // Get the other map names used in loading prototypes
-         // and other application data.
-         std::vector<std::string> values;
-         GetAdditionalMaps(values);
-
-         mMapNames.insert(mMapNames.end(), values.begin(), values.end());
-
-         try
-         {
-            GetGameManager()->ChangeMapSet(mMapNames, false);
+            SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;
          }
          catch(const dtUtil::Exception& e)
          {
-            e.LogException(dtUtil::Log::LOG_ERROR);
+            mMapNames.clear();
             mState = &HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
-            throw;
+            throw e;
          }
       }
 

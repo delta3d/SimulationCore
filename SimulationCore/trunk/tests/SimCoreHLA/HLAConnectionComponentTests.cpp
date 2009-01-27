@@ -42,6 +42,7 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/HLA/HLAConnectionComponent.h>
 #include <SimCore/HLA/HLACustomParameterTranslator.h>
+#include <SimCore/Utilities.h>
 
 #include <UnitTestMain.h>
 
@@ -115,26 +116,22 @@ void HLAConnectionComponentTests::TestAdditionalMaps()
       mGameManager->AddComponent(*mHLACC, dtGame::GameManager::ComponentPriority::NORMAL);
       
       
-      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "1", 
-               "Map1");
-      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2", 
-               "Map2");
-      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "3", 
-               "Map3");
+      mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "1", "Map1");
+      mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "2", "Map2");
+      mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "3", "Map3");
 
       std::vector<std::string> toFill;
-      mHLACC->GetAdditionalMaps(toFill);
+      SimCore::Utils::GetAdditionalMaps(*mGameManager, toFill);
       
       CPPUNIT_ASSERT_EQUAL(3U, unsigned(toFill.size()));
       CPPUNIT_ASSERT_EQUAL(std::string("Map1"), toFill[0]);
       CPPUNIT_ASSERT_EQUAL(std::string("Map2"), toFill[1]);
       CPPUNIT_ASSERT_EQUAL(std::string("Map3"), toFill[2]);
 
-      mApp->SetConfigPropertyValue(SimCore::HLA::HLAConnectionComponent::CONFIG_PROP_ADDITIONAL_MAP + "2",
-               "");
+      mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "2", "");
 
       toFill.clear();
-      mHLACC->GetAdditionalMaps(toFill);
+      SimCore::Utils::GetAdditionalMaps(*mGameManager, toFill);
       
       CPPUNIT_ASSERT_EQUAL_MESSAGE("Filling should stop when it encounters an index that doesn't exist", 
                1U, unsigned(toFill.size()));

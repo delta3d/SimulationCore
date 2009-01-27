@@ -61,7 +61,6 @@ namespace SimCore
              };
 
             static const std::string DEFAULT_NAME;
-            static const std::string CONFIG_PROP_ADDITIONAL_MAP;
             
             /// Constructor
             HLAConnectionComponent(const std::string &name = DEFAULT_NAME);
@@ -154,9 +153,6 @@ namespace SimCore
              * @param msg The message to process
              */
             virtual void ProcessMessage(const dtGame::Message &msg);
-
-            /// Fills a vector with an additional maps  list loaded from the application config.
-            void GetAdditionalMaps(std::vector<std::string>& toFill) const;
 
          protected:
 

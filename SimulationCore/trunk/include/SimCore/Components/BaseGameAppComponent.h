@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
-* @author Allen Danklefsen
+* @author Allen Danklefsen, Curtiss Murphy
 */
 
 #ifndef _BASE_GAMEAPP_COMPONENT_
@@ -75,6 +75,11 @@ namespace SimCore
             /// initializes command line to parser and sets the options in the command
             /// line object.
             virtual void InitializeCommandLineOptionsAndRead(osg::ArgumentParser* parser);
+
+            // A default load map behavior. Similar to OnConnect() in the HLAConnectionComponent
+            // Only needed if your app does not have HLA. Call from your GameEntryPoint
+            void LoadMaps(const std::string& inMapName);
+
 
          protected:
             /// Destructor
