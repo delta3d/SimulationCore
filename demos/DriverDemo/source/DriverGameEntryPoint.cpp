@@ -60,7 +60,7 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   DriverGameEntryPoint::DriverGameEntryPoint() : SimCore::HLA::BaseHLAGameEntryPoint()
+   DriverGameEntryPoint::DriverGameEntryPoint()
    {
       mArgv = NULL;
       mArgc = 0;

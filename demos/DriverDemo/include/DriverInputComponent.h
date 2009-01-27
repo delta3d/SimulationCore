@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifndef DRIVER_INPUT_COMPONENT_H_
@@ -42,11 +42,6 @@ namespace dtAudio
 namespace dtGame
 {
    class Message;
-}
-
-namespace dtHLAGM
-{
-   class HLAComponent;
 }
 
 namespace dtUtil
@@ -78,18 +73,18 @@ namespace SimCore
 namespace DriverDemo
 {
    class GameAppComponent;
-   
+
    ////////////////////////////////////////////////////////////////////////////////
    // INPUT COMPONENT CODE
    //
-   // NOTE - The camera sits at the bottom of a VERY large hierarchy of DoF's. Looks like this: 
+   // NOTE - The camera sits at the bottom of a VERY large hierarchy of DoF's. Looks like this:
    //     Vehicle (center of vehicle)
    //       - Ring Mount (often swivels left/right)
    //           - mDoFWeapon (pivots about weapon pivot point)
    //               - mWeapon (3D model of weapon)
    //                   - mWeaponEyePoint (offset for human eyepoint)
    //                       - StealthActor (yay!  almost there)
-   //                           - camera 
+   //                           - camera
    ////////////////////////////////////////////////////////////////////////////////
    class DRIVER_DEMO_EXPORT DriverInputComponent : public SimCore::Components::BaseInputComponent
    {
@@ -97,27 +92,27 @@ namespace DriverDemo
          typedef SimCore::Components::BaseInputComponent BaseClass;
 
       public:
-         
-         
+
+
          /// Constructor
          DriverInputComponent(const std::string& name = BaseClass::DEFAULT_NAME);
-   
+
          void ProcessMessage(const dtGame::Message &message);
-   
+
          virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
-   
+
          virtual bool HandleKeyReleased(const dtCore::Keyboard* keyboard, int key);
-   
+
          virtual bool HandleButtonPressed(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button);
-   
+
          virtual bool HandleButtonReleased(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button);
-         
+
          void HandleTurretEnabled( bool enable );
-   
+
          void SetConnectionParameters(const std::string& executionName,
             const std::string& fedFile,
             const std::string& federateName);
-   
+
          // GUI Tool Methods: to be moved to a new GUI Component.
          SimCore::Tools::Tool* GetTool(SimCore::MessageType &type);
          void AddTool(SimCore::Tools::Tool &tool, SimCore::MessageType &type);
@@ -129,7 +124,7 @@ namespace DriverDemo
          void SetToolEnabled(SimCore::MessageType &toolType, bool enable);
 
          //SimCore::Actors::CameraAttachmentActor* StealthInputComponent::GetAttachmentActor();
-   
+
          // Attach the player to the specified vehicle onto certain DOFs, determined
          // by the application's set SimulationMode.
          // @param vehicle The physics vehicle onto which the player should be attached.
@@ -137,14 +132,14 @@ namespace DriverDemo
          // NOTE: The relevant simulation mode must be set prior to calling this function.
          //       This function will position the player based on the simulation mode.
          void AttachToVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
-   
+
          // Detach the player from the current vehicle to which he is attached.
          // This function will enable the walk motion model that controls the player.
          void DetachFromVehicle();
-   
+
          // sets the mVehicle, used through gameappcomponent
          void SetCurrentVehicle( SimCore::Actors::BasePhysicsVehicleActor& vehicle) {mVehicle = &vehicle;}
-   
+
          // Determines if the vehicle can be "turned on a dime".
          bool IsVehiclePivotable( const SimCore::Actors::BasePhysicsVehicleActor& vehicle ) const;
 
@@ -158,16 +153,16 @@ namespace DriverDemo
          //
          // NOTE: This is automatically called by AttachToVehicle.
          bool AttachToRingmount( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
-         
+
          void SetPlayer( SimCore::Actors::StealthActor* actor );
          //SimCore::Actors::BasePhysicsVehicleActor* GetVehicle();
-   
+
          // Stores the default camera perspective to be set
          // when the camera is exiting tool perspectives
          // such as those found in Binoculars and LRF.
          // This is a temporary work around for IPT1.
-         void SetDefaultCameraPerspective( 
-            float horizontalFOV, float verticalFOV, 
+         void SetDefaultCameraPerspective(
+            float horizontalFOV, float verticalFOV,
             float nearClip, float farClip )
          {
             mHorizontalFOV = horizontalFOV;
@@ -175,17 +170,17 @@ namespace DriverDemo
             mNearClip = nearClip;
             mFarClip = farClip;
          }
-   
+
          // Sets up the player, motion models, and other objects needed
          // over all application modes.
          void InitializePlayer( SimCore::Actors::StealthActor& player );
-     
+
          // Creates all the weapons (from prototypes) that this simulator will be using.
          void InitializeWeapons();
-   
+
          // Create all sounds used in this simulator.
          void InitializeSounds( SimCore::Actors::StealthActor& player );
-   
+
          // Create an instance of a single weapon from a prototype in the loaded map.
          // @param weaponName The name of the weapon as it is found in the map file.
          // @param shooterName The name of the PhysX particle system as it is found in the map file.
@@ -196,89 +191,87 @@ namespace DriverDemo
          bool CreateWeapon( const std::string& weaponName, const std::string& shooterName,
             const std::string& flashEffectFile,
             dtCore::RefPtr<SimCore::Actors::WeaponActor>& outWeapon );
-   
+
          // Assign the current weapon that is being used.
          // This function will do all the necessary work of removing the old weapon
          // references and set up references to the new specified weapon.
          // @param weapon The weapon instance that will be swapped into the scene
          //        and used as the current weapon. Specify NULL to not used any weapons.
          void SetWeapon( SimCore::Actors::WeaponActor* weapon );
-   
+
          // Cycle between the currently loaded list weapons.
          // @param direction The index offset into the weapon list that points to
          //        the weapon to which to be cycled.
          void CycleWeapon( int direction );
-   
+
          void SetStartPosition( const osg::Vec3& position ) { mStartPosition = position; }
          const osg::Vec3& GetStartPosition() const { return mStartPosition; }
-   
+
 
          /// Method to create a test target that can be shot
          void CreateTarget();
 
       protected:
-   
+
          /// Destructor
          virtual ~DriverInputComponent();
-   
+
          //void Cycle(bool forward, bool attach);
          void ToggleEntityShaders();
-   
+
          void ResetTurnSpeeds();
-   
+
          // This function tracks states such as the vehicle's damage state.
          // In the case of damage state changes, this function will do the required
          // setup of the vehicle object exterior, important for the Gunner simulation.
          // @param simDelta The change in simulation time since the last frame.
          // @param realDelta The change in real world time since the last frame.
          void UpdateStates( float simDelta, float realDelta );
-   
+
          void UpdateSounds();
-   
+
          // Capture the DOFs of the specified vehicle.
          // @param vehicle The vehicle from which to obtain the DOFs needed by the
          //        gunner and driver simulators
          void GetVehicleDOFs( SimCore::Actors::BasePhysicsVehicleActor& vehicle );
-   
+
          void EnableMotionModels( bool enable );
-   
+
          // Used in deleting all weapons when the player disembarks from a vehicle.
          void DeleteWeapons();
-      
+
          // Hack - Curttest code to create a test target actor
          //void CreateTarget();
-   
+
          void SetViewMode();
 
          void ToggleView();
          void AttachToView( const std::string& viewNodeName );
 
       private:
-   
+
          // ?:???? void UpdateInteriorModel();
          void StopAnyWeaponsFiring();
-   
+
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
-   
+
          dtCore::RefPtr<DriverHUD>    mHUDComponent;
          dtCore::UniqueId              mCurrentActorId;
-         
+
          // logging methods and vars
          void JoinFederation();
          void LeaveFederation();
-         
+
          // Variables needed for joining and leaving a federation
          //std::string mExecutionName;
          //std::string mFedFile;
          //std::string mFederateName;
-         bool mIsConnected;
          bool mUsePhysicsDemoMode;
-         dtCore::RefPtr<dtHLAGM::HLAComponent> mHLA;
-   
+
          // Tools
          std::map<SimCore::MessageType*, dtCore::RefPtr<SimCore::Tools::Tool> > mToolList;
-   
+
          // Simulator specific objects
          dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActorProxy> mPlayerAvatarProxy;
          dtCore::RefPtr<SimCore::Actors::HumanWithPhysicsActor> mPlayerAvatar;
@@ -288,10 +281,10 @@ namespace DriverDemo
          dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;                    // current weapon
          std::vector<dtCore::RefPtr<SimCore::Actors::WeaponActor> > mWeaponList;  // all weapons
          unsigned mWeaponIndex;
-      
+
          // Special DOF's acquired from loaded models
          dtCore::RefPtr<dtCore::Transformable> mSeat;
-   
+
          // Direct DOF references used by controls states
          osg::observer_ptr<osgSim::DOFTransform> mDOFSeat;
          osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
@@ -300,64 +293,64 @@ namespace DriverDemo
          //osg::observer_ptr<osgSim::DOFTransform> mDOFWeaponStem;
          //float mDOFWeaponStemOffset; // offset up/down of the weapon mount
          //float mDOFWeaponStemOffsetLimit; // the maximum up/down displacement of the weapon mount (in meters)
-   
+
          // The original orientations of the above DOFs prior to modification.
          // These will be used to reset the orientations of the DOFs when detaching
          // the player from the current vehicle.
          osg::Vec3 mDOFRingOriginalHPR;
          osg::Vec3 mDOFWeaponOriginalHPR;
-   
+
          // Gunner app related motion models
          dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
          dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
          //dtCore::RefPtr<SimCore::PlayerMotionModel> mWalkMM; // moves the seat (the player's root transformable)
-   
+
          // View points
          dtCore::RefPtr<dtCore::Transformable> mWeaponEyePoint; // added to the weapon pivot DOF
          //dtCore::RefPtr<dtCore::Transformable> mSitEyePoint; // added to seat DOF
          //dtCore::RefPtr<dtCore::Transformable> mStandEyePoint; // added to seat DOF
          //ViewMode mViewMode;
-   
+
          // Store the camera perspective to be set after coming
          // out of a tool's change in perspective.
          float mHorizontalFOV;
          float mVerticalFOV;
          float mNearClip;
          float mFarClip;
-   
+
          // Gunner specific key/button states
          bool mRingKeyHeld;
          bool mRingButtonHeld;
          bool mMotionModelsEnabled;
-   
+
          // Gunner/Driver related states
          bool mPlayerAttached;
-         SimCore::Actors::BaseEntityActorProxy::DamageStateEnum* mLastDamageState; 
+         SimCore::Actors::BaseEntityActorProxy::DamageStateEnum* mLastDamageState;
          // the last reported state of the vehicle
 
          // View mode variable.
          std::string mViewNodeName;
-   
+
          // Initial starting position
          osg::Vec3 mStartPosition;
-   
+
          // HACK: variables for hacking the ephemeris to update to the correct time of day
          float mEnvUpdateTime;
          int mEnvUpdateAttempts;
-   
+
          // Sounds effects no contained by a vehicle directly
          dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurnStart;
          dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurn;
          dtCore::RefPtr<dtAudio::Sound> mSoundTurretTurnEnd;
          dtCore::RefPtr<dtAudio::Sound> mSoundAmbient;
-   
+
          // Sound file names
          static const dtUtil::RefString SOUND_TURRET_TURN_START;
          static const dtUtil::RefString SOUND_TURRET_TURN;
          static const dtUtil::RefString SOUND_TURRET_TURN_END;
          static const dtUtil::RefString SOUND_AMBIENT;
 
-         // The common DOF names found on most vehicle models 
+         // The common DOF names found on most vehicle models
          static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
          static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
          static const dtUtil::RefString DOF_NAME_RINGMOUNT;
