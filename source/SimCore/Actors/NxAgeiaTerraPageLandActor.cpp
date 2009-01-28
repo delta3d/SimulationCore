@@ -472,7 +472,7 @@ namespace SimCore
 #else
          //////////////////////////////////////////////////////////////////////
          dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
-            const std::string& nameOfNode, TerrainNode& terrainNode)
+            const std::string& nameOfNode)
          {
             if(nodeToParse == NULL)
             {
@@ -483,7 +483,6 @@ namespace SimCore
 
             dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
             mPhysicsHelper->AddPhysicsObject(*newTile);
-            terrainNode.SetPhysicsObject(newTile.get());
             newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
             newTile->CreateFromProperties(nodeToParse);
