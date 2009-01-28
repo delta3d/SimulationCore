@@ -93,7 +93,7 @@ namespace SimCore
          virtual void OnStartup(dtGame::GameApplication &app);
 
          /// May be overridden to allow subclassed to add components
-         virtual void InitializeComponents(dtGame::GameManager &gm) = 0;
+         virtual void InitializeComponents(dtGame::GameManager &gm) {};
 
          /**
           * called from external to 'end' the parser so anyone can
