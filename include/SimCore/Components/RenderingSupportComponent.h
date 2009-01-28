@@ -159,8 +159,15 @@ namespace SimCore
             bool GetEnableNVGS();
             void SetEnableNVGS(bool pEnable);
 
+            // Enable Cull Visitor (for terrain physics) - Mutually exclusive of Static Terrain Physics. 
+            // Turning this on, disables Static Terrain Physics 
             bool GetEnableCullVisitor();
             void SetEnableCullVisitor(bool pEnable);
+
+            // Enable Static Terrain Physics - Mutually exclusive of Cull Visitor. 
+            // Turning this on, disables Cull Visitor
+            bool GetEnableStaticTerrainPhysics() const;
+            void SetEnableStaticTerrainPhysics(bool pEnable);
 
             void SetNVGS(RenderFeature* rf);
             const RenderFeature* GetNVGS() const;
@@ -232,6 +239,7 @@ namespace SimCore
 
             bool mEnableDynamicLights;
             bool mEnableCullVisitor;
+            bool mEnableStaticTerrainPhysics;
             bool mEnableNVGS;
             dtCore::RefPtr<osg::Group> mDeltaScene;
             dtCore::RefPtr<osg::Group> mSceneRoot;
