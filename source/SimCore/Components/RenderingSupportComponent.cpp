@@ -494,6 +494,7 @@ namespace SimCore
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             LoadPrototypes();
+            LoadStaticTerrain();
          }
 
          //else if( msg.GetMessageType() == SimCore::MessageType::INFO_ACTOR_CREATED
@@ -540,6 +541,40 @@ namespace SimCore
            UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
          }
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::LoadStaticTerrain()
+      {
+/*         if (mStaticTerrainPhysicsEnabled)
+         {
+
+            std::vector<dtDAL::ActorProxy*> toFill;
+
+            if (mCullVisitor->GetLandActor() == NULL)
+            {
+               SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
+               GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
+
+               if (landActorProxy != NULL)
+               {
+                  SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+                  landActorProxy->GetActor(landActor);
+                  mCullVisitor->SetLandActor(landActor);
+               }
+            }
+
+            if (mCullVisitor->GetTerrainNode() == NULL)
+            {
+               GetGameManager()->FindActorsByName("Terrain", toFill);
+               if(!toFill.empty())
+               {
+                  mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
+               }
+            }
+         }
+*/
+      }
+
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::UpdateDynamicLights(float dt)

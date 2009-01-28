@@ -117,6 +117,10 @@ namespace DriverDemo
       // call base class
       BaseClass::OnStartup(app);
 
+#ifndef BUILD_HLA
+      // Load all of our maps (base --mapName plus AdditionalMaps
+      gameAppComponent->LoadMaps(mMapName);
+#endif
       // initialize our guy / stealth actor
       gameAppComponent->InitializePlayer();
 

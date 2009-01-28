@@ -205,6 +205,9 @@ namespace SimCore
             // Finds all the dynamic light actor prototypes in the GM and holds onto them
             void LoadPrototypes();
 
+            // After a map loads, reload the static terrain - used only when StaticTerrainPhysicsEnabled
+            void LoadStaticTerrain();
+
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
             void UpdateDynamicLights(float dt);
