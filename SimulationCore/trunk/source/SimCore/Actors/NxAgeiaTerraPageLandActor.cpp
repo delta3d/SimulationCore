@@ -215,16 +215,16 @@ namespace SimCore
                if(loadNow)
                {
                   terrainNodeToAdd->SetFilled( ParseTerrainNode( terrainNodeToAdd->GetGeodePointer(),
-                                                                  terrainNodeToAdd->GetUniqueID().ToString(),
-                                                                  *terrainNodeToAdd));
+                     terrainNodeToAdd->GetUniqueID().ToString(),
+                     *terrainNodeToAdd));
                   if(terrainNodeToAdd->IsFilled())
                   {
 #ifdef AGEIA_PHYSICS
                      osg::Quat quaternion = matrixForTransform.getRotate();
                      terrainNodeToAdd->GetPhysicsObject()->setGlobalOrientationQuat(NxQuat(NxVec3(quaternion[0],quaternion[1],quaternion[2]), quaternion[3]));
                      terrainNodeToAdd->GetPhysicsObject()->setGlobalPosition(NxVec3(  matrixForTransform.getTrans()[0],
-                                                                              matrixForTransform.getTrans()[1],
-                                                                              matrixForTransform.getTrans()[2]));
+                        matrixForTransform.getTrans()[1],
+                        matrixForTransform.getTrans()[2]));
 #else
                      dtPhysics::PhysicsObject* physObject = terrainNodeToAdd->GetPhysicsObject();
                      dtCore::Transform xform;
