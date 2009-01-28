@@ -214,9 +214,10 @@ namespace SimCore
 
                if(loadNow)
                {
-                  terrainNodeToAdd->SetFilled( ParseTerrainNode( terrainNodeToAdd->GetGeodePointer(),
-                     terrainNodeToAdd->GetUniqueID().ToString(),
-                     *terrainNodeToAdd));
+                  terrainNodeToAdd->SetPhysicsObject(BuildTerrainAsStaticMesh( terrainNodeToAdd->GetGeodePointer(),
+                     terrainNodeToAdd->GetUniqueID().ToString()));
+                  terrainNodeToAdd->SetFilled(terrainNodeToAdd->GetPhysicsObject() != NULL);
+
                   if(terrainNodeToAdd->IsFilled())
                   {
 #ifdef AGEIA_PHYSICS
@@ -240,6 +241,17 @@ namespace SimCore
                }
                mTerrainMap.insert(std::make_pair(&node, terrainNodeToAdd));
             }
+         }
+
+         //////////////////////////////////////////////////////////////////////
+         void NxAgeiaTerraPageLandActor::ClearAllTerrainPhysics()
+         {
+#ifdef AGEIA_PHYSICS
+            mPhysicsHelper->ReleaseAllPhysXObjects();
+#else
+            mPhysicsHelper->ClearAllPhysicsObjects();
+#endif
+            mTerrainMap.clear();
          }
 
          //////////////////////////////////////////////////////////////////////
@@ -293,10 +305,9 @@ namespace SimCore
                      &&currentNode->GetGeodePointer() != NULL)
                {
                   // load the tile to ageia
-                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(),
-                                                            currentNode->GetUniqueID().ToString(),
-                                                            *currentNode));
-
+                  currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
+                     currentNode->GetUniqueID().ToString()));
+                  currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
                }
 
                if(currentNode->IsFilled() == false)
@@ -317,7 +328,6 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::ReloadTerrainPhysics()
          {
-#ifdef AGEIA_PHYSICS
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mterrainIter;
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
             for(mterrainIter = mTerrainMap.begin();
@@ -329,12 +339,12 @@ namespace SimCore
                if(currentNode->GetGeodePointer() != NULL && currentNode->IsFilled())
                {
                   mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
-                  currentNode->SetFilled( ParseTerrainNode( currentNode->GetGeodePointer(),
-                     currentNode->GetUniqueID().ToString(),
-                     *currentNode));
+
+                  currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
+                     currentNode->GetUniqueID().ToString()));
+                  currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
                }
             }
-#endif
          }
 
       //////////////////////////////////////////////////////////////////////
@@ -343,8 +353,8 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse,
-            const std::string& nameOfNode, TerrainNode& terrainNode)
+         NxActor* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
+            const std::string& nameOfNode)
          {
             dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
             GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
@@ -353,7 +363,7 @@ namespace SimCore
             {
                LOG_ERROR("worldComponent Is not initialized, make sure a new one \
                          was made before loading a map in, or setting physics objects");
-               return false;
+               return NULL;
             }
 
             mLoadedTerrainYet = true;
@@ -435,7 +445,7 @@ namespace SimCore
                {
                   delete [] gHeightfieldVerts;
                   delete [] gHeightfieldFaces;
-                  return false;
+                  return NULL;
                }
 
                NxActorDesc     actorDesc;
@@ -448,29 +458,27 @@ namespace SimCore
                delete [] gHeightfieldFaces;
 
                NxActor *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
-               terrainNode.SetPhysicsObject(actor);
-
                mPhysicsHelper->AddPhysXObject(*actor, nameOfNode.c_str());
                gCooking->NxCloseCooking();
-               return true;
+               return actor;
             }
             else
             {
                LOG_WARNING("Terrain tile not loaded in, this can happen for several reasons. 1. Bad Terrain. 2. Bad OSG_txp Dlls. 3. Material on this terrain was set to not be loaded in.");
-               return false;
+               return NULL;
             }
-            return false;
+            return NULL;
          }
 #else
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::ParseTerrainNode(osg::Geode* nodeToParse,
+         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, TerrainNode& terrainNode)
          {
             if(nodeToParse == NULL)
             {
-               LOG_ALWAYS("Null nodeToParse sent into the ParseTerrainNode function! \
+               LOG_ALWAYS("Null nodeToParse sent into the BuildTerrainAsStaticMesh function! \
                   No action taken.");
-               return false;
+               return NULL;
             }
 
             dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
@@ -479,7 +487,7 @@ namespace SimCore
             newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
             newTile->CreateFromProperties(nodeToParse);
-            return true;
+            return newTile.get();
          }
 #endif
          //////////////////////////////////////////////////////////////////////

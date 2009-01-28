@@ -24,6 +24,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
+#include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 
@@ -50,6 +51,7 @@
 #include <dtUtil/noiseutility.h>
 #include <dtUtil/log.h>
 #include <dtUtil/matrixutil.h>
+#include <dtUtil/stringutils.h>
 
 #include <osg/Camera>
 #include <osg/Geode>
@@ -154,6 +156,7 @@ namespace SimCore
          : dtGame::GMComponent(name)
          , mEnableDynamicLights(true)
          , mEnableCullVisitor(false)
+         , mEnableStaticTerrainPhysics(false)
          , mEnableNVGS(false)
          , mDeltaScene(new osg::Group())
          , mSceneRoot(new osg::Group())
@@ -418,7 +421,32 @@ namespace SimCore
       void RenderingSupportComponent::SetEnableCullVisitor(bool pEnable)
       {
          mEnableCullVisitor = pEnable;
+
+         if (pEnable && mEnableStaticTerrainPhysics)
+         {
+            LOG_WARNING("Turning on the terrain Cull Visitor, but Static Terrain Physics was already enabled. Disabling Static Terrain Physics, .");
+            SetEnableStaticTerrainPhysics(false);
+         }
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      bool RenderingSupportComponent::GetEnableStaticTerrainPhysics() const
+      {
+         return mEnableStaticTerrainPhysics;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetEnableStaticTerrainPhysics(bool pEnable)
+      {
+         mEnableStaticTerrainPhysics = pEnable;
+
+         if (pEnable && mEnableCullVisitor)
+         {
+            LOG_WARNING("Turning on Static Terrain Physics, but the Cull Visitor was already enabled. Disabling the Cull Visitor.");
+            SetEnableCullVisitor(false);
+         }
+      }
+
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetEnableDynamicLights(bool b)
@@ -536,6 +564,10 @@ namespace SimCore
             UpdateCullVisitor();
          }
 
+
+         // Should mStaticTerrainPhysicsEnabled & mEnableCullVisitor be mutually exclusive? 
+
+
          if(mEnableDynamicLights)
          {
            UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
@@ -545,34 +577,42 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::LoadStaticTerrain()
       {
-/*         if (mStaticTerrainPhysicsEnabled)
+         // Loads the terrain statically, as one big mesh. This completely bypasses the cull visitor
+
+         if (mEnableStaticTerrainPhysics)
          {
 
-            std::vector<dtDAL::ActorProxy*> toFill;
+            // Get the physics land actor
+            SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
+            GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
 
-            if (mCullVisitor->GetLandActor() == NULL)
+            if (landActorProxy != NULL)
             {
-               SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
-               GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
+               SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+               landActorProxy->GetActor(landActor);
 
-               if (landActorProxy != NULL)
+               // Get the terrain - which has our mesh node
+               dtDAL::ActorProxy* terrainActorProxy;
+               GetGameManager()->FindActorByName(SimCore::Actors::TerrainActor::DEFAULT_NAME, terrainActorProxy);
+               if (terrainActorProxy != NULL)
                {
-                  SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
-                  landActorProxy->GetActor(landActor);
-                  mCullVisitor->SetLandActor(landActor);
+                  static int nameCounter = 1;
+                  landActor->ClearAllTerrainPhysics();
+                  std::string bogusIndexthing;
+                  dtUtil::MakeIndexString(nameCounter, bogusIndexthing);
+                  nameCounter ++;
+                  
+                  landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(), 
+                     "Base Terrain " + bogusIndexthing);
                }
-            }
+               else 
+               {
+                  // Clear if we had something before and now we don't
+                  landActor->BuildTerrainAsStaticMesh(NULL, "");
+               }
 
-            if (mCullVisitor->GetTerrainNode() == NULL)
-            {
-               GetGameManager()->FindActorsByName("Terrain", toFill);
-               if(!toFill.empty())
-               {
-                  mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
-               }
             }
          }
-*/
       }
 
 
@@ -776,5 +816,5 @@ namespace SimCore
          }
       }
 
-   } // end entity namespace.
-} // end dvte namespace.
+   } 
+} 

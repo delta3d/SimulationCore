@@ -127,41 +127,51 @@ namespace SimCore
             /// Destructor
             virtual ~NxAgeiaTerraPageLandActor(void);
 
-            // internally called functions when a terrain tile is loaded into the system
-            bool ParseTerrainNode(osg::Geode* nodeToParse, const std::string& nameOfNode, TerrainNode& terrainNode);
 
          public:
+
+            // internally called functions when a terrain tile is loaded into the system
+            // Used to be called ParseTerrainNode
+#ifdef AGEIA_PHYSICS
+            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode);
+#else
+            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode);
+#endif
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
-            // determine if we want to use these hard coded materials and load to physics
+            /// determine if we want to use these hard coded materials and load to physics
             bool PassThisGeometry(int fid, int smc, int soilTemperatureAndPressure, 
                      int soilWaterContent);
 
-            // should this be a group or just heightfield.
+            /// should this be a group or just heightfield.
             void DetermineHowToLoadGeometry(int fid, int smc, 
                      int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad);
 
-            // should we load the geom as a group (buildings)
+            /// should we load the geom as a group (buildings)
             bool LoadGeomAsGroup(int fid);
 
-            // for the Hmmwv ground sim actor
+            /// for the Hmmwv ground sim actor
             bool HasSomethingBeenLoaded() {return mLoadedTerrainYet;}
 
-            // geode 
+            /// geode - loads a single geode into the physics engine. Usually called from the Cull Visitor when it decides to physics something
             void CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform);
+
+            /// Clears all of the geodes and/or the static meshes physics objects - call on map reload or similar 
+            void ClearAllTerrainPhysics();
 
             // reset terrain iterator so we can start at the beginning
             // and subdivide the work being done.
             void ResetTerrainIterator();
 
-            // called to act on the flags.
+            /// called to act on the flags.
             bool FinalizeTerrain(int amountOfFrames);
 
+
 #ifdef AGEIA_PHYSICS
-            // public accessor to get the variable
+            /// public accessor to get the variable
             dtAgeiaPhysX::NxAgeiaPhysicsHelper* GetPhysicsHelper() const {return mPhysicsHelper.get();}
 
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
