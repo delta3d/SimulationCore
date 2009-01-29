@@ -35,7 +35,6 @@
 #include <SimCore/Components/TextureProjectorComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
-#include <SimCore/HLA/HLAConnectionComponent.h>
 
 #include <NxAgeiaWorldComponent.h>
 

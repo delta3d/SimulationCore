@@ -54,11 +54,8 @@ namespace SimCore
 
             static const std::string DEFAULT_NAME;
             static const std::string CMD_LINE_PROJECTPATH;
-            static const std::string CMD_LINE_FEDEXECUTION_NAME;
-            static const std::string CMD_LINE_FEDFILE_NAME;
             static const std::string CMD_LINE_STATISTICS_INTERVAL;
             static const std::string CMD_LINE_MAP_NAME;
-            static const std::string CMD_LINE_FEDMAPPING_FILE_RESOURCE;
 
             /// Constructor
             BaseGameAppComponent(const std::string &name = DEFAULT_NAME);

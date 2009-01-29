@@ -1,13 +1,13 @@
 /*
 * Copyright, 2008, Alion Science and Technology Corporation, all rights reserved.
-* 
+*
 * See the .h file for complete licensing information.
-* 
+*
 * Alion Science and Technology Corporation
 * 5365 Robin Hood Road
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
-* 
+*
 * @author Curtiss Murphy
 */
 #include <GameAppComponent.h>
@@ -81,15 +81,15 @@ namespace DriverDemo
    const std::string GameAppComponent::CMD_LINE_START_HEADING       = "StartHeading";
 
    //////////////////////////////////////////////////////////////////////////
-   GameAppComponent::GameAppComponent(const std::string &name) 
+   GameAppComponent::GameAppComponent(const std::string &name)
       : SimCore::Components::BaseGameAppComponent(name)
      , mLatitudeStart(0)
       , mLongitudeStart(0)
       , mStartingPosition(100.0f, 100.0f, 20.0f)
-      , mWaitForVehicle(false) 
+      , mWaitForVehicle(false)
       , mStartingCoordSet(false)
    {
-      
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -99,10 +99,7 @@ namespace DriverDemo
 
    //////////////////////////////////////////////////////////////////////////
    void GameAppComponent::ProcessMessage(const dtGame::Message &msg)
-   {
-      SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
-
-      if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
+   {      if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {
          UpdatePlayerStartingPosition();
       }
@@ -120,20 +117,18 @@ namespace DriverDemo
 
       BaseGameAppComponent::InitializeCommandLineOptionsAndRead(parser);
 
-      parser->getApplicationUsage()->addCommandLineOption("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME,        
+      parser->getApplicationUsage()->addCommandLineOption("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME,
          "Vehicle we are attaching to - use the prototype actor name in DriverPrototypes.xml");
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
-      int tempValue = 0;
 
       double coord = 0.0;
-      double coord2 = 0.0;
       mStartingPosition[0] = 0.0f;
       mStartingPosition[1] = 0.0f;
       mStartingPosition[2] = 0.0f;
       if(parser->read("--startX", coord))
       {
-         mStartingPosition[0] = coord;   
+         mStartingPosition[0] = coord;
          mStartingCoordSet = true;
       }
       if(parser->read("--startY", coord))
@@ -147,30 +142,30 @@ namespace DriverDemo
          mStartingCoordSet = true;
       }
 
-      dtCore::RefPtr<dtDAL::NamedVec3fParameter> parameter 
+      dtCore::RefPtr<dtDAL::NamedVec3fParameter> parameter
          = new dtDAL::NamedVec3fParameter(CMD_LINE_STARTING_POSITION, mStartingPosition);
       commandLineObject->AddParameter(parameter.get());
 
       // Get the start heading for the player
       float heading = 0.0f;
       parser->read( "--startHeading", heading );
-      dtCore::RefPtr<dtDAL::NamedFloatParameter> paramHeading 
+      dtCore::RefPtr<dtDAL::NamedFloatParameter> paramHeading
          = new dtDAL::NamedFloatParameter(CMD_LINE_START_HEADING, heading);
       commandLineObject->AddParameter(paramHeading.get());
 
       std::string prototypeName;
       if(parser->read("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName))
       {
-         dtCore::RefPtr<dtDAL::NamedStringParameter> parameter 
+         dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
             = new dtDAL::NamedStringParameter(CMD_LINE_VEHICLE_PROTOTYPE_NAME, prototypeName);
          commandLineObject->AddParameter(parameter.get());
       }
       else
       {
-         LOG_ALWAYS("To choose your vehicle, pass '--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME + 
+         LOG_ALWAYS("To choose your vehicle, pass '--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME +
             "' on the command line \n     followed by either, 'Hover_Vehicle' or 'Wheeled_Vehicle'.");
       }
-      
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -178,11 +173,11 @@ namespace DriverDemo
    {
       std::vector<dtDAL::ActorProxy*> toFill;
       GetGameManager()->FindActorsByName("Coordinate Config", toFill);
-      
+
       if(toFill.empty())
          return;
-      
-      dtUtil::Coordinates coordConvertor = 
+
+      dtUtil::Coordinates coordConvertor =
          (dynamic_cast<dtActors::CoordinateConfigActor*>(toFill[0]->GetActor()))->GetCoordinateConverter();
 
       // safety setting for Z. Take the z that was probably set from command params
@@ -198,7 +193,7 @@ namespace DriverDemo
             needToZClamp = true;
          }
          break;
-         
+
          case PLAYER_START_MGRS:
          {
             mStartingPosition = coordConvertor.ConvertMGRSToXYZ(mMGRSStart);
@@ -218,19 +213,19 @@ namespace DriverDemo
          if(!toFill.empty())
          {
             terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-            
+
             dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
             iSector->SetScene( &GetGameManager()->GetScene() );
             iSector->SetQueryRoot(terrainNode->GetActor());
             dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
             osg::Vec3 pos( mStartingPosition[0], mStartingPosition[1], mStartingPosition[2] );
             osg::Vec3 endPos = pos;
-            pos[2] += 30000; 
+            pos[2] += 30000;
             endPos[2] -= 30000;
             SingleISector.SetSectorAsLineSegment(pos, endPos);
             if( iSector->Update(osg::Vec3(0,0,0), true) )
             {
-               if( SingleISector.GetNumberOfHits() > 0 ) 
+               if( SingleISector.GetNumberOfHits() > 0 )
                {
                   osg::Vec3 hp;
                   SingleISector.GetHitPoint(hp);
@@ -294,7 +289,7 @@ namespace DriverDemo
       GetGameManager()->FindPrototypesByName(vehicleName, toFill);
 
 
-      // CREATE OUR NEW VEHICLE 
+      // CREATE OUR NEW VEHICLE
       if(!toFill.empty())
       {
 #ifdef AGEIA_PHYSICS
@@ -305,7 +300,7 @@ namespace DriverDemo
          NxScene& nxScene = ageiaComponent->GetPhysicsScene(std::string("Default"));
          nxScene.setGroupCollisionFlag(30, 0, false);  // characters interact with world
 #endif
-         dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy = 
+         dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy =
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
          if(ourActualActorProxy != NULL)
          {
@@ -342,7 +337,7 @@ namespace DriverDemo
                //   SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
                //   if(rsComp)
                //   {
-               //      SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();                  
+               //      SimCore::Components::RenderingSupportComponent::DynamicLight* dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
                //      dl->mIntensity = -2.0f;//a negative intensity will add a negative color, the higher
                //                             //it is the more light it will take to get rid of it
                //      dl->mColor.set(osg::Vec3(1.0f, 1.0f, 1.0f));
@@ -391,8 +386,8 @@ namespace DriverDemo
 
       // create a player actor, walk run jump and drink :)
       GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE, ap);
-    
-      // make the stealh aware 
+
+      // make the stealh aware
       mStealth = static_cast<SimCore::Actors::PlayerActor*>(ap->GetActor());
 
       // make the camera a child

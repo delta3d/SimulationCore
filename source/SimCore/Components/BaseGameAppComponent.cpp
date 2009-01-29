@@ -50,12 +50,9 @@ namespace SimCore
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const std::string BaseGameAppComponent::DEFAULT_NAME = "BaseGameAppComponent";
-      const std::string BaseGameAppComponent::CMD_LINE_FEDEXECUTION_NAME      = "FederationExecutionName";
-      const std::string BaseGameAppComponent::CMD_LINE_FEDFILE_NAME           = "FederationFileName";
       const std::string BaseGameAppComponent::CMD_LINE_PROJECTPATH            = "ProjectPath";
       const std::string BaseGameAppComponent::CMD_LINE_STATISTICS_INTERVAL    = "StatisticsInterval";
       const std::string BaseGameAppComponent::CMD_LINE_MAP_NAME               = "MapName";
-      const std::string BaseGameAppComponent::CMD_LINE_FEDMAPPING_FILE_RESOURCE = "FedMappingFileResource";
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       BaseGameAppComponent::BaseGameAppComponent(const std::string &name)
@@ -104,9 +101,6 @@ namespace SimCore
 
          parser->getApplicationUsage()->addCommandLineOption("--projectPath", "The path (either relative or absolute) to the project context you wish to use. This defaults to the current working directory.");
          parser->getApplicationUsage()->addCommandLineOption("--mapName", "The name of the map to load in. This must be a map that is located within the project path specified");
-         parser->getApplicationUsage()->addCommandLineOption("--federationExecutionName", "Name of the federation execution to use");
-         parser->getApplicationUsage()->addCommandLineOption("--fedFileName", "Name of the federation file to use");
-         parser->getApplicationUsage()->addCommandLineOption("--fedMappingFileResource", "Name of the federation mapping resource file to load.");
          parser->getApplicationUsage()->addCommandLineOption("--statisticsInterval", "The interval the game manager will use to print statistics, in seconds");
 
          int tempInt = 0;
@@ -132,33 +126,13 @@ namespace SimCore
                = new dtDAL::NamedStringParameter(CMD_LINE_MAP_NAME, tempString);
             mCommandLineObject->AddParameter(parameter.get());
          }
-
-         if(parser->read("--federationExecutionName", tempString))
-         {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-               = new dtDAL::NamedStringParameter(CMD_LINE_FEDEXECUTION_NAME, tempString);
-            mCommandLineObject->AddParameter(parameter.get());
-         }
-
-         if(parser->read("--fedFileName", tempString))
-         {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-               = new dtDAL::NamedStringParameter(CMD_LINE_FEDFILE_NAME, tempString);
-            mCommandLineObject->AddParameter(parameter.get());
-         }
-
-         if(parser->read("--fedMappingFileResource", tempString))
-         {
-            dtCore::RefPtr<dtDAL::NamedStringParameter> parameter
-               = new dtDAL::NamedStringParameter(CMD_LINE_FEDMAPPING_FILE_RESOURCE, tempString);
-            mCommandLineObject->AddParameter(parameter.get());
-         }
       }
+
       //////////////////////////////////////////////////////////////////////////
       void BaseGameAppComponent::LoadMaps(const std::string& inMapName)
       {
          // This behavior is similar to what happens in the HLAConnectionComponent.
-         // Apps that use the HLAConnectionComponent should NOT need to call this. 
+         // Apps that use the HLAConnectionComponent should NOT need to call this.
 
          // look up the map name from the command line args. If none supplied, we error out.
          std::string mapName = inMapName;
@@ -186,5 +160,5 @@ namespace SimCore
 
 
 
-   } 
+   }
 }
