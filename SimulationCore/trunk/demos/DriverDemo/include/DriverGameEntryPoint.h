@@ -74,7 +74,7 @@ namespace DriverDemo
           */
          virtual void OnStartup(dtGame::GameApplication& app);
 
-         virtual void InitializeComponents(dtGame::GameManager &gm);
+         virtual void InitializeComponents(dtGame::GameManager& gm);
 
       private:
 
