@@ -14,7 +14,7 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::
 :: Simulation Core - runVisualStudio.bat - Using 'The MIT License'
-:: Copyright (C) 2007-2008, Alion Science and Technology Corporation.
+:: Copyright (C) 2007-2009, Alion Science and Technology Corporation.
 ::
 :: Permission is hereby granted, free of charge, to any person obtaining a copy
 :: of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ set SIM_CORE_ROOT=C:\Curtiss\Projects\Delta3D\SimulationCore
 set DTPHYSX_ROOT=C:\Curtiss\Projects\Delta3D\dtAgeiaPhysX
 set DRIVERDEMO_DIR=C:\Curtiss\Projects\Delta3D\SimulationCore\demos\DriverDemo
 :: Primary Dependencies - Qt, PhysX, HLA RTI, Phython, Windows...
-set QTDIR=C:\Qt\4.3.0
+set QTDIR=C:\Qt\4.4.3
 set PHYSX_ROOT=C:\Program Files\AGEIA Technologies\AGEIA PhysX SDK\v2.7.0
 set RTI_HOME=C:\Curtiss\Projects\Delta3D\rti
 set PYTHON_ROOT=C:\Program Files\Python25
@@ -84,23 +84,13 @@ set DCOS_ROOT=C:\Curtiss\Projects\MTS_DCOS\trunk
 set DVTE_ROOT=C:\Curtiss\Projects\DVTE\DVTE_SimViewer
 set DCSIM_DIR=c:\Curtiss\Projects\BBN\DCSim
 
-:: Project Settings - DCOS
-set DCOS_PATH=%DCOS_ROOT%\bin
-set DCOS_EXT_PATH=%DCOS_ROOT%\ext\bin
-
-:: Project Settings - Humvee App
-set DVTE_INC=%DVTE_ROOT%\include;%DVTE_ROOT%\ext\include\win32
-set DVTE_LIB=%DVTE_ROOT%\lib;%DVTE_ROOT%\ext\lib\win32
-set DVTE_PATH=%DVTE_ROOT%\bin
-set DVTE_EXT_PATH=%DVTE_ROOT%\ext\bin\win32
-
-:: Main Externals - used below. 
-set EXTERNAL_INC=%SIM_CORE_ROOT%\ext\include\win32;%DVTE_ROOT%\ext\include\win32
-set EXTERNAL_LIB=%DVTE_ROOT%\ext\lib\win32
-set EXTERNAL_PATH=%DVTE_ROOT%\ext\bin\win32
+:: Project Settings
+set DCOS_PATH=%DCOS_ROOT%\bin;%DCOS_ROOT%\ext\bin
+set DVTE_PATH=%DVTE_ROOT%\bin;%DVTE_ROOT%\ext\bin\win32
+set DCSIM_PATH=%DCSIM_DIR%\bin
 
 :: Final Custom Project path - used below
-set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DVTE_EXT_PATH%;%DCOS_PATH%;%DCOS_EXT_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_DIR%\bin;
+set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PATH%;
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -108,24 +98,15 @@ set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DVTE_EXT_PATH%;%DCOS_PATH%;%DCOS_EXT_PATH%
 :: Delta3D Environment Variables go here - No need to edit this section
 :: 
 :: This path is the default install path for the Delta3D Self Extracting Installer
-set DELTA_INC=%DELTA_ROOT%\inc;%DELTA_ROOT%\ext\inc;%DELTA_ROOT%\ext\inc\CEGUI
-set DELTA_LIB=%DELTA_ROOT%\lib;%DELTA_ROOT%\ext\lib
-set DELTA_DATA=%DELTA_ROOT%\data
 set DELTA_PATH=%DELTA_ROOT%\bin
 set DELTA_EXT_PATH=%DELTA_ROOT%\ext\bin
 :: Simulation Core
-set SIM_CORE_INC=%SIM_CORE_ROOT%\include;%EXTERNAL_INC%
-set SIM_CORE_LIB=%SIM_CORE_ROOT%\lib;%EXTERNAL_LIB%
 set SIM_CORE_PATH=%SIM_CORE_ROOT%\bin
 
 :: PhysX 
 :: dtAgeiaPhysX - The Delta3D library
-set DTPHYSX_INC=%DTPHYSX_ROOT%\include
-set DTPHYSX_LIB=%DTPHYSX_ROOT%\lib
 set DTPHYSX_PATH=%DTPHYSX_ROOT%\bin
 :: NVidia PhysX - assumes default install and setup path
-set PHYSX_INC=%PHYSX_ROOT%\SDKs\Cooking\include;%PHYSX_ROOT%\SDKs\Foundation\include;%PHYSX_ROOT%\SDKs\NxCharacter\include;%PHYSX_ROOT%\SDKs\NxExtensions\include;%PHYSX_ROOT%\SDKs\Physics\include;%PHYSX_ROOT%\SDKs\PhysXLoader\include;%DTPHYSX_INC%;
-set PHYSX_LIB=%PHYSX_ROOT%\SDKs\lib\win32;%DTPHYSX_LIB%;
 set PHYSX_PATH=%PHYSX_ROOT%\Bin\win32
 
 :: Qt
