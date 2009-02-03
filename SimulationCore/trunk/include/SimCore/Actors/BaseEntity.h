@@ -71,6 +71,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_MAPPING_NAME;
             static const dtUtil::RefString PROPERTY_FORCE;
             static const dtUtil::RefString PROPERTY_GROUND_OFFSET;
+            static const dtUtil::RefString PROPERTY_DEAD_RECKONING_ALGORITHM;
 
             class SIMCORE_EXPORT DomainEnum : public dtUtil::Enumeration
             {
@@ -603,7 +604,7 @@ namespace SimCore
             virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
 
             // Allows a sub-class to set the engine smoke value without doing all the engine
-            // smoke 'stuff'. 
+            // smoke 'stuff'.
             void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
          private:

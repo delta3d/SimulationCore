@@ -117,6 +117,7 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FORCE("Force Affiliation");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_GROUND_OFFSET("Ground Offset");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DEAD_RECKONING_ALGORITHM("Dead Reckoning Algorithm");
 
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -256,11 +257,12 @@ namespace SimCore
             "Specifies the type of environment an entity is specialized in navigating.",
             BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>("Dead Reckoning Algorithm"
-                  , "Dead Reckoning Algorithm",
+         static const dtUtil::RefString PROPERTY_DEAD_RECKONING_ALGORITHM_DESC("Sets the enumerated dead reckoning algorithm to use.");
+         AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>(
+                  PROPERTY_DEAD_RECKONING_ALGORITHM, PROPERTY_DEAD_RECKONING_ALGORITHM,
             dtDAL::MakeFunctor(e, &BaseEntity::SetDeadReckoningAlgorithm),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDeadReckoningAlgorithm),
-            "Sets the enumerated dead reckoning algorithm to use.", BASE_ENTITY_GROUP));
+            PROPERTY_DEAD_RECKONING_ALGORITHM_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_FORCE_DESC("The force for which the entity is fighting.");
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
