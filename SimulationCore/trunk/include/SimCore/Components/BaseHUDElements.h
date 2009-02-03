@@ -111,15 +111,18 @@ namespace SimCore
             CEGUI::Window* GetCEGUIWindow() { return mWindow; }
             const CEGUI::Window* GetCEGUIWindow() const { return mWindow; }
 
+            void SetPositionByVec( const osg::Vec2& position );
             void SetPosition( float x, float y );
             void SetPosition( float x, float y, bool absoluteCoords );
             void SetPosition( float x, float y, const HUDAlignment& align );
             void SetPosition( float x, float y, const HUDAlignment& align, bool absoluteCoords );
             void GetPosition( osg::Vec2& outPos ) const;
 
+            void SetSizeByVec( const osg::Vec2& dimensions );
             virtual void SetSize( float width, float height, bool absoluteCoords = false );
             void GetSize( osg::Vec2& outSize ) const;
 
+            void SetBoundsByVec( const osg::Vec4& bounds );
             void SetBounds( float x, float y, float width, float height, 
                const HUDAlignment& align, bool absolutePos = false, bool absoluteSize = false );
             void SetBounds( float x, float y, float width, float height, 
