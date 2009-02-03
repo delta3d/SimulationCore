@@ -602,11 +602,13 @@ namespace SimCore
                   dtUtil::MakeIndexString(nameCounter, bogusIndexthing);
                   nameCounter ++;
                   
+                  // Build the terrain as a static mesh, but with each geode loaded separately 
                   landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(), 
-                     "Base Terrain " + bogusIndexthing);
+                     "Base Terrain " + bogusIndexthing, true);
                }
                else 
                {
+                  landActor->ClearAllTerrainPhysics();
                   // Clear if we had something before and now we don't
                   landActor->BuildTerrainAsStaticMesh(NULL, "");
                }
