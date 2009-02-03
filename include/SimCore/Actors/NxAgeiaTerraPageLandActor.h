@@ -133,9 +133,11 @@ namespace SimCore
             // internally called functions when a terrain tile is loaded into the system
             // Used to be called ParseTerrainNode
 #ifdef AGEIA_PHYSICS
-            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode);
+            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately = false);
+            // Add a single node, as opposed to a soup. Usually done at the geode level.
+            NxActor* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
 #else
-            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode);
+            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, , bool buildGeodesSeparately = false);
 #endif
 
             // Called when the actor has been added to the game manager.
@@ -205,6 +207,9 @@ namespace SimCore
 
             // for the hmmwv sim
             bool mLoadedTerrainYet;
+
+            int mNumNodesLoaded;
+            int mNumVertsLoaded;
 
             // our map nodes
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> > mTerrainMap;
