@@ -164,6 +164,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetPositionByVec( const osg::Vec2& position )
+      {
+         SetPosition( position.x(), position.y() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void HUDElement::SetPosition(float x, float y)
       {
          if (mAbsPos)
@@ -214,6 +220,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetSizeByVec( const osg::Vec2& dimensions )
+      {
+         SetSize( dimensions.x(), dimensions.y(), mAbsSize );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void HUDElement::SetSize(float width, float height, bool absoluteCoords)
       {
          mAbsSize = absoluteCoords;
@@ -241,6 +253,13 @@ namespace SimCore
          {
             outSize.set(ceguiSize.d_x.d_scale, ceguiSize.d_y.d_scale);
          }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetBoundsByVec( const osg::Vec4& bounds )
+      {
+         SetPosition( bounds.x(), bounds.y(), mAbsPos );
+         SetSize( bounds.z(), bounds.w(), mAbsSize );
       }
 
       //////////////////////////////////////////////////////////////////////////

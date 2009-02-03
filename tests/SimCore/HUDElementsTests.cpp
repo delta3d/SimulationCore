@@ -314,6 +314,30 @@ void HUDElementsTests::TestHUDElement()
    CPPUNIT_ASSERT_DOUBLES_EQUAL( dimensions[1], bounds[3], errorThreshold );
 
 
+   // Test setting position by a Vec2
+   osg::Vec2 newPos( 63.0f, -31.5f );
+   element->SetPositionByVec( newPos );
+   element->GetPosition( pos );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newPos[0], pos[0], errorThreshold );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newPos[1], pos[1], errorThreshold );
+
+   // Test setting size by a Vec2
+   osg::Vec2 newDimensions( 32.0f, 72.0f );
+   element->SetSizeByVec( newDimensions );
+   element->GetSize( dimensions );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newDimensions[0], dimensions[0], errorThreshold );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newDimensions[1], dimensions[1], errorThreshold );
+
+   // Test setting bounds by a Vec4
+   osg::Vec4 newBounds( -20.0f, 16.0f, 52.0f, 13.0f );
+   element->SetBoundsByVec( newBounds );
+   element->GetBounds( bounds );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newBounds[0], bounds[0], errorThreshold );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newBounds[1], bounds[1], errorThreshold );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newBounds[2], bounds[2], errorThreshold );
+   CPPUNIT_ASSERT_DOUBLES_EQUAL( newBounds[3], bounds[3], errorThreshold );
+
+
    // Test visibility
    bool value = element->IsVisible();
    element->SetVisible( ! value );
