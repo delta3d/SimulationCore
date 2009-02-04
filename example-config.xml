@@ -38,6 +38,7 @@ find it.  It shows an example set of values one may set
       <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
       <Property Name="System.UseFixedTimeStep">false</Property>
       
+      <Property Name="dtAudio.NumSources">16</Property>
       <!-- 
            These are left commented out, so the defaults for the terrain
            data base pager are preserved.  The values shown here are not
