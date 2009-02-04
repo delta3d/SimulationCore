@@ -27,11 +27,12 @@
 #include <dtGame/logcontroller.h>
 #include <osg/MatrixTransform>
 
+#include <SimCore/CollisionGroupEnum.h>
+
 #ifdef AGEIA_PHYSICS
 
-#include <NxAgeiaWorldComponent.h>
 #include <SimCore/ModifiedStream.h>
-#include <SimCore/CollisionGroupEnum.h>
+#include <NxAgeiaWorldComponent.h>
 #include <NxCooking.h>
 #else
 #include <dtPhysics/physicscomponent.h>
@@ -47,15 +48,15 @@ namespace SimCore
       const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("Terra Page Listener");
 
       //////////////////////////////////////////////////////////////////////
-      // Geode Visitor - This visitor searches for geodes. It then adds each 
-      // geode separately to the physics engine. This is used when you are NOT 
+      // Geode Visitor - This visitor searches for geodes. It then adds each
+      // geode separately to the physics engine. This is used when you are NOT
       // using the AgeiaCullVisitor (see RenderingSupportComponent for setting this flag).
       //////////////////////////////////////////////////////////////////////
       class GeodeTriangleVisitor : public osg::NodeVisitor
       {
       public:
          // Constructor
-         GeodeTriangleVisitor(NxAgeiaTerraPageLandActor& landActor, std::string nodeName) 
+         GeodeTriangleVisitor(NxAgeiaTerraPageLandActor& landActor, std::string nodeName)
             : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN)
             , mLandActor(landActor)
             , mNodeName(nodeName)
@@ -94,7 +95,7 @@ namespace SimCore
             osg::TriangleFunctor<T> mFunctor;
 
             // Constructor.
-            DrawableTriangleVisitor(NxAgeiaTerraPageLandActor& landActor) 
+            DrawableTriangleVisitor(NxAgeiaTerraPageLandActor& landActor)
                : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN)
                , mLandActor(landActor)
             {
@@ -181,7 +182,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy) 
+         NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy)
             : GameActor(proxy)
             , mNumNodesLoaded(0)
             , mNumVertsLoaded(0)
@@ -245,7 +246,7 @@ namespace SimCore
                if(loadNow)
                {
                   terrainNodeToAdd->SetPhysicsObject(BuildTerrainAsStaticMesh( terrainNodeToAdd->GetGeodePointer(),
-                     terrainNodeToAdd->GetUniqueID().ToString()));
+                     terrainNodeToAdd->GetUniqueID().ToString(), false));
                   terrainNodeToAdd->SetFilled(terrainNodeToAdd->GetPhysicsObject() != NULL);
 
                   if(terrainNodeToAdd->IsFilled())
@@ -336,7 +337,7 @@ namespace SimCore
                {
                   // load the tile to ageia
                   currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
-                     currentNode->GetUniqueID().ToString()));
+                     currentNode->GetUniqueID().ToString(), false));
                   currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
                }
 
@@ -371,7 +372,7 @@ namespace SimCore
                   mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
 
                   currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
-                     currentNode->GetUniqueID().ToString()));
+                     currentNode->GetUniqueID().ToString(), false));
                   currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
                }
             }
@@ -418,7 +419,7 @@ namespace SimCore
             }
 
             // For normal geometries, we go through the node and find all children and check the drawables
-            // for material codes and everything. Then we treat all the triangles as one big soup. 
+            // for material codes and everything. Then we treat all the triangles as one big soup.
             // For large pieces, the physics engine could choke here.
             else
             {
@@ -437,9 +438,9 @@ namespace SimCore
                   return NULL;
                }
 
-               // It's odd, but the verts and triangles match the perfect memory 
+               // It's odd, but the verts and triangles match the perfect memory
                // footprint of what we need for PhysX. We just need to C cast it.
-               NxVec3* Verts = (NxVec3*) &mv.mFunctor.mVertices.front(); 
+               NxVec3* Verts = (NxVec3*) &mv.mFunctor.mVertices.front();
                NxU32* Faces = (NxU32*) &mv.mFunctor.mTriangles.front();
 
                // Build physical model
@@ -489,26 +490,18 @@ namespace SimCore
          NxActor* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
             const std::string& nameOfNode)
          {
-            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
-            GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
-            if(worldComponent == NULL)
-            {
-               LOG_ERROR("Critical Error! Physics Component does not exist.");
-               return NULL;
-            }
-
             mNumNodesLoaded ++;
             std::string numNodesString;
             dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
             numNodesString = nameOfNode + " " + numNodesString;
 
-            // Create our physics object 
+            // Create our physics object
             NxActor* actor = NULL;
-            actor = mPhysicsHelper->SetCollisionStaticMesh(node, NxVec3(0.0f, 0.0f, 0.0f), false, 
-               numNodesString, dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME, 
+            actor = mPhysicsHelper->SetCollisionStaticMesh(node, NxVec3(0.0f, 0.0f, 0.0f), false,
+               numNodesString, dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME,
                nameOfNode, SimCore::CollisionGroup::GROUP_TERRAIN);
             mNumVertsLoaded += mPhysicsHelper->GetNumVertsOnLastGeometry();
-            //NxActor* actor = mPhysicsHelper->SetCollisionMeshHeightField(node, SimCore::CollisionGroup::GROUP_TERRAIN, 
+            //NxActor* actor = mPhysicsHelper->SetCollisionMeshHeightField(node, SimCore::CollisionGroup::GROUP_TERRAIN,
             //   dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME, numNodesString,0);
 
             return actor;
@@ -517,7 +510,7 @@ namespace SimCore
 #else
          //////////////////////////////////////////////////////////////////////
          dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
-            const std::string& nameOfNode)
+            const std::string& nameOfNode, bool buildGeodesSeparately)
          {
             if(nodeToParse == NULL)
             {
@@ -526,11 +519,53 @@ namespace SimCore
                return NULL;
             }
 
+            // Some geometries are really large to load as one big mess, so we load each geode separately
+            // Note, in this case, we don't have a single physics object to return...
+            if (buildGeodesSeparately)
+            {
+               mNumNodesLoaded = 0;
+               mNumVertsLoaded = 0;
+               LOG_ALWAYS("Starting to load physics geometry for terrain.");
+
+               // For each geode it finds, it calls AddTerrainGeode();
+               GeodeTriangleVisitor geodeVisitor(*this, nameOfNode);
+               nodeToParse->accept(geodeVisitor);
+
+               std::string numNodesString, numVertsString;
+               dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
+               dtUtil::MakeIndexString(mNumVertsLoaded, numVertsString);
+               LOG_ALWAYS("Finished loading physics geometry. Found [" + numNodesString + "] nodes with [" + numVertsString + "] verts.");
+               return NULL;
+            }
+            else
+            {
+               dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+               mPhysicsHelper->AddPhysicsObject(*newTile);
+               newTile->SetName(nameOfNode);
+               newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+               newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+               newTile->CreateFromProperties(nodeToParse);
+               return newTile.get();
+            }
+         }
+
+         //////////////////////////////////////////////////////////////////////
+         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
+            const std::string& nameOfNode)
+         {
+            mNumNodesLoaded ++;
+            std::string numNodesString;
+            dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
+            numNodesString = nameOfNode + " " + numNodesString;
+
             dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
             mPhysicsHelper->AddPhysicsObject(*newTile);
+            newTile->SetName(nameOfNode);
             newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-            newTile->CreateFromProperties(nodeToParse);
+            newTile->CreateFromProperties(node);
+            newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+
             return newTile.get();
          }
 #endif

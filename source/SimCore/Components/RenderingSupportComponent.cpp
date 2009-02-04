@@ -565,7 +565,7 @@ namespace SimCore
          }
 
 
-         // Should mStaticTerrainPhysicsEnabled & mEnableCullVisitor be mutually exclusive? 
+         // Should mStaticTerrainPhysicsEnabled & mEnableCullVisitor be mutually exclusive?
 
 
          if(mEnableDynamicLights)
@@ -601,16 +601,16 @@ namespace SimCore
                   std::string bogusIndexthing;
                   dtUtil::MakeIndexString(nameCounter, bogusIndexthing);
                   nameCounter ++;
-                  
-                  // Build the terrain as a static mesh, but with each geode loaded separately 
-                  landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(), 
+
+                  // Build the terrain as a static mesh, but with each geode loaded separately
+                  landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
                      "Base Terrain " + bogusIndexthing, true);
                }
-               else 
+               else
                {
                   landActor->ClearAllTerrainPhysics();
                   // Clear if we had something before and now we don't
-                  landActor->BuildTerrainAsStaticMesh(NULL, "");
+                  landActor->BuildTerrainAsStaticMesh(NULL, "", false);
                }
 
             }
@@ -818,5 +818,5 @@ namespace SimCore
          }
       }
 
-   } 
-} 
+   }
+}

@@ -26,10 +26,10 @@
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
 #include <Stream.h>
-#include <PhysicsGlobals.h> 
+#include <PhysicsGlobals.h>
 #else
 #include <dtPhysics/physicshelper.h>
-#endif 
+#endif
 
 #include <osgDB/Registry>
 #include <osg/Geode>
@@ -72,7 +72,7 @@ namespace SimCore
             void  SetFilled(bool value) {mFilledBL = value;}
 
             /////////////////////////////////////////////////////////////////////////
-            osg::Geode* GetGeodePointer() 
+            osg::Geode* GetGeodePointer()
             {
                if(mGeodePTR.valid())
                   return mGeodePTR.get();
@@ -104,7 +104,7 @@ namespace SimCore
          private:
             dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
 #endif
-            
+
             osg::observer_ptr<osg::Geode>    mGeodePTR;
             bool                             mFilledBL;
             char                             mFlags;
@@ -113,7 +113,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////
       //class NxAgeiaTerraPageListener;
-      class SIMCORE_EXPORT NxAgeiaTerraPageLandActor : public dtGame::GameActor 
+      class SIMCORE_EXPORT NxAgeiaTerraPageLandActor : public dtGame::GameActor
 #ifdef AGEIA_PHYSICS
       , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
 #endif
@@ -133,11 +133,13 @@ namespace SimCore
             // internally called functions when a terrain tile is loaded into the system
             // Used to be called ParseTerrainNode
 #ifdef AGEIA_PHYSICS
-            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately = false);
+            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
             // Add a single node, as opposed to a soup. Usually done at the geode level.
             NxActor* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
 #else
-            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, , bool buildGeodesSeparately = false);
+            dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
+            // Add a single node, as opposed to a soup. Usually done at the geode level.
+            dtPhysics::PhysicsObject* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
 #endif
 
             // Called when the actor has been added to the game manager.
@@ -145,11 +147,11 @@ namespace SimCore
             virtual void OnEnteredWorld();
 
             /// determine if we want to use these hard coded materials and load to physics
-            bool PassThisGeometry(int fid, int smc, int soilTemperatureAndPressure, 
+            bool PassThisGeometry(int fid, int smc, int soilTemperatureAndPressure,
                      int soilWaterContent);
 
             /// should this be a group or just heightfield.
-            void DetermineHowToLoadGeometry(int fid, int smc, 
+            void DetermineHowToLoadGeometry(int fid, int smc,
                      int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad);
 
             /// should we load the geom as a group (buildings)
@@ -161,7 +163,7 @@ namespace SimCore
             /// geode - loads a single geode into the physics engine. Usually called from the Cull Visitor when it decides to physics something
             void CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform);
 
-            /// Clears all of the geodes and/or the static meshes physics objects - call on map reload or similar 
+            /// Clears all of the geodes and/or the static meshes physics objects - call on map reload or similar
             void ClearAllTerrainPhysics();
 
             // reset terrain iterator so we can start at the beginning
@@ -183,7 +185,7 @@ namespace SimCore
             virtual void AgeiaPostPhysicsUpdate(){}
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
                      NxActor& ourSelf, NxActor& whatWeHit) {}
 
             // You would have to make a new raycast to get this report,
