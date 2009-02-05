@@ -25,11 +25,15 @@
 #define PHYSICSTYPES_H_
 
 #ifdef AGEIA_PHYSICS
+
+#include <NxAgeiaPhysicsHelper.h>
+
+
 namespace dtPhysics
 {
 
 
-typedef NxActor PhysicsObject ;
+typedef NxActor PhysicsObject;
 typedef dtAgeiaPhysX::NxAgeiaPhysicsHelper PhysicsHelper;
 typedef dtAgeiaPhysX::NxAgeiaWorldComponent PhysicsComponent;
 
