@@ -277,11 +277,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::ClearAllTerrainPhysics()
          {
-#ifdef AGEIA_PHYSICS
-            mPhysicsHelper->ReleaseAllPhysXObjects();
-#else
             mPhysicsHelper->ClearAllPhysicsObjects();
-#endif
             mTerrainMap.clear();
          }
 
