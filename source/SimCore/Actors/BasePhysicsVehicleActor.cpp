@@ -106,7 +106,7 @@ namespace SimCore
       {
          // DEBUG: std::cout << "Terrain loaded." << std::endl;
 
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
          if( physicsObject == NULL )
          {
             // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
@@ -151,20 +151,20 @@ namespace SimCore
       void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
          // NOTE - Fix this so it uses the location provided
-         //GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
-         GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+         //GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]) );
+         GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force)
       {
-         GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+         GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
          if(physicsObject == NULL)
          {
             LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
@@ -242,7 +242,7 @@ namespace SimCore
 /*
          float amountChange = 0.5f;
          float glmat[16];
-         NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
+         NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
 
          if(physxObj == NULL)
          {
@@ -333,7 +333,7 @@ namespace SimCore
             if (!fullUpdate)
                forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
 
-            NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
+            NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
             if(physxObj == NULL)
             {
                LOG_ERROR("No physics object on BasePhysicsVehicleActor::ShouldForceUpdate(), no doing dead reckoning");
@@ -407,7 +407,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate()
       {
-         NxActor* physicsActor = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physicsActor = GetPhysicsHelper()->GetPhysicsObject();
 
          // The PRE physics update is only trapped if we are remote. It updates the physics
          // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
@@ -442,7 +442,7 @@ namespace SimCore
          {
             // The base behavior is that we want to pull the translation and rotation off the object
             // in our physics scene and apply it to our 3D object in the visual scene.
-            NxActor* physicsActor = GetPhysicsHelper()->GetPhysXObject();
+            NxActor* physicsActor = GetPhysicsHelper()->GetPhysicsObject();
             if(physicsActor != NULL && !physicsActor->isSleeping())
             {
                dtCore::Transform ourTransform;
@@ -513,7 +513,7 @@ namespace SimCore
          // we need a base vehicle helper and it should be moved there.
          // The code in PhysicsHelper::RepositionVehicle can be refactored out
 
-         NxActor* physActor = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physActor = GetPhysicsHelper()->GetPhysicsObject();
          float glmat[16];
 
          for(int i = 0 ; i < 16; i++)
@@ -581,7 +581,7 @@ namespace SimCore
       bool BasePhysicsVehicleActor::GetTerrainPoint(
          const osg::Vec3& location, osg::Vec3& outPoint )
       {
-         NxActor* physxObject = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physxObject = GetPhysicsHelper()->GetPhysicsObject();
          if( physxObject == NULL )
          {
             return false;
