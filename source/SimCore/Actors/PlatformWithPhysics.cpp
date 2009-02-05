@@ -243,7 +243,7 @@ namespace SimCore
             osg::Matrix rot;
             ourTransform.GetRotation(rot);
 
-            NxActor* toFillIn = mPhysicsHelper->GetPhysXObject();
+            NxActor* toFillIn = mPhysicsHelper->GetPhysicsObject();
             if(toFillIn != NULL)
             {
                osg::Vec3 translation;

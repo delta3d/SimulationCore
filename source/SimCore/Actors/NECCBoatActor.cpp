@@ -253,7 +253,7 @@ namespace SimCore
          mPhysicsHelper->SetIsKinematic(false);
          mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
          mPhysicsHelper->InitializePrimitive(GetOSGNode(), sendInMatrix);
-         NxActor* actor = mPhysicsHelper->GetPhysXObject();
+         NxActor* actor = mPhysicsHelper->GetPhysicsObject();
 
          SetTransform(ourTransform);
 
@@ -357,14 +357,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
-         //if(GetPhysicsHelper()->GetPhysXObject() != NULL)
-         //   GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]) );
+         //if(GetPhysicsHelper()->GetPhysicsObject() != NULL)
+         //   GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]) );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::OnTickLocal(const dtGame::TickMessage &tickMessage)
       {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
          if(physicsObject == NULL)
          {
             // should probably throw an exception
@@ -458,7 +458,7 @@ namespace SimCore
             return;
          }
 
-         if(mPhysicsHelper->GetPhysXObject() == NULL)
+         if(mPhysicsHelper->GetPhysicsObject() == NULL)
          {
             LOG_WARNING("PhysX object null in update dead reckoning not sending out!");
             return;
@@ -475,7 +475,7 @@ namespace SimCore
 
          float amountChange = 0.5f;
          float glmat[16];
-         NxActor* physxObj = mPhysicsHelper->GetPhysXObject();
+         NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
          NxMat33 rotation = physxObj->getGlobalOrientation();
          rotation.getColumnMajorStride4(glmat);
          glmat[12] = physxObj->getGlobalPosition()[0];
@@ -571,7 +571,7 @@ namespace SimCore
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
 
-         NxActor* toFillIn = GetPhysicsHelper()->GetPhysXObject();
+         NxActor* toFillIn = GetPhysicsHelper()->GetPhysicsObject();
 
          if(toFillIn != NULL)
          {
@@ -703,8 +703,8 @@ namespace SimCore
          ourMatrix.t = NxVec3(71815, 42518, 804);
          ourMatrix.M = NxMat33();
          ourMatrix.M.id();
-         GetPhysicsHelper()->GetPhysXObject()->setGlobalPosition(ourMatrix.t);
-         GetPhysicsHelper()->GetPhysXObject()->setGlobalOrientation(ourMatrix.M);
+         GetPhysicsHelper()->GetPhysicsObject()->setGlobalPosition(ourMatrix.t);
+         GetPhysicsHelper()->GetPhysicsObject()->setGlobalOrientation(ourMatrix.M);
 
          // reset forces.
          GetPhysicsHelper()->ResetForces();
@@ -877,7 +877,7 @@ namespace SimCore
          //
 
          NxRay ourRay;
-         ourRay.orig = GetPhysicsHelper()->GetPhysXObject()->getGlobalPosition();
+         ourRay.orig = GetPhysicsHelper()->GetPhysicsObject()->getGlobalPosition();
          ourRay.dir = NxVec3(0,0,-1);
          NxRaycastHit   mOurHit;
 
@@ -885,7 +885,7 @@ namespace SimCore
          // Make sure we DO hit hte terrain appropriatelys
          BoatToLandReport myReport(this);
          //NxShape* shape = ourActor->getScene().raycastClosestShape(ourRay, NX_ALL_SHAPES,  mOurHit, (1 << 0));
-         NxU32 numHits = GetPhysicsHelper()->GetPhysXObject()->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES,
+         NxU32 numHits = GetPhysicsHelper()->GetPhysicsObject()->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES,
             (1 << 0) | (1 << 23) | (1 << 26) | (1 << 30) | (1 << 31) );
          if(numHits > 0 && myReport.mGotAHit)
          {
