@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<hla xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="hlaComponent"
-     xsi:schemaLocation="hlaComponent HLAMapping.xsd">
+<hla xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="HLAMapping.xsd">
 
     <header>
         <name>RPR1 FOM</name>
@@ -274,8 +273,8 @@
             <attrToProp>
                 <hlaName>FlamesPresent</hlaName>
                 <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
-                <gameDataType>BOOLEAN</gameDataType>
                 <gameName>FlamesPresent</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
                 <default>0</default>
             </attrToProp>
             <attrToProp>
@@ -377,8 +376,8 @@
             <attrToProp>
                <hlaName>ArticulatedParametersArray</hlaName> 
                <hlaDataType>ARTICULATED_PART_TYPE</hlaDataType> 
-               <gameDataType>GROUP</gameDataType> 
                <gameName>Articulated Parameters Array</gameName> 
+               <gameDataType>GROUP</gameDataType> 
                <default>unknown</default> 
                <enumerationMapping>
                   <value id="0">unknown</value> 
@@ -602,9 +601,9 @@
         <!-- This is A first tier object -->
         <!-- *************************** -->
         <object name="Portal">
-            <remoteOnly>false</remoteOnly>
             <objectClass>Portal</objectClass>
             <actorType>PortalModels.Portal</actorType>
+            <remoteOnly>false</remoteOnly>
             <attrToProp>
                     <hlaName>name</hlaName>
                     <hlaDataType>STRING_TYPE</hlaDataType>
