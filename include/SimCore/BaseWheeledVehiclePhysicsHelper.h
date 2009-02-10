@@ -25,7 +25,7 @@
 #ifndef _BASE_VEHICLE_PHYSICS_HELPER_
 #define _BASE_VEHICLE_PHYSICS_HELPER_
 
-#include <Vehicles/NxWheelDesc.h>
+#include <NxWheelShapeDesc.h>
 #include <osgSim/DOFTransform>
 #include <SimCore/Export.h>
 #include <SimCore/PhysicsTypes.h>

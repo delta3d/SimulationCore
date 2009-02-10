@@ -44,7 +44,7 @@
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/PortalActor.h>
-#include <Vehicles/NxWheelDesc.h>
+#include <NxWheelShapeDesc.h>
 #include <NxMat34.h>
 
 namespace SimCore
@@ -326,8 +326,9 @@ namespace SimCore
 
             if(mWheels[i] != NULL)
             {
-               mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF
-               | NX_WF_ACCELERATED | NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT);
+               //these flags are no longer in the SDK 
+               //mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF
+               //| NX_WF_ACCELERATED | NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT);
 
                NxMat33 orient;
                orient.setRow(0, NxVec3(1,0,0));
