@@ -22,7 +22,7 @@
 * @author Allen Danklefsen, Bradley Anderegg
 */
 
-#include <SimCore/BaseVehiclePhysicsHelper.h>
+#include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
 #include <osg/Matrix>
 #include <dtDAL/enginepropertytypes.h>
 
@@ -133,10 +133,6 @@ namespace SimCore
             wheelShapeDesc.lateralTireForceFunction = lngTFD;
 
             WheelType* wheelShape = static_cast<WheelType*>(GetPhysXObject()->createShape(wheelShapeDesc));
-            if(!steerable)
-               wheelShape->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF | NX_WF_ACCELERATED);
-            else
-               wheelShape->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF | NX_WF_ACCELERATED | NX_WF_STEERABLE_INPUT);
 
             return wheelShape;
          }
