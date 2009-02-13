@@ -85,11 +85,10 @@ namespace SimCore
                   static DomainEnum SURFACE;
                   static DomainEnum MULTI;
 
+                  const std::string& GetDisplayName();
                private:
-                  DomainEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  DomainEnum(const std::string& name, const std::string& displayName);
+                  const std::string mDisplayName;
             };
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
@@ -101,10 +100,7 @@ namespace SimCore
                   static DamageStateEnum MODERATE_DAMAGE;
                   static DamageStateEnum DESTROYED;
                private:
-                  DamageStateEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  DamageStateEnum(const std::string& name);
             };
 
             class SIMCORE_EXPORT ForceEnum : public dtUtil::Enumeration
@@ -116,11 +112,11 @@ namespace SimCore
                   static ForceEnum OPPOSING;
                   static ForceEnum NEUTRAL;
                   static ForceEnum INSURGENT;
+
+                  const std::string& GetDisplayName();
                private:
-                  ForceEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  ForceEnum(const std::string& name, const std::string displayName);
+                  const std::string mDisplayName;
             };
 
             class SIMCORE_EXPORT ServiceEnum : public dtUtil::Enumeration
@@ -137,10 +133,7 @@ namespace SimCore
                   static ServiceEnum CIVILIAN;
                   static ServiceEnum REFUGEE;
                private:
-                  ServiceEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  ServiceEnum(const std::string& name);
             };
 
             BaseEntityActorProxy();

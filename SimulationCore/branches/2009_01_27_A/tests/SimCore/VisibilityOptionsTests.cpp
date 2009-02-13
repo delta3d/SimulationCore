@@ -69,15 +69,15 @@ namespace SimCore
 
       void TestBasicOptions()
       {
-         const std::string ALL_OPTS_TRUE_MSG("All visibility options should be true by default.");
+         const std::string ALL_OPTS_TRUE_MSG("All visibility options should be true by default but blips and tracks.");
          const std::string ALL_OPTS_FALSE_MSG("All visibility options should now be false.");
          RefPtr<VisibilityOptions> visOpts = new VisibilityOptions;
          BasicVisibilityOptions basicOpts = visOpts->GetBasicOptions();
          //All basic options should be true by default.
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mDismountedInfantry);
          CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mPlatforms);
-         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mSensorBlips);
-         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, basicOpts.mTracks);
+         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, !basicOpts.mSensorBlips);
+         CPPUNIT_ASSERT_MESSAGE(ALL_OPTS_TRUE_MSG, !basicOpts.mTracks);
 
          {
             const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
