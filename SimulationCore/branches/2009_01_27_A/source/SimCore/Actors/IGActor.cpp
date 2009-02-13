@@ -64,11 +64,12 @@ namespace SimCore
                 // traverse(node, nv);
              }
       };
-
+      static dtCore::RefPtr<HideNodeCallback> HIDE_NODE_CALLBACK(new HideNodeCallback);
 
       ///////////////////////////////////////////////////////////////////////////
-      IGActor::IGActor(dtGame::GameActorProxy &proxy) :
-         GameActor(proxy)
+      IGActor::IGActor(dtGame::GameActorProxy &proxy)
+      : GameActor(proxy)
+      , mIsVisible(true)
       {
       }
 
@@ -217,25 +218,26 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       bool IGActor::IsVisible() const
       {
-         return GetOSGNode()->getCullCallback() == NULL;
+         return mIsVisible;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void IGActor::SetVisible(bool visible)
       {
-         DoSetVisible(visible);
+         mIsVisible = visible;
+         SetNodeVisible(visible, *GetOSGNode());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void IGActor::DoSetVisible(bool visible)
+      void IGActor::SetNodeVisible(bool visible, osg::Node& nodeToUse)
       {
          if (visible)
          {
-            GetOSGNode()->setCullCallback(NULL);
+            nodeToUse.setCullCallback(NULL);
          }
          else
          {
-            GetOSGNode()->setCullCallback(new HideNodeCallback);
+            nodeToUse.setCullCallback(HIDE_NODE_CALLBACK.get());
          }
       }
     }
