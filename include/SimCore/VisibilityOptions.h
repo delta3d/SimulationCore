@@ -32,7 +32,7 @@
 
 namespace SimCore
 {
-   class BasicVisibilityOptions
+   class SIMCORE_EXPORT BasicVisibilityOptions
    {
    public:
       BasicVisibilityOptions();
