@@ -1,4 +1,6 @@
 #include <SimCore/Actors/PositionMarker.h>
+#include <SimCore/VisibilityOptions.h>
+
 #include <dtGame/basemessages.h>
 #include <dtGame/invokable.h>
 
@@ -20,25 +22,6 @@ namespace SimCore
 {
    namespace Actors
    {
-      class HideNodeCallback : public osg::NodeCallback
-      {
-         public:
-
-            /**
-             * Constructor.
-             *
-             * @param terrain the owning InfiniteTerrain object
-             */
-            HideNodeCallback()
-            {}
-
-            virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-            {
-               // We're hiding the node.  The point is to NOT traverse.
-               // traverse(node, nv);
-            }
-      };
-
       ////////////////////////////////////////////////////////////////////////
       const std::string PositionMarker::COLOR_UNIFORM("forceColor");
 
@@ -394,19 +377,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////
-      void PositionMarker::HandleModelDrawToggle(bool active)
-      {
-         if (active)
-         {
-            GetOSGNode()->setCullCallback(NULL);
-         }
-         else
-         {
-            GetOSGNode()->setCullCallback(new HideNodeCallback);
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////
       void PositionMarker::LoadImage(const std::string& theFile)
       {
          if (theFile.empty())
@@ -462,6 +432,37 @@ namespace SimCore
          {
             SetCurrentColorUniform(osg::Vec4(CalculateCurrentColor(), CalculateCurrentAlpha()));
          }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      class HideNodeCallback : public osg::NodeCallback
+      {
+         public:
+
+            /**
+             * Constructor.
+             *
+             * @param terrain the owning InfiniteTerrain object
+             */
+            HideNodeCallback()
+            {}
+
+            virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+            {
+               // We're hiding the node.  The point is to NOT traverse.
+               // traverse(node, nv);
+            }
+      };
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool PositionMarker::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+         // this is kind of Dr. Seuss-ish, but if it's not a blip it's a track, but seeing as tracks look
+         // exactly like blips, it's mighty hard telling the tracks from the blips except that blips
+         // get the entity type "Blip" set.
+         return (basicOptions.mSensorBlips && GetMappingName() == "Blip")
+         || (basicOptions.mTracks && GetMappingName() != "Blip");
       }
 
       ////////////////////////////////////////////////////////////////////////
@@ -639,6 +640,7 @@ namespace SimCore
             PROPERTY_INITIAL_ALPHA_DESC, POSITION_MARKER_GROUP));
       }
 
+      ////////////////////////////////////////////////////////////////////////
       void PositionMarkerActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();

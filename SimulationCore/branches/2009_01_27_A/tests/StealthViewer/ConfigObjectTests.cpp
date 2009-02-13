@@ -41,6 +41,7 @@
 
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/LabelManager.h>
+#include <SimCore/Components/ViewerMessageProcessor.h>
 
 #include <SimCore/Tools/Binoculars.h>
 
@@ -531,17 +532,24 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    dtCore::RefPtr<StealthGM::PreferencesVisibilityConfigObject> visConfig =
       new StealthGM::PreferencesVisibilityConfigObject;
 
-   SimCore::Components::LabelOptions options = visConfig->GetOptions();
+   SimCore::Components::LabelOptions options = visConfig->GetLabelOptions();
    options.SetShowLabels(false);
    options.SetShowLabelsForBlips(false);
    options.SetShowLabelsForEntities(false);
    options.SetShowLabelsForPositionReports(false);
    options.SetMaxLabelDistance(10.0f);
 
-   visConfig->SetOptions(options);
+   SimCore::VisibilityOptions& visOptions = visConfig->GetEntityOptions();
+   SimCore::BasicVisibilityOptions basicOptions = visOptions.GetBasicOptions();
+
+   visConfig->SetLabelOptions(options);
    CPPUNIT_ASSERT(visConfig->IsUpdated());
 
-   SimCore::Components::LabelOptions options2 = visConfig->GetOptions();
+   visConfig->SetIsUpdated(false);
+   visConfig->SetEntityOptions(visOptions);
+   CPPUNIT_ASSERT(visConfig->IsUpdated());
+
+   SimCore::Components::LabelOptions options2 = visConfig->GetLabelOptions();
    CPPUNIT_ASSERT(options == options2);
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
@@ -549,6 +557,9 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    dtCore::RefPtr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
    hud->SetupGUI(*new SimCore::Components::HUDGroup("hello"), 50, 50 );
    gm->AddComponent(*hud, dtGame::GameManager::ComponentPriority::NORMAL);
+
+   dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> vmp = new SimCore::Components::ViewerMessageProcessor;
+   gm->AddComponent(*vmp, dtGame::GameManager::ComponentPriority::HIGHEST);
 
    SimCore::Components::LabelOptions optionsApplied = hud->GetLabelManager().GetOptions();
    CPPUNIT_ASSERT(options != optionsApplied);
@@ -558,6 +569,7 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    optionsApplied = hud->GetLabelManager().GetOptions();
 
    CPPUNIT_ASSERT(options == optionsApplied);
+   CPPUNIT_ASSERT(&visConfig->GetEntityOptions() == &vmp->GetVisibilityOptions());
 }
 
 

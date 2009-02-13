@@ -26,6 +26,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/VisibilityOptions.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
@@ -467,35 +468,6 @@ namespace SimCore
          return mSwitchNode;
       }
 
-      void Platform::HandleModelDrawToggle(bool draw)
-      {
-         if (!draw)
-         {
-            mSwitchNode->setAllChildrenOff();
-            if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Hiding Model on BaseEntity \"s\".", GetName().c_str());
-         }
-         else
-         {
-            if(!draw)
-               return;
-
-            BaseEntityActorProxy::DamageStateEnum& damageState = GetDamageState();
-            if(damageState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
-               mSwitchNode->setSingleChildOn(0);
-            else if(damageState == BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE
-                  || damageState == BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
-               mSwitchNode->setSingleChildOn(1);
-            else if(damageState == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-               mSwitchNode->setSingleChildOn(2);
-           // mNode->asGroup()->addChild(mSwitchNode.get());
-            if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__, "Showing Model on Platform \"%s\" with damage state \"%s\".",
-                     GetName().c_str(), GetDamageState().GetName().c_str());
-         }
-
-      }
-
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::LoadDamageableFile(const std::string &fileName, PlatformActorProxy::DamageStateEnum &state)
       {
@@ -927,5 +899,13 @@ namespace SimCore
             mArticHelper->SetDirty(false);
          }
       }
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool Platform::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+         bool baseVal = BaseClass::ShouldBeVisible(options);
+         return baseVal && basicOptions.mPlatforms;
+      }
+
    }
 }

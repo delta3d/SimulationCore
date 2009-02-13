@@ -19,6 +19,9 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+// For the Force and Domain Enums.  Thas has to be first because of a macro conflict with Qt.
+#include <SimCore/Actors/BaseEntity.h>
+
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/MainWindow.h>
@@ -103,6 +106,11 @@ namespace StealthQt
       const QString StealthViewerSettings::SHOW_LABELS_FOR_BLIPS("SHOW_LABELS_FOR_BLIPS");
       const QString StealthViewerSettings::SHOW_LABELS_FOR_TRACKS("SHOW_LABELS_FOR_TRACKS");
       const QString StealthViewerSettings::LABEL_MAX_DISTANCE("LABEL_MAX_DISTANCE");
+      const QString StealthViewerSettings::SHOW_PLATFORMS("SHOW_PLATFORMS");
+      const QString StealthViewerSettings::SHOW_HUMANS("SHOW_HUMANS");
+      const QString StealthViewerSettings::SHOW_TRACKS("SHOW_TRACKS");
+      const QString StealthViewerSettings::SHOW_BLIPS("SHOW_BLIPS");
+      const QString StealthViewerSettings::SHOW_ENUM_PREFIX("SHOW_ENUM_");
 
    const QString StealthViewerSettings::CONTROLS_CAMERA_GROUP("CONTROLS_CAMERA_GROUP");
 
@@ -466,13 +474,40 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetVisibilityConfigObject();
 
       beginGroup(StealthViewerSettings::PREFERENCES_VISIBILITY_GROUP);
-         SimCore::Components::LabelOptions options = visObject.GetOptions();
+         SimCore::Components::LabelOptions labelOptions = visObject.GetLabelOptions();
+         SimCore::VisibilityOptions& visOptions = visObject.GetEntityOptions();
+         SimCore::BasicVisibilityOptions basicOptions = visOptions.GetBasicOptions();
 
-         setValue(StealthViewerSettings::SHOW_LABELS, options.ShowLabels());
-         setValue(StealthViewerSettings::SHOW_LABELS_FOR_BLIPS, options.ShowLabelsForBlips());
-         setValue(StealthViewerSettings::SHOW_LABELS_FOR_ENTITIES, options.ShowLabelsForEntities());
-         setValue(StealthViewerSettings::SHOW_LABELS_FOR_TRACKS, options.ShowLabelsForPositionReports());
-         setValue(StealthViewerSettings::LABEL_MAX_DISTANCE, options.GetMaxLabelDistance());
+         setValue(StealthViewerSettings::SHOW_LABELS, labelOptions.ShowLabels());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_BLIPS, labelOptions.ShowLabelsForBlips());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_ENTITIES, labelOptions.ShowLabelsForEntities());
+         setValue(StealthViewerSettings::SHOW_LABELS_FOR_TRACKS, labelOptions.ShowLabelsForPositionReports());
+         setValue(StealthViewerSettings::LABEL_MAX_DISTANCE, labelOptions.GetMaxLabelDistance());
+
+         setValue(StealthViewerSettings::SHOW_PLATFORMS, basicOptions.mPlatforms);
+         setValue(StealthViewerSettings::SHOW_HUMANS, basicOptions.mDismountedInfantry);
+         setValue(StealthViewerSettings::SHOW_TRACKS, basicOptions.mTracks);
+         setValue(StealthViewerSettings::SHOW_BLIPS, basicOptions.mSensorBlips);
+
+         const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
+            SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
+         for (size_t i = 0; i < forces.size(); ++i)
+         {
+            SimCore::Actors::BaseEntityActorProxy::ForceEnum* curForce = forces[i];
+
+            QString key = SHOW_ENUM_PREFIX + tr(curForce->GetName().c_str());
+            setValue(key, basicOptions.IsEnumVisible(*curForce));
+         }
+
+         const std::vector<SimCore::Actors::BaseEntityActorProxy::DomainEnum*>& domains =
+            SimCore::Actors::BaseEntityActorProxy::DomainEnum::EnumerateType();
+         for (size_t i = 0; i < domains.size(); ++i)
+         {
+            SimCore::Actors::BaseEntityActorProxy::DomainEnum* curDomain = domains[i];
+
+            QString key = SHOW_ENUM_PREFIX + tr(curDomain->GetName().c_str());
+            setValue(key, basicOptions.IsEnumVisible(*curDomain));
+         }
       endGroup();
    }
 
@@ -836,34 +871,87 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetVisibilityConfigObject();
 
       beginGroup(PREFERENCES_VISIBILITY_GROUP);
-         SimCore::Components::LabelOptions options = visObject.GetOptions();
+         SimCore::Components::LabelOptions labelOptions = visObject.GetLabelOptions();
+         SimCore::VisibilityOptions& visOptions = visObject.GetEntityOptions();
+         SimCore::BasicVisibilityOptions basicOptions = visOptions.GetBasicOptions();
 
          if (contains(SHOW_LABELS))
          {
-            options.SetShowLabels(value(SHOW_LABELS).toBool());
+            labelOptions.SetShowLabels(value(SHOW_LABELS).toBool());
          }
 
          if (contains(SHOW_LABELS_FOR_BLIPS))
          {
-            options.SetShowLabelsForBlips(value(SHOW_LABELS_FOR_BLIPS).toBool());
+            labelOptions.SetShowLabelsForBlips(value(SHOW_LABELS_FOR_BLIPS).toBool());
          }
 
          if (contains(SHOW_LABELS_FOR_ENTITIES))
          {
-            options.SetShowLabelsForEntities(value(SHOW_LABELS_FOR_ENTITIES).toBool());
+            labelOptions.SetShowLabelsForEntities(value(SHOW_LABELS_FOR_ENTITIES).toBool());
          }
 
          if (contains(SHOW_LABELS_FOR_TRACKS))
          {
-            options.SetShowLabelsForPositionReports(value(SHOW_LABELS_FOR_TRACKS).toBool());
+            labelOptions.SetShowLabelsForPositionReports(value(SHOW_LABELS_FOR_TRACKS).toBool());
          }
 
          if (contains(LABEL_MAX_DISTANCE))
          {
-            options.SetMaxLabelDistance(value(LABEL_MAX_DISTANCE).toDouble());
+            labelOptions.SetMaxLabelDistance(value(LABEL_MAX_DISTANCE).toDouble());
          }
+
+
+         if (contains(SHOW_PLATFORMS))
+         {
+            basicOptions.mPlatforms = value(SHOW_PLATFORMS).toBool();
+         }
+
+         if (contains(SHOW_HUMANS))
+         {
+            basicOptions.mDismountedInfantry = value(SHOW_HUMANS).toBool();
+         }
+
+         if (contains(SHOW_TRACKS))
+         {
+            basicOptions.mTracks = value(SHOW_TRACKS).toBool();
+         }
+
+         if (contains(SHOW_BLIPS))
+         {
+            basicOptions.mSensorBlips = value(SHOW_BLIPS).toBool();
+         }
+
+         const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forces =
+            SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
+         for (size_t i = 0; i < forces.size(); ++i)
+         {
+            SimCore::Actors::BaseEntityActorProxy::ForceEnum* curForce = forces[i];
+
+            QString key = SHOW_ENUM_PREFIX + tr(curForce->GetName().c_str());
+            if (contains(key))
+            {
+               basicOptions.SetEnumVisible(*curForce, value(key).toBool());
+            }
+         }
+
+         const std::vector<SimCore::Actors::BaseEntityActorProxy::DomainEnum*>& domains =
+            SimCore::Actors::BaseEntityActorProxy::DomainEnum::EnumerateType();
+         for (size_t i = 0; i < domains.size(); ++i)
+         {
+            SimCore::Actors::BaseEntityActorProxy::DomainEnum* curDomain = domains[i];
+
+            QString key = SHOW_ENUM_PREFIX + tr(curDomain->GetName().c_str());
+            if (contains(key))
+            {
+               basicOptions.SetEnumVisible(*curDomain, value(key).toBool());
+            }
+         }
+
+         visOptions.SetBasicOptions(basicOptions);
+         visObject.SetLabelOptions(labelOptions);
+
       endGroup();
-      visObject.SetOptions(options);
+
    }
 
    void StealthViewerSettings::LoadControlsRecord()

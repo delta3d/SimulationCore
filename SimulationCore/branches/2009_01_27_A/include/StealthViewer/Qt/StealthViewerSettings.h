@@ -100,6 +100,12 @@ namespace StealthQt
             static const QString SHOW_LABELS_FOR_TRACKS;
             static const QString LABEL_MAX_DISTANCE;
 
+            static const QString SHOW_PLATFORMS;
+            static const QString SHOW_HUMANS;
+            static const QString SHOW_TRACKS;
+            static const QString SHOW_BLIPS;
+            static const QString SHOW_ENUM_PREFIX;
+
          static const QString CONTROLS_CAMERA_GROUP;
 
          static const QString CONTROLS_RECORD_GROUP;

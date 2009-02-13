@@ -22,6 +22,7 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/Human.h>
+#include <SimCore/VisibilityOptions.h>
 
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
@@ -510,7 +511,7 @@ namespace SimCore
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
 
-               HandleModelDrawToggle(IsDrawingModel());
+               SetActive(IsDrawingModel());
 
                //setup speed blends
                WalkRunBlend* walkRunReady = new WalkRunBlend(this);
@@ -557,21 +558,6 @@ namespace SimCore
       const std::string& Human::GetSkeletalMeshFile()
       {
          return mSkeletalMeshFileName;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////
-      void Human::HandleModelDrawToggle(bool draw)
-      {
-         if (!draw)
-         {
-            osg::MatrixTransform& transform = GetScaleMatrixTransform();
-            transform.removeChildren(0, transform.getNumChildren());
-         }
-         else
-         {
-            if (mModelNode.valid())
-               GetScaleMatrixTransform().addChild(mModelNode.get());
-         }
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -1391,6 +1377,14 @@ namespace SimCore
          newOp->AddPreCondition(isShot.get());
          newOp->AddEffect(deadEff.get());
          newOp->AddEffect(notTransitionEff.get());
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool Human::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+         bool baseVal = BaseClass::ShouldBeVisible(options);
+         return baseVal && basicOptions.mDismountedInfantry;
       }
    }
 }

@@ -37,6 +37,7 @@
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QScrollBar>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QSpacerItem>
 
 #include <StealthViewer/Qt/MainWindow.h>
 #include <ui_MainWindowUi.h>
@@ -681,6 +682,15 @@ namespace StealthQt
                this,               SLOT(OnVisLabelsToggled(bool)));
       connect(mUi->mVisMaxDistCombo, SIGNAL(currentIndexChanged(const QString&)),
                this,                 SLOT(OnVisLabelsDistanceChanged(const QString&)));
+
+      connect(mUi->mVisShowPlatforms,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
+      connect(mUi->mVisShowHumans,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
+      connect(mUi->mVisShowTracks,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
+      connect(mUi->mVisShowBlips,  SIGNAL(toggled(bool)),
+               this,               SLOT(OnVisibilityOptionToggled(bool)));
 
       ////////////////////////////////////////////////////
 
@@ -1743,7 +1753,7 @@ namespace StealthQt
 
       // Must copy the options because setting the options from the options object
       // can change the values because of the way the events fire... sheesh.
-      SimCore::Components::LabelOptions options = visConfig.GetOptions();
+      SimCore::Components::LabelOptions options = visConfig.GetLabelOptions();
 
       ui.mVisTrackChk->setChecked(options.ShowLabelsForPositionReports());
       ui.mVisEntityChk->setChecked(options.ShowLabelsForEntities());
@@ -1882,7 +1892,7 @@ namespace StealthQt
       mUi->mToolsShowDistanceToObjectCheckBox->setChecked(toolsConfig.GetShowDistanceToObject());
       mUi->mToolsShowElevationOfObjectCheckBox->setChecked(toolsConfig.GetShowElevationOfObject());
 
-      // Camera controls
+      AddVisibilityCheckBoxes();
 
       // Record controls
       StealthGM::ControlsRecordConfigObject& recordConfig =
@@ -1963,6 +1973,63 @@ namespace StealthQt
 
       SetVisibilityUIValuesFromConfig(*mUi);
       mViewDockWidget->LoadSettings();
+   }
+
+   ///////////////////////////////////////////////////////////////
+   void MainWindow::AddVisibilityCheckBoxes()
+   {
+      QGroupBox* visEntityGroup = mUi->mVisEntityGroup;
+      QFormLayout* visEntityForm = dynamic_cast<QFormLayout*>(visEntityGroup->layout());
+
+      SimCore::VisibilityOptions& options =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetEntityOptions();
+      SimCore::BasicVisibilityOptions basicOpts = options.GetBasicOptions();
+
+      const std::vector<SimCore::Actors::BaseEntityActorProxy::DomainEnum*>& domainEnumVals =
+         SimCore::Actors::BaseEntityActorProxy::DomainEnum::EnumerateType();
+
+      mUi->mVisShowPlatforms->setChecked(basicOpts.mPlatforms);
+      mUi->mVisShowHumans->setChecked(basicOpts.mDismountedInfantry);
+      mUi->mVisShowBlips->setChecked(basicOpts.mSensorBlips);
+      mUi->mVisShowTracks->setChecked(basicOpts.mTracks);
+
+      QSpacerItem* spacer = new QSpacerItem(20, 20);
+      visEntityForm->addItem(spacer);
+
+      for (size_t i = 0; i < domainEnumVals.size(); ++i)
+      {
+         QCheckBox* check = new QCheckBox(tr(domainEnumVals[i]->GetName().c_str()));
+         check->setChecked(basicOpts.IsEnumVisible(*domainEnumVals[i]));
+
+         connect(check,  SIGNAL(toggled(bool)),
+                  this,  SLOT(OnVisibilityOptionToggled(bool)));
+
+         //Store the enum object so it be looked up later when a user toggles it.
+         check->setUserData(0, (QObjectUserData*)domainEnumVals[i]);
+         visEntityForm->addRow(NULL, check);
+         mVisibilityCheckBoxes.push_back(check);
+      }
+
+      spacer = new QSpacerItem(20, 20);
+      visEntityForm->addItem(spacer);
+
+      const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forceEnumVals =
+         SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
+
+      for (size_t i = 0; i < forceEnumVals.size(); ++i)
+      {
+         QCheckBox* check = new QCheckBox(tr(forceEnumVals[i]->GetName().c_str()));
+
+         check->setChecked(basicOpts.IsEnumVisible(*forceEnumVals[i]));
+
+         connect(check,  SIGNAL(toggled(bool)),
+                  this,  SLOT(OnVisibilityOptionToggled(bool)));
+
+         //Store the enum object so it be looked up later when a user toggles it.
+         check->setUserData(0, (QObjectUserData*)forceEnumVals[i]);
+         visEntityForm->addRow(NULL, check);
+         mVisibilityCheckBoxes.push_back(check);
+      }
    }
 
    ///////////////////////////////////////////////////////////////
@@ -2515,14 +2582,38 @@ namespace StealthQt
    void MainWindow::OnVisLabelsToggled(bool)
    {
       SimCore::Components::LabelOptions options =
-         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetOptions();
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetLabelOptions();
 
       options.SetShowLabels(mUi->mVisLabelGroup->isChecked());
       options.SetShowLabelsForEntities(mUi->mVisEntityChk->isChecked());
       options.SetShowLabelsForBlips(mUi->mVisBlipChk->isChecked());
       options.SetShowLabelsForPositionReports(mUi->mVisTrackChk->isChecked());
 
-      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetOptions(options);
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetLabelOptions(options);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnVisibilityOptionToggled(bool newValue)
+   {
+      SimCore::VisibilityOptions& options =
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetEntityOptions();
+      SimCore::BasicVisibilityOptions basicOpts = options.GetBasicOptions();
+      basicOpts.mPlatforms = mUi->mVisShowPlatforms->isChecked();
+      basicOpts.mDismountedInfantry = mUi->mVisShowHumans->isChecked();
+      basicOpts.mSensorBlips = mUi->mVisShowBlips->isChecked();
+      basicOpts.mTracks = mUi->mVisShowTracks->isChecked();
+
+      for (size_t i = 0; i < mVisibilityCheckBoxes.size(); ++i)
+      {
+         QCheckBox* check = mVisibilityCheckBoxes[i];
+         dtUtil::Enumeration* enumVal = (dtUtil::Enumeration*)check->userData(0);
+         if (enumVal != NULL)
+         {
+            basicOpts.SetEnumVisible(*enumVal, check->isChecked());
+         }
+      }
+      options.SetBasicOptions(basicOpts);
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetEntityOptions(options);
    }
 
    ///////////////////////////////////////////////////////////////////
@@ -2531,7 +2622,7 @@ namespace StealthQt
       const std::string textValue = text.toStdString();
 
       SimCore::Components::LabelOptions options =
-         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetOptions();
+         StealthViewerData::GetInstance().GetVisibilityConfigObject().GetLabelOptions();
 
       if (textValue == "Unlimited")
       {
@@ -2543,7 +2634,7 @@ namespace StealthQt
          options.SetMaxLabelDistance(distance);
       }
 
-      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetOptions(options);
+      StealthViewerData::GetInstance().GetVisibilityConfigObject().SetLabelOptions(options);
 
    }
 

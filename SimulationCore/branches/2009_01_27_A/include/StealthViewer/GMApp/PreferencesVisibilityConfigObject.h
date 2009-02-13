@@ -27,6 +27,7 @@
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
 #include <SimCore/Components/LabelManager.h>
+#include <SimCore/VisibilityOptions.h>
 
 namespace StealthGM
 {
@@ -35,8 +36,13 @@ namespace StealthGM
    public:
       PreferencesVisibilityConfigObject();
 
-      void SetOptions(const SimCore::Components::LabelOptions& options);
-      const SimCore::Components::LabelOptions& GetOptions() const;
+      void SetLabelOptions(const SimCore::Components::LabelOptions& options);
+      const SimCore::Components::LabelOptions& GetLabelOptions() const;
+      SimCore::Components::LabelOptions& GetLabelOptions();
+
+      void SetEntityOptions(SimCore::VisibilityOptions& options);
+      const SimCore::VisibilityOptions& GetEntityOptions() const;
+      SimCore::VisibilityOptions& GetEntityOptions();
 
       /**
        * Overridden base class method to apply the changes made to this class to the
@@ -47,6 +53,7 @@ namespace StealthGM
    protected:
       virtual ~PreferencesVisibilityConfigObject();
       SimCore::Components::LabelOptions mLabelOptions;
+      dtCore::RefPtr<SimCore::VisibilityOptions> mEntityOptions;
    };
 }
 
