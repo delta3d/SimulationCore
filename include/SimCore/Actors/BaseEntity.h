@@ -425,6 +425,25 @@ namespace SimCore
             void SetDrawingModel(bool newDrawing);
 
             /**
+             * @return true if this drawable drawing.
+             * It is overridden to
+             * make it play nice with the drawing model property, which will also
+             * hide the model of this drawable.  Both must be true for the drawable to show up,
+             * but they two represent different reasons for hiding it, so they must be exclusive.
+             */
+            virtual bool IsVisible() const;
+
+            /**
+             * Sets this entity to visible, that is, drawing.
+             * It is overridden to
+             * make it play nice with the drawing model property, which will also
+             * hide the model of this drawable.  Both must be true for the drawable to show up,
+             * but they two represent different reasons for hiding it, so they must be exclusive.
+             */
+            virtual void SetVisible(bool);
+
+
+            /**
              * @return true a player is attached to this entity
              */
             bool IsPlayerAttached() const;
@@ -563,6 +582,8 @@ namespace SimCore
             virtual void RespondToHit(const SimCore::DetonationMessage& message,
                const SimCore::Actors::MunitionTypeActor& munition);
 
+            /// @return true if this entity should be visible based on the options given.
+            bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
          protected:
             virtual ~BaseEntity();
@@ -582,13 +603,6 @@ namespace SimCore
              */
             const osg::MatrixTransform& GetScaleMatrixTransform() const;
 
-            /**
-             * Must be implemented to allow turning off/on drawing whatever visual representation
-             * the subclass renders.
-             * @param draw true if the model should be drawn, false if not.
-             */
-            virtual void HandleModelDrawToggle(bool draw) = 0;
-
             ///updates the scale of the model base on the default scale and magnification.
             void UpdateModelScale();
 
@@ -603,7 +617,7 @@ namespace SimCore
             virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
 
             // Allows a sub-class to set the engine smoke value without doing all the engine
-            // smoke 'stuff'. 
+            // smoke 'stuff'.
             void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
          private:
@@ -623,7 +637,7 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem, mSmokePlumesSystem, mFlamesSystem;
 
             /// The entity's service
-            BaseEntityActorProxy::ServiceEnum *mService;
+            BaseEntityActorProxy::ServiceEnum* mService;
 
             /// The file names that are loaded into the above particle systems
             std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;
@@ -655,6 +669,7 @@ namespace SimCore
             bool mEngineSmokeOn, mSmokePlumePresent, mFlamesPresent;
             bool mFlying;
             bool mDrawing;
+            bool mVisible;
             bool mIsPlayerAttached;
             bool mDisabledFirepower;
             bool mDisabledMobility;

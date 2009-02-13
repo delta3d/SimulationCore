@@ -245,9 +245,11 @@ namespace SimCore
             /*virtual*/ void OnTickRemote(const dtGame::TickMessage& tickRemote);
             /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickLocal);
 
+            /// @return true if this Human should be visible based on the options given.
+            bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
+
          protected:
             virtual ~Human();
-            /*virtual*/ void HandleModelDrawToggle(bool draw);
 
             void SetupPlannerHelper();
             float GetRemainingCost(const dtAI::WorldState* pWS) const;

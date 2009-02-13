@@ -38,6 +38,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Messages.h>
+#include <SimCore/VisibilityOptions.h>
 
 namespace SimCore
 {
@@ -425,6 +426,8 @@ namespace SimCore
          mEngineSmokeOn(false),
          mSmokePlumePresent(false),
          mFlamesPresent(false),
+         mDrawing(true),
+         mVisible(true),
          mIsPlayerAttached(false),
          mDisabledFirepower(false),
          mDisabledMobility(false),
@@ -672,12 +675,21 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDrawingModel(bool newDrawing)
       {
-         //don't mess with the node hierarchy if the values have not changed.
-         if (mDrawing == newDrawing)
-            return;
-
          mDrawing = newDrawing;
-         HandleModelDrawToggle(mDrawing);
+         DoSetVisible(mDrawing && IsVisible());
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool BaseEntity::IsVisible() const
+      {
+         return mVisible;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetVisible(bool visible)
+      {
+         mVisible = visible;
+         DoSetVisible(IsDrawingModel() && mVisible);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -691,6 +703,7 @@ namespace SimCore
       {
          mIsPlayerAttached = attach;
       }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlamesPresent(bool enable)
       {
@@ -1112,6 +1125,18 @@ namespace SimCore
          // An opportunity to respond to damage. Only called on local entities that have been
          // damaged by a munition hit of some sort. Damage & forces have already been
          // applied by the time this method is called.
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool BaseEntity::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+
+         bool forceIsVisible = basicOptions.IsEnumVisible(GetForceAffiliation());
+
+         bool domainIsVisible = basicOptions.IsEnumVisible(GetDomain());
+
+         return forceIsVisible && domainIsVisible;
       }
 
    }

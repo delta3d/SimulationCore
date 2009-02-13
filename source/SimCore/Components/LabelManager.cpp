@@ -332,6 +332,15 @@ namespace SimCore
                result = mShowLabelsForBlips;
             }
          }
+         if (result)
+         {
+            SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(proxy.GetActor());
+            // We don't want a label for something that isn't visible.
+            if (entity == NULL || !entity->IsVisible())
+            {
+               result = false;
+            }
+         }
          return result;
       }
 

@@ -35,14 +35,37 @@
 #include <dtGame/gamemanager.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/VisibilityOptions.h>
 
 #include <osgDB/ReadFile>
 #include <osgDB/Registry>
+
+#include <osgUtil/CullVisitor>
 
 namespace SimCore
 {
    namespace Actors
    {
+      class HideNodeCallback : public osg::NodeCallback
+      {
+          public:
+
+             /**
+              * Constructor.
+              *
+              * @param terrain the owning InfiniteTerrain object
+              */
+             HideNodeCallback()
+             {}
+
+             virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+             {
+                // We're hiding the node.  The point is to NOT traverse.
+                // traverse(node, nv);
+             }
+      };
+
+
       ///////////////////////////////////////////////////////////////////////////
       IGActor::IGActor(dtGame::GameActorProxy &proxy) :
          GameActor(proxy)
@@ -183,6 +206,37 @@ namespace SimCore
             }
          }
          dtCore::DeltaDrawable::RemoveChild(child);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      bool IGActor::ShouldBeVisible(const SimCore::VisibilityOptions&)
+      {
+         return true;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool IGActor::IsVisible() const
+      {
+         return GetOSGNode()->getCullCallback() == NULL;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::SetVisible(bool visible)
+      {
+         DoSetVisible(visible);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::DoSetVisible(bool visible)
+      {
+         if (visible)
+         {
+            GetOSGNode()->setCullCallback(NULL);
+         }
+         else
+         {
+            GetOSGNode()->setCullCallback(new HideNodeCallback);
+         }
       }
     }
 }

@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>989</width>
+    <width>1440</width>
     <height>915</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>989</width>
+     <width>1440</width>
      <height>22</height>
     </rect>
    </property>
@@ -81,7 +81,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex" >
-        <number>0</number>
+        <number>3</number>
        </property>
        <property name="elideMode" >
         <enum>Qt::ElideRight</enum>
@@ -893,34 +893,44 @@
             <property name="fieldGrowthPolicy" >
              <enum>QFormLayout::FieldsStayAtSizeHint</enum>
             </property>
-            <item row="2" column="1" >
+            <item row="0" column="1" >
+             <widget class="QCheckBox" name="mVisEntityChk" >
+              <property name="text" >
+               <string>Entity Labels</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
              <widget class="QCheckBox" name="mVisTrackChk" >
               <property name="text" >
-               <string>Tracks</string>
+               <string>Track Labels</string>
               </property>
               <property name="checked" >
                <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="3" column="1" >
+            <item row="2" column="1" >
              <widget class="QCheckBox" name="mVisBlipChk" >
               <property name="text" >
-               <string>Blips</string>
+               <string>Sensor Blip Labels</string>
               </property>
               <property name="checked" >
                <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="4" column="0" >
+            <item row="3" column="0" >
              <widget class="QLabel" name="mVisDistLabel" >
               <property name="text" >
                <string>Max Distance</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1" >
+            <item row="3" column="1" >
              <widget class="QComboBox" name="mVisMaxDistCombo" >
               <property name="currentIndex" >
                <number>3</number>
@@ -967,10 +977,41 @@
               </item>
              </widget>
             </item>
-            <item row="1" column="1" >
-             <widget class="QCheckBox" name="mVisEntityChk" >
+           </layout>
+           <zorder>mVisTrackChk</zorder>
+           <zorder>mVisBlipChk</zorder>
+           <zorder>mVisDistLabel</zorder>
+           <zorder>mVisMaxDistCombo</zorder>
+           <zorder>mVisEntityChk</zorder>
+           <zorder>mVisEntityGroup</zorder>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="mVisEntityGroup" >
+           <property name="title" >
+            <string>Show Entities</string>
+           </property>
+           <property name="checkable" >
+            <bool>false</bool>
+           </property>
+           <layout class="QFormLayout" name="formLayout_9" >
+            <property name="fieldGrowthPolicy" >
+             <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+            </property>
+            <item row="0" column="1" >
+             <widget class="QCheckBox" name="mVisShowPlatforms" >
               <property name="text" >
-               <string>Entities</string>
+               <string>Platforms</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" >
+             <widget class="QCheckBox" name="mVisShowHumans" >
+              <property name="text" >
+               <string>Dismounted Infantry</string>
               </property>
               <property name="checked" >
                <bool>true</bool>
@@ -978,6 +1019,26 @@
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="mVisShowTracks" >
+           <property name="text" >
+            <string>Show Tracks</string>
+           </property>
+           <property name="checked" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="mVisShowBlips" >
+           <property name="text" >
+            <string>Show Sensor Blips</string>
+           </property>
+           <property name="checked" >
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>

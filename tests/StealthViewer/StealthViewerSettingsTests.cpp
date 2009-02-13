@@ -208,21 +208,21 @@ void StealthViewerSettingsTests::TestVisibilitySettings()
    StealthGM::PreferencesVisibilityConfigObject& visConfig =
       StealthQt::StealthViewerData::GetInstance().GetVisibilityConfigObject();
 
-   SimCore::Components::LabelOptions options = visConfig.GetOptions();
+   SimCore::Components::LabelOptions options = visConfig.GetLabelOptions();
    options.SetMaxLabelDistance(-1.0f);
    options.SetShowLabels(false);
    options.SetShowLabelsForEntities(false);
    options.SetShowLabelsForBlips(false);
    options.SetShowLabelsForPositionReports(false);
-   visConfig.SetOptions(options);
+   visConfig.SetLabelOptions(options);
 
    SubStealthViewerSettings settings(QString("UnitTest"));
    settings.ClearAllSettings(true);
    settings.WritePreferencesToFile(false);
    //reset the values to defaults
-   visConfig.SetOptions(SimCore::Components::LabelOptions());
+   visConfig.SetLabelOptions(SimCore::Components::LabelOptions());
    settings.LoadPreferences();
-   SimCore::Components::LabelOptions options2 = visConfig.GetOptions();
+   SimCore::Components::LabelOptions options2 = visConfig.GetLabelOptions();
 
    CPPUNIT_ASSERT(options == options2);
 
@@ -231,13 +231,13 @@ void StealthViewerSettingsTests::TestVisibilitySettings()
    options.SetShowLabelsForEntities(true);
    options.SetShowLabelsForBlips(true);
    options.SetShowLabelsForPositionReports(true);
-   visConfig.SetOptions(options);
+   visConfig.SetLabelOptions(options);
 
    settings.WritePreferencesToFile(false);
    //reset the values to defaults
-   visConfig.SetOptions(SimCore::Components::LabelOptions());
+   visConfig.SetLabelOptions(SimCore::Components::LabelOptions());
    settings.LoadPreferences();
-   options2 = visConfig.GetOptions();
+   options2 = visConfig.GetLabelOptions();
 
    CPPUNIT_ASSERT(options == options2);
 }

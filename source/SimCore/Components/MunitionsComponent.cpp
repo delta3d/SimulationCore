@@ -115,8 +115,8 @@ namespace SimCore
 
          if( newHelper == NULL ) { return false; }
 
-         bool success = mIdToHelperMap.insert( 
-               std::make_pair( entity.GetUniqueId(), newHelper ) 
+         bool success = mIdToHelperMap.insert(
+               std::make_pair( entity.GetUniqueId(), newHelper )
             ).second;
 
          if( !success )
@@ -124,7 +124,7 @@ namespace SimCore
             std::stringstream ss;
             ss << "FAILURE: Munition Component registering entity \""
                << entity.GetUniqueId().ToString().c_str()
-               << "\" of class type \"" << entity.GetGameActorProxy().GetClassName() 
+               << "\" of class type \"" << entity.GetGameActorProxy().GetClassName()
                <<"\" for damage tracking. Entity may have already been registered."
                << std::endl;
             LOG_WARNING( ss.str() );
@@ -132,9 +132,9 @@ namespace SimCore
          else
          {
             std::stringstream ss;
-            ss << "Munition Component registered entity \"" 
-               << entity.GetUniqueId().ToString().c_str() 
-               << "\" of class type \"" << entity.GetGameActorProxy().GetClassName() 
+            ss << "Munition Component registered entity \""
+               << entity.GetUniqueId().ToString().c_str()
+               << "\" of class type \"" << entity.GetGameActorProxy().GetClassName()
                << "\"" << std::endl;
             LOG_DEBUG( ss.str() );
          }
@@ -147,17 +147,17 @@ namespace SimCore
             // If the table exists, link it to the newly created helper
             dtCore::RefPtr<MunitionDamageTable> table = GetMunitionDamageTable( tableName );
             newHelper->SetMunitionDamageTable( table );
-         
+
             std::stringstream ss;
             if( table.valid() )
             {
-               ss << "\tLoaded munition damage table \"" << tableName.c_str() 
+               ss << "\tLoaded munition damage table \"" << tableName.c_str()
                   << "\"" << std::endl;
                LOG_DEBUG( ss.str() );
             }
             else
             {
-               ss << "FAILURE: Munition damage table \"" << tableName.c_str() 
+               ss << "FAILURE: Munition damage table \"" << tableName.c_str()
                   << "\" could not be found." << std::endl;
                LOG_ERROR( ss.str() );
             }
@@ -169,7 +169,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool MunitionsComponent::Unregister( const dtCore::UniqueId& entityId )
       {
-         std::map< dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator itor = 
+         std::map< dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator itor =
             mIdToHelperMap.find( entityId );
 
          if( itor != mIdToHelperMap.end() )
@@ -207,7 +207,7 @@ namespace SimCore
          if( resourcePath.empty() )
          {
             std::stringstream ss;
-            ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could not locate \"" 
+            ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could not locate \""
                << munitionConfigPath.c_str() << "\"" << std::endl;
             LOG_ERROR( ss.str() );
             return 0;
@@ -218,7 +218,7 @@ namespace SimCore
 
          // Parse the new table data
          dtCore::RefPtr<MunitionsConfig> mParser = new MunitionsConfig();
-         unsigned int successes = 
+         unsigned int successes =
             mParser->LoadMunitionTables( resourcePath, tables );
          mParser = NULL;
 
@@ -234,7 +234,7 @@ namespace SimCore
             if( existingTable != NULL && ! RemoveMunitionDamageTable( existingTable->GetName() ) )
             {
                std::stringstream ss;
-               ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could not remove existing munition table \"" 
+               ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could not remove existing munition table \""
                   << existingTable->GetName() << "\"" << std::endl;
                LOG_WARNING( ss.str() );
             }
@@ -245,7 +245,7 @@ namespace SimCore
                // Reduce successes because insert failed
                successes--;
                std::stringstream ss;
-               ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could insert new munition table \"" 
+               ss << "Failure: MunitionsComponent.LoadMunitionDamageTables could insert new munition table \""
                   << (*iter)->GetName() << "\"" << std::endl;
                LOG_WARNING( ss.str() );
             }
@@ -276,7 +276,7 @@ namespace SimCore
          catch(const dtUtil::Exception &e)
          {
             std::ostringstream oss;
-            oss << "ERROR! Failed to load the munitions type table named: " << mapName << 
+            oss << "ERROR! Failed to load the munitions type table named: " << mapName <<
                " because: " << e.What() << ". You will not be able to see detonations.";
 
             LOG_ERROR(oss.str());
@@ -317,7 +317,7 @@ namespace SimCore
          // Update the effects manager
          if( type == dtGame::MessageType::TICK_LOCAL )
          {
-            const dtGame::TickMessage& tickMessage 
+            const dtGame::TickMessage& tickMessage
                = static_cast<const dtGame::TickMessage&> (message);
 
             mEffectsManager->Update( tickMessage.GetDeltaSimTime() );
@@ -332,7 +332,7 @@ namespace SimCore
 
          if( type == SimCore::MessageType::DETONATION )
          {
-            const DetonationMessage& detMessage = 
+            const DetonationMessage& detMessage =
                dynamic_cast<const DetonationMessage&> (message);
 
             const SimCore::Actors::MunitionTypeActor* munitionType
@@ -352,7 +352,7 @@ namespace SimCore
                }
                else // this is Indirect Fire
                {
-                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
+                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
                      mIdToHelperMap.begin();
 
                   for( ; iter != mIdToHelperMap.end(); ++iter )
@@ -374,11 +374,11 @@ namespace SimCore
             }
          }
 
-         // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't 
+         // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't
          // do any damage. For direct & indirect, the damage occurs on the Detonation message.
          else if( type == SimCore::MessageType::SHOT_FIRED )
          {
-            const ShotFiredMessage& shotMessage = 
+            const ShotFiredMessage& shotMessage =
                dynamic_cast<const ShotFiredMessage&> (message);
 
             const SimCore::Actors::MunitionTypeActor* munitionType
@@ -398,7 +398,7 @@ namespace SimCore
                }
                else // this is Indirect Fire
                {
-                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter = 
+                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
                      mIdToHelperMap.begin();
 
                   for( ; iter != mIdToHelperMap.end(); ++iter )
@@ -425,7 +425,7 @@ namespace SimCore
          // Capture the player
          else if(message.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
          {
-            dtGame::GameActorProxy* proxy 
+            dtGame::GameActorProxy* proxy
                = GetGameManager()->FindGameActorById(message.GetAboutActorId());
 
             if ( proxy == NULL || proxy->IsRemote() ) { return; }
@@ -511,7 +511,7 @@ namespace SimCore
          if( ! table.valid() ) { return false; }
 
          return mNameToMunitionDamageTableMap.insert(
-               std::make_pair( table->GetName(), table.get() ) 
+               std::make_pair( table->GetName(), table.get() )
             ).second;
       }
 
@@ -532,7 +532,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponent::ClearTables()
       {
-         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::iterator iter = 
+         std::map<std::string, dtCore::RefPtr<MunitionDamageTable> >::iterator iter =
             mNameToMunitionDamageTableMap.begin();
 
          for( ; iter != mNameToMunitionDamageTableMap.end(); ++iter )
@@ -632,8 +632,8 @@ namespace SimCore
             }
 
             if( bestDof == NULL || curDotProd > lastDotProd )
-            { 
-               bestDof = curDof; 
+            {
+               bestDof = curDof;
                lastDotProd = curDotProd;
             }
          }
@@ -648,7 +648,7 @@ namespace SimCore
             osg::Vec3 playerPos;
             playerXform.GetTranslation(playerPos);
             // Initiate the weapon effect
-            mEffectsManager->ApplyWeaponEffect( 
+            mEffectsManager->ApplyWeaponEffect(
                *entity, bestDof, *effects, playerPos );
          }
 
@@ -692,7 +692,7 @@ namespace SimCore
                      effectRequest->SetFirePoint( mtx.getTrans() );
                      mEffectsManager->AddMunitionEffectRequest( effectRequest );
 
-                     //mEffectsManager->ApplyTracerEffect( 
+                     //mEffectsManager->ApplyTracerEffect(
                      //   mtx.getTrans(), message.GetInitialVelocityVector(), *effects );
                   }
                   else
@@ -701,7 +701,7 @@ namespace SimCore
                      effectRequest->SetFirePoint( message.GetFiringLocation() );
                      mEffectsManager->AddMunitionEffectRequest( effectRequest );
 
-                     //mEffectsManager->ApplyTracerEffect( 
+                     //mEffectsManager->ApplyTracerEffect(
                      //   message.GetFiringLocation(), message.GetInitialVelocityVector(), *effects );
                   }
                }
@@ -720,7 +720,7 @@ namespace SimCore
             LOG_DEBUG("Skipping detonations that occur too close together.");
             return;
          }
-         else 
+         else
             mLastDetonationTime = simTime;
 
          const std::string& munitionName = message.GetMunitionType();
@@ -749,12 +749,12 @@ namespace SimCore
             // Change hitEntity to false if this is found to be the terrain actor.
             if(targetProxy != NULL)
             {
-               hitEntity = ! (targetProxy != NULL 
+               hitEntity = ! (targetProxy != NULL
                   && ( dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
                   || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
-            
+
                // Check to see if we hit a person. Needs a different effect
-               entityIsHuman = (hitEntity && 
+               entityIsHuman = (hitEntity &&
                   dynamic_cast<SimCore::Actors::Human*>(targetProxy->GetActor()) != NULL);
             }
          }
@@ -788,12 +788,12 @@ namespace SimCore
          if(mIsector->Update( osg::Vec3(0,0,0), true ) )
          {
             osg::Vec3 hp;
-            
+
             // Make sure the isector actually has hit points on the terrain.
             // This component will not assume the isector to return an unsigned value
             // when its function return is a signed value; thus failing everything from
             // 0 and everything to the left of 0.
-            if( SingleISector.GetNumberOfHits() <= 0 ) 
+            if( SingleISector.GetNumberOfHits() <= 0 )
             {
                LOG_WARNING( "Munition Component could not place a detonation actor because the BatchIsector has an empty hit list." );
                return;
@@ -803,9 +803,9 @@ namespace SimCore
             const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0).getDrawable();
             if( drawable != NULL && drawable->getStateSet() != NULL)
             {
-               RefPtr<const osg::IntArray> mOurList 
+               RefPtr<const osg::IntArray> mOurList
                   = dynamic_cast<const osg::IntArray*>(drawable->getStateSet()->getUserData());
-               if( mOurList.valid() ) 
+               if( mOurList.valid() )
                {
                   if( ! mOurList->empty() )
                   {
@@ -861,10 +861,10 @@ namespace SimCore
          SimCore::Components::ViewerMaterialComponent* materialComponent;
          GetGameManager()->GetComponentByName(
                SimCore::Components::ViewerMaterialComponent::DEFAULT_NAME, materialComponent);
-         
+
          if(materialComponent != NULL)
          {
-            SimCore::Actors::ViewerMaterialActor& viewerMaterial 
+            SimCore::Actors::ViewerMaterialActor& viewerMaterial
                = materialComponent->CreateOrChangeMaterialByFID(fidID);
             da->SetMaterialCollidedWith(viewerMaterial);
          }
@@ -878,7 +878,7 @@ namespace SimCore
             osg::Vec3 playerPos;
             xform.GetTranslation(playerPos);
             da->CalculateDelayTime(playerPos);
-         }  
+         }
 
          // Set properties on the detonation actor
          std::string curValue;
@@ -907,10 +907,9 @@ namespace SimCore
          else if( hitEntity && effects->HasEntityImpactSound() )
          {
             curValue = effects->GetEntityImpactSound();
-            if( ! curValue.empty() ) 
+            if( ! curValue.empty() )
             {
                da->LoadSoundFile( curValue );
-               da->SetMinimumSoundDistance( effects->GetEntityImpactSoundMinDistance() );
                da->SetMaximumSoundDistance( effects->GetEntityImpactSoundMaxDistance() );
             }
          }
@@ -918,9 +917,8 @@ namespace SimCore
          {
             curValue = effects->GetGroundImpactSound();
             if( ! curValue.empty() )
-            { 
+            {
                da->LoadSoundFile( curValue );
-               da->SetMinimumSoundDistance( effects->GetGroundImpactSoundMinDistance() );
                da->SetMaximumSoundDistance( effects->GetGroundImpactSoundMaxDistance() );
             }
          }
@@ -931,7 +929,7 @@ namespace SimCore
          da->SetLingeringSmokeSecs( effects->GetSmokeLifeTime() );
 
          // Determine if the detonation should have physics applied to its particles.
-         bool avoidPhysics = munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_ROUND 
+         bool avoidPhysics = munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_ROUND
             || munitionType.GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN;
          da->SetPhysicsEnabled( ! avoidPhysics );
 
@@ -945,7 +943,7 @@ namespace SimCore
          da->SetLightName( curValue );
 
          // Add the newly created detonation to the scene
-         GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);  
+         GetGameManager()->AddActor(da->GetGameActorProxy(), false, false);
 
          AddMunitionToCreatedMunitionsQueue(da->GetUniqueId());
       }
@@ -965,7 +963,7 @@ namespace SimCore
             int newValue = dtUtil::ToType<int>(stringValue);
             if (newValue > 0)
                mMaximumActiveMunitions = newValue;
-            else 
+            else
                LOG_ERROR("Received bag number from configuration file for MaximumActiveMunitions on the Munitions Component.");
          }
       }
@@ -979,7 +977,7 @@ namespace SimCore
 
          if( ! mMunitionTypeTable.valid() ) { return EMPTY; }
 
-         const SimCore::Actors::MunitionTypeActor* munitionType = 
+         const SimCore::Actors::MunitionTypeActor* munitionType =
             GetMunitionTypeTable()->GetMunitionType( munitionTypeName );
 
          if( munitionType == NULL ) { return EMPTY; }
@@ -1010,7 +1008,7 @@ namespace SimCore
          }
 
          // Obtain the closest matching registered munition type.
-         const SimCore::Actors::MunitionTypeActor* munitionType 
+         const SimCore::Actors::MunitionTypeActor* munitionType
             = mMunitionTypeTable->GetMunitionType( munitionName );
 
          if( munitionType == NULL )
@@ -1036,7 +1034,7 @@ namespace SimCore
          // Get the munition effects info so that the detonation actor can be set
          // with relevant data.
          const SimCore::Actors::MunitionEffectsInfoActor* effects =
-            dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
+            dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>
             (munition.GetEffectsInfoActor());
 
          if( effects == NULL )
@@ -1050,7 +1048,7 @@ namespace SimCore
                = GetMunition( defaultMunitionName );
             if( defaultMunitionType != NULL )
             {
-               effects = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*> 
+               effects = dynamic_cast<const SimCore::Actors::MunitionEffectsInfoActor*>
                   (defaultMunitionType->GetEffectsInfoActor());
             }
             else
@@ -1068,7 +1066,7 @@ namespace SimCore
       // active munitions deque. It basically checks to see if the unique id exists
       // in the GM or not so that we can delete old id's from our queue when we clean up.
       struct RemoveOldMunitionsChecker
-      { 
+      {
          RemoveOldMunitionsChecker(dtGame::GameManager &gm) : theGM(gm) { }
 
          // check to see if the unique id exists in the GM (return false) or not (return true).
@@ -1086,7 +1084,7 @@ namespace SimCore
       void MunitionsComponent::SetMaximumActiveMunitions(int newMax)
       {
          if (newMax > 0) // a negative max would be bad.
-            mMaximumActiveMunitions = newMax; 
+            mMaximumActiveMunitions = newMax;
 
          // clean up in case our new max causes us to have too many
          CleanupCreatedMunitionsQueue();
@@ -1103,10 +1101,10 @@ namespace SimCore
       {
          if (!mCreatedMunitionsQueue.empty())
          {
-            // First, we remove all of entries in our queue that are no longer valid. Usually happens if the 
-            // Actors were deleted, probably from timing out. 
-               mCreatedMunitionsQueue.erase(std::remove_if(mCreatedMunitionsQueue.begin(), 
-                  mCreatedMunitionsQueue.end(), RemoveOldMunitionsChecker(*GetGameManager())), mCreatedMunitionsQueue.end());  
+            // First, we remove all of entries in our queue that are no longer valid. Usually happens if the
+            // Actors were deleted, probably from timing out.
+               mCreatedMunitionsQueue.erase(std::remove_if(mCreatedMunitionsQueue.begin(),
+                  mCreatedMunitionsQueue.end(), RemoveOldMunitionsChecker(*GetGameManager())), mCreatedMunitionsQueue.end());
 
             // if we still have too many valid munitions, remove them from the front until we have the right size.
             int curSize = mCreatedMunitionsQueue.size();
@@ -1116,7 +1114,7 @@ namespace SimCore
             }
          }
       }
- 
+
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponent::RemoveOldestMunitionFromQueue()
       {

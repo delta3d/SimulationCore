@@ -31,12 +31,14 @@
 #define DELTA_MAIN_WINDOW
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QCheckBox>
 #include <QtCore/QTimer>
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
 #include <StealthViewer/Qt/SimTicker.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+#include <vector>
 
 namespace dtGame
 {
@@ -348,6 +350,9 @@ namespace StealthQt
          /// Called when any of the label check boxes are toggled in the label visibility group
          void OnVisLabelsToggled(bool);
 
+         /// Called when any of the non-label check boxes are toggled.
+         void OnVisibilityOptionToggled(bool);
+
          /// Called when the label visibility distance is changed
          void OnVisLabelsDistanceChanged(const QString& text);
 
@@ -367,6 +372,10 @@ namespace StealthQt
           */
          virtual void FillAndSetComboBox(const std::vector<dtUtil::Enumeration*>& enums,
                   QComboBox& combo, const dtUtil::Enumeration& enumValue);
+
+         /// Some visibility check boxes are generated from enumerations, this adds them.
+         virtual void AddVisibilityCheckBoxes();
+
          /**
           * Updates UI controls from the loaded preferences
           */
@@ -490,6 +499,8 @@ namespace StealthQt
          int mPreviousCustomSecond;
 
          ViewDockWidget* mViewDockWidget;
+
+         std::vector<QCheckBox*> mVisibilityCheckBoxes;
    };
 }
 
