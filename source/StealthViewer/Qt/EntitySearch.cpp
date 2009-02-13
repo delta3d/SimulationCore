@@ -53,7 +53,10 @@ namespace StealthQt
             if(eap == NULL)
                continue;
 
-            SimCore::Actors::BaseEntity &entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
+            SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
+
+            if (!entity.IsVisible())
+               continue;
 
             if(!callSign.empty())
             {

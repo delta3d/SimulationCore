@@ -1978,8 +1978,10 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////
    void MainWindow::AddVisibilityCheckBoxes()
    {
-      QGroupBox* visEntityGroup = mUi->mVisEntityGroup;
-      QFormLayout* visEntityForm = dynamic_cast<QFormLayout*>(visEntityGroup->layout());
+      QFormLayout* visDomainForm = new QFormLayout;
+      QFormLayout* visForceForm = new QFormLayout;
+      mUi->mVisDomainGroup->setLayout(visDomainForm);
+      mUi->mVisForceGroup->setLayout(visForceForm);
 
       SimCore::VisibilityOptions& options =
          StealthViewerData::GetInstance().GetVisibilityConfigObject().GetEntityOptions();
@@ -1993,12 +1995,9 @@ namespace StealthQt
       mUi->mVisShowBlips->setChecked(basicOpts.mSensorBlips);
       mUi->mVisShowTracks->setChecked(basicOpts.mTracks);
 
-      QSpacerItem* spacer = new QSpacerItem(20, 20);
-      visEntityForm->addItem(spacer);
-
       for (size_t i = 0; i < domainEnumVals.size(); ++i)
       {
-         QCheckBox* check = new QCheckBox(tr(domainEnumVals[i]->GetName().c_str()));
+         QCheckBox* check = new QCheckBox(tr(domainEnumVals[i]->GetDisplayName().c_str()));
          check->setChecked(basicOpts.IsEnumVisible(*domainEnumVals[i]));
 
          connect(check,  SIGNAL(toggled(bool)),
@@ -2006,19 +2005,16 @@ namespace StealthQt
 
          //Store the enum object so it be looked up later when a user toggles it.
          check->setUserData(0, (QObjectUserData*)domainEnumVals[i]);
-         visEntityForm->addRow(NULL, check);
+         visDomainForm->addRow(NULL, check);
          mVisibilityCheckBoxes.push_back(check);
       }
-
-      spacer = new QSpacerItem(20, 20);
-      visEntityForm->addItem(spacer);
 
       const std::vector<SimCore::Actors::BaseEntityActorProxy::ForceEnum*>& forceEnumVals =
          SimCore::Actors::BaseEntityActorProxy::ForceEnum::EnumerateType();
 
       for (size_t i = 0; i < forceEnumVals.size(); ++i)
       {
-         QCheckBox* check = new QCheckBox(tr(forceEnumVals[i]->GetName().c_str()));
+         QCheckBox* check = new QCheckBox(tr(forceEnumVals[i]->GetDisplayName().c_str()));
 
          check->setChecked(basicOpts.IsEnumVisible(*forceEnumVals[i]));
 
@@ -2027,7 +2023,7 @@ namespace StealthQt
 
          //Store the enum object so it be looked up later when a user toggles it.
          check->setUserData(0, (QObjectUserData*)forceEnumVals[i]);
-         visEntityForm->addRow(NULL, check);
+         visForceForm->addRow(NULL, check);
          mVisibilityCheckBoxes.push_back(check);
       }
    }

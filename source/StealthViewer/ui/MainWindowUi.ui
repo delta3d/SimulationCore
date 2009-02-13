@@ -1018,26 +1018,43 @@
               </property>
              </widget>
             </item>
+            <item row="2" column="1" >
+             <widget class="QCheckBox" name="mVisShowTracks" >
+              <property name="text" >
+               <string>Tracks (All)</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" >
+             <widget class="QCheckBox" name="mVisShowBlips" >
+              <property name="text" >
+               <string>Sensor Blips (All)</string>
+              </property>
+              <property name="checked" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="mVisShowTracks" >
-           <property name="text" >
-            <string>Show Tracks</string>
+          <widget class="QGroupBox" name="mVisDomainGroup" >
+           <property name="layoutDirection" >
+            <enum>Qt::LeftToRight</enum>
            </property>
-           <property name="checked" >
-            <bool>true</bool>
+           <property name="title" >
+            <string>Show Domains</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="mVisShowBlips" >
-           <property name="text" >
-            <string>Show Sensor Blips</string>
-           </property>
-           <property name="checked" >
-            <bool>true</bool>
+          <widget class="QGroupBox" name="mVisForceGroup" >
+           <property name="title" >
+            <string>Show Forces</string>
            </property>
           </widget>
          </item>
