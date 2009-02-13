@@ -451,7 +451,6 @@ namespace SimCore
          mSmokePlumePresent(false),
          mFlamesPresent(false),
          mDrawing(true),
-         mVisible(true),
          mIsPlayerAttached(false),
          mDisabledFirepower(false),
          mDisabledMobility(false),
@@ -700,20 +699,7 @@ namespace SimCore
       void BaseEntity::SetDrawingModel(bool newDrawing)
       {
          mDrawing = newDrawing;
-         DoSetVisible(mDrawing && IsVisible());
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::IsVisible() const
-      {
-         return mVisible;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetVisible(bool visible)
-      {
-         mVisible = visible;
-         DoSetVisible(IsDrawingModel() && mVisible);
+         SetNodeVisible(mDrawing, GetScaleMatrixTransform());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

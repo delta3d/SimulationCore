@@ -122,7 +122,9 @@ namespace SimCore
             /// Destructor
             virtual ~IGActor();
 
-            void DoSetVisible(bool);
+            void SetNodeVisible(bool, osg::Node& nodeToUse);
+         private:
+            bool mIsVisible;
        };
    }
 }
