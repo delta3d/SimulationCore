@@ -28,6 +28,11 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
+#else
+#include <dtPhysics/physicscomponent.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+#include <pal/palFactory.h>
 #endif
 
 namespace SimCore
@@ -38,23 +43,23 @@ namespace SimCore
    /// Constructor
    BaseVehiclePhysicsHelper::BaseVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
       : dtPhysics::PhysicsHelper(proxy)
-         , mMotorTorque(300.0f)      
-         , mVehicleMaxMPH(120.0f)            
-         , mVehicleMaxReverseMPH(40.0f)     
-         , mHorsePower(150)        
-         , mAllWheelDrive(false)    
-         , mVehicleWeight(3500.0f)        
-         , mWheelTurnRadiusPerUpdate(0.03f) 
-         , mWheelInverseMass(0.15)         
-         , mWheelRadius(0.5f)          
-         , mWheelSuspensionTravel(0.35f)    
-         , mSuspensionSpringCoef(600.0f)   
-         , mSuspensionSpringDamper(15.0f)       
-         , mSuspensionSpringTarget(0.0f)          
-         , mMaxWheelRotation(45.0f)          
-         , mTireExtremumSlip(1.0f)  
-         , mTireExtremumValue(0.02f) 
-         , mTireAsymptoteSlip(2.0f) 
+         , mMotorTorque(300.0f)
+         , mVehicleMaxMPH(120.0f)
+         , mVehicleMaxReverseMPH(40.0f)
+         , mHorsePower(150)
+         , mAllWheelDrive(false)
+         , mVehicleWeight(3500.0f)
+         , mWheelTurnRadiusPerUpdate(0.03f)
+         , mWheelInverseMass(0.15)
+         , mWheelRadius(0.5f)
+         , mWheelSuspensionTravel(0.35f)
+         , mSuspensionSpringCoef(600.0f)
+         , mSuspensionSpringDamper(15.0f)
+         , mSuspensionSpringTarget(0.0f)
+         , mMaxWheelRotation(45.0f)
+         , mTireExtremumSlip(1.0f)
+         , mTireExtremumValue(0.02f)
+         , mTireAsymptoteSlip(2.0f)
          , mTireAsymptoteValue(0.01f)
          , mTireStiffnessFactor(1000000.0f)
          , mTireRestitution(0.5f)
@@ -85,10 +90,11 @@ namespace SimCore
       //                               Vehicle Initialization                             //
       // ///////////////////////////////////////////////////////////////////////////////////
 
+#ifdef AGEIA_PHYSICS
          // Adds a single wheel to the vehicle.
          WheelType* BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, bool steerable)
          {
-            if(GetPhysXObject() == NULL)
+            if (GetMainPhysicsObject() == NULL)
                return NULL;
 
             NxWheelShapeDesc wheelShapeDesc;
@@ -127,7 +133,7 @@ namespace SimCore
             wheelShapeDesc.radius                  = mWheelRadius;
             wheelShapeDesc.suspensionTravel        = mWheelSuspensionTravel;
             wheelShapeDesc.inverseWheelMass        = mWheelInverseMass;
-            
+
             //TODO- do we need to different versions of the properties to handle this?
             wheelShapeDesc.longitudalTireForceFunction = lngTFD;
             wheelShapeDesc.lateralTireForceFunction = lngTFD;
@@ -136,6 +142,12 @@ namespace SimCore
 
             return wheelShape;
          }
+#else
+         WheelType* BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, bool steerable)
+         {
+            return NULL;
+         }
+#endif
 
          bool BaseVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode)
          {
@@ -145,15 +157,11 @@ namespace SimCore
                return false;
             }
 
-            dtPhysics::PhysicsObject* physicsObject = GetPhysXObject();
-            if(physicsObject == NULL)
-            {
-               return false;
-            }
-
             osg::Matrix BodyMatrix;
             GetLocalMatrix(bodyNode, BodyMatrix);
 
+
+#ifdef AGEIA_PHYSICS
             osg::Matrix rot;
             transformForRot.GetRotation(rot);
 
@@ -170,15 +178,33 @@ namespace SimCore
             //the position of the actor which is set to be position of the dof_chassis above
             SetLocalOffSet(osg::Vec3(0.0f, 0.0f, 0.0f));
 
-            SetCollisionConvexMesh(bodyNode, sendInMatrix, 0, mVehicleWeight, false, "", "Default", "Default", 0);
+            dtPhysics::PhysicsObject* physicsObject = SetCollisionConvexMesh(bodyNode, sendInMatrix, 0, mVehicleWeight, false, "", "Default", "Default", 0);
 
             dtPhysics::VectorType massPos = physicsObject->getCMassLocalPosition();
             massPos.x += GetVehiclesCenterOfMass()[0];
             massPos.y += GetVehiclesCenterOfMass()[1];
             massPos.z += GetVehiclesCenterOfMass()[2];
             physicsObject->setCMassOffsetLocalPosition(massPos);
+#else
+            palVehicle* vehicle = dynamic_cast<palVehicle*>(palFactory::GetInstance()->CreateObject("palVehicle"));
+
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("vehicle");
+
+            physicsObject->SetMass(mVehicleWeight);
+            physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+            physicsObject->CreateFromProperties(bodyNode);
+
+            //TODO: this is using torque in place of force, some conversion probably needs to be done.
+            vehicle->Init(dynamic_cast<palBody*>(physicsObject->GetBodyWrapper()->GetPalBody()),
+                     mMotorTorque, mHorsePower);
+            //TODO: offset center of mass.
+            //dtCore::Transform xform;
+            //xform.Set(transformForRot);
+            //xform.SetRotation(rot);
+#endif
+
             return true;
-         
+
          }
 
       //////////////////////////////////////////////////////////////////////////////////////
@@ -193,8 +219,8 @@ namespace SimCore
          {
             dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
 
-            const std::string& VEHICLEGROUP = "Vehicle Physics";
-            const std::string& WHEELGROUP = "Wheel Physics";
+            static const dtUtil::RefString VEHICLEGROUP("Vehicle Physics");
+            static const dtUtil::RefString WHEELGROUP("Wheel Physics");
 
             toFillIn.push_back(new dtDAL::FloatActorProperty("Motor Torque", "Motor Torque",
                dtDAL::MakeFunctor(*this, &BaseVehiclePhysicsHelper::SetMotorTorque),
@@ -259,7 +285,7 @@ namespace SimCore
             toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Spring Target", "Suspension Spring Target",
                dtDAL::MakeFunctor(*this, &BaseVehiclePhysicsHelper::SetSuspensionSpringTarget),
                dtDAL::MakeFunctorRet(*this, &BaseVehiclePhysicsHelper::GetSuspensionSpringTarget),
-               "Target value position of spring where the spring force is zero.", WHEELGROUP));           
+               "Target value position of spring where the spring force is zero.", WHEELGROUP));
 
             toFillIn.push_back(new dtDAL::FloatActorProperty("Max Wheel Rotation", "Max Wheel Rotation",
                dtDAL::MakeFunctor(*this, &BaseVehiclePhysicsHelper::SetMaxWheelRotation),

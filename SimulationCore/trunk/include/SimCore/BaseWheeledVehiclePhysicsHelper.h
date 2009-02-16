@@ -25,26 +25,34 @@
 #ifndef _BASE_VEHICLE_PHYSICS_HELPER_
 #define _BASE_VEHICLE_PHYSICS_HELPER_
 
-#include <NxWheelShapeDesc.h>
+#ifdef AGEIA_PHYSICS
+#include <Vehicles/NxWheelDesc.h>
+#else
+#include <dtPhysics/physicshelper.h>
+#include <pal/palVehicle.h>
+#endif
 #include <osgSim/DOFTransform>
 #include <SimCore/Export.h>
 #include <SimCore/PhysicsTypes.h>
+#include <dtGame/gameactor.h>
 
 namespace SimCore
 {
 #ifdef AGEIA_PHYSICS
    typedef NxWheelShape WheelType;
+#else
+   typedef palWheel WheelType;
 #endif
 
    class SIMCORE_EXPORT BaseVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
    {
       public:
-         BaseVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);      
+         BaseVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
 
          //////////////////////////////////////////////////////////////////////////////////////
          //                               Vehicle Initialization                             //
          //////////////////////////////////////////////////////////////////////////////////////
-            
+
             /**
             * /brief Purpose : Create Wheels onto the main NxActor from the base class
             */
@@ -52,7 +60,7 @@ namespace SimCore
 
             /**
             * /brief Purpose : To create a 4 wheeled vehicle
-            */ 
+            */
             bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode);
 
 
@@ -65,18 +73,18 @@ namespace SimCore
             virtual void   BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
             float GetMotorTorque()                 {return mMotorTorque;}
-            float GetVehicleMaxMPH()               {return mVehicleMaxMPH;}            
-            float GetVehicleMaxReverseMPH()        {return mVehicleMaxReverseMPH;}      
-            int   GetVehicleHorsePower()           {return mHorsePower;}     
-            bool  GetIsAllWheelDrive()             {return mAllWheelDrive;}    
-            float GetVehicleWeight()               {return mVehicleWeight;}        
-            float GetVehicleTurnRadiusPerUpdate()  {return mWheelTurnRadiusPerUpdate;} 
-            float GetWheelInverseMass()            {return mWheelInverseMass;}         
-            float GetWheelRadius()                 {return mWheelRadius;}          
-            float GetWheelSuspensionTravel()       {return mWheelSuspensionTravel;}    
-            float GetSuspensionSpringCoef()        {return mSuspensionSpringCoef;}   
-            float GetSuspensionSpringDamper()      {return mSuspensionSpringDamper;}       
-            float GetSuspensionSpringTarget()      {return mSuspensionSpringTarget;}           
+            float GetVehicleMaxMPH()               {return mVehicleMaxMPH;}
+            float GetVehicleMaxReverseMPH()        {return mVehicleMaxReverseMPH;}
+            int   GetVehicleHorsePower()           {return mHorsePower;}
+            bool  GetIsAllWheelDrive()             {return mAllWheelDrive;}
+            float GetVehicleWeight()               {return mVehicleWeight;}
+            float GetVehicleTurnRadiusPerUpdate()  {return mWheelTurnRadiusPerUpdate;}
+            float GetWheelInverseMass()            {return mWheelInverseMass;}
+            float GetWheelRadius()                 {return mWheelRadius;}
+            float GetWheelSuspensionTravel()       {return mWheelSuspensionTravel;}
+            float GetSuspensionSpringCoef()        {return mSuspensionSpringCoef;}
+            float GetSuspensionSpringDamper()      {return mSuspensionSpringDamper;}
+            float GetSuspensionSpringTarget()      {return mSuspensionSpringTarget;}
             float GetMaxWheelRotation()            {return mMaxWheelRotation;}
             float GetTireExtremumSlip()            {return mTireExtremumSlip;}
             float GetTireExtremumValue()           {return mTireExtremumValue;}
@@ -88,19 +96,19 @@ namespace SimCore
             float GetTireStaticFriction()          {return mTireStaticFriction;}
 
             void SetMotorTorque(float value)                {mMotorTorque = value;}
-            void SetVehicleMaxMPH(float value)              {mVehicleMaxMPH = value;}            
-            void SetVehicleMaxReverseMPH(float value)       {mVehicleMaxReverseMPH = value;}      
-            void SetVehicleHorsePower(int value)            {mHorsePower = value;}        
-            void SetIsAllWheelDrive(bool value)             {mAllWheelDrive = value;}    
-            void SetVehicleWeight(float value)              {mVehicleWeight = value;}        
-            void SetVehicleTurnRadiusPerUpdate(float value) {mWheelTurnRadiusPerUpdate = value;} 
-            void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}         
-            void SetWheelRadius(float value)                {mWheelRadius = value;}           
-            void SetWheelSuspensionTravel(float value)      {mWheelSuspensionTravel = value;}    
-            void SetSuspensionSpringCoef(float value)       {mSuspensionSpringCoef = value;}   
-            void SetSuspensionSpringDamper(float value)     {mSuspensionSpringDamper = value;}       
-            void SetSuspensionSpringTarget(float value)     {mSuspensionSpringTarget = value;}           
-            void SetMaxWheelRotation(float value)           {mMaxWheelRotation = value;}          
+            void SetVehicleMaxMPH(float value)              {mVehicleMaxMPH = value;}
+            void SetVehicleMaxReverseMPH(float value)       {mVehicleMaxReverseMPH = value;}
+            void SetVehicleHorsePower(int value)            {mHorsePower = value;}
+            void SetIsAllWheelDrive(bool value)             {mAllWheelDrive = value;}
+            void SetVehicleWeight(float value)              {mVehicleWeight = value;}
+            void SetVehicleTurnRadiusPerUpdate(float value) {mWheelTurnRadiusPerUpdate = value;}
+            void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}
+            void SetWheelRadius(float value)                {mWheelRadius = value;}
+            void SetWheelSuspensionTravel(float value)      {mWheelSuspensionTravel = value;}
+            void SetSuspensionSpringCoef(float value)       {mSuspensionSpringCoef = value;}
+            void SetSuspensionSpringDamper(float value)     {mSuspensionSpringDamper = value;}
+            void SetSuspensionSpringTarget(float value)     {mSuspensionSpringTarget = value;}
+            void SetMaxWheelRotation(float value)           {mMaxWheelRotation = value;}
             void SetTireExtremumSlip(float value)           {mTireExtremumSlip = value;}
             void SetTireExtremumValue(float value)          {mTireExtremumValue = value;}
             void SetTireAsymptoteSlip(float value)          {mTireAsymptoteSlip = value;}
@@ -121,7 +129,7 @@ namespace SimCore
             // Properties
             float             mMotorTorque;              /// Effects total acceleration, not only modifier however
             float             mVehicleMaxMPH;            /// The max mph you want your vehicle to have
-            float             mVehicleMaxReverseMPH;     /// The max reverse mph you can go 
+            float             mVehicleMaxReverseMPH;     /// The max reverse mph you can go
             int               mHorsePower;               /// Used for brake torque, not implemented currently TODO
             bool              mAllWheelDrive;           /// Is this vehicle using all wheel drive or not? effects speed
             float             mVehicleWeight;            /// How much is just the chassis / wheels without people in it
@@ -140,8 +148,8 @@ namespace SimCore
             float             mReverse;
 
             /**
-            *  This is an additional overall positive scaling that gets applied to the tire forces before passing 
-            *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may 
+            *  This is an additional overall positive scaling that gets applied to the tire forces before passing
+            *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
             *  need to lower this. A setting of zero will disable all friction in this direction.
             */
             float             mTireStiffnessFactor;
@@ -164,6 +172,9 @@ namespace SimCore
             */
             float             mTireStaticFriction;
 
+#ifndef AGEIA_PHYSICS
+            palVehicle* vehicle;
+#endif
 
    };
 }

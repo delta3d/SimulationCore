@@ -51,10 +51,11 @@
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/Actors/WaterGridActor.h>
 
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
+#include <SimCore/Actors/MunitionParticlesActor.h>
+
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
-   #include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
-   #include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
    #include <SimCore/Actors/NECCBoatActor.h>
 #endif
 

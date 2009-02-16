@@ -96,11 +96,11 @@ namespace SimCore
             virtual void AgeiaPostPhysicsUpdate();
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, NxActor& ourSelf, NxActor& whatWeHit);
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, const NxActor& whatWeHit){}
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit){}
 
             // Shape report, used for character interactions for objects in the world.
             virtual NxControllerAction AgeiaCharacterShapeReport(const NxControllerShapeHit& shapeHit);

@@ -380,7 +380,7 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
          //////////////////////////////////////////////////////////////////////
-         NxActor* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
+         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, bool buildGeodesSeparately)
          {
             dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
@@ -469,13 +469,13 @@ namespace SimCore
                   return NULL;
                }
 
-               NxActorDesc     actorDesc;
+               dtPhysics::PhysicsObjectDesc     actorDesc;
                heightfieldShapeDesc.meshData = worldComponent->GetPhysicsSDK().createTriangleMesh(SimCore::MMemoryReadBuffer(buf.data));
                actorDesc.shapes.pushBack(&heightfieldShapeDesc);
                actorDesc.userData = (void *) mPhysicsHelper.get();
                actorDesc.group = SimCore::CollisionGroup::GROUP_TERRAIN;
 
-               NxActor *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
+               dtPhysics::PhysicsObject *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
                mPhysicsHelper->AddPhysXObject(*actor, nameOfNode.c_str());
                gCooking->NxCloseCooking();
                return actor;
@@ -483,7 +483,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         NxActor* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
+         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
             const std::string& nameOfNode)
          {
             mNumNodesLoaded ++;
@@ -492,12 +492,12 @@ namespace SimCore
             numNodesString = nameOfNode + " " + numNodesString;
 
             // Create our physics object
-            NxActor* actor = NULL;
+            dtPhysics::PhysicsObject* actor = NULL;
             actor = mPhysicsHelper->SetCollisionStaticMesh(node, NxVec3(0.0f, 0.0f, 0.0f), false,
                numNodesString, dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME,
                nameOfNode, SimCore::CollisionGroup::GROUP_TERRAIN);
             mNumVertsLoaded += mPhysicsHelper->GetNumVertsOnLastGeometry();
-            //NxActor* actor = mPhysicsHelper->SetCollisionMeshHeightField(node, SimCore::CollisionGroup::GROUP_TERRAIN,
+            //dtPhysics::PhysicsObject* actor = mPhysicsHelper->SetCollisionMeshHeightField(node, SimCore::CollisionGroup::GROUP_TERRAIN,
             //   dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_SCENE_NAME, numNodesString,0);
 
             return actor;

@@ -80,19 +80,17 @@ namespace SimCore
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
             virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-               NxActor& ourSelf, NxActor& whatWeHit);
+               dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
 
             // You would have to make a new raycast to get this report,
             // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
-               const NxActor& whatWeHit){}
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
+               const dtPhysics::PhysicsObject& whatWeHit){}
 
             /**
             * Handle forces received from the environment, such as detonations and impacts
             */
             virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
-
-            bool CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon );
 
             /// Utility Methods
             virtual float GetMPH();

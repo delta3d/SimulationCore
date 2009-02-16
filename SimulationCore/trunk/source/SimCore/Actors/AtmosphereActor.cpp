@@ -31,9 +31,9 @@ namespace SimCore
    {
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(CloudType);
-      CloudType CloudType::CIRRUS("CIRRUS"); 
-      CloudType CloudType::CIRROCUMULUS("CIRROCUMULUS"); 
-      CloudType CloudType::CIRROSTRATUS("CIRROSTRATUS"); 
+      CloudType CloudType::CIRRUS("CIRRUS");
+      CloudType CloudType::CIRROCUMULUS("CIRROCUMULUS");
+      CloudType CloudType::CIRROSTRATUS("CIRROSTRATUS");
       CloudType CloudType::ALTOCUMULUS("ALTOCUMULUS");
       CloudType CloudType::ALTOSTRATUS("ALTOSTRATUS");
       CloudType CloudType::NIMBOSTRATUS("NIMBOSTRATUS");

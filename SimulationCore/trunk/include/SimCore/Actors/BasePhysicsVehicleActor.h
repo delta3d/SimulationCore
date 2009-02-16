@@ -20,7 +20,6 @@
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Curtiss Murphy
 */
-#ifdef AGEIA_PHYSICS
 #ifndef _BASE_PHYSICS_VEHICLE_
 #define _BASE_PHYSICS_VEHICLE_
 
@@ -29,8 +28,12 @@
 //#include <NxAgeiaFourWheelVehiclePhysicsHelper.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
+#include <SimCore/PhysicsTypes.h>
+#ifdef AGEIA_PHYSICS
 #include <NxAgeiaPhysicsHelper.h>
-//#include <SimCore/Actors/VehicleInterface.h>
+#else
+#include <dtPhysics/physicshelper.h>
+#endif
 
 namespace dtAudio
 {
@@ -49,7 +52,9 @@ namespace SimCore
        * This class is abstract. Makes no sense to have a base instantiation...
        */
       class SIMCORE_EXPORT BasePhysicsVehicleActor : public Platform,
-                                                       public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
+#ifdef AGEIA_PHYSICS
+      public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
+#endif
                                                        public VehicleInterface
       {
          public:
@@ -80,6 +85,7 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
+#ifdef AGEIA_PHYSICS
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
             /// Does most of what is needed. Shouldn't need to override this behavior.
             virtual void AgeiaPrePhysicsUpdate();
@@ -89,12 +95,16 @@ namespace SimCore
 
             /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
             virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-               NxActor& ourSelf, NxActor& whatWeHit);
+               dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit) {}
 
-            // You would have to make a new raycast to get this report,
-            // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf,
-               const NxActor& whatWeHit){}
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
+               const dtPhysics::PhysicsObject& whatWeHit){}
+#else
+            /// dtPhysics post physics callback.
+            void PrePhysicsUpdate();
+            void PostPhysicsUpdate();
+
+#endif
 
             /**
              * Handle forces received from the environment, such as detonations and impacts
@@ -120,8 +130,8 @@ namespace SimCore
 
             virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
-            void SetPhysicsHelper(dtAgeiaPhysX::NxAgeiaPhysicsHelper* newHelper) {mPhysicsHelper = newHelper;}
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+            void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper) {mPhysicsHelper = newHelper;}
+            dtPhysics::PhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
 
             //?? virtual void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
 
@@ -161,11 +171,8 @@ namespace SimCore
             /// By default, does most of the work you need to do for dead reckoning and sending out actor updates based on position.
             virtual void UpdateDeadReckoning(float deltaTime);
 
-            // Compares 2 vectors. This can probably be replaced by core Delta functionality.
-            bool CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon );
-
-            /// Check if the supplied NxActor is below ground, if so, move it above ground
-            void KeepAboveGround( NxActor* physicsObject );
+            /// Check if the actor is above ground.
+            void KeepAboveGround();
 
             /**
             * Get the point on the PhysX terrain at the specified location.
@@ -188,7 +195,7 @@ namespace SimCore
          // Private vars
          private:
 
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPhysicsHelper> mPhysicsHelper;
+            dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
 
 
             ///////////////////////////////////////////////////
@@ -247,5 +254,4 @@ namespace SimCore
    }
 }
 
-#endif
 #endif

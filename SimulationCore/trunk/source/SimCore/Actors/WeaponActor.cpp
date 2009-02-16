@@ -35,7 +35,7 @@
 
 #include <dtGame/basemessages.h>
 
-#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 
@@ -319,11 +319,10 @@ namespace SimCore
             std::cout << "\tWeapon: " << normal[0] << ", " << normal[1] << ", " << normal[2] << std::endl;
             // --- DEBUG --- END --- /*/
 
-#ifdef AGEIA_PHYSICS
             if( mShooter.valid() )
             {
-               NxAgeiaMunitionsPSysActor* particleSystem
-                  = dynamic_cast<NxAgeiaMunitionsPSysActor*>(mShooter->GetActor());
+               MunitionParticlesActor* particleSystem = NULL;
+               mShooter->GetActor(particleSystem);
 
                // Add the vehicles current velocity to the weapon.
                osg::Vec3 vehicleVelocity;
@@ -338,9 +337,7 @@ namespace SimCore
                }
                particleSystem->Fire();
             }
-#else
-            mShooter->Fire();
-#endif
+
             mAmmoCount--;
             mShotsFired++;
          }
@@ -555,6 +552,39 @@ namespace SimCore
             const NxVec3& impact = report.lsContactPoints[0];
             mLastHitLocation.set( impact[0], impact[1], impact[2] );
          }
+
+         // Get the target ID
+         mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;
+         std::string targetID( mLastTargetObject.valid() ?
+            mLastTargetObject->GetUniqueId().ToString() : "" );
+
+         // Send a message if a target has changed or the time allows.
+         if( mLastTargetID != targetID )
+         {
+            mTargetChanged = true;
+            mLastTargetID = targetID;
+         }
+
+         // Check type to see if it is grenade - Indirect Fire type
+         if( ( mMunitionType.valid()
+             && (  mMunitionType->GetFamily() == MunitionFamily::FAMILY_GRENADE
+                || mMunitionType->GetFamily() == MunitionFamily::FAMILY_EXPLOSIVE_ROUND) )
+             || ( mUseBulletPhysics && ( mTargetChanged || mDetMessageTime >= mMessageCycleTime ) ) )
+         {
+            SendDetonationMessage( mHitCount, mLastVelocity, mLastHitLocation, mLastTargetObject.get() );
+            mDetMessageTime = 0.0f;
+         }
+      }
+#else
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::ReceiveContactReport(dtPhysics::CollisionContact& report, dtGame::GameActorProxy* target)
+      {
+         ++mHitCount;
+
+         mLastVelocity.set(report.mNormal);
+         mLastVelocity *= mFireVelocity;
+
+         mLastHitLocation = report.mPosition;
 
          // Get the target ID
          mLastTargetObject = target != NULL ? &target->GetGameActor() : NULL;

@@ -254,6 +254,7 @@ namespace SimCore
 
          // probably only need to set the scene veiw, and it
          // auto sets the cull visitor but havent checked yet.
+
          mCullVisitor->setCullingMode(flags);
          sceneView->setCullingMode(flags);
          sceneView->setCullVisitor(mCullVisitor.get());

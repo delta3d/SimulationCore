@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifdef AGEIA_PHYSICS
@@ -42,7 +42,7 @@ namespace DriverDemo
 
 
    ////////////////////////////////////////////////////////////////////////////////
-   /* This class extends BasePhysicsVehicle. It is intended to be a simple target 
+   /* This class extends BasePhysicsVehicle. It is intended to be a simple target
     * that you can shoot at. It will publish itself and can be shot by remote players.
     */
    class DRIVER_DEMO_EXPORT HoverTargetActor : public SimCore::Actors::BasePhysicsVehicleActor
@@ -54,7 +54,7 @@ namespace DriverDemo
       protected:
          /// Destructor
          virtual ~HoverTargetActor();
-      
+
       // INHERITED PUBLIC
       public:
          // Called when the actor has been added to the game manager.
@@ -62,13 +62,13 @@ namespace DriverDemo
          virtual void OnEnteredWorld();
 
          /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, 
-         //   NxActor& ourSelf, NxActor& whatWeHit);
+         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
+         //   dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
 
          // You would have to make a new raycast to get this report,
          // so no flag associated with it.
-         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, 
-         //   const NxActor& whatWeHit){}
+         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
+         //   const dtPhysics::PhysicsObject& whatWeHit){}
 
          /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
          virtual void AgeiaPrePhysicsUpdate();
@@ -81,7 +81,7 @@ namespace DriverDemo
 
       // PUBLIC METHODS
       public:
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
+         float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
             const osg::Vec3 &direction, float &distanceToHit);
 
          /// Reset to starting position In additional to base behavior, it turns off sounds.
@@ -95,7 +95,7 @@ namespace DriverDemo
          }
 
 
-      protected: 
+      protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          /// This does nothing by default.
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -111,7 +111,7 @@ namespace DriverDemo
 
       // Private vars
       private:
-         
+
          ///////////////////////////////////////////////////
          // Sound effects
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;

@@ -19,12 +19,20 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Curtiss Murphy
+* @author David Guthrie
 */
 #include <prefix/SimCorePrefix-src.h>
+#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #ifdef AGEIA_PHYSICS
-//#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaRaycastReport.h>
+#else
+#include <dtPhysics/physicscomponent.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+#include <dtPhysics/palphysicsworld.h>
+#endif
+
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -45,7 +53,6 @@
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/CollisionGroupEnum.h>
-#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 namespace SimCore
 {
@@ -82,11 +89,15 @@ namespace SimCore
       {
          Platform::OnEnteredWorld();
 
-         GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
          // Register with the Physics Component
-         dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->
-            GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+         dtPhysics::PhysicsComponent* physicsComp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
+         physicsComp->RegisterHelper(*mPhysicsHelper.get());
+
+
+#ifdef AGEIA_PHYSICS
+         GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
          if(IsRemote())
          {
@@ -99,6 +110,21 @@ namespace SimCore
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
             GetPhysicsHelper()->TurnObjectsGravityOff("Default");
          }
+#else
+         if(IsRemote())
+         {
+            GetPhysicsHelper()->SetPostPhysicsCallback(
+                     dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PostPhysicsUpdate));
+            GetPhysicsHelper()->SetPrePhysicsCallback(
+                     dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
+         }
+         else // Local
+         {
+            // Disable gravity until the map has loaded terrain under our feet...
+            // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
+            //GetPhysicsHelper()->TurnObjectsGravityOff("Default");
+         }
+#endif
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +132,7 @@ namespace SimCore
       {
          // DEBUG: std::cout << "Terrain loaded." << std::endl;
 
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
          if( physicsObject == NULL )
          {
             // DEBUG: std::cout << "\tVehicle physics object not loaded :(\n" << std::endl;
@@ -114,9 +140,16 @@ namespace SimCore
          }
 
          // Check to see if we are currently up under the earth, if so, snap them back up.
-         osg::Vec3 terrainPoint;
+#ifdef AGEIA_PHYSICS
          NxVec3 pos = physicsObject->getGlobalPosition();
          osg::Vec3 location( pos.x, pos.y, pos.z );
+#else
+         dtPhysics::TransformType xform;
+         dtPhysics::VectorType location;
+         physicsObject->GetTransform(xform);
+         xform.GetTranslation(location);
+#endif
+         osg::Vec3 terrainPoint;
 
          // DEBUG: std::cout << "\tAttempting detection at [" << location << "]...";
 
@@ -127,8 +160,11 @@ namespace SimCore
             // DEBUG: std::cout << "DETECTED!" << std::endl;
 
             // ...and snap just above that point.
+
+            terrainPoint.z() += 5.0f;
+#ifdef AGEIA_PHYSICS
             physicsObject->setGlobalPosition(
-               NxVec3( pos.x, pos.y, terrainPoint.z() + 5.0f ) );
+               NxVec3( pos.x, pos.y, terrainPoint.z()) );
 
             // And turn gravity on if it is off...
             if( physicsObject->readBodyFlag(NX_BF_DISABLE_GRAVITY) )
@@ -137,6 +173,10 @@ namespace SimCore
 
                GetPhysicsHelper()->TurnObjectsGravityOn();
             }
+#else
+            xform.SetTranslation(terrainPoint);
+            physicsObject->SetTransform(xform);
+#endif
          }
          // DEBUG:
          /*else
@@ -147,33 +187,47 @@ namespace SimCore
          return terrainDetected;
       }
 
+#ifdef AGEIA_PHYSICS
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
       {
-         // NOTE - Fix this so it uses the location provided
-         //GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]) );
-         GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+         GetPhysicsHelper()->GetMainPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force)
       {
-         GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+         GetPhysicsHelper()->GetMainPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
       }
+
+#else
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
+      {
+         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force)
+      {
+         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+      }
+#endif
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
          if(physicsObject == NULL)
          {
-            LOG_ERROR("BAD PHYSXOBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
+            LOG_ERROR("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
          }
-
+#ifdef AGEIA_PHYSICS
          if(physicsObject->isSleeping())
             physicsObject->wakeUp(1e30);
-
+#endif
          // Check if terrain is available. (For startup)
          if( ! mHasFoundTerrain )
          {
@@ -183,7 +237,7 @@ namespace SimCore
          // Check to see if we are currently up under the earth, if so, snap them back up.
          else if( GetPerformAboveGroundSafetyCheck() == true)
          {
-            KeepAboveGround(physicsObject);
+            KeepAboveGround();
          }
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,21 +261,6 @@ namespace SimCore
          // Do nothing in the base. That's yer job.
       }
 
-      bool BasePhysicsVehicleActor::CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
-      {
-         return std::abs(op1.x() - op2.x()) < epsilon
-            && std::abs(op1.y() - op2.y()) < epsilon
-            && std::abs(op1.z() - op2.z()) < epsilon;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
-      {
-         return std::abs(op1.x() - op2.x()) < epsilon
-            && std::abs(op1.y() - op2.y()) < epsilon
-            && std::abs(op1.z() - op2.z()) < epsilon;
-      }
-
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateDeadReckoning(float deltaTime)
       {
@@ -229,94 +268,6 @@ namespace SimCore
          // so many times a second.
          mTimeForSendingDeadReckoningInfoOut += deltaTime;
 
-
-         ///// DELETE THE FOLLOWING!!!!
-
-
-         // A full update may not be required. Prevent any further network updates.
-         // Let the following code determine if this vehicle should be flagged
-         // for a full actor update.
-         //mNotifyFullUpdate = false;
-         //mNotifyPartialUpdate = false;
-
-/*
-         float amountChange = 0.5f;
-         float glmat[16];
-         NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
-
-         if(physxObj == NULL)
-         {
-            LOG_ERROR("No physics object on the hmmwv, no doing dead reckoning");
-            return;
-         }
-
-         NxMat33 rotation = physxObj->getGlobalOrientation();
-         rotation.getColumnMajorStride4(glmat);
-         glmat[12] = physxObj->getGlobalPosition()[0];
-         glmat[13] = physxObj->getGlobalPosition()[1];
-         glmat[14] = physxObj->getGlobalPosition()[2];
-         glmat[15] = 1.0f;
-         //float zoffset = 0.0;
-         float zoffset = 1.1;
-         osg::Matrix currentMatrix(glmat);
-         osg::Vec3 globalOrientation;
-         dtUtil::MatrixUtil::MatrixToHpr(globalOrientation, currentMatrix);
-         osg::Vec3 physTranslationVec;
-         physTranslationVec.set(physxObj->getGlobalPosition().x, physxObj->getGlobalPosition().y, physxObj->getGlobalPosition().z + zoffset);
-
-         const osg::Vec3 &drTranslationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
-         const osg::Vec3 &drOrientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
-
-         bool changedTrans = CompareVectors(physTranslationVec, drTranslationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(physTranslationVec, translationVec, 3, amountChange);
-         bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, drOrientationVec, 3, 3.0f);
-
-         const osg::Vec3 &drAngularVelocity = GetDeadReckoningHelper().GetAngularVelocityVector();
-         const osg::Vec3 &drLinearVelocity = GetDeadReckoningHelper().GetVelocityVector();
-
-         const osg::Vec3 physAngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
-         const osg::Vec3 physLinearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
-
-         float linearVelocityDiff = (drLinearVelocity - physLinearVelocity).length();
-         bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
-         bool changedLinearVelocity = linearVelocityDiff > 0.2 || (physVelocityNearZero && drLinearVelocity.length() > 0.1 );
-
-         float angularVelocityDiff = (drAngularVelocity - physAngularVelocity).length();
-         bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
-         bool changedAngularVelocity = angularVelocityDiff > 0.2 || (physAngularVelocityNearZero && drAngularVelocity.length() > 0.1 );
-
-         if( changedTrans || changedOrient || changedLinearVelocity || changedAngularVelocity)
-         {
-            SetLastKnownTranslation(physTranslationVec);
-            SetLastKnownRotation(globalOrientation);
-
-            if( physVelocityNearZero )
-            {
-               SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-            }
-            else
-            {
-               SetVelocityVector(physLinearVelocity);
-            }
-
-            if ( physAngularVelocityNearZero )
-            {
-               SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-            }
-            else
-            {
-               SetAngularVelocityVector(physAngularVelocity);
-            }
-
-            // do not send the update message here but rather flag this vehicle
-            // to send the update via the base class though ShouldForceUpdate.
-            mNotifyFullUpdate = true;
-         }
-         else if( GetArticulationHelper() != NULL && GetArticulationHelper()->IsDirty() )
-         {
-            mNotifyPartialUpdate = true;
-            // DEBUG: std::cout << "Articulation Update\n" << std::endl;
-         }
-         */
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -333,8 +284,8 @@ namespace SimCore
             if (!fullUpdate)
                forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
 
-            NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
-            if(physxObj == NULL)
+            dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+            if(physObj == NULL)
             {
                LOG_ERROR("No physics object on BasePhysicsVehicleActor::ShouldForceUpdate(), no doing dead reckoning");
                return false;
@@ -346,8 +297,13 @@ namespace SimCore
                // Linear Velocity - set our linear velocity from the physics object in preparation for a publish
                if (mPublishLinearVelocity)
                {
-                  NxVec3 linearVelVec3 = physxObj->getLinearVelocity();
-                  const osg::Vec3 physLinearVelocity(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+                  osg::Vec3 physLinearVelocity;
+#ifdef AGEIA_PHYSICS
+                  NxVec3 linearVelVec3 = physObj->getLinearVelocity();
+                  physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+#else
+                  physLinearVelocity = physObj->GetBodyWrapper()->GetLinearVelocity();
+#endif
                   // If the value is very close to 0, set it to zero to prevent warbling
                   bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
                   if( physVelocityNearZero )
@@ -362,8 +318,13 @@ namespace SimCore
                // Angular Velocity - set our angular velocity from the physics object in preparation for a publish
                if (mPublishAngularVelocity)
                {
-                  NxVec3 angularVelVec3 = physxObj->getAngularVelocity();
-                  const osg::Vec3 physAngularVelocity(angularVelVec3.x, angularVelVec3.y, angularVelVec3.z);
+                  osg::Vec3 physAngularVelocity;
+#ifdef AGEIA_PHYSICS
+                  NxVec3 angVelVec3 = physObj->getAngularVelocity();
+                  physAngularVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+#else
+                  physAngularVelocity = physObj->GetBodyWrapper()->GetAngularVelocity();
+#endif
                   // If the value is very close to 0, set it to zero to prevent warbling
                   bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
                   if ( physAngularVelocityNearZero ) //
@@ -404,17 +365,18 @@ namespace SimCore
          UpdateSoundEffects(ElapsedTime);
       }
 
+#ifdef AGEIA_PHYSICS
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate()
       {
-         NxActor* physicsActor = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physicsActor = GetPhysicsHelper()->GetMainPhysicsObject();
 
          // The PRE physics update is only trapped if we are remote. It updates the physics
          // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
          // We do this because we don't own remote vehicles and naturally can't just go
          // physically simulating them however we like. But, the physics scene needs them to interact with.
          // Only called if we are remote, but check for safety. Local objects are moved by the physics engine...
-         if (IsRemote() && physicsActor != NULL)
+         if (physicsActor != NULL)
          {
             osg::Matrix rot = GetMatrixNode()->getMatrix();
 
@@ -442,7 +404,7 @@ namespace SimCore
          {
             // The base behavior is that we want to pull the translation and rotation off the object
             // in our physics scene and apply it to our 3D object in the visual scene.
-            NxActor* physicsActor = GetPhysicsHelper()->GetPhysicsObject();
+            dtPhysics::PhysicsObject* physicsActor = GetPhysicsHelper()->GetMainPhysicsObject();
             if(physicsActor != NULL && !physicsActor->isSleeping())
             {
                dtCore::Transform ourTransform;
@@ -471,12 +433,56 @@ namespace SimCore
 
       }
 
+#endif
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport&
-         contactReport, NxActor& ourSelf, NxActor& whatWeHit)
+      void BasePhysicsVehicleActor::PrePhysicsUpdate()
       {
-         //printf("VehicleCollision\n");
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
+         // The PRE physics update is only trapped if we are remote. It updates the physics
+         // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
+         // We do this because we don't own remote vehicles and naturally can't just go
+         // physically simulating them however we like. But, the physics scene needs them to interact with.
+         // Only called if we are remote, but check for safety. Local objects are moved by the physics engine...
+         if (physicsObject != NULL)
+         {
+
+            if (IsRemote())
+            {
+               // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
+               // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
+               // but we want to act like their not.
+               osg::Vec3 velocity = GetVelocityVector();
+               physicsObject->GetBodyWrapper()->SetLinearVelocity(velocity);
+            }
+
+            dtCore::Transform xform;
+            GetTransform(xform);
+            physicsObject->SetTransform(xform);
+         }
+
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::PostPhysicsUpdate()
+      {
+         // This is ONLY called if we are LOCAL (we put the check here just in case... )
+         if (!IsRemote() && GetPhysicsHelper() != NULL)
+         {
+            // The base behavior is that we want to pull the translation and rotation off the object
+            // in our physics scene and apply it to our 3D object in the visual scene.
+            dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
+            //TODO: Should I ask about the sleeping object?  It could be an optimization
+            if(physicsObject != NULL)
+            {
+               dtCore::Transform xform;
+               physicsObject->GetTransform(xform);
+               SetTransform(xform);
+            }
+         }
+
       }
 
 
@@ -486,11 +492,6 @@ namespace SimCore
          // nothing by default
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ResetVehicle()
-      {
-         GetPhysicsHelper()->ResetToStarting();
-      }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
@@ -505,6 +506,13 @@ namespace SimCore
          //return 0.0f;
       }
 
+#ifdef AGEIA_PHYSICS
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ResetVehicle()
+      {
+         GetPhysicsHelper()->ResetToStarting();
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::RepositionVehicle(float deltaTime)
       {
@@ -513,29 +521,61 @@ namespace SimCore
          // we need a base vehicle helper and it should be moved there.
          // The code in PhysicsHelper::RepositionVehicle can be refactored out
 
-         NxActor* physActor = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physObj = GetPhysicsHelper()->GetMainPhysicsObject();
          float glmat[16];
 
          for(int i = 0 ; i < 16; i++)
             glmat[i] = 0.0f;
          glmat[0]  = glmat[5]  = glmat[10] = glmat[15] = 1.0f;
-         glmat[12] = physActor->getGlobalPosition()[0];
-         glmat[13] = physActor->getGlobalPosition()[1];
-         glmat[14] = physActor->getGlobalPosition()[2];
+         glmat[12] = physObj->getGlobalPosition()[0];
+         glmat[13] = physObj->getGlobalPosition()[1];
+         glmat[14] = physObj->getGlobalPosition()[2];
          glmat[10] = 1.0f;
 
          float xyOffset = deltaTime;
          float zOffset = deltaTime * 5.0f;
 
-         GetPhysicsHelper()->SetTransform(NxVec3(physActor->getGlobalPosition()[0] + xyOffset,
-            physActor->getGlobalPosition()[1] + xyOffset, physActor->getGlobalPosition()[2] + zOffset), osg::Matrix(glmat));
+         GetPhysicsHelper()->SetTransform(NxVec3(physObj->getGlobalPosition()[0] + xyOffset,
+            physObj->getGlobalPosition()[1] + xyOffset, physObj->getGlobalPosition()[2] + zOffset), osg::Matrix(glmat));
+
 
          GetPhysicsHelper()->ResetForces();
-         //GetPhysicsHelper()->RepositionVehicle(deltaTime);
+      }
+#else
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ResetVehicle()
+      {
+         //this is a stupid method.
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::KeepAboveGround( NxActor* physicsObject )
+      void BasePhysicsVehicleActor::RepositionVehicle(float deltaTime)
+      {
+         // This behavior is semi duplicated in the four wheel vehicle helper.
+         // It has been moved here to allow vehicles to have separate behavior. Eventually,
+         // we need a base vehicle helper and it should be moved there.
+         // The code in PhysicsHelper::RepositionVehicle can be refactored out
+
+         dtPhysics::PhysicsObject* physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+
+         float xyOffset = deltaTime;
+         float zOffset = deltaTime * 5.0f;
+
+         dtCore::Transform xform;
+         physObj->GetTransform(xform);
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
+         pos.x() += xyOffset;
+         pos.y() += xyOffset;
+         pos.z() += zOffset;
+         xform.SetTranslation(pos);
+
+         physObj->GetBodyWrapper()->ResetForces();
+      }
+
+#endif
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::KeepAboveGround()
       {
          bool underearth = false;
          std::vector<dtDAL::ActorProxy*> toFill;
@@ -544,14 +584,18 @@ namespace SimCore
          if(!toFill.empty())
             terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
 
-         NxVec3 position = physicsObject->getGlobalPosition();
+
+         dtCore::Transform xform;
+
+         GetTransform(xform);
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
 
          osg::Vec3 hp;
          dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
          iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
          iSector->SetQueryRoot(terrainNode->GetActor());
          dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-         osg::Vec3 pos( position.x, position.y, position.z );
          osg::Vec3 endPos = pos;
          pos[2] -= 100.0f;
          endPos[2] += 100.0f;
@@ -563,17 +607,20 @@ namespace SimCore
             {
                SingleISector.GetHitPoint(hp);
 
-               if(position[2] + offsettodo < hp[2])
+               if(pos[2] + offsettodo < hp[2])
                {
                   underearth = true;
                }
             }
          }
 
-         if(underearth)
+         if (underearth)
          {
-            physicsObject->setGlobalPosition(
-               NxVec3(position[0], position[1], hp[2] + offsettodo));
+            // This should just set the regular position.  When the physics engine should get
+            // prephysics every time, not just for remote.
+            pos.z() = hp[2] + offsettodo;
+            xform.SetTranslation(pos);
+            SetTransform(xform);
          }
       }
 
@@ -581,27 +628,40 @@ namespace SimCore
       bool BasePhysicsVehicleActor::GetTerrainPoint(
          const osg::Vec3& location, osg::Vec3& outPoint )
       {
-         NxActor* physxObject = GetPhysicsHelper()->GetPhysicsObject();
-         if( physxObject == NULL )
+         dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
+         if( physObject == NULL )
          {
             return false;
          }
 
+         osg::Vec3 rayStart(location);
+         rayStart.z() += 10000.0f;
+#ifdef AGEIA_PHYSICS
          NxRay ray;
-         ray.orig = NxVec3(location.x(),location.y(),location.z());
-         ray.orig.z += 10000.0f;
+         ray.orig = NxVec3(rayStart.x(), rayStart.y(), rayStart.z());
          ray.dir = NxVec3(0.0f,0.0f,-1.0f);
 
          // Create a raycast report that should ignore this vehicle.
          dtAgeiaPhysX::SimpleRaycastReport report( this );
          static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
 
-         NxU32 numHits = physxObject->getScene().raycastAllShapes(
+         unsigned int numHits = physObject->getScene().raycastAllShapes(
             ray, report, NX_ALL_SHAPES, GROUPS_FLAGS );
 
          if( numHits > 0 && report.HasHit() )
          {
             report.GetClosestHit( outPoint );
+#else
+         dtPhysics::RayCast ray;
+         ray.SetOrigin(rayStart);
+         ray.SetDirection(osg::Vec3(0.0f, 0.0f, -20000.0f));
+         dtPhysics::RayCast::Report report;
+         if (dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, report))
+         {
+            outPoint = report.mHitPos;
+#endif
+
             return true;
          }
          return false;
@@ -667,4 +727,4 @@ namespace SimCore
 
    } // namespace
 }// namespace
-#endif
+
