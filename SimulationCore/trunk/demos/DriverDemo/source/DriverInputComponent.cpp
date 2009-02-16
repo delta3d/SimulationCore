@@ -310,12 +310,12 @@ namespace DriverDemo
       if( mWeapon.valid() )
       {
          mWeapon->SetTriggerHeld( false );
-         MunitionParticlesActorProxy* proxy = mWeapon->GetShooter();
+         SimCore::MunitionParticlesActorProxy* proxy = mWeapon->GetShooter();
          if( proxy != NULL )
          {
             // Clear out the shooter's bullets, otherwise a crash
             // may occur asynchronously.
-            MunitionParticlesActorProxy* particles;
+            SimCore::MunitionParticlesActor* particles;
             proxy->GetActor(particles);
             if( particles != NULL )
             {
@@ -1113,16 +1113,16 @@ namespace DriverDemo
          {
             // Give the shooter unit access to the shooter so that it
             // can tell the shooter when to fire.
-            MunitionParticlesActorProxy* proxy =
-               dynamic_cast<MunitionParticlesActorProxy*>(ourActualActorProxy.get());
+            SimCore::MunitionParticlesActorProxy* proxy =
+               dynamic_cast<SimCore::MunitionParticlesActorProxy*>(ourActualActorProxy.get());
             outWeapon->SetShooter( proxy );
 
             // Initialize the physics based particle system/shooter,
             // only if the shooter unit was assigned a valid proxy.
             if( proxy != NULL )
             {
-               MunitionParticlesActorProxy* shooter
-                  = dynamic_cast<MunitionParticlesActorProxy*>(ourActualActorProxy->GetActor());
+               SimCore::MunitionParticlesActor* shooter
+                  = dynamic_cast<SimCore::MunitionParticlesActor*>(ourActualActorProxy->GetActor());
 
                // Set other properties of the particle system
                shooter->SetWeapon( *outWeapon );
