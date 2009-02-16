@@ -29,6 +29,8 @@
 #include <dtPhysics/physicsobject.h>
 #endif
 
+#include <SimCore/PhysicsTypes.h>
+
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <dtCore/scene.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -244,7 +246,7 @@ namespace SimCore
             osg::Matrix rot;
             ourTransform.GetRotation(rot);
 
-            dtPhysics::PhysicsObject* toFillIn = mPhysicsHelper->GetPhysicsObject();
+            dtPhysics::PhysicsObject* toFillIn = mPhysicsHelper->GetMainPhysicsObject();
             if(toFillIn != NULL)
             {
                osg::Vec3 translation;

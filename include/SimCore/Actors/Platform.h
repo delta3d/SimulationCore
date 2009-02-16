@@ -76,7 +76,7 @@ namespace SimCore
    {
       class ArticulationHelper;
    }
-   
+
    namespace Actors
    {
       /**
@@ -115,7 +115,7 @@ namespace SimCore
 
             /**
              * Initializes the actual actor the derived proxy will represent
-             * By default this will create an Platform. This should be 
+             * By default this will create an Platform. This should be
              * overridden in all subclasses of the Platform class
              */
             virtual void CreateActor();
@@ -127,7 +127,7 @@ namespace SimCore
 
             /// Adds additional invokables for this class.
             virtual void BuildInvokables();
-            
+
             /**
              * Returns the icon to be shown in the level editor
              * for this proxy (PARTICLE_SYSTEM)
@@ -185,7 +185,7 @@ namespace SimCore
              *  file which must be loaded before any of these properties are set.
              */
             virtual void OnShaderGroupChanged();
-           
+
             /**
             * /brief    Purpose :  to load the dofs for the dofcontainer class
             *           Outs     : filled in mNodeCollector memb vars
@@ -231,16 +231,16 @@ namespace SimCore
             /// Sets the group parameter of articulations.  This is for supporting the property.
             void SetArticulatedParametersArray(const dtDAL::NamedGroupParameter& newValue);
             /// @return the group parameter for articulations.  This is for supporting the property.
-            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray(); 
+            dtCore::RefPtr<dtDAL::NamedGroupParameter> GetArticulatedParametersArray();
 
             /**
-             * Sets the entity type.  Entity Type is a string that is used by the Input component 
+             * Sets the entity type.  Entity Type is a string that is used by the Input component
              * to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
              */
             void SetEntityType( const std::string& entityType) { mEntityType = entityType; }
-            
+
             /**
-             * Gets the entity type.  Entity Type is a string that is used by the Input component 
+             * Gets the entity type.  Entity Type is a string that is used by the Input component
              * to determine what types of behaviors the app should have such as gunner positions, seats, weapons, ...
              */
             std::string GetEntityType() { return mEntityType; }
@@ -285,17 +285,18 @@ namespace SimCore
 
             float GetMinDistanceIdleSound() const {return mMinIdleSoundDistance;}
             float GetMaxDistanceIdleSound() const {return mMaxIdleSoundDistance;}
-            
+
             void TickTimerMessage(const dtGame::Message& tickMessage);
+
+            /// @return true if this platform should be visible based on the options given.
+            bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
+
          protected:
 
             /**
              * Destructor.
              */
             virtual ~Platform();
-            
-            /// overridden from base class to setup the nodes to draw or not.
-            virtual void HandleModelDrawToggle(bool draw);
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
@@ -339,19 +340,19 @@ namespace SimCore
             /// Internal method that causes the set damage state to actually happen.  Should prevent unnecessary changes to CollisionBox
             void InternalSetDamageState(PlatformActorProxy::DamageStateEnum &damageState);
 
-            /// The entities main dof container that objects get moved around with 
+            /// The entities main dof container that objects get moved around with
             dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
 
             /// The name of the munition damage table as found in Configs/MunitionsConfig.xml
             std::string mMunitionTableName;
 
             // The entity type - used by apps to determine what type of behaviors the app should have.
-            std::string mEntityType; 
+            std::string mEntityType;
 
             // The articulation helper used in creating out-going articulation
             // data for entity update messages.
             dtCore::RefPtr<Components::ArticulationHelper> mArticHelper;
-            
+
             // Flag for determining if the head light effect should be enabled or disabled
             bool mHeadLightsEnabled;
 

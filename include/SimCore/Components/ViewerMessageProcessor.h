@@ -17,7 +17,7 @@
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
 * This software was developed by Alion Science and Technology Corporation under
-* circumstances in which the U. S. Government may have rights in the software. 
+* circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
 #ifndef _VIEWER_MESSAGE_PROCESSOR_H_
@@ -46,7 +46,7 @@ namespace dtGame
 }
 
 namespace SimCore
-{  
+{
    class DetonationMessage;
    class TimeValueMessage;
 
@@ -69,6 +69,13 @@ namespace SimCore
             void ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg);
 
             virtual dtCore::RefPtr<dtGame::GameActorProxy> ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg);
+
+            /**
+             * Processes a remote update actor message
+             * @param msg The message
+             */
+            virtual void ProcessRemoteUpdateActor(const dtGame::ActorUpdateMessage& msg, dtGame::GameActorProxy* ap);
+
 
             /**
              * Cleans up the player ref ptr on delete.
@@ -124,22 +131,28 @@ namespace SimCore
 
             const std::string& GetTimeSyncSenderName() const { return mTimeSyncSenderName.ToString(); }
 
-            unsigned long GetTimeSyncLatency() const { return mTimeSyncLatency; } 
+            unsigned long GetTimeSyncLatency() const { return mTimeSyncLatency; }
+
+            void SetVisibilityOptions(SimCore::VisibilityOptions& options);
+            const SimCore::VisibilityOptions& GetVisibilityOptions() const;
+            SimCore::VisibilityOptions& GetVisibilityOptions();
 
          protected:
-            /// updates the GM time based on the time 
+            /// updates the GM time based on the time
             void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);
 
          private:
 
             /// updates the magnification of entities based on the current magnification value set via input.
-            void UpdateMagnification();
-            
+            void UpdateMagnificationAndVisibilityOptions();
+
             dtUtil::Log* mLogger;
-            
+
             dtCore::ObserverPtr<SimCore::Actors::StealthActor> mPlayer;
             float mMagnification;
-            
+
+            dtCore::RefPtr<SimCore::VisibilityOptions> mVisibilityOptions;
+
             std::string mTimeMasterName;
             dtCore::UniqueId mTimeSyncSenderName;
             unsigned long mTimeSyncLatency;

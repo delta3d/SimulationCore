@@ -36,6 +36,7 @@
 #include <dtUtil/enumeration.h>
 #include <dtUtil/nodeprintout.h>
 
+#include <SimCore/Actors/MunitionParticlesActor.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
@@ -309,12 +310,12 @@ namespace DriverDemo
       if( mWeapon.valid() )
       {
          mWeapon->SetTriggerHeld( false );
-         NxAgeiaMunitionsPSysActorProxy* proxy = mWeapon->GetShooter();
+         MunitionParticlesActorProxy* proxy = mWeapon->GetShooter();
          if( proxy != NULL )
          {
             // Clear out the shooter's bullets, otherwise a crash
             // may occur asynchronously.
-            NxAgeiaMunitionsPSysActor* particles;
+            MunitionParticlesActorProxy* particles;
             proxy->GetActor(particles);
             if( particles != NULL )
             {
@@ -1112,16 +1113,16 @@ namespace DriverDemo
          {
             // Give the shooter unit access to the shooter so that it
             // can tell the shooter when to fire.
-            NxAgeiaMunitionsPSysActorProxy* proxy =
-               dynamic_cast<NxAgeiaMunitionsPSysActorProxy*>(ourActualActorProxy.get());
+            MunitionParticlesActorProxy* proxy =
+               dynamic_cast<MunitionParticlesActorProxy*>(ourActualActorProxy.get());
             outWeapon->SetShooter( proxy );
 
             // Initialize the physics based particle system/shooter,
             // only if the shooter unit was assigned a valid proxy.
             if( proxy != NULL )
             {
-               NxAgeiaMunitionsPSysActor* shooter
-                  = dynamic_cast<NxAgeiaMunitionsPSysActor*>(ourActualActorProxy->GetActor());
+               MunitionParticlesActorProxy* shooter
+                  = dynamic_cast<MunitionParticlesActorProxy*>(ourActualActorProxy->GetActor());
 
                // Set other properties of the particle system
                shooter->SetWeapon( *outWeapon );

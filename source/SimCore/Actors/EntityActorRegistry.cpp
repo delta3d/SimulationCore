@@ -206,10 +206,11 @@ namespace SimCore
          mActorFactory->RegisterType<BaseWaterActorProxy>(BASE_WATER_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PortalProxy>(PORTAL_ACTOR_TYPE.get());
 
+         mActorFactory->RegisterType<PhysicsParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
+         mActorFactory->RegisterType<MunitionParticlesActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
+
 #ifdef AGEIA_PHYSICS
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaMunitionsPSysActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #else
          mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());

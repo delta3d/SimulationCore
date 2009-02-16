@@ -27,6 +27,8 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/camera.h>
 
+#include <dtUtil/configproperties.h>
+
 ///////////////////////////////////
 // extra components to init
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -35,11 +37,15 @@
 #include <SimCore/Components/TextureProjectorComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
-
+#ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
+#endif
 
 #include <DriverInputComponent.h>
 ///////////////////////////////////
+
+#include <dtNetGM/servernetworkcomponent.h>
+#include <dtNetGM/clientnetworkcomponent.h>
 
 using dtCore::RefPtr;
 using namespace SimCore::CollisionGroup;
@@ -147,14 +153,16 @@ namespace DriverDemo
          return;
       }
 
+
+#ifdef AGEIA_PHYSICS
       ////////////////////////////////////////////////////////////////////////
       // Initialize the ageia component
-      dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent
+      dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> physicsComponent
          = new dtAgeiaPhysX::NxAgeiaWorldComponent();
-      gm.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+      gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
       // Configure the Ageia Component
-      NxScene& nxScene = ageiaComponent->GetPhysicsScene(std::string("Default"));
+      NxScene& nxScene = physicsComponent->GetPhysicsScene(std::string("Default"));
 
       // Which groups collide with each other. Typically, on the world and particles collide.
       // Group 0 is the normal default group. Terrain, HMMWV, buildings
@@ -205,7 +213,43 @@ namespace DriverDemo
       nxScene.setActorGroupPairFlags(GROUP_TERRAIN, GROUP_TERRAIN,
          NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
       ////////////////////////////////////////////////////////////////////////
+#else
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
+      world->Init();
+      gm.AddComponent(*new dtPhysics::PhysicsComponent(*world, false),
+               dtGame::GameManager::ComponentPriority::NORMAL);
+      world->SetGroupCollision(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
+      world->SetGroupCollision(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
+      world->SetGroupCollision(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
+      world->SetGroupCollision(GROUP_BULLET, GROUP_TERRAIN, false); // bullets and the world do NOT interact (this seems odd, but we handle with raycast)
+      world->SetGroupCollision(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
+      world->SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
 
+      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
+      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
+      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
+      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
+
+      // For remote characters, we want to collide with some things, but not the vehicle
+      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
+      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
+      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
+      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
+
+      // water interactions
+      world->SetGroupCollision(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)
+      world->SetGroupCollision(GROUP_WATER, GROUP_PARTICLE, true);  // particles interact with the water
+      world->SetGroupCollision(GROUP_WATER, GROUP_TERRAIN, false);   // everything in group 0 can not hit the water
+      world->SetGroupCollision(GROUP_WATER, GROUP_HUMAN_LOCAL, false); // characters and water do not collide
+
+      // 26 is our boat actor.
+      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
+      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
+      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
+      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
+      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
+      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
+#endif
 
       ////////////////////////////////////////////////////////////////////////
       // rendering support component - terrain tiling atm, dynamic lights, etc...
@@ -268,12 +312,46 @@ namespace DriverDemo
 
       ////////////////////////////////////////////////////////////////////////
       // Disable the weather component's ability to change the clipping planes.
-      SimCore::Components::WeatherComponent* weatherComp
-         = dynamic_cast<SimCore::Components::WeatherComponent*>
-         (gm.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME));
-      if( weatherComp != NULL )
+      SimCore::Components::WeatherComponent* weatherComp = NULL;
+      gm.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
+      if (weatherComp != NULL)
       {
          weatherComp->SetAdjustClipPlanes(false);
+      }
+
+      SetupClientServerNetworking(gm);
+   }
+
+   ///////////////////////////////////////////////////////////
+   void DriverGameEntryPoint::SetupClientServerNetworking(dtGame::GameManager& gm)
+   {
+      dtUtil::ConfigProperties& configParams = gm.GetConfiguration();
+      if (dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false")))
+      {
+         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "client");
+         int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+         if (role == "Server" || role == "server" || role == "SERVER")
+         {
+            dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+               new dtNetGM::ServerNetworkComponent("DriverDemo", 1);
+            gm.AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
+            serverComp->SetupServer(serverPort);
+         }
+         else if (role == "Client" || role == "client" || role == "CLIENT")
+         {
+            dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+               new dtNetGM::ClientNetworkComponent("DriverDemo", 1);
+            gm.AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
+            int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+            const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+            if (clientComp->SetupClient(host, serverPort))
+            {
+               dtCore::RefPtr<dtGame::Message> message;
+               gm.GetMessageFactory().CreateMessage(dtGame::MessageType::NETCLIENT_REQUEST_CONNECTION, message);
+               message->SetDestination(clientComp->GetServer());
+               gm.SendNetworkMessage(*message);
+            }
+         }
       }
    }
 }

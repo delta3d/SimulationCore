@@ -73,9 +73,6 @@ namespace SimCore
 
             void LoadImage(const std::string& theFile);
 
-            /// Implemented from the base class
-            virtual void HandleModelDrawToggle(bool active);
-
             void SetInitialAlpha(float alpha);
 
             float GetInitialAlpha() const;
@@ -111,6 +108,9 @@ namespace SimCore
             osg::Vec4 GetCurrentColorUniform();
 
             void UpdateColorForForce();
+
+            /// @return true if this position marker should be visible based on the options given.
+            bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
          protected:
             void SetInitialColor(const osg::Vec3& vec);

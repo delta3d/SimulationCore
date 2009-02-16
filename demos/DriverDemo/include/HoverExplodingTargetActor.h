@@ -71,12 +71,6 @@ namespace DriverDemo
          //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
          //   const dtPhysics::PhysicsObject& whatWeHit){}
 
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         virtual void AgeiaPrePhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         virtual void AgeiaPostPhysicsUpdate();
-
          virtual void RespondToHit(const SimCore::DetonationMessage& message,
             const SimCore::Actors::MunitionTypeActor& munition);
 

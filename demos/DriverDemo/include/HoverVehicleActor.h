@@ -29,6 +29,7 @@
 #include <DriverExport.h>
 
 #include <HoverVehiclePhysicsHelper.h>
+#include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 namespace dtAudio

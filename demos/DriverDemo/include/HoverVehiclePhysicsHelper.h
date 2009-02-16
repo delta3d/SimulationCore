@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifndef _HOVER_VEHICLE_PHYSICS_HELPER_
@@ -29,6 +29,7 @@
 //#include <Vehicles/NxWheelDesc.h>
 #include <NxAgeiaPhysicsHelper.h>
 #include <NxAgeiaWorldComponent.h>
+#include <SimCore/PhysicsTypes.h>
 #include <osgSim/DOFTransform>
 
 namespace DriverDemo
@@ -62,18 +63,18 @@ namespace DriverDemo
          //void RepositionVehicle(float deltaTime);
 
          /**
-          * Call this method each frame from your actor after you have determined which direction to accelerate. 
-          * Note, the method may not correct you if you say you accelerated forward and back, left and right 
+          * Call this method each frame from your actor after you have determined which direction to accelerate.
+          * Note, the method may not correct you if you say you accelerated forward and back, left and right
           * at the same time - if it does check, left wins over right & forward wins over reverse.
           */
          void UpdateVehicle(float deltaTime, bool accelForward, bool accelReverse, bool accelLeft, bool accelRight);
 
          /**
           * /brief Purpose : To create the hover vehicle
-          */ 
-         bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode); 
+          */
+         bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode);
 
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
+         float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
             const osg::Vec3 &direction, float &distanceToHit);
 
          void DoJump(float deltaTime);
@@ -86,23 +87,23 @@ namespace DriverDemo
          // Build the property list for the actor
          virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-         float GetVehicleMaxForwardMPH() {return mVehicleMaxForwardMPH;}            
-         void SetVehicleMaxForwardMPH(float value) {mVehicleMaxForwardMPH = value;}            
+         float GetVehicleMaxForwardMPH() {return mVehicleMaxForwardMPH;}
+         void SetVehicleMaxForwardMPH(float value) {mVehicleMaxForwardMPH = value;}
 
-         float GetVehicleMaxStrafeMPH() {return mVehicleMaxStrafeMPH;}     
-         void SetVehicleMaxStrafeMPH(float value)  {mVehicleMaxStrafeMPH = value;}     
+         float GetVehicleMaxStrafeMPH() {return mVehicleMaxStrafeMPH;}
+         void SetVehicleMaxStrafeMPH(float value)  {mVehicleMaxStrafeMPH = value;}
 
-         float GetVehicleBaseWeight() {return mVehicleBaseWeight;}        
-         void SetVehicleBaseWeight(float value)  {mVehicleBaseWeight = value;}        
+         float GetVehicleBaseWeight() {return mVehicleBaseWeight;}
+         void SetVehicleBaseWeight(float value)  {mVehicleBaseWeight = value;}
 
-         float GetSphereRadius() {return mSphereRadius;}        
-         void SetSphereRadius(float value)  {mSphereRadius = value;}        
+         float GetSphereRadius() {return mSphereRadius;}
+         void SetSphereRadius(float value)  {mSphereRadius = value;}
 
-         float GetGroundClearance() {return mGroundClearance;}        
-         void SetGroundClearance(float value)  {mGroundClearance = value;}        
+         float GetGroundClearance() {return mGroundClearance;}
+         void SetGroundClearance(float value)  {mGroundClearance = value;}
 
-         float GetForceBoostFactor() {return mForceBoostFactor;}        
-         void SetForceBoostFactor(float value)  {mForceBoostFactor = value;}        
+         float GetForceBoostFactor() {return mForceBoostFactor;}
+         void SetForceBoostFactor(float value)  {mForceBoostFactor = value;}
    };
 }
 

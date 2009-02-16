@@ -35,17 +35,41 @@
 #include <dtGame/gamemanager.h>
 
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/VisibilityOptions.h>
 
 #include <osgDB/ReadFile>
 #include <osgDB/Registry>
+
+#include <osgUtil/CullVisitor>
 
 namespace SimCore
 {
    namespace Actors
    {
+      class HideNodeCallback : public osg::NodeCallback
+      {
+          public:
+
+             /**
+              * Constructor.
+              *
+              * @param terrain the owning InfiniteTerrain object
+              */
+             HideNodeCallback()
+             {}
+
+             virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+             {
+                // We're hiding the node.  The point is to NOT traverse.
+                // traverse(node, nv);
+             }
+      };
+      static dtCore::RefPtr<HideNodeCallback> HIDE_NODE_CALLBACK(new HideNodeCallback);
+
       ///////////////////////////////////////////////////////////////////////////
-      IGActor::IGActor(dtGame::GameActorProxy &proxy) :
-         GameActor(proxy)
+      IGActor::IGActor(dtGame::GameActorProxy &proxy)
+      : GameActor(proxy)
+      , mIsVisible(true)
       {
       }
 
@@ -183,6 +207,38 @@ namespace SimCore
             }
          }
          dtCore::DeltaDrawable::RemoveChild(child);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      bool IGActor::ShouldBeVisible(const SimCore::VisibilityOptions&)
+      {
+         return true;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool IGActor::IsVisible() const
+      {
+         return mIsVisible;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::SetVisible(bool visible)
+      {
+         mIsVisible = visible;
+         SetNodeVisible(visible, *GetOSGNode());
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void IGActor::SetNodeVisible(bool visible, osg::Node& nodeToUse)
+      {
+         if (visible)
+         {
+            nodeToUse.setCullCallback(NULL);
+         }
+         else
+         {
+            nodeToUse.setCullCallback(HIDE_NODE_CALLBACK.get());
+         }
       }
     }
 }

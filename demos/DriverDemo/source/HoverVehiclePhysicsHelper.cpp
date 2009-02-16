@@ -78,7 +78,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
    {
-      dtPhysics::PhysicsObject* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       float weight = GetVehicleBaseWeight();
       NxVec3 dir(0.0, 0.0, 1.0);
       physicsObject->addForce(dir * (weight * testJumpBoost), NX_SMOOTH_IMPULSE);

@@ -49,42 +49,45 @@ namespace StealthQt
          SimCore::Actors::BaseEntityActorProxy *eap =
             dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(allProxies[i]);
 
-            // Could be the environment actor proxy or something. Skip it
-            if(eap == NULL)
+         // Could be the environment actor proxy or something. Skip it
+         if(eap == NULL)
+            continue;
+
+         SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
+
+         if (!entity.IsVisible())
+            continue;
+
+         if (!callSign.empty())
+         {
+            // Skip it
+            std::string entityName = entity.GetName();
+
+            int index = entityName.find(callSign);
+            if(index != 0)
                continue;
+         }
 
-            SimCore::Actors::BaseEntity &entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
+         if (force != "Any")
+         {
+            const std::string &value = entity.GetForceAffiliation().GetName();
 
-            if(!callSign.empty())
-            {
-               // Skip it
-               std::string entityName = entity.GetName();
+            // Force search string is not empty, and this doesn't match. Skip it.
+            if(value != force)
+               continue;
+         }
 
-               int index = entityName.find(callSign);
-               if(index != 0)
-                  continue;
-            }
+         if (damageState != "Any")
+         {
+            const std::string &value = entity.GetDamageState().GetName();
 
-            if(force != "Any")
-            {
-               const std::string &value = entity.GetForceAffiliation().GetName();
+            // Skip it.
+            if(value != damageState)
+               continue;
+         }
 
-               // Force search string is not empty, and this doesn't match. Skip it.
-               if(value != force)
-                  continue;
-            }
-
-            if(damageState != "Any")
-            {
-               const std::string &value = entity.GetDamageState().GetName();
-
-               // Skip it.
-               if(value != damageState)
-                  continue;
-            }
-
-            // The name, force, and damage state matches, add it
-            toFill.push_back(&entity.GetGameActorProxy());
+         // The name, force, and damage state matches, add it
+         toFill.push_back(&entity.GetGameActorProxy());
       }
    }
 

@@ -39,27 +39,139 @@ namespace StealthGM
    const PreferencesToolsConfigObject::CoordinateSystem PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ("Raw XYZ");
    const PreferencesToolsConfigObject::CoordinateSystem PreferencesToolsConfigObject::CoordinateSystem::LAT_LON("Lat Lon");
 
+   class PrefToolImpl
+   {
+   public:
+      PrefToolImpl()
+      : mCoordinateSystem(&PreferencesToolsConfigObject::CoordinateSystem::MGRS)
+      , mShowBinocularImage(true)
+      , mShowDistanceToObject(true)
+      , mShowElevationOfObject(true)
+      , mMagnification(7.0f)
+      , mAutoAttachOnSelection(true)
+      , mHighlightEntities(false)
+      , mShowCallSigns(false)
+      {
+      }
+      const PreferencesToolsConfigObject::CoordinateSystem* mCoordinateSystem;
+      bool mShowBinocularImage;
+      bool mShowDistanceToObject;
+      bool mShowElevationOfObject;
+      float mMagnification;
+      bool mAutoAttachOnSelection;
+      bool mHighlightEntities;
+      bool mShowCallSigns;
+      dtCore::RefPtr<SimCore::Tools::Binoculars> mBinocs;
+
+   };
+
+   /////////////////////////////////////////////////////////////////////////////
    PreferencesToolsConfigObject::CoordinateSystem::CoordinateSystem(const std::string& name) : dtUtil::Enumeration(name)
    {
       AddInstance(this);
    }
 
+   /////////////////////////////////////////////////////////////////////////////
    PreferencesToolsConfigObject::PreferencesToolsConfigObject() :
-      mCoordinateSystem(&PreferencesToolsConfigObject::CoordinateSystem::MGRS),
-      mShowBinocularImage(true),
-      mShowDistanceToObject(true),
-      mShowElevationOfObject(true),
-      mMagnification(7.0f),
-      mAutoAttachOnSelection(true),
-      mHighlightEntities(false),
-      mShowCallSigns(false)
+      mPImpl(new PrefToolImpl)
    {
 
    }
 
+   /////////////////////////////////////////////////////////////////////////////
    PreferencesToolsConfigObject::~PreferencesToolsConfigObject()
    {
+      delete mPImpl;
+   }
 
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetCoordinateSystem(const PreferencesToolsConfigObject::CoordinateSystem& system)
+   {
+      mPImpl->mCoordinateSystem = &system;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   const PreferencesToolsConfigObject::CoordinateSystem& PreferencesToolsConfigObject::GetCoordinateSystem() const
+   {
+      return *mPImpl->mCoordinateSystem;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetShowBinocularImage(bool show)
+   {
+      mPImpl->mShowBinocularImage = show;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool PreferencesToolsConfigObject::GetShowBinocularImage() const
+   {
+      return mPImpl->mShowBinocularImage;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetShowDistanceToObject(bool show)
+   {
+      mPImpl->mShowDistanceToObject = show;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool PreferencesToolsConfigObject::GetShowDistanceToObject() const
+   {
+      return mPImpl->mShowDistanceToObject;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetShowElevationOfObject(bool show)
+   {
+      mPImpl->mShowElevationOfObject = show;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool PreferencesToolsConfigObject::GetShowElevationOfObject() const
+   {
+      return mPImpl->mShowElevationOfObject;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetMagnification(float factor)
+   {
+      mPImpl->mMagnification = factor;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   float PreferencesToolsConfigObject::GetMagnification() const
+   {
+      return mPImpl->mMagnification;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetAutoAttachOnSelection(bool attach)
+   {
+      mPImpl->mAutoAttachOnSelection = attach;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool PreferencesToolsConfigObject::GetAutoAttachOnSelection() const
+   {
+      return mPImpl->mAutoAttachOnSelection;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetBinocularsTool(SimCore::Tools::Binoculars* binocs)
+   {
+      mPImpl->mBinocs = binocs;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   SimCore::Tools::Binoculars* PreferencesToolsConfigObject::GetBinocularsTool()
+   {
+      return mPImpl->mBinocs.get();
    }
 
    void PreferencesToolsConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
@@ -70,18 +182,25 @@ namespace StealthGM
       // but I didn't think it was a big deal.
       // - Eddie
       /////////////////////////////////////////////////////////////////////////////
-      StealthGM::StealthInputComponent* sic =
-         static_cast<StealthGM::StealthInputComponent*>(gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME));
+      SimCore::Tools::Binoculars* binos = GetBinocularsTool();
 
-      if (sic == NULL)
+      if (binos == NULL)
       {
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GENERAL_GAMEMANAGER_EXCEPTION,
-            "Failed to locate the stealth input component on the Game Manager.",
-            __FILE__, __LINE__);
+
+         StealthGM::StealthInputComponent* sic =
+            static_cast<StealthGM::StealthInputComponent*>(gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME));
+
+         if (sic == NULL)
+         {
+            throw dtUtil::Exception(dtGame::ExceptionEnum::GENERAL_GAMEMANAGER_EXCEPTION,
+               "Failed to locate the stealth input component on the Game Manager.",
+               __FILE__, __LINE__);
+         }
+
+         SetBinocularsTool(static_cast<SimCore::Tools::Binoculars*>(sic->GetTool(SimCore::MessageType::BINOCULARS)));
+         binos = GetBinocularsTool();
       }
 
-      SimCore::Tools::Binoculars* binos =
-         static_cast<SimCore::Tools::Binoculars*>(sic->GetTool(SimCore::MessageType::BINOCULARS));
       if (binos != NULL && binos->IsEnabled())
       {
          std::vector<dtDAL::ActorProxy*> proxies;
@@ -102,15 +221,15 @@ namespace StealthGM
       StealthHUD* hud = static_cast<StealthHUD*>(gameManager.GetComponentByName(StealthHUD::DEFAULT_NAME));
       if (hud != NULL)
       {
-         if (*mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::MGRS)
+         if (*mPImpl->mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::MGRS)
          {
             hud->SetCoordinateSystem(CoordSystem::MGRS);
          }
-         else if (*mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
+         else if (*mPImpl->mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ)
          {
             hud->SetCoordinateSystem(CoordSystem::RAW_XYZ);
          }
-         else if (*mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
+         else if (*mPImpl->mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
          {
             hud->SetCoordinateSystem(CoordSystem::LAT_LON);
          }

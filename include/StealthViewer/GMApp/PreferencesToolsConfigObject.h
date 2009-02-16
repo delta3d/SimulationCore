@@ -28,8 +28,18 @@
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
 
+namespace SimCore
+{
+   namespace Tools
+   {
+      class Binoculars;
+   }
+}
+
 namespace StealthGM
 {
+   class PrefToolImpl;
+
    class STEALTH_GAME_EXPORT PreferencesToolsConfigObject : public ConfigurationObjectInterface
    {
       public:
@@ -63,74 +73,76 @@ namespace StealthGM
           * Sets the coordinate system
           * @param system The system to use
           */
-         void SetCoordinateSystem(const CoordinateSystem& system) { mCoordinateSystem = &system; SetIsUpdated(true); }
+         void SetCoordinateSystem(const CoordinateSystem& system);
 
          /**
           * Gets the coordinate system
           * @return mCoordinateSystem
           */
-         const CoordinateSystem& GetCoordinateSystem() const { return *mCoordinateSystem; }
+         const CoordinateSystem& GetCoordinateSystem() const;
 
          /**
           * Sets whether to render the binocular reticle
           * @param show True to show, false to hide
           */
-         void SetShowBinocularImage(bool show) { mShowBinocularImage = show; SetIsUpdated(true); }
+         void SetShowBinocularImage(bool show);
 
          /**
           * Returns true if we are showing the binocular image
           * @return mShowBinocularImage
           */
-         bool GetShowBinocularImage() const { return mShowBinocularImage; }
+         bool GetShowBinocularImage() const;
 
          /**
           * Sets whether to show the distance to an object
           * @param show True to show, false to hide
           */
-         void SetShowDistanceToObject(bool show) { mShowDistanceToObject = show; SetIsUpdated(true); }
+         void SetShowDistanceToObject(bool show);
 
          /**
           * Returns true if we are showing the the object distance
           * @return mShowBinocularImage
           */
-         bool GetShowDistanceToObject() const { return mShowDistanceToObject; }
+         bool GetShowDistanceToObject() const;
 
          /**
           * Sets whether to show the distance to an object
           * @param show True to show, false to hide
           */
-         void SetShowElevationOfObject(bool show) { mShowElevationOfObject = show; SetIsUpdated(true); }
+         void SetShowElevationOfObject(bool show);
 
          /**
           * Returns true if we are showing the the object distance
           * @return mShowBinocularImage
           */
-         bool GetShowElevationOfObject() const { return mShowElevationOfObject; }
+         bool GetShowElevationOfObject() const;
 
          /**
           * Sets the magnification
           * @param factor The zoom factor
           */
-         void SetMagnification(float factor) { mMagnification = factor; SetIsUpdated(true); }
+         void SetMagnification(float factor);
 
          /**
           * Returns the magnification
           * @return mMagnification
           */
-         float GetMagnification() const { return mMagnification; }
+         float GetMagnification() const;
 
          /**
           * Sets auto attaching on selection
           * @param attach True to auto attach, false to not
           */
-         void SetAutoAttachOnSelection(bool attach) { mAutoAttachOnSelection = attach; SetIsUpdated(true); }
+         void SetAutoAttachOnSelection(bool attach);
 
          /**
           * Returns true if we are auto attaching
           * @return mAutoAttachOnSelection
           */
-         bool GetAutoAttachOnSelection() const { return mAutoAttachOnSelection; }
+         bool GetAutoAttachOnSelection() const;
 
+         void SetBinocularsTool(SimCore::Tools::Binoculars* binocs);
+         SimCore::Tools::Binoculars* GetBinocularsTool();
       protected:
 
          /// Destructor
@@ -138,14 +150,7 @@ namespace StealthGM
 
       private:
 
-         const CoordinateSystem* mCoordinateSystem;
-         bool mShowBinocularImage;
-         bool mShowDistanceToObject;
-         bool mShowElevationOfObject;
-         float mMagnification;
-         bool mAutoAttachOnSelection;
-         bool mHighlightEntities;
-         bool mShowCallSigns;
+         PrefToolImpl* mPImpl;
    };
 }
 #endif

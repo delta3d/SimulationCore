@@ -28,6 +28,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 
+#include <SimCore/PhysicsTypes.h>
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
 #include <NxAgeiaContactReport.h>

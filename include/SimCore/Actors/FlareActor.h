@@ -84,8 +84,6 @@ namespace SimCore
 
             void LoadParticlesFile( const std::string& fileName );
 
-            virtual void HandleModelDrawToggle(bool draw);
-
             virtual void OnEnteredWorld();
 
          protected:

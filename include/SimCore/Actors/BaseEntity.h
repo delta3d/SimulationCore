@@ -86,11 +86,10 @@ namespace SimCore
                   static DomainEnum SURFACE;
                   static DomainEnum MULTI;
 
+                  const std::string& GetDisplayName();
                private:
-                  DomainEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  DomainEnum(const std::string& name, const std::string& displayName);
+                  const std::string mDisplayName;
             };
 
             class SIMCORE_EXPORT DamageStateEnum : public dtUtil::Enumeration
@@ -102,10 +101,7 @@ namespace SimCore
                   static DamageStateEnum MODERATE_DAMAGE;
                   static DamageStateEnum DESTROYED;
                private:
-                  DamageStateEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  DamageStateEnum(const std::string& name);
             };
 
             class SIMCORE_EXPORT ForceEnum : public dtUtil::Enumeration
@@ -117,11 +113,11 @@ namespace SimCore
                   static ForceEnum OPPOSING;
                   static ForceEnum NEUTRAL;
                   static ForceEnum INSURGENT;
+
+                  const std::string& GetDisplayName();
                private:
-                  ForceEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  ForceEnum(const std::string& name, const std::string displayName);
+                  const std::string mDisplayName;
             };
 
             class SIMCORE_EXPORT ServiceEnum : public dtUtil::Enumeration
@@ -138,10 +134,7 @@ namespace SimCore
                   static ServiceEnum CIVILIAN;
                   static ServiceEnum REFUGEE;
                private:
-                  ServiceEnum(const std::string& name) : dtUtil::Enumeration(name)
-                  {
-                     AddInstance(this);
-                  }
+                  ServiceEnum(const std::string& name);
             };
 
             BaseEntityActorProxy();
@@ -564,6 +557,8 @@ namespace SimCore
             virtual void RespondToHit(const SimCore::DetonationMessage& message,
                const SimCore::Actors::MunitionTypeActor& munition);
 
+            /// @return true if this entity should be visible based on the options given.
+            bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
          protected:
             virtual ~BaseEntity();
@@ -582,13 +577,6 @@ namespace SimCore
              *         of all other nodes, not the one returned by GetOSGNode().
              */
             const osg::MatrixTransform& GetScaleMatrixTransform() const;
-
-            /**
-             * Must be implemented to allow turning off/on drawing whatever visual representation
-             * the subclass renders.
-             * @param draw true if the model should be drawn, false if not.
-             */
-            virtual void HandleModelDrawToggle(bool draw) = 0;
 
             ///updates the scale of the model base on the default scale and magnification.
             void UpdateModelScale();
@@ -624,7 +612,7 @@ namespace SimCore
             dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem, mSmokePlumesSystem, mFlamesSystem;
 
             /// The entity's service
-            BaseEntityActorProxy::ServiceEnum *mService;
+            BaseEntityActorProxy::ServiceEnum* mService;
 
             /// The file names that are loaded into the above particle systems
             std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;

@@ -23,6 +23,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaPhysicsHelper.h>
+#include <NxAgeiaWorldComponent.h>
 #else
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/bodywrapper.h>
@@ -238,8 +239,6 @@ void PhysicsParticleSystemActor::AddParticle()
    osg::Matrix ourRotationMatrix;
    ourTransform.GetRotation(ourRotationMatrix);
 
-   osg::Vec3 dimensions(mPhysicsHelper->GetDimensions());
-
    osg::Vec3 positionRandMax;
    positionRandMax.set(mStartingPositionRandMax[0], mStartingPositionRandMax[1], mStartingPositionRandMax[2]);
    osg::Vec3 positionRandMin;
@@ -285,6 +284,7 @@ void PhysicsParticleSystemActor::AddParticle()
    }
 
 #ifdef AGEIA_PHYSICS
+   NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
    dtPhysics::PhysicsObject* newActor = NULL;
 
    //////////////////////////////////////////////////////////////////////////
@@ -407,7 +407,7 @@ void PhysicsParticleSystemActor::AddParticle()
       newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
 
    // add to our list for updating and such....
-   particle->SetPhysicsActor(newActor);
+   particle->SetPhysicsObject(newActor);
 
    newActor->userData = mPhysicsHelper.get();
    GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
@@ -571,7 +571,7 @@ void PhysicsParticleSystemActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactRepor
       std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
       for(;iter!= mOurParticleList.end(); ++iter)
       {
-         if (&ourSelf == (*iter)->GetPhysicsActor())
+         if (&ourSelf == (*iter)->GetPhysicsObject())
             //if(&ourSelf == mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str()))
          {
             (*iter)->FlagToDelete();
@@ -590,7 +590,7 @@ void PhysicsParticleSystemActor::AgeiaPostPhysicsUpdate()
       if((*iter)->ShouldBeRemoved() == false)
       {
          //dtPhysics::PhysicsObject* physXActor = mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str());
-         dtPhysics::PhysicsObject* physXActor = (*iter)->GetPhysicsActor();
+         dtPhysics::PhysicsObject* physXActor = (*iter)->GetPhysicsObject();
          if(!physXActor->isSleeping())
          {
             float glmat[16];

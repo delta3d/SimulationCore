@@ -41,6 +41,8 @@
 
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/LabelManager.h>
+#include <SimCore/Components/BaseHUD.h>
+#include <SimCore/Components/ViewerMessageProcessor.h>
 
 #include <SimCore/Tools/Binoculars.h>
 
@@ -85,6 +87,14 @@ class ConfigObjectTests : public CPPUNIT_NS::TestFixture
 
 public:
 
+   //////////////////////////////////////////////////////////////
+   void setupCEGUI()
+   {
+      mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
+      CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
+      //SLEEP(200);
+   }
+
    void setUp();
    void tearDown();
 
@@ -111,6 +121,7 @@ private:
    void RemoveCallbackTest(StealthGM::ViewWindowWrapper& vw);
 
    dtCore::RefPtr<dtGame::GameManager> mGM;
+   dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
 
    bool mInitCalled;
    bool mRemoveCalled;
@@ -123,6 +134,7 @@ void ConfigObjectTests::setUp()
    dtCore::System::GetInstance().Start();
    mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    mGM->SetApplication(GetGlobalApplication());
+   setupCEGUI();
 }
 
 void ConfigObjectTests::tearDown()
@@ -133,6 +145,7 @@ void ConfigObjectTests::tearDown()
       mGM = NULL;
       CPPUNIT_ASSERT(!gmOb.valid());
    }
+   mMainGUIWindow = NULL;
    dtCore::System::GetInstance().Stop();
 }
 
@@ -523,6 +536,29 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    toolsConfig->SetAutoAttachOnSelection(false);
    CPPUNIT_ASSERT_EQUAL(false, toolsConfig->GetAutoAttachOnSelection());
 
+   dtCore::RefPtr<SimCore::Tools::Binoculars> binocs;
+   try
+   {
+      binocs =
+         new SimCore::Tools::Binoculars(*mGM->GetApplication().GetCamera(), mMainGUIWindow->GetCEGUIWindow());
+   }
+   catch(const CEGUI::Exception& e)
+   {
+      CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
+   }
+
+   toolsConfig->SetBinocularsTool(binocs.get());
+   CPPUNIT_ASSERT(toolsConfig->GetBinocularsTool() == binocs.get());
+
+   binocs->Enable(false);
+
+   toolsConfig->ApplyChanges(*mGM);
+
+   CPPUNIT_ASSERT(binocs->GetZoomFactor() == toolsConfig->GetMagnification());
+   CPPUNIT_ASSERT(binocs->GetShowDistance() == toolsConfig->GetShowDistanceToObject());
+   CPPUNIT_ASSERT(binocs->GetShowReticle() == toolsConfig->GetShowBinocularImage());
+   CPPUNIT_ASSERT(binocs->GetShowElevation() == toolsConfig->GetShowElevationOfObject());
+
    toolsConfig = NULL;
 }
 
@@ -531,17 +567,24 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    dtCore::RefPtr<StealthGM::PreferencesVisibilityConfigObject> visConfig =
       new StealthGM::PreferencesVisibilityConfigObject;
 
-   SimCore::Components::LabelOptions options = visConfig->GetOptions();
+   SimCore::Components::LabelOptions options = visConfig->GetLabelOptions();
    options.SetShowLabels(false);
    options.SetShowLabelsForBlips(false);
    options.SetShowLabelsForEntities(false);
    options.SetShowLabelsForPositionReports(false);
    options.SetMaxLabelDistance(10.0f);
 
-   visConfig->SetOptions(options);
+   SimCore::VisibilityOptions& visOptions = visConfig->GetEntityOptions();
+   SimCore::BasicVisibilityOptions basicOptions = visOptions.GetBasicOptions();
+
+   visConfig->SetLabelOptions(options);
    CPPUNIT_ASSERT(visConfig->IsUpdated());
 
-   SimCore::Components::LabelOptions options2 = visConfig->GetOptions();
+   visConfig->SetIsUpdated(false);
+   visConfig->SetEntityOptions(visOptions);
+   CPPUNIT_ASSERT(visConfig->IsUpdated());
+
+   SimCore::Components::LabelOptions options2 = visConfig->GetLabelOptions();
    CPPUNIT_ASSERT(options == options2);
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
@@ -549,6 +592,9 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    dtCore::RefPtr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
    hud->SetupGUI(*new SimCore::Components::HUDGroup("hello"), 50, 50 );
    gm->AddComponent(*hud, dtGame::GameManager::ComponentPriority::NORMAL);
+
+   dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> vmp = new SimCore::Components::ViewerMessageProcessor;
+   gm->AddComponent(*vmp, dtGame::GameManager::ComponentPriority::HIGHEST);
 
    SimCore::Components::LabelOptions optionsApplied = hud->GetLabelManager().GetOptions();
    CPPUNIT_ASSERT(options != optionsApplied);
@@ -558,6 +604,7 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
    optionsApplied = hud->GetLabelManager().GetOptions();
 
    CPPUNIT_ASSERT(options == optionsApplied);
+   CPPUNIT_ASSERT(&visConfig->GetEntityOptions() == &vmp->GetVisibilityOptions());
 }
 
 

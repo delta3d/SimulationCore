@@ -1,13 +1,13 @@
 /*
 * Copyright, 2008, Alion Science and Technology Corporation, all rights reserved.
-* 
+*
 * See the .h file for complete licensing information.
-* 
+*
 * Alion Science and Technology Corporation
 * 5365 Robin Hood Road
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
-* 
+*
 * @author Curtiss Murphy
 */
 
@@ -51,7 +51,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 
 #include <ctime>
@@ -71,7 +71,7 @@ namespace DriverDemo
    const DriverHUD::CoordSystem DriverHUD::CoordSystem::LAT_LON("LAT_LON");
 
    ////////////////////////////////////////////////////////////////////////////////
-   DriverHUD::DriverHUD(dtCore::DeltaWin *win, 
+   DriverHUD::DriverHUD(dtCore::DeltaWin *win,
                           const std::string& ceguiScheme, bool usePhysicsDemoMode)
    : BaseClass(win, DEFAULT_NAME, ceguiScheme),
       mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL),
@@ -145,16 +145,16 @@ namespace DriverDemo
       }
       */
       else if ( type == dtGame::MessageType::INFO_MAP_LOADED)
-      {         
+      {
 
          SimCore::Components::RenderingSupportComponent* renderComp = NULL;
          dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-         
+
          if(comp != NULL)
          {
             renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
          }
-         
+
          if(comp == NULL || renderComp == NULL)
          {
             GetGameManager()->GetScene().AddDrawable( GetGUIDrawable().get() );
@@ -176,7 +176,7 @@ namespace DriverDemo
             return;
          }
 
-         dtActors::CoordinateConfigActor &ccActor = 
+         dtActors::CoordinateConfigActor &ccActor =
             static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
 
          SetCoordinateConverter(ccActor.GetCoordinateConverter());
@@ -336,7 +336,7 @@ namespace DriverDemo
       background->SetSize( 350.0f/SCREEN_WIDTH, 500.0f/SCREEN_HEIGHT );
       background->SetPosition( 0.0, -256.0f/SCREEN_HEIGHT, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
       mHelpOverlay->Add( background.get() );
-      
+
 
       // Gunner Mode Help Text
       std::string text("\
@@ -438,9 +438,9 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void DriverHUD::TickHUD(const dtGame::TickMessage &tick)
    {
-      // Set the time control to the basic sim time 
-      mSimTimeMeter->SetText2( 
-         dtUtil::DateTime::ToString(GetGameManager()->GetSimulationClockTime() / 1000000, 
+      // Set the time control to the basic sim time
+      mSimTimeMeter->SetText2(
+         dtUtil::DateTime::ToString(GetGameManager()->GetSimulationClockTime() / 1000000,
          dtUtil::DateTime::TimeFormat::CLOCK_TIME_24_HOUR_FORMAT) );
 
 
@@ -463,7 +463,7 @@ namespace DriverDemo
          {
             mHealthMeter->SetVisible( true );
          }
-         float health = mDamageHelper->GetDamageState() == SimCore::Components::DamageType::DAMAGE_KILL 
+         float health = mDamageHelper->GetDamageState() == SimCore::Components::DamageType::DAMAGE_KILL
             ? 0.0f : 1.0f - mDamageHelper->GetDamageProbabilityModifier();
          mHealthMeter->SetValue( 100.0f*(health < 0.0f ? 0.0f : health), 100.0f, 0.0f );
       }
