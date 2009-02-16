@@ -321,7 +321,7 @@ namespace SimCore
                   osg::Vec3 physAngularVelocity;
 #ifdef AGEIA_PHYSICS
                   NxVec3 angVelVec3 = physObj->getAngularVelocity();
-                  physAngularVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+                  physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
 #else
                   physAngularVelocity = physObj->GetBodyWrapper()->GetAngularVelocity();
 #endif
@@ -433,7 +433,7 @@ namespace SimCore
 
       }
 
-#endif
+#else
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::PrePhysicsUpdate()
@@ -485,6 +485,7 @@ namespace SimCore
 
       }
 
+#endif
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)

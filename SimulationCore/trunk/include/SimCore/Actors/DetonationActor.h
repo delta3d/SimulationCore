@@ -158,12 +158,6 @@ namespace SimCore
             void SetMaximumSoundDistance(float distance) { if(mSound.valid()) mSound->SetMaxDistance(distance); }
 
             /**
-             * Sets the minimum distance on the sound
-             * @param distance The new distance
-             */
-            void SetMinimumSoundDistance(float distance) { if(mSound.valid()) mSound->SetMinDistance(distance); }
-
-            /**
              * Sets the roll off factor of the sound
              * @param the distance to which is starts dropping off
              */
@@ -174,12 +168,6 @@ namespace SimCore
              * @param distance The new distance
              */
             float GetMaximumSoundDistance() const { return mSound.valid() ? mSound->GetMaxDistance() : 0; }
-
-            /**
-             * Gets the minimum distance on the sound
-             * @param distance The new distance
-             */
-            float GetMinimumSoundDistance() const { return mSound.valid() ? mSound->GetMinDistance() : 0; }
 
             /**
              * Get the explosion particle system. This allows the proxy
@@ -280,7 +268,6 @@ namespace SimCore
             /// Set common property values with one function call
             void SetDetonationProperties(
                float lingerTime,
-               float minSoundDistance,
                float maxSoundDistance,
                const std::string& detonationFile,
                const std::string& soundFile,

@@ -31,6 +31,8 @@
 #include <dtPhysics/physicshelper.h>
 #endif
 
+#include <SimCore/PhysicsTypes.h>
+
 #include <osgDB/Registry>
 #include <osg/Geode>
 #include <osg/MatrixTransform>
@@ -128,6 +130,22 @@ namespace SimCore
 
 
          public:
+#ifdef AGEIA_PHYSICS
+
+            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
+            virtual void AgeiaPrePhysicsUpdate(){}
+
+            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
+            virtual void AgeiaPostPhysicsUpdate(){}
+
+            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
+                     NxActor& ourSelf, NxActor& whatWeHit) {}
+
+            // You would have to make a new raycast to get this report,
+            // so no flag associated with it.
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, const NxActor& whatWeHit){}
+#endif
 
             // internally called functions when a terrain tile is loaded into the system
             // Used to be called ParseTerrainNode

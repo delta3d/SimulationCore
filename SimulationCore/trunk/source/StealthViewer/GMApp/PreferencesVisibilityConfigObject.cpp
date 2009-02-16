@@ -23,12 +23,14 @@
 
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
+#include <SimCore/Components/ViewerMessageProcessor.h>
 
 namespace StealthGM
 {
 
    ////////////////////////////////////////////////////////////////////
    PreferencesVisibilityConfigObject::PreferencesVisibilityConfigObject()
+   : mEntityOptions(new SimCore::VisibilityOptions)
    {
    }
 
@@ -38,16 +40,41 @@ namespace StealthGM
    }
 
    ////////////////////////////////////////////////////////////////////
-   void PreferencesVisibilityConfigObject::SetOptions(const SimCore::Components::LabelOptions& options)
+   void PreferencesVisibilityConfigObject::SetLabelOptions(const SimCore::Components::LabelOptions& options)
    {
       SetIsUpdated(true);
       mLabelOptions = options;
    }
 
    ////////////////////////////////////////////////////////////////////
-   const SimCore::Components::LabelOptions& PreferencesVisibilityConfigObject::GetOptions() const
+   const SimCore::Components::LabelOptions& PreferencesVisibilityConfigObject::GetLabelOptions() const
    {
       return mLabelOptions;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   SimCore::Components::LabelOptions& PreferencesVisibilityConfigObject::GetLabelOptions()
+   {
+      return mLabelOptions;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   void PreferencesVisibilityConfigObject::SetEntityOptions(SimCore::VisibilityOptions& options)
+   {
+      SetIsUpdated(true);
+      mEntityOptions = &options;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   const SimCore::VisibilityOptions& PreferencesVisibilityConfigObject::GetEntityOptions() const
+   {
+      return *mEntityOptions;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   SimCore::VisibilityOptions& PreferencesVisibilityConfigObject::GetEntityOptions()
+   {
+      return *mEntityOptions;
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -57,8 +84,27 @@ namespace StealthGM
       {
          StealthGM::StealthHUD* hud = NULL;
          gameManager.GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME, hud);
-         SimCore::Components::LabelManager& lm = hud->GetLabelManager();
-         lm.SetOptions(GetOptions());
+         if (hud != NULL)
+         {
+            SimCore::Components::LabelManager& lm = hud->GetLabelManager();
+            lm.SetOptions(GetLabelOptions());
+         }
+         else
+         {
+            LOG_ERROR("Attempted to update the label manager options, but on StealthHUD component could be found");
+         }
+
+         SimCore::Components::ViewerMessageProcessor* vmp = NULL;
+         gameManager.GetComponentByName(SimCore::Components::ViewerMessageProcessor::DEFAULT_NAME, vmp);
+         if (vmp != NULL)
+         {
+            vmp->SetVisibilityOptions(*mEntityOptions);
+         }
+         else
+         {
+            LOG_ERROR("Attempted to update the visibility options, but on ViewerMessageProcessor component could be found");
+         }
+
          SetIsUpdated(false);
       }
    }

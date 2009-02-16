@@ -112,12 +112,13 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          // You would have to make a new raycast to get this report,
          // so no flag associated with it.
          virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit){}
-#endif
+#else
 
          /// dtPhysics collisions report callback
          void CollisionReport(const dtPhysics::CollisionContact& cr);
          /// dtPhysics post physics callback.
          void PostPhysicsUpdate();
+#endif
 
       public:
 
@@ -193,7 +194,12 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          osg::Vec3 GetParentsWorldRelativeVelocityVector()     {return mParentsWorldRelativeVelocityVector;}
          bool GetObjectsStayStaticWhenHit()                    {return mObjectsStayStaticWhenHit;}
 
+
+#ifdef AGEIA_PHYSICS
+         dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetPhysicsHelper() { return *mPhysicsHelper; }
+#else
          dtPhysics::PhysicsHelper& GetPhysicsHelper() { return *mPhysicsHelper; }
+#endif
       protected:
 
          //////////////////////////////////////////////////////////////////
@@ -235,7 +241,11 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          osg::Vec3               mForceVectorMin;
          osg::Vec3               mForceVectorMax;
 
+#ifdef AGEIA_PHYSICS
+         dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mPhysicsHelper;
+#else
          dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
+#endif
    };
 
    ////////////////////////////////////////////////////////

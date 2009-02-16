@@ -34,10 +34,12 @@
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
 #include <SimCore/Components/MultiSurfaceClamper.h>
+#include <SimCore/VisibilityOptions.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/gamemanager.inl>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/logcontroller.h>
 
@@ -57,9 +59,10 @@ namespace SimCore
    namespace Components
    {
       ///////////////////////////////////////////////////////////////////////////
-      ViewerMessageProcessor::ViewerMessageProcessor():
-         mMagnification(1.0f),
-         mTimeSyncLatency(0L)
+      ViewerMessageProcessor::ViewerMessageProcessor()
+      : mMagnification(1.0f)
+      , mTimeSyncLatency(0L)
+      , mVisibilityOptions(new SimCore::VisibilityOptions)
       {
          srand(unsigned(time(0)));
          mLogger = &dtUtil::Log::GetInstance("ViewerMessageProcessor.cpp");
@@ -150,12 +153,34 @@ namespace SimCore
 
          if(dynamic_cast<SimCore::Actors:: StealthActorProxy*>(ap.get()) == NULL)
          {
-            BaseEntity *eap = dynamic_cast<BaseEntity*>(ap->GetActor());
-            if(eap != NULL)
+            //Must dynamic cast here because the GetActor template does a static cast.
+            BaseEntity* eap = dynamic_cast<BaseEntity*>(ap->GetActor());
+            if (eap != NULL)
+            {
                eap->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
+            }
+
          }
          return ap;
       }
+
+      ////////////////////////////////////////////////////////////////////////////
+      void ViewerMessageProcessor::ProcessRemoteUpdateActor(const dtGame::ActorUpdateMessage& msg,
+               dtGame::GameActorProxy* ap)
+      {
+         dtGame::DefaultMessageProcessor::ProcessRemoteUpdateActor(msg, ap);
+
+         //Must dynamic cast here because the GetActor template does a static cast.
+         SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetActor());
+         if (ig != NULL)
+         {
+            // The happens every time we get an update, but it must happen after the properties
+            // are set because a property set can change if it should be visible or not.
+            ig->SetVisible(ig->ShouldBeVisible(*mVisibilityOptions));
+         }
+
+      }
+
 
       ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg)
@@ -174,6 +199,12 @@ namespace SimCore
                BaseEntityActorProxy *eap = dynamic_cast<BaseEntityActorProxy*>(ap);
                if(eap != NULL)
                   static_cast<BaseEntity&>(eap->GetGameActor()).SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
+            }
+            //Must dynamic cast here because the GetActor template does a static cast.
+            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap->GetActor());
+            if (ig != NULL)
+            {
+               ig->SetVisible(ig->ShouldBeVisible(*mVisibilityOptions));
             }
          }
       }
@@ -195,7 +226,7 @@ namespace SimCore
             if(msg.GetMessageType() == MessageType::MAGNIFICATION)
             {
                mMagnification = static_cast<const MagnificationMessage&>(msg).GetMagnification();
-               UpdateMagnification();
+               UpdateMagnificationAndVisibilityOptions();
             }
             else if(msg.GetMessageType() == MessageType::TIME_VALUE)
             {
@@ -332,25 +363,69 @@ namespace SimCore
             LOG_ERROR("Received a player entered world message of the wrong type");
       }
 
+
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::UpdateMagnification()
+      void ViewerMessageProcessor::SetVisibilityOptions(SimCore::VisibilityOptions& options)
       {
-         //This should be changed to a message.
+         mVisibilityOptions = &options;
+         //It may be better here to set a flag and do in on the next tick.
          if (GetGameManager() != NULL)
          {
-            std::vector<dtGame::GameActorProxy*> toFill;
-            GetGameManager()->GetAllGameActors(toFill);
-            for (size_t i = 0; i < toFill.size(); ++i)
+            UpdateMagnificationAndVisibilityOptions();
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      const SimCore::VisibilityOptions& ViewerMessageProcessor::GetVisibilityOptions() const
+      {
+         return *mVisibilityOptions;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      SimCore::VisibilityOptions& ViewerMessageProcessor::GetVisibilityOptions()
+      {
+         return *mVisibilityOptions;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////////
+      class VMPUpdateMagVisFunctor
+      {
+      public:
+         VMPUpdateMagVisFunctor(float magnification, SimCore::VisibilityOptions& visOpts)
+         : mMagnification(magnification)
+         , mVisibilityOptions(visOpts)
+         {
+         }
+
+         void operator()(dtDAL::ActorProxy& ap)
+         {
+            SimCore::Actors::BaseEntityActorProxy* eap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(&ap);
+            if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)
             {
-               SimCore::Actors::BaseEntityActorProxy* eap = dynamic_cast<SimCore::Actors::BaseEntityActorProxy*>(toFill[i]);
-               if (eap != NULL && dynamic_cast<SimCore::Actors::StealthActorProxy*>(eap) == NULL)
-               {
-                  SimCore::Actors::BaseEntity& entity = static_cast<SimCore::Actors::BaseEntity&>(eap->GetGameActor());
-                  entity.SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
-               }
+               SimCore::Actors::BaseEntity* entity = NULL;
+               eap->GetActor(entity);
+               entity->SetScaleMagnification(osg::Vec3(mMagnification, mMagnification, mMagnification));
             }
 
+            //Must dynamic cast here because the GetActor template does a static cast.
+            SimCore::Actors::IGActor* ig = dynamic_cast<SimCore::Actors::IGActor*>(ap.GetActor());
+            if (ig != NULL)
+            {
+               ig->SetVisible(ig->ShouldBeVisible(mVisibilityOptions));
+            }
          }
+         float mMagnification;
+         SimCore::VisibilityOptions& mVisibilityOptions;
+      };
+      ///////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////////
+
+      ///////////////////////////////////////////////////////////////////////////
+      void ViewerMessageProcessor::UpdateMagnificationAndVisibilityOptions()
+      {
+         VMPUpdateMagVisFunctor mag(mMagnification, *mVisibilityOptions);
+         GetGameManager()->ForEachActor(mag);
       }
 
    }

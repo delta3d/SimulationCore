@@ -152,7 +152,7 @@ namespace SimCore
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
                const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
 
-               mNotifyChangePosition = dtUtil::Equivalent(*(osg::Vec3*(&nxVecTemp)), translationVec, amountChange);
+               mNotifyChangePosition = dtUtil::Equivalent(*((osg::Vec3*)(&nxVecTemp)), translationVec, amountChange);
                mNotifyChangeOrient = !dtUtil::Equivalent(globalOrientation, orientationVec, osg::Vec3::value_type(3.0f));
 
                GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);

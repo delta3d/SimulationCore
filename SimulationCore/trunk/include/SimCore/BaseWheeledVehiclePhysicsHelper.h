@@ -26,7 +26,7 @@
 #define _BASE_VEHICLE_PHYSICS_HELPER_
 
 #ifdef AGEIA_PHYSICS
-#include <Vehicles/NxWheelDesc.h>
+#include <NxWheelShapeDesc.h>
 #else
 #include <dtPhysics/physicshelper.h>
 #include <pal/palVehicle.h>

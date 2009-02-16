@@ -401,7 +401,6 @@ namespace SimCore
             mWind = envActor->GetWind();
 
             // Update the physics particles wind....
-#ifdef AGEIA_PHYSICS
             std::vector<dtDAL::ActorProxy*> toFill;
             GetGameManager()->FindActorsByClassName("NxAgeiaParticleSystemActor", toFill);
             if(!toFill.empty())
@@ -409,12 +408,11 @@ namespace SimCore
                std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
                for(; toFillInIter != toFill.end(); ++toFillInIter)
                {
-                   NxAgeiaParticleSystemActor* currentParticleSystem = static_cast<NxAgeiaParticleSystemActor*>((*toFillInIter)->GetActor());
+                   PhysicsParticleSystemActor* currentParticleSystem = static_cast<PhysicsParticleSystemActor*>((*toFillInIter)->GetActor());
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
                    currentParticleSystem->SetOverTimeForceVecMax(mWind);
                }
             }
-#endif
          }
 
          // Is this a global application state change?

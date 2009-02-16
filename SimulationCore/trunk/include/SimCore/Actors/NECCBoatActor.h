@@ -30,6 +30,8 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 
+#include <SimCore/PhysicsTypes.h>
+
 namespace dtAudio
 {
    class Sound;

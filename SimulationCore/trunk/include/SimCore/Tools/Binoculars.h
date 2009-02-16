@@ -76,18 +76,21 @@ namespace SimCore
              * @param enable True to enable
              */
             void SetShowDistance(bool enable);
+            bool GetShowDistance() const;
 
             /**
              * Toggles showing the distance
              * @param enable True to enable
              */
             void SetShowElevation(bool enable);
+            bool GetShowElevation() const;
 
             /**
              * Toggles showing the reticle
              * @param enable True to enable
              */
             void SetShowReticle(bool enable);
+            bool GetShowReticle() const;
 
             /**
              * Set the relative screen position of the elevation readout from
@@ -167,7 +170,7 @@ namespace SimCore
 
             // Pointer to the binocular overlay
             CEGUI::Window *mOverlay;
-            CEGUI::Window *mRecticle;
+            CEGUI::Window *mReticle;
             // Farthest distance you can zoom
             static const unsigned int MAX_ZOOM_DISTANCE = 1000;
             // The original settings of the perspectives and LOD

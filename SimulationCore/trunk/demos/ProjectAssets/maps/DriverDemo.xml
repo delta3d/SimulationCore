@@ -169,117 +169,20 @@
             <id>afdf8628-7048-4b81-9aff-b11cd94cdd84</id>
             <name>Coordinate Config</name>
             <property>
-                <name>Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Normal Rescaling</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Show Collision Geometry</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Collision Type</name>
-                <enumerated>NONE</enumerated>
-            </property>
-            <property>
-                <name>Collision Radius</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Length</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Box</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Render Proxy Node</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Enable Dynamics</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Mass</name>
-                <float>4.1887903</float>
-            </property>
-            <property>
-                <name>Center of Gravity</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Initial Ownership</name>
-                <enumerated>Client Local</enumerated>
-            </property>
-            <property>
-                <name>ShaderGroup</name>
-                <string>
-            </string>
-            </property>
-            <property>
                 <name>Origin</name>
                 <vec3>
-			<!--<value1>536220.000000</value1>
-			<value2>3755415.000000</value2>-->
                     <value1>0.000000</value1>
                     <value2>0.000000</value2>
                     <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Origin Rotation</name>
-                <vec3>
-			<!--<value1>43.092216</value1>
-                    <value2>-48.353664</value2>
-		    <value3>34.956783</value3>-->
-                    <value1>0.0</value1>
-                    <value2>0.0</value2>
-                    <value3>0.0</value3>
                 </vec3>
             </property>
             <property>
                 <name>Geo Origin</name>
                 <vec3>
-			<!--<value1>33.197075</value1>
-			<value2>-117.479813</value2>-->
                     <value1>0.0</value1>
                     <value2>0.0</value2>
                     <value3>0.000000</value3>
                 </vec3>
-            </property>
-            <property>
-                <name>Geo Origin Rotation</name>
-                <vec2>
-			<!--<value1>33.000000</value1>
-			<value2>-117.000000</value2>-->
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                </vec2>
             </property>
             <property>
                 <name>Globe Radius</name>
@@ -298,12 +201,7 @@
                 <boolean>false</boolean>
             </property>
             <property>
-                <name>Use Geo Origin Rotation</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
                 <name>Incoming Coordinate Type</name>
-		<!--<enumerated>Geocentric</enumerated>-->
                 <enumerated>Cartesian</enumerated>
             </property>
             <property>

@@ -19,7 +19,7 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <dtUtil/matrixutil.h>
 
-
+#include <SimCore/PhysicsTypes.h>
 
 namespace DriverDemo
 {
@@ -53,7 +53,7 @@ namespace DriverDemo
       float weight = GetVehicleBaseWeight();
 
       // First thing we do is try to make sure we are hovering...
-      dtPhysics::PhysicsObject* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       NxVec3 velocity = physicsObject->getLinearVelocity();
       NxVec3 pos = physicsObject->getGlobalPosition();
       NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
@@ -132,7 +132,7 @@ namespace DriverDemo
       // Create our Physics Sphere!
       NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
       SetCollisionSphere(startPos, mSphereRadius, 0, mVehicleBaseWeight, 0, "Default", "Default", false);
-      dtPhysics::PhysicsObject *physActor = GetPhysicsObject();
+      dtPhysics::PhysicsObject *physActor = GetMainPhysicsObject();
       if (physActor == NULL)
       {
          throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_ACTOR_STATE,

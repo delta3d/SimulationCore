@@ -54,7 +54,7 @@
 
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <SimCore/Actors/PlatformWithPhysics.h>
-#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -149,23 +149,23 @@ void NxAgeiaTests::TestParticleSystemPerformance()
 
    mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Performance testing AgeaiParticles with " + dtUtil::ToString(proxies.size()) + " particle actors.");
 
-   std::vector<NxAgeiaParticleSystemActor*> particleActors;
+   std::vector<PhysicsParticleSystemActor*> particleActors;
 
    // Setup and find particle actors
    ProxyContainer::iterator iter, end;
    for(iter = proxies.begin(), end = proxies.end(); iter != end; ++iter)
    {
-      NxAgeiaParticleSystemActorProxy* gameProxy = dynamic_cast<NxAgeiaParticleSystemActorProxy*>((*iter).get());
+      PhysicsParticleSystemActorProxy* gameProxy = dynamic_cast<PhysicsParticleSystemActorProxy*>((*iter).get());
       if(gameProxy != NULL)
       {
          dtCore::RefPtr<dtDAL::ActorProxy> newPrototypeActor = mGM->CreateActorFromPrototype(gameProxy->GetId());
          if(newPrototypeActor.valid())
          {
-            NxAgeiaParticleSystemActorProxy* newParticle =
-               static_cast<NxAgeiaParticleSystemActorProxy*>(newPrototypeActor.get());
+            PhysicsParticleSystemActorProxy* newParticle =
+               static_cast<PhysicsParticleSystemActorProxy*>(newPrototypeActor.get());
 
-            NxAgeiaParticleSystemActor* newPartActor =
-               static_cast<NxAgeiaParticleSystemActor*>(newParticle->GetActor());
+               PhysicsParticleSystemActor* newPartActor =
+               static_cast<PhysicsParticleSystemActor*>(newParticle->GetActor());
 
             newParticle->SetInitialOwnership(dtGame::GameActorProxy::Ownership::CLIENT_LOCAL);
             newPartActor->ToggleEmitter(true);
@@ -206,7 +206,7 @@ void NxAgeiaTests::TestParticleSystemPerformance()
       // Loop through the particle systems and tick them too
       for(int j = 0; j < listSize; j ++)
       {
-         NxAgeiaParticleSystemActor* partActor = particleActors[j];
+         PhysicsParticleSystemActor* partActor = particleActors[j];
          if (partActor != NULL)
             partActor->OnTickLocal(*tickMessage);
       }

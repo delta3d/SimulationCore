@@ -469,7 +469,7 @@ namespace SimCore
                   return NULL;
                }
 
-               dtPhysics::PhysicsObjectDesc     actorDesc;
+               NxActorDesc     actorDesc;
                heightfieldShapeDesc.meshData = worldComponent->GetPhysicsSDK().createTriangleMesh(SimCore::MMemoryReadBuffer(buf.data));
                actorDesc.shapes.pushBack(&heightfieldShapeDesc);
                actorDesc.userData = (void *) mPhysicsHelper.get();

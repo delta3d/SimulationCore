@@ -374,7 +374,7 @@ namespace SimCore
             }
          }
 
-         // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't 
+         // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't
          // do any damage. For direct & indirect, the damage occurs on the Detonation message.
          else if( type == SimCore::MessageType::SHOT_FIRED )
          {
@@ -916,7 +916,6 @@ namespace SimCore
             if( ! curValue.empty() )
             {
                da->LoadSoundFile( curValue );
-               da->SetMinimumSoundDistance( effects->GetEntityImpactSoundMinDistance() );
                da->SetMaximumSoundDistance( effects->GetEntityImpactSoundMaxDistance() );
             }
          }
@@ -926,7 +925,6 @@ namespace SimCore
             if( ! curValue.empty() )
             {
                da->LoadSoundFile( curValue );
-               da->SetMinimumSoundDistance( effects->GetGroundImpactSoundMinDistance() );
                da->SetMaximumSoundDistance( effects->GetGroundImpactSoundMaxDistance() );
             }
          }

@@ -38,6 +38,8 @@ namespace dtCore
 
 namespace SimCore
 {
+   class VisibilityOptions;
+
    namespace Actors
    {
       class IGActor;
@@ -93,16 +95,37 @@ namespace SimCore
              */
             void UnregisterParticleSystem( dtCore::ParticleSystem& particles );
 
-            // Add an optional parameter for the node name, and a bool return if that
-            // node was found.
+            /**
+             * Adds an optional parameter for the node name, and a bool return if that
+             * node was found.
+             */
             virtual bool AddChild(dtCore::DeltaDrawable* child, const std::string& nodeName = "");
+
+            /// Overrides RemoveChild to support the new AddChild mechanic.
             virtual void RemoveChild(dtCore::DeltaDrawable* child);
+
+            ///@return true if this actor should be visible based on the visibility options given.
+            virtual bool ShouldBeVisible(const SimCore::VisibilityOptions&);
+
+            /**
+             * @return true if this drawable should be visible.
+             */
+            virtual bool IsVisible() const;
+
+            /**
+             * Sets this entity to visible, that is, drawing.
+             */
+            virtual void SetVisible(bool);
 
          protected:
 
             /// Destructor
             virtual ~IGActor();
-      };
+
+            void SetNodeVisible(bool, osg::Node& nodeToUse);
+         private:
+            bool mIsVisible;
+       };
    }
 }
 #endif

@@ -1,13 +1,13 @@
 /*
 * Copyright, 2009, Alion Science and Technology Corporation, all rights reserved.
-* 
+*
 * See the .h file for complete licensing information.
-* 
+*
 * Alion Science and Technology Corporation
 * 5365 Robin Hood Road
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
-* 
+*
 * @author Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
@@ -53,7 +53,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverExplodingTargetActor ::HoverExplodingTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy) 
+   HoverExplodingTargetActor ::HoverExplodingTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)
@@ -69,7 +69,7 @@ namespace DriverDemo
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
 
-      // create my unique physics helper.  almost all of the physics is on the helper.  
+      // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       //dtAgeiaPhysX::NxAgeiaPhysicsHelper * helper = new dtAgeiaPhysX::NxAgeiaPhysicsHelper(proxy);
       HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
@@ -122,7 +122,7 @@ namespace DriverDemo
       // REMOTE - Finish initial startup conditions
       if(IsRemote())
       {
-         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us 
+         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          GetTargetPhysicsHelper()->GetPhysXObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
@@ -168,7 +168,7 @@ namespace DriverDemo
    {
       if( ! IsMobilityDisabled())
       {
-         // we call this every frame because mPlayerWeAreChasing is an observer. Allows 
+         // we call this every frame because mPlayerWeAreChasing is an observer. Allows
          // us to stop chasing a player if they were deleted.
          SetChasingModeActive(mPlayerWeAreChasing != NULL);
          // we are chasing a player (for a little while), so update our target loc.
@@ -185,7 +185,7 @@ namespace DriverDemo
          // Do all our movement!
          GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
       }
-      else 
+      else
       {
          mTimeSinceKilled += deltaTime;
       }
@@ -247,11 +247,11 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void HoverExplodingTargetActor::RespondToHit(const SimCore::DetonationMessage& message, 
+   void HoverExplodingTargetActor::RespondToHit(const SimCore::DetonationMessage& message,
       const SimCore::Actors::MunitionTypeActor& munition)
    {
       // The target was hit by a munition. We've already taken damage and had forces applied
-      // If we aren't about to die, then set our new goal target to be the player 
+      // If we aren't about to die, then set our new goal target to be the player
       // that shot us. Then, each frame, we will fly toward that player.
       if (SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED != GetDamageState())
       {
@@ -260,10 +260,10 @@ namespace DriverDemo
             = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActorProxy*>
                (GetGameActorProxy().GetGameManager()->FindActorById(message.GetSendingActorId()));
 
-         if (shooterProxy != NULL && 
+         if (shooterProxy != NULL &&
             (shooterProxy->GetActorType() == *DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE))
          {
-            std::cout << "Exploding Target was hit! Going to start chasing player [" << 
+            std::cout << "Exploding Target was hit! Going to start chasing player [" <<
                shooterProxy->GetName() << "]." << std::endl;
             mPlayerWeAreChasing = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor *>
                (shooterProxy->GetActor());
@@ -272,13 +272,13 @@ namespace DriverDemo
             bool wasChasingActive = mChasingModeActive;
             SetChasingModeActive(true);
 
-            // We publish the 'chasing' mode via the 'engine smoke on' property. 
+            // We publish the 'chasing' mode via the 'engine smoke on' property.
             // Since we are local, we set EngineSmokeOn and then publish.
             if (!wasChasingActive)
             {
                InnerSetEngineSmokeOn(true);
-               // Note, we could probably do a partial here, but some systems require certain 
-               // minimum properties (such as velocity and trans) in order to publish, so just do them all 
+               // Note, we could probably do a partial here, but some systems require certain
+               // minimum properties (such as velocity and trans) in order to publish, so just do them all
                // to be safe. This is a rare event anyway.
                GetGameActorProxy().NotifyFullActorUpdate();
             }
@@ -287,7 +287,7 @@ namespace DriverDemo
          // debugging stuff
          else if (shooterProxy != NULL)
             std::cout << "Exploding Target was hit by [" << shooterProxy->GetName() << "]! NO PLAYER TO CHASE." << std::endl;
-         else 
+         else
             std::cout << "Exploding Target was hit - NOT BY A BASE PHYSICS OBJECT. " << std::endl;
 
       }
@@ -298,14 +298,14 @@ namespace DriverDemo
    void HoverExplodingTargetActor::SetChasingModeActive(bool newMode)
    {
 
-      // NOTE - if you have different models for your damage/destroyed/no-damage states 
-      // of your entity, you can apply shaders directly that way. In this case, I am 
+      // NOTE - if you have different models for your damage/destroyed/no-damage states
+      // of your entity, you can apply shaders directly that way. In this case, I am
       // bypassing what's in OnShaderGroupChanged() and manually controlling the shaders.
 
-      if (newMode != mChasingModeActive) 
+      if (newMode != mChasingModeActive)
       {
-         std::string newShaderName; 
-         
+         std::string newShaderName;
+
          if (mChasingModeActive) // We were ON. Turn off chasing and set to NORMAL shader
             newShaderName = "NormalMode";
          else // We were OFF. Turn off normal and set to CHASING shader
@@ -330,7 +330,7 @@ namespace DriverDemo
             LOG_ERROR("Could not load shader [" + newShaderName + "], group[" + GetShaderGroup() + "].");
             mCurrentShader = NULL;
          }
-         
+
 
          mChasingModeActive = newMode;
       }
@@ -340,7 +340,7 @@ namespace DriverDemo
    void HoverExplodingTargetActor::SetEngineSmokeOn(bool enable)
    {
       // The engine smoke property is what we publish over the network for
-      // Chasing Mode since there is no HLA equivalent.  
+      // Chasing Mode since there is no HLA equivalent.
       SetChasingModeActive(enable);
    }
 
@@ -356,19 +356,6 @@ namespace DriverDemo
 
       GameActor::OnShaderGroupChanged();
    }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverExplodingTargetActor::AgeiaPrePhysicsUpdate()
-   {
-      BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate();
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverExplodingTargetActor::AgeiaPostPhysicsUpdate()
-   {
-      BasePhysicsVehicleActor::AgeiaPostPhysicsUpdate();
-   }
-
 
    //////////////////////////////////////////////////////////////////////
    // PROXY
@@ -411,5 +398,5 @@ namespace DriverDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
    }
 
-} // namespace 
+} // namespace
 #endif

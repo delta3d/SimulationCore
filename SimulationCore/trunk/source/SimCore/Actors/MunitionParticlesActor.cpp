@@ -551,12 +551,13 @@ namespace SimCore
 
       dtPhysics::PhysicsObject* newActor = NULL;
 #ifdef AGEIA_PHYSICS
+      NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
       //////////////////////////////////////////////////////////////////////////
       // Set up the physics values for the object
       if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE)
       {
          newActor = mPhysicsHelper->SetCollisionBox(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                  mPhysicsHelper->GetDimensions(),
+                  dimensions,
                   mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), id.ToString().c_str(), true);
       }
       else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::SPHERE)
@@ -680,7 +681,7 @@ namespace SimCore
                }
             }
 
-            dtPhysics::PhysicsObject* physObj = (*iter)->GetPhysicsActor();//mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str());
+            dtPhysics::PhysicsObject* physObj = (*iter)->GetPhysicsObject();//mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str());
             if(!physObj->isSleeping())
             {
                float glmat[16];

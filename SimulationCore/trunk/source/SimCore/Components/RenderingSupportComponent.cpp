@@ -605,7 +605,7 @@ namespace SimCore
 
                   // Build the terrain as a static mesh, but with each geode loaded separately
                   landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
-                     "Base Terrain " + bogusIndexthing, true);
+                     "Base Terrain " + bogusIndexthing, false);
                }
                else
                {

@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -27,7 +27,7 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <dtGame/gamemanager.h> 
+#include <dtGame/gamemanager.h>
 #include <dtGame/exceptionenum.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/Tools/LaserRangeFinder.h>
@@ -56,7 +56,7 @@
 
 using dtCore::RefPtr;
 
-class ToolTests : public CPPUNIT_NS::TestFixture 
+class ToolTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ToolTests);
 
@@ -79,14 +79,14 @@ public:
    void TestGPS();
    void TestPlayerProperty();
    void TestEnableToolProperty();
-   
+
    ToolTests()
    {
-     
+
    }
    ~ToolTests()
    {
-      
+
    }
 
 private:
@@ -94,7 +94,7 @@ private:
    RefPtr<dtGame::GameManager> mGM;
    RefPtr<dtGUI::CEUIDrawable> mGUI;
    // The constructor call to the GUI member assumes that an
-   // application has been instantiated. 
+   // application has been instantiated.
    RefPtr<dtABC::Application> mApp;
    RefPtr<SimCore::Actors::PlayerActor> mPlayerActor;
 };
@@ -116,7 +116,7 @@ void ToolTests::setUp()
 
       mGUI = &GetGlobalCEGUIDrawable();
    }
-   catch(const dtUtil::Exception &e) 
+   catch(const dtUtil::Exception &e)
    {
       CPPUNIT_FAIL(e.What());
    }
@@ -144,7 +144,7 @@ void ToolTests::tearDown()
       dtCore::System::GetInstance().Stop();
       mGM->DeleteAllActors(true);
    }
-   
+
    mGM = NULL;
    mPlayerActor = NULL;
 
@@ -161,18 +161,24 @@ void ToolTests::TestBinoculars()
    try
    {
       binos = new SimCore::Tools::Binoculars(*mApp->GetCamera(), NULL);
-      binos->SetPlayerActor(mPlayerActor.get()); 
+      binos->SetPlayerActor(mPlayerActor.get());
    }
-   catch(const CEGUI::Exception &e) 
+   catch(const CEGUI::Exception &e)
    {
       CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
    }
+
+   CPPUNIT_ASSERT(binos->GetShowDistance());
+   CPPUNIT_ASSERT(binos->GetShowReticle());
+   CPPUNIT_ASSERT(binos->GetShowElevation());
+   CPPUNIT_ASSERT_DOUBLES_EQUAL(7.0f, binos->GetZoomFactor(), 0.1f);
 
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be disabled by default", !binos->IsEnabled());
    binos->Enable(true);
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be enabled", binos->IsEnabled());
    binos->Enable(false);
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be disabled", !binos->IsEnabled());
+
 }
 
 void ToolTests::TestLRF()
@@ -180,10 +186,10 @@ void ToolTests::TestLRF()
    RefPtr<SimCore::Tools::LaserRangeFinder> lrf;
    try
    {
-      lrf = new SimCore::Tools::LaserRangeFinder(*mApp->GetCamera(), NULL); 
-      lrf->SetPlayerActor(mPlayerActor.get()); 
+      lrf = new SimCore::Tools::LaserRangeFinder(*mApp->GetCamera(), NULL);
+      lrf->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e) 
+   catch(CEGUI::Exception &e)
    {
       CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
    }
@@ -203,10 +209,10 @@ void ToolTests::TestCompass()
    RefPtr<SimCore::Tools::Compass> compass;
    try
    {
-      compass = new SimCore::Tools::Compass(NULL, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f); 
-      compass->SetPlayerActor(mPlayerActor.get()); 
+      compass = new SimCore::Tools::Compass(NULL, *dtABC::Application::GetInstance(0)->GetCamera(), 0.0f);
+      compass->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e) 
+   catch(CEGUI::Exception &e)
    {
       CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
    }
@@ -223,10 +229,10 @@ void ToolTests::TestGPS()
    RefPtr<SimCore::Tools::GPS> gps;
    try
    {
-      gps = new SimCore::Tools::GPS(NULL); 
-      gps->SetPlayerActor(mPlayerActor.get()); 
+      gps = new SimCore::Tools::GPS(NULL);
+      gps->SetPlayerActor(mPlayerActor.get());
    }
-   catch(CEGUI::Exception &e) 
+   catch(CEGUI::Exception &e)
    {
       CPPUNIT_FAIL(e.getMessage().c_str() + '\n');
    }
@@ -260,7 +266,7 @@ void ToolTests::TestEnableToolProperty()
    gps->SetPlayerActor(mPlayerActor.get());
    */
    //TODO this needs to be reworked because all the enable code is in VFSTInputComponent
-      
+
    /*mPlayerActor->SetEnabledTool(SimCore::MessageType::BINOCULARS);
    CPPUNIT_ASSERT_MESSAGE("The binoculars should be enabled", binos->IsEnabled());
    CPPUNIT_ASSERT_MESSAGE("The return value should be binoculars", mPlayerActor->GetEnabledTool() == SimCore::MessageType::BINOCULARS);
@@ -283,7 +289,7 @@ void ToolTests::TestEnableToolProperty()
    CPPUNIT_ASSERT_MESSAGE("The player should have the correct tool enabled", mPlayerActor->GetEnabledTool() == SimCore::MessageType::GPS);
    mPlayerActor->SetEnabledTool(SimCore::MessageType::NO_TOOL);
    CPPUNIT_ASSERT_MESSAGE("The property should have updated from the player", aep->GetEnumValue() == SimCore::MessageType::NO_TOOL);
-   
+
    mPlayerActor->SetEnabledTool(const_cast<SimCore::MessageType&>(SimCore::MessageType::ATTACH_TO_ACTOR));
    CPPUNIT_ASSERT_MESSAGE("Trying to set an invalid tool should not have worked", mPlayerActor->GetEnabledTool() == SimCore::MessageType::NO_TOOL);
    mPlayerActor->AddTool(*binos, const_cast<SimCore::MessageType&>(SimCore::MessageType::STEALTH_ACTOR_FOV));

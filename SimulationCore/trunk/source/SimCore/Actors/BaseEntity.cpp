@@ -38,6 +38,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Messages.h>
+#include <SimCore/VisibilityOptions.h>
 
 namespace SimCore
 {
@@ -47,16 +48,28 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::DomainEnum);
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AIR("AIR");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AMPHIBIOUS("AMPHIBIOUS");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::GROUND("GROUND");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SPACE("SPACE");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SUBMARINE("SUBMARINE");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SURFACE("SURFACE");
-      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::MULTI("MULTI");
+      BaseEntityActorProxy::DomainEnum::DomainEnum(const std::string& name, const std::string& displayName)
+      : dtUtil::Enumeration(name)
+      , mDisplayName(displayName)
+      {
+         AddInstance(this);
+      }
+      const std::string& BaseEntityActorProxy::DomainEnum::GetDisplayName() { return mDisplayName; }
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AIR("AIR", "Air");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::AMPHIBIOUS("AMPHIBIOUS", "Amphibious");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::GROUND("GROUND", "Ground");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SPACE("SPACE", "Space");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SUBMARINE("SUBMARINE", "Submersible");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::SURFACE("SURFACE", "Surface");
+      BaseEntityActorProxy::DomainEnum BaseEntityActorProxy::DomainEnum::MULTI("MULTI", "Multi-Domain");
 
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::DamageStateEnum);
+      BaseEntityActorProxy::DamageStateEnum::DamageStateEnum(const std::string& name)
+      : dtUtil::Enumeration(name)
+      {
+         AddInstance(this);
+      }
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE("No Damage");
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE("Slight Damage");
       BaseEntityActorProxy::DamageStateEnum BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE("Moderate Damage");
@@ -64,14 +77,26 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::ForceEnum);
-      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::OTHER("OTHER");
-      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::FRIENDLY("FRIENDLY");
-      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::OPPOSING("OPPOSING");
-      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::NEUTRAL("NEUTRAL");
-      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::INSURGENT("INSURGENT");
+      BaseEntityActorProxy::ForceEnum::ForceEnum(const std::string& name, const std::string displayName)
+      : dtUtil::Enumeration(name)
+      , mDisplayName(displayName)
+      {
+         AddInstance(this);
+      }
+      const std::string& BaseEntityActorProxy::ForceEnum::GetDisplayName() { return mDisplayName; }
+      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::OTHER("OTHER", "Other");
+      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::FRIENDLY("FRIENDLY", "Friendly");
+      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::OPPOSING("OPPOSING", "Opposing");
+      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::NEUTRAL("NEUTRAL", "Neutral");
+      BaseEntityActorProxy::ForceEnum BaseEntityActorProxy::ForceEnum::INSURGENT("INSURGENT", "Insurgent");
 
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BaseEntityActorProxy::ServiceEnum);
+      BaseEntityActorProxy::ServiceEnum::ServiceEnum(const std::string& name)
+      : dtUtil::Enumeration(name)
+      {
+         AddInstance(this);
+      }
       BaseEntityActorProxy::ServiceEnum BaseEntityActorProxy::ServiceEnum::OTHER("OTHER");
       BaseEntityActorProxy::ServiceEnum BaseEntityActorProxy::ServiceEnum::ARMY("ARMY");
       BaseEntityActorProxy::ServiceEnum BaseEntityActorProxy::ServiceEnum::AIR_FORCE("AIR FORCE");
@@ -427,6 +452,7 @@ namespace SimCore
          mEngineSmokeOn(false),
          mSmokePlumePresent(false),
          mFlamesPresent(false),
+         mDrawing(true),
          mIsPlayerAttached(false),
          mDisabledFirepower(false),
          mDisabledMobility(false),
@@ -674,12 +700,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDrawingModel(bool newDrawing)
       {
-         //don't mess with the node hierarchy if the values have not changed.
-         if (mDrawing == newDrawing)
-            return;
-
          mDrawing = newDrawing;
-         HandleModelDrawToggle(mDrawing);
+         SetNodeVisible(mDrawing, GetScaleMatrixTransform());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -693,6 +715,7 @@ namespace SimCore
       {
          mIsPlayerAttached = attach;
       }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlamesPresent(bool enable)
       {
@@ -1114,6 +1137,18 @@ namespace SimCore
          // An opportunity to respond to damage. Only called on local entities that have been
          // damaged by a munition hit of some sort. Damage & forces have already been
          // applied by the time this method is called.
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool BaseEntity::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+
+         bool forceIsVisible = basicOptions.IsEnumVisible(GetForceAffiliation());
+
+         bool domainIsVisible = basicOptions.IsEnumVisible(GetDomain());
+
+         return forceIsVisible && domainIsVisible;
       }
 
    }

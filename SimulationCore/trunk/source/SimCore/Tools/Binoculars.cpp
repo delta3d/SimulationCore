@@ -72,11 +72,11 @@ namespace SimCore
             mOverlay->setProperty("BackgroundEnabled", "false");
             mOverlay->setProperty("FrameEnabled", "false");
 
-            mRecticle = wm->createWindow("WindowsLook/StaticImage", !isLRF ? "binoculars_recticle" : "lrf_recticle");
-            mRecticle->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
-            mRecticle->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
-            mRecticle->setProperty("BackgroundEnabled", "false");
-            mRecticle->setProperty("FrameEnabled", "false");
+            mReticle = wm->createWindow("WindowsLook/StaticImage", !isLRF ? "binoculars_recticle" : "lrf_recticle");
+            mReticle->setPosition(CEGUI::UVector2(cegui_reldim(0.0f), cegui_reldim(0.0f)));
+            mReticle->setSize(CEGUI::UVector2(cegui_reldim(1.0f), cegui_reldim(1.0f)));
+            mReticle->setProperty("BackgroundEnabled", "false");
+            mReticle->setProperty("FrameEnabled", "false");
 
             if(mCamera->GetAspectRatio() < 1.47)
             {
@@ -87,7 +87,7 @@ namespace SimCore
                SetOverlayImage("Binoculars8.5","Binoculars8.5");
             }
 
-            mOverlay->addChildWindow(mRecticle);
+            mOverlay->addChildWindow(mReticle);
 
             if(!isLRF)
             {
@@ -123,10 +123,11 @@ namespace SimCore
             throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
                oss.str(), __FILE__, __LINE__);
          }
- 	   }
+      }
 
- 	   Binoculars::~Binoculars()
- 	   {
+      ////////////////////////////////////////////////
+      Binoculars::~Binoculars()
+      {
          if(mMainWindow != NULL)
             mMainWindow->removeChildWindow(mOverlay);
 
@@ -134,51 +135,62 @@ namespace SimCore
          wm->destroyWindow(mOverlay);
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetOriginalNearFar( float nearValue, float farValue )
       {
          mOriginalNear = nearValue;
          mOriginalFar = farValue;
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetOriginalNear( float nearValue )
       {
          mOriginalNear = nearValue;
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetOriginalFar( float farValue )
       {
          mOriginalFar = farValue;
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::Enable(bool enable)
       {
+         bool wasEnabled = IsEnabled();
          Tool::Enable(enable);
 
-         if(IsEnabled())
+         if (wasEnabled != IsEnabled())
          {
-            mOverlay->show();
-            ZoomIn();
-         }
-         else
-         {
-            mOverlay->hide();
-            mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
-            double vfov, aspect, nearPlane, farPlane;
-            mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
-            mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), nearPlane, farPlane);
+            if(IsEnabled())
+            {
+               mOverlay->show();
+               ZoomIn();
+            }
+            else
+            {
+               mOverlay->hide();
+               mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
+               double vfov, aspect, nearPlane, farPlane;
+               mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
+               mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), nearPlane, farPlane);
+            }
          }
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetElevationReadoutScreenPosition( float x, float y )
       {
          mElevationText->setPosition(CEGUI::UVector2(cegui_reldim(x), cegui_reldim(y)));
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetDistanceReadoutScreenPosition( float x, float y )
       {
          mIntersectionText->setPosition(CEGUI::UVector2(cegui_reldim(x), cegui_reldim(y)));
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::ZoomIn()
       {
          if(!IsEnabled())
@@ -251,6 +263,7 @@ namespace SimCore
          mCamera->SetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::ZoomOut()
       {
          if(!IsEnabled())
@@ -283,6 +296,7 @@ namespace SimCore
          mCamera->SetPerspectiveParams(mOriginalVFOV, mOriginalAspect, nearPlane, farPlane);
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::Update(dtCore::DeltaDrawable &terrain)
       {
          if(!IsEnabled() || GetPlayerActor() == NULL)
@@ -334,18 +348,20 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetShowReticle(bool enable)
       {
          if( enable )
          {
-            mRecticle->show();
+            mReticle->show();
          }
          else
          {
-            mRecticle->hide();
+            mReticle->hide();
          }
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetShowDistance(bool enable)
       {
          if( mIntersectionText != NULL )
@@ -353,6 +369,7 @@ namespace SimCore
             if( enable )
             {
                mIntersectionText->show();
+               mIntersectionText->setAlwaysOnTop(true);
             }
             else
             {
@@ -361,6 +378,7 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////
       void Binoculars::SetShowElevation(bool enable)
       {
          if( mElevationText != NULL )
@@ -368,6 +386,7 @@ namespace SimCore
             if( enable )
             {
                mElevationText->show();
+               mElevationText->setAlwaysOnTop(true);
             }
             else
             {
@@ -376,10 +395,30 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////
+      bool Binoculars::GetShowDistance() const
+      {
+         return mIntersectionText->isVisible(true);
+      }
+
+      ////////////////////////////////////////////////
+      bool Binoculars::GetShowElevation() const
+      {
+         return mElevationText->isVisible(true);
+      }
+
+
+      ////////////////////////////////////////////////
+      bool Binoculars::GetShowReticle() const
+      {
+         return mReticle->isVisible(true);
+      }
+
+      ////////////////////////////////////////////////
       void Binoculars::SetOverlayImage( const std::string& imageset, const std::string& imageName )
       {
          std::string imageSetAndName("set:"+imageset+" image:"+imageName);
-         mRecticle->setProperty("Image", imageSetAndName);
+         mReticle->setProperty("Image", imageSetAndName);
       }
 
    }

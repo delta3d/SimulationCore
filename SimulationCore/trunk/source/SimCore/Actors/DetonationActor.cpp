@@ -119,11 +119,6 @@ namespace SimCore
             dtDAL::MakeFunctorRet(da, &DetonationActor::GetMaximumSoundDistance),
             "Sets the maximum number of meters that a sound will clip"));
 
-         AddProperty(new dtDAL::FloatActorProperty("Min Sound Distance", "Min Sound Distance",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetMinimumSoundDistance),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetMinimumSoundDistance),
-            "Sets the minimum number of meters that a sound will clip"));
-
          AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name",
             dtDAL::MakeFunctor(da, &DetonationActor::SetLightName),
             dtDAL::MakeFunctorRet(da, &DetonationActor::GetLightName),
@@ -193,7 +188,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void DetonationActorProxy::SetDetonationProperties(
          float lingerTime,
-         float minSoundDistance,
          float maxSoundDistance,
          const std::string& detonationFile,
          const std::string& soundFile,
@@ -209,10 +203,6 @@ namespace SimCore
          GetProperty("Max Sound Distance", floatProp);
          if(floatProp != NULL )
             floatProp->SetValue(maxSoundDistance);
-
-         GetProperty("Min Sound Distance", floatProp);
-         if(floatProp != NULL )
-            floatProp->SetValue(minSoundDistance);
 
          dtDAL::StringActorProperty* stringProp =  NULL;
          GetProperty("Detonation Particle System", stringProp);
@@ -503,5 +493,6 @@ namespace SimCore
             dl->mTarget = this;
          }
       }
+
    }
 }

@@ -29,6 +29,8 @@
 #include <NxAgeiaCharacterHelper.h>
 #endif
 
+#include <SimCore/PhysicsTypes.h>
+
 namespace dtGame
 {
    class Message;

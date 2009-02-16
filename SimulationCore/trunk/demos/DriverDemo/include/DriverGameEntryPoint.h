@@ -78,6 +78,8 @@ namespace DriverDemo
 
       private:
 
+         virtual void SetupClientServerNetworking(dtGame::GameManager& gm);
+
          static const std::string ApplicationLibraryName;
          dtCore::RefPtr<GameAppComponent> gameAppComponent;
 
