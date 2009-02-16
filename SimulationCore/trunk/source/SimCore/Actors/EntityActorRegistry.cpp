@@ -112,10 +112,8 @@ namespace SimCore
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::BASE_WATER_ACTOR_TYPE(new dtDAL::ActorType("BaseWaterActor", "SimCore.Actors", "The base class for water actors."));
 
-#ifdef AGEIA_PHYSICS
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaParticleSystemActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaMunitionsPSysActor", "NxAgeiaPhysicsModels"));
-#endif
 
       // needs to be implemented whether or not physics is on.
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
