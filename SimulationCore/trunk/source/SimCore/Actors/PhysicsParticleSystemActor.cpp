@@ -410,7 +410,6 @@ void PhysicsParticleSystemActor::AddParticle()
    particle->SetPhysicsObject(newActor);
 
    newActor->userData = mPhysicsHelper.get();
-   GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
 #else
    osg::Vec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
    newObject->GetBodyWrapper()->SetLinearVelocity(vRandVec);
@@ -426,12 +425,10 @@ void PhysicsParticleSystemActor::AddParticle()
       newObject->SetNotifyCollisions(true);
    }
 
-   //Add as a child, even though that means updating the positions means a matrix multiply or three
-   //each time the position is updated...  Otherwise, rendering problems could occur.
-   //If this is a problem, this could be fixed.
-   AddChild(particle->mObj.get());
    //TODO turn off gravity
 #endif
+
+   GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
    mOurParticleList.push_back(particle);

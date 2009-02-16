@@ -649,8 +649,8 @@ namespace SimCore
       mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), id.ToString().c_str());
 #endif
 
-      AddChild(particle->mObj.get());
-      //GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
+      //AddChild(particle->mObj.get());
+      GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
 
       //newActor->userData = mPhysicsHelper.get();
       particle->SetPhysicsObject(newActor);
