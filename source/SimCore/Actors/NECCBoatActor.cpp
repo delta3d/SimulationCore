@@ -59,7 +59,7 @@ namespace SimCore
       {
       public:
          /////////////////////////////////////////////////////////////////////////////////////////////
-         BoatToLandReport(/*NxActor *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
+         BoatToLandReport(/*dtPhysics::PhysicsObject *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
             //, mOurActor(actor)
             , mGotAHit(false)
             , mOwnerActor(ownerActor)
@@ -253,7 +253,7 @@ namespace SimCore
          mPhysicsHelper->SetIsKinematic(false);
          mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
          mPhysicsHelper->InitializePrimitive(GetOSGNode(), sendInMatrix);
-         NxActor* actor = mPhysicsHelper->GetPhysicsObject();
+         dtPhysics::PhysicsObject* actor = mPhysicsHelper->GetPhysicsObject();
 
          SetTransform(ourTransform);
 
@@ -365,7 +365,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::OnTickLocal(const dtGame::TickMessage &tickMessage)
       {
-         NxActor* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
          if(physicsObject == NULL)
          {
             // should probably throw an exception
@@ -442,15 +442,6 @@ namespace SimCore
          ////////////////////////////////////////////////////////////
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool NECCBoatActor::CompareVectors( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
-      {
-         return fabs(op1.x() - op2.x()) < epsilon
-            && fabs(op1.y() - op2.y()) < epsilon
-            && fabs(op1.z() - op2.z()) < epsilon;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::UpdateDeadReckoning(float deltaTime)
       {
          if(mTimesASecondYouCanSendOutAnUpdate == 0)
@@ -476,7 +467,7 @@ namespace SimCore
 
          float amountChange = 0.5f;
          float glmat[16];
-         NxActor* physxObj = mPhysicsHelper->GetPhysicsObject();
+         dtPhysics::PhysicsObject* physxObj = mPhysicsHelper->GetPhysicsObject();
          NxMat33 rotation = physxObj->getGlobalOrientation();
          rotation.getColumnMajorStride4(glmat);
          glmat[12] = physxObj->getGlobalPosition()[0];
@@ -500,8 +491,8 @@ namespace SimCore
          const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetLastKnownTranslation();//GetCurrentDeadReckonedTranslation();
          const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetLastKnownRotation();//GetCurrentDeadReckonedRotation();
 
-         bool changedTrans = CompareVectors(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
-         bool changedOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 3, 3.0f);
+         bool changedTrans = dtUtil::Equivalent(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
+         bool changedOrient = !dtUtil::Equivalent(globalOrientation, orientationVec, osg::Vec3::value_type(3.0f));
 
          const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetVelocityVector();
 
@@ -572,7 +563,7 @@ namespace SimCore
       {
          osg::Matrix rot = GetMatrixNode()->getMatrix();
 
-         NxActor* toFillIn = GetPhysicsHelper()->GetPhysicsObject();
+         dtPhysics::PhysicsObject* toFillIn = GetPhysicsHelper()->GetPhysicsObject();
 
          if(toFillIn != NULL)
          {
@@ -636,7 +627,7 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport&
-         contactReport, NxActor& ourSelf, NxActor& whatWeHit)
+         contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit)
       {
          //printf("VehicleCollision\n");
       }

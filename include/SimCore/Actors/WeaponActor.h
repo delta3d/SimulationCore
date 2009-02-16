@@ -28,9 +28,13 @@
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/Platform.h>
 
+#include <SimCore/Actors/MunitionParticlesActor.h>
+
 #ifdef AGEIA_PHYSICS
-#include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
 #include <NxAgeiaPhysicsHelper.h>
+#else
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/collisioncontact.h>
 #endif
 
 namespace dtAudio
@@ -44,23 +48,6 @@ namespace SimCore
    {
       class WeaponFlashActor;
       class WeaponFlashActorProxy;
-
-      // This class exists to satisfy compiling without Ageia physics.
-      class SIMCORE_EXPORT WeaponShooter : public dtCore::Base
-      {
-         public:
-            WeaponShooter() : dtCore::Base("WeaponShooter") {}
-
-            void Fire()
-            {
-               //std::cout << "Fired gun." << std::endl;
-            }
-
-         protected:
-            virtual ~WeaponShooter() {}
-      };
-
-
 
       //////////////////////////////////////////////////////////
       // Actor Code
@@ -139,15 +126,15 @@ namespace SimCore
             void SetTriggerHeld( bool hold );
             bool IsTriggerHeld() const { return mTriggerHeld; }
 
-            // Set the weapon's state to either jammed or unjammed.
-            // @param jammed The jammed state to be set on this weapon.
-            //
-            // NOTE: This will need to be called manually to set the
-            //       jammed state to FALSE before attempting another shot.
+            /**
+             * Set the weapon's state to either jammed or unjammed.
+             * @param jammed The jammed state to be set on this weapon.
+             *
+             * NOTE: This will need to be called manually to set the
+             *       jammed state to FALSE before attempting another shot.
+             */
             void SetJammed( bool jammed ) { mJammed = jammed; }
             bool IsJammed() const { return mJammed; }
-
-#ifdef AGEIA_PHYSICS
 
             // Implement the NxAgeiaPhysicsInterface to receive contact report data.
             //
@@ -159,20 +146,21 @@ namespace SimCore
             // NOTE: It is this weapons responsibility for collecting and preparing
             //       data for a network message, as well as forwarding a local
             //       message through the application.
-            virtual void ReceiveContactReport( dtAgeiaPhysX::ContactReport& report, dtGame::GameActorProxy* target );
-
-            // Set the shooter that this weapon uses to display tracers and/or
-            // spawn physical objects representing rounds that must collide realisticly
-            // with the environment.
-            // @param shooter The physics particle system that spawns tracers and physical rounds.
-            void SetShooter( NxAgeiaMunitionsPSysActorProxy* shooter ) { mShooter = shooter; }
-            NxAgeiaMunitionsPSysActorProxy* GetShooter() { return mShooter.get(); }
-            const NxAgeiaMunitionsPSysActorProxy* GetShooter() const  { return mShooter.get(); }
+#ifdef AGEIA_PHYSICS
+            virtual void ReceiveContactReport(dtAgeiaPhysX::ContactReport& report, dtGame::GameActorProxy* target);
 #else
-            void SetShooter( WeaponShooter* shooter ) { mShooter = shooter; }
-            WeaponShooter* GetShooter() { return mShooter.get(); }
-            const WeaponShooter* GetShooter() const  { return mShooter.get(); }
+            virtual void ReceiveContactReport(dtPhysics::CollisionContact& report, dtGame::GameActorProxy* target);
 #endif
+
+            /**
+             * Set the shooter that this weapon uses to display tracers and/or
+             * spawn physical objects representing rounds that must collide realistically
+             * with the environment.
+             * @param shooter The physics particle system that spawns tracers and physical rounds.
+             */
+            void SetShooter(MunitionParticlesActorProxy* shooter) { mShooter = shooter; }
+            MunitionParticlesActorProxy* GetShooter() { return mShooter.get(); }
+            const MunitionParticlesActorProxy* GetShooter() const  { return mShooter.get(); }
 
             // Set the name of the munition type that this shooter unit will be using.
             // @param munitionTypeName The name of the MunitionTypeActor to be retrieved
@@ -253,6 +241,7 @@ namespace SimCore
             {
                mAmmoCount = count <= mAmmoMax ? count < 0 ? 0 : count : mAmmoMax;
             }
+
             int GetAmmoCount() const { return mAmmoCount; }
 
             // Set the maximum number of ammo that this shooter can hold
@@ -484,11 +473,7 @@ namespace SimCore
             dtCore::RefPtr<dtAudio::Sound> mSoundJammed;
 
             // Reference to the shooter that shoots the visual representations of the rounds.
-#ifdef AGEIA_PHYSICS
-            dtCore::RefPtr<NxAgeiaMunitionsPSysActorProxy>  mShooter;
-#else
-            dtCore::RefPtr<WeaponShooter> mShooter;
-#endif
+            dtCore::RefPtr<MunitionParticlesActorProxy>  mShooter;
 
       };
 

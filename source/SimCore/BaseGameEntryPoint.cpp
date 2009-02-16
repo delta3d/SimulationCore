@@ -71,7 +71,7 @@
 
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
-#include <osgUtil/RenderBin>
+//#include <osgUtil/RenderBin>
 #include <osgViewer/View>
 
 using dtCore::RefPtr;

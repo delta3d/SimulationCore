@@ -58,17 +58,7 @@
 
 #include "UnitTestMain.h"
 
-#ifdef AGEIA_PHYSICS
-#include <SimCore/Actors/NxAgeiaMunitionsPSysActor.h>
-#endif
-
-#ifdef DELTA_WIN32
-#include <Windows.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
+#include <SimCore/Actors/MunitionParticlesActor.h>
 
 namespace SimCore
 {
@@ -656,7 +646,6 @@ namespace SimCore
          // Messages will not be sent as expected if a change in targets has
          // not been detected by the weapon.
 
-#ifdef AGEIA_PHYSICS
          // TEST MESSAGE BEHAVIOR (OUT-GOING) ----------------------------------
          mWeapon->SetFireRate( 0.5f );
          mWeapon->SetUsingBulletPhysics( true ); // means detonations are sent separately from fire messages
@@ -739,7 +728,6 @@ namespace SimCore
          CPPUNIT_ASSERT_EQUAL(7U, mTestComp->GetShotCount());
          CPPUNIT_ASSERT_EQUAL(5U, mTestComp->GetShotMessageCount());
          CPPUNIT_ASSERT_EQUAL(5U, mTestComp->GetDetonationMessageCount());
-#endif
       }
    }
 }

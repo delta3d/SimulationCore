@@ -78,7 +78,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
    {
-      NxActor* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
       float weight = GetVehicleBaseWeight();
       NxVec3 dir(0.0, 0.0, 1.0);
       physicsObject->addForce(dir * (weight * testJumpBoost), NX_SMOOTH_IMPULSE);
@@ -93,7 +93,7 @@ namespace DriverDemo
       float weight = GetVehicleBaseWeight();
 
       // First thing we do is try to make sure we are hovering...
-      NxActor* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetPhysicsObject();  // Tick Local protects us from NULL.
       NxVec3 velocity = physicsObject->getLinearVelocity();
       NxVec3 pos = physicsObject->getGlobalPosition();
       NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
@@ -115,7 +115,7 @@ namespace DriverDemo
       //std::cout << " **** Up Force [" << upForce << "]." << std::endl;
       physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
 
-      // Get the forward vector and the perpendicular side (right) vector. 
+      // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
       GetPhysicsGameActorProxy().GetActor( actor );
       osg::Matrix matrix;

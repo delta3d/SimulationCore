@@ -82,14 +82,6 @@ namespace SimCore
       {
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool CompareVectorsPlayer( const osg::Vec3& op1, const osg::Vec3& op2, float epsilon )
-      {
-         return std::abs(op1.x() - op2.x()) < epsilon
-            && std::abs(op1.y() - op2.y()) < epsilon
-            && std::abs(op1.z() - op2.z()) < epsilon;
-      }
-
       ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
@@ -141,7 +133,7 @@ namespace SimCore
             {
                float amountChange = GetMaxTranslationError();//0.5f;
                float glmat[16];
-               NxActor* physxObj = mPhysicsHelper->GetActor();
+               dtPhysics::PhysicsObject* physxObj = mPhysicsHelper->GetActor();
                NxMat33 rotation = physxObj->getGlobalOrientation();
                rotation.getColumnMajorStride4(glmat);
                glmat[12] = physxObj->getGlobalPosition()[0];
@@ -160,8 +152,8 @@ namespace SimCore
                const osg::Vec3 &translationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
                const osg::Vec3 &orientationVec = GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
 
-               mNotifyChangePosition = CompareVectorsPlayer(nxVecTemp, translationVec, amountChange);
-               mNotifyChangeOrient = !dtUtil::Equivalent<osg::Vec3, float>(globalOrientation, orientationVec, 1, 3.0f);
+               mNotifyChangePosition = dtUtil::Equivalent(*(osg::Vec3*(&nxVecTemp)), translationVec, amountChange);
+               mNotifyChangeOrient = !dtUtil::Equivalent(globalOrientation, orientationVec, osg::Vec3::value_type(3.0f));
 
                GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
 
@@ -411,7 +403,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, NxActor& ourSelf, NxActor& whatWeHit)
+      void HumanWithPhysicsActor::AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport, dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit)
       {
 
       }
@@ -421,8 +413,8 @@ namespace SimCore
       {
          if(shapeHit.shape->getActor().userData != NULL)
          {
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
-               (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(shapeHit.shape->getActor().userData);
+            dtPhysics::PhysicsHelper* physicsHelper =
+               (dtPhysics::PhysicsHelper*)(shapeHit.shape->getActor().userData);
             NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
             if (physicsHelper != NULL)
             {

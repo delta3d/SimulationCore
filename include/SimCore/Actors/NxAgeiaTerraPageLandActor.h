@@ -91,15 +91,14 @@ namespace SimCore
             /////////////////////////////////////////////////////////////////////////
             const dtCore::UniqueId& GetUniqueID() const {return mUniqueID;}
 
-#ifdef AGEIA_PHYSICS
-            /////////////////////////////////////////////////////////////////////////
-            void SetPhysicsObject(NxActor* actor) {mActor = actor;}
-            NxActor* GetPhysicsObject() {return mActor;}
-         private:
-            NxActor*                         mActor;
-#else
             /////////////////////////////////////////////////////////////////////////
             void SetPhysicsObject(dtPhysics::PhysicsObject* object) {mPhysicsObject = object;}
+
+#ifdef AGEIA_PHYSICS
+            dtPhysics::PhysicsObject* GetPhysicsObject() {return mPhysicsObject;}
+         private:
+            dtPhysics::PhysicsObject*                mPhysicsObject;
+#else
             dtPhysics::PhysicsObject* GetPhysicsObject() {return mPhysicsObject.get();}
          private:
             dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
@@ -132,15 +131,9 @@ namespace SimCore
 
             // internally called functions when a terrain tile is loaded into the system
             // Used to be called ParseTerrainNode
-#ifdef AGEIA_PHYSICS
-            NxActor* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
-            // Add a single node, as opposed to a soup. Usually done at the geode level.
-            NxActor* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
-#else
             dtPhysics::PhysicsObject* BuildTerrainAsStaticMesh(osg::Node* nodeToParse, const std::string& nameOfNode, bool buildGeodesSeparately);
             // Add a single node, as opposed to a soup. Usually done at the geode level.
             dtPhysics::PhysicsObject* AddTerrainNode(osg::Node* node, const std::string& nameOfNode);
-#endif
 
             // Called when the actor has been added to the game manager.
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
@@ -173,36 +166,12 @@ namespace SimCore
             /// called to act on the flags.
             bool FinalizeTerrain(int amountOfFrames);
 
-
-#ifdef AGEIA_PHYSICS
-            /// public accessor to get the variable
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* GetPhysicsHelper() const {return mPhysicsHelper.get();}
-
-            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            virtual void AgeiaPrePhysicsUpdate(){}
-
-            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate(){}
-
-            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-                     NxActor& ourSelf, NxActor& whatWeHit) {}
-
-            // You would have to make a new raycast to get this report,
-            // so no flag associated with it.
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const NxActor& ourSelf, const NxActor& whatWeHit){}
-
-         private:
-            // our physics helper
-            dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPhysicsHelper> mPhysicsHelper;
-#else
             // public accessor to get the variable
             dtPhysics::PhysicsHelper* GetPhysicsHelper() const {return mPhysicsHelper.get();}
 
          private:
             // our physics helper
             dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
-#endif
             // shouldnt be called, only for debugging purposes.
             // reloads all terrain to physics during runtimne
             void ReloadTerrainPhysics();

@@ -23,7 +23,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #include <SimCore/Actors/DetonationActor.h>
-#include <SimCore/Actors/NxAgeiaParticleSystemActor.h>
+#include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 
 #include <dtGame/gamemanager.h>
@@ -241,15 +241,15 @@ namespace SimCore
       // Actor code
       //////////////////////////////////////////////////////////////
 
-      DetonationActor::DetonationActor(dtGame::GameActorProxy &proxy) :
-         IGActor(proxy),
-         mExplosionSystem(new dtCore::ParticleSystem),
-         mSmokeSystem(new dtCore::ParticleSystem),
-         mDelayTime(3.0f),
-         mLingeringSmokeSecs(0.0f),
-         mRenderExplosionTimerSecs(2.0f),
-         mDeleteActorTimerSecs(5.0f),
-         mUsesPhysics(false)
+      DetonationActor::DetonationActor(dtGame::GameActorProxy &proxy)
+      : IGActor(proxy)
+      , mExplosionSystem(new dtCore::ParticleSystem)
+      , mSmokeSystem(new dtCore::ParticleSystem)
+      , mDelayTime(3.0f)
+      , mLingeringSmokeSecs(0.0f)
+      , mRenderExplosionTimerSecs(2.0f)
+      , mDeleteActorTimerSecs(5.0f)
+      , mUsesPhysics(false)
       {
          AddChild(mExplosionSystem.get());
          AddChild(mSmokeSystem.get());
@@ -313,7 +313,6 @@ namespace SimCore
          if(mUsesPhysics && mCollidedMaterial != NULL)
          {
             AddDynamicLight();
-#ifdef AGEIA_PHYSICS
             //this is kind of a hack, but it ensures it is at least a relatively large explosion
             //and keeps the gun fire from being an explosion
 
@@ -336,7 +335,7 @@ namespace SimCore
                      {
                         dtCore::Transform detonationTransform;
                         GetTransform(detonationTransform);
-                        NxAgeiaParticleSystemActor* ourSpewingParticleSystemOfDoom = dynamic_cast<NxAgeiaParticleSystemActor*>(ourActualActorProxy->GetActor());
+                        PhysicsParticleSystemActor* ourSpewingParticleSystemOfDoom = dynamic_cast<PhysicsParticleSystemActor*>(ourActualActorProxy->GetActor());
                         ourSpewingParticleSystemOfDoom->SetTransform(detonationTransform);
                         ourSpewingParticleSystemOfDoom->ToggleEmitter(true);
                         GetGameActorProxy().GetGameManager()->AddActor(ourSpewingParticleSystemOfDoom->GetGameActorProxy(), false, false);
@@ -344,7 +343,6 @@ namespace SimCore
                   }
                }
             }
-#endif
          }
          ///////////////////////////////////////////////////////////////////////
 

@@ -168,6 +168,7 @@ namespace SimCore
             mPhysicsHelper->SetAgeiaMass(5000);
             mPhysicsHelper->SetResourceName(checkValue);
             mPhysicsHelper->SetLoadAsCached(true);
+            //I don't think we want this.
             mPhysicsHelper->SetIsKinematic(true);
             mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
             switch(modelToLoad)
@@ -243,7 +244,7 @@ namespace SimCore
             osg::Matrix rot;
             ourTransform.GetRotation(rot);
 
-            NxActor* toFillIn = mPhysicsHelper->GetPhysicsObject();
+            dtPhysics::PhysicsObject* toFillIn = mPhysicsHelper->GetPhysicsObject();
             if(toFillIn != NULL)
             {
                osg::Vec3 translation;
@@ -251,9 +252,9 @@ namespace SimCore
 
                toFillIn->setGlobalPosition(NxVec3(translation[0], translation[1], translation[2]));
                toFillIn->setGlobalOrientation(
-                  NxMat33( NxVec3(rot.operator ()(0,0), rot.operator ()(0,1), rot.operator ()(0,2)),
-                           -NxVec3(rot.operator ()(1,0), rot.operator ()(1,1), rot.operator ()(1,2)),
-                           NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
+                  NxMat33( NxVec3(rot(0,0), rot(0,1), rot(0,2)),
+                           -NxVec3(rot(1,0), rot(1,1), rot(1,2)),
+                           NxVec3(rot(2,0), rot(2,1), rot(2,2))));
             }
          }
       }

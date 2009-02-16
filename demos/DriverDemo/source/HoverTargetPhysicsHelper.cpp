@@ -53,10 +53,10 @@ namespace DriverDemo
       float weight = GetVehicleBaseWeight();
 
       // First thing we do is try to make sure we are hovering...
-      NxActor* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
+      dtPhysics::PhysicsObject* physicsObject = GetPhysXObject();  // Tick Local protects us from NULL.
       NxVec3 velocity = physicsObject->getLinearVelocity();
       NxVec3 pos = physicsObject->getGlobalPosition();
-      NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds? 
+      NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
 
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
@@ -69,18 +69,18 @@ namespace DriverDemo
       float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
 
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
-      // Use current position and estimated future position to help smooth out the force. 
-      float finalAdjustment = currentAdjustment * 0.85 + futureAdjustment * 0.15; 
+      // Use current position and estimated future position to help smooth out the force.
+      float finalAdjustment = currentAdjustment * 0.85 + futureAdjustment * 0.15;
       NxVec3 dir(0.0, 0.0, 1.0);
       physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
 
-      // Now, figure out how to move our target toward our goal. We want it to sort of oscillate a bit, 
+      // Now, figure out how to move our target toward our goal. We want it to sort of oscillate a bit,
       // so we play with the forces a tad.
       osg::Vec3 targetVector =  goalLocation - location;
       osg::Vec3 targetVectorLookAhead = goalLocation - locationLookAhead;
       float distanceAway = targetVector.length() * 0.4 + targetVectorLookAhead.length() * 0.6;
       float distanceAwayPercent = (distanceAway) / mGroundClearance;
-      float forceAdjustment = dtUtil::Min(10.0f, distanceAwayPercent); 
+      float forceAdjustment = dtUtil::Min(10.0f, distanceAwayPercent);
       targetVector.normalize();
       targetVector[2] = 0.01; // cancel out the z - that's up above.
       targetVector[1] += dtUtil::RandFloat(0.0, 0.15); // cause minor fluctuations
@@ -132,7 +132,7 @@ namespace DriverDemo
       // Create our Physics Sphere!
       NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
       SetCollisionSphere(startPos, mSphereRadius, 0, mVehicleBaseWeight, 0, "Default", "Default", false);
-      NxActor *physActor = GetPhysXObject();
+      dtPhysics::PhysicsObject *physActor = GetPhysicsObject();
       if (physActor == NULL)
       {
          throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_ACTOR_STATE,
@@ -149,7 +149,7 @@ namespace DriverDemo
       // LOCAL - Configure Physics
       if(!isRemote)
       {
-         SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT | 
+         SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
             dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          //GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
       }

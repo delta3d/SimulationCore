@@ -90,7 +90,7 @@ namespace DriverDemo
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
-      NxActor* physActor = GetPhysicsHelper()->GetPhysXObject();
+      dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
 
       if(!IsRemote())
       {
@@ -235,7 +235,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
    {
-      NxActor* physObject = GetPhysicsHelper()->GetPhysXObject();
+      dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetPhysXObject();
 
       // The PRE physics update is only trapped if we are remote. It updates the physics
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
@@ -273,7 +273,7 @@ namespace DriverDemo
 
          // For this hover vehicle, we really only want to push our translation, not our rotation.
          // We want to bounce in place and move as a sphere. But, we don't want the roll.... ugh... seasick ... vomit!
-         NxActor* physXActor = GetHoverPhysicsHelper()->GetPhysXObject();
+         dtPhysics::PhysicsObject* physXActor = GetHoverPhysicsHelper()->GetPhysicsObject();
          if(!physXActor->isSleeping())
          {
             dtCore::Transform ourTransform;

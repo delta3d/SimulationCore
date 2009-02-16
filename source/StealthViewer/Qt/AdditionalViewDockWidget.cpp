@@ -45,7 +45,7 @@ namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
    AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent)
-   : dtQt::OSGAdapterWidget(false, parent)
+   : dtQt::OSGAdapterWidget(false, parent, NULL, Qt::Tool | Qt::Window)
    , mGLWidget(NULL)
    {
       setFocusPolicy(Qt::StrongFocus);
@@ -166,6 +166,8 @@ namespace StealthQt
          connect(dockWidget, SIGNAL(closeRequested(AdditionalViewDockWidget&)),
                   &StealthViewerData::GetInstance().GetMainWindow()->GetViewDockWidget(), SLOT(OnAdditionalViewClosed(AdditionalViewDockWidget&)));
          //dockWidget->setWindowTitle(wrapper.GetWindowTitle().c_str());
+         //dockWidget->setParent(StealthViewerData::GetInstance().GetMainWindow());
+         dockWidget->setWindowFlags(Qt::Tool | Qt::Window | Qt::WindowStaysOnTopHint);
          dockWidget->show();
       }
 
