@@ -19,7 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
-* @author Allen Danklefsen, Bradley Anderegg
+* @author Allen Danklefsen, Bradley Anderegg, Stephen Westin
 */
 
 #ifndef _BASE_VEHICLE_PHYSICS_HELPER_
@@ -31,10 +31,14 @@
 #include <dtPhysics/physicshelper.h>
 #include <pal/palVehicle.h>
 #endif
-#include <osgSim/DOFTransform>
 #include <SimCore/Export.h>
 #include <SimCore/PhysicsTypes.h>
 #include <dtGame/gameactor.h>
+
+namespace osgSim
+{
+   class DOFTransform;
+}
 
 namespace SimCore
 {
@@ -56,12 +60,12 @@ namespace SimCore
             /**
             * /brief Purpose : Create Wheels onto the main NxActor from the base class
             */
-            WheelType* AddWheel(const osg::Vec3& position, bool steerable);
+            virtual WheelType* AddWheel(const osg::Vec3& position);
 
             /**
             * /brief Purpose : To create a 4 wheeled vehicle
             */
-            bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode);
+            virtual bool CreateChassis(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode);
 
 
          //////////////////////////////////////////////////////////////////////////////////////
@@ -72,35 +76,33 @@ namespace SimCore
             // Build the property list for the actor
             virtual void   BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-            float GetMotorTorque()                 {return mMotorTorque;}
-            float GetVehicleMaxMPH()               {return mVehicleMaxMPH;}
-            float GetVehicleMaxReverseMPH()        {return mVehicleMaxReverseMPH;}
-            int   GetVehicleHorsePower()           {return mHorsePower;}
-            bool  GetIsAllWheelDrive()             {return mAllWheelDrive;}
-            float GetVehicleWeight()               {return mVehicleWeight;}
-            float GetVehicleTurnRadiusPerUpdate()  {return mWheelTurnRadiusPerUpdate;}
-            float GetWheelInverseMass()            {return mWheelInverseMass;}
-            float GetWheelRadius()                 {return mWheelRadius;}
-            float GetWheelSuspensionTravel()       {return mWheelSuspensionTravel;}
-            float GetSuspensionSpringCoef()        {return mSuspensionSpringCoef;}
-            float GetSuspensionSpringDamper()      {return mSuspensionSpringDamper;}
-            float GetSuspensionSpringTarget()      {return mSuspensionSpringTarget;}
-            float GetMaxWheelRotation()            {return mMaxWheelRotation;}
-            float GetTireExtremumSlip()            {return mTireExtremumSlip;}
-            float GetTireExtremumValue()           {return mTireExtremumValue;}
-            float GetTireAsymptoteSlip()           {return mTireAsymptoteSlip;}
-            float GetTireAsymptoteValue()          {return mTireAsymptoteValue;}
-            float GetTireStiffnessFactor()         {return mTireStiffnessFactor;}
-            float GetTireRestitution()             {return mTireRestitution;}
-            float GetTireDynamicFriction()         {return mTireDynamicFriction;}
-            float GetTireStaticFriction()          {return mTireStaticFriction;}
+            float       GetEngineTorque() const                {return mEngineTorque;}
+            float       GetVehicleTopSpeed() const             {return mVehicleTopSpeed;}
+            float       GetVehicleTopSpeedReverse() const      {return mVehicleTopSpeedReverse;}
+            int         GetVehicleHorsePower() const           {return mHorsePower;}
+            bool        GetIsVehicleFourWheelDrive() const     {return mFourWheelDrive;}
+            float       GetVehicleMass() const                 {return mVehicleMass;}
+            float       GetVehicleTurnRadiusPerUpdate() const  {return mWheelTurnRadiusPerUpdate;}
+            float       GetWheelInverseMass() const            {return mWheelInverseMass;}
+            float       GetWheelRadius() const                 {return mWheelRadius;}
+            float       GetWheelSuspensionTravel() const       {return mWheelSuspensionTravel;}
+            float       GetSuspensionSpringCoef() const        {return mSuspensionSpringCoef;}
+            float       GetSuspensionSpringDamper()const       {return mSuspensionSpringDamper;}
+            float       GetSuspensionSpringTarget() const      {return mSuspensionSpringTarget;}
+            float       GetMaxSteerAngle() const               {return mMaxSteerAngle;}
+            float       GetTireExtremumSlip() const            {return mTireExtremumSlip;}
+            float       GetTireExtremumValue() const           {return mTireExtremumValue;}
+            float       GetTireAsymptoteSlip() const           {return mTireAsymptoteSlip;}
+            float       GetTireAsymptoteValue() const          {return mTireAsymptoteValue;}
+            float       GetTireStiffnessFactor() const         {return mTireStiffnessFactor;}
+            float       GetTireRestitution() const             {return mTireRestitution;}
 
-            void SetMotorTorque(float value)                {mMotorTorque = value;}
-            void SetVehicleMaxMPH(float value)              {mVehicleMaxMPH = value;}
-            void SetVehicleMaxReverseMPH(float value)       {mVehicleMaxReverseMPH = value;}
+            void SetEngineTorque(float value)               {mEngineTorque = value;}
+            void SetVehicleTopSpeed(float value)            {mVehicleTopSpeed = value;}
+            void SetVehicleTopSpeedReverse(float value)     {mVehicleTopSpeedReverse = value;}
             void SetVehicleHorsePower(int value)            {mHorsePower = value;}
-            void SetIsAllWheelDrive(bool value)             {mAllWheelDrive = value;}
-            void SetVehicleWeight(float value)              {mVehicleWeight = value;}
+            void SetIsVehicleFourWheelDrive(bool value)     {mFourWheelDrive = value;}
+            void SetVehicleMass(float value)                {mVehicleMass = value;}
             void SetVehicleTurnRadiusPerUpdate(float value) {mWheelTurnRadiusPerUpdate = value;}
             void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}
             void SetWheelRadius(float value)                {mWheelRadius = value;}
@@ -108,45 +110,52 @@ namespace SimCore
             void SetSuspensionSpringCoef(float value)       {mSuspensionSpringCoef = value;}
             void SetSuspensionSpringDamper(float value)     {mSuspensionSpringDamper = value;}
             void SetSuspensionSpringTarget(float value)     {mSuspensionSpringTarget = value;}
-            void SetMaxWheelRotation(float value)           {mMaxWheelRotation = value;}
+            void SetMaxSteerAngle(float value)              {mMaxSteerAngle = value;}
             void SetTireExtremumSlip(float value)           {mTireExtremumSlip = value;}
             void SetTireExtremumValue(float value)          {mTireExtremumValue = value;}
             void SetTireAsymptoteSlip(float value)          {mTireAsymptoteSlip = value;}
             void SetTireAsymptoteValue(float value)         {mTireAsymptoteValue = value;}
             void SetTireStiffnessFactor(float value)        {mTireStiffnessFactor = value;}
             void SetTireRestitution(float value)            {mTireRestitution = value;}
-            void SetTireDynamicFriction(float value)        {mTireDynamicFriction = value;}
-            void SetTireStaticFriction(float value)         {mTireStaticFriction = value;}
 
 
       protected:
          virtual ~BaseVehiclePhysicsHelper();
 
+         /// This currently assumes this dof is placed in the model using the 3DSMax OSG Helper
+         /// because the local to world matrix is placed right above the DOF in the export process
+         /// since the dof transform does not actually have a matrix
+         void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
 
          private:
 
-            //////////////////////////////////
-            // Properties
-            float             mMotorTorque;              /// Effects total acceleration, not only modifier however
-            float             mVehicleMaxMPH;            /// The max mph you want your vehicle to have
-            float             mVehicleMaxReverseMPH;     /// The max reverse mph you can go
-            int               mHorsePower;               /// Used for brake torque, not implemented currently TODO
-            bool              mAllWheelDrive;           /// Is this vehicle using all wheel drive or not? effects speed
-            float             mVehicleWeight;            /// How much is just the chassis / wheels without people in it
-            float             mWheelTurnRadiusPerUpdate; /// How much do the tires move when u press the movement key
-            float             mWheelInverseMass;         /// Effects acceleration of the vehicle with MOVEMENT_AMOUNT
-            float             mWheelRadius;              /// how big our rims our, cant get exact between meters / inches / etc, have to play with
-            float             mWheelSuspensionTravel;    /// Bumpiness
-            float             mSuspensionSpringCoef;     /// Correctness and bounciness
-            float             mSuspensionSpringDamper;   /// Damping amount used with restitution
-            float             mSuspensionSpringTarget;   /// Set to 0 usually
-            float             mMaxWheelRotation;         /// How it can go left and right , 45 degrees etc.
-            float             mTireExtremumSlip;         ///extremal point of curve.  Values must be positive.
-            float             mTireExtremumValue;        ///extremal point of curve.  Values must be positive.
-            float             mTireAsymptoteSlip;        ///point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-            float             mTireAsymptoteValue;       ///point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-            float             mReverse;
+            //////////////////////////////////////////////////////////////////////
+            // Powertrain properties
+            //////////////////////////////////////////////////////////////////////
+            float             mEngineTorque;              //!< Maximum torque capacity of engine
+            float             mVehicleTopSpeed;            //!< Top speed of vehicle
+            float             mVehicleTopSpeedReverse;     //!< Top speed in reverse
+            int               mHorsePower;               //!< @todo Used for brake torque, not implemented currently
+            bool              mFourWheelDrive;           //!< Is this vehicle using 4 wheel drive or not? affects speed
 
+            float             mVehicleMass;            //!< Mass of chassis / wheels without people in it
+            float             mWheelTurnRadiusPerUpdate; //!< How much do the tires move when you press the movement key
+            float             mWheelInverseMass;         //!< Affects acceleration of the vehicle with MOVEMENT_AMOUNT
+            float             mWheelRadius;              //!< how big our rims our, cant get exact between meters / inches / etc, have to play with
+            float             mMaxSteerAngle;            //!< Maximum steer angle at wheel
+            float             mWheelSuspensionTravel;    //!< Total suspension travel from full rebound to full jounce
+            float             mSuspensionSpringCoef;     //!< Spring constant
+            float             mSuspensionSpringDamper;   //!< Coefficient for linear damping
+            float             mSuspensionSpringTarget;   //!< Set to 0 usually
+
+            //////////////////////////////////////////////////////////////////////
+            // Parameters to tire model
+            //////////////////////////////////////////////////////////////////////
+
+            float             mTireExtremumSlip;         //!< extremal point of curve.  Values must be positive.
+            float             mTireExtremumValue;        //!< extremal point of curve.  Values must be positive.
+            float             mTireAsymptoteSlip;        //!< point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
+            float             mTireAsymptoteValue;       //!< point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
             /**
             *  This is an additional overall positive scaling that gets applied to the tire forces before passing
             *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
@@ -155,22 +164,10 @@ namespace SimCore
             float             mTireStiffnessFactor;
 
             /**
-            * coefficient of restitution --  0 makes the object bounce as little as possible, higher values up to 1.0 result in more bounce.
+            * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
             * Note that values close to or above 1 may cause stability problems and/or increasing energy.
             */
             float             mTireRestitution;
-
-            /**
-            * Coefficient of dynamic friction -- should be in [0, +inf]. If set to greater than staticFriction, the effective value of staticFriction will be increased to match.
-            * if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)
-            */
-            float             mTireDynamicFriction;
-
-            /**
-            * Coefficient of static friction -- should be in [0, +inf]
-            * if flags & NX_MF_ANISOTROPIC is set, then this value is used for the primary direction of anisotropy (U axis)
-            */
-            float             mTireStaticFriction;
 
 #ifndef AGEIA_PHYSICS
             palVehicle* vehicle;
