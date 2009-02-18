@@ -92,7 +92,10 @@
               <xsd:sequence>
                 <xsd:element name="objectClass" type="xsd:normalizedString" />
                 <xsd:element name="actorType" type="xsd:normalizedString"/>
-                <xsd:element name="remoteOnly" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                <xsd:choice>
+                  <xsd:element name="remoteOnly" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                  <xsd:element name="localOnly" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+                </xsd:choice>
                 <xsd:element name="disEntityEnum" minOccurs="0" maxOccurs="1" type="DISEntityEnumType"/>
               </xsd:sequence>
               <xsd:element name="abstract" type="xsd:string"/>
@@ -192,7 +195,7 @@
               <xsd:complexType>
                 <xsd:simpleContent>
                   <xsd:extension base="xsd:string">
-                    <xsd:attribute name="id" type="xsd:unsignedInt"/>
+                    <xsd:attribute name="id" type="xsd:string"/>
                   </xsd:extension>
                 </xsd:simpleContent>
               </xsd:complexType>
