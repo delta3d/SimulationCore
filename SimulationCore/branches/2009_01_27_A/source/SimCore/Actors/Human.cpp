@@ -511,7 +511,7 @@ namespace SimCore
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
 
-               SetActive(IsDrawingModel());
+               transform.addChild(mModelNode.get());
 
                //setup speed blends
                WalkRunBlend* walkRunReady = new WalkRunBlend(this);
