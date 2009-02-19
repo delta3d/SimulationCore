@@ -117,8 +117,9 @@ namespace SimCore
              */
             virtual void ApplyForce(const osg::Vec3& force);
 
-         // PUBLIC CLASSES
-         public:
+            /// Overridden so that it will flag the actor as being transformed when you set the position.
+            virtual void SetTransform(dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);
+
             /// Utility Methods
             virtual float GetMPH();
 
@@ -192,6 +193,8 @@ namespace SimCore
             /// utility function for the UpdatedeadReckoning function
             float GetPercentageChangeDifference(float startValue, float newValue);
 
+            bool GetPushTransformToPhysics() const;
+            void SetPushTransformToPhysics(bool flag);
          // Private vars
          private:
 
@@ -210,30 +213,33 @@ namespace SimCore
 
             ///////////////////////////////////////////////////
             // is there currently a driver inside?
-            bool mHasDriver;
+            bool mHasDriver : 1;
 
             ///////////////////////////////////////////////////
             // Was terrain currently found? Used for startup checks.
-            bool mHasFoundTerrain;
+            bool mHasFoundTerrain : 1;
 
             ///////////////////////////////////////////////////
             // Should this vehicle send a full actor update when asked?
-            bool mNotifyFullUpdate;
-            bool mNotifyPartialUpdate;
+            bool mNotifyFullUpdate : 1;
+            bool mNotifyPartialUpdate : 1;
 
             /// Should the physics coll. det. fail, this will keep the vehicle above ground
             /// at the cost of some runtime performance.
-            bool mPerformAboveGroundSafetyCheck;
+            bool mPerformAboveGroundSafetyCheck : 1;
 
             /// When publishing pos/rot updates vs dead reckoning - do we send linear velocity or not?
             /// Allows tightly controlled entities that do motion model stuff to not mess up linear velocity
             /// If false, linear velocity will always be zero.
-            bool mPublishLinearVelocity;
+            bool mPublishLinearVelocity : 1;
 
             /// When publishing pos/rot updates vs dead reckoning - do we send angular velocity or not?
             /// Allows tightly controlled entities that do motion model stuff to not mess up angular velocity
             /// If false, angular velocity will always be zero.
-            bool mPublishAngularVelocity;
+            bool mPublishAngularVelocity : 1;
+
+            /// When this is true, the position and rotation will be pushed to the physics engine on pre physics.
+            bool mPushTransformToPhysics : 1;
 
 
       };
