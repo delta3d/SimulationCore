@@ -80,7 +80,7 @@ namespace SimCore
 
          void SetLastKnownRotation(const osg::Vec3& vec);
 
-         void ScheduleSmokeTrailDelete( const dtGame::Message& message );
+         void ScheduleSmokeTrailDelete();
 
       protected:
 
@@ -117,6 +117,8 @@ namespace SimCore
          void LoadSmokeTrailFile(const std::string &fileName);
 
          void LoadFlameFile(const std::string &fileName);
+
+         virtual void OnRemovedFromWorld();
 
       protected:
 
