@@ -58,11 +58,6 @@ namespace SimCore
          PlatformActorProxy::BuildInvokables();
 
          MissileActor &actor = static_cast<MissileActor&>(GetGameActor());
-
-         AddInvokable(*new dtGame::Invokable("ScheduleSmokeTrailDelete", 
-            dtDAL::MakeFunctor(actor, &MissileActor::ScheduleSmokeTrailDelete)));
-
-         RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_DELETED, "ScheduleSmokeTrailDelete");
       }
 
       //////////////////////////////////////////////////////////
@@ -70,54 +65,61 @@ namespace SimCore
       {
          PlatformActorProxy::BuildPropertyMap();
 
-         AddProperty(new dtDAL::BooleanActorProperty("Smoke Trail Enabled", "Smoke Trail Enabled", 
-            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetSmokeTrailEnabled), 
-            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsSmokeTrailEnabled), 
+         AddProperty(new dtDAL::BooleanActorProperty("Smoke Trail Enabled", "Smoke Trail Enabled",
+            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetSmokeTrailEnabled),
+            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsSmokeTrailEnabled),
             "Turns the smoke trail particle system on or off"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Smoke Trail File", "Smoke Trail File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadSmokeTrailFile), 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+            "Smoke Trail File", "Smoke Trail File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadSmokeTrailFile),
             "Loads the file of the missile smoke trail", "Particles"));
 
-         AddProperty(new dtDAL::BooleanActorProperty("Flame Enabled", "Flame Enabled", 
-            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetFlameEnabled), 
-            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsFlameEnabled), 
+         AddProperty(new dtDAL::BooleanActorProperty("Flame Enabled", "Flame Enabled",
+            dtDAL::MakeFunctor(static_cast<MissileActor&>(GetGameActor()), &MissileActor::SetFlameEnabled),
+            dtDAL::MakeFunctorRet(static_cast<MissileActor&>(GetGameActor()), &MissileActor::IsFlameEnabled),
             "Turns the flame particle system on or off"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Flame File", "Flame File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadFlameFile), 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+            "Flame File", "Flame File", dtDAL::MakeFunctor(*this, &MissileActorProxy::LoadFlameFile),
             "Loads the file of the missile thruster flame", "Particles"));
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActorProxy::LoadSmokeTrailFile(const std::string &fileName)
+      void MissileActorProxy::LoadSmokeTrailFile(const std::string& fileName)
       {
-         MissileActor *ma = static_cast<MissileActor*>(GetActor());
+         MissileActor* ma = static_cast<MissileActor*>(GetActor());
 
-         ma->LoadSmokeTrailFile(fileName); 
+         ma->LoadSmokeTrailFile(fileName);
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActorProxy::LoadFlameFile(const std::string &fileName)
+      void MissileActorProxy::LoadFlameFile(const std::string& fileName)
       {
-         MissileActor *ma = static_cast<MissileActor*>(GetActor());
+         MissileActor* ma = static_cast<MissileActor*>(GetActor());
 
-         ma->LoadFlameFile(fileName); 
+         ma->LoadFlameFile(fileName);
       }
-      
+
       //////////////////////////////////////////////////////////
       void MissileActorProxy::CreateActor()
       {
          MissileActor* pActor = new MissileActor(*this);
-         SetActor(*pActor); 
+         SetActor(*pActor);
          pActor->InitDeadReckoningHelper();
       }
 
+      //////////////////////////////////////////////////////////
+      void MissileActorProxy::OnRemovedFromWorld()
+      {
+         MissileActor* missile = NULL;
+         GetActor(missile);
+         missile->ScheduleSmokeTrailDelete();
+      }
 
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      MissileActor::MissileActor(dtGame::GameActorProxy &proxy) : 
+      MissileActor::MissileActor(dtGame::GameActorProxy& proxy) :
          Platform(proxy),
          mLastTranslationSet(false),
          mLastRotationSet(false)
@@ -134,8 +136,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActor::LoadFlameFile(const std::string& fileName) 
-      { 
+      void MissileActor::LoadFlameFile(const std::string& fileName)
+      {
          if(!mFlame.valid())
          {
             mFlame = new dtCore::ParticleSystem("Flame");
@@ -176,17 +178,20 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void MissileActor::LoadSmokeTrailFile(const std::string& fileName) 
-      { 
-         if(!mSmokeTrail.valid())
+      void MissileActor::LoadSmokeTrailFile(const std::string& fileName)
+      {
+         dtCore::ParticleSystem* ps = NULL;
+         if (!mSmokeTrail.valid())
          {
             GetGameActorProxy().GetGameManager()->CreateActor(
                *dtActors::EngineActorRegistry::PARTICLE_SYSTEM_ACTOR_TYPE,
                mSmokeTrail);
-            mSmokeTrail->GetProperty("Particle(s) File")->FromString(fileName);
+
+            mSmokeTrail->GetActor(ps);
+            ps->LoadFile(fileName);
          }
 
-         if(mSmokeTrail->GetProperty("Particle(s) File")->ToString().empty())
+         if (ps != NULL && ps->GetFilename().empty())
          {
             LOG_ERROR("Failed to load the missile smoke trail particle system file: " + fileName);
          }
@@ -211,7 +216,7 @@ namespace SimCore
       {
          if(mSmokeTrail.valid())
          {
-            dtDAL::BooleanActorProperty* prop = NULL; 
+            dtDAL::BooleanActorProperty* prop = NULL;
             mSmokeTrail->GetProperty("Enable", prop);
             prop->SetValue(enable);
          }
@@ -234,12 +239,9 @@ namespace SimCore
       {
          Platform::OnEnteredWorld();
 
-
          // Set the flame and smoke position by "hotspot_01"
          osg::MatrixTransform* relTransform =
             const_cast<osg::MatrixTransform*> (GetNodeCollector()->GetMatrixTransform("hotspot_01"));
-
-
 
          // If thrust flame exists
          if( mFlame.valid() )
@@ -270,7 +272,7 @@ namespace SimCore
                // it can exist after this missile is deleted.
                GetGameActorProxy().GetGameManager()->AddActor( *mSmokeTrail );
 
-               // The GameManager added it to the scene in AddActor, so remove it 
+               // The GameManager added it to the scene in AddActor, so remove it
                smokeps->Emancipate();
                AddChild(smokeps);
                if( relTransform != NULL )
@@ -281,7 +283,7 @@ namespace SimCore
                   smokeps->SetTransform(xform, dtCore::Transformable::REL_CS);
                }
                // Register the particle systems with the particle manager component
-               Components::ParticleInfo::AttributeFlags attrs = {true,true};
+               SimCore::Components::ParticleInfo::AttributeFlags attrs = {true,true};
                RegisterParticleSystem(*smokeps, &attrs );
             }
          }
@@ -298,20 +300,19 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////
-      void MissileActor::ScheduleSmokeTrailDelete( const dtGame::Message& message )
+      void MissileActor::ScheduleSmokeTrailDelete()
       {
          if( mFlame != NULL ) { mFlame->SetEnabled(false); }
 
          if( !mSmokeTrail.valid() ) { return; }
 
-         dtGame::GMComponent* comp = 
-            GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME);
+         Components::TimedDeleterComponent* deleterComp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME, deleterComp);
 
-         if( comp != NULL )
+         if( deleterComp != NULL )
          {
-            Components::TimedDeleterComponent* deleterComp = static_cast<Components::TimedDeleterComponent*> (comp);
-
-            dtCore::ParticleSystem* ps = static_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetActor());
+            dtCore::ParticleSystem* ps = NULL;
+            mSmokeTrail->GetActor(ps);
             dtCore::ParticleLayer* smokeLayer = ps->GetSingleLayer("Smoke");
             float deleteTime = 0.0f;
             if( smokeLayer != NULL )
@@ -320,13 +321,17 @@ namespace SimCore
                deleteTime = smokeLayer->GetParticleSystem()
                   .getDefaultParticleTemplate().getLifeTime();
             }
-            
+
             if( deleteTime < 1.0f )
             {
                deleteTime = 1.0f;
             }
 
             deleterComp->AddId( mSmokeTrail->GetId(), deleteTime );
+         }
+         else
+         {
+            LOG_ERROR("Could not find the timed deleter component.  Smoke trails will not be deleted properly.");
          }
       }
 
