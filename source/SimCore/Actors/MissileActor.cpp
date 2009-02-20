@@ -58,11 +58,6 @@ namespace SimCore
          PlatformActorProxy::BuildInvokables();
 
          MissileActor &actor = static_cast<MissileActor&>(GetGameActor());
-
-         AddInvokable(*new dtGame::Invokable("ScheduleSmokeTrailDelete",
-            dtDAL::MakeFunctor(actor, &MissileActor::ScheduleSmokeTrailDelete)));
-
-         RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_ACTOR_DELETED, "ScheduleSmokeTrailDelete");
       }
 
       //////////////////////////////////////////////////////////
@@ -113,6 +108,13 @@ namespace SimCore
          pActor->InitDeadReckoningHelper();
       }
 
+      //////////////////////////////////////////////////////////
+      void MissileActorProxy::OnRemovedFromWorld()
+      {
+         MissileActor* missile = NULL;
+         GetActor(missile);
+         missile->ScheduleSmokeTrailDelete();
+      }
 
       //////////////////////////////////////////////////////////
       // Actor code
@@ -298,20 +300,19 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////
-      void MissileActor::ScheduleSmokeTrailDelete( const dtGame::Message& message )
+      void MissileActor::ScheduleSmokeTrailDelete()
       {
          if( mFlame != NULL ) { mFlame->SetEnabled(false); }
 
          if( !mSmokeTrail.valid() ) { return; }
 
-         dtGame::GMComponent* comp =
-            GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME);
+         Components::TimedDeleterComponent* deleterComp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(Components::TimedDeleterComponent::DEFAULT_NAME, deleterComp);
 
-         if( comp != NULL )
+         if( deleterComp != NULL )
          {
-            Components::TimedDeleterComponent* deleterComp = static_cast<Components::TimedDeleterComponent*> (comp);
-
-            dtCore::ParticleSystem* ps = static_cast<dtCore::ParticleSystem*> (mSmokeTrail->GetActor());
+            dtCore::ParticleSystem* ps = NULL;
+            mSmokeTrail->GetActor(ps);
             dtCore::ParticleLayer* smokeLayer = ps->GetSingleLayer("Smoke");
             float deleteTime = 0.0f;
             if( smokeLayer != NULL )
@@ -327,6 +328,10 @@ namespace SimCore
             }
 
             deleterComp->AddId( mSmokeTrail->GetId(), deleteTime );
+         }
+         else
+         {
+            LOG_ERROR("Could not find the timed deleter component.  Smoke trails will not be deleted properly.");
          }
       }
 
