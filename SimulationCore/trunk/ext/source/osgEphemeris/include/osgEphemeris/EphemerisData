@@ -90,7 +90,7 @@ struct CelestialBodyData
   */
 
 
-struct EphemerisData : public Shmem
+struct EphemerisData// : public Shmem
 {
     /*! 
       Latitude of view point in degrees 

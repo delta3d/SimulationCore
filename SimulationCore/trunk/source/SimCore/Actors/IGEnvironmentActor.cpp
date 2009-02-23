@@ -27,6 +27,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Actors/DayTimeActor.h>
+#include <SimCore/Actors/LensFlareDrawable.h>
 
 #include <dtABC/application.h>
 #include <dtCore/cloudplane.h>
@@ -61,6 +62,7 @@ namespace SimCore
       IGEnvironmentActor::IGEnvironmentActor(dtGame::GameActorProxy& proxy)
          : BaseClass(proxy)
          , mEnableCloudPlane(true)
+         , mEnableLensFlare(false)
          , mCurrTime()
          , mWind()
          , mCloudPlane(new dtCore::CloudPlane(1500.0f, "Cloud Plane","./Textures/CloudTexture9.dds"))
@@ -116,6 +118,11 @@ namespace SimCore
          SetFogColor(fogColor);         // Seems wierd, but we have to set the clear color to black on the camera or
          // the ephemeris shows stars in the daytime and at night, they are sort of gray instead of white.
          GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->SetClearColor(osg::Vec4(0, 0, 0, 0));
+
+         if(mEnableLensFlare && !mLensFlare.valid())
+         {
+            InitLensFlare();
+         }
       }
 
 
@@ -257,6 +264,12 @@ namespace SimCore
          osg::Vec3 fogColor;
          mEnvironment->GetModFogColor(fogColor);
          SetFogColor(fogColor);
+
+         if(mLensFlare.valid())
+         {
+            //when the time changes we must update the position of the sun
+            mLensFlare->Update(GetSunPosition());
+         }
       }
 
       /////////////////////////////////////////////////////////////
@@ -412,6 +425,57 @@ namespace SimCore
          return *mFog;
       }
 
+      osg::Vec3d IGEnvironmentActor::GetSunPosition() const
+      {
+         osg::Vec3d position;
+
+         if(mEnvironment.valid())
+         {
+            float az, el;
+            mEnvironment->GetSunAzEl(az, el);
+
+            //this is the same calculation done in osgEphemeris for azimuth and elevation to position
+            position = osg::Vec3d(
+               sin(osg::DegreesToRadians(az))*cos(osg::DegreesToRadians(el)),
+               cos(osg::DegreesToRadians(az))*cos(osg::DegreesToRadians(el)),
+               sin(osg::DegreesToRadians(el)));
+
+            position.normalize();
+            // Mean distance to sun  1.496x10^8 km
+            // Use 1/2 distance.  In reality, light "goes around corners".  Using half the distance
+            // allows us to mimic the light surrounding the moon sphere a bit more.
+            position *= (1.496 * 100000000000.0) * 0.5;
+         }
+
+         return position;
+      }
+
+      /////////////////////////////////////////////////////////////
+      bool IGEnvironmentActor::GetEnableLensFlare() const
+      {
+         return mEnableLensFlare;
+      }
+
+      /////////////////////////////////////////////////////////////
+      void IGEnvironmentActor::SetEnableLensFlare( bool b )
+      {
+         if(mEnableLensFlare && !mLensFlare.valid())
+         {
+            InitLensFlare();
+         }
+         else
+         {
+            mLensFlare->GetOSGNode()->setNodeMask(b ? 0xFFFFFFFF : 0x0);
+         }
+      }
+
+      void IGEnvironmentActor::InitLensFlare()
+      {
+         //this drawable creates a nice halo/glare effect from the sun
+         mLensFlare = new LensFlareDrawable();
+         mLensFlare->Init();
+         AddChild(mLensFlare.get());
+      }
 
       /////////////////////////////////////////////////////////////
       // Actor Proxy Code

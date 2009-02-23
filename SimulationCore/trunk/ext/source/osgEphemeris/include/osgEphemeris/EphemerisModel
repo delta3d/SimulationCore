@@ -219,6 +219,7 @@ class EphemerisModel : public osg::Group
         
 		/** RSC modifications for sensor simulation.
 		  */
+      osg::Vec3d getSunPosition();
 		osg::Vec4 getSunLightAmbient();
 		osg::Vec4 getSunLightDiffuse();
 

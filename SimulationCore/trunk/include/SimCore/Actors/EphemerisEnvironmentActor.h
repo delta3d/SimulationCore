@@ -52,6 +52,8 @@ namespace SimCore
 
          osg::Transform* GetFogSphere();
 
+         /*virtual*/ osg::Vec3d GetSunPosition() const;
+
       protected:
          virtual ~EphemerisEnvironmentActor();
       private:
