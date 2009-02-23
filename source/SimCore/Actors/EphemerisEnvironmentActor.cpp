@@ -233,6 +233,19 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////
+      osg::Vec3d EphemerisEnvironmentActor::GetSunPosition() const
+      {
+         if(mEphemerisModel.valid())
+         {
+            return mEphemerisModel->getSunPosition();
+         }
+         else
+         {
+            return BaseClass::GetSunPosition();
+         }
+      }
+
+      /////////////////////////////////////////////////////////////
       bool EphemerisEnvironmentActor::MoveWithEyePointTransform::computeLocalToWorldMatrix(osg::Matrix& matrix,osg::NodeVisitor* nv) const
       {
          if( mEnabled )

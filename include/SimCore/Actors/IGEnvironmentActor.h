@@ -28,6 +28,8 @@
 #include <dtCore/environment.h>
 #include <dtUtil/datetime.h>
 
+//#include <SimCore/Actors/LensFlareDrawable.h>
+
 namespace osg
 {
    class Fog;
@@ -43,6 +45,8 @@ namespace SimCore
 {
    namespace Actors
    {
+      class LensFlareDrawable;
+
       ////////////////////////////////////////////////////////////////////////
       // Actor Code
       ////////////////////////////////////////////////////////////////////////
@@ -135,6 +139,11 @@ namespace SimCore
 
          dtCore::CloudPlane* GetCloudPlane(){return mCloudPlane.get();};
 
+         bool GetEnableLensFlare() const;
+         void SetEnableLensFlare(bool b);
+
+         virtual osg::Vec3d GetSunPosition() const;
+
       protected:
 
          // Destructor
@@ -148,13 +157,16 @@ namespace SimCore
          dtCore::Environment& GetCoreEnvironment();
          osg::Fog& GetFog();
 
+         void InitLensFlare();
+
       private:
 
-         bool mEnableCloudPlane;
+         bool mEnableCloudPlane, mEnableLensFlare;
          time_t mCurrTime;
          osg::Vec3 mWind;
          dtCore::RefPtr<dtCore::CloudPlane> mCloudPlane;
          dtCore::RefPtr<dtCore::Environment> mEnvironment;
+         dtCore::RefPtr<LensFlareDrawable> mLensFlare;
          dtCore::RefPtr<osg::Fog> mFog;
 
          int mCloudCoverage;
