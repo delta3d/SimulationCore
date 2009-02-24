@@ -261,8 +261,8 @@ int main(int argc, char** argv)
    int optimize = 1;
    int useOccluders = 1;
    parser.read("--verbose", verbose);
-   parser.read("--optimize", verbose);
-   parser.read("--useOccluders", verbose);
+   parser.read("--optimize", optimize);
+   parser.read("--useOccluders", useOccluders);
 
 
    std::cout << "Loading File '"<< parser[1] << "'." << std::endl;
