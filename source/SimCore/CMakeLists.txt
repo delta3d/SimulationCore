@@ -18,7 +18,10 @@ file(GLOB LIB_PUBLIC_HEADERS_4
 file(GLOB LIB_PUBLIC_HEADERS_5 
    "${HEADER_PATH}/GUI/*.h"
    )
-SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5})
+file(GLOB LIB_PUBLIC_HEADERS_6 
+   "${HEADER_PATH}/Components/Conversations/*.h"
+   )
+SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5} ${LIB_PUBLIC_HEADERS_6})
 
 file(GLOB LIB_SOURCES_1 
    "${SOURCE_PATH}/*.cpp"
@@ -35,7 +38,10 @@ file(GLOB LIB_SOURCES_4
 file(GLOB LIB_SOURCES_5 
    "${SOURCE_PATH}/GUI/*.cpp"
    )
-SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5})
+file(GLOB LIB_SOURCES_6 
+   "${SOURCE_PATH}/Components/Conversations/*.cpp"
+   )
+SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6})
 
 
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
@@ -49,11 +55,13 @@ source_group("Header Files\\ActorsH" FILES ${LIB_PUBLIC_HEADERS_2})
 source_group("Header Files\\ToolsH" FILES ${LIB_PUBLIC_HEADERS_3})
 source_group("Header Files\\ComponentsH" FILES ${LIB_PUBLIC_HEADERS_4})
 source_group("Header Files\\GUIH" FILES ${LIB_PUBLIC_HEADERS_5})
+source_group("Header Files\\ComponentsH\\ConversationsH" FILES ${LIB_PUBLIC_HEADERS_6})
 
 source_group("Source Files\\Actors" FILES ${LIB_SOURCES_2})
 source_group("Source Files\\Tools" FILES ${LIB_SOURCES_3})
 source_group("Source Files\\Components" FILES ${LIB_SOURCES_4})
 source_group("Source Files\\GUI" FILES ${LIB_SOURCES_5})
+source_group("Source Files\\Components\\Conversations" FILES ${LIB_SOURCES_6})
 
 LINK_WITH_VARIABLES(${LIB_NAME}
                                    DTUTIL_LIBRARY

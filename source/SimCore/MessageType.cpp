@@ -24,6 +24,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
+#include <SimCore/Components/Conversations/ConversationMessages.h>
 #include <dtGame/messagefactory.h>
 
 namespace SimCore
@@ -67,6 +68,11 @@ namespace SimCore
    const MessageType MessageType::INFO_EMBEDDED_DATA("Embedded Data", "Info",
             "Holds a buffer of embedded binary data.  Traditionally a radio message", USER_DEFINED_MESSAGE_TYPE + 22);
 
+   // Conversation-related messages
+   const MessageType MessageType::INTERACTION_CHANGED("INTERACTION_CHANGED", "INFO", "Sent when the conversation component has received a new interaction.", USER_DEFINED_MESSAGE_TYPE + 23);
+   const MessageType MessageType::CONVERSATION_RESPONSE("CONVERSATION_RESPONSE", "INFO", "Sent when the player responds to an interaction.", USER_DEFINED_MESSAGE_TYPE + 24);
+
+
    ///////////////////////////////////////////////////////////////////////
    MessageType::MessageType(
       const std::string &name,
@@ -106,6 +112,9 @@ namespace SimCore
       factory.RegisterMessageType<StealthActorUpdatedMessage>(REQUEST_WARP_TO_POSITION);
 
       factory.RegisterMessageType<EmbeddedDataMessage>(INFO_EMBEDDED_DATA);
+
+      factory.RegisterMessageType<InteractionChangedMessage>(MessageType::INTERACTION_CHANGED);
+      factory.RegisterMessageType<ConversationResponseMessage>(MessageType::CONVERSATION_RESPONSE);
    }
 
    ///////////////////////////////////////////////////////////////////////
