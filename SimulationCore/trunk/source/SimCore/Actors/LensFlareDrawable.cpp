@@ -170,7 +170,7 @@ namespace SimCore
             float streaksScale = 0.75;
 
             //calculate the screen position of the light
-            osg::Camera* cam = renderInfo.getCurrentCamera();
+            osg::Camera* cam = renderInfo.getCurrentCamera();            
             osg::Vec4d screenXYZ(mLightPos.x(), mLightPos.y(), mLightPos.z(), 1.0);
             screenXYZ = cam->getViewMatrix().preMult(screenXYZ);
             screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);
@@ -179,9 +179,18 @@ namespace SimCore
             screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
             screenXYZ *= 0.5;
             
+            bool occluded = false;
+            if(screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
+               && screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
+            {
+               float bufferZ = 0.0f;
+               glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
+               occluded = bufferZ < 1;             
+               //std::cout << "Screen X,Y: " << bufferZ << std::endl;
+            }            
+
             //if the lens flare is not on the screen dont draw it
-            if(inFrontOfCamera)// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
-               //&& screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
+            if(inFrontOfCamera && !occluded)
             {
              
                osg::Vec2 screenPos(screenXYZ.x(), screenXYZ.y());
