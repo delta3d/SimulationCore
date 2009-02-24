@@ -451,7 +451,7 @@ namespace SimCore
                glmat[15] = 1.0f;
                osg::Matrix currentMatrix(glmat);
                ourTransform.Set(currentMatrix);
-               std::cout << ourTransform.GetTranslation() << std::endl;
+               //std::cout << ourTransform.GetTranslation() << std::endl;
 
                // Translation
                //ourTransform.SetTranslation(physicsActor->getGlobalPosition()[0],
