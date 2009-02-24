@@ -179,18 +179,15 @@ namespace SimCore
             screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
             screenXYZ *= 0.5;
             
-            bool occluded = false;
-            if(screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
-               && screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
-            {
-               float bufferZ = 0.0f;
-               glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
-               occluded = bufferZ < 1;             
-               //std::cout << "Screen X,Y: " << bufferZ << std::endl;
-            }            
+            float bufferZ = 0.0f;
+            glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
+            //std::cout << "Screen X,Y: " << bufferZ << std::endl;
+
+            bool occluded = bufferZ < 1;
 
             //if the lens flare is not on the screen dont draw it
-            if(inFrontOfCamera && !occluded)
+            if(inFrontOfCamera && !occluded)// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
+               //&& screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
             {
              
                osg::Vec2 screenPos(screenXYZ.x(), screenXYZ.y());
