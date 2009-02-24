@@ -74,6 +74,10 @@ namespace SimCore
 
          static const MessageType INFO_EMBEDDED_DATA;
 
+         // Conversation-related messages
+         static const MessageType INTERACTION_CHANGED;
+         static const MessageType CONVERSATION_RESPONSE;
+
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 
          static bool IsValidToolType(const dtGame::MessageType &type);
