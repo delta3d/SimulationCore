@@ -40,7 +40,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
-      Conversation::Conversation(RegisterConversationFunctor& regFunc)
+      Conversation::Conversation(RegisterConversationFunctor regFunc)
          : mName()
          , mRegistrationFunctor(regFunc)
          , mCurrentInteraction(NULL)
@@ -84,7 +84,7 @@ namespace SimCore
                }
                else
                {
-                  mCurrentInteraction = (*mCurrentInteractionIter).get();           
+                  mCurrentInteraction = (*mCurrentInteractionIter).get();
                }
             }
          }
@@ -123,7 +123,7 @@ namespace SimCore
                   //don't think we need to do anything here
                }
                else if(rt == ResponseType::RESPONSE_WRONG_ACKNOWLEDGED)
-               {   
+               {
                   //just go back to where we came from
                   if(mCurrentInteractionIter != mInteractions.end())
                   {
@@ -152,7 +152,7 @@ namespace SimCore
       bool Conversation::LoadConversation( const std::string& filename )
       {
          bool success = false;
-         
+
          ClearData();
 
          //attempt to load conversation xml
@@ -162,7 +162,7 @@ namespace SimCore
             XMLHandler handler(this);
             dtUtil::XercesParser parser;
             success = parser.Parse(fileWithPath, handler);
-            
+
             if(success && !mInteractions.empty())
             {
                mCurrentInteractionIter = mInteractions.begin();
@@ -171,7 +171,7 @@ namespace SimCore
          }
          else
          {
-            LOG_ERROR("Unable to find file '" + fileWithPath + "'.")         
+            LOG_ERROR("Unable to find file '" + fileWithPath + "'.")
          }
          return success;
       }
@@ -230,10 +230,10 @@ namespace SimCore
          {
             mCurrentInteractionIter = mInteractions.begin();
             mCurrentInteraction = mInteractions.front().get();
-         } 
+         }
       }
 
-      
+
       //////////////////////////////////////////////////////////////////////////
       //XML LOADING
       //////////////////////////////////////////////////////////////////////////
@@ -432,7 +432,7 @@ namespace SimCore
                {
                   std::string str2((*audioiter).second);
                   mBranchInteraction->SetSoundHandle(str2);
-               }            
+               }
             }
             else
             {
@@ -447,7 +447,7 @@ namespace SimCore
       void Conversation::XMLHandler::endElement(const XMLCh* const uri,
          const XMLCh* const localname,
          const XMLCh* const qname)
-      {  
+      {
          std::string elementStr = dtUtil::XMLStringConverter(localname).ToString();
          if(elementStr == CONVERSATION_ELEMENT)
          {
@@ -460,7 +460,7 @@ namespace SimCore
             //TODO ERROR CHECK HERE
             if(mCurrentInteraction.valid())
             {
-               //RANDOMIZE BEFORE ADDING CLOSE UI 
+               //RANDOMIZE BEFORE ADDING CLOSE UI
                while(!mResponses.empty())
                {
                   int index = 0;
@@ -468,12 +468,12 @@ namespace SimCore
                   if(mCurrentInteraction->GetRandomizeResponses())
                   {
                      index = dtUtil::RandRange(0, mResponses.size() - 1);
-                  } 
+                  }
 
                   mCurrentInteraction->AddResponse(mResponses[index]);
                   mResponses.erase(std::remove(mResponses.begin(), mResponses.end(), mResponses[index]), mResponses.end());
                }
-               
+
                //now if the force close ui response last flag is set, then it will put all the close ui responses
                //in a different container, so if there are any responses in that container add them now
                ResponseInteractionArray::iterator iter = mCloseUIResponses.begin();
@@ -533,7 +533,7 @@ namespace SimCore
                responseElement.first = mCurrentResponse.get();
                responseElement.second = mBranchInteraction.get();
 
-               //if this is a close ui response and the interaction wants to force it last 
+               //if this is a close ui response and the interaction wants to force it last
                //add it to a separate container
                if(mCurrentResponse->GetResponseType() == ResponseType::RESPONSE_CLOSE_UI && mCurrentInteraction->GetForceCloseResponseLast())
                {
@@ -616,7 +616,7 @@ namespace SimCore
                   mCurrentInteraction->SetInteractionText(str);
                }
             }
-            else 
+            else
             {
                //print error
             }
@@ -640,7 +640,7 @@ namespace SimCore
                //print error
             }
          }
-         
+
       }
 
    }

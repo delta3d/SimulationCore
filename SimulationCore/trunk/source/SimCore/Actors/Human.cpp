@@ -463,7 +463,6 @@ namespace SimCore
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
          , mMaxTimePerIteration(0.5)
       {
-         SetDrawingModel(true);
          SetName("Human");
       }
 
@@ -510,8 +509,7 @@ namespace SimCore
             if (!fileName.empty() && mAnimationHelper->LoadModel(fileName))
             {
                mModelNode = dtAnim::Cal3DDatabase::GetInstance().GetNodeBuilder().CreateNode(mAnimationHelper->GetModelWrapper());
-
-               SetActive(IsDrawingModel());
+               transform.addChild(mModelNode.get());
 
                //setup speed blends
                WalkRunBlend* walkRunReady = new WalkRunBlend(this);

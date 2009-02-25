@@ -52,22 +52,22 @@ namespace SimCore
       {
          public:
             typedef std::vector< dtCore::RefPtr<Interaction> > InteractionArray;
-            typedef std::multimap<dtCore::ObserverPtr<dtDAL::GameEvent>, dtCore::RefPtr<Command<void> > > EventToCommandMap; 
-            typedef std::multimap<const Response*, dtCore::ObserverPtr<dtDAL::GameEvent> > ResponseToEventMap; 
+            typedef std::multimap<dtCore::ObserverPtr<dtDAL::GameEvent>, dtCore::RefPtr<Command<void> > > EventToCommandMap;
+            typedef std::multimap<const Response*, dtCore::ObserverPtr<dtDAL::GameEvent> > ResponseToEventMap;
 
             typedef dtUtil::Functor<void, TYPELIST_2(dtDAL::GameEvent*, Conversation*)> RegisterConversationFunctor;
 
          public:
-            Conversation(RegisterConversationFunctor& regFunc);
+            Conversation(RegisterConversationFunctor regFunc);
 
-            const std::string& GetName() const; 
+            const std::string& GetName() const;
 
             bool LoadConversation(const std::string& filename);
 
             const Interaction* GetCurrentInteraction() const;
 
             Interaction* HandleResponse(const Response* r);
-            
+
             void HandleGameEvent(dtDAL::GameEvent* ge);
 
             ResponseToEventMap& GetResponseEvents();
@@ -79,7 +79,7 @@ namespace SimCore
          protected:
             /*virtual*/ ~Conversation();
             void ClearData();
-           
+
             dtDAL::GameEvent* LookupGameEvent(const std::string& str) const;
 
             void AddCommand(dtDAL::GameEvent* ge, Command<void>* com);
@@ -109,7 +109,7 @@ namespace SimCore
             class XMLHandler : public XERCES_CPP_NAMESPACE_QUALIFIER ContentHandler
             {
             public:
-               XMLHandler(Conversation* mgr): mManager(mgr) 
+               XMLHandler(Conversation* mgr): mManager(mgr)
                {
                   mInConversation = false;
                   mInInteraction = false;
@@ -117,7 +117,7 @@ namespace SimCore
                }
                ~XMLHandler() {}
 
-               // inherited pure virtual functions            
+               // inherited pure virtual functions
                virtual void endDocument() {}
                virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length) {}
                virtual void processingInstruction(const XMLCh* const target, const XMLCh* const data) {}
@@ -139,8 +139,8 @@ namespace SimCore
                   const XMLCh* const qname);
 
             private:
-               
-               bool  mInConversation, mInInteraction, mInResponse; 
+
+               bool  mInConversation, mInInteraction, mInResponse;
                Conversation* mManager;
 
                typedef std::stack<std::string> ElementStack;
@@ -160,7 +160,7 @@ namespace SimCore
 
          friend class XMLHandler;
       };
-   
+
    }
 }
 

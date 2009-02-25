@@ -2687,7 +2687,7 @@
             </property>
             <property>
                 <name>Flying</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -4275,7 +4275,7 @@
             </property>
             <property>
                 <name>Flying</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -4636,7 +4636,7 @@
             </property>
             <property>
                 <name>Flying</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>DrawingModel</name>
