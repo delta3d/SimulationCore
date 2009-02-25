@@ -109,6 +109,7 @@ namespace SimCore
          }
          else // Local
          {
+            GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
             // Disable gravity until the map has loaded terrain under our feet...
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
             GetPhysicsHelper()->TurnObjectsGravityOff("Default");
