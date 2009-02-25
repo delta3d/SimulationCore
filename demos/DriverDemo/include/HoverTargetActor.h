@@ -49,7 +49,7 @@ namespace DriverDemo
    {
       public:
          /// Constructor
-         HoverTargetActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
+         HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy);
 
       protected:
          /// Destructor
@@ -66,8 +66,8 @@ namespace DriverDemo
 
       // PUBLIC METHODS
       public:
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
-            const osg::Vec3 &direction, float &distanceToHit);
+         float ComputeEstimatedForceCorrection(const osg::Vec3& location,
+            const osg::Vec3& direction, float& distanceToHit);
 
          /// Reset to starting position In additional to base behavior, it turns off sounds.
          //virtual void ResetVehicle();
