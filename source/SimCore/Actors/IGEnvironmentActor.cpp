@@ -459,14 +459,12 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       void IGEnvironmentActor::SetEnableLensFlare( bool b )
       {
-         if(mEnableLensFlare && !mLensFlare.valid())
+         if(!mLensFlare.valid())
          {
             InitLensFlare();
          }
-         else
-         {
-            mLensFlare->GetOSGNode()->setNodeMask(b ? 0xFFFFFFFF : 0x0);
-         }
+         
+         mLensFlare->GetOSGNode()->setNodeMask(b ? 0xFFFFFFFF : 0x0);
       }
 
       void IGEnvironmentActor::InitLensFlare()
