@@ -603,9 +603,15 @@ namespace SimCore
                   dtUtil::MakeIndexString(nameCounter, bogusIndexthing);
                   nameCounter ++;
 
+                  //the per-geode loading crashes on linux when using PhysX.
+#ifdef DELTA_WIN32
+                  bool usePerGeodeLoading = true;
+#else
+                  bool usePerGeodeLoading = false;
+#endif
                   // Build the terrain as a static mesh, but with each geode loaded separately
                   landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
-                     "Base Terrain " + bogusIndexthing, false);
+                     "Base Terrain " + bogusIndexthing, usePerGeodeLoading);
                }
                else
                {
