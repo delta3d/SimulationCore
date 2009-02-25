@@ -30,6 +30,7 @@
 #include <osg/Texture2D>
 #include <osg/Drawable>
 #include <osg/MatrixTransform>
+#include <map>
 
 namespace SimCore
 {
@@ -57,6 +58,7 @@ namespace SimCore
                 private:
 
                    void LoadTextures();
+                   float CalculateEffectScale(osg::Camera* cam, bool visible) const;
                    void EnableTextureState(osg::RenderInfo& renderInfo) const;
                    void InitTexture(const std::string& filename, osg::Texture2D* ptr);
                    void RenderQuad(const osg::Vec4& rgba, const osg::Vec2& point, float scale) const;
@@ -65,6 +67,27 @@ namespace SimCore
                    dtCore::RefPtr<osg::Texture2D> mSoftGlow;
                    dtCore::RefPtr<osg::Texture2D> mHardGlow;
                    dtCore::RefPtr<osg::Texture2D> mStreaks;
+
+                   struct FadeParams
+                   {
+                      FadeParams()
+                         : mVisible(false)
+                         , mFadeDirection(0)
+                         , mFadeRate(1.0f)
+                         , mLastTickTime(0.0)
+                         , mFadeCurrent(0.0f)
+                      {
+                      }
+
+                      bool mVisible;
+                      int mFadeDirection;
+                      float mFadeRate, mLastTickTime, mFadeCurrent;
+                   };
+
+                   //this requires a map so the fading can work with each camera
+                   //if there are multiple
+                   typedef std::map<osg::Camera*, FadeParams> CameraFadeMap;
+                   mutable CameraFadeMap mFadeMap;
                };  
 
 
