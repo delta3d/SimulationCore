@@ -108,6 +108,8 @@ namespace DriverDemo
 
       if(IsRemote() && physActor != NULL)
       {
+         GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
+            dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE);
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          physActor->clearBodyFlag(NX_BF_KINEMATIC);

@@ -61,21 +61,6 @@ namespace DriverDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-         //   dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
-
-         // You would have to make a new raycast to get this report,
-         // so no flag associated with it.
-         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
-         //   const dtPhysics::PhysicsObject& whatWeHit){}
-
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         virtual void AgeiaPrePhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         virtual void AgeiaPostPhysicsUpdate();
-
          //////////////// PROPERTIES
 
 
