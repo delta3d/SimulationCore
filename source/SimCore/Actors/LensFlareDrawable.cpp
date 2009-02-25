@@ -106,11 +106,6 @@ namespace SimCore
      
       
       LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable()
-         : mVisible(false)
-         , mFadeDirection(0)
-         , mFadeRate(1.0f)
-         , mLastTickTime(0.0)
-         , mFadeCurrent(0.0f)
       {
          setUseDisplayList(false);
          LoadTextures();
@@ -169,33 +164,36 @@ namespace SimCore
 
       //this function calculates a scalar to apply to the flare effect which fades it in and
       //out over the fade rate
-      float LensFlareDrawable::LensFlareOSGDrawable::CalculateEffectScale(bool visible) const
+      float LensFlareDrawable::LensFlareOSGDrawable::CalculateEffectScale(osg::Camera* cam, bool visible) const
       {        
          const double currentTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
 
-         if(mVisible != visible)
+         //this will insert one if it doesnt exist
+         FadeParams& params = mFadeMap[cam];         
+
+         if(params.mVisible != visible)
          {           
             //if visible is false, fade direction will be -1, implying we are fading out
             //else fade direction will be 1, implying we are fading in
-            mFadeDirection = (2 * int(visible)) - 1;            
-            mVisible = visible;
+            params.mFadeDirection = (2 * int(visible)) - 1;            
+            params.mVisible = visible;
          }
-         else if(mFadeDirection != 0)
+         else if(params.mFadeDirection != 0)
          {
-            float fadeDelta = (currentTime - mLastTickTime) / mFadeRate;
-            mFadeCurrent += float(mFadeDirection) * fadeDelta;
+            float fadeDelta = (currentTime - params.mLastTickTime) / params.mFadeRate;
+            params.mFadeCurrent += float(params.mFadeDirection) * fadeDelta;
             
             //if we are fading down and we hit zero or up and we hit one then we are no longer fading
-            if((mFadeCurrent <= 0.0f && mFadeDirection == -1) || (mFadeCurrent >= 1.0 && mFadeDirection == 1))
+            if((params.mFadeCurrent <= 0.0f && params.mFadeDirection == -1) || (params.mFadeCurrent >= 1.0 && params.mFadeDirection == 1))
             {
-               mFadeDirection = 0;
+               params.mFadeDirection = 0;
             }
                
-            dtUtil::Clamp(mFadeCurrent, 0.0f, 1.0f);
+            dtUtil::Clamp(params.mFadeCurrent, 0.0f, 1.0f);
          }         
          
-         mLastTickTime = currentTime;
-         return mFadeCurrent;
+         params.mLastTickTime = currentTime;
+         return params.mFadeCurrent;
       }
 
       void LensFlareDrawable::LensFlareOSGDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
@@ -221,7 +219,7 @@ namespace SimCore
 
             bool occluded = bufferZ < 1;            
 
-            float effectScale = CalculateEffectScale(inFrontOfCamera && !occluded);
+            float effectScale = CalculateEffectScale(cam, inFrontOfCamera && !occluded);
 
       
             //if the lens flare is not on the screen dont draw it
