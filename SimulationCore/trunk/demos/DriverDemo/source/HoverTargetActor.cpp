@@ -1,13 +1,13 @@
 /*
 * Copyright, 2008, Alion Science and Technology Corporation, all rights reserved.
-* 
+*
 * See the .h file for complete licensing information.
-* 
+*
 * Alion Science and Technology Corporation
 * 5365 Robin Hood Road
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
-* 
+*
 * @author Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
@@ -45,7 +45,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverTargetActor ::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy) 
+   HoverTargetActor ::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)
@@ -60,7 +60,7 @@ namespace DriverDemo
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
 
-      // create my unique physics helper.  almost all of the physics is on the helper.  
+      // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       //dtAgeiaPhysX::NxAgeiaPhysicsHelper * helper = new dtAgeiaPhysX::NxAgeiaPhysicsHelper(proxy);
       HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
@@ -113,7 +113,7 @@ namespace DriverDemo
       // REMOTE - Finish initial startup conditions
       if(IsRemote())
       {
-         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us 
+         // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          GetTargetPhysicsHelper()->GetPhysXObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
@@ -161,7 +161,7 @@ namespace DriverDemo
       {
          GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
       }
-      else 
+      else
       {
          mTimeSinceKilled += deltaTime;
       }
@@ -173,18 +173,6 @@ namespace DriverDemo
       {
          GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
       }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetActor::AgeiaPrePhysicsUpdate()
-   {
-      BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate();
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverTargetActor::AgeiaPostPhysicsUpdate()
-   {
-      BasePhysicsVehicleActor::AgeiaPostPhysicsUpdate();
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -228,5 +216,5 @@ namespace DriverDemo
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
    }
 
-} // namespace 
+} // namespace
 #endif
