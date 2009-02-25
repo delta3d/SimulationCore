@@ -26,6 +26,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtDAL/project.h>
 #include <dtCore/scene.h>
+#include <dtCore/system.h>
 #include <dtABC/application.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -105,6 +106,11 @@ namespace SimCore
      
       
       LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable()
+         : mVisible(false)
+         , mFadeDirection(0)
+         , mFadeRate(1.0f)
+         , mLastTickTime(0.0)
+         , mFadeCurrent(0.0f)
       {
          setUseDisplayList(false);
          LoadTextures();
@@ -161,13 +167,44 @@ namespace SimCore
          glEnable(GL_TEXTURE_2D);
       }
 
+      //this function calculates a scalar to apply to the flare effect which fades it in and
+      //out over the fade rate
+      float LensFlareDrawable::LensFlareOSGDrawable::CalculateEffectScale(bool visible) const
+      {        
+         const double currentTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
+
+         if(mVisible != visible)
+         {           
+            //if visible is false, fade direction will be -1, implying we are fading out
+            //else fade direction will be 1, implying we are fading in
+            mFadeDirection = (2 * int(visible)) - 1;            
+            mVisible = visible;
+         }
+         else if(mFadeDirection != 0)
+         {
+            float fadeDelta = (currentTime - mLastTickTime) / mFadeRate;
+            mFadeCurrent += float(mFadeDirection) * fadeDelta;
+            
+            //if we are fading down and we hit zero or up and we hit one then we are no longer fading
+            if((mFadeCurrent <= 0.0f && mFadeDirection == -1) || (mFadeCurrent >= 1.0 && mFadeDirection == 1))
+            {
+               mFadeDirection = 0;
+            }
+               
+            dtUtil::Clamp(mFadeCurrent, 0.0f, 1.0f);
+         }         
+         
+         mLastTickTime = currentTime;
+         return mFadeCurrent;
+      }
+
       void LensFlareDrawable::LensFlareOSGDrawable::drawImplementation(osg::RenderInfo& renderInfo) const
       {
          if(renderInfo.getState() && mHardGlow.valid() && mSoftGlow.valid() && mStreaks.valid())
          {
-            float softGlowScale = 1.0;
-            float hardGlowScale = 0.25;
-            float streaksScale = 0.75;
+            static const float softGlowScale = 1.0;
+            static const float hardGlowScale = 0.20;
+            static const float streaksScale = 0.55;
 
             //calculate the screen position of the light
             osg::Camera* cam = renderInfo.getCurrentCamera();            
@@ -181,30 +218,30 @@ namespace SimCore
             
             float bufferZ = 0.0f;
             glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
-            //std::cout << "Screen X,Y: " << bufferZ << std::endl;
 
-            bool occluded = bufferZ < 1;
+            bool occluded = bufferZ < 1;            
 
+            float effectScale = CalculateEffectScale(inFrontOfCamera && !occluded);
+
+      
             //if the lens flare is not on the screen dont draw it
-            if(inFrontOfCamera && !occluded)// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
+            if(inFrontOfCamera && (effectScale > 0.0f))// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
                //&& screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
-            {
-             
+            {             
                osg::Vec2 screenPos(screenXYZ.x(), screenXYZ.y());
 
                osg::Vec4 glowColor(0.60f, 0.60f, 0.8f, 1.0f);
-               osg::Vec4 hardGlowColor(1.0f, 1.0f, 1.0f, 1.0f);
 
                EnableTextureState(renderInfo);
 
                mHardGlow->apply(*renderInfo.getState());
-               RenderQuad(glowColor, screenPos, hardGlowScale);
+               RenderQuad(glowColor * effectScale, screenPos, hardGlowScale);
 
                mSoftGlow->apply(*renderInfo.getState());
-               RenderQuad(glowColor, screenPos, softGlowScale);
+               RenderQuad(glowColor * effectScale, screenPos, softGlowScale);
 
                mStreaks->apply(*renderInfo.getState());
-               RenderQuad(glowColor, screenPos, streaksScale);
+               RenderQuad(glowColor * effectScale, screenPos, streaksScale);
             }
          }
       }
