@@ -312,6 +312,10 @@ namespace SimCore
 
             void LoadSFXEngineIdleLoop();
 
+            /// Does the work of loading a model file name into a node, assigning it to a parent group, and populating the node collector.
+            bool LoadModelNodeInternal(osg::Group& modelNode, const std::string& fileName, const std::string& copiedNodeName,
+                     bool populateNodeCollector);
+
          private:
             /// The minimum time allowed between control state updates
             float mTimeBetweenControlStateUpdates;
