@@ -129,6 +129,8 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       void TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy&);
       void TestBaseEntityActorUpdates(SimCore::Actors::BaseEntityActorProxy&);
       void TestBaseEntityDRRegistration(SimCore::Actors::BaseEntityActorProxy&);
+      void TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
+         SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state);
 
       RefPtr<dtGame::GameManager> mGM;
       RefPtr<dtGame::DeadReckoningComponent> mDeadReckoningComponent;
@@ -187,10 +189,16 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    ObserverPtr<dtCore::DeltaDrawable> edraw = eap->GetActor();
 
+
    TestBaseEntityActorProxy(*eap);
 
    SimCore::Actors::Platform* platform;
    eap->GetActor(platform);
+
+   TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
+   TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE);
+   TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE);
+   TestPlatformLoadMesh(platform, SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
 
    dtCore::RefPtr<SimCore::VisibilityOptions> visOpts = new SimCore::VisibilityOptions;
    SimCore::BasicVisibilityOptions basicVisOpts;
@@ -219,6 +227,117 @@ void BaseEntityActorProxyTests::TestPlatform()
    eap = NULL;
    CPPUNIT_ASSERT(!edraw.valid());
    edraw = NULL;
+}
+
+void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
+         SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& state)
+{
+   CPPUNIT_ASSERT(platform->GetNodeCollector() == NULL);
+
+   if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+   {
+      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+   }
+
+   platform->LoadDamageableFile("StaticMeshes/physics_happy_sphere.ive", state);
+   dtCore::RefPtr<osg::Node> currentNode = NULL;
+
+   dtCore::RefPtr<const dtUtil::NodeCollector> nodeCollector = platform->GetNodeCollector();
+
+   if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+   {
+      currentNode = platform->GetNonDamagedFileNode();
+      CPPUNIT_ASSERT(nodeCollector.valid());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+   {
+      currentNode = platform->GetDamagedFileNode();
+      CPPUNIT_ASSERT(!nodeCollector.valid());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+   {
+      currentNode = platform->GetDamagedFileNode();
+      CPPUNIT_ASSERT(!nodeCollector.valid());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+   {
+      currentNode = platform->GetDestroyedFileNode();
+      CPPUNIT_ASSERT(!nodeCollector.valid());
+   }
+
+   CPPUNIT_ASSERT(currentNode != NULL);
+   CPPUNIT_ASSERT(currentNode->getParent(0)->getUserData() != NULL);
+   osg::Node* copiedNode = dynamic_cast<osg::Node*>(currentNode->getParent(0)->getUserData());
+   CPPUNIT_ASSERT(copiedNode != NULL);
+   CPPUNIT_ASSERT_EQUAL(std::string("StaticMeshes/physics_happy_sphere.ive"), currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
+
+   platform->LoadDamageableFile("StaticMeshes/physics_happy_sphere.ive", state);
+
+   if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the mesh", currentNode == platform->GetNonDamagedFileNode());
+      CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the node collector", nodeCollector.get() == platform->GetNodeCollector());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the mesh", currentNode == platform->GetDamagedFileNode());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the mesh", currentNode == platform->GetDamagedFileNode());
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should NOT have reloaded the mesh", currentNode == platform->GetDestroyedFileNode());
+   }
+
+   platform->LoadDamageableFile("StaticMeshes/physics_crate.ive", state);
+
+   if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should have reloaded the mesh", currentNode != platform->GetNonDamagedFileNode());
+      CPPUNIT_ASSERT_MESSAGE("It should have reloaded the node collector", nodeCollector.get() != platform->GetNodeCollector());
+      currentNode = platform->GetNonDamagedFileNode();
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should have reloaded the mesh", currentNode != platform->GetDamagedFileNode());
+      currentNode = platform->GetDamagedFileNode();
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should have reloaded the mesh", currentNode != platform->GetDamagedFileNode());
+      currentNode = platform->GetDamagedFileNode();
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+   {
+      CPPUNIT_ASSERT_MESSAGE("It should have reloaded the mesh", currentNode != platform->GetDestroyedFileNode());
+      currentNode = platform->GetDestroyedFileNode();
+   }
+
+   CPPUNIT_ASSERT_EQUAL(std::string("StaticMeshes/physics_crate.ive"), currentNode->getParent(0)->getName());
+   CPPUNIT_ASSERT_EQUAL(state.GetName(), currentNode->getName());
+
+   platform->LoadDamageableFile("", state);
+
+   if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+   {
+      CPPUNIT_ASSERT(platform->GetNonDamagedFileNode() == NULL);
+      CPPUNIT_ASSERT_MESSAGE("It should have deleted the node collector on model unload", platform->GetNodeCollector() == NULL);
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
+   {
+      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+   {
+      CPPUNIT_ASSERT(platform->GetDamagedFileNode() == NULL);
+   }
+   else if (state ==  SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+   {
+      CPPUNIT_ASSERT(platform->GetDestroyedFileNode() == NULL);
+   }
 }
 
 void BaseEntityActorProxyTests::TestHuman()

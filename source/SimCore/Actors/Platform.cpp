@@ -203,7 +203,7 @@ namespace SimCore
       dtDAL::ActorProxyIcon* PlatformActorProxy::GetBillboardIcon()
       {
          if(!mBillboardIcon.valid())
-            mBillboardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IconType::STATICMESH);
+            mBillboardIcon = new dtDAL::ActorProxyIcon(dtDAL::ActorProxyIcon::IMAGE_BILLBOARD_STATICMESH);
 
          return mBillboardIcon.get();
       }
@@ -376,7 +376,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::InternalSetDamageState(PlatformActorProxy::DamageStateEnum &damageState)
+      void Platform::InternalSetDamageState(PlatformActorProxy::DamageStateEnum& damageState)
       {
          if(IsDrawingModel())
          {
@@ -422,17 +422,6 @@ namespace SimCore
          }
 
          BaseClass::SetDamageState(damageState);
-
-         // Update the articulation helper with DOFs of the current model.
-         if( ! mArticHelper.valid() )
-         {
-            mArticHelper = new SimCore::Components::DefaultArticulationHelper;
-         }
-
-         mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
-
-         //The damage state can effect the dr algorithm.
-         SetDeadReckoningAlgorithm(GetDeadReckoningAlgorithm());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -447,19 +436,31 @@ namespace SimCore
       /// For the different physics models
       osg::Node* Platform::GetNonDamagedFileNode()
       {
-         return mNonDamagedFileNode.get()->getChild(0);
+         if (mNonDamagedFileNode->getNumChildren() > 0)
+         {
+            return mNonDamagedFileNode->getChild(0);
+         }
+         return NULL;
       }
 
       /// For the different physics models
       osg::Node* Platform::GetDamagedFileNode()
       {
-         return mDamagedFileNode.get()->getChild(0);
+         if (mDamagedFileNode->getNumChildren() > 0)
+         {
+            return mDamagedFileNode->getChild(0);
+         }
+         return NULL;
       }
 
       /// For the different physics models
       osg::Node* Platform::GetDestroyedFileNode()
       {
-         return mDestroyedFileNode.get()->getChild(0);
+         if (mDestroyedFileNode->getNumChildren() > 0)
+         {
+            return mDestroyedFileNode->getChild(0);
+         }
+         return NULL;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -469,114 +470,82 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::LoadDamageableFile(const std::string &fileName, PlatformActorProxy::DamageStateEnum &state)
+      bool Platform::LoadModelNodeInternal(osg::Group& modelNode,
+               const std::string& fileName,
+               const std::string& copiedNodeName,
+               bool populateNodeCollector)
+      {
+         if (fileName == modelNode.getName())
+         {
+            return false;
+         }
+
+         if (modelNode.getNumChildren() > 0)
+         {
+            std::ostringstream oss;
+            oss << "Platform forced a reload of model files: File [" << fileName      <<
+                   "], Actor Type[" << GetGameActorProxy().GetActorType().GetName() <<
+                   "], Name[" << GetName() << "], Id[" << GetUniqueId().ToString()  <<
+                   "].";
+
+            mLogger->LogMessage(dtUtil::Log::LOG_WARNING,
+                                __FUNCTION__, __LINE__, oss.str().c_str());
+
+         }
+
+         modelNode.removeChild(0, modelNode.getNumChildren());
+
+         // Store the file name in the name of the node.
+         modelNode.setName(fileName);
+
+         dtCore::RefPtr<osg::Node> cachedOriginalNode;
+         dtCore::RefPtr<osg::Node> copiedNode;
+         if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
+            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
+         copiedNode->setName(copiedNodeName);
+         modelNode.addChild(copiedNode.get());
+         modelNode.setUserData(cachedOriginalNode.get());
+
+         if (populateNodeCollector)
+         {
+            LoadNodeCollector(copiedNode.get());
+         }
+         return true;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::LoadDamageableFile(const std::string& fileName, PlatformActorProxy::DamageStateEnum &state)
       {
          if(!fileName.empty())
          {
+
+            bool loadedNewModel = false;
             if(state == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
             {
-               if (mNonDamagedFileNode->getNumChildren() > 0)
-               {
-                  std::ostringstream oss;
-                  oss << "Platform forced a reload of model files: File [" << fileName      <<
-                         "], Actor Type[" << GetGameActorProxy().GetActorType().GetName() <<
-                         "], Name[" << GetName() << "], Id[" << GetUniqueId().ToString()  <<
-                         "].";
-
-                  mLogger->LogMessage(dtUtil::Log::LOG_WARNING,
-                                      __FUNCTION__, __LINE__, oss.str().c_str());
-
-                  //std::cout << "Platform - Loading NO DAMAGE File [" << fileName  << "] for actor type[" <<
-                  //   GetGameActorProxy().GetActorType().GetName() << "].  Previous Num Children was[" <<
-                  //   mNonDamagedFileNode->getNumChildren() << "], name[" << GetName() << "], Id[" <<
-                  //   GetUniqueId().ToString() << "]." << std::endl;
-               }
-               mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
-
-               dtCore::RefPtr<osg::Node> cachedOriginalNode;
-               dtCore::RefPtr<osg::Node> copiedNode;
-               if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-                  std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
-               copiedNode->setName("No Damage");
-               mNonDamagedFileNode->addChild(copiedNode.get());
-               mNonDamagedFileNode->setUserData(cachedOriginalNode.get());
-               LoadNodeCollector(copiedNode.get());
-
-               //osg::Node *node = mLoader.LoadFile(fileName, true);
-               //if(node == NULL)
-               //   throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, std::string("Model file could not be loaded: ") + fileName);
-
-               //node->setName("No Damage");
-               //mNonDamagedFileNode->addChild(node);
-               //LoadNodeCollector(node);
+               loadedNewModel = LoadModelNodeInternal(*mNonDamagedFileNode, fileName, state.GetName(), true);
             }
             else if(state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
             {
-               mDamagedFileNode->removeChild(0,mDamagedFileNode->getNumChildren());
-
-               dtCore::RefPtr<osg::Node> cachedOriginalNode;
-               dtCore::RefPtr<osg::Node> copiedNode;
-               if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-                  std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
-               copiedNode->setName("Slight Damage");
-               mDamagedFileNode->addChild(copiedNode.get());
-               mDamagedFileNode->setUserData(cachedOriginalNode.get());
-
-               //osg::Node *node = mLoader.LoadFile(fileName, true);
-               //if(node == NULL)
-               //   throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, std::string("Model file could not be loaded: ") + fileName);
-
-               //node->setName("Slight Damage");
-               //mDamagedFileNode->addChild(node);
+               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName(), false);
             }
             else if(state == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
-               mDamagedFileNode->removeChild(0,mDamagedFileNode->getNumChildren());
-
-               dtCore::RefPtr<osg::Node> cachedOriginalNode;
-               dtCore::RefPtr<osg::Node> copiedNode;
-               if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-                  std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
-               copiedNode->setName("Moderate Damage");
-               mDamagedFileNode->addChild(copiedNode.get());
-               mDamagedFileNode->setUserData(cachedOriginalNode.get());
-
-               //osg::Node *node = mLoader.LoadFile(fileName, true);
-               //if(node == NULL)
-               //   throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, std::string("Model file could not be loaded: ") + fileName);
-
-               //node->setName("Moderate Damage");
-               //mDamagedFileNode->addChild(node);
+               loadedNewModel = LoadModelNodeInternal(*mDamagedFileNode, fileName, state.GetName(), false);
             }
             else if(state == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
-               mDestroyedFileNode->removeChild(0,mDestroyedFileNode->getNumChildren());
-
-               dtCore::RefPtr<osg::Node> cachedOriginalNode;
-               dtCore::RefPtr<osg::Node> copiedNode;
-               if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
-                  throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-                  std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
-               copiedNode->setName("Destroyed");
-               mDestroyedFileNode->addChild(copiedNode.get());
-               mDestroyedFileNode->setUserData(cachedOriginalNode.get());
-
-               //osg::Node *node = mLoader.LoadFile(fileName, true);
-               //if(node == NULL)
-               //   throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, std::string("Model file could not be loaded: ") + fileName);
-
-               //node->setName("Destroyed");
-               //mDestroyedFileNode->addChild(node);
+               loadedNewModel = LoadModelNodeInternal(*mDestroyedFileNode, fileName, state.GetName(), false);
             }
             else
                throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                "Damage state is not supported", __FILE__, __LINE__);
 
-            /// this resets the model now that new model files have been loaded n' stuff.
-            InternalSetDamageState(GetDamageState());
+            if (loadedNewModel)
+            {
+               /// this resets the model now that new model files have been loaded n' stuff.
+               InternalSetDamageState(GetDamageState());
+            }
          }
          else
          {
@@ -584,6 +553,11 @@ namespace SimCore
             {
                mNonDamagedFileNode->removeChild(0,mNonDamagedFileNode->getNumChildren());
                mNonDamagedFileNode->setUserData(NULL);
+               mNodeCollector = NULL;
+               if (mArticHelper.valid())
+               {
+                  mArticHelper->UpdateDOFReferences(NULL);
+               }
             }
             else if(state == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE)
             {
@@ -601,8 +575,10 @@ namespace SimCore
                mDestroyedFileNode->setUserData(NULL);
             }
             else
+            {
                throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
                "Damage state is not supported", __FILE__, __LINE__);
+            }
          }
       }
 
@@ -754,9 +730,7 @@ namespace SimCore
             GetGameActorProxy().GetGameManager()->SetTimer("TimeElapsedForSoundIdle", &GetGameActorProxy(), 1, true);
             mSndIdleLoop = dtAudio::AudioManager::GetInstance().NewSound();
             mSndIdleLoop->LoadFile(mSFXSoundIdleEffect.c_str());
-            mSndIdleLoop->ListenerRelative(false);
             mSndIdleLoop->SetLooping(true);
-            mSndIdleLoop->SetMinDistance(mMinIdleSoundDistance);
             mSndIdleLoop->SetMaxDistance(mMaxIdleSoundDistance);
             AddChild(mSndIdleLoop.get());
             dtCore::Transform xform;
@@ -832,6 +806,13 @@ namespace SimCore
       {
          mNodeCollector = new dtUtil::NodeCollector(dofModel, dtUtil::NodeCollector::AllNodeTypes);
          GetDeadReckoningHelper().SetNodeCollector(*mNodeCollector);
+         // Update the articulation helper with DOFs of the current model.
+         if (!mArticHelper.valid())
+         {
+            mArticHelper = new SimCore::Components::DefaultArticulationHelper;
+         }
+
+         mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -850,7 +831,7 @@ namespace SimCore
       void Platform::SetArticulationHelper( SimCore::Components::ArticulationHelper* articHelper )
       {
          mArticHelper = articHelper;
-         if( mArticHelper.valid() )
+         if (mArticHelper.valid())
          {
             mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
          }
