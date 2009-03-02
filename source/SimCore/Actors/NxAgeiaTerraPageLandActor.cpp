@@ -314,8 +314,6 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
                   mPhysicsHelper->TurnOffCollision(currentNode->GetPhysicsObject());
 #else
-                  //TODO make this work for a terrain
-                  currentNode->GetPhysicsObject()->SetActive(false);
 #endif
                }
                else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
@@ -324,8 +322,6 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
                   mPhysicsHelper->TurnOnCollision(currentNode->GetPhysicsObject());
 #else
-                  //TODO make this work for a terrain
-                  currentNode->GetPhysicsObject()->SetActive(true);
 #endif
                }
                else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD

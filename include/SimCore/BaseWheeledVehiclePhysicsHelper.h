@@ -170,7 +170,7 @@ namespace SimCore
             float             mTireRestitution;
 
 #ifndef AGEIA_PHYSICS
-            palVehicle* vehicle;
+            palVehicle* mVehicle;
 #endif
 
    };

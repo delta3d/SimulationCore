@@ -23,7 +23,11 @@
 */
 
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
+#ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
+//#else
+//#include <dtPhysics/physicscomponent.h>
+//#endif
 #include <osg/Matrix>
 #include <osgSim/DOFTransform>
 #include <dtDAL/enginepropertytypes.h>
@@ -64,7 +68,7 @@ namespace SimCore
          {
             // ( X * 10 * 60) / (5280* 12) * 100 = X * 0.9469696
             //return (-((10 * GetWheelSizeWidth() * NxPi * mWheels[BACK_LEFT]->getAxleSpeed() * 60) / (5280 * 12)) * 100);
-            return -0.9469696 * 2.0 * GetWheelRadius() * NxPi * mWheels[BACK_LEFT]->getAxleSpeed();
+            return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[BACK_LEFT]->getAxleSpeed();
          }
 
          float FourWheelVehiclePhysicsHelper::GetWheelRotation( WheelLocation index ) const
@@ -107,7 +111,7 @@ namespace SimCore
                float RotationTemp = mAxleRotation[i];
                RotationTemp += (mWheels[2*i]->getAxleSpeed()+mWheels[2*i+1]->getAxleSpeed()) / 2.0f * deltaTime;
                float dum;
-               RotationTemp = NxTwoPi * modff ( RotationTemp / NxTwoPi, &dum );
+               RotationTemp = NxTwoPi * modff( RotationTemp / NxTwoPi, &dum );
                if ( RotationTemp < 0.0f )
                   RotationTemp += NxTwoPi;
                mAxleRotation[i] = RotationTemp;
@@ -227,7 +231,7 @@ namespace SimCore
                GetLocalMatrix((wheels[i]), WheelMatrix[i]);
                WheelVec[i] = WheelMatrix[i].getTrans() - BodyMatrix.getTrans();
             }
-   
+
             float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
             float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
             float wheelbase       = frontLeverArm + rearLeverArm;
@@ -252,7 +256,7 @@ namespace SimCore
                 || mWheels[FRONT_RIGHT] == NULL
                 || mWheels[BACK_LEFT] == NULL
                 || mWheels[BACK_RIGHT] == NULL )
-                return false;            
+                return false;
 
 
             CreateChassis(transformForRot, bodyNode);
@@ -279,3 +283,4 @@ namespace SimCore
             BaseClass::BuildPropertyMap(toFillIn);
          }
 } // end namespace
+#endif

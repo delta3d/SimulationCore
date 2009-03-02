@@ -119,7 +119,7 @@ namespace SimCore
                unsigned flags = worldComponent->GetMaterial(NameofMaterial, "Default", true).getFlags();
 
                flags |= NX_MF_DISABLE_FRICTION;
-               worldComponent->GetMaterial(NameofMaterial, "Default", true).setFlags(flags);            
+               worldComponent->GetMaterial(NameofMaterial, "Default", true).setFlags(flags);
                wheelShapeDesc.materialIndex = worldComponent->GetMaterialIndex(NameofMaterial, "Default", true);
             }
             else
@@ -150,7 +150,7 @@ namespace SimCore
             return wheelShape;
          }
 #else
-         WheelType* BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, bool steerable)
+         WheelType* BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position)
          {
             return NULL;
          }
@@ -203,7 +203,7 @@ namespace SimCore
 
             //TODO: this is using torque in place of force, some conversion probably needs to be done.
             vehicle->Init(dynamic_cast<palBody*>(physicsObject->GetBodyWrapper()->GetPalBody()),
-                     mMotorTorque, mHorsePower);
+                     mEngineTorque, mHorsePower);
             //TODO: offset center of mass.
             //dtCore::Transform xform;
             //xform.Set(transformForRot);
