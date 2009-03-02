@@ -24,7 +24,7 @@
 
 #ifndef DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER
 #define DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER
-
+#ifdef AGEIA_PHYSICS
 #include <SimCore/Export.h>
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
 
@@ -60,11 +60,11 @@ namespace SimCore
             void UpdateVehicle(float deltaTime);
             void Steer(float normalize_wheel_angle);
             void ApplyAccelerator(float pedal);
-            void ApplyBrake(float normalized_brake);            
+            void ApplyBrake(float normalized_brake);
 
             bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode, osgSim::DOFTransform* wheels[4]);
 
-            
+
          //////////////////////////////////////////////////////////////////
          // Build the property list for the actor
          virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
@@ -87,5 +87,5 @@ namespace SimCore
       float            mRearMaxJounce;            //!< Vertical translation of rear wheel (relative to body) with suspension fully compressed.
    };
 }
-
+#endif
 #endif //DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER
