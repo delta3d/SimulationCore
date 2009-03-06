@@ -54,10 +54,10 @@ namespace StealthQt
    {
       mUi->setupUi(this);
 
-      QVBoxLayout* boxLayout = new QVBoxLayout(mUi->mFOVPane);
-      mUi->mFOVPane->setLayout(boxLayout);
-      boxLayout->addWidget(mFOVWidget);
-
+      //QVBoxLayout* boxLayout = new QVBoxLayout(mUi->mFOVPane);
+      //mUi->mFOVPane->setLayout(boxLayout);
+      //boxLayout->addWidget(mFOVWidget);
+      mUi->mFOVPane->layout()->addWidget(mFOVWidget);
       mFOVWidget->SetViewWindow(mViewWindow.get());
       mFOVWidget->Init();
 
