@@ -437,6 +437,11 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    MainWindow::~MainWindow()
    {
+      for (size_t i =0; i < mVisibilityCheckBoxes.size(); ++i)
+      {
+         mVisibilityCheckBoxes[i]->setUserData(0, NULL);
+      }
+
       delete mUi;
       mUi = NULL;
       delete mViewDockWidget;
