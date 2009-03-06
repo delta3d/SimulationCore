@@ -398,6 +398,8 @@ namespace StealthQt
       WriteControlsPlaybackGroupToFile();
 
       WriteViewWindowGroupToFile();
+
+      sync();
    }
 
    void StealthViewerSettings::WritePreferencesGeneralGroupToFile()
