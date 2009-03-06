@@ -57,10 +57,11 @@ namespace StealthQt
    {
       mUi->setupUi(this);
 
-      QVBoxLayout* boxLayout = new QVBoxLayout(mUi->mFOVPane);
-      boxLayout->setContentsMargins(0,0,0,0);
-      mUi->mFOVPane->setLayout(boxLayout);
-      boxLayout->addWidget(mFOVWidget);
+      //QVBoxLayout* boxLayout = new QVBoxLayout(mUi->mFOVPane);
+      //boxLayout->setContentsMargins(0,0,0,0);
+      //mUi->mFOVPane->setLayout(boxLayout);
+      //boxLayout->addWidget(mFOVWidget);
+      mUi->mFOVPane->layout()->addWidget(mFOVWidget);
 
       connect(mUi->mNewViewButton, SIGNAL(clicked(bool)),
                this,                SLOT(OnNewViewClicked(bool)));
