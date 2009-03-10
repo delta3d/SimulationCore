@@ -23,7 +23,7 @@
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
- * @author David Guthrie
+ * @author David Guthrie, Curtiss Murphy
  */
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
@@ -51,6 +51,17 @@
 #include <fstream>
 #include <cstdlib>
 
+
+// global vars for mapMerger
+static int mNumLibrariesAdded = 0;
+static int mNumActorsAdded = 0;
+static int mNumActorsChanged = 0;
+static int mNumPropsChanged = 0;
+static int mNumEventsAdded = 0; 
+static int mNumEventsChanged = 0;
+
+
+/////////////////////////////////////////////////////////////////////
 void Usage()
 {
    std::cerr << "Usage: MapMerger [-i ignorePropsFile] <projectPath> <mapFrom> <mapTo>" << std::endl;
@@ -58,6 +69,8 @@ void Usage()
 }
 
 template <typename container>
+
+/////////////////////////////////////////////////////////////////////
 void PrintMissing(const container& c)
 {
    typedef typename container::const_iterator citor;
@@ -73,6 +86,7 @@ void PrintMissing(const container& c)
    std::cerr << std::endl;
 }
 
+/////////////////////////////////////////////////////////////////////
 void PrintMissingData(dtDAL::Map& m)
 {
    std::cerr << m.GetName() << " tried to load the following actor types, but they were not found.\n";
@@ -83,6 +97,7 @@ void PrintMissingData(dtDAL::Map& m)
    exit(-1);
 }
 
+/////////////////////////////////////////////////////////////////////
 void MergeLibraries(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
 {
    const std::vector<std::string>& libs = mapFrom.GetAllLibraries();
@@ -96,12 +111,15 @@ void MergeLibraries(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
       if (!mapTo.HasLibrary(libName))
       {
          mapTo.AddLibrary(libName, mapFrom.GetLibraryVersion(libName));
+         mNumLibrariesAdded ++;
       }
    }
 }
 
+/////////////////////////////////////////////////////////////////////
 void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::set<std::string> ignorePropsSet)
 {
+   bool actorPropChanged = false;
    std::vector<const dtDAL::ActorProperty*> props;
    from.GetPropertyList(props);
 
@@ -129,12 +147,23 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
          }
          else
          {
+            if (toProp->ToString() != curProp.ToString())
+            {
+               mNumPropsChanged ++;
+               actorPropChanged = true;
+            }
             toProp->CopyFrom(curProp);
          }
       }
    }
+
+   if (actorPropChanged)
+   {
+      mNumActorsChanged ++;
+   }
 }
 
+/////////////////////////////////////////////////////////////////////
 void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> ignorePropsSet)
 {
    std::vector<dtCore::RefPtr<dtDAL::ActorProxy> > proxiesFrom;
@@ -153,10 +182,12 @@ void MergeProxies(dtDAL::Map& mapFrom, dtDAL::Map& mapTo, std::set<std::string> 
       else
       {
          mapTo.AddProxy(mapFromProxyCurrent);
+         mNumActorsAdded ++;
       }
    }
 }
 
+/////////////////////////////////////////////////////////////////////
 void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
 {
    std::vector<dtDAL::GameEvent* > mapFromEvents;
@@ -172,17 +203,25 @@ void MergeEvents(dtDAL::Map& mapFrom, dtDAL::Map& mapTo)
       dtDAL::GameEvent* foundEvent = mapToEventMan.FindEvent(curEvent->GetUniqueId());
       if (foundEvent != NULL)
       {
+         if (foundEvent->GetDescription() != curEvent->GetDescription() && 
+            foundEvent->GetName() != curEvent->GetName())
+         {
+            mNumEventsChanged ++;
+         }
+
          foundEvent->SetDescription(curEvent->GetDescription());
          foundEvent->SetName(curEvent->GetName());
       }
       else
       {
          mapToEventMan.AddEvent(*curEvent);
+         mNumEventsAdded ++;
       }
 
    }
 }
 
+/////////////////////////////////////////////////////////////////////
 /** \brief A functor which tests if a character is part of a newline.
   * This "predicate" needed to have 'state', the locale member.
   */
@@ -195,6 +234,7 @@ private:
    std::locale mLocale;
 };
 
+/////////////////////////////////////////////////////////////////////
 void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resultingList)
 {
    dtUtil::FileInfo fi = dtUtil::FileUtils::GetInstance().GetFileInfo(path);
@@ -223,6 +263,8 @@ void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resul
    tokenizer.tokenize(resultingList, data);
 }
 
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 int main (int argc, char* argv[])
 {
    const std::string executable = argv[0];
@@ -271,6 +313,9 @@ int main (int argc, char* argv[])
       Usage();
    }
 
+   std::cout << "Map Merge - merging from [" << 
+      mapFromName << "] onto [" << mapToName << "]." << std::endl << std::endl;
+
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
@@ -305,10 +350,25 @@ int main (int argc, char* argv[])
 
       dtDAL::Project::GetInstance().SaveMap(mapTo);
 
+      std::cout << std::endl;
+      std::cout << "Map Merge was a success!!! Successfully merged:" << std::endl << 
+         "  from map [" << mapFromName << "] onto [" << mapToName << "]." << std::endl;
+      std::cout << "  [" << mNumEventsAdded << "] events added; [" << 
+         mNumLibrariesAdded << "] Libraries added" << std::endl;
+      std::cout << "  [" << mNumActorsAdded << "] actors added; [" << 
+         mNumActorsChanged << "] actors changed; [" << 
+         mNumPropsChanged << "] props changed; [" << std::endl;
+         
+
+      dtDAL::Project::GetInstance().CloseAllMaps(true);
+
       dtAudio::AudioManager::Destroy();
    }
    catch(const dtUtil::Exception& ex)
    {
+      std::cout << "Map Merge failed. Error occurred merging from map [" <<
+         mapFromName << "] onto [" << mapToName << "]." << std::endl;
+      dtDAL::Project::GetInstance().CloseAllMaps(true);
       dtAudio::AudioManager::Destroy();
       LOG_ERROR(ex.ToString());
       return 1;
