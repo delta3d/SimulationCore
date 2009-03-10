@@ -353,12 +353,13 @@ int main (int argc, char* argv[])
       std::cout << std::endl;
       std::cout << "Map Merge was a success!!! Successfully merged:" << std::endl << 
          "  from map [" << mapFromName << "] onto [" << mapToName << "]." << std::endl;
-      std::cout << "  [" << mNumEventsAdded << "] events added; [" << 
-         mNumLibrariesAdded << "] Libraries added" << std::endl;
-      std::cout << "  [" << mNumActorsAdded << "] actors added; [" << 
-         mNumActorsChanged << "] actors changed; [" << 
-         mNumPropsChanged << "] props changed; [" << std::endl;
-         
+      std::cout << "  [" << mNumEventsAdded << "] Events Added; [" << 
+         mNumEventsChanged << "] Events Changed; [" << 
+         mNumLibrariesAdded << "] Libraries Added; " << std::endl;
+      std::cout << "  [" << mNumActorsAdded << "] Actors Added; [" << 
+         mNumActorsChanged << "] Actors Changed; [" << 
+         mNumPropsChanged << "] Props Changed; " << std::endl;
+
 
       dtDAL::Project::GetInstance().CloseAllMaps(true);
 
