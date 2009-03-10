@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="mMenuWindow" >
@@ -101,379 +101,412 @@
           <number>5</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="groupBox" >
-           <property name="title" >
-            <string>Options</string>
-           </property>
-           <layout class="QFormLayout" name="formLayout" >
-            <item row="2" column="0" >
-             <widget class="QLabel" name="mGeneralPerformaceLabel" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text" >
-               <string>Performance</string>
-              </property>
-              <property name="buddy" >
-               <cstring>mGeneralPerformanceComboBox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" >
-             <widget class="QLabel" name="mOptionsCoordinateSystemLabel" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text" >
-               <string>Coordinate System</string>
-              </property>
-              <property name="buddy" >
-               <cstring>mOptionsCoordinateSystemComboBox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" >
-             <widget class="QComboBox" name="mOptionsCoordinateSystemComboBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip" >
-               <string>Select the coordinate system to be used. This is a global change. </string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QComboBox" name="mGeneralPerformanceComboBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip" >
-               <string>Select one of the preset performance options of customize your own. </string>
-              </property>
-              <property name="currentIndex" >
-               <number>-1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1" >
-             <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
-              <property name="toolTip" >
-               <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
-              </property>
-              <property name="text" >
-               <string>Auto-Attach on Selection</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1" >
-             <widget class="QCheckBox" name="mGeneralShowAdvancedOptionsCheckBox" >
-              <property name="text" >
-               <string>Show Advanced Options</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QCheckBox" name="mGeneralEnableCameraCollisionCheckBox" >
-              <property name="toolTip" >
-               <string>Selecting this will prevent the camera from going under the earth.</string>
-              </property>
-              <property name="text" >
-               <string>Keep Camera Above Ground</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mAttachOptionsGroup" >
-           <property name="title" >
-            <string>Attachment</string>
-           </property>
-           <layout class="QFormLayout" name="formLayout_2" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="mGeneralAttachModeLabel" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text" >
-               <string>Attach Mode</string>
-              </property>
-              <property name="buddy" >
-               <cstring>mGeneralAttachModeComboBox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" >
-             <widget class="QComboBox" name="mGeneralAttachModeComboBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                <horstretch>1</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip" >
-               <string>Selects first or third person attach mode. </string>
-              </property>
-              <property name="currentIndex" >
-               <number>-1</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" >
-             <widget class="QLabel" name="mAttachNodeLabel" >
-              <property name="text" >
-               <string>Attach Point/Node (Optional)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QLineEdit" name="mAttachNodeName" >
-              <property name="toolTip" >
-               <string>Name of pre-created attach point provided by the 3d model creator.  If this does not exist, it will be ignored.</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0" >
-             <widget class="QLabel" name="mAttachAzimuthLabel" >
-              <property name="toolTip" >
-               <string>Attach azimuth in degrees.  Right is positive.</string>
-              </property>
-              <property name="text" >
-               <string>Attach Azimuth (Degrees)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QLineEdit" name="mAttachAzimuth" >
-              <property name="toolTip" >
-               <string>Attach azimuth in degrees.  Right is positive.</string>
-              </property>
-              <property name="text" >
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" >
-             <widget class="QCheckBox" name="mAutoAttachCheckBox" >
-              <property name="toolTip" >
-               <string>If this is enabled, and the Auto-Attach Callsign is set, this will automatically attach to any entity with that callsign when it enters the world.</string>
-              </property>
-              <property name="text" >
-               <string>Auto-Attach to Callsign</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" >
-             <widget class="QLineEdit" name="mAutoAttachCallsign" >
-              <property name="enabled" >
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mGeneralAdvancedPerformanceOptionsGroupBox" >
-           <property name="title" >
-            <string>Advanced Performance Options</string>
-           </property>
-           <layout class="QFormLayout" name="formLayout_3" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="mGeneralLODScaleLabel" >
-              <property name="text" >
-               <string>LOD Scale</string>
-              </property>
-              <property name="buddy" >
-               <cstring>mGeneralLODScaleLineEdit</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" >
-             <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
-              <property name="toolTip" >
-               <string>This is the scale value for level of detail</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
-              <property name="currentIndex" >
-               <number>0</number>
-              </property>
-              <item>
-               <property name="text" >
-                <string>0.05</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>0.1</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>0.25</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>0.5</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>1</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>2</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>5</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>10</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>100</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
-              <property name="currentIndex" >
-               <number>0</number>
-              </property>
-              <item>
-               <property name="text" >
-                <string>1000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>2000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>5000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>8000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>10000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>11000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>12000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>15000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>18000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>20000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>25000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>30000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>50000</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="1" column="0" >
-             <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
-              <property name="text" >
-               <string>Near Plane</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0" >
-             <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
-              <property name="text" >
-               <string>Far Plane</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation" >
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType" >
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0" >
+          <widget class="QScrollArea" name="scrollArea_2" >
+           <property name="minimumSize" >
             <size>
-             <width>20</width>
-             <height>900</height>
+             <width>50</width>
+             <height>50</height>
             </size>
            </property>
-          </spacer>
+           <property name="widgetResizable" >
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_2" >
+            <property name="geometry" >
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>296</width>
+              <height>812</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2" >
+             <item>
+              <widget class="QGroupBox" name="groupBox" >
+               <property name="title" >
+                <string>Options</string>
+               </property>
+               <layout class="QFormLayout" name="formLayout" >
+                <item row="2" column="0" >
+                 <widget class="QLabel" name="mGeneralPerformaceLabel" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text" >
+                   <string>Performance</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mGeneralPerformanceComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" >
+                 <widget class="QLabel" name="mOptionsCoordinateSystemLabel" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text" >
+                   <string>Coordinate System</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mOptionsCoordinateSystemComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1" >
+                 <widget class="QComboBox" name="mOptionsCoordinateSystemComboBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip" >
+                   <string>Select the coordinate system to be used. This is a global change. </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QComboBox" name="mGeneralPerformanceComboBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip" >
+                   <string>Select one of the preset performance options of customize your own. </string>
+                  </property>
+                  <property name="currentIndex" >
+                   <number>-1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="1" >
+                 <widget class="QCheckBox" name="mToolsAutoAttachOnSelectionCheckBox" >
+                  <property name="toolTip" >
+                   <string>This selects whether or not to attach to an entity from double clicking it in the search window</string>
+                  </property>
+                  <property name="text" >
+                   <string>Auto-Attach on Selection</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="1" >
+                 <widget class="QCheckBox" name="mGeneralShowAdvancedOptionsCheckBox" >
+                  <property name="text" >
+                   <string>Show Advanced Options</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QCheckBox" name="mGeneralEnableCameraCollisionCheckBox" >
+                  <property name="toolTip" >
+                   <string>Selecting this will prevent the camera from going under the earth.</string>
+                  </property>
+                  <property name="text" >
+                   <string>Keep Camera Above Ground</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+               <zorder>mGeneralPerformaceLabel</zorder>
+               <zorder>mOptionsCoordinateSystemLabel</zorder>
+               <zorder>mOptionsCoordinateSystemComboBox</zorder>
+               <zorder>mGeneralPerformanceComboBox</zorder>
+               <zorder>mToolsAutoAttachOnSelectionCheckBox</zorder>
+               <zorder>mGeneralShowAdvancedOptionsCheckBox</zorder>
+               <zorder>mGeneralEnableCameraCollisionCheckBox</zorder>
+               <zorder>mAttachOptionsGroup</zorder>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="mAttachOptionsGroup" >
+               <property name="title" >
+                <string>Attachment</string>
+               </property>
+               <layout class="QFormLayout" name="formLayout_2" >
+                <item row="0" column="0" >
+                 <widget class="QLabel" name="mGeneralAttachModeLabel" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text" >
+                   <string>Attach Mode</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mGeneralAttachModeComboBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1" >
+                 <widget class="QComboBox" name="mGeneralAttachModeComboBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                    <horstretch>1</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip" >
+                   <string>Selects first or third person attach mode. </string>
+                  </property>
+                  <property name="currentIndex" >
+                   <number>-1</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" >
+                 <widget class="QLabel" name="mAttachNodeLabel" >
+                  <property name="text" >
+                   <string>Attach Point/Node (Optional)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QLineEdit" name="mAttachNodeName" >
+                  <property name="toolTip" >
+                   <string>Name of pre-created attach point provided by the 3d model creator.  If this does not exist, it will be ignored.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0" >
+                 <widget class="QLabel" name="mAttachAzimuthLabel" >
+                  <property name="toolTip" >
+                   <string>Attach azimuth in degrees.  Right is positive.</string>
+                  </property>
+                  <property name="text" >
+                   <string>Attach Azimuth (Degrees)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QLineEdit" name="mAttachAzimuth" >
+                  <property name="toolTip" >
+                   <string>Attach azimuth in degrees.  Right is positive.</string>
+                  </property>
+                  <property name="text" >
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" >
+                 <widget class="QCheckBox" name="mAutoAttachCheckBox" >
+                  <property name="toolTip" >
+                   <string>If this is enabled, and the Auto-Attach Callsign is set, this will automatically attach to any entity with that callsign when it enters the world.</string>
+                  </property>
+                  <property name="text" >
+                   <string>Auto-Attach to Callsign</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1" >
+                 <widget class="QLineEdit" name="mAutoAttachCallsign" >
+                  <property name="enabled" >
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="mGeneralAdvancedPerformanceOptionsGroupBox" >
+               <property name="title" >
+                <string>Advanced Performance Options</string>
+               </property>
+               <layout class="QFormLayout" name="formLayout_3" >
+                <item row="0" column="0" >
+                 <widget class="QLabel" name="mGeneralLODScaleLabel" >
+                  <property name="text" >
+                   <string>LOD Scale</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mGeneralLODScaleLineEdit</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1" >
+                 <widget class="QLineEdit" name="mGeneralLODScaleLineEdit" >
+                  <property name="toolTip" >
+                   <string>This is the scale value for level of detail</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QComboBox" name="mGeneralNearClippingPlaneComboBox" >
+                  <property name="currentIndex" >
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>0.05</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>0.1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>0.25</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>0.5</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>2</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>5</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>10</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>100</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QComboBox" name="mGeneralFarClippingPlaneComboBox" >
+                  <property name="currentIndex" >
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>1000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>2000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>5000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>8000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>10000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>11000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>12000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>15000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>18000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>20000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>25000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>30000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>50000</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="1" column="0" >
+                 <widget class="QLabel" name="mGeneralNearClippingPlaneLabel" >
+                  <property name="text" >
+                   <string>Near Plane</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0" >
+                 <widget class="QLabel" name="mGeneralFarClippingPlaneLabel" >
+                  <property name="text" >
+                   <string>Far Plane</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation" >
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType" >
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>20</width>
+                 <height>900</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -485,48 +518,6 @@
          <property name="margin" >
           <number>5</number>
          </property>
-         <item>
-          <widget class="QGroupBox" name="mWeatherGroupBox" >
-           <property name="sizePolicy" >
-            <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title" >
-            <string>Weather Options</string>
-           </property>
-           <layout class="QVBoxLayout" >
-            <item>
-             <widget class="QRadioButton" name="mWeatherUseNetworkSettingsRadioButton" >
-              <property name="text" >
-               <string>Use Network Settings</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="mWeatherThemedRadioButton" >
-              <property name="text" >
-               <string>Themed</string>
-              </property>
-              <property name="checked" >
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="mWeatherCustomRadioButton" >
-              <property name="text" >
-               <string>Custom</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item>
           <widget class="QWidget" native="1" name="widget_6" >
            <property name="sizePolicy" >
@@ -543,212 +534,279 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QGroupBox" name="mNetSetGroupBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title" >
-               <string>Network Settings</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_4" >
-               <item row="0" column="0" >
-                <widget class="QLabel" name="mNetworkTimeLabel_2" >
-                 <property name="text" >
-                  <string>Network Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" >
-                <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
-                 <property name="toolTip" >
-                  <string>The time of the network of the current network connection</string>
-                 </property>
-                 <property name="readOnly" >
-                  <bool>true</bool>
-                 </property>
-                 <property name="maximumDate" >
-                  <date>
-                   <year>2000</year>
-                   <month>1</month>
-                   <day>1</day>
-                  </date>
-                 </property>
-                 <property name="displayFormat" >
-                  <string>hh:mm</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" >
-                <widget class="QLabel" name="mVisibilityLabel_2" >
-                 <property name="text" >
-                  <string>Visibility</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1" >
-                <widget class="QLineEdit" name="mVisibilityLineEdit" >
-                 <property name="toolTip" >
-                  <string>The visibility of the network of the current network connection</string>
-                 </property>
-                 <property name="readOnly" >
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" >
-                <widget class="QLabel" name="mWeatherLabel_2" >
-                 <property name="text" >
-                  <string>Weather</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" >
-                <widget class="QLineEdit" name="mWeatherLineEdit" >
-                 <property name="toolTip" >
-                  <string>The weather of the network of the current network connection</string>
-                 </property>
-                 <property name="readOnly" >
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="mThemedSettingsGroupBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title" >
-               <string>Themed Settings</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_5" >
-               <item row="0" column="0" >
-                <widget class="QLabel" name="mThemeLabel" >
-                 <property name="text" >
-                  <string>Theme</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" >
-                <widget class="QComboBox" name="mThemeComboBox" >
-                 <property name="sizePolicy" >
-                  <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
-                   <horstretch>1</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" >
-                <widget class="QLabel" name="mTimeLabel" >
-                 <property name="text" >
-                  <string>Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1" >
-                <widget class="QComboBox" name="mTimeComboBox" />
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="mCustomSettingsGroupBox" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title" >
-               <string>Custom Settings</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_6" >
-               <item row="0" column="0" >
-                <widget class="QLabel" name="mCustomTimeLabel" >
-                 <property name="text" >
-                  <string>Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" >
-                <widget class="QTimeEdit" name="mCustomTimeEdit" >
-                 <property name="sizePolicy" >
-                  <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
-                   <horstretch>1</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="wrapping" >
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols" >
-                  <enum>QAbstractSpinBox::UpDownArrows</enum>
-                 </property>
-                 <property name="accelerated" >
-                  <bool>true</bool>
-                 </property>
-                 <property name="correctionMode" >
-                  <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-                 </property>
-                 <property name="displayFormat" >
-                  <string>hh:mm:ss</string>
-                 </property>
-                 <property name="calendarPopup" >
-                  <bool>true</bool>
-                 </property>
-                 <property name="time" >
-                  <time>
-                   <hour>9</hour>
-                   <minute>0</minute>
-                   <second>0</second>
-                  </time>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" >
-                <widget class="QLabel" name="mCustomVisibilityLabel" >
-                 <property name="text" >
-                  <string>Visibility</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1" >
-                <widget class="QComboBox" name="mCustomVisibilityComboBox" />
-               </item>
-               <item row="2" column="0" >
-                <widget class="QLabel" name="mCustomCloudCoverLabel" >
-                 <property name="text" >
-                  <string>Cloud Cover</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" >
-                <widget class="QComboBox" name="mCustomCloudCoverComboBox" />
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer>
-              <property name="orientation" >
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0" >
+             <widget class="QScrollArea" name="scrollArea_3" >
+              <property name="minimumSize" >
                <size>
-                <width>20</width>
-                <height>40</height>
+                <width>50</width>
+                <height>50</height>
                </size>
               </property>
-             </spacer>
+              <property name="widgetResizable" >
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_3" >
+               <property name="geometry" >
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>296</width>
+                 <height>812</height>
+                </rect>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_3" >
+                <item>
+                 <widget class="QGroupBox" name="mWeatherGroupBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title" >
+                   <string>Weather Options</string>
+                  </property>
+                  <layout class="QVBoxLayout" >
+                   <item>
+                    <widget class="QRadioButton" name="mWeatherUseNetworkSettingsRadioButton" >
+                     <property name="text" >
+                      <string>Use Network Settings</string>
+                     </property>
+                     <property name="checked" >
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="mWeatherThemedRadioButton" >
+                     <property name="text" >
+                      <string>Themed</string>
+                     </property>
+                     <property name="checked" >
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="mWeatherCustomRadioButton" >
+                     <property name="text" >
+                      <string>Custom</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="mNetSetGroupBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title" >
+                   <string>Network Settings</string>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout_4" >
+                   <item row="0" column="0" >
+                    <widget class="QLabel" name="mNetworkTimeLabel_2" >
+                     <property name="text" >
+                      <string>Network Time</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1" >
+                    <widget class="QTimeEdit" name="mNetworkTimeTimeEdit" >
+                     <property name="toolTip" >
+                      <string>The time of the network of the current network connection</string>
+                     </property>
+                     <property name="readOnly" >
+                      <bool>true</bool>
+                     </property>
+                     <property name="maximumDate" >
+                      <date>
+                       <year>2000</year>
+                       <month>1</month>
+                       <day>1</day>
+                      </date>
+                     </property>
+                     <property name="displayFormat" >
+                      <string>hh:mm</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0" >
+                    <widget class="QLabel" name="mVisibilityLabel_2" >
+                     <property name="text" >
+                      <string>Visibility</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1" >
+                    <widget class="QLineEdit" name="mVisibilityLineEdit" >
+                     <property name="toolTip" >
+                      <string>The visibility of the network of the current network connection</string>
+                     </property>
+                     <property name="readOnly" >
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0" >
+                    <widget class="QLabel" name="mWeatherLabel_2" >
+                     <property name="text" >
+                      <string>Weather</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1" >
+                    <widget class="QLineEdit" name="mWeatherLineEdit" >
+                     <property name="toolTip" >
+                      <string>The weather of the network of the current network connection</string>
+                     </property>
+                     <property name="readOnly" >
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="mThemedSettingsGroupBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title" >
+                   <string>Themed Settings</string>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout_5" >
+                   <item row="0" column="0" >
+                    <widget class="QLabel" name="mThemeLabel" >
+                     <property name="text" >
+                      <string>Theme</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1" >
+                    <widget class="QComboBox" name="mThemeComboBox" >
+                     <property name="sizePolicy" >
+                      <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+                       <horstretch>1</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0" >
+                    <widget class="QLabel" name="mTimeLabel" >
+                     <property name="text" >
+                      <string>Time</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1" >
+                    <widget class="QComboBox" name="mTimeComboBox" />
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="mCustomSettingsGroupBox" >
+                  <property name="sizePolicy" >
+                   <sizepolicy vsizetype="Minimum" hsizetype="Preferred" >
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title" >
+                   <string>Custom Settings</string>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout_6" >
+                   <item row="0" column="0" >
+                    <widget class="QLabel" name="mCustomTimeLabel" >
+                     <property name="text" >
+                      <string>Time</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1" >
+                    <widget class="QTimeEdit" name="mCustomTimeEdit" >
+                     <property name="sizePolicy" >
+                      <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+                       <horstretch>1</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="wrapping" >
+                      <bool>true</bool>
+                     </property>
+                     <property name="buttonSymbols" >
+                      <enum>QAbstractSpinBox::UpDownArrows</enum>
+                     </property>
+                     <property name="accelerated" >
+                      <bool>true</bool>
+                     </property>
+                     <property name="correctionMode" >
+                      <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+                     </property>
+                     <property name="displayFormat" >
+                      <string>hh:mm:ss</string>
+                     </property>
+                     <property name="calendarPopup" >
+                      <bool>true</bool>
+                     </property>
+                     <property name="time" >
+                      <time>
+                       <hour>9</hour>
+                       <minute>0</minute>
+                       <second>0</second>
+                      </time>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0" >
+                    <widget class="QLabel" name="mCustomVisibilityLabel" >
+                     <property name="text" >
+                      <string>Visibility</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1" >
+                    <widget class="QComboBox" name="mCustomVisibilityComboBox" />
+                   </item>
+                   <item row="2" column="0" >
+                    <widget class="QLabel" name="mCustomCloudCoverLabel" >
+                     <property name="text" >
+                      <string>Cloud Cover</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1" >
+                    <widget class="QComboBox" name="mCustomCloudCoverComboBox" />
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <spacer>
+                  <property name="orientation" >
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0" >
+                   <size>
+                    <width>20</width>
+                    <height>375</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -767,100 +825,125 @@
           <number>2</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="mToolsBinocularGroupBox" >
-           <property name="title" >
-            <string>Binoculars</string>
-           </property>
-           <layout class="QFormLayout" name="formLayout_7" >
-            <item row="0" column="1" >
-             <widget class="QCheckBox" name="mToolsShowBinocularImageCheckBox" >
-              <property name="toolTip" >
-               <string>Selects whether or not to render the binocular reticle. </string>
-              </property>
-              <property name="text" >
-               <string>Show Binocular Image</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QCheckBox" name="mToolsShowDistanceToObjectCheckBox" >
-              <property name="toolTip" >
-               <string>Select to show the distance to the object in front of the camera's eyepoint. </string>
-              </property>
-              <property name="text" >
-               <string>Show Distance to Object</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
-              <property name="toolTip" >
-               <string>Select this to print the elevation of the object being viewed by binoculars</string>
-              </property>
-              <property name="text" >
-               <string>Show Elevation of Object</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" >
-             <widget class="QLabel" name="mToolsMagnificationLabel" >
-              <property name="toolTip" >
-               <string>Select the magnification of the binoculars. The greater the magnification, the farther in they zoom. 7x is miliary standard issue. </string>
-              </property>
-              <property name="text" >
-               <string>Magnification</string>
-              </property>
-              <property name="buddy" >
-               <cstring>mToolsMagnificationSpinBox</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" >
-             <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
-              <property name="toolTip" >
-               <string>This selects the magnification of the binoculars</string>
-              </property>
-              <property name="buttonSymbols" >
-               <enum>QAbstractSpinBox::PlusMinus</enum>
-              </property>
-              <property name="specialValueText" >
-               <string>x</string>
-              </property>
-              <property name="suffix" >
-               <string>x</string>
-              </property>
-              <property name="minimum" >
-               <number>1</number>
-              </property>
-              <property name="maximum" >
-               <number>25</number>
-              </property>
-              <property name="value" >
-               <number>7</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation" >
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType" >
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0" >
+          <widget class="QScrollArea" name="scrollArea_4" >
+           <property name="minimumSize" >
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>50</width>
+             <height>50</height>
             </size>
            </property>
-          </spacer>
+           <property name="widgetResizable" >
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_4" >
+            <property name="geometry" >
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>302</width>
+              <height>818</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4" >
+             <item>
+              <widget class="QGroupBox" name="mToolsBinocularGroupBox" >
+               <property name="title" >
+                <string>Binoculars</string>
+               </property>
+               <layout class="QFormLayout" name="formLayout_7" >
+                <item row="0" column="1" >
+                 <widget class="QCheckBox" name="mToolsShowBinocularImageCheckBox" >
+                  <property name="toolTip" >
+                   <string>Selects whether or not to render the binocular reticle. </string>
+                  </property>
+                  <property name="text" >
+                   <string>Show Binocular Image</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QCheckBox" name="mToolsShowDistanceToObjectCheckBox" >
+                  <property name="toolTip" >
+                   <string>Select to show the distance to the object in front of the camera's eyepoint. </string>
+                  </property>
+                  <property name="text" >
+                   <string>Show Distance to Object</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QCheckBox" name="mToolsShowElevationOfObjectCheckBox" >
+                  <property name="toolTip" >
+                   <string>Select this to print the elevation of the object being viewed by binoculars</string>
+                  </property>
+                  <property name="text" >
+                   <string>Show Elevation of Object</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" >
+                 <widget class="QLabel" name="mToolsMagnificationLabel" >
+                  <property name="toolTip" >
+                   <string>Select the magnification of the binoculars. The greater the magnification, the farther in they zoom. 7x is miliary standard issue. </string>
+                  </property>
+                  <property name="text" >
+                   <string>Magnification</string>
+                  </property>
+                  <property name="buddy" >
+                   <cstring>mToolsMagnificationSpinBox</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1" >
+                 <widget class="QSpinBox" name="mToolsMagnificationSpinBox" >
+                  <property name="toolTip" >
+                   <string>This selects the magnification of the binoculars</string>
+                  </property>
+                  <property name="buttonSymbols" >
+                   <enum>QAbstractSpinBox::PlusMinus</enum>
+                  </property>
+                  <property name="specialValueText" >
+                   <string>x</string>
+                  </property>
+                  <property name="suffix" >
+                   <string>x</string>
+                  </property>
+                  <property name="minimum" >
+                   <number>1</number>
+                  </property>
+                  <property name="maximum" >
+                   <number>25</number>
+                  </property>
+                  <property name="value" >
+                   <number>7</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation" >
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType" >
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>20</width>
+                 <height>394</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -879,197 +962,221 @@
           <number>2</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="mVisLabelGroup" >
-           <property name="title" >
-            <string>Show Labels</string>
-           </property>
-           <property name="alignment" >
-            <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-           </property>
-           <property name="checkable" >
-            <bool>true</bool>
-           </property>
-           <layout class="QFormLayout" name="formLayout_8" >
-            <property name="fieldGrowthPolicy" >
-             <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-            </property>
-            <item row="0" column="1" >
-             <widget class="QCheckBox" name="mVisEntityChk" >
-              <property name="text" >
-               <string>Entity Labels</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QCheckBox" name="mVisTrackChk" >
-              <property name="text" >
-               <string>Track Labels</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QCheckBox" name="mVisBlipChk" >
-              <property name="text" >
-               <string>Sensor Blip Labels</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" >
-             <widget class="QLabel" name="mVisDistLabel" >
-              <property name="text" >
-               <string>Max Distance</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" >
-             <widget class="QComboBox" name="mVisMaxDistCombo" >
-              <property name="currentIndex" >
-               <number>3</number>
-              </property>
-              <item>
-               <property name="text" >
-                <string>50</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>100</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>500</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>1000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>2500</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>5000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>10000</string>
-               </property>
-              </item>
-              <item>
-               <property name="text" >
-                <string>Unlimited</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-           <zorder>mVisTrackChk</zorder>
-           <zorder>mVisBlipChk</zorder>
-           <zorder>mVisDistLabel</zorder>
-           <zorder>mVisMaxDistCombo</zorder>
-           <zorder>mVisEntityChk</zorder>
-           <zorder>mVisEntityGroup</zorder>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mVisEntityGroup" >
-           <property name="title" >
-            <string>Show Entities</string>
-           </property>
-           <property name="checkable" >
-            <bool>false</bool>
-           </property>
-           <layout class="QFormLayout" name="formLayout_9" >
-            <property name="fieldGrowthPolicy" >
-             <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-            </property>
-            <item row="0" column="1" >
-             <widget class="QCheckBox" name="mVisShowPlatforms" >
-              <property name="text" >
-               <string>Platforms</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" >
-             <widget class="QCheckBox" name="mVisShowHumans" >
-              <property name="text" >
-               <string>Dismounted Infantry</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" >
-             <widget class="QCheckBox" name="mVisShowTracks" >
-              <property name="text" >
-               <string>Tracks (All)</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1" >
-             <widget class="QCheckBox" name="mVisShowBlips" >
-              <property name="text" >
-               <string>Sensor Blips (All)</string>
-              </property>
-              <property name="checked" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mVisDomainGroup" >
-           <property name="layoutDirection" >
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="title" >
-            <string>Show Domains</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="mVisForceGroup" >
-           <property name="title" >
-            <string>Show Forces</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation" >
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0" >
+          <widget class="QScrollArea" name="scrollArea" >
+           <property name="minimumSize" >
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>50</width>
+             <height>50</height>
             </size>
            </property>
-          </spacer>
+           <property name="widgetResizable" >
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents" >
+            <property name="geometry" >
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>302</width>
+              <height>818</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout" >
+             <item>
+              <widget class="QGroupBox" name="mVisLabelGroup" >
+               <property name="title" >
+                <string>Show Labels</string>
+               </property>
+               <property name="alignment" >
+                <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+               </property>
+               <property name="checkable" >
+                <bool>true</bool>
+               </property>
+               <layout class="QFormLayout" name="formLayout_8" >
+                <property name="fieldGrowthPolicy" >
+                 <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+                </property>
+                <item row="0" column="1" >
+                 <widget class="QCheckBox" name="mVisEntityChk" >
+                  <property name="text" >
+                   <string>Entity Labels</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QCheckBox" name="mVisTrackChk" >
+                  <property name="text" >
+                   <string>Track Labels</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QCheckBox" name="mVisBlipChk" >
+                  <property name="text" >
+                   <string>Sensor Blip Labels</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0" >
+                 <widget class="QLabel" name="mVisDistLabel" >
+                  <property name="text" >
+                   <string>Max Distance</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1" >
+                 <widget class="QComboBox" name="mVisMaxDistCombo" >
+                  <property name="currentIndex" >
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <property name="text" >
+                    <string>50</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>100</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>500</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>1000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>2500</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>5000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>10000</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text" >
+                    <string>Unlimited</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+               <zorder>mVisTrackChk</zorder>
+               <zorder>mVisBlipChk</zorder>
+               <zorder>mVisDistLabel</zorder>
+               <zorder>mVisMaxDistCombo</zorder>
+               <zorder>mVisEntityChk</zorder>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="mVisEntityGroup" >
+               <property name="title" >
+                <string>Show Entities</string>
+               </property>
+               <property name="checkable" >
+                <bool>false</bool>
+               </property>
+               <layout class="QFormLayout" name="formLayout_9" >
+                <property name="fieldGrowthPolicy" >
+                 <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+                </property>
+                <item row="0" column="1" >
+                 <widget class="QCheckBox" name="mVisShowPlatforms" >
+                  <property name="text" >
+                   <string>Platforms</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" >
+                 <widget class="QCheckBox" name="mVisShowHumans" >
+                  <property name="text" >
+                   <string>Dismounted Infantry</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" >
+                 <widget class="QCheckBox" name="mVisShowTracks" >
+                  <property name="text" >
+                   <string>Tracks (All)</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1" >
+                 <widget class="QCheckBox" name="mVisShowBlips" >
+                  <property name="text" >
+                   <string>Sensor Blips (All)</string>
+                  </property>
+                  <property name="checked" >
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="mVisDomainGroup" >
+               <property name="layoutDirection" >
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="title" >
+                <string>Show Domains</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="mVisForceGroup" >
+               <property name="title" >
+                <string>Show Forces</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer>
+               <property name="orientation" >
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </widget>
          </item>
         </layout>
        </widget>

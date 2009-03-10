@@ -125,6 +125,18 @@ class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemI
          return mInterface->setScreenRefreshRate(screenIdentifier, refreshRate);
       }
 
+#if defined(OPENSCENEGRAPH_MAJOR_VERSION) && OPENSCENEGRAPH_MAJOR_VERSION >= 2 && defined(OPENSCENEGRAPH_MINOR_VERSION) && OPENSCENEGRAPH_MINOR_VERSION >= 8
+      virtual void getScreenSettings(const osg::GraphicsContext::ScreenIdentifier& si, osg::GraphicsContext::ScreenSettings & resolution)
+      {
+         mInterface->getScreenSettings(si, resolution);
+      }
+
+      virtual void enumerateScreenSettings(const osg::GraphicsContext::ScreenIdentifier& si, osg::GraphicsContext::ScreenSettingsList & rl)
+      {
+         mInterface->enumerateScreenSettings(si, rl);
+      }
+#endif
+
       virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
       {
          //return new osgViewer::GraphicsWindowEmbedded(traits);
@@ -425,6 +437,11 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    MainWindow::~MainWindow()
    {
+      for (size_t i =0; i < mVisibilityCheckBoxes.size(); ++i)
+      {
+         mVisibilityCheckBoxes[i]->setUserData(0, NULL);
+      }
+
       delete mUi;
       mUi = NULL;
       delete mViewDockWidget;
