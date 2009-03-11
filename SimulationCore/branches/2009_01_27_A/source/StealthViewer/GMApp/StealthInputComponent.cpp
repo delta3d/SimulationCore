@@ -582,6 +582,7 @@ namespace StealthGM
          break;
 
          case 'p':
+         case 'P':
          {
             std::string developerMode;
             developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
@@ -611,18 +612,21 @@ namespace StealthGM
          break;
 
          case 'o':
+         case 'O':
          {
             IncrementTime(5);
          }
          break;
 
          case 'i':
+         case 'I':
          {
             IncrementTime(-5);
          }
          break;
 
          case 'm':
+         case 'M':
          {
             if (!mHasUI)
             {
@@ -798,6 +802,7 @@ namespace StealthGM
          break;
 
          case 'x':
+         case 'X':
          {
             dtABC::Application &app = GetGameManager()->GetApplication();
 
