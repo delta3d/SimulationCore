@@ -150,7 +150,7 @@ namespace SimCore
          //dtCore::DeltaWin* win = GetGameManager()->GetApplication().GetWindow();
          //win->GetMouse()->AddMouseListener(mMouseListener.get());
          //win->GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
-         dtABC::Application &app = GetGameManager()->GetApplication();
+         dtABC::Application& app = GetGameManager()->GetApplication();
          app.GetMouse()->AddMouseListener(mMouseListener.get());
          app.GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
       }
@@ -158,7 +158,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       dtUtil::Log& BaseInputComponent::GetLogger()
       {
-
+         return *mLogger;
       }
 
       ////////////////////////////////////////////////////////////////////
