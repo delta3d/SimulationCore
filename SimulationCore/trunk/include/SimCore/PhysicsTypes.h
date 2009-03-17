@@ -27,6 +27,7 @@
 #ifdef AGEIA_PHYSICS
 
 #include <NxAgeiaPhysicsHelper.h>
+#include <NxAgeiaWorldComponent.h>
 
 
 namespace dtPhysics

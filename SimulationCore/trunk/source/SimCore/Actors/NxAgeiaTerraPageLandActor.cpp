@@ -217,7 +217,6 @@ namespace SimCore
             GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
             if (worldComponent != NULL)
                worldComponent->RegisterAgeiaHelper(*mPhysicsHelper);
-            mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
 #else
             dtPhysics::PhysicsComponent* physicsComponent;
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);

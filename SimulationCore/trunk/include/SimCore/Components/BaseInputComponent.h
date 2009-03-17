@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson 
+ * @author Eddie Johnson
  */
 #ifndef _BASE_INPUT_COMPONENT_H_
 #define _BASE_INPUT_COMPONENT_H_
@@ -33,6 +33,11 @@
 #include <dtCore/mouse.h>
 
 #include <SimCore/Actors/StealthActor.h>
+
+namespace dtUtil
+{
+   class Log;
+}
 
 namespace SimCore
 {
@@ -76,7 +81,7 @@ namespace SimCore
              * Mouse calling this function is responsbile for using this
              * return value or not
              */
-            virtual bool HandleButtonClicked(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button, int clickCount); 
+            virtual bool HandleButtonClicked(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button, int clickCount);
 
             /**
              *  Called when the mouse pointer is moved.
@@ -87,7 +92,7 @@ namespace SimCore
              * Mouse calling this function is responsbile for using this
              * return value or not.
              */
-            virtual bool HandleMouseMoved(const dtCore::Mouse* mouse, float x, float y); 
+            virtual bool HandleMouseMoved(const dtCore::Mouse* mouse, float x, float y);
 
             /**
              * Called when the mouse pointer is dragged.
@@ -119,7 +124,7 @@ namespace SimCore
 
             dtCore::RefPtr<dtGame::GMComponent> mInputComp;
       };
-      
+
       class SIMCORE_EXPORT BaseKeyboardListener : public dtCore::KeyboardListener
       {
          public:
@@ -250,7 +255,7 @@ namespace SimCore
 
             /**
              * This method increments (or decrements) the current sim time.  Adjusts the time of day
-             * which changes the sun position, light value, moon, and the rest. Typically, linked to a 
+             * which changes the sun position, light value, moon, and the rest. Typically, linked to a
              * UI or hotkey or something.
              */
             void IncrementTime(const int minuteStep);
@@ -259,7 +264,8 @@ namespace SimCore
 
             // provide an access for the stealth actor. This is used by the Stealth Viewer to check the status of the stealth camera.
             // DO NOT HOLD ONTO THIS MEMORY
-            SimCore::Actors::StealthActor* GetStealthActor() { return mStealthActor.get(); }
+            SimCore::Actors::StealthActor* GetStealthActor();
+            void SetStealthActor(SimCore::Actors::StealthActor* stealth);
 
 
          protected:
@@ -268,20 +274,22 @@ namespace SimCore
             //Increases/decreases the Level of Detail scale by 10%
             void ChangeLODScale(bool down);
 
+            dtUtil::Log& GetLogger();
+
             /// Destructor
             virtual ~BaseInputComponent();
 
-            dtUtil::Log* mLogger;
-            dtCore::RefPtr<SimCore::Actors::StealthActor> mStealthActor;
             dtCore::RefPtr<SimCore::AttachedMotionModel> mAttachedMM;
             dtCore::RefPtr<dtDAL::ActorProxy> mTerrainActor;
             dtUtil::Coordinates mCoordinateConverter;
-            dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
-            std::string mFoName;
-            std::string mTerrainActorName;
-            dtCore::RefPtr<BaseMouseListener> mMouseListener;
+         private:
             dtCore::RefPtr<BaseKeyboardListener> mKeyboardListener;
+            dtCore::RefPtr<BaseMouseListener> mMouseListener;
+            std::string mFoName;
+            dtCore::RefPtr<SimCore::Actors::StealthActor> mStealthActor;
             float mEntityMagnification;
+            std::string mTerrainActorName;
+            dtUtil::Log* mLogger;
       };
    }
 }

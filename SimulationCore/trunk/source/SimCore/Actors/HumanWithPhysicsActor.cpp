@@ -371,7 +371,6 @@ namespace SimCore
          transform.GetTranslation(xyz);
 
          SetPosition(xyz);
-         mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 
 #endif

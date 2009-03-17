@@ -37,9 +37,7 @@
 #include <SimCore/Components/TextureProjectorComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-#endif
+#include <SimCore/PhysicsTypes.h>
 
 #include <DriverInputComponent.h>
 ///////////////////////////////////
@@ -158,53 +156,12 @@ namespace DriverDemo
 #ifdef AGEIA_PHYSICS
       ////////////////////////////////////////////////////////////////////////
       // Initialize the ageia component
-      dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> physicsComponent
-         = new dtAgeiaPhysX::NxAgeiaWorldComponent();
+      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent
+         = new dtPhysics::PhysicsComponent();
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
       // Configure the Ageia Component
       NxScene& nxScene = physicsComponent->GetPhysicsScene(std::string("Default"));
-
-      // Which groups collide with each other. Typically, on the world and particles collide.
-      // Group 0 is the normal default group. Terrain, HMMWV, buildings
-      // Group 15 is bullets
-      // Group 20 is particles
-      // Group 30 is Local Characters
-      // Group 31 is Remote Characters
-      // DO NOT FORGET - If you want bullets to collide, make sure to update this line:
-      // ourActor->getScene().raycastAllShapes(ourRay, myReport, NX_ALL_SHAPES, (1 << 0) | (1 << 30) | (1 << 31))
-      // In NxAgeiaMunitionsPSysActor. You have to add whichever group such as 0, 30, 31, to the '|' list.
-      nxScene.setGroupCollisionFlag(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
-      nxScene.setGroupCollisionFlag(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
-      nxScene.setGroupCollisionFlag(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
-      nxScene.setGroupCollisionFlag(GROUP_BULLET, GROUP_TERRAIN, false); // bullets and the world do NOT interact (this seems odd, but we handle with raycast)
-      nxScene.setGroupCollisionFlag(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
-      nxScene.setGroupCollisionFlag(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
-
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
-
-      // For remote characters, we want to collide with some things, but not the vehicle
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
-
-      // water interactions
-      nxScene.setGroupCollisionFlag(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)
-      nxScene.setGroupCollisionFlag(GROUP_WATER, GROUP_PARTICLE, true);  // particles interact with the water
-      nxScene.setGroupCollisionFlag(GROUP_WATER, GROUP_TERRAIN, false);   // everything in group 0 can not hit the water
-      nxScene.setGroupCollisionFlag(GROUP_WATER, GROUP_HUMAN_LOCAL, false); // characters and water do not collide
-
-      // 26 is our boat actor.
-      nxScene.setGroupCollisionFlag(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
-      nxScene.setGroupCollisionFlag(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
-      nxScene.setGroupCollisionFlag(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
-      nxScene.setGroupCollisionFlag(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
-      nxScene.setGroupCollisionFlag(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
-      nxScene.setGroupCollisionFlag(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
 
       nxScene.setActorGroupPairFlags(GROUP_HUMAN_LOCAL, GROUP_TERRAIN,
          NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
@@ -213,44 +170,48 @@ namespace DriverDemo
       // We really only care about the world and the world
       nxScene.setActorGroupPairFlags(GROUP_TERRAIN, GROUP_TERRAIN,
          NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
+
       ////////////////////////////////////////////////////////////////////////
 #else
       dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
       world->Init();
-      gm.AddComponent(*new dtPhysics::PhysicsComponent(*world, false),
-               dtGame::GameManager::ComponentPriority::NORMAL);
-      world->SetGroupCollision(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
-      world->SetGroupCollision(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
-      world->SetGroupCollision(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
-      world->SetGroupCollision(GROUP_BULLET, GROUP_TERRAIN, false); // bullets and the world do NOT interact (this seems odd, but we handle with raycast)
-      world->SetGroupCollision(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
-      world->SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
+      dtCore::RefPtr<dtPhysics:PhysicsComponent> physicsComponent
+         = new dtPhysics::PhysicsComponent(*world, false);
+      gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+#endif
+      // Which groups collide with each other. Typically, on the world and particles collide.
+      // DO NOT FORGET - If you want bullets to collide, make sure to update this line:
+      physicsComponent->SetGroupCollision(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
+      physicsComponent->SetGroupCollision(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
+      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
+      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_TERRAIN, false); // bullets and the world do NOT interact (this seems odd, but we handle with raycast)
+      physicsComponent->SetGroupCollision(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
+      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
 
-      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
-      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
-      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
-      world->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
 
       // For remote characters, we want to collide with some things, but not the vehicle
-      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
-      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
-      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
-      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
 
       // water interactions
-      world->SetGroupCollision(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)
-      world->SetGroupCollision(GROUP_WATER, GROUP_PARTICLE, true);  // particles interact with the water
-      world->SetGroupCollision(GROUP_WATER, GROUP_TERRAIN, false);   // everything in group 0 can not hit the water
-      world->SetGroupCollision(GROUP_WATER, GROUP_HUMAN_LOCAL, false); // characters and water do not collide
+      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)
+      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_PARTICLE, true);  // particles interact with the water
+      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_TERRAIN, false);   // everything in group 0 can not hit the water
+      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_HUMAN_LOCAL, false); // characters and water do not collide
 
       // 26 is our boat actor.
-      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
-      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
-      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
-      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
-      world->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
-      world->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
-#endif
+      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
+      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
+      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
+      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
+      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
+      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
 
       ////////////////////////////////////////////////////////////////////////
       // rendering support component - terrain tiling atm, dynamic lights, etc...

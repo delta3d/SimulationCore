@@ -646,7 +646,6 @@ namespace SimCore
 
       if(!mGravityEnabled) newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
 
-      mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get(), id.ToString().c_str());
 #endif
 
       //AddChild(particle->mObj.get());

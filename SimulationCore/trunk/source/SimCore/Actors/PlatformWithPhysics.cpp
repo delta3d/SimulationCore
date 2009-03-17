@@ -195,7 +195,6 @@ namespace SimCore
                break;
             }
          }
-         mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
          {
