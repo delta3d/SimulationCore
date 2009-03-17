@@ -378,7 +378,7 @@ class EphemerisModel : public osg::Group
                         {
                             osg::Vec3 eyePointLocal = cv->getEyeLocal();
                             matrix.preMult(osg::Matrix::translate(
-                                        osg::Vec3( eyePointLocal.x(),eyePointLocal.y(),0.0f) - _center));
+                                        osg::Vec3( eyePointLocal.x(),eyePointLocal.y(),eyePointLocal.z()) - _center));
                         }
                     }
                     return true;
