@@ -74,7 +74,6 @@ namespace SimCore
          mFarClipPlane(SimCore::Tools::Binoculars::FAR_CLIPPING_PLANE),
          mPreviousFarClipPlane(0.0),
          mBaseElevation(0.0), // 600 was the old default height for some terrains
-         mCurElevation(0.0),
          mMaxVisibility(40000.0),
          mMaxElevationVis(15000.0),
          mUpdatesEnabled(true),
@@ -196,11 +195,13 @@ namespace SimCore
       {
          dtCore::Camera* camera = GetGameManager()->GetApplication().GetCamera();
 
+         dtCore::Transform xform;
+         camera->GetTransform(xform);
          //if(!mUpdatesEnabled)
          //   return;
 
          // Calculate the elevation and far clip plane based on elevation
-         float elevation = dtUtil::Abs(mCurElevation - mBaseElevation);
+         float elevation = dtUtil::Abs(xform.GetTranslation().z() - mBaseElevation);
          float newFarClip = mFarClipPlane + elevation * 2.0f;
          // The FAR can't be shorter than current far, or larger than maxVis
          dtUtil::Clamp(newFarClip, mFarClipPlane, (float) mMaxVisibility);
@@ -233,13 +234,6 @@ namespace SimCore
                }
             }
          }
-      }
-
-      //////////////////////////////////////////////////////////
-      void WeatherComponent::SetViewElevation( double elevation )
-      {
-         mCurElevation = elevation;
-         UpdateFog();
       }
 
       //////////////////////////////////////////////////////////
@@ -291,11 +285,10 @@ namespace SimCore
                mEphemerisEnvironmentActor->SetTimeFromSystem();
             }
 
-            return;
+            UpdateFog();
          }
-
          // Check for a NEW weather object
-         if(type == dtGame::MessageType::INFO_ACTOR_UPDATED ||
+         else if(type == dtGame::MessageType::INFO_ACTOR_UPDATED ||
             type == dtGame::MessageType::INFO_ACTOR_CREATED)
          {
             // Convert the message to its true form

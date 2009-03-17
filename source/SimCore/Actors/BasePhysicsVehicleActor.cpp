@@ -64,14 +64,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor ::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
-      , mHasDriver(false)
-      , mHasFoundTerrain(false)
-      , mNotifyFullUpdate(true)
-      , mNotifyPartialUpdate(true)
-      , mPerformAboveGroundSafetyCheck(true)
-      , mPublishLinearVelocity(true)
-      , mPublishAngularVelocity(true)
-      , mPushTransformToPhysics(false)
+         , mHasDriver(false)
+         , mHasFoundTerrain(false)
+         , mNotifyFullUpdate(true)
+         , mNotifyPartialUpdate(true)
+         , mPerformAboveGroundSafetyCheck(true)
+         , mPublishLinearVelocity(true)
+         , mPublishAngularVelocity(true)
+         , mPushTransformToPhysics(false)
       {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
          mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
@@ -100,8 +100,6 @@ namespace SimCore
 
 
 #ifdef AGEIA_PHYSICS
-         GetPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
-
          if(IsRemote())
          {
             GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);

@@ -74,12 +74,12 @@ namespace SimCore
       , mFogSphereEyePointTransform(new MoveWithEyePointTransform())
 
       {
-         mEphemerisModel->setSkyDomeRadius( 9000.0f );
+         mEphemerisModel->setSkyDomeRadius( 999.0f );
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
 
          //FogSphere SetUp
-         mFogSphere = new osgEphemeris::Sphere( 8500.0f,
+         mFogSphere = new osgEphemeris::Sphere( 999.0f,
             osgEphemeris::Sphere::TessLow,
             osgEphemeris::Sphere::OuterOrientation,
             osgEphemeris::Sphere::BothHemispheres,
@@ -102,7 +102,7 @@ namespace SimCore
          fogSphereStates->setMode(GL_FOG, osg::StateAttribute::ON);
          fogSphereStates->setMode(GL_LIGHTING, osg::StateAttribute::ON);
          fogSphereStates->setMode(GL_BLEND, osg::StateAttribute::ON);
-         fogSphereStates->setRenderBinDetails( -3, "RenderBin" );
+         fogSphereStates->setRenderBinDetails( SimCore::Components::RenderingSupportComponent::RENDER_BIN_ENVIRONMENT + 2, "RenderBin" );
       }
 
       /////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ namespace SimCore
       {
          if(fog_toggle == true)
          {
-            mFogSphere->setNodeMask(0xFFFFFFFF);
+            mFogSphere->setNodeMask(~0);
          }
          else
          {
@@ -255,7 +255,7 @@ namespace SimCore
             {
                osg::Vec3 eyePointLocal = cv->getEyeLocal();
                matrix.preMult(osg::Matrix::translate(
-                  osg::Vec3( eyePointLocal.x(),eyePointLocal.y(),0.0f) - mCenter));
+                  osg::Vec3( eyePointLocal.x(), eyePointLocal.y(), eyePointLocal.z()) - mCenter));
             }
          }
          return true;

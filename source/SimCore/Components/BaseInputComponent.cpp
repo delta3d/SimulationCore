@@ -46,7 +46,8 @@ namespace SimCore
    namespace Components
    {
       ////////////////////////////////////////////////////////////////////
-      BaseMouseListener::BaseMouseListener(dtGame::GMComponent &inputComp) : mInputComp(&inputComp)
+      BaseMouseListener::BaseMouseListener(dtGame::GMComponent& inputComp)
+      : mInputComp(&inputComp)
       {
       }
 
@@ -116,9 +117,9 @@ namespace SimCore
       const std::string BaseInputComponent::DEFAULT_NAME = "Input Component";
 
       ////////////////////////////////////////////////////////////////////
-      BaseInputComponent::BaseInputComponent(const std::string &name) :
-      dtGame::GMComponent(name),
-         mEntityMagnification(1.0f)
+      BaseInputComponent::BaseInputComponent(const std::string& name)
+      : dtGame::GMComponent(name)
+      , mEntityMagnification(1.0f)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseInputComponent.cpp");
          mMouseListener = new BaseMouseListener(*this);
@@ -152,6 +153,24 @@ namespace SimCore
          dtABC::Application &app = GetGameManager()->GetApplication();
          app.GetMouse()->AddMouseListener(mMouseListener.get());
          app.GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      dtUtil::Log& BaseInputComponent::GetLogger()
+      {
+
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      SimCore::Actors::StealthActor* BaseInputComponent::GetStealthActor()
+      {
+         return mStealthActor.get();
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      void BaseInputComponent::SetStealthActor(SimCore::Actors::StealthActor* stealth)
+      {
+         mStealthActor = stealth;
       }
 
       ////////////////////////////////////////////////////////////////////

@@ -231,8 +231,6 @@ namespace SimCore
             mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
          }
 
-         mPhysicsHelper->SetAgeiaUserData(mPhysicsHelper.get());
-
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>
             (GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
       }
@@ -326,7 +324,7 @@ namespace SimCore
 
             if(mWheels[i] != NULL)
             {
-               //these flags are no longer in the SDK 
+               //these flags are no longer in the SDK
                //mWheels[i]->setWheelFlags(NX_WF_USE_WHEELSHAPE | NX_WF_BUILD_LOWER_HALF
                //| NX_WF_ACCELERATED | NX_WF_AFFECTED_BY_HANDBRAKE | NX_WF_STEERABLE_INPUT);
 

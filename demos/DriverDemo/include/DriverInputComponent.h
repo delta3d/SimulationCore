@@ -256,6 +256,8 @@ namespace DriverDemo
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
 
+         dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
+
          dtCore::RefPtr<DriverHUD>    mHUDComponent;
          dtCore::UniqueId              mCurrentActorId;
 

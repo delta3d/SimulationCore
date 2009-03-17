@@ -102,7 +102,6 @@ namespace DriverDemo
       }
       //else // -- Flags set in the base class.
       //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-      //GetHoverPhysicsHelper()->SetAgeiaUserData(mPhysicsHelper.get());
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 

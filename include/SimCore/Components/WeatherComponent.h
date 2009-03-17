@@ -74,7 +74,7 @@ namespace SimCore
       class SIMCORE_EXPORT WeatherComponent : public dtGame::GMComponent
       {
          public:
-            // The default component name, used when looking it up on the GM. 
+            // The default component name, used when looking it up on the GM.
             static const std::string DEFAULT_NAME;
 
             // Constructor
@@ -98,10 +98,6 @@ namespace SimCore
             // Set & Get the average elevation from which visibility fog should be calculated.
             void SetBaseElevation( double elevation );
             double GetBaseElevation() const;
-
-            // Set the viewing elevation from which adjustments to visibility fog should be calculated.
-            // NOTE: This calls UpdateFog which assumes the GameManager is accessible.
-            void SetViewElevation( double elevation );
 
             // Set the limit at which all fog must be solid, to hide ends of terrain.
             // @param maxVisibility Visibility measured in meters
@@ -151,14 +147,14 @@ namespace SimCore
                mFarClipPlane = farClip;
             }
 
-            // Enable or disable the component's ability to modify the clipping planes. 
+            // Enable or disable the component's ability to modify the clipping planes.
             void SetAdjustClipPlanes( bool allowAjust ) { mAllowClipAjust = allowAjust; }
 
             // The following functions are used for sub-classes
             // and unit tests.
             Actors::DayTimeActorProxy* GetDayTimeActor() { return mDayTime.get(); }
             const Actors::DayTimeActorProxy* GetDayTimeActor() const { return mDayTime.get(); }
-            
+
             Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() { return mAtmosphere.get(); }
             const Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() const { return mAtmosphere.get(); }
 
@@ -189,7 +185,7 @@ namespace SimCore
             dtABC::Weather::Season ClassifySeason( unsigned int time_msec );
 
             void SetCoordinates();
-            
+
             //this sets our state set on our root node to have the proper draw order and
             //prevent rendering of the snow within the vehicle
             void SetStateSet(osg::Node* node);
@@ -201,7 +197,7 @@ namespace SimCore
              * Helper method to help reduce some code
              */
             void AssignNewProxy(const dtCore::UniqueId &id);
-            
+
          private:
 
 
@@ -212,7 +208,6 @@ namespace SimCore
             float  mFarClipPlane;
             float  mPreviousFarClipPlane;
             double mBaseElevation;
-            double mCurElevation;
             double mMaxVisibility;
             double mMaxElevationVis;
             bool   mUpdatesEnabled;

@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -60,11 +60,11 @@ using dtCore::RefPtr;
 
 class TestHLAComponent;
 
-class HLATests : public CPPUNIT_NS::TestFixture 
+class HLATests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HLATests);
-  
-      CPPUNIT_TEST(TestHLAConnection);  
+
+      CPPUNIT_TEST(TestHLAConnection);
 
    CPPUNIT_TEST_SUITE_END();
 
@@ -72,7 +72,7 @@ class HLATests : public CPPUNIT_NS::TestFixture
       void setUp();
       void tearDown();
       void TestHLAConnection();
-      
+
    private:
       RefPtr<dtGame::GameManager> mGameManager;
 };
@@ -83,26 +83,26 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HLATests);
 class TestHLAComponent: public dtHLAGM::HLAComponent
 {
    public:
-   
+
       void TestDeleteActor(const dtCore::UniqueId& actorId)
       {
-         DeleteActor(actorId); 
+         DeleteActor(actorId);
       }
 };
 
 // Called implicitly by CPPUNIT when the app starts
 void HLATests::setUp()
 {
-   try 
+   try
    {
       RefPtr<dtCore::Scene> scene = GetGlobalApplication().GetScene();
       mGameManager = new dtGame::GameManager(*scene);
       SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
-      
+
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();
    }
-   catch (const dtUtil::Exception& e) 
+   catch (const dtUtil::Exception& e)
    {
       CPPUNIT_FAIL((std::string("Error: ") + e.What()).c_str());
    }
@@ -127,7 +127,7 @@ void HLATests::TestHLAConnection()
       mGameManager->AddComponent(*thisHLAComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
       thisHLAComponent->AddParameterTranslator(*new SimCore::HLA::HLACustomParameterTranslator());
-      config.LoadConfiguration(*thisHLAComponent, "Federations/HLAMapping.xml");
+      config.LoadConfiguration(*thisHLAComponent, "Federations/RPR1Mapping.xml");
    }
    catch (const dtUtil::Exception& ex)
    {

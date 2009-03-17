@@ -292,14 +292,6 @@ namespace DriverDemo
       // CREATE OUR NEW VEHICLE
       if(!toFill.empty())
       {
-#ifdef AGEIA_PHYSICS
-         GMComponent* tempComponent = GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
-         dtAgeiaPhysX::NxAgeiaWorldComponent* ageiaComponent = static_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(tempComponent);
-
-         // Configure the Ageia Component
-         NxScene& nxScene = ageiaComponent->GetPhysicsScene(std::string("Default"));
-         nxScene.setGroupCollisionFlag(30, 0, false);  // characters interact with world
-#endif
          dtCore::RefPtr<dtDAL::ActorProxy> ourActualActorProxy =
             GetGameManager()->CreateActorFromPrototype(toFill.front()->GetId());
          if(ourActualActorProxy != NULL)

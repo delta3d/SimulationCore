@@ -503,6 +503,18 @@ void PhysicsParticleSystemActor::OnEnteredWorld()
    // your particle system may not work the way you wanted if this
    // wasnt set for w/e reason.
 
+   dtPhysics::PhysicsComponent* component = NULL;
+   GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, component);
+
+   if (component != NULL)
+   {
+      component->RegisterHelper(*mPhysicsHelper);
+   }
+   else
+   {
+      LOGN_ERROR("PhysicsParticleSystem.cpp", "Unable to find a physics component with the default name in the GameManager.");
+   }
+
 #ifdef AGEIA_PHYSICS
    if(mPhysicsHelper->GetCollisionGroup() != 0)
    {
@@ -527,9 +539,6 @@ void PhysicsParticleSystemActor::OnEnteredWorld()
       LOG_WARNING("You need to set your collision group to something other than 0 for the particle system, its going to give you an issue and not act correctly.");
    }
 
-   dtAgeiaPhysX::NxAgeiaWorldComponent* component = dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"));
-   component->RegisterAgeiaHelper(*mPhysicsHelper);
-
    if (mObjectsStayStaticWhenHit)
    {
       mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
@@ -542,17 +551,6 @@ void PhysicsParticleSystemActor::OnEnteredWorld()
    if(mPhysicsHelper->GetDefaultCollisionGroup() == 0)
    {
       LOG_WARNING("You need to set your collision group to something other than 0 for the particle system, its going to give you an issue and not act correctly.");
-   }
-
-   dtPhysics::PhysicsComponent* component = NULL;
-   GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, component);
-   if (component != NULL)
-   {
-      component->RegisterHelper(*mPhysicsHelper);
-   }
-   else
-   {
-      LOGN_ERROR("PhysicsParticleSystem.cpp", "Unable to find a physics component with the default name in the GameManager.");
    }
 
 #endif

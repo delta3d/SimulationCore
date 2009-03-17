@@ -147,7 +147,6 @@ namespace DriverDemo
       mEnvUpdateTime(0.0f),
       mEnvUpdateAttempts(2)
    {
-      mLogger = &dtUtil::Log::GetInstance("DriverInputComponent.cpp");
       mMachineInfo = new dtGame::MachineInfo;
 
       SetStartPosition(osg::Vec3(100.0,100.0,20.0));
@@ -186,19 +185,6 @@ namespace DriverDemo
       {
          const dtGame::TickMessage& tick = static_cast<const dtGame::TickMessage&>(message);
          UpdateStates( tick.GetDeltaSimTime(), tick.GetDeltaRealTime() );
-
-         // Update the view height distance - helps the fog decay nicely based on height.
-         // Note, in the vehicle, it shouldn't go 'up' much, but it helps the comp to keep things in sync
-         SimCore::Components::WeatherComponent* weatherComp;
-         GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
-         if(weatherComp != NULL && mStealthActor.valid())
-         {
-            dtCore::Transform xform;
-            mStealthActor->GetTransform( xform );
-            osg::Vec3 pos;
-            xform.GetTranslation(pos);
-            weatherComp->SetViewElevation(pos[2]);
-         }
       }
 
       // Tool update message.
@@ -217,7 +203,7 @@ namespace DriverDemo
          dtGame::GameActorProxy *stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
          if(stealthProxy == NULL)
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "A player entered world message was received, but the about actor id does not refer to a Game Actor in the Game Manager.");
             return;
          }
@@ -226,7 +212,7 @@ namespace DriverDemo
             = dynamic_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
          if(stealthActor == NULL)
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "A player entered world message was received, but the actor is not the right type.");
          }
          else if(!stealthProxy->IsRemote())
@@ -240,9 +226,10 @@ namespace DriverDemo
       else if (msgType == dtGame::MessageType::INFO_ACTOR_DELETED)
       {
          const dtCore::UniqueId& id = message.GetAboutActorId();
-         if (mStealthActor.valid() && mStealthActor->GetUniqueId() == id)
+         SimCore::Actors::StealthActor* stealth = GetStealthActor();
+         if (stealth != NULL && stealth->GetUniqueId() == id)
          {
-            mStealthActor = NULL;
+            SetStealthActor(NULL);
          }
          else if (mVehicle.valid() && mVehicle->GetUniqueId() == id)
          {
@@ -251,7 +238,7 @@ namespace DriverDemo
             if(gameAppComponent != NULL)
             {
                // WE'RE TOTALLY HOSED IF SOMEONE DELETES OUR VEHICLE AT THIS POINT!
-               mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                   "Someone deleted our vehicle! OMG! How rude! We're in big trouble!!! Ignore this if in the process of shutting down.");
                mVehicle = NULL;
             }
@@ -702,7 +689,6 @@ namespace DriverDemo
 
       bool enable = !tool->IsEnabled();
 
-
       if( enable )
       {
          DisableAllTools();
@@ -710,7 +696,7 @@ namespace DriverDemo
 
       static_cast<SimCore::ToolMessage*>(msg.get())->SetEnabled(enable);
 
-      msg->SetAboutActorId(mStealthActor->GetUniqueId());
+      msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
       msg->SetSource(*mMachineInfo);
       GetGameManager()->SendMessage(*msg);
 
@@ -804,10 +790,10 @@ namespace DriverDemo
    void DriverInputComponent::InitializePlayer(SimCore::Actors::StealthActor& player)
    {
       // Capture the player
-      mStealthActor = &player;
+      SetStealthActor(&player);
 
       // Prevent attached geometry from going invisible
-      mStealthActor->SetAttachAsThirdPerson(true);
+      GetStealthActor()->SetAttachAsThirdPerson(true);
 
       // Create eye points to which to attach the player for various vantage points. If you wanted to
       // create an offset for standing or sitting inside the vehicle, you'd do it here.
@@ -815,7 +801,7 @@ namespace DriverDemo
 
       // Create the seat
       mSeat = new dtCore::Transformable("PlayerSeat");
-      mSeat->AddChild(mStealthActor.get());
+      mSeat->AddChild(GetStealthActor());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -878,7 +864,7 @@ namespace DriverDemo
 
 
       // Get Stealth Actor ready for attachment by removing it from the scene
-      if( mStealthActor->GetParent() != NULL )
+      if( GetStealthActor()->GetParent() != NULL )
       {
          // Set the attach state.
          mPlayerAttached = true;
@@ -990,7 +976,7 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////
    void DriverInputComponent::SetPlayer( SimCore::Actors::StealthActor* actor )
    {
-      mStealthActor = actor;
+      SetStealthActor(actor);
    }
 
    //////////////////////////////////////////////////////////////////////////

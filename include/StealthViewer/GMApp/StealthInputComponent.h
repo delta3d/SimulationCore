@@ -159,6 +159,8 @@ namespace StealthGM
          const dtGame::LogStateEnumeration* mTargetLogState;
          dtCore::RefPtr<dtGame::LogController> mLogController;
 
+         dtCore::RefPtr<dtGame::MachineInfo> mMachineInfo;
+
          // JSAF vars needed for joining and leaving a federation
          std::string mExecutionName;
          std::string mFedFile;
@@ -171,7 +173,7 @@ namespace StealthGM
          bool mHasUI;
          bool mCollideWithGround;
 
-         float mCountDownToPeriodicProcessing; 
+         float mCountDownToPeriodicProcessing;
 
          // Ensures stealth actor persists between map changes.
          dtCore::RefPtr<SimCore::Actors::StealthActorProxy> mStealthActorProxy;

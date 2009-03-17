@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -110,7 +110,7 @@ void HLAConfigTests::TestLoadBasicConfigXML()
    {
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       dtHLAGM::HLAComponentConfig config;
-      config.LoadConfiguration(*mTranslator, "Federations/HLAMapping.xml");
+      config.LoadConfiguration(*mTranslator, "Federations/RPR1Mapping.xml");
    }
    catch (const dtUtil::Exception& ex)
    {

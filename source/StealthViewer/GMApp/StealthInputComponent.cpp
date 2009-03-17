@@ -101,7 +101,6 @@ namespace StealthGM
       , mCountDownToPeriodicProcessing(1.0)
 
    {
-      mLogger = &dtUtil::Log::GetInstance("StealthInputComponent.cpp");
       mMachineInfo = new dtGame::MachineInfo;
    }
 
@@ -121,7 +120,7 @@ namespace StealthGM
          mHLA = static_cast<dtHLAGM::HLAComponent*>
             (GetGameManager()->GetComponentByName(dtHLAGM::HLAComponent::DEFAULT_NAME));
          if (!mHLA.valid())
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "Critical Error!  Stealth Input Component could not find an HLA Component!!!");
       }
 
@@ -164,16 +163,6 @@ namespace StealthGM
                ChangeAARState( *mTargetLogState );
             }
          }
-
-         // Update the view height distance - helps the fog decay nicely based on height.
-         // Note - used to do this only a few times per second, but it causes jumpiness and
-         // it is noticeable. Should be a fairly small hit anyway
-         SimCore::Components::WeatherComponent* weatherComp = static_cast<SimCore::Components::WeatherComponent*>
-            (GetGameManager()->GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME));
-         if (weatherComp != NULL && mStealthMM.valid())
-         {
-            weatherComp->SetViewElevation(mStealthMM->GetElevation());
-         }
       }
 
       // A Local Player entered world, so create our motion models
@@ -183,7 +172,7 @@ namespace StealthGM
          RefPtr<dtGame::GameActorProxy> stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
          if (!stealthProxy.valid())
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "A player entered world message was received, but the about actor id does not refer to a Game Actor in the Game Manager.");
             return;
          }
@@ -192,25 +181,25 @@ namespace StealthGM
             = static_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
          if (!stealthActor.valid())
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
                "A player entered world message was received, but the actor is not the right type.");
          }
          else if (!stealthProxy->IsRemote())
          {
-            if (! mStealthActor.valid() )
+            if (GetStealthActor() == NULL)
             {
-               mStealthActor = stealthActor.get();
+               SetStealthActor(stealthActor.get());
             }
-            osg::Vec3 attachOffset = mStealthActor->GetAttachOffset();
+            osg::Vec3 attachOffset = GetStealthActor()->GetAttachOffset();
             attachOffset.y() = -4.0f;
-            mStealthActor->SetAttachOffset( attachOffset );
-            mStealthActor->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
+            GetStealthActor()->SetAttachOffset( attachOffset );
+            GetStealthActor()->SetAttachAsThirdPerson(!mFirstPersonAttachMode);
 
             // Ensure that the compass tool has reference to the stealth actor
             SimCore::Tools::Compass* compass
                = dynamic_cast<SimCore::Tools::Compass*>(GetTool(SimCore::MessageType::COMPASS));
             if (compass != NULL)
-               compass->SetPlayerActor( mStealthActor.get() );
+               compass->SetPlayerActor( GetStealthActor() );
 
             std::vector<dtDAL::ActorProxy*> actors;
 
@@ -226,12 +215,12 @@ namespace StealthGM
                osg::Vec3 mStartPos = proxy->GetTranslation();
                dtCore::Transform stealthStart;
                stealthStart.SetTranslation(mStartPos);
-               mStealthActor->SetTransform(stealthStart);
+               GetStealthActor()->SetTransform(stealthStart);
             }
 
             if (mLogController.valid())
             {
-               mLogController->RequestAddIgnoredActor(mStealthActor->GetUniqueId());
+               mLogController->RequestAddIgnoredActor(GetStealthActor()->GetUniqueId());
             }
 
             dtABC::Application& app = GetGameManager()->GetApplication();
@@ -245,7 +234,7 @@ namespace StealthGM
                cam.GetSceneParent()->RemoveDrawable(&cam);
             }
 
-            mStealthActor->AddChild(app.GetCamera());
+            GetStealthActor()->AddChild(app.GetCamera());
 
             // create the fly motion model
             if (!mStealthMM.valid())
@@ -253,7 +242,7 @@ namespace StealthGM
                mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
                mStealthMM->SetCollideWithGround(mCollideWithGround);
             }
-            mStealthMM->SetTarget(mStealthActor.get());
+            mStealthMM->SetTarget(GetStealthActor());
             mStealthMM->SetScene(GetGameManager()->GetScene());
 
             std::vector<dtDAL::ActorProxy*> toFill;
@@ -264,7 +253,7 @@ namespace StealthGM
                // with which it will collide.
                mStealthMM->SetCollidableGeometry(toFill[0]->GetActor());
             }
-            mStealthMM->SetEnabled(mStealthActor->GetAttachAsThirdPerson());
+            mStealthMM->SetEnabled(GetStealthActor()->GetAttachAsThirdPerson());
 
             // create the attached motion model
             if (!mAttachedMM.valid())
@@ -272,8 +261,8 @@ namespace StealthGM
                mAttachedMM = new SimCore::AttachedMotionModel(app.GetKeyboard(), app.GetMouse());
                mAttachedMM->SetCenterMouse(false);
             }
-            mAttachedMM->SetTarget(mStealthActor.get());
-            mAttachedMM->SetEnabled(!mStealthActor->GetAttachAsThirdPerson());
+            mAttachedMM->SetTarget(GetStealthActor());
+            mAttachedMM->SetEnabled(!GetStealthActor()->GetAttachAsThirdPerson());
 
             // The HUD will need to access data from the motion model
             // so it can be displayed.
@@ -282,7 +271,7 @@ namespace StealthGM
             {
                // Data should not be sent by messages because they
                // may be recorded during record mode.
-               if (mStealthActor->GetAttachAsThirdPerson())
+               if (GetStealthActor()->GetAttachAsThirdPerson())
                {
                   hud->SetMotionModel(mStealthMM.get());
                }
@@ -298,8 +287,8 @@ namespace StealthGM
          // Act only on local tool messages because the messages could be sent from playback.
          if (mMachineInfo.valid() && *mMachineInfo == message.GetSource() )
          {
-            if ( mStealthActor.valid()
-               && mStealthActor->GetUniqueId() == message.GetAboutActorId())
+            if (GetStealthActor() != NULL
+               && GetStealthActor()->GetUniqueId() == message.GetAboutActorId())
             {
                const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
                SetToolEnabled(
@@ -311,11 +300,7 @@ namespace StealthGM
       else if (msgType == dtGame::MessageType::INFO_ACTOR_DELETED)
       {
          const dtCore::UniqueId& id = message.GetAboutActorId();
-         if (mStealthActor.valid() && mStealthActor->GetUniqueId() == id)
-         {
-//            mStealthActor = NULL;
-         }
-         else if (mTerrainActor.valid() && mTerrainActor->GetId() == id)
+         if (mTerrainActor.valid() && mTerrainActor->GetId() == id)
          {
             mTerrainActor = NULL;
          }
@@ -393,11 +378,7 @@ namespace StealthGM
             mLogController->RequestAddIgnoredActor(proxy->GetId());
          }
 
-         if (mStealthActor.valid() && mStealthActorProxy.valid() )
-         {
-            // DO NOTHING
-         }
-         else
+         if (GetStealthActor() == NULL || !mStealthActorProxy.valid())
          {
             std::vector<dtDAL::ActorProxy*> proxies;
             gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
@@ -412,7 +393,7 @@ namespace StealthGM
                dtCore::RefPtr<dtDAL::ActorProxy> proxy = gameManager.CreateActorFromPrototype(proxies[0]->GetId());
                mStealthActorProxy = static_cast<SimCore::Actors::StealthActorProxy*> (proxy.get());
 
-               mStealthActor = static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor());
+               SetStealthActor(static_cast<SimCore::Actors::StealthActor*>(mStealthActorProxy->GetActor()));
             }
          }
 
@@ -436,10 +417,10 @@ namespace StealthGM
    void StealthInputComponent::HandlePeriodicProcessing(float deltaTime)
    {
       mCountDownToPeriodicProcessing -= deltaTime;
-      
+
       if (mCountDownToPeriodicProcessing < 0.0f)
       {
-         // Slow down the camera based on how much view area we have. 
+         // Slow down the camera based on how much view area we have.
          // Helps with binoculars and other FoV scale effects in Stealth View
          dtCore::Camera *camera = GetGameManager()->GetApplication().GetCamera();
          float avgFoV = 0.5f * (camera->GetHorizontalFov() + camera->GetVerticalFov());
@@ -560,7 +541,7 @@ namespace StealthGM
          case '9':
          {
             dtCore::Transform xform;
-            mStealthActor->GetTransform(xform);
+            GetStealthActor()->GetTransform(xform);
             osg::Vec3 pos;
             xform.GetTranslation(pos);
             std::ostringstream oss;
@@ -594,10 +575,10 @@ namespace StealthGM
          {
             RefPtr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             SimCore::AttachToActorMessage &atamsg = static_cast<SimCore::AttachToActorMessage&>(*msg);
-            atamsg.SetAboutActorId(mStealthActor->GetUniqueId());
+            atamsg.SetAboutActorId(GetStealthActor()->GetUniqueId());
             atamsg.SetSource(*mMachineInfo);
 
-            if (mStealthActor->GetParent() != NULL)
+            if (GetStealthActor()->GetParent() != NULL)
             {
                atamsg.SetAttachToActor(dtCore::UniqueId(""));
             }
@@ -663,7 +644,7 @@ namespace StealthGM
                SimCore::Tools::Tool* tool = GetTool(SimCore::MessageType::BINOCULARS);
                if (tool != NULL && tool->GetPlayerActor() == NULL)
                {
-                  GetTool(SimCore::MessageType::BINOCULARS)->SetPlayerActor(mStealthActor.get());
+                  GetTool(SimCore::MessageType::BINOCULARS)->SetPlayerActor(GetStealthActor());
                }
 
                ToggleTool(SimCore::MessageType::BINOCULARS);
@@ -691,7 +672,8 @@ namespace StealthGM
          case osgGA::GUIEventAdapter::KEY_Shift_L:
          case osgGA::GUIEventAdapter::KEY_Shift_R:
             {
-               if ( mStealthActor.valid() && !mStealthActor->IsRemote())
+               if (GetStealthActor() != NULL
+                        && !GetStealthActor()->IsRemote())
                {
                   SimCore::Tools::LaserRangeFinder *lrf = static_cast<SimCore::Tools::LaserRangeFinder*>(GetTool(SimCore::MessageType::LASER_RANGE_FINDER));
                   if (lrf == NULL || !lrf->IsEnabled())
@@ -1064,11 +1046,11 @@ namespace StealthGM
          mCycleIndex = mCycleIndex % actors.size();
 
       RefPtr<dtDAL::ActorProxy> ap = actors[mCycleIndex];
-      if (ap->GetActor() != mStealthActor.get() && ap != mTerrainActor &&
+      if (ap->GetActor() != GetStealthActor() && ap != mTerrainActor &&
          ap.get() != GetGameManager()->GetEnvironmentActor())
       {
          RefPtr<dtGame::Message> nMsg = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
-         nMsg->SetAboutActorId(mStealthActor->GetUniqueId());
+         nMsg->SetAboutActorId(GetStealthActor()->GetUniqueId());
 
          SimCore::AttachToActorMessage* atamsg = dynamic_cast<SimCore::AttachToActorMessage*>(nMsg.get());
 
@@ -1091,7 +1073,7 @@ namespace StealthGM
                objectxform.GetTranslation(x, y, z);
                y -= 15;
                z += 3;
-               mStealthActor->SetTransform(dtCore::Transform(x, y, z));
+               GetStealthActor()->SetTransform(dtCore::Transform(x, y, z));
             }
             else
             {
@@ -1283,8 +1265,8 @@ namespace StealthGM
    /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ToggleTool(SimCore::MessageType& msgType)
    {
-      if (! mStealthActor.valid()
-         || mStealthActor->IsRemote() )
+      if (GetStealthActor() == NULL
+         || GetStealthActor()->IsRemote() )
       {
          return;
       }
@@ -1307,7 +1289,7 @@ namespace StealthGM
       }
 
       static_cast<SimCore::ToolMessage*>(msg.get())->SetEnabled(enable);
-      msg->SetAboutActorId(mStealthActor->GetUniqueId());
+      msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
       msg->SetSource(*mMachineInfo);
 
       GetGameManager()->SendMessage(*msg);
@@ -1330,7 +1312,7 @@ namespace StealthGM
                dtCore::RefPtr<dtGame::Message> nvgMsg
                   = GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::NIGHT_VISION);
                static_cast<SimCore::ToolMessage*>(nvgMsg.get())->SetEnabled(false);
-               nvgMsg->SetAboutActorId(mStealthActor->GetUniqueId());
+               nvgMsg->SetAboutActorId(GetStealthActor()->GetUniqueId());
                nvgMsg->SetSource(*mMachineInfo);
                GetGameManager()->SendMessage(*nvgMsg);
             }
@@ -1338,7 +1320,7 @@ namespace StealthGM
             i->second->Enable(false);
          }
       }
-      
+
       // Note - The motion model turn speeds was moved to HandlePeriodicProcessing()
    }
 
@@ -1510,10 +1492,10 @@ namespace StealthGM
          mStealthMM->SetTarget(NULL);
          mStealthMM->SetEnabled(false);
 
-         mAttachedMM->SetTarget(mStealthActor.get());
+         mAttachedMM->SetTarget(GetStealthActor());
          mAttachedMM->SetEnabled(true);
 
-         mStealthActor->SetAttachAsThirdPerson(false);
+         GetStealthActor()->SetAttachAsThirdPerson(false);
 
          if (hud != NULL)
          {
@@ -1534,10 +1516,10 @@ namespace StealthGM
          mAttachedMM->SetTarget(NULL);
          mAttachedMM->SetEnabled(false);
 
-         mStealthMM->SetTarget(mStealthActor.get());
+         mStealthMM->SetTarget(GetStealthActor());
          mStealthMM->SetEnabled(true);
 
-         mStealthActor->SetAttachAsThirdPerson(true);
+         GetStealthActor()->SetAttachAsThirdPerson(true);
 
          if (hud != NULL)
          {
