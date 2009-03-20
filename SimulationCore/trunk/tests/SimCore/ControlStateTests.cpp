@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -71,23 +71,23 @@ namespace SimCore
             void setUp();
             void tearDown();
 
-            dtCore::RefPtr<SimCore::Actors::DiscreteControl> CreateDiscreteControl( 
+            dtCore::RefPtr<SimCore::Actors::DiscreteControl> CreateDiscreteControl(
                const std::string& controlName, unsigned long totalStates, long currentState );
 
-            dtCore::RefPtr<SimCore::Actors::ContinuousControl> CreateContinuousControl( 
+            dtCore::RefPtr<SimCore::Actors::ContinuousControl> CreateContinuousControl(
                const std::string& controlName, float minValue, float maxValue, float value );
 
-            void TestControlGroupParameter( 
-               const dtDAL::NamedGroupParameter& testGroupParam, 
+            void TestControlGroupParameter(
+               const dtDAL::NamedGroupParameter& testGroupParam,
                const SimCore::Actors::DiscreteControl& controlsMap );
 
-            void TestControlGroupParameter( 
-               const dtDAL::NamedGroupParameter& testGroupParam, 
+            void TestControlGroupParameter(
+               const dtDAL::NamedGroupParameter& testGroupParam,
                const SimCore::Actors::ContinuousControl& controlsMap );
 
             template<class T_ControlType>
-            void TestControlArrayGroupParameter( 
-               const dtDAL::NamedGroupParameter& testGroupParam, 
+            void TestControlArrayGroupParameter(
+               const dtDAL::NamedGroupParameter& testGroupParam,
                const std::map<const std::string, dtCore::RefPtr<T_ControlType> >& controlsMap );
 
             void TestControlTypeName( SimCore::Actors::BaseControl& controlType );
@@ -136,7 +136,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Actors::DiscreteControl> ControlStateTests::CreateDiscreteControl( 
+      dtCore::RefPtr<SimCore::Actors::DiscreteControl> ControlStateTests::CreateDiscreteControl(
          const std::string& controlName, unsigned long totalStates, long currentState )
       {
          dtCore::RefPtr<SimCore::Actors::DiscreteControl> control = new SimCore::Actors::DiscreteControl;
@@ -145,9 +145,9 @@ namespace SimCore
          control->SetCurrentState( currentState );
          return control;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
-      dtCore::RefPtr<SimCore::Actors::ContinuousControl> ControlStateTests::CreateContinuousControl( 
+      dtCore::RefPtr<SimCore::Actors::ContinuousControl> ControlStateTests::CreateContinuousControl(
          const std::string& controlName, float minValue, float maxValue, float value )
       {
          dtCore::RefPtr<SimCore::Actors::ContinuousControl> control = new SimCore::Actors::ContinuousControl;
@@ -160,15 +160,15 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       // OVERLOAD: DISCRETE CONTROL
-      void ControlStateTests::TestControlGroupParameter( 
-         const dtDAL::NamedGroupParameter& testGroupParam, 
+      void ControlStateTests::TestControlGroupParameter(
+         const dtDAL::NamedGroupParameter& testGroupParam,
          const SimCore::Actors::DiscreteControl& control )
       {
          CPPUNIT_ASSERT_MESSAGE("A discrete control should create a NamedGroupParameter that shares the same name",
             testGroupParam.GetName() == control.GetName() );
 
          // Test total states
-         const dtDAL::NamedUnsignedIntParameter* paramTotalStates 
+         const dtDAL::NamedUnsignedIntParameter* paramTotalStates
             = dynamic_cast<const dtDAL::NamedUnsignedIntParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::DiscreteControl::PARAM_NAME_TOTAL_STATES ));
 
@@ -176,7 +176,7 @@ namespace SimCore
          CPPUNIT_ASSERT( control.GetTotalStates() == paramTotalStates->GetValue() );
 
          // Test current state
-         const dtDAL::NamedIntParameter* paramCurrentState 
+         const dtDAL::NamedIntParameter* paramCurrentState
             = dynamic_cast<const dtDAL::NamedIntParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::DiscreteControl::PARAM_NAME_CURRENT_STATE ));
 
@@ -186,15 +186,15 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       // OVERLOAD: CONTINUOUS CONTROL
-      void ControlStateTests::TestControlGroupParameter( 
-         const dtDAL::NamedGroupParameter& testGroupParam, 
+      void ControlStateTests::TestControlGroupParameter(
+         const dtDAL::NamedGroupParameter& testGroupParam,
          const SimCore::Actors::ContinuousControl& control )
       {
          double errorThreshold = 0.0001;
          CPPUNIT_ASSERT_MESSAGE("A continuous control should create a NamedGroupParameter that shares the same name",
             testGroupParam.GetName() == control.GetName() );
 
-         const dtDAL::NamedFloatParameter* param 
+         const dtDAL::NamedFloatParameter* param
             = dynamic_cast<const dtDAL::NamedFloatParameter*>
             (testGroupParam.GetParameter( SimCore::Actors::ContinuousControl::PARAM_NAME_VALUE_MIN ));
 
@@ -218,8 +218,8 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       template<class T_ControlType>
-      void ControlStateTests::TestControlArrayGroupParameter( 
-         const dtDAL::NamedGroupParameter& testGroupParam, 
+      void ControlStateTests::TestControlArrayGroupParameter(
+         const dtDAL::NamedGroupParameter& testGroupParam,
          const std::map<const std::string, dtCore::RefPtr<T_ControlType> >& controlsMap )
       {
          // Ensure that the collections of controls are the same size.
@@ -227,7 +227,7 @@ namespace SimCore
 
          const T_ControlType* currentControl = NULL;
          const dtDAL::NamedGroupParameter* currentGroupParam = NULL;
-         
+
          typedef typename std::map<const std::string, dtCore::RefPtr<T_ControlType> >::const_iterator constMapIter;
          constMapIter iter = controlsMap.begin();
 
@@ -259,7 +259,7 @@ namespace SimCore
          controlType.SetName( testName );
          CPPUNIT_ASSERT( controlType.GetName() == testName );
 
-         // Test setting the name longer than the 
+         // Test setting the name longer than the
          // limit specified by the object's class;
          // the name length should be clamped to the limit.
          CPPUNIT_ASSERT( SimCore::Actors::BaseControl::NAME_LENGTH == 64 );
@@ -426,11 +426,11 @@ namespace SimCore
             = static_cast<SimCore::Actors::Platform*>(&testEntityProxy->GetGameActor());
 
          // Test setting an entity
-         CPPUNIT_ASSERT( controlState->GetEntityID().empty() );
+         CPPUNIT_ASSERT( controlState->GetEntityID().ToString().empty() );
          CPPUNIT_ASSERT( controlState->GetEntity() == NULL );
          controlState->SetEntity( testEntityProxy.get() );
          CPPUNIT_ASSERT( controlState->GetEntity() == testEntity.get() );
-         CPPUNIT_ASSERT( controlState->GetEntityID() == testEntity->GetUniqueId().ToString() );
+         CPPUNIT_ASSERT( controlState->GetEntityID() == testEntity->GetUniqueId());
 
          // Test station type
          CPPUNIT_ASSERT( controlState->GetStationType() == 0 );
@@ -473,7 +473,7 @@ namespace SimCore
          CPPUNIT_ASSERT( controlState->GetDiscreteControlCount() == 4 );
          CPPUNIT_ASSERT( controlState->GetDiscreteControls().size() == 4 );
          // --- Test accessing individual controls
-         SimCore::Actors::DiscreteControl* testDiscreteControl 
+         SimCore::Actors::DiscreteControl* testDiscreteControl
             = controlState->GetDiscreteControl( dc1->GetName() );
          CPPUNIT_ASSERT( testDiscreteControl != NULL );
          CPPUNIT_ASSERT( testDiscreteControl == dc1.get() );
@@ -535,7 +535,7 @@ namespace SimCore
             proxy.valid() );
          dtCore::RefPtr<SimCore::Actors::ControlStateActor> decodedControlState
             = static_cast<SimCore::Actors::ControlStateActor*>(&proxy->GetGameActor());
-         CPPUNIT_ASSERT( decodedControlState->GetEntityID().empty() );
+         CPPUNIT_ASSERT( decodedControlState->GetEntityID().ToString().empty() );
          CPPUNIT_ASSERT( decodedControlState->GetStationType() == 0 );
          CPPUNIT_ASSERT( decodedControlState->GetDiscreteControlCount() == 0 );
          CPPUNIT_ASSERT( decodedControlState->GetContinuousControlCount() == 0 );
@@ -545,7 +545,7 @@ namespace SimCore
 
 
          // --- Encode & decode discrete controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> discreteArray 
+         dtCore::RefPtr<dtDAL::NamedGroupParameter> discreteArray
             = controlState->GetDiscreteControlsAsGroupParameter();
          CPPUNIT_ASSERT( discreteArray.valid() );
 
@@ -560,7 +560,7 @@ namespace SimCore
 
 
          // --- Encode & decode continuous controls
-         dtCore::RefPtr<dtDAL::NamedGroupParameter> continuousArray 
+         dtCore::RefPtr<dtDAL::NamedGroupParameter> continuousArray
             = controlState->GetContinuousControlsAsGroupParameter();
          CPPUNIT_ASSERT( continuousArray.valid() );
 
@@ -623,7 +623,7 @@ namespace SimCore
 
          // Test clear (on the decoded control state)
          decodedControlState->Clear();
-         CPPUNIT_ASSERT( decodedControlState->GetEntityID().empty() );
+         CPPUNIT_ASSERT( decodedControlState->GetEntityID().ToString().empty() );
          CPPUNIT_ASSERT( decodedControlState->GetStationType() == 0 );
          CPPUNIT_ASSERT( decodedControlState->GetDiscreteControlCount() == 0 );
          CPPUNIT_ASSERT( decodedControlState->GetContinuousControlCount() == 0 );

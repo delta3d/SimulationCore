@@ -664,7 +664,7 @@ namespace SimCore
 
             UpdateDayTime();
          }
-         else if(type == *dtActors::EngineActorRegistry::ENVIRONMENT_ACTOR_TYPE)
+         else if(type == *dtActors::EngineActorRegistry::WEATHER_ENVIRONMENT_ACTOR_TYPE)
          {
             SimCore::Actors::IGEnvironmentActorProxy* igproxy =
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(actor);

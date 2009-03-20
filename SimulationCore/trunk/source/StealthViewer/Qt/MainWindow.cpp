@@ -2228,7 +2228,7 @@ namespace StealthQt
       QString id = currentItem->data(Qt::UserRole).toString();
 
       // Retrieve proxy from the GM
-      dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
+      dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(dtCore::UniqueId(id.toStdString()));
       if (proxy != NULL)
       {
          UpdateEntityInfoData(*proxy);
@@ -2354,7 +2354,7 @@ namespace StealthQt
          QString id = currentItem->data(Qt::UserRole).toString();
 
          // Retrieve proxy from the GM
-         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(id.toStdString());
+         dtGame::GameActorProxy *proxy = mApp->GetGameManager()->FindGameActorById(dtCore::UniqueId(id.toStdString()));
          if (proxy != NULL)
          {
             UpdateEntityInfoData(*proxy);

@@ -187,8 +187,7 @@ namespace SimCore
 
             ControlStateActor( ControlStateProxy& proxy );
 
-            // NOTE: Does not return a reference since an entity might not exist.
-            const std::string& GetEntityID() const;
+            const dtCore::UniqueId& GetEntityID() const;
 
             void SetEntity( dtDAL::ActorProxy* proxy );
             dtCore::DeltaDrawable* GetEntity();
