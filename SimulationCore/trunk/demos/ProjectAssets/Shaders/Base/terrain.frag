@@ -19,6 +19,7 @@ void computeDetailBlend(sampler2D, vec2, vec3, out float);
 void computeTerrainColor(vec3, vec4, float, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
+void spot_light_fragment(vec3, vec3, out vec3);
 
 void main(void)
 {   
@@ -35,6 +36,11 @@ void main(void)
 
    vec3 dynamicLightContrib;
    dynamic_light_fragment(worldNormal, vPos, dynamicLightContrib);
+
+   vec3 spotLightContrib;
+   spot_light_fragment(worldNormal, vPos, spotLightContrib);
+   dynamicLightContrib += spotLightContrib;
+
    lightContrib += dynamicLightContrib;
    lightContrib = clamp(lightContrib, 0.0, 1.0);
    
