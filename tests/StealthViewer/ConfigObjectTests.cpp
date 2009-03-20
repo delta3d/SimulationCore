@@ -673,7 +673,7 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, dayTimeProxy);
 
    dtCore::RefPtr<dtActors::BasicEnvironmentActorProxy> envProxy;
-   gm->CreateActor(*dtActors::EngineActorRegistry::ENVIRONMENT_ACTOR_TYPE, envProxy);
+   gm->CreateActor(*dtActors::EngineActorRegistry::WEATHER_ENVIRONMENT_ACTOR_TYPE, envProxy);
 
    dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosphereProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, atmosphereProxy);

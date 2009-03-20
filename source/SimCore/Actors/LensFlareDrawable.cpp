@@ -23,6 +23,7 @@
 #include <SimCore/Actors/LensFlareDrawable.h>
 
 #include <dtUtil/exception.h>
+#include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 #include <dtDAL/project.h>
 #include <dtCore/scene.h>
@@ -44,7 +45,7 @@ namespace SimCore
    namespace Actors
    {
 
-      const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_SOFT_GLOW("Textures:sun_glare_soft_glow.bmp");      
+      const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_SOFT_GLOW("Textures:sun_glare_soft_glow.bmp");
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_HARD_GLOW("Textures:sun_glare_hard_glow.bmp");
       const dtUtil::RefString LensFlareDrawable::TEXTURE_LENSFLARE_STREAKS("Textures:sun_glare_streaks_01.bmp");
 
@@ -57,7 +58,7 @@ namespace SimCore
 
       LensFlareDrawable::~LensFlareDrawable()
       {
-         
+
       }
 
       osg::Node* SimCore::Actors::LensFlareDrawable::GetOSGNode()
@@ -71,16 +72,16 @@ namespace SimCore
       }
 
       void LensFlareDrawable::Init()
-      { 
+      {
          mLensFlareDrawable = new LensFlareDrawable::LensFlareOSGDrawable();
-         
+
          osg::Geode* geode = new osg::Geode();
 
          geode->addDrawable(mLensFlareDrawable.get());
          geode->setCullingActive(false);
 
          osg::StateSet* ss = geode->getOrCreateStateSet();
-         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD - 1, "TransparentBin");               
+         ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD - 1, "TransparentBin");
          ss->setMode( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
          ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
 
@@ -96,15 +97,15 @@ namespace SimCore
          mNode = new osg::MatrixTransform;
          mNode->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
          mNode->setMatrix(osg::Matrix::identity());
-         mNode->addChild(projection);      
+         mNode->addChild(projection);
       }
 
       void LensFlareDrawable::Update(const osg::Vec3& lightPos)
       {
-         mLensFlareDrawable->SetLightPos(lightPos);    
+         mLensFlareDrawable->SetLightPos(lightPos);
       }
-     
-      
+
+
       LensFlareDrawable::LensFlareOSGDrawable::LensFlareOSGDrawable()
       {
          setUseDisplayList(false);
@@ -113,11 +114,11 @@ namespace SimCore
 
 
       void LensFlareDrawable::LensFlareOSGDrawable::LoadTextures()
-      {      
+      {
          dtDAL::Project& project = dtDAL::Project::GetInstance();
-         
+
          try
-         {      
+         {
             std::string softGlowFile = project.GetResourcePath(dtDAL::ResourceDescriptor(TEXTURE_LENSFLARE_SOFT_GLOW));
             mSoftGlow = new osg::Texture2D();
             InitTexture(softGlowFile, mSoftGlow.get());
@@ -165,33 +166,33 @@ namespace SimCore
       //this function calculates a scalar to apply to the flare effect which fades it in and
       //out over the fade rate
       float LensFlareDrawable::LensFlareOSGDrawable::CalculateEffectScale(osg::Camera* cam, bool visible) const
-      {        
+      {
          const double currentTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
 
          //this will insert one if it doesnt exist
-         FadeParams& params = mFadeMap[cam];         
+         FadeParams& params = mFadeMap[cam];
 
          if(params.mVisible != visible)
-         {           
+         {
             //if visible is false, fade direction will be -1, implying we are fading out
             //else fade direction will be 1, implying we are fading in
-            params.mFadeDirection = (2 * int(visible)) - 1;            
+            params.mFadeDirection = (2 * int(visible)) - 1;
             params.mVisible = visible;
          }
          else if(params.mFadeDirection != 0)
          {
             float fadeDelta = (currentTime - params.mLastTickTime) / params.mFadeRate;
             params.mFadeCurrent += float(params.mFadeDirection) * fadeDelta;
-            
+
             //if we are fading down and we hit zero or up and we hit one then we are no longer fading
             if((params.mFadeCurrent <= 0.0f && params.mFadeDirection == -1) || (params.mFadeCurrent >= 1.0 && params.mFadeDirection == 1))
             {
                params.mFadeDirection = 0;
             }
-               
+
             dtUtil::Clamp(params.mFadeCurrent, 0.0f, 1.0f);
-         }         
-         
+         }
+
          params.mLastTickTime = currentTime;
          return params.mFadeCurrent;
       }
@@ -205,7 +206,7 @@ namespace SimCore
             static const float streaksScale = 0.55;
 
             //calculate the screen position of the light
-            osg::Camera* cam = renderInfo.getCurrentCamera();            
+            osg::Camera* cam = renderInfo.getCurrentCamera();
             osg::Vec4d screenXYZ(mLightPos.x(), mLightPos.y(), mLightPos.z(), 1.0);
             screenXYZ = cam->getViewMatrix().preMult(screenXYZ);
             screenXYZ = cam->getProjectionMatrix().preMult(screenXYZ);
@@ -213,19 +214,19 @@ namespace SimCore
             screenXYZ /= screenXYZ.w();
             screenXYZ += osg::Vec4d(1.0, 1.0, 1.0, 1.0);
             screenXYZ *= 0.5;
-            
+
             float bufferZ = 0.0f;
             glReadPixels(cam->getViewport()->width() * screenXYZ.x(), cam->getViewport()->height() * screenXYZ.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &bufferZ);
 
-            bool occluded = bufferZ < 1;            
+            bool occluded = bufferZ < 1;
 
             float effectScale = CalculateEffectScale(cam, inFrontOfCamera && !occluded);
 
-      
+
             //if the lens flare is not on the screen dont draw it
             if(inFrontOfCamera && (effectScale > 0.0f))// && screenXYZ.x() >= 0.0 && screenXYZ.x() <= 1.0
                //&& screenXYZ.y() >= 0.0 && screenXYZ.y() <= 1.0)
-            {             
+            {
                osg::Vec2 screenPos(screenXYZ.x(), screenXYZ.y());
 
                osg::Vec4 glowColor(0.60f, 0.60f, 0.8f, 1.0f);
@@ -263,7 +264,7 @@ namespace SimCore
          glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
 
          glBegin(GL_TRIANGLE_STRIP);
-         glTexCoord2f(0.0f, 0.0f);					
+         glTexCoord2f(0.0f, 0.0f);
          glVertex2f(q[0].x(), q[0].y());
          glTexCoord2f(0.0f, 1.0f);
          glVertex2f(q[1].x(), q[1].y());
@@ -271,7 +272,7 @@ namespace SimCore
          glVertex2f(q[2].x(), q[2].y());
          glTexCoord2f(1.0f, 1.0f);
          glVertex2f(q[3].x(), q[3].y());
-         glEnd();					
+         glEnd();
       }
 
    }

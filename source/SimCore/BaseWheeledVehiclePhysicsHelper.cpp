@@ -202,7 +202,7 @@ namespace SimCore
             physicsObject->CreateFromProperties(bodyNode);
 
             //TODO: this is using torque in place of force, some conversion probably needs to be done.
-            vehicle->Init(dynamic_cast<palBody*>(physicsObject->GetBodyWrapper()->GetPalBody()),
+            vehicle->Init(dynamic_cast<palBody*>(&physicsObject->GetBodyWrapper()->GetPalBody()),
                      mEngineTorque, mHorsePower);
             //TODO: offset center of mass.
             //dtCore::Transform xform;

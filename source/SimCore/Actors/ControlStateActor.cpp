@@ -511,13 +511,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const std::string& ControlStateActor::GetEntityID() const
+      const dtCore::UniqueId& ControlStateActor::GetEntityID() const
       {
-         static const std::string EMPTY("");
+         static const dtCore::UniqueId EMPTY("");
 
          if( mEntity.valid() )
          {
-            return mEntity->GetUniqueId().ToString();
+            return mEntity->GetUniqueId();
          }
          return EMPTY;
       }

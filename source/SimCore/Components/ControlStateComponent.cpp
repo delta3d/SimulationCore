@@ -86,16 +86,16 @@ namespace SimCore
 
          // Avoid any additional comparisons on message type since
          // tick messages will be the most frequently received.
-         if( type == dtGame::MessageType::TICK_LOCAL 
+         if( type == dtGame::MessageType::TICK_LOCAL
             || type == dtGame::MessageType::TICK_REMOTE )
          {
             return;
          }
-         
+
          if( type == SimCore::MessageType::INFO_ACTOR_CREATED
             || type == SimCore::MessageType::INFO_ACTOR_UPDATED )
          {
-            const dtGame::ActorUpdateMessage& updateMsg 
+            const dtGame::ActorUpdateMessage& updateMsg
                = static_cast<const dtGame::ActorUpdateMessage&>(message);
 
             // Listen for remote updates
@@ -110,7 +110,7 @@ namespace SimCore
          }
          else if( type == SimCore::MessageType::INFO_ACTOR_DELETED )
          {
-            const dtGame::ActorDeletedMessage& deleteMsg 
+            const dtGame::ActorDeletedMessage& deleteMsg
                = static_cast<const dtGame::ActorDeletedMessage&>(message);
 
             // Listen for remote deletes
@@ -123,7 +123,7 @@ namespace SimCore
                }
             }
             // Is the vehicle being deleted?
-            else 
+            else
             {
                // Notify local control states of an entity being deleted.
                // Remove all local controls states pointing to the entity.
@@ -150,7 +150,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      SimCore::Actors::ControlStateActor* ControlStateComponent::GetControlState( 
+      SimCore::Actors::ControlStateActor* ControlStateComponent::GetControlState(
          const dtCore::UniqueId& actorID )
       {
          dtGame::GameManager* gm = GetGameManager();
@@ -158,7 +158,7 @@ namespace SimCore
          if( gm != NULL )
          {
             dtDAL::ActorProxy* proxy = gm->FindActorById( actorID );
-            
+
             if( proxy != NULL
                && proxy->GetActorType() == *SimCore::Actors::EntityActorRegistry::CONTROL_STATE_ACTOR_TYPE )
             {
@@ -170,7 +170,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      const SimCore::Actors::ControlStateActor* ControlStateComponent::GetControlState( 
+      const SimCore::Actors::ControlStateActor* ControlStateComponent::GetControlState(
          const dtCore::UniqueId& actorID ) const
       {
          const dtGame::GameManager* gm = GetGameManager();
@@ -248,7 +248,7 @@ namespace SimCore
          // Determine if the control state is a remote gunner.
          if( controlState.IsRemote() )
          {
-            const std::string& vehicleID = controlState.GetEntityID();
+            const dtCore::UniqueId& vehicleID = controlState.GetEntityID();
             bool isVehicleControlState = IsVehicleControlState( controlState );
 
             // A vehicle or gunner control state will have a weapon ID (index).
@@ -304,9 +304,9 @@ namespace SimCore
                      if( ! isVehicleControlState )
                      {
                         ControlStateInfo* vehicleControlInfo = GetRemoteVehicleControlStateInfo( vehicleID );
-                        
+
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
-                        SimCore::Actors::Platform* vehicle = proxy != NULL 
+                        SimCore::Actors::Platform* vehicle = proxy != NULL
                            ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor()) : NULL;
 
                         if( vehicle != NULL && vehicleControlInfo != NULL && vehicleControlInfo->mWeaponModel.valid() )
@@ -331,7 +331,7 @@ namespace SimCore
                      if( info->mGunnerModel.valid() && ! info->mGunnerModelAttached )
                      {
                         dtDAL::ActorProxy* proxy = GetGameManager()->FindActorById(vehicleID);
-                        SimCore::Actors::Platform* vehicle = proxy != NULL 
+                        SimCore::Actors::Platform* vehicle = proxy != NULL
                            ? dynamic_cast<SimCore::Actors::Platform*>(proxy->GetActor()) : NULL;
 
                         if( vehicle != NULL )
@@ -347,7 +347,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      bool ControlStateComponent::IsStationAvailableOnVehicle( 
+      bool ControlStateComponent::IsStationAvailableOnVehicle(
          unsigned station, const SimCore::Actors::Platform& vehicle )
       {
          const SimCore::Actors::ControlStateActor* vehicleControl = FindVehicleControlState( vehicle );
@@ -364,7 +364,7 @@ namespace SimCore
       bool ControlStateComponent::IsStationAvailableOnVehicle(
          unsigned station, const SimCore::Actors::ControlStateActor& vehicleControl )
       {
-         const SimCore::Actors::DiscreteControl* stationControl 
+         const SimCore::Actors::DiscreteControl* stationControl
             = vehicleControl.GetDiscreteControl( CreateStationName( station ) );
 
          return stationControl != NULL && stationControl->GetCurrentState() == 0;
@@ -373,7 +373,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       SimCore::Actors::ControlStateActor* ControlStateComponent::FindVehicleControlState( const SimCore::Actors::Platform& vehicle )
       {
-         const std::string& vehicleID = vehicle.GetUniqueId().ToString();
+         const dtCore::UniqueId& vehicleID = vehicle.GetUniqueId();
 
          // Determine if the current vehicle control state is the one for the specified vehicle.
          if( HasVehicleControl( vehicleID ) )
@@ -475,7 +475,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      bool ControlStateComponent::DetachRemoteWeaponOnVehicle( 
+      bool ControlStateComponent::DetachRemoteWeaponOnVehicle(
          SimCore::Actors::Platform& vehicle, const std::string& dofName )
       {
          // Get the weapon model associated with the vehicle.
@@ -489,7 +489,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      bool ControlStateComponent::SetRemoteWeaponOnVehicleVisible( 
+      bool ControlStateComponent::SetRemoteWeaponOnVehicleVisible(
          SimCore::Actors::Platform& vehicle, const std::string& dofName, bool visible )
       {
          osg::Node* weapon = GetWeaponModelOnVehicle( vehicle.GetUniqueId() );
@@ -542,14 +542,14 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      ControlStateInfo* ControlStateComponent::GetRemoteGunnerControlStateInfo( 
+      ControlStateInfo* ControlStateComponent::GetRemoteGunnerControlStateInfo(
          const dtCore::UniqueId& vehicleID )
       {
          return GetControlStateInfo( mRemoteGunnerMap, vehicleID );
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      bool ControlStateComponent::AddRemoteGunnerControlStateInfo( 
+      bool ControlStateComponent::AddRemoteGunnerControlStateInfo(
          const dtCore::UniqueId& vehicleID, ControlStateInfo& info )
       {
          return AddControlStateInfo( mRemoteGunnerMap, vehicleID, info );
@@ -562,14 +562,14 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      ControlStateInfo* ControlStateComponent::GetRemoteVehicleControlStateInfo( 
+      ControlStateInfo* ControlStateComponent::GetRemoteVehicleControlStateInfo(
          const dtCore::UniqueId& vehicleID )
       {
          return GetControlStateInfo( mRemoteVehicleMap, vehicleID );
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      bool ControlStateComponent::AddRemoteVehicleControlStateInfo( 
+      bool ControlStateComponent::AddRemoteVehicleControlStateInfo(
          const dtCore::UniqueId& vehicleID, ControlStateInfo& info )
       {
          return AddControlStateInfo( mRemoteVehicleMap, vehicleID, info );
@@ -582,7 +582,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      ControlStateInfo* ControlStateComponent::GetControlStateInfo( 
+      ControlStateInfo* ControlStateComponent::GetControlStateInfo(
          RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID )
       {
          RemoteControlStateMap::iterator foundIter = infoMap.find( vehicleID );
@@ -660,11 +660,11 @@ namespace SimCore
             const std::string& weaponFileName = GetWeaponModelFileName( controlStateInfo.mWeaponSelected );
             dtCore::RefPtr<osg::Node> cachedModel;
 
-            bool isModelLoaded 
+            bool isModelLoaded
                = SimCore::Actors::IGActor::LoadFileStatic( weaponFileName, cachedModel, controlStateInfo.mWeaponModel );
 
             // DEBUG: std::cout << "\tweapon(" << (isModelLoaded?weaponFileName:"NULL") << ")" << std::endl;
-            
+
             if( isModelLoaded )
             {
                if( controlStateInfo.mWeaponModel.valid() )
