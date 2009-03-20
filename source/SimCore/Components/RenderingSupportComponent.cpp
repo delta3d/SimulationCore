@@ -117,6 +117,10 @@ namespace SimCore
 
       };
 
+      //////////////////////////////////////////////////////////////////////////
+      IMPLEMENT_ENUM(RenderingSupportComponent::LightType)
+      RenderingSupportComponent::LightType RenderingSupportComponent::LightType::OMNI_DIRECTIONAL("OMNI_DIRECTIONAL");
+      RenderingSupportComponent::LightType RenderingSupportComponent::LightType::SPOT_LIGHT("SPOT_LIGHT");
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       const std::string RenderingSupportComponent::DEFAULT_NAME = "RenderingSupportComponent";
@@ -125,7 +129,6 @@ namespace SimCore
 
       RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
 
-      const unsigned RenderingSupportComponent::MAX_LIGHTS = 20;
       const unsigned RenderingSupportComponent::MAIN_CAMERA_CULL_MASK = 0xFFFFFFFF;
       const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
       const unsigned RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK = 0x80000000;
@@ -147,8 +150,42 @@ namespace SimCore
          , mRadius(0.0f)
          , mID(++mLightCounter)
          , mAutoDeleteLightOnTargetNull(false)
+         , mLightType(&RenderingSupportComponent::LightType::OMNI_DIRECTIONAL) //omni by default
          , mTarget(NULL)
       {
+      }
+
+      RenderingSupportComponent::DynamicLight::DynamicLight(const LightType* lightType)
+         : mDeleteMe(false)
+         , mIntensity(1.0f)
+         , mSaturationIntensity(1.0f)
+         , mColor(1.0f, 1.0f, 1.0f)
+         , mPosition()
+         , mAttenuation(1.0f, 0.01f, 0.001f)
+         , mFlicker(false)
+         , mFlickerScale(0.1f)
+         , mAutoDeleteAfterMaxTime(false)
+         , mMaxTime(0.0f)
+         , mFadeOut(false)
+         , mFadeOutTime(0.0f)
+         , mRadius(0.0f)
+         , mID(++mLightCounter)
+         , mAutoDeleteLightOnTargetNull(false)
+         , mLightType(lightType) 
+         , mTarget(NULL)
+      {
+      }
+
+      //spot light constructor
+      RenderingSupportComponent::SpotLight::SpotLight()
+         : DynamicLight(&LightType::SPOT_LIGHT)
+         , mUseAbsoluteDirection(false)
+         , mSpotExponent(0.5)
+         , mSpotCosCutoff(0.75)
+         , mDirection(0.0, 1.0, 0.0)
+         , mCurrentDirection(0.0, 1.0, 0.0)
+      {
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,6 +195,8 @@ namespace SimCore
          , mEnableCullVisitor(false)
          , mEnableStaticTerrainPhysics(false)
          , mEnableNVGS(false)
+         , mMaxDynamicLights(10)
+         , mMaxSpotLights(5)
          , mDeltaScene(new osg::Group())
          , mSceneRoot(new osg::Group())
          , mGUIRoot(new osg::Camera())
@@ -295,20 +334,28 @@ namespace SimCore
          // Find all the dynamic light prototypes
          std::vector<dtDAL::ActorProxy*> prototypes;
          GetGameManager()->FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE, prototypes);
-         if(prototypes.empty())
-         {
-            LOG_WARNING("The Rendering component could not find any dynamic light prototypes. Make sure you loaded the correct map.");
-         }
 
          // Add all the prototypes to our map of light proxies. This allows others to quickly add a light by name
          unsigned int numPrototypes = prototypes.size();
          for (unsigned int i = 0; i < numPrototypes; i ++)
          {
-            SimCore::Actors::DynamicLightPrototypeProxy *prototype = (SimCore::Actors::DynamicLightPrototypeProxy *)prototypes[i];
+            SimCore::Actors::DynamicLightPrototypeProxy* prototype = dynamic_cast<SimCore::Actors::DynamicLightPrototypeProxy*>(prototypes[i]);
             LOG_DEBUG("Found dynamic light proxy [" + prototype->GetName() + "].");
             mDynamicLightPrototypes.insert(std::make_pair(prototype->GetName(), prototype));
          }
 
+         // Find all the spot light prototypes
+         prototypes.clear();
+         GetGameManager()->FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE, prototypes);
+
+         // Add all the prototypes to our map of light proxies. This allows others to quickly add a light by name
+         numPrototypes = prototypes.size();
+         for (unsigned int i = 0; i < numPrototypes; i ++)
+         {
+            SimCore::Actors::SpotLightPrototypeProxy* prototype = dynamic_cast<SimCore::Actors::SpotLightPrototypeProxy*>(prototypes[i]);
+            LOG_DEBUG("Found spot light proxy [" + prototype->GetName() + "].");
+            mSpotLightPrototypes.insert(std::make_pair(prototype->GetName(), prototype));
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,10 +373,29 @@ namespace SimCore
          }
       }
 
+      void RenderingSupportComponent::SetDynamicLightProperties( SimCore::Actors::DynamicLightPrototypeActor* dlActor, DynamicLight* result )
+      {
+         result->mAttenuation = dlActor->GetAttenuation();
+         result->mIntensity = dlActor->GetIntensity();
+         result->mColor = dlActor->GetLightColor();
+         // flick - is on if scale > 0
+         result->mFlicker = (dlActor->GetFlickerScale() > 0.0);
+         result->mFlickerScale = dlActor->GetFlickerScale();
+         // delete after time if maxtime > 0
+         result->mAutoDeleteAfterMaxTime = (dlActor->GetMaxTime() > 0.0);
+         result->mMaxTime = dlActor->GetMaxTime();
+         // fade out on if fade out time > 0
+         result->mFadeOut = (dlActor->GetFadeOutTime() > 0.0);
+         result->mFadeOutTime = dlActor->GetFadeOutTime();
+         result->mRadius = dlActor->GetRadius();
+         result->mAutoDeleteLightOnTargetNull = dlActor->IsDeleteOnTargetIsNull();
+
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::AddDynamicLightByPrototypeName(const std::string& prototypeName)
       {
-         DynamicLight *result = NULL;
+         DynamicLight* result = NULL;
 
          std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> >::const_iterator iter = mDynamicLightPrototypes.find(prototypeName);
          if(iter == mDynamicLightPrototypes.end() || iter->second.get() == NULL)
@@ -342,22 +408,40 @@ namespace SimCore
          }
          else
          {
-            SimCore::Actors::DynamicLightPrototypeActor *dlActor = (SimCore::Actors::DynamicLightPrototypeActor *) iter->second.get()->GetActor();
+            SimCore::Actors::DynamicLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::DynamicLightPrototypeActor*>(iter->second.get()->GetActor());
             result = new DynamicLight();
-            result->mAttenuation = dlActor->GetAttenuation();
-            result->mIntensity = dlActor->GetIntensity();
-            result->mColor = dlActor->GetLightColor();
-            // flick - is on if scale > 0
-            result->mFlicker = (dlActor->GetFlickerScale() > 0.0);
-            result->mFlickerScale = dlActor->GetFlickerScale();
-            // delete after time if maxtime > 0
-            result->mAutoDeleteAfterMaxTime = (dlActor->GetMaxTime() > 0.0);
-            result->mMaxTime = dlActor->GetMaxTime();
-            // fade out on if fade out time > 0
-            result->mFadeOut = (dlActor->GetFadeOutTime() > 0.0);
-            result->mFadeOutTime = dlActor->GetFadeOutTime();
-            result->mRadius = dlActor->GetRadius();
-            result->mAutoDeleteLightOnTargetNull = dlActor->IsDeleteOnTargetIsNull();
+
+            SetDynamicLightProperties(dlActor, result);
+
+            // Set the light type from the enum!
+            mLights.push_back(result);
+         }
+
+         return result;
+      }
+
+      RenderingSupportComponent::SpotLight* RenderingSupportComponent::AddSpotLightByPrototypeName( const std::string &prototypeName )
+      {
+         SpotLight* result = NULL;
+
+         std::map<const std::string, dtCore::RefPtr<SimCore::Actors::SpotLightPrototypeProxy> >::const_iterator iter = mSpotLightPrototypes.find(prototypeName);
+         if(iter == mSpotLightPrototypes.end() || iter->second.get() == NULL)
+         {
+            LOG_ERROR("Failed to find spot light prototype [" + prototypeName + "]. Making bogus default light instead. Make sure the light exists in the map.");
+            result = new SpotLight();
+            result->mMaxTime = 1.0f;
+            result->mAutoDeleteLightOnTargetNull = true;
+            mLights.push_back(result);
+         }
+         else
+         {
+            SimCore::Actors::SpotLightPrototypeActor* dlActor = dynamic_cast<SimCore::Actors::SpotLightPrototypeActor*>(iter->second.get()->GetActor());
+            result = new SpotLight();
+
+            SetDynamicLightProperties(dlActor, result);
+            result->mSpotExponent = dlActor->GetSpotExponent();
+            result->mDirection = dlActor->GetSpotDirection();
+            result->mUseAbsoluteDirection = dlActor->GetUseAbsoluteDirection();
 
             // Set the light type from the enum!
             mLights.push_back(result);
@@ -518,6 +602,7 @@ namespace SimCore
          {
             mLights.clear();
             mDynamicLightPrototypes.clear();
+            mSpotLightPrototypes.clear();
          }
 
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
@@ -535,17 +620,6 @@ namespace SimCore
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED){}
          else if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOADED){}*/
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::SetPosition(DynamicLight* dl)
-      {
-         if(dl != NULL && dl->mTarget.valid())
-         {
-            dtCore::Transform xform;
-            dl->mTarget->GetTransform(xform);
-            xform.GetTranslation(dl->mPosition);
-         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -633,10 +707,13 @@ namespace SimCore
 //temporary hack
 #ifdef __APPLE__
          static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
 #else
          static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
 #endif
-         osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, MAX_LIGHTS * 3);
+         osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
 
          LightArray::iterator iter = mLights.begin();
          LightArray::iterator endIter = mLights.end();
@@ -720,6 +797,14 @@ namespace SimCore
                //update the light's position
                SetPosition(dl);
             }
+            if(dl->mLightType == &LightType::SPOT_LIGHT)
+            {
+               SpotLight* sLight = dynamic_cast<SpotLight*>(dl);
+               if(sLight != NULL)
+               {
+                  SetDirection(sLight);
+               }
+            }
          }
 
          //now remove all flagged lights, note this is actually faster because we only have a single deallocation for N lights
@@ -733,34 +818,123 @@ namespace SimCore
          //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(pos));
 
-         unsigned count = 0;
-         for(iter = mLights.begin(), endIter = mLights.end();count < MAX_LIGHTS * 3;)
+         unsigned numDynamicLights = 0;
+         unsigned numSpotLights = 0;
+
+         unsigned numDynamicLightAttributes = 3;
+         unsigned numSpotLightAttributes = 4;
+
+         unsigned maxDynamicLightUniforms = numDynamicLightAttributes * mMaxDynamicLights;
+         unsigned maxSpotLightUniforms = numSpotLightAttributes * mMaxSpotLights;
+
+
+         for(iter = mLights.begin(), endIter = mLights.end(); numDynamicLights < maxDynamicLightUniforms && numSpotLights < maxSpotLightUniforms;)
          {
             if(iter != endIter)
             {
                DynamicLight* dl = (*iter).get();
+               SpotLight* sl = NULL;
 
+               bool useSpotLight = false;
+               float spotExp = 0.0f;
+               osg::Vec4 spotParams;
+
+               //if we have an open slot for spot lights and we have a spot light
+               //else we are out of dynamic light spots and we have a dynamic light make a spot light and bind it here
+               if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT) && (sl = dynamic_cast<SpotLight*>(dl)) )
+               {           
+                  spotExp = sl->mSpotExponent;
+                  spotParams.set(sl->mDirection[0], sl->mDirection[1], sl->mDirection[2], sl->mSpotExponent);                  
+                  useSpotLight = true;
+               }
+               else if( !(numDynamicLights < maxDynamicLightUniforms) )
+               {
+                  spotExp = 0.0f;
+                  spotParams.set(0.0f, 1.0f, 0.0f, -1.0f);
+                  useSpotLight = true;
+               }
+               
                //don't bind lights of zero intensity
                if(dl->mIntensity > 0.0001f)
-               {
-                  lightArray->setElement(count, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                  lightArray->setElement(count + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                  lightArray->setElement(count + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
-                  count += 3;
+               {                  
+                  if(useSpotLight)
+                  {
+                     spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                     spotLightArray->setElement(numSpotLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                     spotLightArray->setElement(numSpotLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], spotExp));
+                     spotLightArray->setElement(numSpotLights + 3, spotParams);
+                     numSpotLights += numSpotLightAttributes;
+                  }
+                  else
+                  {
+                     lightArray->setElement(numDynamicLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                     lightArray->setElement(numDynamicLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                     lightArray->setElement(numDynamicLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+                     numDynamicLights += numDynamicLightAttributes;
+                  }
                }
 
                ++iter;
             }
             else
             {
-               //else we turn the light off by setting the intensity to 0
-               lightArray->setElement(count, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-               lightArray->setElement(count + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-               lightArray->setElement(count + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-               count += 3;
+               if(numDynamicLights < maxDynamicLightUniforms)
+               {
+                  //else we turn the light off by setting the intensity to 0
+                  lightArray->setElement(numDynamicLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+                  lightArray->setElement(numDynamicLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  lightArray->setElement(numDynamicLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  numDynamicLights += numDynamicLightAttributes;
+               }
+
+               if(numSpotLights < maxSpotLightUniforms)
+               {
+                  //else we turn the light off by setting the intensity to 0
+                  spotLightArray->setElement(numSpotLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+                  spotLightArray->setElement(numSpotLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  spotLightArray->setElement(numSpotLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  numSpotLights += numSpotLightAttributes;
+               }
+
+
             }
          }
       }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetPosition(DynamicLight* dl)
+      {
+         if(dl != NULL && dl->mTarget.valid())
+         {
+            dtCore::Transform xform;
+            dl->mTarget->GetTransform(xform);
+            xform.GetTranslation(dl->mPosition);
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetDirection(SpotLight* light)
+      {
+         if(light->mTarget.valid() && !light->mUseAbsoluteDirection)
+         {
+            //this transforms our direction relative to our target
+            //to create a world space direction
+            dtCore::Transform xform;
+            light->mTarget->GetTransform(xform);
+            osg::Matrix rot;
+            xform.GetRotation(rot);
+         
+            light->mCurrentDirection = rot.postMult(light->mDirection);            
+         }
+         else 
+         {
+            //if our direction is absolute or we do not have a target
+            //then our world space direction is our current local direction
+            light->mCurrentDirection = light->mDirection;            
+         }
+      }
+
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       bool RenderingSupportComponent::UpdateCullVisitor()
@@ -825,5 +999,28 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetMaxDynamicLights( unsigned lights )
+      {
+         mMaxDynamicLights = lights;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      unsigned RenderingSupportComponent::GetMaxDynamicLights() const
+      {
+         return mMaxDynamicLights;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::SetMaxSpotLights( unsigned lights )
+      {
+         mMaxSpotLights = lights;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      unsigned RenderingSupportComponent::GetMaxSpotLights() const
+      {
+         return mMaxSpotLights;
+      }
    }
 }

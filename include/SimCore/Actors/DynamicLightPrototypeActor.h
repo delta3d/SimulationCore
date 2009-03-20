@@ -18,8 +18,9 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Curtiss Murphy
- */
+* @author Curtiss Murphy
+* @author Bradley Anderegg
+*/
 
 
 #ifndef _DYNAMICLIGHTPROTOTYPE_ACTOR_H_
@@ -151,7 +152,6 @@ namespace SimCore
          DynamicLightType* mDynamicLightType;
       };
 
-
       /* 
        * Proxy - The DynamicLightPrototype actor is used to set properties for lights in the map. This base class
        * is not intended to become a real actor. Instead, when you create a dynamic light in the world (such as a flare, 
@@ -161,9 +161,6 @@ namespace SimCore
       class SIMCORE_EXPORT DynamicLightPrototypeProxy : public dtGame::GameActorProxy
       {
       public:
-
-         //The classname set in the proxy.  This is mainly used for ActorActorProperties
-         static const std::string DYNAMIC_LIGHT_PROTOTYPE_CLASSNAME;
 
          /// Constructor
          DynamicLightPrototypeProxy();
@@ -178,6 +175,67 @@ namespace SimCore
 
          /// Destructor
          virtual ~DynamicLightPrototypeProxy();
+
+      private:
+      };
+
+      class SIMCORE_EXPORT SpotLightPrototypeActor : public DynamicLightPrototypeActor
+      {
+      public:
+
+         /// Constructor
+         SpotLightPrototypeActor(dtGame::GameActorProxy &proxy);
+
+      public:
+
+         /// Destructor
+         virtual ~SpotLightPrototypeActor();
+
+         void SetUseAbsoluteDirection(bool b);
+         bool GetUseAbsoluteDirection() const;
+
+         void SetSpotExponent(float f);
+         float GetSpotExponent() const;
+
+         void SetSpotCosCutoff(float f); 
+         float GetSpotCosCutoff() const;
+
+         void SetSpotDirection(const osg::Vec3& v);
+         osg::Vec3 GetSpotDirection() const;
+
+      private:
+
+         bool mUseAbsoluteDirection;   //use this flag if this light is attached to a transformable but you
+         //do not want to accumulate its parents rotation
+
+         //mSpotExponent is the spot rate of decay and controls how 
+         //the lights intensity decays from the center of the cone it its borders. The larger the value the faster de decay, with zero meaning constant light within the light cone.
+         float mSpotExponent;  
+
+         //The cosine of the angle between the light to vertex vector and the spot direction must be larger than spotCosCutoff
+         float mSpotCosCutoff;
+
+         osg::Vec3 mDirection;         //The direction of the light              
+
+      };
+
+      class SIMCORE_EXPORT SpotLightPrototypeProxy : public DynamicLightPrototypeProxy
+      {
+      public:
+
+         /// Constructor
+         SpotLightPrototypeProxy();
+
+         /// Creates the actor
+         void CreateActor();
+
+         /// Adds the properties associated with this actor
+         virtual void BuildPropertyMap();
+
+      protected:
+
+         /// Destructor
+         virtual ~SpotLightPrototypeProxy();
 
       private:
       };
