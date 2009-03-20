@@ -129,6 +129,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LM_OPENFLIGHT_TERRAIN_ACTORTYPE(new dtDAL::ActorType("LM_OpenFlightTerrain", "DVTETerrain"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("SpotLightPrototypeActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
@@ -222,6 +223,7 @@ namespace SimCore
          mActorFactory->RegisterType<OpenFlightToIVETerrainActorProxy>(LM_OPENFLIGHT_TERRAIN_ACTORTYPE.get());
 
          mActorFactory->RegisterType<DynamicLightPrototypeProxy>(DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<SpotLightPrototypeProxy>(SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<PositionMarkerActorProxy>(BLIP_ACTOR_TYPE.get());
 

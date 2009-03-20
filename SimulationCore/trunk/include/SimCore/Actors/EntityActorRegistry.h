@@ -75,6 +75,7 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> LM_OPENFLIGHT_TERRAIN_ACTORTYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> OCEAN_WATER_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> NECC_BOAT_ACTOR_TYPE;
 

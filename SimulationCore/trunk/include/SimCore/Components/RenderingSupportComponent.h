@@ -28,12 +28,14 @@
 #include <SimCore/Export.h>
 #include <dtGame/gmcomponent.h>
 
+#include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/AgeiaTerrainCullVisitor.h>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/SceneView>
 #include <osgUtil/StateGraph>
 #include <osgUtil/RenderStage>
 
+#include <dtUtil/enumeration.h>
 #include <dtUtil/functor.h>
 
 #include <vector>
@@ -79,10 +81,23 @@ namespace SimCore
       {
          public:
             typedef unsigned LightID;
-            static const unsigned MAX_LIGHTS;
             static const unsigned MAIN_CAMERA_CULL_MASK;
             static const unsigned ADDITIONAL_CAMERA_CULL_MASK;
             static const unsigned MAIN_CAMERA_ONLY_FEATURE_NODE_MASK;
+
+            class SIMCORE_EXPORT LightType: public dtUtil::Enumeration
+            {
+            public:
+               DECLARE_ENUM(LightType)
+               static LightType OMNI_DIRECTIONAL;
+               static LightType SPOT_LIGHT;
+
+               LightType(const std::string &name) : dtUtil::Enumeration(name)
+               {
+                  AddInstance(this);
+               }
+            };
+
 
             struct SIMCORE_EXPORT DynamicLight: public osg::Referenced
             {
@@ -94,6 +109,7 @@ namespace SimCore
                public:
 
                   DynamicLight();
+                  DynamicLight(const LightType* lightType);
 
                   //this flag is used internally for removing, but I suppose if you want to set it you can
                   bool mDeleteMe;
@@ -127,12 +143,48 @@ namespace SimCore
                   bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
                                                      //can be used in conjunction with Fade Out
 
+                  //This determines which kind of light will be used, omni or spot
+                  const LightType* mLightType;
+
                   dtCore::ObserverPtr<dtCore::Transformable> mTarget;
 
             };
 
+            //uses the Warn's spotlight model
+            struct SIMCORE_EXPORT SpotLight: public DynamicLight
+            {
+            protected:
+               /*virtual*/ ~SpotLight(){}
+               SpotLight(const SpotLight&); //un-implemented
+               SpotLight& operator=(const SpotLight&); //un-implemented
+
+            public:
+
+               SpotLight();
+
+               //this flag implies the direction specified is absolute or in world space
+               //so it does not accumulate its parents rotation
+               bool mUseAbsoluteDirection;   
+
+               //mSpotExponent is the spot rate of decay and controls how 
+               //the lights intensity decays from the center of the cone it its borders. The larger the value the faster de decay, with zero meaning constant light within the light cone.
+               float mSpotExponent; 
+              
+               //The cosine of the angle between the light to vertex vector and the spot direction must be larger than spotCosCutoff
+               float mSpotCosCutoff;
+
+               //The local direction of the light
+               osg::Vec3 mDirection;         
+
+               //The current direction of the light in world space
+               //this is set by the rendering support component
+               //WARNING- this is not meant to be modified, use mDirection
+               osg::Vec3 mCurrentDirection;  
+            };
+
 
             typedef std::vector<dtCore::RefPtr<DynamicLight> > LightArray;
+            typedef std::vector<dtCore::RefPtr<DynamicLight> > SpotLightArray;
 
             class RenderFeature: public osg::Referenced
             {
@@ -150,10 +202,17 @@ namespace SimCore
             RenderingSupportComponent(const std::string &name = DEFAULT_NAME);
 
             // Convenience method to add a new dynamic light by looking it up from the prototypes. Returns the unique dynamic light instance
-            DynamicLight *AddDynamicLightByPrototypeName(const std::string &prototypeName);
+            DynamicLight* AddDynamicLightByPrototypeName(const std::string &prototypeName);
 
+            // Convenience method to add a new spot light by looking it up from the prototypes. Returns the unique spot light instance
+            SpotLight* AddSpotLightByPrototypeName(const std::string &prototypeName);
+
+            //Use this method for adding dynamic lights or spot lights to the rendering support component
             LightID AddDynamicLight(DynamicLight*);
             void RemoveDynamicLight(LightID id);
+
+            //if your light is a spot light use this function and cast it- sorry! we could add a helper method too
+            //if you aren't sure what type of light it is you can check the light type enumeration 
             DynamicLight* GetDynamicLight(LightID id);
 
             bool GetEnableNVGS();
@@ -197,6 +256,12 @@ namespace SimCore
 
             void AddCamera(osg::Camera* cam);
 
+            void SetMaxDynamicLights(unsigned lights);
+            unsigned GetMaxDynamicLights() const;
+
+            void SetMaxSpotLights(unsigned lights);
+            unsigned GetMaxSpotLights() const;
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
@@ -205,6 +270,7 @@ namespace SimCore
             DynamicLight* FindLight(LightID id);
 
             void SetPosition(DynamicLight* dl);
+            void SetDirection(SpotLight* light);
 
             void InitializeCullVisitor(dtCore::Camera& pCamera);
             void InitializeFrameBuffer();
@@ -217,8 +283,10 @@ namespace SimCore
 
             virtual void ProcessTick(const dtGame::TickMessage &msg);
 
-            void UpdateDynamicLights(float dt);
+            void UpdateDynamicLights(float dt);            
             void UpdateViewMatrix(dtCore::Camera& pCamera);
+
+            void SetDynamicLightProperties(SimCore::Actors::DynamicLightPrototypeActor* prototype, DynamicLight* dl);
 
          public:
             //here we define constants for defining the render bins
@@ -241,6 +309,11 @@ namespace SimCore
             bool mEnableCullVisitor;
             bool mEnableStaticTerrainPhysics;
             bool mEnableNVGS;
+
+
+            unsigned mMaxDynamicLights;
+            unsigned mMaxSpotLights;
+
             dtCore::RefPtr<osg::Group> mDeltaScene;
             dtCore::RefPtr<osg::Group> mSceneRoot;
             dtCore::RefPtr<osg::Camera> mGUIRoot;
@@ -249,7 +322,11 @@ namespace SimCore
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
 
             // list of dynamic light actor prototypes
-            std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > mDynamicLightPrototypes;
+            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;            
+            DynamicLightPrototypeMap mDynamicLightPrototypes;
+
+            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::SpotLightPrototypeProxy> > SpotLightPrototypeMap;
+            SpotLightPrototypeMap mSpotLightPrototypes;
 
             LightArray mLights;
       };

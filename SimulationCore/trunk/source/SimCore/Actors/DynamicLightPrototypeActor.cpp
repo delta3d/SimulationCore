@@ -171,6 +171,133 @@ namespace SimCore
 
       }
 
+
+
+
+      //////////////////////////////////////////////////////////
+      // Proxy code
+      //////////////////////////////////////////////////////////
+      SpotLightPrototypeProxy::SpotLightPrototypeProxy()
+      {
+         SetClassName("SimCore::Actors::SpotLightPrototypeActor");
+         SetInitialOwnership(dtGame::GameActorProxy::Ownership::PROTOTYPE);
+      }
+
+      //////////////////////////////////////////////////////////
+      SpotLightPrototypeProxy::~SpotLightPrototypeProxy()
+      {
+
+      }
+
+      void SpotLightPrototypeProxy::CreateActor()
+      {
+         SetActor(*new SpotLightPrototypeActor(*this)); 
+      }
+
+      //////////////////////////////////////////////////////////
+      void SpotLightPrototypeProxy::BuildPropertyMap()
+      {
+         DynamicLightPrototypeProxy::BuildPropertyMap();
+
+         SpotLightPrototypeActor& actor = dynamic_cast<SpotLightPrototypeActor&>(GetGameActor());
+
+         static const dtUtil::RefString PROPERTY_USE_ABSOLUTE_DIRECTION("UseAbsoluteDirection");
+         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_USE_ABSOLUTE_DIRECTION, PROPERTY_USE_ABSOLUTE_DIRECTION,
+            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetUseAbsoluteDirection),
+            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetUseAbsoluteDirection),
+            "use this flag if this light is attached to a transformable but you do not want to accumulate its parents rotation", "SpotLight"));
+
+         static const dtUtil::RefString PROPERTY_SPOT_EXPONENT("SpotExponent");
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPOT_EXPONENT, PROPERTY_SPOT_EXPONENT, 
+            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotExponent), 
+            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotExponent), 
+            "SpotExponent is the spot rate of decay and controls how the lights intensity decays from the center of the cone it its borders. The larger the value the faster de decay, with zero meaning constant light within the light cone.",
+            "SpotLight"));
+
+         static const dtUtil::RefString PROPERTY_SPOT_COS_CUTOFF("SpotCosCutoff");
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPOT_COS_CUTOFF, PROPERTY_SPOT_COS_CUTOFF, 
+            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotCosCutoff), 
+            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotCosCutoff), 
+            "The cosine of the angle between the light to vertex vector and the spot direction must be larger than spotCosCutoff",
+            "SpotLight"));
+
+
+         static const dtUtil::RefString PROPERTY_SPOTDIRECTION("SpotDirection");
+         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_SPOTDIRECTION, PROPERTY_SPOTDIRECTION,
+            dtDAL::MakeFunctor(actor, &SpotLightPrototypeActor::SetSpotDirection),
+            dtDAL::MakeFunctorRet(actor, &SpotLightPrototypeActor::GetSpotDirection),
+            "The direction of the light", "SpotLight"));
+
+      }
+
+
+
+      //////////////////////////////////////////////////////////
+      // Actor code
+      //////////////////////////////////////////////////////////
+      SpotLightPrototypeActor::SpotLightPrototypeActor( dtGame::GameActorProxy &proxy )
+         : DynamicLightPrototypeActor(proxy)
+         , mUseAbsoluteDirection(false)
+         , mSpotExponent(0.5f)
+         , mSpotCosCutoff(0.75)
+         , mDirection(0.0f, 1.0f, 0.0f)
+      {
+         SetName("SpotLightPrototype");
+      }
+
+      //////////////////////////////////////////////////////////
+      SpotLightPrototypeActor::~SpotLightPrototypeActor()
+      {
+
+      }
+
+      //////////////////////////////////////////////////////////
+      void SpotLightPrototypeActor::SetUseAbsoluteDirection( bool b )
+      {
+         mUseAbsoluteDirection = b;
+      }
+
+      //////////////////////////////////////////////////////////
+      bool SpotLightPrototypeActor::GetUseAbsoluteDirection() const
+      {
+         return mUseAbsoluteDirection;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SpotLightPrototypeActor::SetSpotExponent( float f )
+      {
+         mSpotExponent = f;
+      }
+
+      //////////////////////////////////////////////////////////
+      float SpotLightPrototypeActor::GetSpotExponent() const
+      {
+         return mSpotExponent;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SpotLightPrototypeActor::SetSpotDirection( const osg::Vec3& v )
+      {
+         mDirection = v;
+      }
+
+      //////////////////////////////////////////////////////////
+      osg::Vec3 SpotLightPrototypeActor::GetSpotDirection() const
+      {
+         return mDirection;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SpotLightPrototypeActor::SetSpotCosCutoff( float f )
+      {
+         mSpotCosCutoff = f;
+      }
+
+      //////////////////////////////////////////////////////////
+      float SpotLightPrototypeActor::GetSpotCosCutoff() const
+      {
+         return mSpotCosCutoff;
+      }
    }
 
 }
