@@ -827,8 +827,10 @@ namespace SimCore
          unsigned maxDynamicLightUniforms = numDynamicLightAttributes * mMaxDynamicLights;
          unsigned maxSpotLightUniforms = numSpotLightAttributes * mMaxSpotLights;
 
+         unsigned numLights = 0;
+         unsigned totalLightSlots = mMaxSpotLights + mMaxDynamicLights;
 
-         for(iter = mLights.begin(), endIter = mLights.end(); numDynamicLights < maxDynamicLightUniforms && numSpotLights < maxSpotLightUniforms;)
+         for(iter = mLights.begin(), endIter = mLights.end(); numLights < totalLightSlots; ++numLights)
          {
             if(iter != endIter)
             {
@@ -844,7 +846,7 @@ namespace SimCore
                if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT) && (sl = dynamic_cast<SpotLight*>(dl)) )
                {           
                   spotExp = sl->mSpotExponent;
-                  spotParams.set(sl->mDirection[0], sl->mDirection[1], sl->mDirection[2], sl->mSpotExponent);                  
+                  spotParams.set(sl->mCurrentDirection[0], sl->mCurrentDirection[1], sl->mCurrentDirection[2], sl->mSpotCosCutoff);                  
                   useSpotLight = true;
                }
                else if( !(numDynamicLights < maxDynamicLightUniforms) )
@@ -893,7 +895,7 @@ namespace SimCore
                   spotLightArray->setElement(numSpotLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
                   spotLightArray->setElement(numSpotLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
                   spotLightArray->setElement(numSpotLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-                  spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.1f));
                   numSpotLights += numSpotLightAttributes;
                }
 
@@ -925,7 +927,11 @@ namespace SimCore
             osg::Matrix rot;
             xform.GetRotation(rot);
          
-            light->mCurrentDirection = rot.postMult(light->mDirection);            
+            light->mDirection.normalize();
+            light->mCurrentDirection = rot.preMult(light->mDirection);
+            
+            light->mCurrentDirection.normalize();
+
          }
          else 
          {

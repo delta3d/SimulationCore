@@ -13,6 +13,7 @@ varying vec3 vPos;
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
+void spot_light_fragment(vec3, vec3, out vec3);
 
 
 void main(void)
@@ -27,6 +28,10 @@ void main(void)
    vec3 dynamicLightContrib;
    dynamic_light_fragment(vNormal, vPos, dynamicLightContrib);
    lightContrib += dynamicLightContrib + (dynamicLightContrib * (10.0 * NVG_Enable));
+
+   vec3 spotLightContrib;
+   spot_light_fragment(vNormal, vPos, spotLightContrib);
+   dynamicLightContrib += spotLightContrib;
    
    //add in the nvg components
    vec3 diffuseLight = vec3(diffuseRadiance, gl_LightSource[1].diffuse.g, gl_LightSource[1].diffuse.b);

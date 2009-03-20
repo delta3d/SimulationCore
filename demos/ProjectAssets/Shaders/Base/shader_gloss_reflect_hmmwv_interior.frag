@@ -19,6 +19,8 @@ varying vec3 worldNormal;
 void lightContribution(vec3, vec3, vec3, vec3, out vec3);
 void computeSpecularContribution(vec3, vec3, vec3, vec3, out vec3);
 void dynamic_light_fragment(vec3, vec3, out vec3);
+void spot_light_fragment(vec3, vec3, out vec3);
+
 
 /**
  * This is the fragment shader for the interior HMMWV
@@ -51,6 +53,10 @@ void main(void)
    vec3 dynamicLightContrib;
    dynamic_light_fragment(worldNormal, worldPos, dynamicLightContrib);
    lightContrib += dynamicLightContrib + (dynamicLightContrib * (10.0 * NVG_Enable));
+
+   vec3 spotLightContrib;
+   spot_light_fragment(worldNormal, worldPos, spotLightContrib);
+   dynamicLightContrib += spotLightContrib;
    
    //add in the nvg components
    vec3 diffuseLight = vec3(diffuseRadiance, gl_LightSource[1].diffuse.g, gl_LightSource[1].diffuse.b);

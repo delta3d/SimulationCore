@@ -19,6 +19,7 @@ void alphaMix(vec3, vec3, float, float, out vec4);
 void dynamic_light_fragment(vec3, vec3, out vec3);
 vec3 GetWaterColorAtDepth(float);
 float GetHeightOnWaterSuface(vec2);
+void spot_light_fragment(vec3, vec3, out vec3);
 
 vec3 deep = 0.74 * WaterColor.xyz;  
 
@@ -34,6 +35,11 @@ void main(void)
 
    vec3 dynamicLightContrib;
    dynamic_light_fragment(vNormal, vPos, dynamicLightContrib);
+
+   vec3 spotLightContrib;
+   spot_light_fragment(vNormal, vPos, spotLightContrib);
+   dynamicLightContrib += spotLightContrib;
+
    lightContrib += dynamicLightContrib + (dynamicLightContrib * (10.0 * NVG_Enable));
    
    //add in the nvg components
