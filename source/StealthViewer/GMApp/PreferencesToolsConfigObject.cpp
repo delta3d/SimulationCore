@@ -239,7 +239,7 @@ namespace StealthGM
          }
       }
 
-      if (binos != NULL && binos->IsEnabled())
+      if (binos != NULL)
       {
          binos->SetShowReticle(GetShowBinocularImage());
          binos->SetShowDistance(GetShowDistanceToObject());
