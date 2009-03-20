@@ -20,11 +20,6 @@
         <version>1.0</version>
       </actorLibrary>
 
-      <actorLibrary>
-        <name>DVTE</name>
-        <version>1.0</version>
-      </actorLibrary>
-
     </libraries>
 
    <ddm>
