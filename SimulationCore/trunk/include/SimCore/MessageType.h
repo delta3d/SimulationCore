@@ -78,6 +78,9 @@ namespace SimCore
          static const MessageType INTERACTION_CHANGED;
          static const MessageType CONVERSATION_RESPONSE;
 
+         // Game state-related messages
+         static const MessageType GAME_STATE_CHANGED;
+
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 
          static bool IsValidToolType(const dtGame::MessageType &type);

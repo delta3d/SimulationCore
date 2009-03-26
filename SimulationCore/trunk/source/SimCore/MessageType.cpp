@@ -25,6 +25,7 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <SimCore/Components/Conversations/ConversationMessages.h>
+#include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <dtGame/messagefactory.h>
 
 namespace SimCore
@@ -72,6 +73,9 @@ namespace SimCore
    const MessageType MessageType::INTERACTION_CHANGED("INTERACTION_CHANGED", "INFO", "Sent when the conversation component has received a new interaction.", USER_DEFINED_MESSAGE_TYPE + 23);
    const MessageType MessageType::CONVERSATION_RESPONSE("CONVERSATION_RESPONSE", "INFO", "Sent when the player responds to an interaction.", USER_DEFINED_MESSAGE_TYPE + 24);
 
+   // Game state-related messages
+   const MessageType MessageType::GAME_STATE_CHANGED("GAME_STATE_CHANGED", "INFO", "Sent when the game state changes.", USER_DEFINED_MESSAGE_TYPE + 25);
+
 
    ///////////////////////////////////////////////////////////////////////
    MessageType::MessageType(
@@ -115,6 +119,8 @@ namespace SimCore
 
       factory.RegisterMessageType<InteractionChangedMessage>(MessageType::INTERACTION_CHANGED);
       factory.RegisterMessageType<ConversationResponseMessage>(MessageType::CONVERSATION_RESPONSE);
+
+      factory.RegisterMessageType<GameStateChangedMessage>(MessageType::GAME_STATE_CHANGED);
    }
 
    ///////////////////////////////////////////////////////////////////////
