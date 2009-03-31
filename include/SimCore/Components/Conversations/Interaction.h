@@ -68,6 +68,9 @@ namespace SimCore
             void SetName(const std::string& name);
             const std::string& GetName() const;
 
+            void SetCharacterName(const std::string& name);
+            const std::string& GetCharacterName() const;
+
             void SetEnable(bool b);
             bool GetEnable() const;
 
@@ -105,6 +108,7 @@ namespace SimCore
             const InteractionType* mType;
 
             std::string mName;
+            std::string mCharacterName;
             std::string mInteractionText;
             std::string mSoundHandle;
 
