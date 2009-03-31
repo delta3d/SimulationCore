@@ -62,6 +62,8 @@ namespace SimCore
 
             const std::string& GetName() const;
 
+            const std::string& GetCharacterName() const;
+
             bool LoadConversation(const std::string& filename);
 
             const Interaction* GetCurrentInteraction() const;
@@ -96,6 +98,7 @@ namespace SimCore
          private:
 
             std::string mName;
+            std::string mCharacterName;
             RegisterConversationFunctor mRegistrationFunctor;
 
             dtCore::ObserverPtr<Interaction> mCurrentInteraction;

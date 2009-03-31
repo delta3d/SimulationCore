@@ -42,6 +42,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       Conversation::Conversation(RegisterConversationFunctor regFunc)
          : mName()
+         , mCharacterName()
          , mRegistrationFunctor(regFunc)
          , mCurrentInteraction(NULL)
          , mCurrentInteractionIter()
@@ -147,6 +148,12 @@ namespace SimCore
          return mName;
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& Conversation::GetCharacterName() const
+      {
+         return mCharacterName;
+      }
+
 
       //////////////////////////////////////////////////////////////////////////
       bool Conversation::LoadConversation( const std::string& filename )
@@ -237,6 +244,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       //XML LOADING
       //////////////////////////////////////////////////////////////////////////
+      const std::string CHARACTER_ELEMENT("Character");
       const std::string CONVERSATION_ELEMENT("Conversation");
       const std::string NAME_ELEMENT("Name");
       const std::string GAME_EVENT_ELEMENT("Event");
@@ -565,6 +573,23 @@ namespace SimCore
          if(topEl == CONVERSATION_ELEMENT)
          {
             //TODO ERROR CHECK HERE
+         }
+         else if(topEl == CHARACTER_ELEMENT)
+         {
+            const std::string characterName(dtUtil::XMLStringConverter(chars).ToString());
+
+            // Is the character specific to an interaction, as if the
+            // character is butting in?
+            if(mInInteraction)
+            {
+               mCurrentInteraction->SetCharacterName( characterName );
+            }
+            // Is the character defined for the whole conversation at
+            // the global conversation level?
+            else if(mInConversation)
+            {
+               mManager->mCharacterName = characterName;
+            }
          }
          else if(topEl == NAME_ELEMENT)
          {

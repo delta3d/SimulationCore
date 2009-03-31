@@ -79,6 +79,18 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void Interaction::SetCharacterName( const std::string& name )
+      {
+         mCharacterName = name;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const std::string& Interaction::GetCharacterName() const
+      {
+         return mCharacterName;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void Interaction::SetSoundHandle( const std::string& soundName )
       {
          mSoundHandle = soundName;
