@@ -25,6 +25,7 @@
 
 #include <SimCore/Export.h>
 #include <SimCore/Actors/BaseTerrainActor.h>
+#include <osg/Group>
 
 namespace SimCore
 {
@@ -89,7 +90,7 @@ namespace SimCore
          dtCore::RefPtr<osg::Group> mGroupNodeForTerrain;
 
          //////////////////////////////////////
-         /// Properties 
+         /// Properties
          float       mPaging_Min_X;
          float       mPaging_Min_Y;
          float       mPaging_Max_X;

@@ -71,7 +71,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      ParticleInfo::ParticleInfo( dtCore::ParticleSystem& particles, const AttributeFlags* attributes,
+      ParticleInfo::ParticleInfo( dtCore::ParticleSystem& particles, const ParticleInfoAttributeFlags* attributes,
          const ParticlePriority& priority )
          :  dtCore::Base("ParticleInfo"),
          mLiveCount(0),
@@ -157,7 +157,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void ParticleInfo::Set( dtCore::ParticleSystem& particles, const AttributeFlags* attributes,
+      void ParticleInfo::Set( dtCore::ParticleSystem& particles, const ParticleInfoAttributeFlags* attributes,
          const ParticlePriority& priority )
       {
          if( particles.GetAllLayers().empty() )
@@ -270,13 +270,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      ParticleInfo::AttributeFlags& ParticleInfo::GetAttributeFlags()
+      ParticleInfoAttributeFlags& ParticleInfo::GetAttributeFlags()
       {
          return mAttrFlags;
       }
 
       //////////////////////////////////////////////////////////
-      const ParticleInfo::AttributeFlags& ParticleInfo::GetAttributeFlags() const
+      const ParticleInfoAttributeFlags& ParticleInfo::GetAttributeFlags() const
       {
          return mAttrFlags;
       }
@@ -433,7 +433,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////
       bool ParticleManagerComponent::Register( dtCore::ParticleSystem& particles,
-         const ParticleInfo::AttributeFlags* attrFlags,  const ParticlePriority& priority )
+         const ParticleInfoAttributeFlags* attrFlags,  const ParticlePriority& priority )
       {
          if( HasRegistered(particles.GetUniqueId())
             || particles.GetAllLayers().empty() )

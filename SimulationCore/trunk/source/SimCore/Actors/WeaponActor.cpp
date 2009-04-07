@@ -29,11 +29,13 @@
 
 #include <dtUtil/nodecollector.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
 
 #include <dtGame/basemessages.h>
+#include <dtGame/exceptionenum.h>
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>
@@ -763,7 +765,7 @@ namespace SimCore
 
          if( ! mSoundFire.valid() ) { return; }
 
-         mSoundFire->ListenerRelative(false);
+         mSoundFire->SetListenerRelative(false);
          AddChild(mSoundFire.get());
       }
 
@@ -774,7 +776,7 @@ namespace SimCore
 
          if( ! mSoundDryFire.valid() ) { return; }
 
-         mSoundDryFire->ListenerRelative(true);
+         mSoundDryFire->SetListenerRelative(true);
          AddChild( mSoundDryFire.get() );
       }
 
@@ -785,7 +787,7 @@ namespace SimCore
 
          if( ! mSoundJammed.valid() ) { return; }
 
-         mSoundJammed->ListenerRelative(true);
+         mSoundJammed->SetListenerRelative(true);
          AddChild(mSoundJammed.get());
       }
 

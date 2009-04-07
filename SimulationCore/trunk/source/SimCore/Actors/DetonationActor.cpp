@@ -34,6 +34,7 @@
 #include <dtAudio/audiomanager.h>
 
 #include <dtCore/camera.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
 
@@ -287,14 +288,14 @@ namespace SimCore
          // Register explosion particle effects
          if( mExplosionSystem.valid() )
          {
-            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            Components::ParticleInfoAttributeFlags attrs = { true, false };
             RegisterParticleSystem( *mExplosionSystem, &attrs );
          }
 
          // Register smoke particle effects
          if( mSmokeSystem.valid() )
          {
-            Components::ParticleInfo::AttributeFlags attrs = { true, false };
+            Components::ParticleInfoAttributeFlags attrs = { true, false };
             RegisterParticleSystem( *mSmokeSystem, &attrs );
          }
 

@@ -26,33 +26,12 @@
 #include <dtDAL/exceptionenum.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
+#include <dtUtil/log.h>
 
 namespace SimCore
 {
    namespace Actors
    {
-      ///////////////////////////////////////////////////////
-      //    The Actor
-      ///////////////////////////////////////////////////////
-      // HACK: This is a temporary work around to avoid RILOMData errors on other machines.
-      //       The error states that the expected string should be 64 bytes long.
-      // NOTE: The length includes a NULL terminator.
-      //       The HLA parameter translator adds this to the string automatically,
-      //       thus expect to use 63 bytes for actual name characters.
-      void Portal::SetPortalName(const std::string& name)
-      {
-         mPortalName = name;
-         if( mPortalName.size() > 63 )
-         {
-            mPortalName = mPortalName.substr(0,63);
-         }
-         else
-         {
-            // The following string is exactly 63 spaces long and should NOT be modified.
-            std::string padding("                                                               ");
-            mPortalName += padding.substr(mPortalName.size(),63);
-         }
-      }
 
       ///////////////////////////////////////////////////////
       //    The Proxy
@@ -106,6 +85,49 @@ namespace SimCore
       {
          if(!IsRemote())
             RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+      }
+
+      ///////////////////////////////////////////////////////
+      //    The Actor
+      ///////////////////////////////////////////////////////
+      // HACK: This is a temporary work around to avoid RILOMData errors on other machines.
+      //       The error states that the expected string should be 64 bytes long.
+      // NOTE: The length includes a NULL terminator.
+      //       The HLA parameter translator adds this to the string automatically,
+      //       thus expect to use 63 bytes for actual name characters.
+      void Portal::SetPortalName(const std::string& name)
+      {
+         mPortalName = name;
+         if( mPortalName.size() > 63 )
+         {
+            mPortalName = mPortalName.substr(0,63);
+         }
+         else
+         {
+            std::string padding;
+            padding.insert(0, 63, ' ');
+            mPortalName += padding.substr(mPortalName.size(),63);
+         }
+      }
+
+      ///////////////////////////////////////////
+      Portal::Portal(dtGame::GameActorProxy &proxy) :
+         dtGame::GameActor(proxy),
+         mIsOpen(false)
+      {
+         mTimeToSendOut = 10.0f;
+      }
+
+      ///////////////////////////////////////////
+      dtCore::DeltaDrawable* Portal::GetActorLink()
+      {
+         dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("ActorLink");
+         if(proxy == NULL)
+         {
+            LOG_DEBUG("Get Material Actor [NULL].");
+            return NULL;
+         }
+         return proxy->GetActor();
       }
 
       ///////////////////////////////////////////////////////

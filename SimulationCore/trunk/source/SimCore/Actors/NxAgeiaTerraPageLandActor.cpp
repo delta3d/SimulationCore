@@ -28,11 +28,10 @@
 #include <osg/MatrixTransform>
 
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/PhysicsTypes.h>
 
 #ifdef AGEIA_PHYSICS
-
 #include <SimCore/ModifiedStream.h>
-#include <NxAgeiaWorldComponent.h>
 #include <NxCooking.h>
 #else
 #include <dtPhysics/physicscomponent.h>
@@ -195,7 +194,6 @@ namespace SimCore
             mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
             mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
-            //mPhysicsHelper->SetFlags(dtPhysics::PhysicsHelper::FLAGS_POST_UPDATE);
 #endif
             mLoadedTerrainYet = false;
          }
@@ -212,17 +210,10 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////
          void NxAgeiaTerraPageLandActor::OnEnteredWorld()
          {
-#ifdef AGEIA_PHYSICS
-            dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent;
-            GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
-            if (worldComponent != NULL)
-               worldComponent->RegisterAgeiaHelper(*mPhysicsHelper);
-#else
             dtPhysics::PhysicsComponent* physicsComponent;
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
             if (physicsComponent != NULL)
                physicsComponent->RegisterHelper(*mPhysicsHelper);
-#endif
          }
 
          //////////////////////////////////////////////////////////////////////
@@ -445,17 +436,15 @@ namespace SimCore
                // The next 2 lines are to make this into a height field
                //heightfieldDesc.heightFieldVerticalAxis   = NX_Z;
                //heightfieldDesc.heightFieldVerticalExtent = -3000;
-               heightfieldDesc.flags              = 0;
+               heightfieldDesc.flags              = NX_MF_HARDWARE_MESH;
 
                NxTriangleMeshShapeDesc heightfieldShapeDesc;
                // makes the sharp angles be smoothed, so that wheels will roll over better
                //heightfieldShapeDesc.meshFlags = NX_MESH_SMOOTH_SPHERE_COLLISIONS;
                heightfieldShapeDesc.name = nameOfNode.c_str();
-               NxCookingInterface *gCooking = NxGetCookingLib(NX_PHYSICS_SDK_VERSION);
-               gCooking->NxInitCooking();
 
                SimCore::MMemoryWriteBuffer buf;
-               bool status = gCooking->NxCookTriangleMesh(heightfieldDesc, buf);
+               bool status = worldComponent->GetCooker().NxCookTriangleMesh(heightfieldDesc, buf);
                if(status == false)
                {
                   std::stringstream ss;
@@ -472,7 +461,6 @@ namespace SimCore
 
                dtPhysics::PhysicsObject *actor = worldComponent->GetPhysicsScene(std::string("Default")).createActor(actorDesc);
                mPhysicsHelper->AddPhysXObject(*actor, nameOfNode.c_str());
-               gCooking->NxCloseCooking();
                return actor;
             } //  !buildGeodesSeparately
          }

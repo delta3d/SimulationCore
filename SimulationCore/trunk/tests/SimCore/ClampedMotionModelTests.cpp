@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -31,7 +31,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
-#include <dtCore/transformable.h>
+#include <dtCore/transform.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/logicalinputdevice.h>
 #include <dtGame/gamemanager.h>
@@ -45,14 +45,6 @@
 #include <dtABC/application.h>
 
 #include <UnitTestMain.h>
-
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   #include <Windows.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
 
 //////////////////////////////////////////////////////////////
 // TESTABLE SUB-CLASS
@@ -69,7 +61,7 @@ public:
    // when a free-look key is required for motion.
    virtual bool IsKeyHeld() const;
 
-protected: 
+protected:
    virtual ~TestClampedMotionModel() {}
 
 private:
@@ -94,7 +86,7 @@ bool TestClampedMotionModel::IsKeyHeld() const
 //////////////////////////////////////////////////////////////
 // UNIT TESTS
 //////////////////////////////////////////////////////////////
-class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture 
+class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(ClampedMotionModelTests);
 
@@ -137,12 +129,12 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
          mMotionModel->SetEnabled(true);
          mMotionModel->SetTestMode(true);
       }
-      
+
       //////////////////////////////////////////////////////////////
       void tearDown()
       {
          mMotionModel = NULL;
-    
+
          if (mGM.valid())
          {
             mGM->DeleteAllActors(true);
@@ -152,23 +144,23 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
          mApp = NULL;
          dtCore::System::GetInstance().Stop();
       }
-      
+
       //////////////////////////////////////////////////////////////
       void TestProperties()
-      {       
+      {
          mMotionModel->SetTarget( NULL );
-         CPPUNIT_ASSERT( mMotionModel->GetTarget() == NULL ); 
+         CPPUNIT_ASSERT( mMotionModel->GetTarget() == NULL );
          mMotionModel->SetTarget( mTarget.get() );
-         CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL ); 
+         CPPUNIT_ASSERT( mMotionModel->GetTarget() != NULL );
 
          float limit = 30.0f;
-         CPPUNIT_ASSERT( mMotionModel->GetLeftRightLimit() < 0.0f ); 
+         CPPUNIT_ASSERT( mMotionModel->GetLeftRightLimit() < 0.0f );
          mMotionModel->SetLeftRightLimit( limit );
-         CPPUNIT_ASSERT( mMotionModel->GetLeftRightLimit() == limit ); 
+         CPPUNIT_ASSERT( mMotionModel->GetLeftRightLimit() == limit );
 
-         CPPUNIT_ASSERT( mMotionModel->GetUpDownLimit() < 0.0f ); 
+         CPPUNIT_ASSERT( mMotionModel->GetUpDownLimit() < 0.0f );
          mMotionModel->SetUpDownLimit( limit );
-         CPPUNIT_ASSERT( mMotionModel->GetUpDownLimit() == limit ); 
+         CPPUNIT_ASSERT( mMotionModel->GetUpDownLimit() == limit );
 
          bool value = mMotionModel->GetFreeLookByKey();
          mMotionModel->SetFreeLookByKey( ! value );
@@ -270,7 +262,7 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
             }
             CompareRotations(freeLook?-limitLeftRight:0.0f, true);
          }
-         
+
          if( limitUpDown >= 0.0f ) // negative limits mean free-range
          {
             // Rotate 360 down
@@ -288,14 +280,14 @@ class ClampedMotionModelTests : public CPPUNIT_NS::TestFixture
             CompareRotations(freeLook?limitUpDown:0.0f, false);
          }
       }
-      
+
       //////////////////////////////////////////////////////////////
       void TestTransforms()
       {
          // Test motion with regular mouse motion
          mMotionModel->SetFreeLookByKey(false);
 
-         // Test key-less free-look. 
+         // Test key-less free-look.
          TestOrientationLimits( 45.0f, 45.0f );
          TestOrientationLimits( -1.0f, 45.0f ); // free horizontal rotation
          TestOrientationLimits( 45.0f, -1.0f ); // free vertical rotation

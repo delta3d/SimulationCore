@@ -37,6 +37,7 @@
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 
 #include <dtGame/binarylogstream.h>
 #include <dtGame/logtag.h>

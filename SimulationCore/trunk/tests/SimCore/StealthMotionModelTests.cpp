@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -36,6 +36,7 @@
 #include <dtCore/infiniteterrain.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
+#include <dtCore/transform.h>
 #include <dtCore/transformable.h>
 #include <dtCore/deltawin.h>
 #include <SimCore/StealthMotionModel.h>
@@ -44,14 +45,6 @@
 
 #include <UnitTestMain.h>
 
-#ifdef DELTA_WIN32
-   #include <Windows.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using namespace SimCore;
 
 
@@ -59,7 +52,7 @@ using namespace SimCore;
 ////////////////////////////////////////////////////////////////////////////////
 // TEST OBJECT CODE
 ////////////////////////////////////////////////////////////////////////////////
-class StealthMotionModelTests : public CPPUNIT_NS::TestFixture 
+class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthMotionModelTests);
 
@@ -82,13 +75,13 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mApp = &GetGlobalApplication();
 
          mApp->GetScene()->AddDrawable(mTerrain.get());
-         
+
          mTarget = new dtCore::Transformable();
          mApp->GetScene()->AddDrawable(mTarget.get());
 
          mMotionModel = new SimCore::StealthMotionModel();
          mMotionModel->SetScene(*mApp->GetScene());
-         mMotionModel->SetEnabled(true); 
+         mMotionModel->SetEnabled(true);
          mMotionModel->SetTarget( mTarget.get() );
          mMotionModel->SetCollideWithGround(true);
          mMotionModel->SetGroundClearance(1.0f);
@@ -100,7 +93,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
          dtCore::System::GetInstance().Start();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void tearDown()
       {
@@ -109,32 +102,32 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mTarget = NULL;
          mTerrain = NULL;
          mTerrainAlternate = NULL;
-         
+
          dtCore::System::GetInstance().Stop();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void TestProperties()
-      {       
+      {
          const StealthMotionModel* motionModelConst = mMotionModel.get();
 
-         CPPUNIT_ASSERT( &motionModelConst->GetScene() == mApp->GetScene() );  
+         CPPUNIT_ASSERT( &motionModelConst->GetScene() == mApp->GetScene() );
 
          mMotionModel->SetTarget( mTarget.get() );
-         CPPUNIT_ASSERT( motionModelConst->GetTarget() != NULL );   
+         CPPUNIT_ASSERT( motionModelConst->GetTarget() != NULL );
 
          mMotionModel->SetCollideWithGround(true);
-         CPPUNIT_ASSERT( motionModelConst->GetCollideWithGround() ); 
+         CPPUNIT_ASSERT( motionModelConst->GetCollideWithGround() );
          mMotionModel->SetCollideWithGround(false);
-         CPPUNIT_ASSERT( ! motionModelConst->GetCollideWithGround() );       
+         CPPUNIT_ASSERT( ! motionModelConst->GetCollideWithGround() );
 
          CPPUNIT_ASSERT( motionModelConst->GetGroundClearance() );
          mMotionModel->SetGroundClearance(5.0f);
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0f, motionModelConst->GetGroundClearance(), 0.0f );
 
          mMotionModel->SetMaximumFlySpeed(200.0f);
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( 200.0f, motionModelConst->GetMaximumFlySpeed(), 0.0f ); 
-         
+         CPPUNIT_ASSERT_DOUBLES_EQUAL( 200.0f, motionModelConst->GetMaximumFlySpeed(), 0.0f );
+
          // Check setting speed limits
          float testValue = 123.4567f;
          CPPUNIT_ASSERT( StealthMotionModel::DEFAULT_SPEED_LIMIT_MIN
@@ -152,7 +145,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          mMotionModel->SetFlySpeedLimitMax( testValue );
          CPPUNIT_ASSERT( motionModelConst->GetFlySpeedLimitMax() == testValue );
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void TestEndPosition()
       {
@@ -183,7 +176,7 @@ class StealthMotionModelTests : public CPPUNIT_NS::TestFixture
          elevation = mTerrain->GetHeight( cameraPos[0], cameraPos[1] );
 
          CPPUNIT_ASSERT_DOUBLES_EQUAL( (elevation+mMotionModel->GetGroundClearance()), cameraPos[2], 0.01f );
-         
+
       }
 
       //////////////////////////////////////////////////////////////////////////

@@ -77,6 +77,7 @@
 #include <dtDAL/actorproperty.h>
 
 #include <dtGame/gameapplication.h>
+#include <dtGame/exceptionenum.h>
 #include <dtGame/gmcomponent.h>
 #include <dtGame/logcontroller.h>
 

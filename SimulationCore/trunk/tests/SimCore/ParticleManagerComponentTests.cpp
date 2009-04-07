@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -47,6 +47,8 @@
 #include <dtDAL/map.h>
 #include <dtDAL/resourcedescriptor.h>
 
+#include <dtCore/transform.h>
+
 #include <dtGame/basemessages.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/message.h>
@@ -71,14 +73,6 @@
 #include <osg/MatrixTransform>
 
 #include <UnitTestMain.h>
-
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-#include <Windows.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
 
 namespace SimCore
 {
@@ -411,12 +405,12 @@ namespace SimCore
             info->GetDeadCount() == 0 );
          CPPUNIT_ASSERT_MESSAGE("Default allocated particle count should be 0",
             info->GetAllocatedCount() == 0 );
-         ParticleInfo::AttributeFlags* flags = &info->GetAttributeFlags();
+         ParticleInfoAttributeFlags* flags = &info->GetAttributeFlags();
          CPPUNIT_ASSERT_MESSAGE("Default flags should be false",
             !flags->mEnableWind );
 
          // Test set values
-         ParticleInfo::AttributeFlags flags2 = {true,true};
+         ParticleInfoAttributeFlags flags2 = {true,true};
          info->Set( *mPS, &flags2, ParticlePriority::LOW );
 //         CPPUNIT_ASSERT_MESSAGE("ParticleInfo particles should be valid",
 //            info->GetParticleSystem() != NULL );
@@ -482,7 +476,7 @@ namespace SimCore
 
          // Register the particle system with the component, WITHOUT forces.
          // --- DisableWind && Do NOT AddWindToAllLayers
-         ParticleInfo::AttributeFlags flags = {false,false};
+         ParticleInfoAttributeFlags flags = {false,false};
          CPPUNIT_ASSERT_MESSAGE("Particles registration should be successful.",
             mParticleComp->Register(*mPS,&flags) );
          // --- Make sure registering again fails

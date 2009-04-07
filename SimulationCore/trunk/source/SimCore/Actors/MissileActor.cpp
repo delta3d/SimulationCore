@@ -25,6 +25,7 @@
 #include <dtActors/engineactorregistry.h>
 #include <dtUtil/nodecollector.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/transform.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
@@ -283,7 +284,7 @@ namespace SimCore
                   smokeps->SetTransform(xform, dtCore::Transformable::REL_CS);
                }
                // Register the particle systems with the particle manager component
-               SimCore::Components::ParticleInfo::AttributeFlags attrs = {true,true};
+               SimCore::Components::ParticleInfoAttributeFlags attrs = {true,true};
                RegisterParticleSystem(*smokeps, &attrs );
             }
          }

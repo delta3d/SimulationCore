@@ -25,8 +25,6 @@
 
 #include <SimCore/Export.h>
 
-#include <SimCore/Components/ParticleManagerComponent.h>
-
 #include <dtGame/gameactor.h>
 
 #include <osg/CopyOp>
@@ -39,6 +37,11 @@ namespace dtCore
 namespace SimCore
 {
    class VisibilityOptions;
+
+   namespace Components
+   {
+      class ParticleInfoAttributeFlags;
+   }
 
    namespace Actors
    {
@@ -84,7 +87,7 @@ namespace SimCore
              * @param attrFlags The attribute flags that specify what forces can be applied to particles
              */
             void RegisterParticleSystem( dtCore::ParticleSystem& particles,
-               const SimCore::Components::ParticleInfo::AttributeFlags* attrFlags = NULL );
+               const SimCore::Components::ParticleInfoAttributeFlags* attrFlags = NULL );
 
             /* Removes the particle system from the ParticleManagerComponent
              * contained in the GameManager. This function exists for convenience

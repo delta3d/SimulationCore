@@ -30,7 +30,7 @@
 #include <dtGame/message.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtABC/application.h>
-#include <dtCore/scene.h>
+#include <dtCore/transform.h>
 #include <dtDAL/enginepropertytypes.h>
 
 namespace SimCore
@@ -129,7 +129,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void PortalComponent::ProcessTick(const dtGame::TickMessage &msg)
       {
-         
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 
 #include <dtGame/basemessages.h>
 #include <dtGame/invokable.h>
+#include <dtGame/gamemanager.h>
 
 #include <dtDAL/enginepropertytypes.h>
 

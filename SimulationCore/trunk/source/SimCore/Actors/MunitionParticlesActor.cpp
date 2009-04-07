@@ -40,7 +40,7 @@
 #include <dtCore/uniqueid.h>
 #include <dtCore/scene.h>
 #include <dtCore/isector.h>
-#include <dtCore/object.h>
+#include <dtCore/transform.h>
 #include <dtUtil/mathdefines.h>
 
 #include <osg/Geode>

@@ -28,6 +28,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
+#include <dtCore/transform.h>
 
 #include <osg/Node>
 #include <osg/NodeVisitor>
@@ -45,7 +46,7 @@
 #undef None
 #endif
 
-#include <CEGUI/CEGUI.h> 
+#include <CEGUI/CEGUI.h>
 
 namespace SimCore
 {
@@ -99,7 +100,7 @@ namespace SimCore
 
             // --- LOCKHEED CODE --- START --- //
             if( mDisk.valid() )
-            { 
+            {
                //printf("Disk is valid\n");
                osg::Matrix rotation;
 
@@ -210,12 +211,12 @@ namespace SimCore
 
          std::string lensaticNode("Textures/hud/compass/lensatic.osg");
          lensaticNode = dtCore::FindFileInPathList(lensaticNode);
-         
-         osg::ref_ptr<osg::Node> fileNode; 
-         
+
+         osg::ref_ptr<osg::Node> fileNode;
+
          if (!lensaticNode.empty())
             fileNode = osgDB::readNodeFile(lensaticNode);
-         
+
          if( fileNode != NULL )
          {
             mCompassOverlay = dynamic_cast< osg::MatrixTransform* >(fileNode.get());

@@ -28,6 +28,7 @@
 #include <dtABC/application.h>
 #include <dtCore/view.h>
 #include <dtCore/camera.h>
+#include <dtCore/transform.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
 #include <dtGame/gamemanager.h>

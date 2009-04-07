@@ -25,6 +25,7 @@
 
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/transform.h>
 #include <dtUtil/log.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>

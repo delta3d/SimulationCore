@@ -37,6 +37,7 @@
 #include <dtCore/environment.h>
 #include <dtCore/isector.h>
 #include <dtCore/system.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>

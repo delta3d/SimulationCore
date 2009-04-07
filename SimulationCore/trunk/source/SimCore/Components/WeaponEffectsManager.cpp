@@ -27,8 +27,12 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <osgDB/ReadFile>
 #include <dtAudio/audiomanager.h>
+
 #include <dtCore/particlesystem.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
+#include <dtGame/exceptionenum.h>
+
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 #include <SimCore/Actors/BaseEntity.h>
@@ -118,7 +122,7 @@ namespace SimCore
       {
          mTracerLightName = lightName;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const std::string& MunitionEffect::GetLightName() const
       {
@@ -130,7 +134,7 @@ namespace SimCore
       {
          mMaxLifeTime = maxLifeTime;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       float MunitionEffect::GetMaxLifeTime() const
       {
@@ -139,15 +143,15 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffect::SetVelocity( const osg::Vec3& velocity )
-      { 
-         // If an external munition doesn't send the correct velocity vector, then we 
+      {
+         // If an external munition doesn't send the correct velocity vector, then we
          // just change it to be some sort of minimum. Otherwise, the tracer moves at like
          // 1 m/s which is awful.
          if( velocity.length() < 5.0f )
          {
             osg::Vec3 velocityNormal(velocity);
             velocityNormal.normalize();
-            mVelocity = velocityNormal * 100.0f; 
+            mVelocity = velocityNormal * 100.0f;
          }
          else
          {
@@ -204,7 +208,7 @@ namespace SimCore
             RemoveDynamicLight();
          }
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       bool MunitionEffect::IsVisible() const
       {
@@ -231,7 +235,7 @@ namespace SimCore
       void MunitionEffect::Execute( float maxLifeTime )
       {
          SetMaxLifeTime( maxLifeTime );
-         
+
          Reset();
 
          // Physically adjust orientation to match direction
@@ -469,7 +473,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const SimCore::Actors::BaseEntity* MunitionEffectRequest::GetOwner() const
       {
-         return mOwner.get(); 
+         return mOwner.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -477,7 +481,7 @@ namespace SimCore
       {
          mFirePoint = firePoint;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const osg::Vec3& MunitionEffectRequest::GetFirePoint() const
       {
@@ -489,7 +493,7 @@ namespace SimCore
       {
          mVelocity = velocity;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const osg::Vec3& MunitionEffectRequest::GetVelocity() const
       {
@@ -610,10 +614,10 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::SetFlashProbability( float probability )
-      { 
-         mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability; 
+      {
+         mFlashProbability = probability < 0.0f ? 0.0f : probability > 1.0f ? 1.0f : probability;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       float WeaponEffect::GetFlashProbability() const
       {
@@ -635,7 +639,7 @@ namespace SimCore
 
          mTimeSinceFlash = 0.0f;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       float WeaponEffect::GetFlashTime() const
       {
@@ -666,7 +670,7 @@ namespace SimCore
       {
          return mSound.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const dtAudio::Sound* WeaponEffect::GetSound() const
       {
@@ -678,17 +682,17 @@ namespace SimCore
       {
          mOwner = owner;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       SimCore::Actors::BaseEntity* WeaponEffect::GetOwner()
       {
          return mOwner.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const SimCore::Actors::BaseEntity* WeaponEffect::GetOwner() const
       {
-         return mOwner.get(); 
+         return mOwner.get();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -722,7 +726,7 @@ namespace SimCore
       {
          return mDOF.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const osgSim::DOFTransform* WeaponEffect::GetDOF() const
       {
@@ -776,13 +780,13 @@ namespace SimCore
 
          mFlash = flash;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       dtCore::ParticleSystem* WeaponEffect::GetFlash()
       {
          return mFlash.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const dtCore::ParticleSystem* WeaponEffect::GetFlash() const
       {
@@ -997,7 +1001,7 @@ namespace SimCore
       {
          return mGM.get();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       const dtGame::GameManager* WeaponEffectsManager::GetGameManager() const
       {
@@ -1015,7 +1019,7 @@ namespace SimCore
       {
          mEffectTimeMax = effectTimeMax;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       float WeaponEffectsManager::GetEffectTimeMax() const
       {
@@ -1027,7 +1031,7 @@ namespace SimCore
       {
          mMaxWeaponEffects = maxEffectsAllowed;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       int WeaponEffectsManager::GetMaxWeaponEffects() const
       {
@@ -1039,7 +1043,7 @@ namespace SimCore
       {
          mMaxMunitionEffects = maxEffectsAllowed;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       int WeaponEffectsManager::GetMaxMunitionEffects() const
       {
@@ -1051,7 +1055,7 @@ namespace SimCore
       {
          mRecycleTime = recycleTime;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       float WeaponEffectsManager::GetRecycleTime() const
       {
@@ -1059,8 +1063,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool WeaponEffectsManager::ApplyWeaponEffect( SimCore::Actors::BaseEntity& owner, 
-         osgSim::DOFTransform* ownerDOF, 
+      bool WeaponEffectsManager::ApplyWeaponEffect( SimCore::Actors::BaseEntity& owner,
+         osgSim::DOFTransform* ownerDOF,
          const SimCore::Actors::MunitionEffectsInfoActor& effectsInfo, const osg::Vec3& listenerLocation )
       {
          // If a limit on effects has been set, avoid adding more if the
@@ -1076,7 +1080,7 @@ namespace SimCore
          bool foundEffect = foundEffectIter != mEntityToEffectMap.end();
 
          // Ready a new effect
-         dtCore::RefPtr<WeaponEffect> newEffect = ! foundEffect 
+         dtCore::RefPtr<WeaponEffect> newEffect = ! foundEffect
             ? new WeaponEffect : foundEffectIter->second.get();
 
          // Set the other effect data if this is a new weapon effect.
@@ -1109,8 +1113,8 @@ namespace SimCore
          bool success = newEffect->Attach( ownerDOF );
 
          // --- DEBUG --- START --- //
-         //std::cout << "\nWeaponEffectsManager " << (foundEffect?"Inserting":"Updating") 
-         //   << "\n\tWeaponEffect: " << newEffect->GetUniqueId().ToString() 
+         //std::cout << "\nWeaponEffectsManager " << (foundEffect?"Inserting":"Updating")
+         //   << "\n\tWeaponEffect: " << newEffect->GetUniqueId().ToString()
          //   << " (Attach " << (success?"Success":"Failure") << ")" << std::endl;
          // --- DEBUG --- END --- //
 
@@ -1130,7 +1134,7 @@ namespace SimCore
          MunitionEffectRequest& effectRequest )
       {
          // Avoid any unnecessary processing.
-         if( ! mGM.valid() 
+         if( ! mGM.valid()
             || (mMaxMunitionEffects > -1 && int(mMunitionEffects.size()) >= mMaxMunitionEffects) )
          {
             return false;
@@ -1162,7 +1166,7 @@ namespace SimCore
          {
             if( isTracerEffect )
             {
-               TracerEffect* tracerEffect = new TracerEffect( 
+               TracerEffect* tracerEffect = new TracerEffect(
                   0.001, // spawn tracer at a near-zero size; it will be stretched to max size during updates.
                   effectsInfo.GetTracerThickness(),
                   effectsInfo.GetTracerShaderName(),
@@ -1234,8 +1238,8 @@ namespace SimCore
             {
 
                // Determine how far the tracer has to go before it hits an obstacle.
-               float tracerLifeTime = CalcTimeToImpact( 
-                  weaponFirePoint, intialVelocity, 
+               float tracerLifeTime = CalcTimeToImpact(
+                  weaponFirePoint, intialVelocity,
                   effectsInfo.GetTracerLifeTime(), effectRequest.GetOwner() );
 
                // This also sets the initial orientation of the tracer.
@@ -1373,7 +1377,7 @@ namespace SimCore
          }
 
          // Iterate through all effects and update their times.
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter 
+         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
          for( ; iter != mEntityToEffectMap.end(); ++iter )
          {
@@ -1399,7 +1403,7 @@ namespace SimCore
       {
          unsigned recycleCount = 0;
          std::vector<std::string> deleteList;
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter 
+         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
 
          // Find any effects that need to be freed
@@ -1407,7 +1411,7 @@ namespace SimCore
          for( ; iter != mEntityToEffectMap.end(); ++iter )
          {
             curEffect = iter->second.get();
-            if( curEffect == NULL || curEffect->GetOwner() == NULL 
+            if( curEffect == NULL || curEffect->GetOwner() == NULL
                || curEffect->GetTimeSinceFlash() >= mEffectTimeMax )
             {
                if( curEffect != NULL ) { curEffect->Clear( true ); }
@@ -1449,7 +1453,7 @@ namespace SimCore
          unsigned recycleCount = 0;
 
          // Remove any unused, extraneous effects
-         if( ! mMunitionEffects.empty() && mMaxMunitionEffects > -1 
+         if( ! mMunitionEffects.empty() && mMaxMunitionEffects > -1
             && mMunitionEffects.size() > unsigned(mMaxMunitionEffects) )
          {
             MunitionEffectArray::iterator iter(--mMunitionEffects.end());
@@ -1495,7 +1499,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffectsManager::ClearWeaponEffects()
       {
-         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter 
+         std::map<std::string, dtCore::RefPtr<WeaponEffect> >::iterator iter
             = mEntityToEffectMap.begin();
 
          for( ; iter != mEntityToEffectMap.end(); ++iter )
@@ -1533,7 +1537,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      float WeaponEffectsManager::CalcTimeToImpact( 
+      float WeaponEffectsManager::CalcTimeToImpact(
          const osg::Vec3& weaponFirePoint, const osg::Vec3& initialVelocity,
          float maxTime, SimCore::Actors::BaseEntity* owner )
       {
@@ -1551,7 +1555,7 @@ namespace SimCore
 
          if( mIsector->Update( osg::Vec3(0,0,0), true ) )
          {
-            if( isector.GetNumberOfHits() > 0 ) 
+            if( isector.GetNumberOfHits() > 0 )
             {
                // Check for self-collision?
                if( owner != NULL )

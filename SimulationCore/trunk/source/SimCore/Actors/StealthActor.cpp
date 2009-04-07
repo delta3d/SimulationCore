@@ -30,6 +30,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 #include <dtUtil/log.h>
 #include <dtDAL/enginepropertytypes.h>
 
