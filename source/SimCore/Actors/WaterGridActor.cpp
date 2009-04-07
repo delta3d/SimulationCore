@@ -39,6 +39,7 @@
 #include <cmath>
 
 #include <dtCore/shadermanager.h>
+#include <dtCore/transform.h>
 #include <dtCore/scene.h>
 #include <dtCore/cloudplane.h>
 #include <dtCore/globals.h>

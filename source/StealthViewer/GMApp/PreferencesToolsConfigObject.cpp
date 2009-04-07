@@ -31,6 +31,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <dtGame/gamemanager.h>
 #include <dtActors/engineactorregistry.h>
+#include <dtGame/exceptionenum.h>
 
 namespace StealthGM
 {

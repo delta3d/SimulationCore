@@ -37,6 +37,7 @@
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 #include <dtCore/system.h>
 #include <dtCore/mouse.h>
 //#include <dtTerrain/terrain.h>

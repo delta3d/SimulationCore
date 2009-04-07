@@ -37,6 +37,7 @@
 
 // TEMP:
 #include <dtCore/system.h>
+#include <dtCore/transform.h>
 #include <dtDAL/enginepropertytypes.h>
 
 #include <dtUtil/boundingshapeutils.h>

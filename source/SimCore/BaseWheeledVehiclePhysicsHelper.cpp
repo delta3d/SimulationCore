@@ -24,8 +24,10 @@
 
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
 #include <osg/Matrix>
+#include <osg/MatrixTransform>
 #include <osgSim/DOFTransform>
 #include <dtDAL/enginepropertytypes.h>
+#include <dtCore/transform.h>
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>

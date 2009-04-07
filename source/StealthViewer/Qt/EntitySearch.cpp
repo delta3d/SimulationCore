@@ -29,6 +29,7 @@
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtGame/gamemanager.h>
 #include <dtCore/system.h>
 
 namespace StealthQt

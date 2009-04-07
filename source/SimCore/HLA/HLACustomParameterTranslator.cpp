@@ -34,6 +34,9 @@
 #include <dtHLAGM/objectruntimemappinginfo.h>
 #include <dtHLAGM/onetoonemapping.h>
 #include <dtHLAGM/onetomanymapping.h>
+
+#include <dtDAL/namedparameter.h>
+
 #include <dtUtil/log.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/ControlStateActor.h>

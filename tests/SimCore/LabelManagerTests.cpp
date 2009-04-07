@@ -34,6 +34,7 @@
 #include <dtCore/system.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
+#include <dtCore/transform.h>
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
 #include <dtGame/gamemanager.h>

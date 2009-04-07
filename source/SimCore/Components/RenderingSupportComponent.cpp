@@ -41,9 +41,9 @@
 #include <dtCore/scene.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltadrawable.h>
-#include <dtCore/mouse.h>
 #include <dtCore/globals.h>
 #include <dtCore/system.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/project.h>
@@ -171,7 +171,7 @@ namespace SimCore
          , mRadius(0.0f)
          , mID(++mLightCounter)
          , mAutoDeleteLightOnTargetNull(false)
-         , mLightType(lightType) 
+         , mLightType(lightType)
          , mTarget(NULL)
       {
       }
@@ -241,8 +241,15 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetGUI(dtCore::DeltaDrawable* gui)
       {
-         osg::Node* node = gui->GetOSGNode();
-         mGUIRoot->addChild(node);
+         if (gui == NULL)
+         {
+            mGUIRoot->removeChildren(0, mGUIRoot->getNumChildren());
+         }
+         else
+         {
+            osg::Node* node = gui->GetOSGNode();
+            mGUIRoot->addChild(node);
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -681,7 +688,7 @@ namespace SimCore
 #ifdef DELTA_WIN32
                   bool usePerGeodeLoading = true;
 #else
-                  bool usePerGeodeLoading = false;
+                  bool usePerGeodeLoading = true;
 #endif
                   // Build the terrain as a static mesh, but with each geode loaded separately
                   landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
@@ -844,9 +851,9 @@ namespace SimCore
                //if we have an open slot for spot lights and we have a spot light
                //else we are out of dynamic light spots and we have a dynamic light make a spot light and bind it here
                if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT) && (sl = dynamic_cast<SpotLight*>(dl)) )
-               {           
+               {
                   spotExp = sl->mSpotExponent;
-                  spotParams.set(sl->mCurrentDirection[0], sl->mCurrentDirection[1], sl->mCurrentDirection[2], sl->mSpotCosCutoff);                  
+                  spotParams.set(sl->mCurrentDirection[0], sl->mCurrentDirection[1], sl->mCurrentDirection[2], sl->mSpotCosCutoff);
                   useSpotLight = true;
                }
                else if( !(numDynamicLights < maxDynamicLightUniforms) )
@@ -855,10 +862,10 @@ namespace SimCore
                   spotParams.set(0.0f, 1.0f, 0.0f, -1.0f);
                   useSpotLight = true;
                }
-               
+
                //don't bind lights of zero intensity
                if(dl->mIntensity > 0.0001f)
-               {                  
+               {
                   if(useSpotLight)
                   {
                      spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
@@ -926,18 +933,18 @@ namespace SimCore
             light->mTarget->GetTransform(xform);
             osg::Matrix rot;
             xform.GetRotation(rot);
-         
+
             light->mDirection.normalize();
             light->mCurrentDirection = rot.preMult(light->mDirection);
-            
+
             light->mCurrentDirection.normalize();
 
          }
-         else 
+         else
          {
             //if our direction is absolute or we do not have a target
             //then our world space direction is our current local direction
-            light->mCurrentDirection = light->mDirection;            
+            light->mCurrentDirection = light->mDirection;
          }
       }
 

@@ -63,6 +63,15 @@ namespace SimCore
             }
       };
 
+      // Enter new attribute flags here.
+      // These determine what forces will be applied to a particle
+      // system when the component attempts an update.
+      struct ParticleInfoAttributeFlags
+      {
+         bool mEnableWind;
+         bool mAddWindToAllLayers; // forces addition of a wind force operator to particle layers that do not have one
+      };
+
       //////////////////////////////////////////////////////////
       // Particle Info code
       //////////////////////////////////////////////////////////
@@ -74,19 +83,10 @@ namespace SimCore
             typedef std::vector<dtCore::ObserverPtr<osgParticle::ForceOperator> >
                ForceOperatorList;
 
-            // Enter new attribute flags here.
-            // These determine what forces will be applied to a particle
-            // system when the component attempts an update.
-            struct AttributeFlags
-            {
-               bool mEnableWind;
-               bool mAddWindToAllLayers; // forces addition of a wind force operator to particle layers that do not have one
-            };
-
             ParticleInfo();
 
-            ParticleInfo( dtCore::ParticleSystem& particles, 
-               const ParticleInfo::AttributeFlags* attrFlags = NULL,
+            ParticleInfo( dtCore::ParticleSystem& particles,
+               const ParticleInfoAttributeFlags* attrFlags = NULL,
                const ParticlePriority& priority = ParticlePriority::NORMAL );
 
             // Updates the info based on the referenced particle system.
@@ -94,8 +94,8 @@ namespace SimCore
             // to the particle system is NULL.
             bool Update();
 
-            void Set( dtCore::ParticleSystem& particles, 
-               const ParticleInfo::AttributeFlags* attrFlags = NULL,
+            void Set( dtCore::ParticleSystem& particles,
+               const ParticleInfoAttributeFlags* attrFlags = NULL,
                const ParticlePriority& priority = ParticlePriority::NORMAL );
 
             dtCore::ParticleSystem* GetParticleSystem();
@@ -110,8 +110,8 @@ namespace SimCore
             // @return Total particles allocated in memory (live + dead)
             unsigned int GetAllocatedCount() const;
 
-            AttributeFlags& GetAttributeFlags();
-            const AttributeFlags& GetAttributeFlags() const;
+            ParticleInfoAttributeFlags& GetAttributeFlags();
+            const ParticleInfoAttributeFlags& GetAttributeFlags() const;
 
             ForceOperatorList& GetWindForces();
             const ForceOperatorList& GetWindForces() const;
@@ -125,7 +125,7 @@ namespace SimCore
             const ParticlePriority* mPriority;
             unsigned int mLiveCount;
             unsigned int mDeadCount;
-            AttributeFlags mAttrFlags;
+            ParticleInfoAttributeFlags mAttrFlags;
 
             dtCore::ObserverPtr<dtCore::ParticleSystem> mRef;
             std::vector< dtCore::ObserverPtr<osgParticle::ParticleSystem> > mLayerRefs;
@@ -173,7 +173,7 @@ namespace SimCore
       class SIMCORE_EXPORT ParticleManagerComponent : public dtGame::GMComponent
       {
       public:
-         // The default component name, used when looking it up on the GM. 
+         // The default component name, used when looking it up on the GM.
          static const std::string DEFAULT_NAME;
 
          // Constructor
@@ -194,8 +194,8 @@ namespace SimCore
          // @param attributes Flags that determine what forces will be applied to registered particles
          // @param priority The priority that determines how the particle system should be handled.
          // @return bool TRUE if the particle system was registered
-         bool Register( dtCore::ParticleSystem& particles, 
-            const ParticleInfo::AttributeFlags* attrFlags = NULL,
+         bool Register( dtCore::ParticleSystem& particles,
+            const ParticleInfoAttributeFlags* attrFlags = NULL,
             const ParticlePriority& priority = ParticlePriority::NORMAL );
 
          // @param particles The particle system to be unregistered from this component
@@ -232,13 +232,13 @@ namespace SimCore
          // add the force operator to all layers that do not have it; otherwise, layers
          // that have relevant operators (like those named "wind" for receiving wind force)
          // will be the only layers affected by the applied force.
-         // @param forceName The case-sensitive name of the force operator for which to search; 
+         // @param forceName The case-sensitive name of the force operator for which to search;
          //    if addToAllLayers is true, this will be the name of the operator when it is created.
          // @param force The physical vector force to be applied
          // @param ps The particle system that is to be affected by the force
          // @param addToAllLayers Creates an operator and adds the force to all layers that that do not have a relevant operator by the name of forceName.
          void ApplyForce( const std::string& forceName, const osg::Vec3& force, dtCore::ParticleSystem& ps, bool addToAllLayers = false );
-      
+
          // Changes and/or removes particle info.;
          // Info is removed if its weak reference to the particle system is NULL.
          void UpdateActorInfo();

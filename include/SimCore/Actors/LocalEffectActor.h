@@ -24,11 +24,7 @@
 #define _LOCAL_EFFECT_ACTOR_H_
 
 #include <SimCore/Actors/IGActor.h>
-
-namespace dtCore
-{
-   class ParticleSystem;
-}
+#include <dtCore/particlesystem.h>
 
 namespace SimCore
 {
@@ -112,7 +108,7 @@ namespace SimCore
             virtual ~LocalEffectActor();
 
             dtCore::RefPtr<dtCore::ParticleSystem> mParticleSystem;
-            
+
          private:
 
             float mBoundingSphereRadius;
@@ -144,7 +140,7 @@ namespace SimCore
              * Gets the method by which a particle system is rendered.
              * @return ActorProxy::RenderMode::DRAW_BILLBOARD_ICON.
              */
-            virtual const ActorProxy::RenderMode& GetRenderMode() 
+            virtual const ActorProxy::RenderMode& GetRenderMode()
             {
                 return ActorProxy::RenderMode::DRAW_BILLBOARD_ICON;
             }

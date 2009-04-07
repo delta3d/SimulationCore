@@ -164,22 +164,22 @@ namespace SimCore
 
                //this flag implies the direction specified is absolute or in world space
                //so it does not accumulate its parents rotation
-               bool mUseAbsoluteDirection;   
+               bool mUseAbsoluteDirection;
 
-               //mSpotExponent is the spot rate of decay and controls how 
+               //mSpotExponent is the spot rate of decay and controls how
                //the lights intensity decays from the center of the cone it its borders. The larger the value the faster de decay, with zero meaning constant light within the light cone.
-               float mSpotExponent; 
-              
+               float mSpotExponent;
+
                //The cosine of the angle between the light to vertex vector and the spot direction must be larger than spotCosCutoff
                float mSpotCosCutoff;
 
                //The local direction of the light
-               osg::Vec3 mDirection;         
+               osg::Vec3 mDirection;
 
                //The current direction of the light in world space
                //this is set by the rendering support component
                //WARNING- this is not meant to be modified, use mDirection
-               osg::Vec3 mCurrentDirection;  
+               osg::Vec3 mCurrentDirection;
             };
 
 
@@ -199,31 +199,31 @@ namespace SimCore
             static const std::string DEFAULT_LIGHT_NAME;
 
             /// Constructor
-            RenderingSupportComponent(const std::string &name = DEFAULT_NAME);
+            RenderingSupportComponent(const std::string& name = DEFAULT_NAME);
 
             // Convenience method to add a new dynamic light by looking it up from the prototypes. Returns the unique dynamic light instance
-            DynamicLight* AddDynamicLightByPrototypeName(const std::string &prototypeName);
+            DynamicLight* AddDynamicLightByPrototypeName(const std::string& prototypeName);
 
             // Convenience method to add a new spot light by looking it up from the prototypes. Returns the unique spot light instance
-            SpotLight* AddSpotLightByPrototypeName(const std::string &prototypeName);
+            SpotLight* AddSpotLightByPrototypeName(const std::string& prototypeName);
 
             //Use this method for adding dynamic lights or spot lights to the rendering support component
             LightID AddDynamicLight(DynamicLight*);
             void RemoveDynamicLight(LightID id);
 
             //if your light is a spot light use this function and cast it- sorry! we could add a helper method too
-            //if you aren't sure what type of light it is you can check the light type enumeration 
+            //if you aren't sure what type of light it is you can check the light type enumeration
             DynamicLight* GetDynamicLight(LightID id);
 
             bool GetEnableNVGS();
             void SetEnableNVGS(bool pEnable);
 
-            // Enable Cull Visitor (for terrain physics) - Mutually exclusive of Static Terrain Physics. 
-            // Turning this on, disables Static Terrain Physics 
+            // Enable Cull Visitor (for terrain physics) - Mutually exclusive of Static Terrain Physics.
+            // Turning this on, disables Static Terrain Physics
             bool GetEnableCullVisitor();
             void SetEnableCullVisitor(bool pEnable);
 
-            // Enable Static Terrain Physics - Mutually exclusive of Cull Visitor. 
+            // Enable Static Terrain Physics - Mutually exclusive of Cull Visitor.
             // Turning this on, disables Cull Visitor
             bool GetEnableStaticTerrainPhysics() const;
             void SetEnableStaticTerrainPhysics(bool pEnable);
@@ -241,7 +241,7 @@ namespace SimCore
             * @param The message to process
             * @see dtGame::GameManager
             */
-            virtual void ProcessMessage(const dtGame::Message &msg);
+            virtual void ProcessMessage(const dtGame::Message& msg);
 
             // loads cull visitor stuff.
             void OnAddedToGM();
@@ -281,9 +281,9 @@ namespace SimCore
             // After a map loads, reload the static terrain - used only when StaticTerrainPhysicsEnabled
             void LoadStaticTerrain();
 
-            virtual void ProcessTick(const dtGame::TickMessage &msg);
+            virtual void ProcessTick(const dtGame::TickMessage& msg);
 
-            void UpdateDynamicLights(float dt);            
+            void UpdateDynamicLights(float dt);
             void UpdateViewMatrix(dtCore::Camera& pCamera);
 
             void SetDynamicLightProperties(SimCore::Actors::DynamicLightPrototypeActor* prototype, DynamicLight* dl);
@@ -322,7 +322,7 @@ namespace SimCore
             dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
 
             // list of dynamic light actor prototypes
-            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;            
+            typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;
             DynamicLightPrototypeMap mDynamicLightPrototypes;
 
             typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::SpotLightPrototypeProxy> > SpotLightPrototypeMap;

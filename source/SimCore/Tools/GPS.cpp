@@ -28,6 +28,8 @@
 
 #include <dtGame/exceptionenum.h>
 
+#include <dtCore/transform.h>
+
 #include <dtUtil/log.h>
 #include <dtUtil/coordinates.h>
 

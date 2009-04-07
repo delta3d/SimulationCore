@@ -31,6 +31,8 @@
 
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
+
+#include <dtGame/exceptionenum.h>
 #include <dtABC/application.h>
 
 #include <dtDAL/project.h>
@@ -150,7 +152,7 @@ namespace SimCore
          // Determine if the specified map is valid.
          std::string& mapName = mMapNames[0];
 
-         try 
+         try
          {
             SimCore::Utils::LoadMaps(*GetGameManager(), mapName);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTING;

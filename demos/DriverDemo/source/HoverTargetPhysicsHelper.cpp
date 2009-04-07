@@ -14,10 +14,11 @@
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>
+#include <dtGame/exceptionenum.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
-#include <SimCore/CollisionGroupEnum.h>
 #include <dtUtil/matrixutil.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <SimCore/PhysicsTypes.h>
 

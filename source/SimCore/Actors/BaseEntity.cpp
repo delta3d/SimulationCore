@@ -39,6 +39,7 @@
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Messages.h>
 #include <SimCore/VisibilityOptions.h>
+#include <SimCore/Components/ParticleManagerComponent.h>
 
 namespace SimCore
 {
@@ -722,7 +723,7 @@ namespace SimCore
             mFlamesSystem->SetEnabled(enable);
             AddChild(mFlamesSystem.get());
 
-            Components::ParticleInfo::AttributeFlags attrs = {true,true};
+            Components::ParticleInfoAttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
 
             if(mFireLightID == 0 && GetGameActorProxy().GetGameManager() != NULL )
@@ -815,7 +816,7 @@ namespace SimCore
             AddChild(mSmokePlumesSystem.get());
             mSmokePlumePresent = enable;
 
-            Components::ParticleInfo::AttributeFlags attrs = {true,true};
+            Components::ParticleInfoAttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mSmokePlumesSystem,&attrs);
          }
          else

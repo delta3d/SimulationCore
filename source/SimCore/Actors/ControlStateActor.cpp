@@ -35,7 +35,8 @@
 #include <SimCore/Actors/ControlStateActor.h>
 #include <osg/Endian>
 #include <dtGame/basemessages.h>
-
+#include <dtGame/message.h>
+#include <dtGame/messagetype.h>
 
 namespace SimCore
 {

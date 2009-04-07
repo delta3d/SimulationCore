@@ -31,6 +31,7 @@
 // sets default camera perspective
 #include <dtCore/camera.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 
 #include <dtABC/application.h>
 #include <SimCore/BaseGameEntryPoint.h>

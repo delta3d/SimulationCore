@@ -33,6 +33,7 @@
 
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <dtCore/scene.h>
+#include <dtCore/transform.h>
 #include <dtDAL/enginepropertytypes.h>
 
 #include <osg/Matrix>

@@ -36,24 +36,10 @@ namespace SimCore
       class SIMCORE_EXPORT Portal : public dtGame::GameActor
       {
          public:
-            Portal(dtGame::GameActorProxy &proxy) :
-               dtGame::GameActor(proxy),
-               mIsOpen(false)
-            {
-               mTimeToSendOut = 10.0f;
-            }
+            Portal(dtGame::GameActorProxy &proxy);
 
             ///////////////////////////////////////////
-            dtCore::DeltaDrawable* GetActorLink()
-            {
-               dtDAL::ActorProxy* proxy = GetGameActorProxy().GetLinkedActor("ActorLink");
-               if(proxy == NULL)
-               {
-                  LOG_DEBUG("Get Material Actor [NULL].");
-                  return NULL;
-               }
-               return proxy->GetActor();
-            }
+            dtCore::DeltaDrawable* GetActorLink();
 
             //////////////////////////////////////////////////////////////////
             void  SetActorLink(dtDAL::ActorProxy* proxy)

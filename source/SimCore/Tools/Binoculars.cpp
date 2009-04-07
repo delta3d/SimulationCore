@@ -32,6 +32,7 @@
 
 #include <dtCore/camera.h>
 #include <dtCore/isector.h>
+#include <dtCore/transform.h>
 
 #ifdef None
 #undef None

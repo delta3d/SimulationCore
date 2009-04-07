@@ -36,7 +36,7 @@
 
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
-#include <dtCore/transformable.h>
+#include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
 

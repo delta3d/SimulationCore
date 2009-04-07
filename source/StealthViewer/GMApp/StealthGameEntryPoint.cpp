@@ -58,8 +58,6 @@
 #include <SimCore/Actors/StealthActor.h>
 
 #include <SimCore/Components/ViewerNetworkPublishingComponent.h>
-#include <SimCore/Components/TimedDeleterComponent.h>
-#include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>

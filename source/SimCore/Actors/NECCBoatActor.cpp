@@ -176,7 +176,7 @@ namespace SimCore
          {
             mSndIgnition       = dtAudio::AudioManager::GetInstance().NewSound();
             mSndIgnition->LoadFile(SOUND_EFFECT_IGNITION.c_str());
-            mSndIgnition->ListenerRelative(false);
+            mSndIgnition->SetListenerRelative(false);
             AddChild(mSndIgnition.get());
             dtCore::Transform xform;
             mSndIgnition->SetTransform(xform, dtCore::Transformable::REL_CS);
@@ -186,9 +186,8 @@ namespace SimCore
          {
             mSndVehicleIdleLoop= dtAudio::AudioManager::GetInstance().NewSound();
             mSndVehicleIdleLoop->LoadFile(SOUND_EFFECT_VEHICLE_LOOP.c_str());
-            mSndVehicleIdleLoop->ListenerRelative(false);
+            mSndVehicleIdleLoop->SetListenerRelative(false);
             mSndVehicleIdleLoop->SetLooping(true);
-            mSndVehicleIdleLoop->SetMinDistance(8.0f);
             mSndVehicleIdleLoop->SetMaxDistance(35.0f);
             AddChild(mSndVehicleIdleLoop.get());
             dtCore::Transform xform;
@@ -199,9 +198,8 @@ namespace SimCore
          {
             mSndHorn= dtAudio::AudioManager::GetInstance().NewSound();
             mSndHorn->LoadFile(SOUND_EFFECT_HORN_SOUND.c_str());
-            mSndHorn->ListenerRelative(false);
+            mSndHorn->SetListenerRelative(false);
             mSndHorn->SetLooping(false);
-            mSndHorn->SetMinDistance(8.0f);
             mSndHorn->SetMaxDistance(35.0f);
             AddChild(mSndHorn.get());
             dtCore::Transform xform;

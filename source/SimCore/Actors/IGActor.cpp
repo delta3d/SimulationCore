@@ -127,7 +127,8 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void IGActor::RegisterParticleSystem( dtCore::ParticleSystem& particles, const SimCore::Components::ParticleInfo::AttributeFlags* attributes )
+      void IGActor::RegisterParticleSystem( dtCore::ParticleSystem& particles,
+               const SimCore::Components::ParticleInfoAttributeFlags* attributes )
       {
          // Register the particle systems with the particle manager component
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
