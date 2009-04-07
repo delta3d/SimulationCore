@@ -59,13 +59,13 @@ namespace SimCore
       enum CollisionGroupE
       {
          GROUP_TERRAIN        = 0
-         , GROUP_HUMAN_LOCAL    = 9
-         , GROUP_HUMAN_REMOTE   = 10
          , GROUP_BULLET         = 15
          , GROUP_PARTICLE       = 20
          , GROUP_WATER          = 23
          //, GROUP_VEHICLE_GROUND = 0 currently also 0
          , GROUP_VEHICLE_WATER  = 26
+         , GROUP_HUMAN_LOCAL    = 30
+         , GROUP_HUMAN_REMOTE   = 31
       };
    }
 }
