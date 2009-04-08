@@ -26,6 +26,7 @@
 #include <dtGame/gameactor.h>
 
 #include <SimCore/Export.h>
+#include <osg/Vec4>
 
 namespace dtGame
 {
