@@ -27,6 +27,7 @@
 #include <osgViewer/GraphicsWindow>
 
 #include <dtCore/system.h>
+#include <dtUtil/log.h>
 
 namespace dtQt
 {
@@ -181,7 +182,7 @@ namespace dtQt
       mThreadGLContext = new QGLContext(QGLFormat::defaultFormat(), this);
       if (!mThreadGLContext->create(context()))
       {
-         std::cerr << "broken!" << std::endl;
+         LOG_ERROR("Failed to create thread");
       }
 
       setContext(mThreadGLContext, context(), false);

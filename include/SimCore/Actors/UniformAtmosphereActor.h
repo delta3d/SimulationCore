@@ -25,6 +25,7 @@
 
 #include <SimCore/Export.h>
 #include <SimCore/Actors/AtmosphereActor.h>
+#include <osg/Vec2>
 
 namespace SimCore
 {

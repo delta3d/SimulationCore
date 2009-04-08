@@ -45,7 +45,7 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
-#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #endif
 
 namespace SimCore
@@ -414,14 +414,14 @@ namespace SimCore
          {
             dtPhysics::PhysicsHelper* physicsHelper =
                (dtPhysics::PhysicsHelper*)(shapeHit.shape->getActor().userData);
-            NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
+            //NxAgeiaFourWheelVehicleActor *hitTarget = NULL;
             if (physicsHelper != NULL)
             {
-               hitTarget = dynamic_cast<NxAgeiaFourWheelVehicleActor*>(physicsHelper->GetPhysicsGameActorProxy().GetActor());
-               if(hitTarget != NULL)
-               {
+               //hitTarget = dynamic_cast<NxAgeiaFourWheelVehicleActor*>(physicsHelper->GetPhysicsGameActorProxy().GetActor());
+               //if(hitTarget != NULL)
+               //{
                   // we hit a vehicle lets do something with the character
-               }
+               //}
             }
          }
          return NX_ACTION_NONE;

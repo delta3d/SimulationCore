@@ -29,6 +29,9 @@
 #include <dtCore/refptr.h>
 #include <dtUtil/enumeration.h>
 
+#include <osg/Vec3>
+#include <osg/Vec4>
+
 // High Explosives (HE) use: Carleton Damage Model
 // Improved Conventional Munition (ICM) use: Cookie Cutter Model
 
@@ -157,7 +160,7 @@ namespace SimCore
             const osg::Vec4& GetDeflectRanges() const { return mDeflectRanges; }
 
             const DamageRanges& operator= ( const DamageRanges& ranges );
-            
+
             bool operator== ( const DamageRanges& ranges ) const;
             bool operator!= ( const DamageRanges& ranges ) const;
 
@@ -237,15 +240,15 @@ namespace SimCore
             void GetDamageProbabilities( DamageProbability& outProbabilities,
                float& outDistanceFromImpact,
                bool directFire,
-               const osg::Vec3& munitionTrajectory, 
-               const osg::Vec3& munitionPosition, 
+               const osg::Vec3& munitionTrajectory,
+               const osg::Vec3& munitionPosition,
                const osg::Vec3& entityPosition ) const;
 
             // Get the damage probability via the Carleton Method
             // D0 is one of the damage probability coefficients: M, F, MF, K
             //    P = D0 * exp[-D0 * ((X/r1)^2 + (Y/r2)^2)]
             //
-            // @param damageTypeCoefficient: The coefficient of a particular 
+            // @param damageTypeCoefficient: The coefficient of a particular
             //       damage type {M,F,MF,K} as declared for High Explosive (HE) weapons
             //       within the ifdam_he.rdr file of the JSAF library "libifdam"
             // @param x: The distance from the detonation along the munition trajectory
@@ -253,7 +256,7 @@ namespace SimCore
             // @param downRangeRadius: The lethal radius in meters along the munition trajectory
             // @param deflectionRadius: The lethal radius perpendicular from the munition trajectory
             // @return Damage probability
-            float GetProbability_CarletonEquation( float damageTypeCoefficient, 
+            float GetProbability_CarletonEquation( float damageTypeCoefficient,
                float x, float y, float downRangeRadius, float deflectionRadius ) const;
 
             // Compute a force from this munition if it detonated.

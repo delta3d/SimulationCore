@@ -40,7 +40,7 @@ namespace SimCore
 
    namespace Components
    {
-      class ParticleInfoAttributeFlags;
+      struct ParticleInfoAttributeFlags;
    }
 
    namespace Actors
