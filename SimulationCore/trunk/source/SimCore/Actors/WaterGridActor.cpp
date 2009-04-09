@@ -63,6 +63,7 @@
 #include <osg/TexMat>
 #include <osg/Math>
 #include <osg/CullFace>
+#include <osg/Projection>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 #include <osgGA/GUIEventAdapter>

@@ -71,6 +71,7 @@
 #include <osgParticle/Operator>
 #include <osgParticle/ForceOperator>
 #include <osg/MatrixTransform>
+#include <osg/Geode>
 
 #include <UnitTestMain.h>
 

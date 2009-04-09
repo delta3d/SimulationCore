@@ -24,8 +24,6 @@
 
 #include <SimCore/Export.h>
 
-#include <dtGame/gameactor.h>
-
 #include <SimCore/Actors/IGActor.h>
 
 namespace dtGame
