@@ -34,6 +34,8 @@
 #include <dtGame/gamemanager.h>
 #include <dtUtil/exception.h>
 
+#include <osgViewer/GraphicsWindow>
+
 #include <dtCore/observerptr.h>
 #include <iostream>
 

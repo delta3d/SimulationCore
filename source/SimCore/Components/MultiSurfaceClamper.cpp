@@ -38,7 +38,7 @@
 #include <osg/Geometry>
 #include <osg/Array>
 
-
+#include <sstream>
 
 namespace SimCore
 {

@@ -37,6 +37,7 @@
 #include <osg/StateSet>
 #include <osg/Billboard>
 #include <osg/BlendFunc>
+#include <osg/Projection>
 
 #include <osgDB/ReadFile>
 
