@@ -178,6 +178,22 @@ namespace SimCore
           */
          float GetWaveAmplitudeAtPoint( const Wave& wave, const osg::Vec3& worldPoint ) const;
 
+
+         void SetWaveLengthMultiplier(float f);
+         float GetForWaveLengthMultiplier() const;
+
+         void SetSpeedMultiplier(float f);
+         float GetSpeedMultiplier() const;
+         
+         void SetSteepnessMultiplier(float f);
+         float GetSteepnessMultiplier() const; 
+          
+         void SetAmplitudeMultiplier(float f);
+         float GetAmplitudeMultiplier() const;
+
+         void SetPrimaryWaveDirection(float degrees);
+         float GetPrimaryWaveDirection() const;
+
       protected:
          ~WaterGridActor();
 
