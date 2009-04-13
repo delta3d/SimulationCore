@@ -32,7 +32,7 @@
 
 //#include <QtGui/QDockWidget>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
-#include <StealthViewer/Qt/OSGAdapterWidget.h>
+#include <dtQt/osgadapterwidget.h>
 
 class QGLWidget;
 
@@ -60,9 +60,6 @@ namespace StealthQt
       void RequestClose();
    signals:
       void closeRequested(AdditionalViewDockWidget&);
-   protected slots:
-      void OnVisibilityChanged(bool isVisible);
-      void OnTopLevelChanged(bool isTopLevel);
    protected:
       virtual void closeEvent(QCloseEvent *e);
    private:

@@ -39,14 +39,16 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QSpacerItem>
 
+#include <dtQt/osgadapterwidget.h>
+#include <dtQt/osggraphicswindowqt.h>
+#include <dtQt/qtguiwindowsystemwrapper.h>
+
 #include <StealthViewer/Qt/MainWindow.h>
 #include <ui_MainWindowUi.h>
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
-#include <StealthViewer/Qt/OSGAdapterWidget.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>
-#include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 
@@ -93,74 +95,31 @@
 #include <cmath>
 #include <cfloat>
 
-
-class EmbeddedWindowSystemWrapper: public osg::GraphicsContext::WindowingSystemInterface
+namespace StealthQt
 {
+   class StealthWindowSystemWrapper: public dtQt::QtGuiWindowSystemWrapper
+   {
    public:
-      EmbeddedWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface):
-         mInterface(&oldInterface)
-         {
-         }
-
-      virtual unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier =
-         osg::GraphicsContext::ScreenIdentifier())
+      StealthWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface)
+      : dtQt::QtGuiWindowSystemWrapper(oldInterface)
       {
-         return mInterface->getNumScreens(screenIdentifier);
       }
 
-      virtual void getScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
-               unsigned int& width, unsigned int& height)
-      {
-         mInterface->getScreenResolution(screenIdentifier, width, height);
-      }
-
-      virtual bool setScreenResolution(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
-               unsigned int width, unsigned int height)
-      {
-         return mInterface->setScreenResolution(screenIdentifier, width, height);
-      }
-
-      virtual bool setScreenRefreshRate(const osg::GraphicsContext::ScreenIdentifier& screenIdentifier,
-               double refreshRate)
-      {
-         return mInterface->setScreenRefreshRate(screenIdentifier, refreshRate);
-      }
-
-#if defined(OPENSCENEGRAPH_MAJOR_VERSION) && OPENSCENEGRAPH_MAJOR_VERSION >= 2 && defined(OPENSCENEGRAPH_MINOR_VERSION) && OPENSCENEGRAPH_MINOR_VERSION >= 8
-      virtual void getScreenSettings(const osg::GraphicsContext::ScreenIdentifier& si, osg::GraphicsContext::ScreenSettings & resolution)
-      {
-         mInterface->getScreenSettings(si, resolution);
-      }
-
-      virtual void enumerateScreenSettings(const osg::GraphicsContext::ScreenIdentifier& si, osg::GraphicsContext::ScreenSettingsList & rl)
-      {
-         mInterface->enumerateScreenSettings(si, rl);
-      }
-#endif
-
-      virtual osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
+      osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
       {
          //return new osgViewer::GraphicsWindowEmbedded(traits);
 
          if(traits->pbuffer)
          {
-            return mInterface->createGraphicsContext(traits);
+            return QtGuiWindowSystemWrapper::createGraphicsContext(traits);
          }
          else
          {
-            return new StealthQt::OSGGraphicsWindowQt(traits);
+            return new dtQt::OSGGraphicsWindowQt(traits, new StealthQt::AdditionalViewDockWidget(NULL));
          }
       }
+   };
 
-   protected:
-      virtual ~EmbeddedWindowSystemWrapper() {};
-   private:
-      dtCore::RefPtr<osg::GraphicsContext::WindowingSystemInterface> mInterface;
-};
-
-
-namespace StealthQt
-{
    ///////////////////////////////////////////////////////////////////////////////
    static std::string WINDOW_TITLE_VERSION("[Unknown]");
    static const std::string WINDOW_TITLE( "Stealth Viewer");
@@ -208,7 +167,7 @@ namespace StealthQt
 
       show();
 
-      StealthQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<StealthQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
+      dtQt::OSGGraphicsWindowQt* graphicsWindow = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(mApp->GetWindow()->GetOsgViewerGraphicsWindow());
       if (graphicsWindow != NULL)
       {
          QGLWidget* oglWidget = graphicsWindow->GetQGLWidget();
@@ -417,7 +376,7 @@ namespace StealthQt
 
       if (winSys != NULL)
       {
-         osg::GraphicsContext::setWindowingSystemInterface(new EmbeddedWindowSystemWrapper(*winSys));
+         osg::GraphicsContext::setWindowingSystemInterface(new StealthWindowSystemWrapper(*winSys));
       }
 
       try

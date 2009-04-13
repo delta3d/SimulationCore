@@ -612,7 +612,6 @@ namespace SimCore
 #else
       dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
       newObject->SetCollisionGroup(collisionGroupToSendIn);
-      newObject->SetCollisionMask(mPhysicsHelper->GetDefaultCollisionMask());
       newObject->SetMass(mPhysicsHelper->GetMass());
       newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
       newObject->SetExtents(mPhysicsHelper->GetDimensions());

@@ -36,7 +36,7 @@
 #include <StealthViewer/Qt/AdditionalViewEditDialog.h>
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 #include <StealthViewer/Qt/MainWindow.h>
-#include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
+#include <dtQt/osggraphicswindowqt.h>
 
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <ui_Views.h>
@@ -239,7 +239,7 @@ namespace StealthQt
       newViewWrapper->SetRemoveCallback(StealthGM::ViewWindowWrapper::OperationCallback(&AdditionalViewDockWidget::ShutdownOnViewDestroy));
 
       osgViewer::GraphicsWindow* gw = newViewWrapper->GetWindow().GetOsgViewerGraphicsWindow();
-      OSGGraphicsWindowQt* gwQt = dynamic_cast<OSGGraphicsWindowQt*>(gw);
+      dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
       if (gwQt != NULL)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();

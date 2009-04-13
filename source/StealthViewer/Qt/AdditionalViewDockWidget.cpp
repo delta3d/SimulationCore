@@ -34,9 +34,10 @@
 
 #include <StealthViewer/Qt/AdditionalViewDockWidget.h>
 #include <StealthViewer/Qt/ViewDockWidget.h>
-#include <StealthViewer/Qt/OSGGraphicsWindowQt.h>
 #include <StealthViewer/Qt/StealthViewerData.h>
 #include <StealthViewer/Qt/MainWindow.h>
+
+#include <dtQt/osggraphicswindowqt.h>
 
 #include <dtCore/deltawin.h>
 #include <osgViewer/GraphicsWindow>
@@ -127,7 +128,7 @@ namespace StealthQt
    AdditionalViewDockWidget* AdditionalViewDockWidget::GetDockWidgetForViewWindow(StealthGM::ViewWindowWrapper& wrapper)
    {
       osgViewer::GraphicsWindow* gw = wrapper.GetWindow().GetOsgViewerGraphicsWindow();
-      OSGGraphicsWindowQt* gwQt = dynamic_cast<OSGGraphicsWindowQt*>(gw);
+      dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
       if (gwQt != NULL)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();
@@ -144,7 +145,7 @@ namespace StealthQt
    void AdditionalViewDockWidget::CreateAndInitFromViewWrapper(StealthGM::ViewWindowWrapper& wrapper)
    {
       osgViewer::GraphicsWindow* gw = wrapper.GetWindow().GetOsgViewerGraphicsWindow();
-      OSGGraphicsWindowQt* gwQt = dynamic_cast<OSGGraphicsWindowQt*>(gw);
+      dtQt::OSGGraphicsWindowQt* gwQt = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(gw);
       if (gwQt != NULL)
       {
          QGLWidget* widget = gwQt->GetQGLWidget();
@@ -192,23 +193,5 @@ namespace StealthQt
 //         glWidget->setParent(NULL);
          delete dockWidget;
       }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void AdditionalViewDockWidget::OnTopLevelChanged(bool isTopLevel)
-   {
-//      if (!isTopLevel)
-//      {
-//         setFloating(true);
-//      }
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////
-   void AdditionalViewDockWidget::OnVisibilityChanged(bool isVisible)
-   {
-//      if (!isVisible)
-//      {
-//         emit closeRequested(*this);
-//      }
    }
 }
