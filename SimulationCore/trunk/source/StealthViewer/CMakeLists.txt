@@ -17,6 +17,7 @@ LINK_WITH_VARIABLES(${PROG_NAME}
                                    QT_QTCORE_LIBRARY
                                    QT_QTGUI_LIBRARY
                                    QT_QTOPENGL_LIBRARY
+                                   DTQT_LIBRARY
 )
 
 TARGET_LINK_LIBRARIES(${PROG_NAME} 

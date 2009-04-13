@@ -79,7 +79,7 @@ namespace SimCore
          mEphemerisModel->setMoveWithEyePoint(true);
 
          //FogSphere SetUp
-         mFogSphere = new osgEphemeris::Sphere( 999.0f,
+         mFogSphere = new osgEphemeris::Sphere( 998.0f,
             osgEphemeris::Sphere::TessLow,
             osgEphemeris::Sphere::OuterOrientation,
             osgEphemeris::Sphere::BothHemispheres,

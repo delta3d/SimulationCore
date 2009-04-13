@@ -355,7 +355,6 @@ void PhysicsParticleSystemActor::AddParticle()
    newObject->SetExtents(mPhysicsHelper->GetDimensions());
    newObject->SetOriginOffset(osg::Vec3f(ourTranslation));
    newObject->SetCollisionGroup(collisionGroupToSendIn);
-   newObject->SetCollisionMask(mPhysicsHelper->GetDefaultCollisionMask());
    newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
    newObject->CreateFromProperties(particle->mObj->GetOSGNode());
 

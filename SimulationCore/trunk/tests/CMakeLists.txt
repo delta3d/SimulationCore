@@ -41,7 +41,8 @@ IF (BUILD_HLA)
    LINK_WITH_VARIABLES(${PROG_NAME}
                     QT_QTCORE_LIBRARY
                     QT_QTGUI_LIBRARY
-                    QT_QTOPENGL_LIBRARY)
+                    QT_QTOPENGL_LIBRARY
+                    DTQT_LIBRARY)
 ENDIF (BUILD_HLA)
 
 INCLUDE(ModuleInstall OPTIONAL)
