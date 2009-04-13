@@ -159,6 +159,7 @@ namespace SimCore
          if(pEvent == NULL)
          {
             LOG_ERROR("NULL is invalid parameter to function!");      
+            return false;
          }
 
          TransitionMap::key_type key(pEvent, mCurrentState.get());
@@ -171,7 +172,8 @@ namespace SimCore
             return true;
          }
 
-         LOG_ERROR("Unable to handle event: " + pEvent->GetName() + " from state: " + mCurrentState->GetName());
+         LOG_ERROR( "Unable to handle event: " + pEvent->GetName() + " from state: "
+            + (mCurrentState.valid() ? mCurrentState->GetName() : "NULL") );
          return false;
       }
 
