@@ -30,6 +30,7 @@
 #include <osg/Depth>
 #include <osg/Fog>
 #include <osg/StateSet>
+#include <osg/Projection>
 #include <SimCore/Components/RenderingSupportComponent.h>
 
 namespace SimCore
@@ -74,12 +75,12 @@ namespace SimCore
       , mFogSphereEyePointTransform(new MoveWithEyePointTransform())
 
       {
-         mEphemerisModel->setSkyDomeRadius( 999.0f );
+         mEphemerisModel->setSkyDomeRadius( 499.0f );
          mEphemerisModel->setSunLightNum(0);
          mEphemerisModel->setMoveWithEyePoint(true);
 
          //FogSphere SetUp
-         mFogSphere = new osgEphemeris::Sphere( 998.0f,
+         mFogSphere = new osgEphemeris::Sphere( 497.0f,
             osgEphemeris::Sphere::TessLow,
             osgEphemeris::Sphere::OuterOrientation,
             osgEphemeris::Sphere::BothHemispheres,
@@ -115,11 +116,15 @@ namespace SimCore
       {
          BaseClass::OnEnteredWorld();
          dtCore::Environment& coreEnv = GetCoreEnvironment();
-         //GetGameActorProxy().GetGameManager()->GetScene().UseSceneLight(true);
-         coreEnv.GetOSGNode()->asGroup()->addChild(mEphemerisModel.get());
+         //osg::Matrix projectMat;
+         //projectMat.makePerspective(60, 1.5, 10, 996);
+         //dtCore::RefPtr<osg::Projection> projection = new osg::Projection(projectMat);
+         //coreEnv.GetOSGNode()->asGroup()->addChild(projection.get());
+         osg::Group* envGroup = coreEnv.GetOSGNode()->asGroup();
+         envGroup->addChild(mEphemerisModel.get());
 
          //here we setup the FogSphere's state set and add it to the scene
-         coreEnv.GetOSGNode()->asGroup()->addChild(mFogSphereEyePointTransform.get());
+         envGroup->addChild(mFogSphereEyePointTransform.get());
          mFogSphereEyePointTransform->addChild(mFogSphere.get());
 
          //we give all the drawables on the fog sphere a large bounding box to ensure it is always rendered
