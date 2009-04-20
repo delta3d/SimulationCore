@@ -36,9 +36,9 @@
 #include <dtCore/refptr.h>
 #include <dtCore/sigslot.h>
 #include <dtGame/gamemanager.h>
-#include <StealthViewer/Qt/SimTicker.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <vector>
+#include <dtQt/deltastepper.h>
 
 namespace dtGame
 {
@@ -473,7 +473,7 @@ namespace StealthQt
 
          QString mCurrentConnectionName;
 
-         SimTicker mSimTicker;
+         dtQt::DeltaStepper mSimTicker;
          QTimer mDurationTimer;
          QTimer mGenericTickTimer;
          QTimer mRefreshEntityInfoTimer;
