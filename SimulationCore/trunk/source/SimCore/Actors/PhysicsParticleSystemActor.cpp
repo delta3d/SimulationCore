@@ -472,7 +472,6 @@ void PhysicsParticleSystemActor::LoadParticleResource(PhysicsParticle &particle,
 //      ss->setMode(GL_BLEND, osg::StateAttribute::ON);
 //      ss->setAttributeAndModes(bf, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 //      ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-//      ss->setMode(GL_COLOR_MATERIAL, osg::StateAttribute::ON);
 //      osg::Material* mat = dynamic_cast<osg::Material*>(ss->getAttribute(osg::StateAttribute::MATERIAL));
 //      if(mat)
 //      {
@@ -903,7 +902,6 @@ void PhysicsParticle::UpdateAlphaAmount()
    /*osg::StateSet* ss = mObj->GetOSGNode()->getOrCreateStateSet();
       osg::BlendFunc* bf = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, alphaAmount, 1.0f);
       ss->setMode(GL_BLEND, osg::StateAttribute::ON);
-      ss->setMode(GL_COLOR_MATERIAL, osg::StateAttribute::ON);
       ss->setAttributeAndModes(bf, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
       ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);*/
    //}

@@ -397,6 +397,7 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    MainWindow::~MainWindow()
    {
+      mSimTicker.Stop();
       for (size_t i =0; i < mVisibilityCheckBoxes.size(); ++i)
       {
          mVisibilityCheckBoxes[i]->setUserData(0, NULL);

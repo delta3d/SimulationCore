@@ -156,7 +156,6 @@ namespace StealthQt
                      QMessageBox::Ok, QMessageBox::Ok);
             return;
          }
-//         AdditionalViewDockWidget* dockWidget = new AdditionalViewDockWidget(StealthViewerData::GetInstance().GetMainWindow());
          AdditionalViewDockWidget* dockWidget = static_cast<AdditionalViewDockWidget*>(widget);
          dtCore::DeltaWin::PositionSize ps = wrapper.GetWindow().GetPosition();
          dockWidget->setGeometry(ps.mX, ps.mY, ps.mWidth, ps.mHeight);
@@ -170,6 +169,7 @@ namespace StealthQt
          //dockWidget->setParent(StealthViewerData::GetInstance().GetMainWindow());
          dockWidget->setWindowFlags(Qt::Tool | Qt::Window | Qt::WindowStaysOnTopHint);
          dockWidget->show();
+         gw->resized(ps.mX, ps.mY, ps.mWidth, ps.mHeight);
       }
 
    }
