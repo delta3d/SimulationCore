@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -41,6 +41,8 @@
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
 #include <Windows.h>
@@ -54,7 +56,7 @@ namespace SimCore
 {
    namespace Components
    {
-      
+
       //////////////////////////////////////////////////////////////
       // Sub-classed TimedDeleterComponent
       //////////////////////////////////////////////////////////////
@@ -65,7 +67,7 @@ namespace SimCore
       {
          public:
             TestTimedDeleterComponent();
-            
+
             const std::string CreateTimerNameFromId( const dtCore::UniqueId& id ) const;
 
             void AddId( const dtCore::UniqueId& id, double simWaitTime );
@@ -205,7 +207,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////
       void TestTimedDeleterComponent::ProcessMessage( const dtGame::Message& message )
       {
-         if( mAvoidTimeChangeMessage && 
+         if( mAvoidTimeChangeMessage &&
             message.GetMessageType() == dtGame::MessageType::INFO_TIME_CHANGED )
          {
             return;
@@ -243,8 +245,7 @@ namespace SimCore
          try
          {
             dtCore::System::GetInstance().Start();
-            dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-            mGM = new dtGame::GameManager(*scene);
+            mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
 
             mMachineInfo = new dtGame::MachineInfo;
             mDeleterComp = new TestTimedDeleterComponent;
@@ -273,8 +274,8 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////
-      void TimedDeleterComponentTests::CreateTestActors( 
-         std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& listToFill, 
+      void TimedDeleterComponentTests::CreateTestActors(
+         std::vector<dtCore::RefPtr<dtGame::GameActorProxy> >& listToFill,
          int numActors, bool putInGameManager )
       {
          // Prepare lists memory
@@ -282,7 +283,7 @@ namespace SimCore
          listToFill.reserve(numActors);
 
          // Create the actors and add them to the GM
-         
+
          dtCore::RefPtr<dtGame::GameActorProxy> curProxy;
          for( int index = 0; index < numActors; index++ )
          {
@@ -346,7 +347,7 @@ namespace SimCore
 
             // -- Test CreateTimerNameFromId
             curTimerName = mDeleterComp->CreateTimerNameFromId( curID );
-            CPPUNIT_ASSERT_MESSAGE("Generated timer name should be valid", 
+            CPPUNIT_ASSERT_MESSAGE("Generated timer name should be valid",
                curTimerName.length() > componentNameLength );
 
             // -- Add actor to component
@@ -361,7 +362,7 @@ namespace SimCore
          // Get all actor IDs
          std::vector<dtCore::UniqueId> ids;
          mDeleterComp->GetIds(ids);
-         CPPUNIT_ASSERT_MESSAGE("Number of IDs registered should match the number of IDs returned", 
+         CPPUNIT_ASSERT_MESSAGE("Number of IDs registered should match the number of IDs returned",
             mDeleterComp->GetIdCount() == ids.size() );
 
          // Remove the actors
@@ -371,7 +372,7 @@ namespace SimCore
 
             // -- Test GetAssociatedTimerName
             std::string curStrPtr = mDeleterComp->GetAssociatedTimerName(curID);
-            CPPUNIT_ASSERT_MESSAGE("Returned timer name should be valid", 
+            CPPUNIT_ASSERT_MESSAGE("Returned timer name should be valid",
                curStrPtr.length() > componentNameLength );
 
             // Remove actor from component
@@ -385,7 +386,7 @@ namespace SimCore
             }
 
             // Test count
-            CPPUNIT_ASSERT_MESSAGE("Removing an ID should decrease count", 
+            CPPUNIT_ASSERT_MESSAGE("Removing an ID should decrease count",
                mDeleterComp->GetIdCount() == maxActors - actor - 1 );
 
          }
@@ -394,7 +395,7 @@ namespace SimCore
 
          // Add all actors again
          CreateTestActors( mTestActors, maxActors );
-         CPPUNIT_ASSERT_MESSAGE("All actors should be registered", 
+         CPPUNIT_ASSERT_MESSAGE("All actors should be registered",
             RegisterActorIds(mTestActors) == (int)maxActors );
 
          // Gather ids again
@@ -405,7 +406,7 @@ namespace SimCore
          curID = ids[2];
          curTimerName = mDeleterComp->GetAssociatedTimerName(curID);
          mDeleterComp->RemoveId(curID);
-         CPPUNIT_ASSERT_MESSAGE("Both the ID and timer should have been removed", 
+         CPPUNIT_ASSERT_MESSAGE("Both the ID and timer should have been removed",
             !mDeleterComp->HasId(curID) && !mDeleterComp->HasTimer(curTimerName) );
 
          // Test a single remove by timer name
@@ -413,20 +414,20 @@ namespace SimCore
          curID = ids[4];
          curTimerName = mDeleterComp->GetAssociatedTimerName(curID);
          mDeleterComp->RemoveIdByTimerName(curTimerName);
-         CPPUNIT_ASSERT_MESSAGE("Both the timer and ID should have been removed", 
+         CPPUNIT_ASSERT_MESSAGE("Both the timer and ID should have been removed",
             !mDeleterComp->HasId(curID) && !mDeleterComp->HasTimer(curTimerName) );
 
 
          // Check count
-         CPPUNIT_ASSERT_MESSAGE("Only 2 IDs should have been removed", 
+         CPPUNIT_ASSERT_MESSAGE("Only 2 IDs should have been removed",
             mDeleterComp->GetIdCount() == maxActors-2 );
 
 
          // Test Clear - Check count
          mDeleterComp->Clear();
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager", 
+         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager",
             mGM->GetNumGameActors() == 0 );
       }
 
@@ -436,7 +437,7 @@ namespace SimCore
          int maxActors = 6;
          CreateTestActors(mTestActors,maxActors);
 
-         dtCore::RefPtr<dtGame::Message> msg = 
+         dtCore::RefPtr<dtGame::Message> msg =
             mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_DELETED);
 
 
@@ -444,16 +445,16 @@ namespace SimCore
          RegisterActorIds(mTestActors);
          msg->SetAboutActorId(mTestActors[0]->GetId());
          mDeleterComp->ProcessMessage(*msg);
-         CPPUNIT_ASSERT_MESSAGE("Only one ID should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("Only one ID should be removed",
             (int)mDeleterComp->GetIdCount() == maxActors-1 );
 
          // Test TIME_ELAPSED message
          msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_TIMER_ELAPSED);
-         dtGame::TimerElapsedMessage& timeElapseMessage = 
+         dtGame::TimerElapsedMessage& timeElapseMessage =
             static_cast<dtGame::TimerElapsedMessage&> (*msg);
          timeElapseMessage.SetTimerName( mDeleterComp->GetAssociatedTimerName(mTestActors[1]->GetId()) );
          mDeleterComp->ProcessMessage(timeElapseMessage);
-         CPPUNIT_ASSERT_MESSAGE("Only one ID should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("Only one ID should be removed",
             (int)mDeleterComp->GetIdCount() == maxActors-2 );
 
          // Test TIME_CAHNGED message
@@ -462,7 +463,7 @@ namespace SimCore
          //RegisterActorIds(mTestActors);
          //msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_TIME_CHANGED);
          //mDeleterComp->ProcessMessage(*msg);
-         //CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         //CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
          //   mDeleterComp->GetIdCount() == 0 );
 
          // Test MAP_LOAD message
@@ -470,7 +471,7 @@ namespace SimCore
          RegisterActorIds(mTestActors);
          msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_MAP_LOADED);
          mDeleterComp->ProcessMessage(*msg);
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
 
          // Test MAP_UNLOAD messages
@@ -478,7 +479,7 @@ namespace SimCore
          RegisterActorIds(mTestActors);
          msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_MAP_UNLOADED);
          mDeleterComp->ProcessMessage(*msg);
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
 
          // Test RESTART message
@@ -486,7 +487,7 @@ namespace SimCore
          RegisterActorIds(mTestActors);
          msg = mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_RESTARTED);
          mDeleterComp->ProcessMessage(*msg);
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
       }
 
@@ -519,33 +520,33 @@ namespace SimCore
 
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 0 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 0 should be deleted",
             !mDeleterComp->HasId(mTestActors[0]->GetId()));
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 2 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 2 should be deleted",
             !mDeleterComp->HasId(mTestActors[2]->GetId()));
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 4 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 4 should be deleted",
             !mDeleterComp->HasId(mTestActors[4]->GetId()));
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 1 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 1 should be deleted",
             !mDeleterComp->HasId(mTestActors[1]->GetId()));
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 3 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 3 should be deleted",
             !mDeleterComp->HasId(mTestActors[3]->GetId()));
          // -- Step time forward & check if ID is gone
          AdvanceSimTime(timeStep);
-         CPPUNIT_ASSERT_MESSAGE("ID 5 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 5 should be deleted",
             !mDeleterComp->HasId(mTestActors[5]->GetId()) );
          AdvanceSimTime(timeStep);
 
 
          // Test deleted order
-         /* The following assumed that returned ids would be 
+         /* The following assumed that returned ids would be
          in the same order as contained by the component (when using vectors).
          Now the component uses maps, so the ids may not be in the order as they
          were added initially. The sub-classed deleter will contain the original order.*/
@@ -557,24 +558,24 @@ namespace SimCore
          mDeleterComp->GetDeletedIds(deletedIds);
 
          std::cout << "Total deletes: " << deletedIds.size() << "\n";
-         CPPUNIT_ASSERT_MESSAGE("ID 0 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 0 should be deleted",
             deletedIds[0] == ids[0] );
-         CPPUNIT_ASSERT_MESSAGE("ID 2 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 2 should be deleted",
             deletedIds[1] == ids[2] );
-         CPPUNIT_ASSERT_MESSAGE("ID 4 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 4 should be deleted",
             deletedIds[2] == ids[4] );
-         CPPUNIT_ASSERT_MESSAGE("ID 1 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 1 should be deleted",
             deletedIds[3] == ids[1] );
-         CPPUNIT_ASSERT_MESSAGE("ID 3 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 3 should be deleted",
             deletedIds[4] == ids[3] );
-         CPPUNIT_ASSERT_MESSAGE("ID 5 should be deleted", 
+         CPPUNIT_ASSERT_MESSAGE("ID 5 should be deleted",
             deletedIds[5] == ids[5] );//*/
 
 
          // Check that all actors timers and ids are gone.
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager", 
+         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager",
             mGM->GetNumGameActors() == 0 );//*/
 
 
@@ -590,9 +591,9 @@ namespace SimCore
          SLEEP(10); dtCore::System::GetInstance().Step();
 
          // Check component and GM count
-         CPPUNIT_ASSERT_MESSAGE("2 actors should be removed from the GameManager", 
+         CPPUNIT_ASSERT_MESSAGE("2 actors should be removed from the GameManager",
             mGM->GetNumGameActors() == 4 );
-         CPPUNIT_ASSERT_MESSAGE("2 ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("2 ids should be removed",
             mDeleterComp->GetIdCount() == 4 );
 
          // Remove all game actors from GM
@@ -600,9 +601,9 @@ namespace SimCore
          SLEEP(20); dtCore::System::GetInstance().Step();
 
          // Check component and GM count
-         CPPUNIT_ASSERT_MESSAGE("All ids should be removed", 
+         CPPUNIT_ASSERT_MESSAGE("All ids should be removed",
             mDeleterComp->GetIdCount() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager", 
+         CPPUNIT_ASSERT_MESSAGE("All actors should be removed from the GameManager",
             mGM->GetNumGameActors() == 0 );
       }
 
