@@ -192,8 +192,7 @@ namespace SimCore
          try
          {
             dtCore::System::GetInstance().Start();
-            dtCore::RefPtr<dtCore::Scene> scene = new dtCore::Scene;
-            mGM = new dtGame::GameManager(*scene);
+            mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
             mGM->SetApplication(GetGlobalApplication());
 
             mMachineInfo = new dtGame::MachineInfo;

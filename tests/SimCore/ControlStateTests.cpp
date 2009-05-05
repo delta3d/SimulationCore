@@ -38,6 +38,9 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/MessageType.h>
 
+#include <UnitTestMain.h>
+#include <dtABC/application.h>
+
 
 #ifdef DELTA_WIN32
 #include <Windows.h>
@@ -112,7 +115,7 @@ namespace SimCore
       {
          try
          {
-            mGM = new dtGame::GameManager( *new dtCore::Scene );
+            mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
             MessageType::RegisterMessageTypes( mGM->GetMessageFactory() );
          }
          catch (const dtUtil::Exception& ex)
