@@ -1,12 +1,12 @@
 /**************************************************************************
- * Written by Durk Talsma. Originally started October 1997, for distribution  
- * with the FlightGear project. Version 2 was written in August and 
- * September 1998. This code is based upon algorithms and data kindly 
- * provided by Mr. Paul Schlyter. (pausch@saaf.se). 
+ * Written by Durk Talsma. Originally started October 1997, for distribution
+ * with the FlightGear project. Version 2 was written in August and
+ * September 1998. This code is based upon algorithms and data kindly
+ * provided by Mr. Paul Schlyter. (pausch@saaf.se).
  *
  * This code has been repackaged for use with osgEphemeris by Don Burns
  * November 25, 2005 by placing all celestial body classes into one
- * header file and one source file.  
+ * header file and one source file.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,31 +27,32 @@
 #include <osgEphemeris/CelestialBodies>
 #include <osg/Math>
 
+#include <iostream>
 
 using namespace osgEphemeris;
 
 /**************************************************************************
- * Written by Durk Talsma. Originally started October 1997, for distribution        
- * with the FlightGear project. Version 2 was written in August and 
- * September 1998. This code is based upon algorithms and data kindly 
- * provided by Mr. Paul Schlyter. (pausch@saaf.se). 
+ * Written by Durk Talsma. Originally started October 1997, for distribution
+ * with the FlightGear project. Version 2 was written in August and
+ * September 1998. This code is based upon algorithms and data kindly
+ * provided by Mr. Paul Schlyter. (pausch@saaf.se).
  **************************************************************************/
 
 
 /**************************************************************************
  * void CelestialBody::updatePosition(double mjd, Sun *ourSun)
  *
- * Basically, this member function provides a general interface for 
- * calculating the right ascension and declinaion. This function is 
- * used for calculating the planetary positions. For the planets, an 
+ * Basically, this member function provides a general interface for
+ * calculating the right ascension and declinaion. This function is
+ * used for calculating the planetary positions. For the planets, an
  * overloaded member function is provided to additionally calculate the
- * planet's magnitude. 
+ * planet's magnitude.
  * The sun and moon have their own overloaded updatePosition member, as their
- * position is calculated an a slightly different manner.    
+ * position is calculated an a slightly different manner.
  *
  * arguments:
  * double mjd: provides the modified julian date.
- * Sun *ourSun: the sun's position is needed to convert heliocentric 
+ * Sun *ourSun: the sun's position is needed to convert heliocentric
  *                             coordinates into geocentric coordinates.
  *
  * return value: none
@@ -60,7 +61,7 @@ using namespace osgEphemeris;
 
 void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
 {
-    double eccAnom, v, ecl, actTime, 
+    double eccAnom, v, ecl, actTime,
         xv, yv, xh, yh, zh, xg, yg, zg, xe, ye, ze;
 
     updateOrbElements(mjd);
@@ -68,13 +69,13 @@ void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
 
     // calcualate the angle bewteen ecliptic and equatorial coordinate system
     ecl = osg::DegreesToRadians((23.4393 - 3.563E-7 *actTime));
-    
+
     eccAnom = sgCalcEccAnom(M, e);    //calculate the eccentric anomaly
     xv = a * (cos(eccAnom) - e);
     yv = a * (sqrt (1.0 - e*e) * sin(eccAnom));
     v = atan2(yv, xv);                     // the planet's true anomaly
     r = sqrt (xv*xv + yv*yv);        // the planet's distance
-    
+
     // calculate the planet's position in 3D space
     xh = r * (cos(N) * cos(v+w) - sin(N) * sin(v+w) * cos(i));
     yh = r * (sin(N) * cos(v+w) + cos(N) * sin(v+w) * cos(i));
@@ -93,10 +94,10 @@ void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
     ze = yg * sin(ecl) + zg * cos(ecl);
     rightAscension = atan2(ye, xe);
     declination = atan2(ze, sqrt(xe*xe + ye*ye));
-    /* SG_LOG(SG_GENERAL, SG_INFO, "Planet found at : " 
+    /* SG_LOG(SG_GENERAL, SG_INFO, "Planet found at : "
      << rightAscension << " (ra), " << declination << " (dec)" ); */
 
-    //calculate some variables specific to calculating the magnitude 
+    //calculate some variables specific to calculating the magnitude
     //of the planet
     R = sqrt (xg*xg + yg*yg + zg*zg);
     s = ourSun->getDistance();
@@ -106,11 +107,11 @@ void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
     // checking.
 
     double tmp = (r*r + R*R - s*s) / (2*r*R);
-    if ( tmp > 1.0) 
+    if ( tmp > 1.0)
     {
         tmp = 1.0;
-    } 
-    else if ( tmp < -1.0) 
+    }
+    else if ( tmp < -1.0)
     {
         tmp = -1.0;
     }
@@ -120,9 +121,9 @@ void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
 
 /****************************************************************************
  * double CelestialBody::sgCalcEccAnom(double M, double e)
- * this private member calculates the eccentric anomaly of a celestial body, 
+ * this private member calculates the eccentric anomaly of a celestial body,
  * given its mean anomaly and eccentricity.
- * 
+ *
  * -Mean anomaly: the approximate angle between the perihelion and the current
  *    position. this angle increases uniformly with time.
  *
@@ -130,13 +131,13 @@ void CelestialBody::updatePosition(double mjd, osgEphemeris::Sun *ourSun)
  *
  * Eccentric anomaly: this is an auxilary angle, used in calculating the true
  * anomaly from the mean anomaly.
- * 
- * -eccentricity. Indicates the amount in which the orbit deviates from a 
+ *
+ * -eccentricity. Indicates the amount in which the orbit deviates from a
  *    circle (0 = circle, 0-1, is ellipse, 1 = parabola, > 1 = hyperbola).
  *
  * This function is also known as solveKeplersEquation()
  *
- * arguments: 
+ * arguments:
  * M: the mean anomaly
  * e: the eccentricity
  *
@@ -149,17 +150,21 @@ double CelestialBody::sgCalcEccAnom(double M, double e)
     double eccAnom, E0, E1, diff;
 
     double epsilon = osg::DegreesToRadians(0.001);
-    
+
     eccAnom = M + e * sin(M) * (1.0 + e * cos (M));
-    // iterate to achieve a greater precision for larger eccentricities 
+    // iterate to achieve a greater precision for larger eccentricities
     if (e > 0.05)
     {
         E0 = eccAnom;
+        int count = 0;
         do
         {
              E1 = E0 - (E0 - e * sin(E0) - M) / (1 - e *cos(E0));
              diff = fabs(E0 - E1);
              E0 = E1;
+             ++count;
+             if (count > 200)
+                break;
         } while (diff > epsilon );
         return E0;
     }
@@ -176,16 +181,16 @@ double CelestialBody::sgCalcEccAnom(double M, double e)
  * a: semi-major axis, or mean distance from the sun
  * e: eccenticity
  * M: mean anomaly
- * Each orbital element consists of a constant part and a variable part that 
- * gradually changes over time. 
+ * Each orbital element consists of a constant part and a variable part that
+ * gradually changes over time.
  *
  * Argumetns:
- * the 13 arguments to the constructor constitute the first, constant 
- * ([NiwaeM]f) and the second variable ([NiwaeM]s) part of the orbital 
+ * the 13 arguments to the constructor constitute the first, constant
+ * ([NiwaeM]f) and the second variable ([NiwaeM]s) part of the orbital
  * elements. The 13th argument is the current time. Note that the inclination
- * is written with a capital (If, Is), because 'if' is a reserved word in the 
+ * is written with a capital (If, Is), because 'if' is a reserved word in the
  * C/C++ programming language.
- ***************************************************************************/ 
+ ***************************************************************************/
 CelestialBody::CelestialBody(double Nf, double Ns,
                         double If, double Is,
                         double wf, double ws,
@@ -219,7 +224,7 @@ CelestialBody::CelestialBody(double Nf, double Ns,
 
 /****************************************************************************
  * inline void CelestialBody::updateOrbElements(double mjd)
- * given the current time, this private member calculates the actual 
+ * given the current time, this private member calculates the actual
  * orbital elements
  *
  * Arguments: double mjd: the current modified julian date:
@@ -241,7 +246,7 @@ void CelestialBody::updateOrbElements(double mjd)
  * inline double CelestialBody::sgCalcActTime(double mjd)
  * this private member function returns the offset in days from the epoch for
  * wich the orbital elements are calculated (Jan, 1st, 2000).
- * 
+ *
  * Argument: the current time
  *
  * return value: the (fractional) number of days until Jan 1, 2000.
@@ -256,7 +261,7 @@ double CelestialBody::sgCalcActTime(double mjd)
  * gives public access to Right Ascension and declination
  *
  ****************************************************************************/
-void CelestialBody::getPos(double* ra, double* dec) const 
+void CelestialBody::getPos(double* ra, double* dec) const
 {
     *ra    = rightAscension;
     *dec = declination;
@@ -264,7 +269,7 @@ void CelestialBody::getPos(double* ra, double* dec) const
 
 /*****************************************************************************
  * inline void CelestialBody::getPos(double* ra, double* dec, double* magnitude
- * gives public acces to the current Right ascension, declination, and 
+ * gives public acces to the current Right ascension, declination, and
  * magnitude
  ****************************************************************************/
 void CelestialBody::getPos(double* ra, double* dec, double* magn) const
@@ -279,12 +284,12 @@ void CelestialBody::getPos(double* ra, double* dec, double* magn) const
  * Sun::Sun(double mjd)
  * Public constructor for class Sun
  * Argument: The current time.
- * the hard coded orbital elements our sun are passed to 
+ * the hard coded orbital elements our sun are passed to
  * CelestialBody::CelestialBody();
 
  *** (old note)
  *** note that the word sun is avoided, in order to prevent some compilation
- *** problems on sun systems 
+ *** problems on sun systems
  ***
 
  *
@@ -295,8 +300,8 @@ void CelestialBody::getPos(double* ra, double* dec, double* magn) const
 Sun::Sun(double mjd) :
         CelestialBody (0.000000,        0.0000000000,
    0.0000,                0.00000,
-   282.9404,        4.7093500E-5,    
-   1.0000000, 0.000000,    
+   282.9404,        4.7093500E-5,
+   1.0000000, 0.000000,
    0.016709,        -1.151E-9,
    356.0470,        0.98560025850, mjd)
 {
@@ -306,8 +311,8 @@ Sun::Sun(double mjd) :
 Sun::Sun() :
                 CelestialBody (0.000000,        0.0000000000,
                  0.0000,                0.00000,
-                 282.9404,        4.7093500E-5,    
-                 1.0000000, 0.000000,    
+                 282.9404,        4.7093500E-5,
+                 1.0000000, 0.000000,
                  0.016709,        -1.151E-9,
                  356.0470,        0.98560025850)
 {
@@ -321,22 +326,22 @@ Sun::~Sun()
 
 /*************************************************************************
  * void Sun::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of our sun.
  *************************************************************************/
 void Sun::updatePosition(double mjd)
 {
-        double 
-                actTime, eccAnom, 
+        double
+                actTime, eccAnom,
                 xv, yv, v, r,
                 xe, ye, ze, ecl;
 
         updateOrbElements(mjd);
-        
+
         actTime = sgCalcActTime(mjd);
         ecl = osg::DegreesToRadians((23.4393 - 3.563E-7 * actTime)); // Angle in Radians
         eccAnom = sgCalcEccAnom(M, e);        // Calculate the eccentric Anomaly (also known as solving Kepler's equation)
-        
+
         xv = cos(eccAnom) - e;
         yv = sqrt (1.0 - e*e) * sin(eccAnom);
         v = atan2 (yv, xv);                                                                         // the sun's true anomaly
@@ -345,7 +350,7 @@ void Sun::updatePosition(double mjd)
         lonEcl = v + w; // the sun's true longitude
         latEcl = 0;
 
-        // convert the sun's true longitude to ecliptic rectangular 
+        // convert the sun's true longitude to ecliptic rectangular
         // geocentric coordinates (xs, ys)
         xs = r * cos (lonEcl);
         ys = r * sin (lonEcl);
@@ -365,9 +370,9 @@ void Sun::updatePosition(double mjd)
 
 /*************************************************************************
  * Moon::Moon(double mjd)
- * Public constructor for class Moon. Initializes the orbital elements 
+ * Public constructor for class Moon. Initializes the orbital elements
  * Argument: The current time.
- * the hard coded orbital elements for Moon are passed to 
+ * the hard coded orbital elements for Moon are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Moon::Moon(double mjd) :
@@ -398,30 +403,30 @@ Moon::~Moon()
 
 /*****************************************************************************
  * void Moon::updatePosition(double mjd, Star *ourSun)
- * this member function calculates the actual topocentric position (i.e.) 
+ * this member function calculates the actual topocentric position (i.e.)
  * the position of the moon as seen from the current position on the surface
- * of the moon. 
+ * of the moon.
  ****************************************************************************/
 void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
 {
-    double 
+    double
         eccAnom, ecl, actTime,
         xv, yv, v, r, xh, yh, zh, xg, yg, zg, xe, ye, ze,
         Ls, Lm, D, F, mpar, gclat, rho, HA, g,
         geoRa, geoDec;
-    
+
     updateOrbElements(mjd);
     actTime = sgCalcActTime(mjd);
 
     // calculate the angle between ecliptic and equatorial coordinate system
     // in Radians
-    ecl = ((osg::DegreesToRadians(23.4393)) - (osg::DegreesToRadians(3.563E-7) * actTime));    
+    ecl = ((osg::DegreesToRadians(23.4393)) - (osg::DegreesToRadians(3.563E-7) * actTime));
     eccAnom = sgCalcEccAnom(M, e);    // Calculate the eccentric anomaly
     xv = a * (cos(eccAnom) - e);
     yv = a * (sqrt(1.0 - e*e) * sin(eccAnom));
     v = atan2(yv, xv);                             // the moon's true anomaly
     r = sqrt (xv*xv + yv*yv);             // and its distance
-    
+
     // estimate the geocentric rectangular coordinates here
     xh = r * (cos(N) * cos (v+w) - sin (N) * sin(v+w) * cos(i));
     yh = r * (sin(N) * cos (v+w) + cos (N) * sin(v+w) * cos(i));
@@ -431,14 +436,14 @@ void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
     lonEcl = atan2 (yh, xh);
     latEcl = atan2(zh, sqrt(xh*xh + yh*yh));
 
-    /* Calculate a number of perturbatioin, i.e. disturbances caused by the 
+    /* Calculate a number of perturbatioin, i.e. disturbances caused by the
      * gravitational infuence of the sun and the other major planets.
      * The largest of these even have a name */
     Ls = ourSun->getM() + ourSun->getw();
     Lm = M + w + N;
     D = Lm - Ls;
     F = Lm - N;
-    
+
     lonEcl += osg::DegreesToRadians((-1.274 * sin (M - 2*D)
                 +0.658 * sin (2*D)
                 -0.186 * sin(ourSun->getM())
@@ -464,7 +469,7 @@ void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
     xg = r * cos(lonEcl) * cos(latEcl);
     yg = r * sin(lonEcl) * cos(latEcl);
     zg = r *                             sin(latEcl);
-    
+
     xe = xg;
     ye = yg * cos(ecl) -zg * sin(ecl);
     ze = yg * sin(ecl) +zg * cos(ecl);
@@ -473,32 +478,32 @@ void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
     geoDec = atan2(ze, sqrt(xe*xe + ye*ye));
 
 
-    // Given the moon's geocentric ra and dec, calculate its 
+    // Given the moon's geocentric ra and dec, calculate its
     // topocentric ra and dec. i.e. the position as seen from the
     // surface of the earth, instead of the center of the earth
 
-    // First calculate the moon's parrallax, that is, the apparent size of the 
-    // (equatorial) radius of the earth, as seen from the moon 
+    // First calculate the moon's parrallax, that is, the apparent size of the
+    // (equatorial) radius of the earth, as seen from the moon
     mpar = asin ( 1 / r);
 
-    gclat = lat - 0.003358 * 
+    gclat = lat - 0.003358 *
             sin (2 * osg::DegreesToRadians( lat ) );
 
     rho = 0.99883 + 0.00167 * cos(2 * osg::DegreesToRadians(lat));
-    
+
     if (geoRa < 0)
         geoRa += (2*osg::PI);
-    
+
     HA = lst - (3.8197186 * geoRa);
 
     g = atan (tan(gclat) / cos ((HA / 3.8197186)));
 
     rightAscension = geoRa - mpar * rho * cos(gclat) * sin(HA) / cos (geoDec);
-    if (fabs(lat) > 0) 
+    if (fabs(lat) > 0)
     {
         declination = geoDec - mpar * rho * sin (gclat) * sin (g - geoDec) / sin(g);
-    } 
-    else 
+    }
+    else
     {
         declination = geoDec;
     }
@@ -508,7 +513,7 @@ void Moon::updatePosition(double mjd, double lst, double lat, Sun *ourSun)
  * Mercury::Mercury(double mjd)
  * Public constructor for class Mercury
  * Argument: The current time.
- * the hard coded orbital elements for Mercury are passed to 
+ * the hard coded orbital elements for Mercury are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Mercury::Mercury(double mjd) :
@@ -532,26 +537,26 @@ Mercury::Mercury() :
 
 /*************************************************************************
  * void Mercury::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Mercury, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Mercury specific equation
  *************************************************************************/
 void Mercury::updatePosition(double mjd, Sun *ourSun)
 {
         CelestialBody::updatePosition(mjd, ourSun);
-        magnitude = -0.36 + 5*log10( r*R ) + 0.027 * FV + 2.2E-13 * pow(FV, 6); 
+        magnitude = -0.36 + 5*log10( r*R ) + 0.027 * FV + 2.2E-13 * pow(FV, 6);
 }
 
 /*************************************************************************
  * Venus::Venus(double mjd)
  * Public constructor for class Venus
  * Argument: The current time.
- * the hard coded orbital elements for Venus are passed to 
+ * the hard coded orbital elements for Venus are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Venus::Venus(double mjd) :
-        CelestialBody(76.67990,        2.4659000E-5, 
+        CelestialBody(76.67990,        2.4659000E-5,
         3.3946,                2.75E-8,
         54.89100,        1.3837400E-5,
         0.7233300, 0.000000,
@@ -560,7 +565,7 @@ Venus::Venus(double mjd) :
 {
 }
 Venus::Venus() :
-        CelestialBody(76.67990,        2.4659000E-5, 
+        CelestialBody(76.67990,        2.4659000E-5,
         3.3946,                2.75E-8,
         54.89100,        1.3837400E-5,
         0.7233300, 0.000000,
@@ -571,9 +576,9 @@ Venus::Venus() :
 
 /*************************************************************************
  * void Venus::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Venus, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Venus specific equation
  *************************************************************************/
 void Venus::updatePosition(double mjd, Sun *ourSun)
@@ -586,7 +591,7 @@ void Venus::updatePosition(double mjd, Sun *ourSun)
  * Mars::Mars(double mjd)
  * Public constructor for class Mars
  * Argument: The current time.
- * the hard coded orbital elements for Mars are passed to 
+ * the hard coded orbital elements for Mars are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Mars::Mars(double mjd) :
@@ -611,9 +616,9 @@ Mars::Mars() :
 
 /*************************************************************************
  * void Mars::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Mars, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Mars specific equation
  *************************************************************************/
 void Mars::updatePosition(double mjd, Sun *ourSun)
@@ -626,11 +631,11 @@ void Mars::updatePosition(double mjd, Sun *ourSun)
  * Jupiter::Jupiter(double mjd)
  * Public constructor for class Jupiter
  * Argument: The current time.
- * the hard coded orbital elements for Jupiter are passed to 
+ * the hard coded orbital elements for Jupiter are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Jupiter::Jupiter(double mjd) :
-        CelestialBody(100.4542,        2.7685400E-5,    
+        CelestialBody(100.4542,        2.7685400E-5,
         1.3030,         -1.557E-7,
         273.8777,        1.6450500E-5,
         5.2025600, 0.000000,
@@ -640,7 +645,7 @@ Jupiter::Jupiter(double mjd) :
 }
 
 Jupiter::Jupiter() :
-        CelestialBody(100.4542,        2.7685400E-5,    
+        CelestialBody(100.4542,        2.7685400E-5,
         1.3030,         -1.557E-7,
         273.8777,        1.6450500E-5,
         5.2025600, 0.000000,
@@ -651,9 +656,9 @@ Jupiter::Jupiter() :
 
 /*************************************************************************
  * void Jupiter::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Jupiter, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Jupiter specific equation
  *************************************************************************/
 void Jupiter::updatePosition(double mjd, Sun *ourSun)
@@ -666,7 +671,7 @@ void Jupiter::updatePosition(double mjd, Sun *ourSun)
  * Saturn::Saturn(double mjd)
  * Public constructor for class Saturn
  * Argument: The current time.
- * the hard coded orbital elements for Saturn are passed to 
+ * the hard coded orbital elements for Saturn are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Saturn::Saturn(double mjd) :
@@ -691,19 +696,19 @@ Saturn::Saturn() :
 
 /*************************************************************************
  * void Saturn::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Saturn, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Saturn specific equation
  *************************************************************************/
 void Saturn::updatePosition(double mjd, Sun *ourSun)
 {
         CelestialBody::updatePosition(mjd, ourSun);
-        
+
         double actTime = sgCalcActTime(mjd);
         double ir = 0.4897394;
         double Nr = 2.9585076 + 6.6672E-7*actTime;
-        double B = asin (sin(declination) * cos(ir) - 
+        double B = asin (sin(declination) * cos(ir) -
                  cos(declination) * sin(ir) *
                  sin(rightAscension - Nr));
         double ring_magn = -2.6 * sin(fabs(B)) + 1.2 * pow(sin(B), 2);
@@ -714,7 +719,7 @@ void Saturn::updatePosition(double mjd, Sun *ourSun)
  * Uranus::Uranus(double mjd)
  * Public constructor for class Uranus
  * Argument: The current time.
- * the hard coded orbital elements for Uranus are passed to 
+ * the hard coded orbital elements for Uranus are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Uranus::Uranus(double mjd) :
@@ -739,9 +744,9 @@ Uranus::Uranus() :
 
 /*************************************************************************
  * void Uranus::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Uranus, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Uranus specific equation
  *************************************************************************/
 void Uranus::updatePosition(double mjd, Sun *ourSun)
@@ -754,13 +759,13 @@ void Uranus::updatePosition(double mjd, Sun *ourSun)
  * Neptune::Neptune(double mjd)
  * Public constructor for class Neptune
  * Argument: The current time.
- * the hard coded orbital elements for Neptune are passed to 
+ * the hard coded orbital elements for Neptune are passed to
  * CelestialBody::CelestialBody();
  ************************************************************************/
 Neptune::Neptune(double mjd) :
         CelestialBody(131.7806,         3.0173000E-5,
         1.7700,             -2.550E-7,
-        272.8461,        -6.027000E-6,    
+        272.8461,        -6.027000E-6,
         30.058260,        3.313E-8,
         0.008606,         2.150E-9,
         260.2471,         0.00599514700, mjd)
@@ -770,7 +775,7 @@ Neptune::Neptune(double mjd) :
 Neptune::Neptune() :
         CelestialBody(131.7806,         3.0173000E-5,
         1.7700,             -2.550E-7,
-        272.8461,        -6.027000E-6,    
+        272.8461,        -6.027000E-6,
         30.058260,        3.313E-8,
         0.008606,         2.150E-9,
         260.2471,         0.00599514700)
@@ -779,9 +784,9 @@ Neptune::Neptune() :
 
 /*************************************************************************
  * void Neptune::updatePosition(double mjd, Sun *ourSun)
- * 
+ *
  * calculates the current position of Neptune, by calling the base class,
- * CelestialBody::updatePosition(); The current magnitude is calculated using 
+ * CelestialBody::updatePosition(); The current magnitude is calculated using
  * a Neptune specific equation
  *************************************************************************/
 void Neptune::updatePosition(double mjd, Sun *ourSun)
