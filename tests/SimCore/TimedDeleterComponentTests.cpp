@@ -31,6 +31,7 @@
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
+#include <dtCore/timer.h>
 #include <dtDAL/project.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
@@ -43,14 +44,6 @@
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
-
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-#include <Windows.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
 
 namespace SimCore
 {
@@ -320,13 +313,13 @@ namespace SimCore
       void TimedDeleterComponentTests::SetSimTime( double newSimTime )
       {
          mGM->ChangeTimeSettings( newSimTime, mGM->GetTimeScale(), mGM->GetSimulationClockTime() );
-         SLEEP(1); dtCore::System::GetInstance().Step();
+         dtCore::AppSleep(1); dtCore::System::GetInstance().Step();
       }
 
       //////////////////////////////////////////////////////////////
       void TimedDeleterComponentTests::AdvanceSimTime( double deltaTime )
       {
-         SLEEP(10); dtCore::System::GetInstance().Step();
+         dtCore::AppSleep(10); dtCore::System::GetInstance().Step();
          //SetSimTime( mGM->GetSimulationTime() + deltaTime );
       }
 
@@ -497,7 +490,7 @@ namespace SimCore
          // Prevent time changes from clearing the component lists.
          mDeleterComp->SetAvoidTimeChangeMessage(true);
          // Process RESTART message
-         SLEEP(10); dtCore::System::GetInstance().Step();
+         dtCore::AppSleep(10); dtCore::System::GetInstance().Step();
 
          // Create actors (at least 6) and add to GM
          const int maxActors = 6;
@@ -588,7 +581,7 @@ namespace SimCore
          // Remove a couple actors from GM
          mGM->DeleteActor(*mTestActors[1]);
          mGM->DeleteActor(*mTestActors[3]);
-         SLEEP(10); dtCore::System::GetInstance().Step();
+         dtCore::AppSleep(10); dtCore::System::GetInstance().Step();
 
          // Check component and GM count
          CPPUNIT_ASSERT_MESSAGE("2 actors should be removed from the GameManager",
@@ -598,7 +591,7 @@ namespace SimCore
 
          // Remove all game actors from GM
          mGM->DeleteAllActors(false);
-         SLEEP(20); dtCore::System::GetInstance().Step();
+         dtCore::AppSleep(20); dtCore::System::GetInstance().Step();
 
          // Check component and GM count
          CPPUNIT_ASSERT_MESSAGE("All ids should be removed",

@@ -206,9 +206,6 @@ namespace SimCore
       try
       {
          dtAudio::AudioManager::Instantiate();
-         int sources = dtUtil::ToType<int>(app.GetConfigPropertyValue("dtAudio.NumSources", "32"));
-         dtUtil::Clamp(sources, 1, 32);
-         dtAudio::AudioManager::GetInstance().Config(AudioConfigData(sources));
       }
       catch(const dtUtil::Exception& e)
       {
@@ -370,7 +367,7 @@ namespace SimCore
       AssignProjectContext(*app.GetGameManager());
       PreLoadMap();
 
-      dtGame::GameManager &gameManager = *app.GetGameManager();
+      dtGame::GameManager& gameManager = *app.GetGameManager();
 
       dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
 
