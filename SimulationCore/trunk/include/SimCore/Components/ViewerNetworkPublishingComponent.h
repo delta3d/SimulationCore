@@ -45,7 +45,7 @@ namespace SimCore
       class SIMCORE_EXPORT ViewerNetworkPublishingComponent : public dtGame::DefaultNetworkPublishingComponent
       {
          public:
-            ViewerNetworkPublishingComponent(const std::string& name = "rules");
+            ViewerNetworkPublishingComponent(const std::string& name = dtGame::DefaultNetworkPublishingComponent::DEFAULT_NAME);
          protected:
 
             /**
@@ -67,7 +67,7 @@ namespace SimCore
             void SendStealthActorMessages(const dtGame::ActorUpdateMessage& msg);
 
             /**
-             * Processes an otherwise unhandled message. 
+             * Processes an otherwise unhandled message.
              * @param The message
              */
             virtual void ProcessUnhandledLocalMessage(const dtGame::Message &msg);
