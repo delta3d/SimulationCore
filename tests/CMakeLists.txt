@@ -48,10 +48,13 @@ ENDIF (BUILD_HLA)
 INCLUDE(ModuleInstall OPTIONAL)
 
 #We do want tests in bin.
-IF (WIN32)
+IF (MSVC_IDE)
   SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../../bin/")
+ENDIF ()
+
+IF (MSVC)
   SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
-ENDIF (WIN32)
+ENDIF ()
 
 #This will automatically run the unit test executable upon successfull compile/link
 IF (AUTO_RUN_TESTS)
