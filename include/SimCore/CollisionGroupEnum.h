@@ -32,6 +32,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
+#include <SimCore/PhysicsTypes.h>
 
 #ifdef AGEIA_PHYSICS
 
@@ -42,7 +43,6 @@ namespace SimCore
 }
 #else
 
-#include <SimCore/PhysicsTypes.h>
 namespace SimCore
 {
    typedef  dtPhysics::CollisionGroup CollisionGroupType;
