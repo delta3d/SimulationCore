@@ -58,7 +58,7 @@ namespace SimCore
             static const std::string CMD_LINE_MAP_NAME;
 
             /// Constructor
-            BaseGameAppComponent(const std::string &name = DEFAULT_NAME);
+            BaseGameAppComponent(const std::string& name = DEFAULT_NAME);
 
             /**
              * Processes messages sent from the Game Manager

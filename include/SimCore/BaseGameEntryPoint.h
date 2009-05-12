@@ -126,7 +126,7 @@ namespace SimCore
 
          virtual void CreateEnvironment(dtGame::GameManager &gameManager);
 
-         osg::ArgumentParser *parser;
+         osg::ArgumentParser* parser;
 
          dtCore::RefPtr<dtDAL::ActorProxy> terrainActor;
 

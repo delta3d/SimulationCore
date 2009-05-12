@@ -55,7 +55,7 @@ namespace SimCore
       const std::string BaseGameAppComponent::CMD_LINE_MAP_NAME               = "MapName";
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      BaseGameAppComponent::BaseGameAppComponent(const std::string &name)
+      BaseGameAppComponent::BaseGameAppComponent(const std::string& name)
          : dtGame::GMComponent(name)
       {
          mCommandLineObject = new SimCore::CommandLineObject();
@@ -68,7 +68,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void BaseGameAppComponent::ProcessMessage(const dtGame::Message &msg)
+      void BaseGameAppComponent::ProcessMessage(const dtGame::Message& msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
          {
