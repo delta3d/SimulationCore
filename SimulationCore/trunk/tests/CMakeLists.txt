@@ -50,11 +50,11 @@ INCLUDE(ModuleInstall OPTIONAL)
 #We do want tests in bin.
 IF (MSVC_IDE)
   SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES PREFIX "../../bin/")
-ENDIF ()
+ENDIF (MSVC_IDE)
 
 IF (MSVC)
   SET_TARGET_PROPERTIES(${PROG_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
-ENDIF ()
+ENDIF (MSVC)
 
 #This will automatically run the unit test executable upon successfull compile/link
 IF (AUTO_RUN_TESTS)

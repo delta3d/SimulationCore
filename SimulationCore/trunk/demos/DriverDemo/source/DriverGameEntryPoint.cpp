@@ -175,43 +175,11 @@ namespace DriverDemo
 #else
       dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
       world->Init();
-      dtCore::RefPtr<dtPhysics:PhysicsComponent> physicsComponent
-         = new dtPhysics::PhysicsComponent(*world, false);
+      dtCore::RefPtr<dtPhysics:PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 #endif
-      // Which groups collide with each other. Typically, on the world and particles collide.
-      // DO NOT FORGET - If you want bullets to collide, make sure to update this line:
-      physicsComponent->SetGroupCollision(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
-      physicsComponent->SetGroupCollision(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
-      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
-      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_TERRAIN, false); // bullets and the world do NOT interact (this seems odd, but we handle with raycast)
-      physicsComponent->SetGroupCollision(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
-      physicsComponent->SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
 
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
-
-      // For remote characters, we want to collide with some things, but not the vehicle
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
-
-      // water interactions
-      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)
-      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_PARTICLE, true);  // particles interact with the water
-      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_TERRAIN, false);   // everything in group 0 can not hit the water
-      physicsComponent->SetGroupCollision(GROUP_WATER, GROUP_HUMAN_LOCAL, false); // characters and water do not collide
-
-      // 26 is our boat actor.
-      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
-      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
-      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
-      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
-      physicsComponent->SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
-      physicsComponent->SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
+      SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
       ////////////////////////////////////////////////////////////////////////
       // rendering support component - terrain tiling atm, dynamic lights, etc...

@@ -1,6 +1,6 @@
 /* -*-c++-*-
 * Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
+* Copyright 2007-2009, Alion Science and Technology
 *
 * This library is free software; you can redistribute it and/or modify it under
 * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Chris Rodgers
+* @author David Guthrie
 *
 * NOTE: This enumeration is for avoiding hard-coded values previously found
 * throughout the Sim Core code.
@@ -41,7 +42,7 @@ namespace SimCore
 }
 #else
 
-#include <dtPhysics/physicstypes.h>
+#include <SimCore/PhysicsTypes.h>
 namespace SimCore
 {
    typedef  dtPhysics::CollisionGroup CollisionGroupType;
@@ -67,6 +68,8 @@ namespace SimCore
          , GROUP_HUMAN_LOCAL    = 30
          , GROUP_HUMAN_REMOTE   = 31
       };
+
+      void SIMCORE_EXPORT SetupDefaultGroupCollisions(dtPhysics::PhysicsComponent& comp);
    }
 }
 
