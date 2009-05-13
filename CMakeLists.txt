@@ -6,13 +6,13 @@ ELSE(WIN32)
         IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
             MESSAGE("Warning: A critical CMake bug exists in 2.4.6 and below. Trying to build Universal Binaries will result in a compile error that seems unrelated. Either avoid building Universal Binaries by changing the CMAKE_OSX_ARCHITECTURES field to list only your architecture, or upgrade to the current CVS version of CMake or a newer stable version if it exists.")
         ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
-    ELSE(APPLE)
+    ELSE(APPLE) 
         CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0 FATAL_ERROR)
-    ENDIF(APPLE)
+    ENDIF(APPLE) 
 ENDIF(WIN32)
 
 if(COMMAND cmake_policy)
-   cmake_policy(SET CMP0003 NEW)
+   cmake_policy(SET CMP0003 NEW) 
 endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
@@ -180,6 +180,7 @@ IF (DELTA3D_FOUND)
    FIND_PACKAGE(XercesC REQUIRED)
    FIND_PACKAGE(HAWKNL REQUIRED)
    FIND_PACKAGE(GNE REQUIRED)
+   FIND_PACKAGE(Boost)
 
 
    IF (NOT WIN32 AND NOT APPLE)
@@ -224,6 +225,7 @@ INCLUDE_DIRECTORIES(
     ${XERCES_INCLUDE_DIR}
     ${Boost_INCLUDE_DIR}
     ${PYTHON_INCLUDE_PATH}  
+    ${Boost_INCLUDE_DIR}
 )
 
 IF (APPLE)
