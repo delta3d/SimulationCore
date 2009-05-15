@@ -16,10 +16,6 @@
             <name>SimCore</name>
             <version></version>
         </library>
-        <library>
-            <name>DriverDemo</name>
-            <version></version>
-        </library>
     </libraries>
     <actors>
         <actor>
@@ -198,7 +194,7 @@
             </property>
             <property>
                 <name>Incoming Coordinate Type</name>
-                <enumerated>Cartesian</enumerated>
+                <enumerated>UTM</enumerated>
             </property>
             <property>
                 <name>Local Coordinate Type</name>
