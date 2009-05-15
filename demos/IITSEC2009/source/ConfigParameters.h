@@ -34,8 +34,6 @@ namespace IITSEC2009Game
    class RES_GAME_EXPORT ConfigParameters
    {
    public:
-      static const std::string CONFIG_PHYSICS_ENGINE;
-      static const std::string CONFIG_PHYSICS_ENGINE_DEFAULT;
    private:
       ConfigParameters();
    };

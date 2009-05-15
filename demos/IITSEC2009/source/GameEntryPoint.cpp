@@ -110,10 +110,7 @@ namespace IITSEC2009Game
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameAppComp->InitializeCommandLineOptionsAndRead(parser);
 
-      std::string physicsEngine = gm.GetConfiguration().GetConfigPropertyValue(
-               ConfigParameters::CONFIG_PHYSICS_ENGINE, ConfigParameters::CONFIG_PHYSICS_ENGINE_DEFAULT);
-
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(physicsEngine);
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
       world->Init();
       dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent,
