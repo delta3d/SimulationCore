@@ -29,8 +29,6 @@
 
 namespace IITSEC2009Game
 {
-   const std::string ConfigParameters::CONFIG_PHYSICS_ENGINE("PhysicsEngine");
-   const std::string ConfigParameters::CONFIG_PHYSICS_ENGINE_DEFAULT(dtPhysics::PhysicsWorld::BULLET_ENGINE);
 
    ConfigParameters::ConfigParameters() {}
 }
