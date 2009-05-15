@@ -44,6 +44,14 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
        <Property Name="HasMapTool">true</Property>
        <Property Name="Binoculars.OverrideImage">Periscope</Property>
 
+       <Property Name="dtNetGM.On">true</Property>
+       <Property Name="dtNetGM.Role">client</Property>
+       <Property Name="dtNetGM.ServerPort">7329</Property>
+       <Property Name="dtNetGM.ServerHost">127.0.0.1</Property>
+
+       <Property Name="HasMapTool">true</Property>
+       <Property Name="Binoculars.OverrideImage">Periscope</Property>
+
        <Property Name="MunitionsComponent.MaximumActiveMunitions">200</Property>
 
       <Property Name="System.DatabasePager.PrecompileObjects">false</Property>
