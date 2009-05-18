@@ -25,7 +25,6 @@
 #include <SimCore/Actors/MunitionParticlesActor.h>
 
 #include <SimCore/Actors/VolumetricLine.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/WeaponActor.h>
@@ -387,7 +386,7 @@ namespace SimCore
             MunitionRaycastReport report(mWeapon.valid() ? mWeapon->GetOwner() : NULL);
 
             // CR: Create the bit mask once rather than every time the method is called.
-            static const int GROUPS_FLAGS =
+            static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS =
                (1 << GROUP_TERRAIN)
                | (1 << GROUP_WATER)
                | (1 << GROUP_VEHICLE_WATER)
@@ -395,7 +394,7 @@ namespace SimCore
                | (1 << GROUP_HUMAN_REMOTE);
 
             // TODO fix collision groups.
-            ray.SetCollisionGroup(GROUPS_FLAGS);
+            ray.SetCollisionGroupFilter(GROUPS_FLAGS);
 
             dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, report);
             if (report.mGotAHit)
