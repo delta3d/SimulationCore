@@ -45,85 +45,17 @@ namespace SimCore
 {
    namespace Components
    {
-      ////////////////////////////////////////////////////////////////////
-      BaseMouseListener::BaseMouseListener(dtGame::GMComponent& inputComp)
-      : mInputComp(&inputComp)
-      {
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      BaseMouseListener::~BaseMouseListener()
-      {
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleButtonPressed(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button)
-      {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleButtonPressed(mouse, button);
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleButtonReleased(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button)
-      {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleButtonReleased(mouse, button);
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleButtonClicked(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button, int clickCount)
-      {
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleMouseMoved(const dtCore::Mouse* mouse, float x, float y)
-      {
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleMouseDragged(const dtCore::Mouse* mouse, float x, float y)
-      {
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseMouseListener::HandleMouseScrolled(const dtCore::Mouse* mouse, int delta)
-      {
-         return false;
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      BaseKeyboardListener::BaseKeyboardListener(dtGame::GMComponent &inputComp) : mInputComp(&inputComp)
-      {
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      BaseKeyboardListener::~BaseKeyboardListener()
-      {
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseKeyboardListener::HandleKeyPressed(const dtCore::Keyboard* keyboard, int key)
-      {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyPressed(keyboard, key);
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      bool BaseKeyboardListener::HandleKeyReleased(const dtCore::Keyboard* keyboard, int key)
-      {
-         return static_cast<BaseInputComponent&>(*mInputComp).HandleKeyReleased(keyboard, key);
-      }
 
       const std::string BaseInputComponent::DEFAULT_NAME = "Input Component";
 
       ////////////////////////////////////////////////////////////////////
       BaseInputComponent::BaseInputComponent(const std::string& name)
-      : dtGame::GMComponent(name)
+         : dtGame::BaseInputComponent(name)
       , mEntityMagnification(1.0f)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseInputComponent.cpp");
-         mMouseListener = new BaseMouseListener(*this);
-         mKeyboardListener = new BaseKeyboardListener(*this);
+         //mMouseListener = new BaseMouseListener(*this);
+         //mKeyboardListener = new BaseKeyboardListener(*this);
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -141,18 +73,6 @@ namespace SimCore
          magMsg.SetMagnification(mEntityMagnification);
          magMsg.SetSource(*new dtGame::MachineInfo);
          GetGameManager()->SendMessage(magMsg);
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      void BaseInputComponent::SetListeners()
-      {
-         //enable the keyboard input.
-         //dtCore::DeltaWin* win = GetGameManager()->GetApplication().GetWindow();
-         //win->GetMouse()->AddMouseListener(mMouseListener.get());
-         //win->GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
-         dtABC::Application& app = GetGameManager()->GetApplication();
-         app.GetMouse()->AddMouseListener(mMouseListener.get());
-         app.GetKeyboard()->AddKeyboardListener(mKeyboardListener.get());
       }
 
       ////////////////////////////////////////////////////////////////////
@@ -290,7 +210,8 @@ namespace SimCore
 
       void BaseInputComponent::OnAddedToGM()
       {
-         SetListeners();
+         BaseClass::OnAddedToGM();
+         //SetListeners();
       }
    }
 }

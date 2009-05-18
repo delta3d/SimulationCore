@@ -11,10 +11,10 @@
 * @author David Guthrie
 */
 
-#include "GameEntryPoint.h"
-#include "InputComponent.h"
-#include "GameAppComponent.h"
-#include "ConfigParameters.h"
+#include <GameEntryPoint.h>
+#include <InputComponent.h>
+#include <GameAppComponent.h>
+#include <ConfigParameters.h>
 
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -105,7 +105,8 @@ namespace NetDemo
                dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
-      gm.AddComponent(*new InputComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+      InputComponent* inputComp = new InputComponent();
+      gm.AddComponent(*inputComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
       SetupClientServerNetworking(gm);
    }

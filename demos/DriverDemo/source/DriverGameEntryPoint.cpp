@@ -216,7 +216,7 @@ namespace DriverDemo
       }
 
       gm.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-      mInputComponent->SetListeners();
+      //mInputComponent->SetListeners();
       dtCore::Camera* camera = gm.GetApplication().GetCamera();
       mInputComponent->SetDefaultCameraPerspective(
          camera->GetHorizontalFov(), camera->GetVerticalFov(),
