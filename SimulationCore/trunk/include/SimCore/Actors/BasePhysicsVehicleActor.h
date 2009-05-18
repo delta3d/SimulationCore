@@ -101,8 +101,8 @@ namespace SimCore
                const dtPhysics::PhysicsObject& whatWeHit){}
 #else
             /// dtPhysics post physics callback.
-            void PrePhysicsUpdate();
-            void PostPhysicsUpdate();
+            virtual void PrePhysicsUpdate();
+            virtual void PostPhysicsUpdate();
 
 #endif
 

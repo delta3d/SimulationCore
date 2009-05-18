@@ -26,13 +26,14 @@
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
 #include <dtPhysics/physicshelper.h>
+#include <SimCore/Components/BaseInputComponent.h>
 
 namespace NetDemo
 {
-   class NETDEMO_EXPORT InputComponent : public dtGame::BaseInputComponent
+   class NETDEMO_EXPORT InputComponent : public SimCore::Components::BaseInputComponent
    {
       public:
-         typedef dtGame::BaseInputComponent BaseClass;
+         typedef SimCore::Components::BaseInputComponent BaseClass;
 
          /// Constructor
          InputComponent(const std::string& name = dtGame::BaseInputComponent::DEFAULT_NAME);

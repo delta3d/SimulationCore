@@ -23,14 +23,16 @@
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/bodywrapper.h>
 
+#include <SimCore/BaseGameEntryPoint.h>
+
 #include <osg/io_utils>
 #include <iostream>
 
 namespace NetDemo
 {
    //////////////////////////////////////////////////////////////
-   InputComponent::InputComponent(const std::string& name):
-      BaseInputComponent(name)
+   InputComponent::InputComponent(const std::string& name)
+      : SimCore::Components::BaseInputComponent(name)
    {
 
    }
@@ -122,6 +124,32 @@ namespace NetDemo
             DoRayCast();
             break;
          }
+
+         case osgGA::GUIEventAdapter::KEY_Insert:
+            {
+               std::string developerMode;
+               developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue
+                  (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+               if (developerMode == "true" || developerMode == "1")
+               {
+                  GetGameManager()->GetApplication().SetNextStatisticsType();
+               }
+            }
+            break;
+
+         case 'o':
+            {
+               // Go forward 5 mins in time
+               IncrementTime(+5);
+            }
+            break;
+
+         case 'i':
+            {
+               // go back 5 mins in time
+               IncrementTime(-5);
+            }
+            break;
          default:
             keyUsed = false;
       }
