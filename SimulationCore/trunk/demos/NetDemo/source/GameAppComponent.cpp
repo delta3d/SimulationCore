@@ -11,15 +11,20 @@
 * @author David Guthrie, Curtiss Murphy
 */
 
-#include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/PlayerActor.h>
 #include <dtCore/camera.h>
 #include <dtCore/transform.h>
 #include <dtABC/application.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
+#include <dtGame/gameactor.h>
+#include <dtGame/gamemanager.h>
 //#include <dtActors/playerstartactorproxy.h>
 #include <dtActors/engineactorregistry.h>
+
+#include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/PlayerActor.h>
+#include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 
 #include <GameAppComponent.h>
 #include <ActorRegistry.h>
@@ -43,14 +48,25 @@ namespace NetDemo
    {
       BaseClass::ProcessMessage(msg);
 
+      // CHRIS - add check for LOADING state HERE.
+      if (true /*loading???*/) 
+      {
+         HandleLoadingState();
+      }
+
       if (dtGame::MessageType::INFO_MAP_LOADED == msg.GetMessageType())
       {
          InitializePlayer();
+
+         FindThePhysicsLandActor(); 
+
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
          HandleActorUpdateMessage(msg);
       }
+
+      // Something about Game State changing here
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -68,9 +84,10 @@ namespace NetDemo
       mPlayerStatus->AddChild(GetGameManager()->GetApplication().GetCamera());
       mPlayerStatus->SetName("Player (Unknown)");
 
-      // Hack stuff - move this to UI.
+      // Hack stuff - move this to UI - user selected and all that.
       mPlayerStatus->SetIsServer(true);
-      mPlayerStatus->SetTerrainPreference("Terrains:Level_DriverDemo.ive");
+      mPlayerStatus->SetTerrainPreference("Terrain1");
+      //mPlayerStatus->SetTerrainPreference("Terrains:Level_DriverDemo.ive");
       mPlayerStatus->SetTeamNumber(1);
       mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
  
@@ -93,6 +110,30 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::FindThePhysicsLandActor()
+   {
+      // Find the physics terrain actor
+      SimCore::Actors::NxAgeiaTerraPageLandActorProxy* physicsLandActorProxy = NULL;
+      GetGameManager()->FindActorByName("PhysicsLandActor", physicsLandActorProxy);
+      if (physicsLandActorProxy == NULL)
+      {
+         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+            "CRITICAL ERROR! Cannot find the physics land actor named [PhysicsLandActor]. Likely error - you are not loading the correct prototype maps in your config.xml. Compare to the config_example.xml.");
+         return;
+      }
+
+      mGlobalTerrainPhysicsActor = dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor *>
+         (&physicsLandActorProxy->GetGameActor());
+      if (mGlobalTerrainPhysicsActor == NULL)
+      {
+         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+            "CRITICAL ERROR! Actor of name [PhysicsLandActor] was not the correct actor type. Make sure you are loading all the correct prototype maps in your config.xml. Compare to the config_example.xml.");
+         return;
+      }
+
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void GameAppComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
    {
       const dtGame::ActorUpdateMessage &updateMessage =
@@ -110,22 +151,115 @@ namespace NetDemo
          // If the actor belongs to the server, then we have work to do.
          if (statusActor->GetIsServer())
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-               "Got a player status update message from the server. Time to sync up.");
-
-            if (statusActor->GetTerrainPreference() != mCurrentTerrainLoaded)
+            if (statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
             {
-               mCurrentTerrainLoaded = statusActor->GetTerrainPreference();
                mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-                  "Need to load terrain [%s].", statusActor->GetTerrainPreference().c_str());
+                  "Changing terrain to [%s]. Switching to LOADING state.", statusActor->GetTerrainPreference().c_str());
 
+               // Switch to LOADING STATE - Update will be published as soon as actor is ticked, 
+               // which will happen later this tick (actors are after components).
+               mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
+
+               // Set the terrain to start loading once we switch to loading state.
+               mTerrainToLoad = statusActor->GetTerrainPreference();
+
+               // CHRIS - Change state to LOADING here 
             }
-
          }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::HandleLoadingState()
+   {
+      if (mCurrentTerrainPrototypeName != mTerrainToLoad && mTerrainToLoad != "") 
+      {
+         UnloadPreviousTerrain();
+         mCurrentTerrainPrototypeName = mTerrainToLoad;
+         mTerrainToLoad = "";
+         LoadNewTerrain();
+
+         mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
+
+         // CHRIS - CHANGE STATE to IN_GAME HERE
+
+
+         // Hack stuff - add a vehicle here. For testing purposes.  
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::UnloadPreviousTerrain()
+   {
+      if (mCurrentTerrainDrawActor.valid())
+      {
+         // Delete the visible terrain
+         GetGameManager()->DeleteActor(mCurrentTerrainDrawActor->GetGameActorProxy());
+         mCurrentTerrainDrawActor = NULL;
+         mCurrentTerrainPrototypeName = "";
+
+         // Now clean up the physics terrain
+         GetGlobalTerrainPhysicsActor()->ClearAllTerrainPhysics();
+
+         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain."); 
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::LoadNewTerrain()
+   {
+
+      // NOTE - there are TWO steps. 1) load the DRAWN Terrain. 2) sync the PHYSICS terrain
+
+
+      // Find the prototype for the DRAWN terrain. 
+      SimCore::Actors::TerrainActorProxy* drawLandPrototypeProxy = NULL;
+      GetGameManager()->FindPrototypeByName(mCurrentTerrainPrototypeName, drawLandPrototypeProxy);
+      if (drawLandPrototypeProxy == NULL)
+      {
+         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+            "Cannot load the drawLandPrototype [%s] from the GM. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.", 
+            mCurrentTerrainPrototypeName);
+         mCurrentTerrainPrototypeName = "";
+         return;
       }
 
 
+      // Create a new instance of the DRAWN Terrain.
+      dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
+      GetGameManager()->CreateActorFromPrototype(drawLandPrototypeProxy->GetId(), newDrawLandActorProxy);
+      if (!newDrawLandActorProxy.valid())
+      {
+         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+            "Cannot create a newDrawLandActor for prototype [%s] from the GM. CRITICAL ERROR!", 
+            mCurrentTerrainPrototypeName);
+         mCurrentTerrainPrototypeName = "";
+         return;
+      }
+
+
+      // Add to the GM
+      GetGameManager()->AddActor(*newDrawLandActorProxy, false, false);
+      mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
+         (&newDrawLandActorProxy->GetGameActor());
+
+      // ... wait ... ???
+
+      // Tell the physics actor to load physics for the visible DRAWN terrain
+      GetGlobalTerrainPhysicsActor()->BuildTerrainAsStaticMesh(mCurrentTerrainDrawActor->GetOSGNode(), 
+         mCurrentTerrainPrototypeName, false);
 
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   SimCore::Actors::NxAgeiaTerraPageLandActor *GameAppComponent::GetGlobalTerrainPhysicsActor()
+   {
+      return dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor *>(mGlobalTerrainPhysicsActor.get());
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   SimCore::Actors::TerrainActor *GameAppComponent::GetCurrentTerrainDrawActor()
+   {
+      return dynamic_cast<SimCore::Actors::TerrainActor *>(mCurrentTerrainDrawActor.get());
+   }
 }

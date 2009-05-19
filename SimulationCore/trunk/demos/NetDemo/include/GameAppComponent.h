@@ -29,6 +29,17 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
 
+
+namespace SimCore
+{
+   namespace Actors
+   {
+      class NxAgeiaTerraPageLandActor;
+      class TerrainActor;
+   }
+}
+
+
 namespace NetDemo
 {
    class PlayerStatusActor;
@@ -52,17 +63,38 @@ namespace NetDemo
 
          void InitializePlayer();
 
-         //SimCore::Actors::BasePhysicsVehicleActor* CreateNewVehicle();
+         // Returns the PHYSICS land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
+         SimCore::Actors::NxAgeiaTerraPageLandActor *GetGlobalTerrainPhysicsActor();
+
+         // Returns the DRAW land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
+         SimCore::Actors::TerrainActor *GetCurrentTerrainDrawActor();
 
       protected: 
          void HandleActorUpdateMessage(const dtGame::Message& msg);
+
+         void FindThePhysicsLandActor();
+         void LoadNewTerrain();
+         void UnloadPreviousTerrain();
+         void HandleLoadingState();
 
          dtUtil::Log* mLogger;
 
       private:
          //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
+         // Each client & server has one player status that they are publishing.
          dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
-         std::string mCurrentTerrainLoaded;
+
+         // This holds the terrain prototype we want to load once we enter LOADING state. 
+         std::string mTerrainToLoad;
+
+         // This is our current terrain prototype name.
+         std::string mCurrentTerrainPrototypeName;
+
+         // The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics. 
+         dtCore::RefPtr<dtGame::GameActor> mCurrentTerrainDrawActor;
+
+         // The one and only physics actor. This one persists regardless of how many times we change terrains.
+         dtCore::RefPtr<dtGame::GameActor> mGlobalTerrainPhysicsActor;
    };
 
 }
