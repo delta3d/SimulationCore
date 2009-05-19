@@ -48,7 +48,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="Binoculars.OverrideImage">Periscope</Property>
 
       <Property Name="dtNetGM.On">true</Property>
-      <Property Name="dtNetGM.Role">client</Property>
+      <Property Name="dtNetGM.Role">Server</Property>
       <Property Name="dtNetGM.ServerPort">7329</Property>
       <Property Name="dtNetGM.ServerHost">127.0.0.1</Property>
 

@@ -81,16 +81,17 @@ namespace NetDemo
    void HoverVehiclePhysicsHelper::UpdateVehicle(float deltaTime,
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
    {
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
+
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
       //float weight = GetVehicleBaseWeight();
-      float weight = GetMass();
+      float weight = physicsObject->GetMass();
 
       // First thing we do is try to make sure we are hovering...
       //dtPhysics::PhysicsObject* physicsObject = GetPhysicsObject();  // Tick Local protects us from NULL.
       //NxVec3 velocity = physicsObject->getLinearVelocity();
       //NxVec3 pos = physicsObject->getGlobalPosition();
       //NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
       osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
       osg::Vec3 pos = physicsObject->GetTranslation();
       osg::Vec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
@@ -136,14 +137,14 @@ namespace NetDemo
       {
          //NxVec3 dir(lookDir[0], lookDir[1], lookDir[2]);
          //physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier * deltaTime)); 
+         //physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier /** deltaTime*/)); 
       }
       // REVERSE
       else if(accelReverse)
       {
          //NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier * deltaTime)); 
+         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier /** deltaTime*/)); 
       }
 
       // LEFT
@@ -151,14 +152,14 @@ namespace NetDemo
       {
          //NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier * deltaTime)); 
+         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier /** deltaTime*/)); 
       }
       // RIGHT
       else if(accelRight)
       {
          //NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier * deltaTime)); 
+         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier /** deltaTime*/)); 
       }
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
@@ -183,7 +184,7 @@ namespace NetDemo
 
          // Slow us down! Wind or coast effect
          //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance * deltaTime)); 
+         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance /** deltaTime*/)); 
       }
 
    }
@@ -196,9 +197,10 @@ namespace NetDemo
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z(); // gravity
       osg::Vec3 terrainHitLocation;
 
-      //distanceToHit = GetClosestIntersectionUsingDirection(location,
-      distanceToHit = FindClosestIntersectionUsingDirection(location,
-         direction, terrainHitLocation, GROUPS_FLAGS);
+      // CURT - Hacked out because dtPhysics is crashing in the ray trace
+      distanceToHit = 0.0;
+      //distanceToHit = FindClosestIntersectionUsingDirection(location,
+      //   direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
       {

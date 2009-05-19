@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 *
-* @author David Guthrie
+* @author David Guthrie, Curtiss Murphy
 */
 #ifndef RES_GAMEAPPCOMPONENT_H_
 #define RES_GAMEAPPCOMPONENT_H_
@@ -69,6 +69,10 @@ namespace NetDemo
          // Returns the DRAW land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
          SimCore::Actors::TerrainActor *GetCurrentTerrainDrawActor();
 
+         // IsServer can only be set at startup, probably from the GameEntryPoint()
+         void SetIsServer(bool newValue) { if (!mPlayerStatus.valid()) mIsServer = newValue; }
+         bool GetIsServer() { return mIsServer; }
+
       protected: 
          void HandleActorUpdateMessage(const dtGame::Message& msg);
 
@@ -80,6 +84,8 @@ namespace NetDemo
          dtUtil::Log* mLogger;
 
       private:
+         bool mIsServer;
+
          //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
          // Each client & server has one player status that they are publishing.
          dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;

@@ -113,15 +113,19 @@ namespace SimCore
             GetPhysicsHelper()->TurnObjectsGravityOff("Default");
          }
 #else
-         if(IsRemote())
+         if(IsRemote()) // Remote
          {
-            GetPhysicsHelper()->SetPostPhysicsCallback(
-                     dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PostPhysicsUpdate));
             GetPhysicsHelper()->SetPrePhysicsCallback(
                      dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
          }
          else // Local
          {
+            // Post on local. Pre on both.
+            GetPhysicsHelper()->SetPostPhysicsCallback(
+               dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PostPhysicsUpdate));
+            GetPhysicsHelper()->SetPrePhysicsCallback(
+               dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
+
             // Disable gravity until the map has loaded terrain under our feet...
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
             //GetPhysicsHelper()->TurnObjectsGravityOff("Default");

@@ -58,6 +58,7 @@ namespace NetDemo
       private:
          char **mArgv;
          int mArgc;
+         bool mIsServer;
    };
 }
 

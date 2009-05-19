@@ -45,7 +45,8 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   GameEntryPoint::GameEntryPoint()
+   GameEntryPoint::GameEntryPoint() 
+      : mIsServer(true)
    {
 
    }
@@ -109,6 +110,9 @@ namespace NetDemo
       gm.AddComponent(*inputComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
       SetupClientServerNetworking(gm);
+
+      // true if server or NO networking involved
+      gameAppComp->SetIsServer(mIsServer);
    }
 
    ///////////////////////////////////////////////////////////
@@ -121,6 +125,7 @@ namespace NetDemo
          int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
          if (role == "Server" || role == "server" || role == "SERVER")
          {
+            mIsServer = true;
             dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
                new dtNetGM::ServerNetworkComponent("DriverDemo", 1);
             gm.AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -128,6 +133,7 @@ namespace NetDemo
          }
          else if (role == "Client" || role == "client" || role == "CLIENT")
          {
+            mIsServer = false;
             dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
                new dtNetGM::ClientNetworkComponent("ResGame", 1);
             gm.AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
