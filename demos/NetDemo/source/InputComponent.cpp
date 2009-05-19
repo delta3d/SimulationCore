@@ -25,6 +25,10 @@
 
 #include <SimCore/BaseGameEntryPoint.h>
 
+// TEMP STUFF FOR VEHICLE
+#include <HoverVehicleActor.h>
+#include <HoverVehiclePhysicsHelper.h>
+
 #include <osg/io_utils>
 #include <iostream>
 
@@ -124,6 +128,32 @@ namespace NetDemo
             DoRayCast();
             break;
          }
+
+         case '5':
+            {
+               /////////////////////////////////////////////////////////
+               LOG_ALWAYS("Attempting to create vehicle!!! ");
+               // Hack stuff - add a vehicle here. For testing purposes.  
+               HoverVehicleActorProxy* prototypeProxy = NULL;
+               GetGameManager()->FindPrototypeByName("Hover Vehicle", prototypeProxy);
+               if (prototypeProxy == NULL)
+               {
+                  LOG_ERROR("Critical Error - can't find vehicle prototype [Hover Vehicle]. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.");
+                  return true;
+               }
+               dtCore::RefPtr<HoverVehicleActorProxy> testVehicleProxy = NULL;
+               GetGameManager()->CreateActorFromPrototype(prototypeProxy->GetId(), testVehicleProxy);
+               if(testVehicleProxy != NULL)
+               {
+                  HoverVehicleActor *vehicleActor = dynamic_cast<HoverVehicleActor*>(&testVehicleProxy->GetGameActor());
+                  vehicleActor->SetHasDriver(true);
+                  if (vehicleActor != NULL)
+                  {
+                     GetGameManager()->AddActor(*testVehicleProxy.get(), false, true);
+                  }
+               }
+
+            }
 
          case osgGA::GUIEventAdapter::KEY_Insert:
             {

@@ -191,7 +191,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string></string>
+                <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -277,7 +277,7 @@
             </property>
             <property>
                 <name>Flying</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -293,11 +293,11 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
-                <enumerated>NEUTRAL</enumerated>
+                <enumerated>FRIENDLY</enumerated>
             </property>
             <property>
                 <name>Ground Offset</name>
@@ -309,7 +309,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string></string>
+                <string>DriverVehicle</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -354,20 +354,20 @@
             <property>
                 <name>Non-damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
             </property>
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:HoverTank.ive</resourceDisplayName>
+                <resource>StaticMeshes:HoverTank.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -387,11 +387,11 @@
             </property>
             <property>
                 <name>VehiclesSeatConfigActorNameTable</name>
-                <string></string>
+                <string>Vehicle_Driver_Config</string>
             </property>
             <property>
                 <name>EntityType</name>
-                <string></string>
+                <string>DriverDemoSim</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>

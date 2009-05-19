@@ -32,13 +32,15 @@
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
+#include <HoverVehicleActor.h>
 
 
 namespace NetDemo
 {
    //////////////////////////////////////////////////////////////////////////
    GameAppComponent::GameAppComponent(const std::string& name)
-   : BaseClass(name)
+      : BaseClass(name)
+      , mIsServer(false)
    {
       mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
    }
@@ -85,7 +87,7 @@ namespace NetDemo
       mPlayerStatus->SetName("Player (Unknown)");
 
       // Hack stuff - move this to UI - user selected and all that.
-      mPlayerStatus->SetIsServer(true);
+      mPlayerStatus->SetIsServer(mIsServer);
       mPlayerStatus->SetTerrainPreference("Terrain1");
       //mPlayerStatus->SetTerrainPreference("Terrains:Level_DriverDemo.ive");
       mPlayerStatus->SetTeamNumber(1);
@@ -184,7 +186,30 @@ namespace NetDemo
          // CHRIS - CHANGE STATE to IN_GAME HERE
 
 
+
+
+         /////////////////////////////////////////////////////////
          // Hack stuff - add a vehicle here. For testing purposes.  
+/*         HoverVehicleActorProxy* prototypeProxy = NULL;
+         GetGameManager()->FindPrototypeByName("Hover Vehicle", prototypeProxy);
+         if (prototypeProxy == NULL)
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, 
+               "Critical Error - can't find vehicle prototype [Hover Vehicle]. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.");
+            return;
+         }
+         dtCore::RefPtr<HoverVehicleActorProxy> testVehicleProxy = NULL;
+         GetGameManager()->CreateActorFromPrototype(prototypeProxy->GetId(), testVehicleProxy);
+         if(testVehicleProxy != NULL)
+         {
+            //HoverVehicleActor *vehicleActor = dynamic_cast<HoverVehicleActor*>(testVehicleProxy->GetGameActor());
+            //if (vehicleActor != NULL)
+            //{
+               GetGameManager()->AddActor(*testVehicleProxy.get(), false, true);
+
+            //}
+         }
+         */
       }
    }
 
