@@ -75,7 +75,7 @@
                 <boolean>false</boolean>
             </property>
         </actor>
-        <actor>
+	<!--        <actor>
             <type>DVTETerrain.Terrain</type>
             <id>4384693A-E20D-4287-909F-1F99E04A65D0</id>
             <name>Terrain</name>
@@ -154,12 +154,11 @@
             <property>
                 <name>TerrainMesh</name>
                 <resourceType>Terrains</resourceType>
-		<!--<resourceDisplayName>Terrains:29palms_alpha_3.5:archive.txp</resourceDisplayName>
-		<resource>Terrains:29palms_alpha_3.5:archive.txp</resource>-->
 		<resourceDisplayName>Terrains:Level_DriverDemo.ive</resourceDisplayName>
 		<resource>Terrains:Level_DriverDemo.ive</resource>
             </property>
-        </actor>
+    </actor>
+    -->
         <actor>
             <type>dtutil.Coordinate Config</type>
             <id>afdf8628-7048-4b81-9aff-b11cd94cdd84</id>
