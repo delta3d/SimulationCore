@@ -15,6 +15,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 #include <HoverVehicleActor.h>
+#include <PlayerStatusActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -27,6 +28,10 @@ namespace NetDemo
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("HoverActor", "NetDemo", "A floaty drivable vehicle for Driver Demo", 
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE(
+      new dtDAL::ActorType("PlayerStatusActor", "NetDemo", "Status of each real player such as game state, team, and vehicle for NetDemo",
+      SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE.get()));
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -50,5 +55,6 @@ namespace NetDemo
    void NetDemoActorRegistry::RegisterActorTypes()
    {
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
    }
 }

@@ -27,6 +27,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="AdditionalMap1">DriverPrototypes</Property> 
       <Property Name="AdditionalMap2">DriverMaterials</Property> 
       <Property Name="AdditionalMap3">DriverActors</Property> 
+      <Property Name="AdditionalMap4">SharedDemoPrototypes</Property> 
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <Property Name="DeveloperMode">true</Property>
       <Property Name="GameManager.Statistics.Interval">0</Property>

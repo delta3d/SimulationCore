@@ -153,7 +153,11 @@ namespace NetDemo
          default:
             keyUsed = false;
       }
-      return keyUsed;
+
+      if(!keyUsed)
+         return BaseClass::HandleKeyPressed(keyboard, key);
+      else 
+         return keyUsed;
    }
 
    void InputComponent::DoRayCast()
