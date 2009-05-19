@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
+    <header>
+        <name>NetDemoPrototypes</name>
+        <description>Has prototype actors that are Unique to NetDemo. Used in conjunction with SharedDemoPrototypes.</description>
+        <author>Curtiss Murphy</author>
+        <comment>Place for prototype actors</comment>
+        <copyright>2009</copyright>
+        <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
+        <lastUpdateTimestamp>2009-05-19T10:56:46.0-05:00</lastUpdateTimestamp>
+        <editorVersion>1.3.0</editorVersion>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+    <libraries>
+        <library>
+            <name>SimCore</name>
+            <version></version>
+        </library>
+        <library>
+            <name>NetDemo</name>
+            <version></version>
+        </library>
+    </libraries>
+    <actors>
+
+    </actors>
+</map>

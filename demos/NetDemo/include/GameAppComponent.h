@@ -27,12 +27,24 @@
 
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
+#include <dtUtil/log.h>
 
 namespace NetDemo
 {
+   class PlayerStatusActor;
+
+
+   //////////////////////////////////////////////////////////////////////////////
+   /* 
+    * This component is responsible for some of the core game logic such as changing game
+    * states and responding to major messages from the server. It also listens for server
+    * players and manages/creates the PlayerStatusActor.
+    */
    class GameAppComponent : public SimCore::Components::BaseGameAppComponent
    {
       public:
+         typedef SimCore::Components::BaseGameAppComponent BaseClass;
+
          /// Constructor
          GameAppComponent(const std::string& name = BaseGameAppComponent::DEFAULT_NAME);
 
@@ -41,8 +53,16 @@ namespace NetDemo
          void InitializePlayer();
 
          //SimCore::Actors::BasePhysicsVehicleActor* CreateNewVehicle();
+
+      protected: 
+         void HandleActorUpdateMessage(const dtGame::Message& msg);
+
+         dtUtil::Log* mLogger;
+
       private:
-         dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
+         //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
+         dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
+         std::string mCurrentTerrainLoaded;
    };
 
 }
