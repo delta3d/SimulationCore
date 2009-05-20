@@ -17,6 +17,7 @@
 #include <ConfigParameters.h>
 
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
@@ -95,10 +96,14 @@ namespace NetDemo
       // to connect to the federation.
       BaseClass::InitializeComponents(gm);
 
+      // Our GameAppComponent does a lot of the game based logic such as state management, 
+      // creating the vehicle, and changing terrains when the server tells us to.
       dtCore::RefPtr<GameAppComponent> gameAppComp = new GameAppComponent();
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
       gameAppComp->InitializeCommandLineOptionsAndRead(parser);
 
+
+      // Physics - we definitely need some of this!
       dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
       world->Init();
       dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
@@ -106,12 +111,24 @@ namespace NetDemo
                dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
+      // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff. 
+      // We disable the physics cull visitor (which is for large tiled terrains like Terrex) 
+      // and also disable the static terrain physics (because we solve this manually everytime 
+      // the server app changes terrains - see the GameAppComponent)
+      dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
+         = new SimCore::Components::RenderingSupportComponent();
+      renderingSupportComponent->SetEnableCullVisitor(false);
+      renderingSupportComponent->SetMaxSpotLights(1);
+      renderingSupportComponent->SetEnableStaticTerrainPhysics(false);
+      gm.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      // Keyboard, mouse input, etc...
       InputComponent* inputComp = new InputComponent();
       gm.AddComponent(*inputComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      // Networking 
       SetupClientServerNetworking(gm);
-
-      // true if server or NO networking involved
+      // true if we are the server or if NO networking is involved
       gameAppComp->SetIsServer(mIsServer);
    }
 

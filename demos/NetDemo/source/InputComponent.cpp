@@ -10,21 +10,23 @@
 *
  David Guthrie
 */
-#include <InputComponent.h>
-#include <dtGame/messagetype.h>
-#include <dtABC/application.h>
 #include <osgGA/GUIEventAdapter>
 
+#include <dtGame/messagetype.h>
+#include <dtABC/application.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/playerstartactorproxy.h>
 #include <dtActors/gamemeshactor.h>
-
 #include <dtPhysics/physicsmaterialactor.h>
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/bodywrapper.h>
+#include <dtCore/shadermanager.h>
+#include <dtCore/shaderprogram.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
+#include <SimCore/Utilities.h>
 
+#include <InputComponent.h>
 // TEMP STUFF FOR VEHICLE
 #include <HoverVehicleActor.h>
 #include <HoverVehiclePhysicsHelper.h>
@@ -118,7 +120,7 @@ namespace NetDemo
       {
          case '\n':
          case '\r':
-         case 'p':
+         case 'u':
          {
             FireSomething();
             break;
@@ -126,6 +128,17 @@ namespace NetDemo
          case 'r':
          {
             DoRayCast();
+            break;
+         }
+
+         case 'p':
+         {
+            if (SimCore::Utils::IsDevModeOn(*GetGameManager())) 
+            {
+               dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
+               //ToggleEntityShaders();
+               LOG_ALWAYS("Reloading All Shaders...");
+            }
             break;
          }
 
@@ -153,6 +166,7 @@ namespace NetDemo
                   }
                }
 
+               break;
             }
 
          case osgGA::GUIEventAdapter::KEY_Insert:
