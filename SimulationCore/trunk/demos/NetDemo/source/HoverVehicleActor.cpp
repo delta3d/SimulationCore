@@ -109,15 +109,15 @@ namespace NetDemo
          SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
          if(rsComp)
          {
-            rsComp->SetMaxSpotLights(1);
             //Add a spot light
             SimCore::Components::RenderingSupportComponent::SpotLight* sl = new SimCore::Components::RenderingSupportComponent::SpotLight();
             sl->mIntensity = 1.0f;
             sl->mColor.set(1.0f, 1.0f, 1.0f);
-            sl->mAttenuation.set(0.00002, 0.00002, 0.00005);
+            //sl->mAttenuation.set(0.02, 0.004, 0.00008);
+            sl->mAttenuation.set(0.001, 0.004, 0.0002);
             sl->mDirection.set(0.0f, 1.0f, 0.0f);
-            sl->mSpotExponent = 20.0f;
-            sl->mSpotCosCutoff = 0.75f;
+            sl->mSpotExponent = 6.0f;
+            sl->mSpotCosCutoff = 0.6f;
             sl->mTarget = this;
             sl->mAutoDeleteLightOnTargetNull = true;
             sl->mUseAbsoluteDirection = false;
