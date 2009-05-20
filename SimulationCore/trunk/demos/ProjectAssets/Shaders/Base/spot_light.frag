@@ -28,26 +28,28 @@ void spot_light_fragment(vec3 normal, vec3 pos, out vec3 totalLightContrib)
       lightDir /= dist;
       
       float spotEffect = dot(spotDirection, -lightDir);
-		
       bool spotToggle = spotEffect > spotCosCutoff;
-      spotEffect = abs(pow(spotEffect, spotExponent));//just in case we want a negative cutoff we will do an abs here
+      float absIntensity = max(0.0, spotLights[i].w); //the intensity can be negative to support shadows on terrain
+                                                      //but we have to clamp it here to keep from messing everything else up
+
+      spotEffect = max(0.0, (pow(spotEffect, spotExponent)));//just in case we want a negative cutoff we will do an abs here
 
       //this computes the attenuation which keeps the positional lights lighting within range of the light
-      float atten = spotEffect / ( spotLights[i + 2].x + (spotLights[i + 2].y * dist) + (spotLights[i + 2].z * dist2));      
-      float normalDotLight = max(0.0, dot(normal, lightDir));
+      float attenDenom = spotLights[i + 2].x + (spotLights[i + 2].y * dist) + (spotLights[i + 2].z * dist2);
+      float atten = min(1.0, spotEffect / attenDenom);
+      float normalDotLight = max(0.0, dot(normal, -spotDirection));//lightDir));
 
-
-      //we use 75% of the dot product lighting contribution and then add 25% of the ambient contribution
+      //we use 65% of the dot product lighting contribution and then add 35% of the ambient contribution
       //which is basically taken as just the light color
-      vec3 dotProductLightingAndAmbient = (0.75 * normalDotLight) + (0.25 * spotLights[i+1].xyz);
+      vec3 dotProductLightingAndAmbient = spotLights[i+1].xyz * (0.65 * normalDotLight + 0.35);
          
       //we attenuate the resulting contribution of the dot product and ambient lighting,
       //multiply it by the intensity and then accumulate it into the resulting color
-      float absIntensity = max(0.0, spotLights[i].w); //the intensity can be negative to support shadows on terrain
-                                                         //but we have to clamp it here to keep from messing everything else up
-      if(spotToggle)
+
+      // we don't add anything sometimes
+      if (spotToggle && absIntensity > 0.0)
       {
-         totalLightContrib += absIntensity * min(1.0, atten) * dotProductLightingAndAmbient; 
+         totalLightContrib += absIntensity * atten * dotProductLightingAndAmbient; 
       }
    } 
    
