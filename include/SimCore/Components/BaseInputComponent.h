@@ -69,7 +69,7 @@ namespace SimCore
             /**
              * Sets the mouse listener and keyboard listener on this input component
              */
-            void SetListeners();
+            //void SetListeners();
 
             const dtUtil::Coordinates& GetCoordinateConverter() const { return mCoordinateConverter; }
             void SetCoordinateConverter(const dtUtil::Coordinates& converter) { mCoordinateConverter = converter; }
