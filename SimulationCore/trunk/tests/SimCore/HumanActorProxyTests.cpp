@@ -58,7 +58,7 @@
 #include <dtABC/application.h>
 
 #ifdef DELTA_WIN32
-   #include <Windows.h>
+   #include <dtUtil/mswin.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
 #else
    #include <unistd.h>
