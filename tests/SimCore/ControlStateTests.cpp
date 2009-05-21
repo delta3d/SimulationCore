@@ -43,7 +43,7 @@
 
 
 #ifdef DELTA_WIN32
-#include <Windows.h>
+#include <dtUtil/mswin.h>
 #define SLEEP(milliseconds) Sleep((milliseconds))
 const std::string projectContext = "ProjectAssets";
 #else

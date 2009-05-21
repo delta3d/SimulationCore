@@ -47,7 +47,7 @@
 #include <UnitTestMain.h>
 
 #if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   #include <Windows.h>
+   #include <dtUtil/mswin.h>
    #define SLEEP(milliseconds) Sleep((milliseconds))
 #else
    #include <unistd.h>
