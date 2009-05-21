@@ -29,6 +29,8 @@
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
+#include <dtCore/globals.h>
+#include <dtCore/transform.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Node>
@@ -57,6 +59,12 @@ namespace SimCore
             "TerrainMesh", "TerrainMesh", 
             dtDAL::MakeFunctor(ta, &TerrainActor::LoadFile), 
             "Loads in a terrain mesh for this object", "Terrain"));
+
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH, 
+            "PhysicsModel", "PhysicsModel", 
+            dtDAL::MakeFunctor(ta, &TerrainActor::SetPhysicsModelFile), 
+            "Loads the model file for the level", "Terrain"));
+
       }
 
       dtDAL::ActorProxyIcon* TerrainActorProxy::GetBillBoardIcon()
@@ -69,13 +77,52 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////
       TerrainActor::TerrainActor(dtGame::GameActorProxy &proxy) : IGActor(proxy), mNeedToLoad(false)
+#ifdef AGEIA_PHYSICS
+         , mHelper(new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy))
+         , mCollisionActor(NULL)
+#endif
       {
+#ifdef AGEIA_PHYSICS
+         mHelper->SetBaseInterfaceClass(this);
+#endif
       }
 
       TerrainActor::~TerrainActor()
       {
 
       }
+
+      void TerrainActor::OnEnteredWorld()
+      {
+         dtGame::GameActor::OnEnteredWorld();
+
+         dtCore::Transform xform;
+         GetTransform(xform);
+         osg::Vec3 pos; 
+         xform.GetTranslation(pos);
+
+#ifdef AGEIA_PHYSICS
+         NxVec3 vec(0, 0, 0);
+
+         mCollisionResourceString = dtCore::FindFileInPathList( mCollisionResourceString.c_str() );
+         mHelper->SetCollisionMeshFromFile(mCollisionResourceString, vec);
+
+         mHelper->SetAgeiaUserData(mHelper.get());
+
+         mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+
+         dtAgeiaPhysX::NxAgeiaWorldComponent *comp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME,
+            comp);
+
+         if (comp != NULL)
+            comp->RegisterAgeiaHelper(*mHelper);
+         else
+            LOG_ERROR("No PhysX World Component exists in the Game Manager.");
+#endif
+
+      }
+
       
       void TerrainActor::AddedToScene(dtCore::Scene* scene)
       {
@@ -89,6 +136,19 @@ namespace SimCore
             mNeedToLoad = false;
          }
       }
+
+      /////////////////////////////////////////////////////////////////////////////
+      void TerrainActor::SetPhysicsModelFile(const std::string& filename)
+      {
+         mCollisionResourceString = filename;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      const std::string& TerrainActor::GetPhysicsModelFile() const
+      {
+         return mCollisionResourceString;
+      }
+
 
       void TerrainActor::LoadFile(const std::string &fileName)
       {
