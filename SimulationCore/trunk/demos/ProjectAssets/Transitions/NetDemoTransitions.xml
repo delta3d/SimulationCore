@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<TransitionList>
+   
+   <!-- INTRO -->
+   <Transition>
+      <Event Type="TRANSITION_FORWARD"/>
+      <FromState Type="STATE_INTRO"/>
+      <ToState Type="STATE_LOADING"/>
+   </Transition>
+   
+   <Transition>
+      <Event Type="TRANSITION_LOADING"/>
+      <FromState Type="STATE_INTRO"/>
+      <ToState Type="STATE_LOADING"/>
+   </Transition>
+
+   <!-- LOADING SCREEN -->
+   <Transition>
+      <Event Type="TRANSITION_FORWARD"/>
+      <FromState Type="STATE_LOADING"/>
+      <ToState Type="STATE_GAME"/>
+   </Transition>
+   
+   <!-- GAME PLAY -->
+   <!-- TODO -->
+
+   <StartState Type="STATE_INTRO" />
+</TransitionList>
