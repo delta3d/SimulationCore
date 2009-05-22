@@ -25,14 +25,22 @@
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <SimCore/MessageType.h>
+#include <SimCore/Messages.h>
 
 #include <GameAppComponent.h>
 #include <ActorRegistry.h>
 #include <PlayerStatusActor.h>
+#include <States.h>
+#include <StateComponent.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
 #include <HoverVehicleActor.h>
+
+using namespace SimCore::Components;
+
 
 
 namespace NetDemo
@@ -48,12 +56,15 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    void GameAppComponent::ProcessMessage(const dtGame::Message& msg)
    {
+
       BaseClass::ProcessMessage(msg);
 
-      // CHRIS - add check for LOADING state HERE.
-      if (true /*loading???*/) 
+      const dtGame::MessageType& messageType = msg.GetMessageType();
+
+      // Process game state changes.
+      if (messageType == SimCore::MessageType::GAME_STATE_CHANGED) 
       {
-         HandleLoadingState();
+         HandleStateChangeMessage( static_cast<const GameStateChangedMessage&>(msg) );
       }
 
       if (dtGame::MessageType::INFO_MAP_LOADED == msg.GetMessageType())
@@ -61,7 +72,6 @@ namespace NetDemo
          InitializePlayer();
 
          FindThePhysicsLandActor(); 
-
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
@@ -165,9 +175,21 @@ namespace NetDemo
                // Set the terrain to start loading once we switch to loading state.
                mTerrainToLoad = statusActor->GetTerrainPreference();
 
-               // CHRIS - Change state to LOADING here 
+               // Change state to LOADING here
+               HandleTransition( Transition::TRANSITION_LOADING );
             }
          }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::HandleStateChangeMessage( const GameStateChangedMessage& stateChange )
+   {
+      const StateType& state = stateChange.GetNewState();
+
+      if( state == StateType::STATE_LOADING )
+      {
+         HandleLoadingState();
       }
    }
 
@@ -183,7 +205,8 @@ namespace NetDemo
 
          mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
 
-         // CHRIS - CHANGE STATE to IN_GAME HERE
+         // Loading state is complete. Automatically advance to the next state.
+         HandleTransition( EventType::TRANSITION_FORWARD );
 
 
 
@@ -287,4 +310,41 @@ namespace NetDemo
    {
       return dynamic_cast<SimCore::Actors::TerrainActor *>(mCurrentTerrainDrawActor.get());
    }
+
+   //////////////////////////////////////////////////////////////////////////
+   StateComponent* GameAppComponent::GetStateComponent()
+   {
+      if( ! mStateComp.valid() )
+      {
+         dtGame::GameManager* gm = GetGameManager();
+         if( gm == NULL )
+         {
+            LOG_ERROR("Could not access Game Manager to access the State Component.");
+         }
+         else
+         {
+            StateComponent* stateComp = NULL;
+            gm->GetComponentByName( StateComponent::DEFAULT_NAME.Get(), stateComp );
+            mStateComp = stateComp;
+         }
+      }
+
+      return mStateComp.get();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool GameAppComponent::HandleTransition( SimCore::Components::EventType& transition )
+   {
+      bool success = false;
+
+      StateComponent* stateComp = GetStateComponent();
+      if( stateComp != NULL )
+      {
+         stateComp->HandleEvent( &transition );
+         success = true;
+      }
+
+      return success;
+   }
+
 }
