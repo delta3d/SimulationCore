@@ -15,9 +15,12 @@
 #include <InputComponent.h>
 #include <GameAppComponent.h>
 #include <ConfigParameters.h>
+#include <StateComponent.h>
 
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+
+#include <dtDAL/project.h>
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
@@ -27,6 +30,8 @@
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/clientnetworkcomponent.h>
 #include <dtNetGM/machineinfomessage.h>
+
+#include <dtUtil/fileutils.h>
 
 #include <osg/ApplicationUsage>
 #include <osg/ArgumentParser>
@@ -125,6 +130,15 @@ namespace NetDemo
       // Keyboard, mouse input, etc...
       InputComponent* inputComp = new InputComponent();
       gm.AddComponent(*inputComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      // Game State Component for handling game and menu transitions.
+      StateComponent* stateComp = new StateComponent;
+      gm.AddComponent(*stateComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      // Load state transitions.
+      const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
+      stateComp->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
+         + pathSep + "Transitions" + pathSep + "NetDemoTransitions.xml");
 
       // Networking 
       SetupClientServerNetworking(gm);
