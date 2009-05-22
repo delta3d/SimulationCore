@@ -27,6 +27,7 @@
 #include <SimCore/Utilities.h>
 
 #include <SimCore/IGExceptionEnum.h>
+#include <SimCore/BaseGameEntryPoint.h>
 #include <dtABC/application.h>
 #include <dtDAL/project.h>
 #include <dtUtil/stringutils.h>
@@ -96,5 +97,17 @@ namespace Utils
          throw;
       }
    }
+
+   ///////////////////////////////////////////////////////////////////////
+   bool SIMCORE_EXPORT IsDevModeOn(dtGame::GameManager& gm)
+   {
+      bool result = false;
+      std::string developerMode;
+      developerMode = gm.GetConfiguration().GetConfigPropertyValue
+         (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+      result = (developerMode == "true" || developerMode == "1");
+      return result;
+   }
+
 }
 }

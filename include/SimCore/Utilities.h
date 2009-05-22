@@ -54,6 +54,8 @@ namespace Utils
    // Attempts to load the maps - using passed in map PLUS any additional maps in config.
    void SIMCORE_EXPORT LoadMaps(dtGame::GameManager& gm, std::string baseMapName);
 
+   /// A simple utility to check the DeveloperMode config parameter.
+   bool SIMCORE_EXPORT IsDevModeOn(dtGame::GameManager& gm); 
 }
 }
 
