@@ -25,11 +25,18 @@
 #ifndef RES_GAMEAPPCOMPONENT_H_
 #define RES_GAMEAPPCOMPONENT_H_
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// FORWARD DECLARATIONS
+////////////////////////////////////////////////////////////////////////////////
 namespace SimCore
 {
    namespace Actors
@@ -37,12 +44,20 @@ namespace SimCore
       class NxAgeiaTerraPageLandActor;
       class TerrainActor;
    }
+
+   namespace Components
+   {
+      class GameStateChangedMessage;
+      class EventType;
+   }
 }
+
 
 
 namespace NetDemo
 {
    class PlayerStatusActor;
+   class StateComponent;
 
 
    //////////////////////////////////////////////////////////////////////////////
@@ -73,8 +88,15 @@ namespace NetDemo
          void SetIsServer(bool newValue) { if (!mPlayerStatus.valid()) mIsServer = newValue; }
          bool GetIsServer() { return mIsServer; }
 
+         StateComponent* GetStateComponent();
+
+         bool HandleTransition( SimCore::Components::EventType& transition );
+
       protected: 
          void HandleActorUpdateMessage(const dtGame::Message& msg);
+
+         void HandleStateChangeMessage(
+            const SimCore::Components::GameStateChangedMessage& stateChange);
 
          void FindThePhysicsLandActor();
          void LoadNewTerrain();
@@ -101,6 +123,9 @@ namespace NetDemo
 
          // The one and only physics actor. This one persists regardless of how many times we change terrains.
          dtCore::RefPtr<dtGame::GameActor> mGlobalTerrainPhysicsActor;
+
+         // Reference to the State Component to control automatic transitions.
+         dtCore::ObserverPtr<StateComponent> mStateComp;
    };
 
 }
