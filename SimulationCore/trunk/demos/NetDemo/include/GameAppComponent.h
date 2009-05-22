@@ -31,6 +31,7 @@
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
+#include <StateComponent.h>
 
 
 
@@ -57,7 +58,6 @@ namespace SimCore
 namespace NetDemo
 {
    class PlayerStatusActor;
-   class StateComponent;
 
 
    //////////////////////////////////////////////////////////////////////////////
