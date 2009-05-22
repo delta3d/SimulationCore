@@ -33,7 +33,6 @@
 #include <ActorRegistry.h>
 #include <PlayerStatusActor.h>
 #include <States.h>
-#include <StateComponent.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
