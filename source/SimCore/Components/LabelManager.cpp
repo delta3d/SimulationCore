@@ -665,9 +665,8 @@ namespace SimCore
             size_t removeCount = labelAttachedCount - layerWindow->getChildCount();
             if( removeCount != labelCount )
             {
-               std::cout << "Labels removal count does not match the number of labels expected to be removed"
-                  << "\n\tExpected: " << labelCount
-                  << "\n\tRemoved:  " << removeCount << std::endl;
+               LOG_WARNING( "Labels removal count does not match the number of labels expected to be removed\n\tExpected: " + dtUtil::ToString(labelCount)
+                  + "\n\tRemoved:  " + dtUtil::ToString(removeCount) );
             }
          }
 
