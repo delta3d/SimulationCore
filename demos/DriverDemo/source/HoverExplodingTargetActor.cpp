@@ -49,6 +49,8 @@
 
 #include <dtUtil/nodeprintout.h>
 
+#include <iostream>
+
 namespace DriverDemo
 {
 

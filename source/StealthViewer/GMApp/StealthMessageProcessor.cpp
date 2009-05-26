@@ -24,6 +24,8 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gamemanager.h>
 
+#include <iostream>
+
 namespace StealthGM
 {
 
