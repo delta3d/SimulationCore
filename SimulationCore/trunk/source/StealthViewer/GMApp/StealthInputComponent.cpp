@@ -79,6 +79,8 @@
 
 #include <dtCore/view.h>
 
+#include <iostream>
+
 using dtCore::RefPtr;
 
 namespace StealthGM

@@ -55,6 +55,7 @@
 #include <osg/Shape>
 #include <osg/Math>
 
+#include <iostream>
 #include <queue>
 
 namespace SimCore

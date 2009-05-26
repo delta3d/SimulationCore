@@ -39,6 +39,8 @@
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 
+#include <iostream>
+
 using dtCore::RefPtr;
 
 namespace SimCore
