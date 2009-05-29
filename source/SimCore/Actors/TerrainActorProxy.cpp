@@ -104,21 +104,38 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
          NxVec3 vec(0, 0, 0);
 
-         mCollisionResourceString = dtCore::FindFileInPathList( mCollisionResourceString.c_str() );
-         mHelper->SetCollisionMeshFromFile(mCollisionResourceString, vec);
-
-         mHelper->SetAgeiaUserData(mHelper.get());
-
-         mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-
          dtAgeiaPhysX::NxAgeiaWorldComponent *comp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME,
-            comp);
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME, comp);
 
-         if (comp != NULL)
-            comp->RegisterAgeiaHelper(*mHelper);
+         if(comp != NULL)
+         {            
+            mCollisionResourceString = dtCore::FindFileInPathList( mCollisionResourceString.c_str() );
+            if(!mCollisionResourceString.empty())
+            {
+               mHelper->SetCollisionMeshFromFile(mCollisionResourceString, vec);
+
+               mHelper->SetAgeiaUserData(mHelper.get());
+
+               mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);          
+            }
+            else if(mTerrainNode.valid())
+            {
+               //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
+               //then just bake a static collision mesh with that and spit out a warning
+               mHelper->SetCollisionStaticMesh(mTerrainNode.get(), vec);
+               LOG_WARNING("No pre-baked collision mesh found, creating collision geometry from terrain mesh.");
+            }
+            else
+            {
+               LOG_ERROR("Could not find valid terrain mesh or pre-baked collision mesh to create collision data for terrain.");
+            }
+         }
          else
+         {
             LOG_ERROR("No PhysX World Component exists in the Game Manager.");
+         }
+
+         comp->RegisterAgeiaHelper(*mHelper);
 #endif
 
       }
