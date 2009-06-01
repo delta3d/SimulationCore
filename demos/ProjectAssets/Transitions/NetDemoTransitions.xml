@@ -1,19 +1,26 @@
 <?xml version="1.0"?>
 <TransitionList>
    
-   <!-- INTRO -->
+   <!-- MENU -->
    <Transition>
       <Event Type="TRANSITION_FORWARD"/>
-      <FromState Type="STATE_INTRO"/>
-      <ToState Type="STATE_LOADING"/>
+      <FromState Type="STATE_MENU"/>
+      <ToState Type="STATE_CONNECTING"/>
    </Transition>
    
    <Transition>
-      <Event Type="TRANSITION_LOADING"/>
-      <FromState Type="STATE_INTRO"/>
-      <ToState Type="STATE_LOADING"/>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_MENU"/>
+      <ToState Type="STATE_SHUTDOWN"/>
    </Transition>
 
+   <!-- CONNECTING SCREEN -->
+   <Transition>
+      <Event Type="TRANSITION_FORWARD"/>
+      <FromState Type="STATE_CONNECTING"/>
+      <ToState Type="STATE_LOADING"/>
+   </Transition>
+   
    <!-- LOADING SCREEN -->
    <Transition>
       <Event Type="TRANSITION_FORWARD"/>
@@ -22,7 +29,37 @@
    </Transition>
    
    <!-- GAME PLAY -->
-   <!-- TODO -->
+   <Transition>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_GAME"/>
+      <ToState Type="STATE_GAME_OPTIONS"/>
+   </Transition>
+   
+   <!-- OPTIONS (IN-GAME) -->
+   <Transition>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_GAME_OPTIONS"/>
+      <ToState Type="STATE_GAME"/>
+   </Transition>
+   
+   <Transition>
+      <Event Type="TRANSITION_QUIT"/>
+      <FromState Type="STATE_GAME_OPTIONS"/>
+      <ToState Type="STATE_GAME_QUIT"/>
+   </Transition>
+   
+   <!-- QUIT (IN-GAME) -->
+   <Transition>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_GAME_QUIT"/>
+      <ToState Type="STATE_GAME"/>
+   </Transition>
+   
+   <Transition>
+      <Event Type="TRANSITION_FORWARD"/>
+      <FromState Type="STATE_GAME_QUIT"/>
+      <ToState Type="STATE_MENU"/>
+   </Transition>
 
-   <StartState Type="STATE_INTRO" />
+   <StartState Type="STATE_MENU" />
 </TransitionList>

@@ -191,9 +191,13 @@ namespace NetDemo
          // Change state to LOADING here
          LoadMaps( mMapName );
       }
-      if( state == StateType::STATE_LOADING )
+      else if( state == StateType::STATE_LOADING )
       {
          HandleLoadingState();
+      }
+      else if( state == StateType::STATE_SHUTDOWN )
+      {
+         GetGameManager()->GetApplication().Quit();
       }
    }
 
