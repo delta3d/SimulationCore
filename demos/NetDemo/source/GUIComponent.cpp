@@ -88,6 +88,12 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ShowMouseCursor( bool enable )
+   {
+      GetGameManager()->GetApplication().GetWindow()->ShowCursor( enable );
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::ProcessMessage( const dtGame::Message& message )
    {
       const dtGame::MessageType& messageType = message.GetMessageType();
@@ -102,6 +108,10 @@ namespace NetDemo
    void GUIComponent::ProcessStateChangeMessage( const GameStateChangedMessage& stateChange )
    {
       const StateType& state = stateChange.GetNewState();
+
+      bool isRunningState = state == NetDemoState::STATE_GAME;
+
+      ShowMouseCursor( ! isRunningState );
 
       mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
       mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
