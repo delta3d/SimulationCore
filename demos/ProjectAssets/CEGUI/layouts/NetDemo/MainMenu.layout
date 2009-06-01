@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+	<Window Name="MainMenu_Root" Type="DefaultWindow">
+      <!--"WindowsLook/StaticImage"-->
+      <Property Name="UnifiedSize" Value="{{1.0,0},{1.0,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+      <!--Property Name="Image" Value="set:BackgroundImage image:BackgroundImage"/-->
+
+      <!-- BUTTON - START -->
+      <Window Name="MainMenu_Button_Start" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.15,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Text" Value="Start"/>
+         <Property Name="Action" Value="TRANSITION_FORWARD"/>
+      </Window>
+
+      <!-- BUTTON - EXIT -->
+      <Window Name="MainMenu_Button_Exit" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.096667,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Text" Value="Exit"/>
+         <Property Name="Action" Value="TRANSITION_SHUTDOWN"/>
+      </Window>
+        
+	</Window>
+</GUILayout>
