@@ -33,9 +33,22 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
+namespace CEGUI
+{
+   class EventArgs;
+   class PushButton;
+   class Window;
+}
+
 namespace dtGame
 {
    class Message;
+}
+
+namespace dtGUI
+{
+   class CEUIDrawable;
+   class ScriptModule;
 }
 
 namespace SimCore
@@ -43,6 +56,12 @@ namespace SimCore
    namespace Components
    {
       class GameStateChangedMessage;
+      class HUDGroup;
+   }
+
+   namespace GUI
+   {
+      class SimpleScreen;
    }
 }
 
@@ -71,8 +90,34 @@ namespace NetDemo
       protected:
          virtual ~GUIComponent();
 
+         void InitializeCEGUI( const std::string& schemeFile );
+
+         GameAppComponent* GetAppComponent();
+
+         /**
+          * Helper method for obtaining a CEGUI window from its associated Event Args.
+          * @param args Event Args object that should have a reference to the window that triggered the event.
+          * @return CEGUI window/widget associated with the event.
+          */
+         const CEGUI::Window* GetWidgetFromEventArgs( const CEGUI::EventArgs& args ) const;
+
+         bool OnButtonClicked( const CEGUI::EventArgs& args );
+
+         void BindButtons( CEGUI::Window& rootWindow );
+         void BindButton( CEGUI::PushButton& button );
+
+         bool IsButtonType( const std::string& buttonType ) const;
+
       private:
          dtCore::ObserverPtr<GameAppComponent> mAppComp;
+         dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+         dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
+         dtGUI::ScriptModule* mScriptModule;
+
+         // Screens
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenQuitPrompt;
    };
 
 }
