@@ -83,6 +83,8 @@ namespace NetDemo
 
          void Initialize();
 
+         void ShowMouseCursor( bool enable );
+
          virtual void ProcessMessage( const dtGame::Message& message );
 
          void ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange );
