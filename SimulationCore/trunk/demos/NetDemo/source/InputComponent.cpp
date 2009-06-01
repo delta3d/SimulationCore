@@ -20,12 +20,14 @@
 #include <dtPhysics/physicsmaterialactor.h>
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/bodywrapper.h>
+#include <dtCore/deltawin.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/shaderprogram.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
 #include <SimCore/Utilities.h>
 
+#include <States.h>
 #include <InputComponent.h>
 // TEMP STUFF FOR VEHICLE
 #include <HoverVehicleActor.h>
@@ -194,6 +196,22 @@ namespace NetDemo
                IncrementTime(-5);
             }
             break;
+
+         case osgGA::GUIEventAdapter::KEY_Escape:
+            {
+               // Escapce key should act as one would expect, to escape from the
+               // program in some manner, even if it means going through the menu system.
+               GetAppComponent()->HandleTransition(Transition::TRANSITION_BACK);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_Tab:
+            {
+               dtABC::Application& app = GetGameManager()->GetApplication();
+               app.GetWindow()->SetFullScreenMode(!app.GetWindow()->GetFullScreenMode());
+            }
+            break;
+
          default:
             keyUsed = false;
       }
@@ -304,6 +322,24 @@ namespace NetDemo
       GetGameManager()->AddActor(*projectile, false, true);
 
       physicsComponent->RegisterHelper(*helper);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   GameAppComponent* InputComponent::GetAppComponent()
+   {
+      if( ! mAppComp.valid() )
+      {
+         GameAppComponent* comp = NULL;
+         GetGameManager()->GetComponentByName( GameAppComponent::DEFAULT_NAME, comp );
+         mAppComp = comp;
+      }
+
+      if( ! mAppComp.valid() )
+      {
+         LOG_ERROR( "Input Component cannot access the Game App Component." );
+      }
+
+      return mAppComp.get();
    }
 
 }
