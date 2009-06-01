@@ -49,9 +49,12 @@ namespace NetDemo
          static StateType STATE_LOADING;
          static StateType STATE_RUNNING;
          static StateType STATE_SHUTDOWN;*/
+         static NetDemoState STATE_CONNECTING;
          static NetDemoState STATE_LOBBY;
          static NetDemoState STATE_GAME;
          static NetDemoState STATE_GAME_DEAD;
+         static NetDemoState STATE_GAME_OPTIONS;
+         static NetDemoState STATE_GAME_QUIT;
          static NetDemoState STATE_GAME_UNKNOWN;
          static NetDemoState STATE_SCORE_SCREEN;
 
@@ -87,6 +90,7 @@ namespace NetDemo
          static Transition TRANSITION_LOADING;
          static Transition TRANSITION_GAME;
          static Transition TRANSITION_GAME_DEAD;
+         static Transition TRANSITION_OPTIONS;
          static Transition TRANSITION_SCORE_SCREEN;
 
          Transition( const std::string& name )

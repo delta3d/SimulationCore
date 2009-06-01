@@ -41,9 +41,12 @@ namespace NetDemo
    static StateType STATE_LOADING;
    static StateType STATE_RUNNING;
    static StateType STATE_SHUTDOWN;*/
+   NetDemoState NetDemoState::STATE_CONNECTING("STATE_CONNECTING");
    NetDemoState NetDemoState::STATE_LOBBY("STATE_LOBBY");
    NetDemoState NetDemoState::STATE_GAME("STATE_GAME");
    NetDemoState NetDemoState::STATE_GAME_DEAD("STATE_GAME_DEAD");
+   NetDemoState NetDemoState::STATE_GAME_OPTIONS("STATE_GAME_OPTIONS");
+   NetDemoState NetDemoState::STATE_GAME_QUIT("STATE_GAME_QUIT");
    NetDemoState NetDemoState::STATE_GAME_UNKNOWN("STATE_UNKNOWN");
    NetDemoState NetDemoState::STATE_SCORE_SCREEN("STATE_SCORE_SCREEN");
 
@@ -63,5 +66,6 @@ namespace NetDemo
    Transition Transition::TRANSITION_LOADING("TRANSITION_LOADING");
    Transition Transition::TRANSITION_GAME("TRANSITION_GAME");
    Transition Transition::TRANSITION_GAME_DEAD("TRANSITION_GAME_DEAD");
+   Transition Transition::TRANSITION_OPTIONS("TRANSITION_OPTIONS");
    Transition Transition::TRANSITION_SCORE_SCREEN("TRANSITION_SCORE_SCREEN");
 }
