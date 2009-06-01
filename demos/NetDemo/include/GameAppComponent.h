@@ -88,8 +88,12 @@ namespace NetDemo
          void SetIsServer(bool newValue) { if (!mPlayerStatus.valid()) mIsServer = newValue; }
          bool GetIsServer() { return mIsServer; }
 
+         void SetMapName(const std::string& mapName);
+         const std::string& GetMapName() const;
+
          StateComponent* GetStateComponent();
 
+         bool HandleTransition( const std::string& transitionName );
          bool HandleTransition( SimCore::Components::EventType& transition );
 
       protected: 
@@ -126,6 +130,8 @@ namespace NetDemo
 
          // Reference to the State Component to control automatic transitions.
          dtCore::ObserverPtr<StateComponent> mStateComp;
+
+         std::string mMapName;
    };
 
 }

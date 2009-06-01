@@ -16,6 +16,7 @@
 #include <GameAppComponent.h>
 #include <ConfigParameters.h>
 #include <StateComponent.h>
+#include <GUIComponent.h>
 
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -88,9 +89,9 @@ namespace NetDemo
       FinalizeParser();
 
       ///////////////////// TEMP HACK - This UI should control this ////////////////////
-      SimCore::Components::BaseGameAppComponent* gameAppComp = NULL;
+      GameAppComponent* gameAppComp = NULL;
       app.GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComp);
-      gameAppComp->LoadMaps(mMapName);
+      gameAppComp->SetMapName( mMapName );
       //////////////////////////////////////////////////////////////////////////////////
    }
 
@@ -139,6 +140,12 @@ namespace NetDemo
       const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
       stateComp->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
          + pathSep + "Transitions" + pathSep + "NetDemoTransitions.xml");
+      stateComp->MakeCurrent( stateComp->GetCurrentState() );
+
+      // GUI Component
+      GUIComponent* guiComp = new GUIComponent;
+      gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
+      guiComp->Initialize();
 
       // Networking 
       SetupClientServerNetworking(gm);

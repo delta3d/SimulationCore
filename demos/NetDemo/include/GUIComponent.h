@@ -81,7 +81,7 @@ namespace NetDemo
 
          GUIComponent( const std::string& name = DEFAULT_NAME.Get() );
 
-         void Initialize( GameAppComponent& appComp );
+         void Initialize();
 
          virtual void ProcessMessage( const dtGame::Message& message );
 
