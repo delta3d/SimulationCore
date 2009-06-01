@@ -70,7 +70,7 @@ namespace NetDemo
       {
          InitializePlayer();
 
-         FindThePhysicsLandActor(); 
+         FindThePhysicsLandActor();
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
@@ -175,7 +175,7 @@ namespace NetDemo
                mTerrainToLoad = statusActor->GetTerrainPreference();
 
                // Change state to LOADING here
-               HandleTransition( Transition::TRANSITION_LOADING );
+               HandleTransition( Transition::TRANSITION_FORWARD );
             }
          }
       }
@@ -186,6 +186,11 @@ namespace NetDemo
    {
       const StateType& state = stateChange.GetNewState();
 
+      if( state == NetDemoState::STATE_CONNECTING )
+      {
+         // Change state to LOADING here
+         LoadMaps( mMapName );
+      }
       if( state == StateType::STATE_LOADING )
       {
          HandleLoadingState();
@@ -311,6 +316,18 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::SetMapName(const std::string& mapName)
+   {
+      mMapName = mapName;
+   }
+   
+   //////////////////////////////////////////////////////////////////////////
+   const std::string& GameAppComponent::GetMapName() const
+   {
+      return mMapName;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    StateComponent* GameAppComponent::GetStateComponent()
    {
       if( ! mStateComp.valid() )
@@ -329,6 +346,26 @@ namespace NetDemo
       }
 
       return mStateComp.get();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool GameAppComponent::HandleTransition( const std::string& transitionName )
+   {
+      bool success = false;
+
+      SimCore::Components::EventType* transition
+         = SimCore::Components::EventType::GetValueForName( transitionName );
+
+      if( transition != NULL )
+      {
+         success = HandleTransition( *transition );
+      }
+      else
+      {
+         LOG_WARNING("Could not handle transition \"" + transitionName + "\"");
+      }
+
+      return success;
    }
 
    //////////////////////////////////////////////////////////////////////////

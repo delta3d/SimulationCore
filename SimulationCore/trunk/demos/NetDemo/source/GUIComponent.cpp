@@ -67,7 +67,7 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::Initialize( GameAppComponent& appComp )
+   void GUIComponent::Initialize()
    {
       InitializeCEGUI("CEGUI/schemes/NetDemo.scheme");
 
