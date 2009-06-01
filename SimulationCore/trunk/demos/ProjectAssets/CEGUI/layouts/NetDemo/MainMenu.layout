@@ -26,7 +26,7 @@
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="Font" Value="Arial-Bold-16"/>
          <Property Name="Text" Value="Exit"/>
-         <Property Name="Action" Value="TRANSITION_SHUTDOWN"/>
+         <Property Name="Action" Value="TRANSITION_BACK"/>
       </Window>
         
 	</Window>
