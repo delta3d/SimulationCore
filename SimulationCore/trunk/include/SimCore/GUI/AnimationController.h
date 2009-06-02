@@ -1,11 +1,11 @@
 /*
  * Copyright, 2007, Alion Science and Technology Corporation, all rights reserved.
- * 
+ *
  * Alion Science and Technology Corporation
  * 5365 Robin Hood Road
  * Norfolk, VA 23513
  * (757) 857-5670, www.alionscience.com
- * 
+ *
  * This software was developed by Alion Science and Technology Corporation under
  * circumstances in which the U. S. Government may have rights in the software.
  *
@@ -240,7 +240,7 @@ namespace SimCore
          public:
             typedef AnimationControllerBase BaseClass;
 
-            AnimationController( AnimCallbackInterpolate& interpolator );
+            AnimationController( AnimCallbackInterpolate interpolator );
 
             /**
              * Set the start target value from which the controller should interpolate.
@@ -307,12 +307,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       MY_TEMPLATE_TYPE
       AnimationController<MY_TYPES >::AnimationController(
-         typename AnimationController<MY_TYPES >::AnimCallbackInterpolate& interpolatorCallback )
+         typename AnimationController<MY_TYPES >::AnimCallbackInterpolate interpolatorCallback )
          : AnimationController<MY_TYPES >::BaseClass()
       {
          SetInterpolateCallback( interpolatorCallback );
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       MY_TEMPLATE_TYPE
       AnimationController<MY_TYPES >::~AnimationController()
@@ -383,7 +383,7 @@ namespace SimCore
       {
          return mTargetSetFunc.valid();
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       MY_TEMPLATE_TYPE
       void AnimationController<MY_TYPES >::SetInterpolatedTarget( float interpolationRatio )
