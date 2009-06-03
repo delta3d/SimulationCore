@@ -27,9 +27,11 @@
 #include <dtGame/gameactor.h>
 #include <SimCore/Actors/IGActor.h>
 
+#include <SimCore/PhysicsTypes.h>
+
 #if AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
-#endif 
+#endif
 
 namespace SimCore
 {
@@ -63,41 +65,35 @@ namespace SimCore
             const std::string& GetPhysicsModelFile() const;
 
 
-#ifdef __APPLE__            
-            //There is bug with shaders on the terrain, so disable it as a hack.
-//            virtual void OnShaderGroupChanged() {}
-#endif
-            
-
 #if AGEIA_PHYSICS
             virtual void AgeiaPrePhysicsUpdate() { }
 
             virtual void AgeiaPostPhysicsUpdate() { }
 
-            virtual void AgeiaRaycastReport(const NxRaycastHit &hit, 
-               const NxActor &actor, 
+            virtual void AgeiaRaycastReport(const NxRaycastHit &hit,
+               const NxActor &actor,
                const NxActor &collidedActor)
             {}
 
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, 
-               NxActor& ourSelf, 
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit,
+               NxActor& ourSelf,
                NxActor& whatWeHit)
             {}
 
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport &contactReport, 
-               NxActor &ourSelf, 
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport &contactReport,
+               NxActor &ourSelf,
                NxActor &whatWeHit)
             {}
 
-            dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetHelper() { return *mHelper; }
-            const dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper& GetHelper() const { return *mHelper; }
 #endif
+            dtPhysics::PhysicsHelper& GetHelper() { return *mHelper; }
+            const dtPhysics::PhysicsHelper& GetHelper() const { return *mHelper; }
 
          protected:
 
             /// Destructor
             virtual ~TerrainActor();
-            
+
          private:
 
             dtCore::RefPtr<osg::Node> mTerrainNode;
@@ -107,7 +103,8 @@ namespace SimCore
 
 #if AGEIA_PHYSICS
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mHelper;
-            NxActor *mCollisionActor; 
+#else
+            dtCore::RefPtr<dtPhysics::PhysicsHelper> mHelper;
 #endif
 
       };
@@ -125,7 +122,7 @@ namespace SimCore
              * Adds the properties to the actor.
              */
             virtual void BuildPropertyMap();
-            
+
             /// Creates the actor we are encapsulating
             virtual void CreateActor() { SetActor(*new TerrainActor(*this)); }
 
@@ -134,13 +131,13 @@ namespace SimCore
              * render mode is RenderMode::DRAW_BILLBOARD_ICON.
              * @return a pointer to the icon
              */
-            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon(); 
+            virtual dtDAL::ActorProxyIcon* GetBillBoardIcon();
 
             /**
              * Gets the current render mode for positional lights.
              * @return ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON.
              */
-            virtual const ActorProxy::RenderMode& GetRenderMode() 
+            virtual const ActorProxy::RenderMode& GetRenderMode()
             {
                return ActorProxy::RenderMode::DRAW_ACTOR_AND_BILLBOARD_ICON;
             }
@@ -153,7 +150,7 @@ namespace SimCore
             virtual ~TerrainActorProxy() { }
 
          private:
-            
+
       };
    }
 }
