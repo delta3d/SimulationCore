@@ -54,14 +54,6 @@
 #include <dtPhysics/physicshelper.h>
 #endif
 
-#ifdef DELTA_WIN32
-#include <dtUtil/mswin.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
@@ -91,7 +83,7 @@ namespace SimCore
                mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 #ifndef AGEIA_PHYSICS
-               dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
+               dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(GetGlobalApplication());
                physicsWorld->Init();
                mGM->AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                         dtGame::GameManager::ComponentPriority::NORMAL);
