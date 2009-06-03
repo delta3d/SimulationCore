@@ -158,7 +158,7 @@ namespace SimCore
       {
          if(pEvent == NULL)
          {
-            LOG_ERROR("NULL is invalid parameter to function!");      
+            LOG_ERROR("NULL is invalid parameter to function!");
             return false;
          }
 
@@ -182,9 +182,9 @@ namespace SimCore
       {
          if(pState == NULL)
          {
-            LOG_ERROR("NULL is invalid parameter to function!");      
+            LOG_ERROR("NULL is invalid parameter to function!");
          }
-         else 
+         else
          {
             if(mCurrentState.valid())
             {
@@ -194,10 +194,10 @@ namespace SimCore
             const StateType* from = mCurrentState->GetType();
 
             mCurrentState = pState;
-            mCurrentState->OnEntry();         
-            
+            mCurrentState->OnEntry();
+
             const StateType* to = pState->GetType();
-            SendGameStateChangedMessage(*from, *to);               
+            SendGameStateChangedMessage(*from, *to);
          }
       }
 
@@ -210,7 +210,7 @@ namespace SimCore
          {
             LOG_ERROR("NULL is an invalid argument!");
          }
-         else 
+         else
          {
             newState = GetState(pStateType);
             if(newState == NULL)
@@ -222,7 +222,7 @@ namespace SimCore
 
          return newState;
       }
-      
+
       //////////////////////////////////////////////////////////////////////////
       void GameStateComponent::AddTransition(const EventType* eventType, const StateType* fromState, const StateType* toState)
       {
@@ -234,11 +234,11 @@ namespace SimCore
          {
             // checking the transition map's keys
             TransitionMap::key_type key(eventType, realFrom);
-            mTransitions.insert(TransitionMap::value_type(key, realTo));      
+            mTransitions.insert(TransitionMap::value_type(key, realTo));
          }
          else
          {
-            LOG_ERROR("Unable to add transition- Event:" 
+            LOG_ERROR("Unable to add transition- Event:"
                + eventType->GetName() + ", from state: " + fromState->GetName() +
                ", to state: " + toState->GetName());
          }
