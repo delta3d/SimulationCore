@@ -29,6 +29,8 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtCore/transform.h>
 
+#include <dtUtil/mathdefines.h>
+
 #ifndef AGEIA_PHYSICS
 #include <dtPhysics/bodywrapper.h>
 #include <pal/palVehicle.h>
@@ -106,15 +108,8 @@ namespace SimCore
    /// @retval            Pointer to the new wheel, which is already attached to
    ///                    actor.
    /// @retval            NULL if the wheel could not be created.
-   WheelType BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position)
+   WheelType BaseVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, bool powered, bool steered, bool braked)
    {
-      if (GetMainPhysicsObject() == NULL)
-         return NULL;
-
-      WheelType wheel;
-      wheel.mPowered = powered;
-      wheel.mSteered = steered;
-      wheel.mBraked = braked;
 
       NxWheelShapeDesc wheelShapeDesc;
 
@@ -168,7 +163,7 @@ namespace SimCore
       wheel.mPowered = powered;
       wheel.mSteered = steered;
       wheel.mBraked = braked;
-      wheel.mWheel = wheelShape
+      wheel.mWheel = wheelShape;
 
       mWheels.push_back(wheel);
 
@@ -247,13 +242,13 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
       float maxWheelAngle = GetMaxSteerAngle() * osg::PI / 180.0f;   // convert from deg to rad
-      float steeringAngle = maxWheelAngle * normalizeWheelAngle;
+      float steeringAngle = maxWheelAngle * normalizedWheelAngle;
 
       dtUtil::Clamp(normalizedBrakes, 0.0f, 1.0f);
 
       float brakeTorque = normalizedBrakes * GetMaxBrakeTorque();  //!< @todo Need to use max brake pressure value that includes air pressure for trucks or malfunctions
 
-      wheelTorque = -mAccelerator * GetEngineTorque();
+      float wheelTorque = -acceleration * GetEngineTorque();
 
       for(int i = 0 ; i < mWheels.size(); ++i)
       {
@@ -265,12 +260,12 @@ namespace SimCore
 
          if (curWheel.mPowered)
          {
-            curWheel->setMotorTorque(wheelTorque);
+            curWheel.mWheel->setMotorTorque(wheelTorque);
          }
 
          if (curWheel.mSteered)
          {
-            curWheel->setSteerAngle(-steeringAngle);
+            curWheel.mWheel->setSteerAngle(-steeringAngle);
          }
       }
 #else

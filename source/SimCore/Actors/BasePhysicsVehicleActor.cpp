@@ -540,21 +540,6 @@ namespace SimCore
       {
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetMPH()
-      {
-         static const float METERSPS_TO_MILESPH = 2.236936291;
-         if (IsRemote())
-         {
-            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
-         }
-         else
-         {
-            return GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->GetLinearVelocity().length()
-                  * METERSPS_TO_MILESPH;
-         }
-      }
-
 #ifdef AGEIA_PHYSICS
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ResetVehicle()
@@ -590,6 +575,21 @@ namespace SimCore
 
          GetPhysicsHelper()->ResetForces();
       }
+      ///////////////////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetMPH()
+      {
+         static const float METERSPS_TO_MILESPH = 2.236936291;
+         if (IsRemote())
+         {
+            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
+         }
+         else
+         {
+            return GetPhysicsHelper()->GetMainPhysicsObject()->getLinearVelocity().magnitude()
+                  * METERSPS_TO_MILESPH;
+         }
+      }
+
 #else
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ResetVehicle()
@@ -623,6 +623,20 @@ namespace SimCore
          physObj->GetBodyWrapper()->ResetForces();
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetMPH()
+      {
+         static const float METERSPS_TO_MILESPH = 2.236936291;
+         if (IsRemote())
+         {
+            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
+         }
+         else
+         {
+            return GetPhysicsHelper()->GetMainPhysicsObject()->GetLinearVelocity().length()
+                  * METERSPS_TO_MILESPH;
+         }
+      }
 #endif
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::KeepAboveGround()

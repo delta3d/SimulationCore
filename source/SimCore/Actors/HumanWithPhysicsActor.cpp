@@ -40,7 +40,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 
-#include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
@@ -114,7 +114,7 @@ namespace SimCore
             if( mPhysicsHelper->GetActor() != NULL && mPhysicsHelper->GetActor()->readBodyFlag(NX_BF_DISABLE_GRAVITY))
             {
                std::vector<dtDAL::ActorProxy*> toFill;
-               GetGameActorProxy().GetGameManager()->FindActorsByClassName("NxAgeiaTerraPageLand", toFill);
+               GetGameActorProxy().GetGameManager()->FindActorsByClassName(PagedTerrainPhysicsActor::DEFAULT_NAME, toFill);
                if(toFill.size())
                {
                   PagedTerrainPhysicsActor* landActor = dynamic_cast<PagedTerrainPhysicsActor*>((*toFill.begin())->GetActor());

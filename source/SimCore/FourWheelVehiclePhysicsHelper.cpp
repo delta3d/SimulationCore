@@ -70,7 +70,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
       // ( X * 10 * 60) / (5280* 12) * 100 = X * 0.9469696
       //return (-((10 * GetWheelSizeWidth() * NxPi * mWheels[BACK_LEFT]->getAxleSpeed() * 60) / (5280 * 12)) * 100);
-      return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[BACK_LEFT]->getAxleSpeed();
+      return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[BACK_LEFT].mWheel->getAxleSpeed();
 #endif
       return 0.0;
    }
@@ -88,7 +88,7 @@ namespace SimCore
       NxShape*           contactObject;
       float              maxJounce = (index < 2 ? mFrontMaxJounce : mRearMaxJounce);
 
-      contactObject =  mWheels[index]->getContact ( wheelPatchData );
+      contactObject =  mWheels[index].mWheel->getContact ( wheelPatchData );
       if ( contactObject == NULL )
       {
          return maxJounce - GetWheelSuspensionTravel();
@@ -117,7 +117,7 @@ namespace SimCore
       for(int i = 0 ; i< 2; i++)
       {
          float RotationTemp = mAxleRotation[i];
-         RotationTemp += (mWheels[2*i]->getAxleSpeed()+mWheels[2*i+1]->getAxleSpeed()) / 2.0f * deltaTime;
+         RotationTemp += (mWheels[2*i].mWheel->getAxleSpeed()+mWheels[2*i+1].mWheel->getAxleSpeed()) / 2.0f * deltaTime;
          float dum;
          RotationTemp = TWO_PI * std::modf( RotationTemp / TWO_PI, &dum );
          if ( RotationTemp < 0.0f )

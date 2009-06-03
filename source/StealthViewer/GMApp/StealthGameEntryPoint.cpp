@@ -57,7 +57,6 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/StealthActor.h>
 
-#include <SimCore/Components/ViewerNetworkPublishingComponent.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
