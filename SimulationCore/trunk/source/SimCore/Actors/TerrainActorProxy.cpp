@@ -46,7 +46,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       TerrainActorProxy::TerrainActorProxy()
       {
-      
+
       }
 
       ///////////////////////////////////////////////////////////////////////////////
@@ -55,18 +55,19 @@ namespace SimCore
          dtGame::GameActorProxy::BuildPropertyMap();
          TerrainActor &ta = static_cast<TerrainActor&>(GetGameActor());
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN, 
-            "TerrainMesh", "TerrainMesh", 
-            dtDAL::MakeFunctor(ta, &TerrainActor::LoadFile), 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN,
+            "TerrainMesh", "TerrainMesh",
+            dtDAL::MakeFunctor(ta, &TerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", "Terrain"));
 
-         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH, 
-            "PhysicsModel", "PhysicsModel", 
-            dtDAL::MakeFunctor(ta, &TerrainActor::SetPhysicsModelFile), 
+         AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
+            "PhysicsModel", "PhysicsModel",
+            dtDAL::MakeFunctor(ta, &TerrainActor::SetPhysicsModelFile),
             "Loads the model file for the level", "Terrain"));
 
       }
 
+      /////////////////////////////////////////////////////////////////////////////
       dtDAL::ActorProxyIcon* TerrainActorProxy::GetBillBoardIcon()
       {
          if(!mBillBoardIcon.valid())
@@ -79,36 +80,43 @@ namespace SimCore
       TerrainActor::TerrainActor(dtGame::GameActorProxy &proxy) : IGActor(proxy), mNeedToLoad(false)
 #ifdef AGEIA_PHYSICS
          , mHelper(new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy))
-         , mCollisionActor(NULL)
+#else
+         , mHelper(new dtPhysics::PhysicsHelper(proxy))
 #endif
       {
 #ifdef AGEIA_PHYSICS
          mHelper->SetBaseInterfaceClass(this);
+#else
+         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
+         pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+         pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         mHelper->AddPhysicsObject(*pobj);
 #endif
       }
 
+      /////////////////////////////////////////////////////////////////////////////
       TerrainActor::~TerrainActor()
       {
 
       }
 
+      /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::OnEnteredWorld()
       {
          dtGame::GameActor::OnEnteredWorld();
 
          dtCore::Transform xform;
          GetTransform(xform);
-         osg::Vec3 pos; 
+         osg::Vec3 pos;
          xform.GetTranslation(pos);
 
-#ifdef AGEIA_PHYSICS
-         NxVec3 vec(0, 0, 0);
-
-         dtAgeiaPhysX::NxAgeiaWorldComponent *comp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME, comp);
+         dtPhysics::PhysicsComponent* comp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
 
          if(comp != NULL)
-         {            
+         {
+#ifdef AGEIA_PHYSICS
+            NxVec3 vec(0, 0, 0);
             mCollisionResourceString = dtCore::FindFileInPathList( mCollisionResourceString.c_str() );
             if(!mCollisionResourceString.empty())
             {
@@ -116,7 +124,7 @@ namespace SimCore
 
                mHelper->SetAgeiaUserData(mHelper.get());
 
-               mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);          
+               mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
             }
             else if(mTerrainNode.valid())
             {
@@ -125,6 +133,14 @@ namespace SimCore
                mHelper->SetCollisionStaticMesh(mTerrainNode.get(), vec);
                LOG_WARNING("No pre-baked collision mesh found, creating collision geometry from terrain mesh.");
             }
+#else
+            if(mTerrainNode.valid())
+            {
+               //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
+               //then just bake a static collision mesh with that and spit out a warning
+               mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+            }
+#endif
             else
             {
                LOG_ERROR("Could not find valid terrain mesh or pre-baked collision mesh to create collision data for terrain.");
@@ -135,16 +151,15 @@ namespace SimCore
             LOG_ERROR("No PhysX World Component exists in the Game Manager.");
          }
 
-         comp->RegisterAgeiaHelper(*mHelper);
-#endif
-
+         comp->RegisterHelper(*mHelper);
       }
 
-      
+
+      /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::AddedToScene(dtCore::Scene* scene)
       {
          IGActor::AddedToScene(scene);
-         //Actually load the file, even if it's empty string so that if someone were to 
+         //Actually load the file, even if it's empty string so that if someone were to
          //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
          //work.
          if (mNeedToLoad)
@@ -166,7 +181,7 @@ namespace SimCore
          return mCollisionResourceString;
       }
 
-
+      /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::LoadFile(const std::string &fileName)
       {
          //Don't actually load the file unless
