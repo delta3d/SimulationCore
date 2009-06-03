@@ -84,8 +84,8 @@ namespace SimCore
          mLastTimePeriod(dtABC::Weather::TIME_DAY),
          mLastSeason(dtABC::Weather::SEASON_SUMMER)
       {
-         m_fPrecipRate = 0;
-         m_spPrecipEffect = NULL;
+         mPrecipRate = 0;
+         mPrecipEffect = NULL;
       }
 
       //////////////////////////////////////////////////////////
@@ -137,19 +137,19 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::SetEphemerisEnvironment(  SimCore::Actors::IGEnvironmentActor* env  )
       {
-         mEphemerisEnvironmentActor = env;
+         mEnvironmentActor = env;
       }
 
       //////////////////////////////////////////////////////////
       SimCore::Actors::IGEnvironmentActor* WeatherComponent::GetEphemerisEnvironment()
       {
-         return mEphemerisEnvironmentActor.get();
+         return mEnvironmentActor.get();
       }
 
       //////////////////////////////////////////////////////////
       const SimCore::Actors::IGEnvironmentActor* WeatherComponent::GetEphemerisEnvironment() const
       {
-         return mEphemerisEnvironmentActor.get();
+         return mEnvironmentActor.get();
       }
 
       //////////////////////////////////////////////////////////
@@ -171,15 +171,15 @@ namespace SimCore
          mPrecipStart = start;
 
          //if we already have precipitation, then go ahead and set its start distance now
-         if(m_spPrecipEffect.valid())
+         if(mPrecipEffect.valid())
          {
-            SetStateSet(m_spPrecipEffect.get());
+            SetStateSet(mPrecipEffect.get());
          }
       }
 
       void WeatherComponent::SetStateSet(osg::Node* node)
       {
-         osg::StateSet* ss = m_spPrecipEffect->getOrCreateStateSet();
+         osg::StateSet* ss = mPrecipEffect->getOrCreateStateSet();
          osg::Depth* depth = new osg::Depth(osg::Depth::LEQUAL, mPrecipStart, 1.0);
          ss->setAttributeAndModes(depth,osg::StateAttribute::ON );
          ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_PRECIPITATION, "DepthSortedBin");
@@ -227,11 +227,11 @@ namespace SimCore
          if(!mUpdatesEnabled)
          {
             float vis = newFarClip * 0.6f; // Make fog distance a tad less than the far clip. Helps account for the boxy effect of culling & clipping.
-            if(mEphemerisEnvironmentActor.valid())
+            if(mEnvironmentActor.valid())
             {
-               if(!dtUtil::Equivalent(mEphemerisEnvironmentActor->GetVisibility(), vis))
+               if(!dtUtil::Equivalent(mEnvironmentActor->GetVisibility(), vis))
                {
-                  mEphemerisEnvironmentActor->SetVisibility(vis);
+                  mEnvironmentActor->SetVisibility(vis);
                }
             }
          }
@@ -275,15 +275,15 @@ namespace SimCore
          if(type == dtGame::MessageType::TICK_LOCAL ||
             type == dtGame::MessageType::TICK_REMOTE)
          {
-            if(mEphemerisEnvironmentActor.valid())
+            if(mEnvironmentActor.valid())
             {
                dtCore::Transform positionTransform;
                GetGameManager()->GetApplication().GetCamera()->GetTransform(positionTransform);
                osg::Vec3 pos;
                positionTransform.GetTranslation(pos);
-               mEphemerisEnvironmentActor->SetSkyDomesCenter(pos);
+               mEnvironmentActor->SetSkyDomesCenter(pos);
 
-               mEphemerisEnvironmentActor->SetTimeFromSystem();
+               mEnvironmentActor->SetTimeFromSystem();
             }
 
             UpdateFog();
@@ -309,9 +309,9 @@ namespace SimCore
             {
                mDayTime = NULL;
             }
-            else if(mEphemerisEnvironmentActor.valid() && msg.GetAboutActorId() == mEphemerisEnvironmentActor->GetUniqueId())
+            else if(mEnvironmentActor.valid() && msg.GetAboutActorId() == mEnvironmentActor->GetUniqueId())
             {
-               mEphemerisEnvironmentActor = NULL;
+               mEnvironmentActor = NULL;
             }
          }
 
@@ -319,7 +319,7 @@ namespace SimCore
          {
             SetCoordinates();
 
-            if (mEphemerisEnvironmentActor == NULL)
+            if (mEnvironmentActor == NULL)
             {
                LOG_ERROR("No environment actor exists after MAP_LOADED. It is possible you did not include any AdditionalMaps in your config.xml.");
                return;
@@ -327,15 +327,15 @@ namespace SimCore
 
             // This sets the time the very first time a map changes to NOON. Without this,
             // the game ends up in some weird time zone offset from the current time clock. It's confusing.
-            dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+            dtUtil::DateTime dt(mEnvironmentActor->GetDateTime());
             dt.SetToLocalTime(); // try to sync up the month/day/year first.
             dt.SetHour(12);
             dt.SetMinute(0);
             dt.SetSecond(0.0f);
-            mEphemerisEnvironmentActor->SetDateTime(dt);
+            mEnvironmentActor->SetDateTime(dt);
 
             dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
-            mEphemerisEnvironmentActor->SetTimeFromSystem();
+            mEnvironmentActor->SetTimeFromSystem();
 
          }
 
@@ -370,7 +370,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::UpdateDayTime()
       {
-         if(!mEphemerisEnvironmentActor.valid())
+         if(!mEnvironmentActor.valid())
             return;
 
          // Update the time of day
@@ -383,7 +383,7 @@ namespace SimCore
                Actors::DayTimeActor* timeActor =
                   static_cast<Actors::DayTimeActor*>(mDayTime->GetActor());
 
-               float offset = mEphemerisEnvironmentActor->GetDateTime().GetGMTOffset();
+               float offset = mEnvironmentActor->GetDateTime().GetGMTOffset();
                dtUtil::DateTime dt(dtUtil::DateTime::TimeOrigin::GMT_TIME);
                dt.SetTime(timeActor->GetTime());
                dt.AdjustTimeZone(offset);
@@ -400,7 +400,7 @@ namespace SimCore
 
       void WeatherComponent::SetCoordinates()
       {
-         if(!mEphemerisEnvironmentActor.valid())
+         if(!mEnvironmentActor.valid())
             return;
 
          dtActors::CoordinateConfigActorProxy* coordConfigActorProxy = NULL;
@@ -420,12 +420,12 @@ namespace SimCore
                coords.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
                geoOffset = coords.ConvertToRemoteTranslation(geoOffset);
 
-               mEphemerisEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
+               mEnvironmentActor->SetLatitudeAndLongitude(geoOffset[0],
                   geoOffset[1]);
 
-               dtUtil::DateTime dt(mEphemerisEnvironmentActor->GetDateTime());
+               dtUtil::DateTime dt(mEnvironmentActor->GetDateTime());
                dt.SetGMTOffset(geoOffset[0], geoOffset[1], false);
-               mEphemerisEnvironmentActor->SetDateTime(dt);
+               mEnvironmentActor->SetDateTime(dt);
             }
          }
       }
@@ -436,7 +436,7 @@ namespace SimCore
          if(!mUpdatesEnabled)
             return;
 
-         if(!mEphemerisEnvironmentActor.valid())
+         if(!mEnvironmentActor.valid())
          {
             return;
          }
@@ -452,18 +452,18 @@ namespace SimCore
 
             // Change Visibility and Fog
             // --- Atmosphere holds visibility in Km, but the environment object expects meters.
-            mEphemerisEnvironmentActor->SetVisibility(atmosActor->GetVisibilityDistance()*1000.0f);
+            mEnvironmentActor->SetVisibility(atmosActor->GetVisibilityDistance()*1000.0f);
             UpdateFog();
 
             // Change the Cloud Coverage
-            mEphemerisEnvironmentActor->ChangeClouds(int(atmosActor->GetCloudCoverage() / 10),
+            mEnvironmentActor->ChangeClouds(int(atmosActor->GetCloudCoverage() / 10),
                                                       atmosActor->GetWindSpeedX(),
                                                       atmosActor->GetWindSpeedY());
             // Change Wind
             // --- The following forces an actor update message for which
             //     components and entity may be listening.
             osg::Vec2 wind(atmosActor->GetWind());
-            mEphemerisEnvironmentActor->SetWind(osg::Vec3( wind[0], wind[1], 0.0 ));
+            mEnvironmentActor->SetWind(osg::Vec3( wind[0], wind[1], 0.0 ));
 
             // Change Precipitation
             // --- This change must be applied before wind changes occur,
@@ -472,32 +472,32 @@ namespace SimCore
             //     wind forces.
             // TODO: Precipitation effect shutdown and setup
             if (//m_iPrecipType != atmosActor->GetPrecipitationType() ||
-               m_fPrecipRate != atmosActor->GetPrecipitationRate())
+               mPrecipRate != atmosActor->GetPrecipitationRate())
             {
-               m_fPrecipRate = atmosActor->GetPrecipitationRate();	// mm/hr
+               mPrecipRate = atmosActor->GetPrecipitationRate();	// mm/hr
 
                // Map rate to a rough 0-1 density based on meteorologist classifications.
                // A weather server may send specific values in {0,2,5,12,25,75} mm/hr.
-               if (m_fPrecipRate < 0.1)
-                  m_fPrecipRate = 0.0;
-               else if (m_fPrecipRate < 2.5)	// "light rain" is < 2.5 mm/hr
-                  m_fPrecipRate = 0.2;
-               else if (m_fPrecipRate < 7.6)
-                  m_fPrecipRate = 0.4;
-               else if (m_fPrecipRate < 16)	// "heavy rain" is > 7.6 mm/hr
-                  m_fPrecipRate = 0.6;
-               else if (m_fPrecipRate < 50)	// "downpour"   is > 16 mm/hr
-                  m_fPrecipRate = 0.8;
+               if (mPrecipRate < 0.1)
+                  mPrecipRate = 0.0;
+               else if (mPrecipRate < 2.5)	// "light rain" is < 2.5 mm/hr
+                  mPrecipRate = 0.2;
+               else if (mPrecipRate < 7.6)
+                  mPrecipRate = 0.4;
+               else if (mPrecipRate < 16)	// "heavy rain" is > 7.6 mm/hr
+                  mPrecipRate = 0.6;
+               else if (mPrecipRate < 50)	// "downpour"   is > 16 mm/hr
+                  mPrecipRate = 0.8;
                else
-                  m_fPrecipRate = 1.0;
+                  mPrecipRate = 1.0;
 
                bool toContinue = true;
-               if(m_fPrecipRate < 0.01)
+               if(mPrecipRate < 0.01)
                {
-                  if(m_spPrecipEffect.valid())
+                  if(mPrecipEffect.valid())
                   {
-                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->removeChild(m_spPrecipEffect.get());
-                     m_spPrecipEffect = NULL;
+                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->removeChild(mPrecipEffect.get());
+                     mPrecipEffect = NULL;
                   }
                   toContinue = false;
                }
@@ -505,32 +505,32 @@ namespace SimCore
                if(toContinue)
                {
                   // Create or change the effect
-                  if(!m_spPrecipEffect.valid())
+                  if(!mPrecipEffect.valid())
                   {
-                     m_spPrecipEffect = new osgParticle::PrecipitationEffect;
-                     m_spPrecipEffect->setNodeMask(0x00000010);
+                     mPrecipEffect = new osgParticle::PrecipitationEffect;
+                     mPrecipEffect->setNodeMask(0x00000010);
 
-                     SetStateSet(m_spPrecipEffect.get());
+                     SetStateSet(mPrecipEffect.get());
 
-                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->addChild(m_spPrecipEffect.get());
+                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->addChild(mPrecipEffect.get());
                   }
 
                   if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::FREEZING_RAIN
                      || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::RAIN)
                   {
-                     m_spPrecipEffect->rain(m_fPrecipRate);
+                     mPrecipEffect->rain(mPrecipRate);
                   }
                   else if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::SNOW
                      || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::HAIL)
                   {
-                     m_spPrecipEffect->snow(m_fPrecipRate);
+                     mPrecipEffect->snow(mPrecipRate);
                   }
 
-                  m_spPrecipEffect->setWind(osg::Vec3( wind[0], wind[1], 0.0f ));
+                  mPrecipEffect->setWind(osg::Vec3( wind[0], wind[1], 0.0f ));
                }
             }
             // Notify the app that the environment actor has changed.
-            mEphemerisEnvironmentActor->GetGameActorProxy().NotifyActorUpdate();
+            mEnvironmentActor->GetGameActorProxy().NotifyActorUpdate();
          }
          else
          {

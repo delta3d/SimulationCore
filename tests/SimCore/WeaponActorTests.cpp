@@ -280,7 +280,7 @@ namespace SimCore
       void WeaponActorTests::CreateShooter()
       {
          dtCore::RefPtr<MunitionParticlesActorProxy> proxy;
-         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE, proxy );
+         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE, proxy );
          mWeapon->SetShooter( proxy.get() );
       }
 

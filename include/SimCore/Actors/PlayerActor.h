@@ -39,6 +39,7 @@ namespace SimCore
       class SIMCORE_EXPORT PlayerActor : public StealthActor
       {
          public:
+            typedef StealthActor BaseClass;
 
             /// Constructor
             PlayerActor(dtGame::GameActorProxy &proxy);
@@ -57,10 +58,12 @@ namespace SimCore
              * @param tool The tool to enable
              */
             void SetEnabledTool(SimCore::MessageType &tool);
-            
+
             ///Method to handle the enable/disable tool message.
             void EnableTool(const dtGame::Message &msg);
-      
+
+            virtual void InitDeadReckoningHelper();
+
          private:
 
             SimCore::MessageType* mActiveTool;
@@ -83,13 +86,7 @@ namespace SimCore
             virtual void BuildInvokables();
 
             /// Instantiates the actor this proxy encapsulated
-            virtual void CreateActor() 
-            { 
-               PlayerActor* p = new PlayerActor(*this);
-               SetActor(*p); 
-               p->InitDeadReckoningHelper();               
-               p->SetGroundOffset(3.0f);
-            }
+            virtual void CreateActor();
       };
    }
 }

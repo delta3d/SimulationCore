@@ -353,10 +353,13 @@ void PhysicsParticleSystemActor::AddParticle()
 
    newObject->SetMass(mPhysicsHelper->GetMass());
    newObject->SetExtents(mPhysicsHelper->GetDimensions());
-   newObject->SetOriginOffset(osg::Vec3f(ourTranslation));
    newObject->SetCollisionGroup(collisionGroupToSendIn);
    newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
    newObject->CreateFromProperties(particle->mObj->GetOSGNode());
+
+   dtCore::Transform xform;
+   xform.SetTranslation(ourTranslation);
+   newObject->SetTransform(xform);
 
 #endif
 

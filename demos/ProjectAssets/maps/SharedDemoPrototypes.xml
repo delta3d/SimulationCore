@@ -19,7 +19,7 @@
     </libraries>
     <actors>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaMunitionsPSysActor</type>
+            <type>Effects.MunitionParticles</type>
             <id>1533ce31-9588-4579-a727-51e1ea00e444</id>
             <name>Particle_System_Weapon_Grenade</name>
             <property>
@@ -315,7 +315,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaMunitionsPSysActor</type>
+            <type>Effects.MunitionParticles</type>
             <id>1533ce31-9588-4579-a727-5122ea22e444</id>
             <name>Particle_System_Weapon_GunWithTracer</name>
             <property>
@@ -737,7 +737,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaParticleSystemActor</type>
+            <type>Effects.PhysicsParticleSystem</type>
             <id>4d3c1646-fa31-4678-be7c-ed49f7bca91e</id>
             <name>DustDebrisLight</name>
             <property>
@@ -1025,7 +1025,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaParticleSystemActor</type>
+            <type>Effects.PhysicsParticleSystem</type>
             <id>55529123-eaa5-446e-b086-1d3ba40aa715</id>
             <name>BuildingHitDebrisCement</name>
             <property>
@@ -1943,7 +1943,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaParticleSystemActor</type>
+            <type>Effects.PhysicsParticleSystem</type>
             <id>a8154314-7c3c-4f1c-a672-27fb7ebd2dbb</id>
             <name>DustDebrisHeavy</name>
             <property>
@@ -2231,7 +2231,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaParticleSystemActor</type>
+            <type>Effects.PhysicsParticleSystem</type>
             <id>ad9204e7-a3c4-4ffb-8304-14c8ec4b9c3e</id>
             <name>BuildingHitDebrisMetal</name>
             <property>

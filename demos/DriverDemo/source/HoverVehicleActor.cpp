@@ -35,7 +35,6 @@
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -378,12 +377,6 @@ namespace DriverDemo
    void HoverVehicleActorProxy::CreateActor()
    {
       SetActor(*new HoverVehicleActor(*this));
-
-      SimCore::Actors::BaseEntity* entityActor = dynamic_cast<SimCore::Actors::BaseEntity*> (GetActor());
-      if( entityActor != NULL )
-      {
-         entityActor->InitDeadReckoningHelper();
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -48,7 +48,6 @@
 #include <osgViewer/View>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
@@ -241,7 +240,10 @@ namespace SimCore
             physicsObject->wakeUp();
 
 #else
-         physicsObject->SetActive(true);
+         if (!physicsObject->IsActive())
+         {
+            physicsObject->SetActive(true);
+         }
 #endif
          // Check if terrain is available. (For startup)
          if( ! mHasFoundTerrain )
@@ -541,9 +543,16 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float BasePhysicsVehicleActor::GetMPH()
       {
-         return GetVelocityVector().length() * 2.236936291;
-         //return GetPhysicsHelper()->GetMPH();
-         //return 0.0f;
+         static const float METERSPS_TO_MILESPH = 2.236936291;
+         if (IsRemote())
+         {
+            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
+         }
+         else
+         {
+            return GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->GetLinearVelocity().length()
+                  * METERSPS_TO_MILESPH;
+         }
       }
 
 #ifdef AGEIA_PHYSICS
@@ -715,7 +724,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActorProxy::BasePhysicsVehicleActorProxy()
       {
-         //SetClassName("NxAgeiaFourWheeledVehicleActor");
+         SetClassName("BasePhysicsVehicleActorProxy");
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -743,17 +752,6 @@ namespace SimCore
 
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActorProxy::~BasePhysicsVehicleActorProxy(){}
-      ///////////////////////////////////////////////////////////////////////////////////
-      /*void BasePhysicsVehicleActorProxy::CreateActor()
-      {
-         SetActor(*new BasePhysicsVehicleActor(*this));
-
-         BaseEntity* entityActor = dynamic_cast<BaseEntity*> (GetActor());
-         if( entityActor != NULL )
-         {
-            entityActor->InitDeadReckoningHelper();
-         }
-      }*/
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActorProxy::OnEnteredWorld()

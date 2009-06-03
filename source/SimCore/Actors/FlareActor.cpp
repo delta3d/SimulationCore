@@ -396,8 +396,6 @@ namespace SimCore
       void FlareActorProxy::CreateActor()
       {
          SetActor( *new FlareActor(*this) );
-
-         (static_cast<FlareActor*>(GetActor()))->InitDeadReckoningHelper();
       }
 
    }

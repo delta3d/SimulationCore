@@ -47,10 +47,9 @@ namespace SimCore
       void InteriorActorProxy::CreateActor()
       {
          InteriorActor* pActor = new InteriorActor(*this);
-         SetActor(*pActor); 
-         pActor->InitDeadReckoningHelper();
+         SetActor(*pActor);
       }
-      
+
 
       //////////////////////////////////////////////////////////
       // Actor code

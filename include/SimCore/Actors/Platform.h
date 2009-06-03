@@ -158,14 +158,14 @@ namespace SimCore
              *
              * @param name the instance name
              */
-            Platform(dtGame::GameActorProxy &proxy);
+            Platform(dtGame::GameActorProxy& proxy);
 
             /**
              * Generic method for loading damagable files
              * @param fileName The file to load
              * @param state The dtHLA::DamageState that the file represents
              */
-            void LoadDamageableFile(const std::string &fileName, PlatformActorProxy::DamageStateEnum &state);
+            void LoadDamageableFile(const std::string& fileName, PlatformActorProxy::DamageStateEnum& state);
 
             /**
              * Returns the switch node of this entity

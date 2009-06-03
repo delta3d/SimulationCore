@@ -60,7 +60,7 @@
 #endif
 
 #include <SimCore/Actors/PlatformWithPhysics.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <SimCore/Actors/LatLongDataActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
@@ -115,8 +115,11 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaParticleSystemActor", "NxAgeiaPhysicsModels"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("NxAgeiaMunitionsPSysActor", "NxAgeiaPhysicsModels"));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PHYSICS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("PhysicsParticleSystem", "Effects"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("MunitionParticles", "Effects"));
+
       // needs to be implemented whether or not physics is on.
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("joe", "Terrain"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
@@ -139,6 +142,8 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::OLD_REMOTE_PHYSX_ACTOR_TYPE(
                new dtDAL::ActorType("NxAgeiaRemoteKinematicActor", "NxAgeiaPhysicsModels", "",
                         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaTerraPageLandActor", "NxAgeiaPhysicsModels"));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LAT_LONG_DATA_ACTOR_TYPE
          = new dtDAL::ActorType("LatLongDataActor","SimCore",
@@ -208,6 +213,9 @@ namespace SimCore
          mActorFactory->RegisterType<PhysicsParticleSystemActorProxy>(AGEIA_PARTICLE_SYSTEM_TYPE.get());
          mActorFactory->RegisterType<MunitionParticlesActorProxy>(AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
 
+         mActorFactory->RegisterType<PhysicsParticleSystemActorProxy>(PHYSICS_PARTICLE_SYSTEM_TYPE.get());
+         mActorFactory->RegisterType<MunitionParticlesActorProxy>(PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE.get());
+
 #ifdef AGEIA_PHYSICS
          mActorFactory->RegisterType<NxAgeiaFourWheelVehicleActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
          mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
@@ -216,7 +224,8 @@ namespace SimCore
          mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #endif
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
-         mActorFactory->RegisterType<NxAgeiaTerraPageLandActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(PAGED_TERRAIN_PHYSICS_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<VehicleAttachingConfigActorProxy>(VEHICLE_CONFIG_ACTOR_TYPE.get());
 

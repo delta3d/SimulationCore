@@ -48,7 +48,6 @@ namespace SimCore
    namespace Actors
    {
 
-
       ////////////////////////////////////////////////////
       // Export symbol not needed, this should not be used
       // by external libraries
@@ -114,7 +113,7 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////
       //class NxAgeiaTerraPageListener;
-      class SIMCORE_EXPORT NxAgeiaTerraPageLandActor : public dtGame::GameActor
+      class SIMCORE_EXPORT PagedTerrainPhysicsActor : public dtGame::GameActor
 #ifdef AGEIA_PHYSICS
       , public dtAgeiaPhysX::NxAgeiaPhysicsInterface
 #endif
@@ -122,11 +121,11 @@ namespace SimCore
          public:
             static const std::string DEFAULT_NAME;
             /// Constructor
-            NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy);
+            PagedTerrainPhysicsActor(dtGame::GameActorProxy &proxy);
 
          protected:
             /// Destructor
-            virtual ~NxAgeiaTerraPageLandActor(void);
+            virtual ~PagedTerrainPhysicsActor(void);
 
 
          public:
@@ -210,14 +209,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       // Proxy
       ///////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT NxAgeiaTerraPageLandActorProxy : public dtGame::GameActorProxy
+      class SIMCORE_EXPORT PagedTerrainPhysicsActorProxy : public dtGame::GameActorProxy
       {
          public:
-            NxAgeiaTerraPageLandActorProxy();
+            PagedTerrainPhysicsActorProxy();
             virtual void BuildPropertyMap();
 
          protected:
-            virtual ~NxAgeiaTerraPageLandActorProxy();
+            virtual ~PagedTerrainPhysicsActorProxy();
             void CreateActor();
             virtual void OnEnteredWorld();
       };

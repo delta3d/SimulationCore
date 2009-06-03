@@ -25,7 +25,7 @@
 
 #include <SimCore/Export.h>
 #include <dtCore/observerptr.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <osgUtil/CullVisitor>
 #include <osg/Transform>
 #include <osg/Geode>
@@ -54,8 +54,8 @@ namespace SimCore
          virtual void apply(osg::Group& node);
 
          /// Set and Get For the land Actor
-         void SetLandActor(SimCore::Actors::NxAgeiaTerraPageLandActor* land) {mLandActor = land;}
-         SimCore::Actors::NxAgeiaTerraPageLandActor* GetLandActor() {return mLandActor.get();} 
+         void SetLandActor(SimCore::Actors::PagedTerrainPhysicsActor* land) {mLandActor = land;}
+         SimCore::Actors::PagedTerrainPhysicsActor* GetLandActor() {return mLandActor.get();}
 
          /// Set and get for the terrain node
          void SetTerrainNode(osg::Transform* terrainNodeCheckAgainst){mTerrainNode = terrainNodeCheckAgainst;}
@@ -88,13 +88,13 @@ namespace SimCore
 
       private:
          /// we feed the terrain data through here, it loads the physics
-         dtCore::ObserverPtr<SimCore::Actors::NxAgeiaTerraPageLandActor>  mLandActor;
+         dtCore::ObserverPtr<SimCore::Actors::PagedTerrainPhysicsActor>  mLandActor;
 
          /// this is the top level transform node of the terrain, for knowing when
          /// we are in the terrain
          dtCore::ObserverPtr<osg::Transform>             mTerrainNode;
-         
-         /// are we in the terrain currently? mNodeWeCheckAgainst passed, so work 
+
+         /// are we in the terrain currently? mNodeWeCheckAgainst passed, so work
          /// is being done this frame
          bool                                            mCurrentlyInTerrain;
 
@@ -118,7 +118,7 @@ namespace SimCore
          /// of the mLandActor->FinalizeTerrain is complete.
          bool                                            mRunFinalizeTerrain;
 
-         /// This is for proxy nodes that arent loaded into the basic geode structure 
+         /// This is for proxy nodes that arent loaded into the basic geode structure
          /// of the terrain.
          bool                                            mHitProxyNode;
 

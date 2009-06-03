@@ -57,6 +57,7 @@
 
 #include <iostream>
 #include <queue>
+#include <sstream>
 
 namespace SimCore
 {

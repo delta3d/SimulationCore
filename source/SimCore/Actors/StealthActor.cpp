@@ -90,7 +90,6 @@ namespace SimCore
        {
           StealthActor* pEntity = new StealthActor(*this);
           SetActor(*pEntity);
-          pEntity->InitDeadReckoningHelper();
        }
 
        //////////////////////////////////////////////////////

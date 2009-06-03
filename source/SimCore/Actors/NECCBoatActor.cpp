@@ -934,12 +934,6 @@ namespace SimCore
       void NECCBoatActorProxy::CreateActor()
       {
          SetActor(*new NECCBoatActor(*this));
-
-         BaseEntity* entityActor = dynamic_cast<BaseEntity*> (GetActor());
-         if( entityActor != NULL )
-         {
-            entityActor->InitDeadReckoningHelper();
-         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

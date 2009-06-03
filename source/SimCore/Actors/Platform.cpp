@@ -193,10 +193,6 @@ namespace SimCore
       {
          Platform* pEntity = new Platform(*this);
          SetActor(*pEntity);
-
-         //we made a virtual function to create our dead reckoning helper so the helper
-         //could be changed by a subclass of entity.... bga
-         pEntity->InitDeadReckoningHelper();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

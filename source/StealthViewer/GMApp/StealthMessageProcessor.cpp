@@ -46,7 +46,7 @@ namespace StealthGM
             msg.GetActorTypeName() == "Environment" && msg.GetActorTypeCategory() == "dtcore.Environment")
       {
          // ignore the remote environment
-         std::cerr << "HACK - Ignoring create of remote environment - this is a playback Hack" << std::endl;
+         LOG_ALWAYS("HACK - Ignoring create of remote environment - this is a playback Hack");
          return NULL;
       }
 

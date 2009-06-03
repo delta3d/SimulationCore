@@ -507,10 +507,6 @@ namespace SimCore
       {
          PositionMarker* marker = new PositionMarker(*this);
          SetActor(*marker);
-
-         //we made a virtual function to create our dead reckoning helper so the helper
-         //could be changed by a subclass of entity.... bga
-         marker->InitDeadReckoningHelper();
       }
 
       ////////////////////////////////////////////////////////////////////////

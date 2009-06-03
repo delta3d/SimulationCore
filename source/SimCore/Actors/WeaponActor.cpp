@@ -861,8 +861,6 @@ namespace SimCore
       {
          WeaponActor& actor = *new WeaponActor(*this);
          SetActor(actor);
-
-         actor.InitDeadReckoningHelper();
       }
 
       //////////////////////////////////////////////////////////////////////////
