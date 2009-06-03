@@ -106,7 +106,6 @@ namespace SimCore
       {
          MissileActor* pActor = new MissileActor(*this);
          SetActor(*pActor);
-         pActor->InitDeadReckoningHelper();
       }
 
       //////////////////////////////////////////////////////////

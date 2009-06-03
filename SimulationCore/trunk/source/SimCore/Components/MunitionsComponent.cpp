@@ -56,7 +56,7 @@
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/Human.h>
 
@@ -750,7 +750,7 @@ namespace SimCore
             if(targetProxy != NULL)
             {
                hitEntity = ! (targetProxy != NULL
-                  && ( dynamic_cast<SimCore::Actors::NxAgeiaTerraPageLandActor*>(targetProxy->GetActor()) != NULL
+                  && ( dynamic_cast<SimCore::Actors::PagedTerrainPhysicsActor*>(targetProxy->GetActor()) != NULL
                   || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
 
                // Check to see if we hit a person. Needs a different effect

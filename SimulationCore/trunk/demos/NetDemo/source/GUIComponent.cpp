@@ -22,7 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <GUICOmponent.h>
+#include <GUIComponent.h>
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>
@@ -31,11 +31,8 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/gui/SimpleScreen.h>
+#include <SimCore/GUI/SimpleScreen.h>
 #include <States.h>
-
-using namespace SimCore::Components;
-
 
 
 namespace NetDemo
@@ -105,9 +102,9 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessStateChangeMessage( const GameStateChangedMessage& stateChange )
+   void GUIComponent::ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
    {
-      const StateType& state = stateChange.GetNewState();
+      const SimCore::Components::StateType& state = stateChange.GetNewState();
 
       bool isRunningState = state == NetDemoState::STATE_GAME;
 
@@ -130,7 +127,7 @@ namespace NetDemo
 
       // Initialize CEGUI
       mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
-      mGUI->SetRenderBinDetails(RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+      mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
 
       // Add the GUI drawable directly to the OSG scene node rather than
       // going through the over-managed dtCore Scene. If this is not done,
@@ -159,7 +156,7 @@ namespace NetDemo
       }
 
       CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
-      mMainWindow = new HUDGroup("Root","DefaultGUISheet");
+      mMainWindow = new SimCore::Components::HUDGroup("Root","DefaultGUISheet");
       CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
 
       // Prepare the main window.
@@ -208,7 +205,7 @@ namespace NetDemo
          // Attempt to access the button's action property.
          try
          {
-            CEGUI::String& value = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
+            CEGUI::String value = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
             action = std::string( value.c_str() );
          }
          catch( CEGUI::Exception& ceguiEx )
@@ -253,7 +250,7 @@ namespace NetDemo
          // ...else if this is a normal widget window...
          else if( curChild->getChildCount() > 0 )
          {
-            size_t numChildren = curChild->getChildCount(); 
+            size_t numChildren = curChild->getChildCount();
             for( size_t i = 0; i < numChildren; ++i )
             {
                childList.push_back( curChild->getChildAtIdx( i ) );

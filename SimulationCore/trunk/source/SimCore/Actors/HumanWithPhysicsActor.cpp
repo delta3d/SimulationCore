@@ -41,7 +41,6 @@
 #include <dtUtil/mathdefines.h>
 
 #include <SimCore/Actors/TerrainActorProxy.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
@@ -118,7 +117,7 @@ namespace SimCore
                GetGameActorProxy().GetGameManager()->FindActorsByClassName("NxAgeiaTerraPageLand", toFill);
                if(toFill.size())
                {
-                  NxAgeiaTerraPageLandActor* landActor = dynamic_cast<NxAgeiaTerraPageLandActor*>((*toFill.begin())->GetActor());
+                  PagedTerrainPhysicsActor* landActor = dynamic_cast<PagedTerrainPhysicsActor*>((*toFill.begin())->GetActor());
                   if(landActor != NULL)
                   {
                      if(landActor->HasSomethingBeenLoaded())
@@ -453,11 +452,6 @@ namespace SimCore
       {
          HumanWithPhysicsActor* p = new HumanWithPhysicsActor(*this);
          SetActor(*p);
-
-         if(!IsRemote())
-         {
-            p->InitDeadReckoningHelper();
-         }
       }
 
       //////////////////////////////////////////////////////////////////////////

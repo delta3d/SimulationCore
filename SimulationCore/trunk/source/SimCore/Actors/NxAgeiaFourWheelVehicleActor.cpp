@@ -40,7 +40,6 @@
 #include <osgViewer/View>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
@@ -486,12 +485,6 @@ namespace SimCore
       void NxAgeiaFourWheelVehicleActorProxy::CreateActor()
       {
          SetActor(*new NxAgeiaFourWheelVehicleActor(*this));
-
-         BaseEntity* entityActor = dynamic_cast<BaseEntity*> (GetActor());
-         if( entityActor != NULL )
-         {
-            entityActor->InitDeadReckoningHelper();
-         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

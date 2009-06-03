@@ -382,6 +382,15 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntityActorProxy::Init(const dtDAL::ActorType& actorType)
+      {
+         BaseClass::Init(actorType);
+         BaseEntity* entity = NULL;
+         GetActor(entity);
+         entity->InitDeadReckoningHelper();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildInvokables()
       {
          BaseClass::BuildInvokables();

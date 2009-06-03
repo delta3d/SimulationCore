@@ -34,7 +34,6 @@
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -148,7 +147,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
    {
-      GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force); 
+      GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
       /////////dtPhysics::VectorType force(force[0], force[1], force[2]);
       //GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
    }
@@ -204,7 +203,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::PostPhysicsUpdate()
    {
-      // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we 
+      // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
       // take the position and throw away the rotation.
 
       // This is ONLY called if we are LOCAL (we put the check here just in case... )
@@ -257,12 +256,12 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildPropertyMap()
    {
-      const std::string& VEH_GROUP   = "Vehicle Property Values";
-      const std::string& SOUND_GROUP = "Sound Property Values";
+      const std::string VEH_GROUP   = "Vehicle Property Values";
+      //const std::string SOUND_GROUP = "Sound Property Values";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      HoverVehicleActor  &actor = static_cast<HoverVehicleActor &>(GetGameActor());
+      HoverVehicleActor& actor = *static_cast<HoverVehicleActor*>(GetActor());
 
       AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
          dtDAL::MakeFunctor(actor, &HoverVehicleActor::SetVehicleIsTurret),
@@ -276,12 +275,6 @@ namespace NetDemo
    void HoverVehicleActorProxy::CreateActor()
    {
       SetActor(*new HoverVehicleActor(*this));
-
-      SimCore::Actors::BaseEntity* entityActor = dynamic_cast<SimCore::Actors::BaseEntity*> (GetActor());
-      if( entityActor != NULL )
-      {
-         entityActor->InitDeadReckoningHelper();
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

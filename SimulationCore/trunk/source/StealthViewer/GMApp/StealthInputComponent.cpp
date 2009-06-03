@@ -481,7 +481,7 @@ namespace StealthGM
          SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(dd);
          if (entity != NULL )
          {
-            std::cout << "\n\tEntity found!!!\n" << std::endl;
+            //std::cout << "\n\tEntity found!!!\n" << std::endl;
             mCurEntity = entity;
 
             /*osg::Vec3 entityPos;

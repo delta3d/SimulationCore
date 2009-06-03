@@ -62,10 +62,10 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> CONTROL_STATE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> BASE_WATER_ACTOR_TYPE;
 
-            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_PARTICLE_SYSTEM_TYPE;
-            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> PHYSICS_PARTICLE_SYSTEM_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
 
-            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_TLAND_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> PAGED_TERRAIN_PHYSICS_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_VEHICLE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_PHYSICS_ACTOR_TYPE;
             //static dtCore::RefPtr<dtDAL::ActorType> AGEIA_EMBARKABLE_ACTOR_TYPE;
@@ -93,8 +93,11 @@ namespace SimCore
             void RegisterActorTypes();
          private:
 
-            //Protected so it won't be used in code
+            //Private so it won't be used in code
             static dtCore::RefPtr<dtDAL::ActorType> OLD_REMOTE_PHYSX_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_TLAND_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_PARTICLE_SYSTEM_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> AGEIA_MUNITIONS_PARTICLE_SYSTEM_TYPE;
 
       };
    }

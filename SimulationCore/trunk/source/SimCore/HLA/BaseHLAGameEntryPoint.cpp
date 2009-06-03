@@ -165,19 +165,19 @@ namespace SimCore
 
             if (!parser->read("--federationExecutionName", mFederationExecutionName))
             {
-               std::cerr << "Please specify the name of the federation execution to use with the --federationExecutionName option.\n";
+               std::cerr << "Please specify the name of the federation execution to use with the --federationExecutionName option." << std::endl;
                mMissingRequiredCommandLineOption = true;
             }
 
             if (!parser->read("--fedFileName", mFedFileResource))
             {
-               std::cerr << "Please specify the name of the federation file name to use with the --fedFileName option\n";
+               std::cerr << "Please specify the name of the federation file name to use with the --fedFileName option."  << std::endl;
                mMissingRequiredCommandLineOption = true;
             }
 
             if (!parser->read("--fedMappingFileResource", mFedMappingResource))
             {
-               std::cerr << "Please specify the name of the mapping file to use with federation file " << mFedMappingResource << '\n';
+               std::cerr << "Please specify the name of the mapping file to use with federation file " + mFedMappingResource  << std::endl;
                mMissingRequiredCommandLineOption = true;
             }
 

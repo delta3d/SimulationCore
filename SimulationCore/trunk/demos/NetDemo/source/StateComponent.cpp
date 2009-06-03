@@ -59,7 +59,7 @@ namespace NetDemo
    {
       BaseClass::ProcessMessage(message);
 
-      const dtGame::MessageType& messageType = message.GetMessageType();
+      //const dtGame::MessageType& messageType = message.GetMessageType();
 
       // TODO: Any message specific stuff.
    }

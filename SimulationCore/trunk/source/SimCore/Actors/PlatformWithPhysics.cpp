@@ -311,12 +311,6 @@ namespace SimCore
       void PlatformWithPhysicsActorProxy::CreateActor()
       {
          SetActor(*new PlatformWithPhysics(*this));
-
-         BaseEntity* entityActor = dynamic_cast<BaseEntity*> (GetActor());
-         if( entityActor != NULL )
-         {
-            entityActor->InitDeadReckoningHelper();
-         }
       }
 
       /////////////////////////////////////////////////////////////////////////

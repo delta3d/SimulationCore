@@ -190,8 +190,8 @@ namespace SimCore
             //prevent rendering of the snow within the vehicle
             void SetStateSet(osg::Node* node);
 
-            float				   m_fPrecipRate;
-            osg::ref_ptr<osgParticle::PrecipitationEffect> m_spPrecipEffect;
+            float				   mPrecipRate;
+            osg::ref_ptr<osgParticle::PrecipitationEffect> mPrecipEffect;
 
             /**
              * Helper method to help reduce some code
@@ -225,7 +225,7 @@ namespace SimCore
             // The Weather object is being referenced to gain access
             // to clouds. If it were not for this reason, the Environment
             // object would instead be referenced directly.
-            dtCore::RefPtr<SimCore::Actors::IGEnvironmentActor>      mEphemerisEnvironmentActor;
+            dtCore::RefPtr<SimCore::Actors::IGEnvironmentActor> mEnvironmentActor;
       };
    }
 }

@@ -42,7 +42,6 @@ namespace SimCore
 {
    namespace Actors
    {
-      class NxAgeiaTerraPageLandActor;
       class TerrainActor;
    }
 
@@ -61,7 +60,7 @@ namespace NetDemo
 
 
    //////////////////////////////////////////////////////////////////////////////
-   /* 
+   /*
     * This component is responsible for some of the core game logic such as changing game
     * states and responding to major messages from the server. It also listens for server
     * players and manages/creates the PlayerStatusActor.
@@ -78,15 +77,12 @@ namespace NetDemo
 
          void InitializePlayer();
 
-         // Returns the PHYSICS land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
-         SimCore::Actors::NxAgeiaTerraPageLandActor *GetGlobalTerrainPhysicsActor();
-
          // Returns the DRAW land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
-         SimCore::Actors::TerrainActor *GetCurrentTerrainDrawActor();
+         SimCore::Actors::TerrainActor* GetCurrentTerrainDrawActor();
 
          // IsServer can only be set at startup, probably from the GameEntryPoint()
-         void SetIsServer(bool newValue) { if (!mPlayerStatus.valid()) mIsServer = newValue; }
-         bool GetIsServer() { return mIsServer; }
+         void SetIsServer(bool newValue);
+         bool GetIsServer();
 
          void SetMapName(const std::string& mapName);
          const std::string& GetMapName() const;
@@ -96,13 +92,11 @@ namespace NetDemo
          bool HandleTransition( const std::string& transitionName );
          bool HandleTransition( SimCore::Components::EventType& transition );
 
-      protected: 
+      protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
 
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
-
-         void FindThePhysicsLandActor();
          void LoadNewTerrain();
          void UnloadPreviousTerrain();
          void HandleLoadingState();
@@ -116,17 +110,14 @@ namespace NetDemo
          // Each client & server has one player status that they are publishing.
          dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
 
-         // This holds the terrain prototype we want to load once we enter LOADING state. 
+         // This holds the terrain prototype we want to load once we enter LOADING state.
          std::string mTerrainToLoad;
 
          // This is our current terrain prototype name.
          std::string mCurrentTerrainPrototypeName;
 
-         // The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics. 
+         // The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics.
          dtCore::RefPtr<dtGame::GameActor> mCurrentTerrainDrawActor;
-
-         // The one and only physics actor. This one persists regardless of how many times we change terrains.
-         dtCore::RefPtr<dtGame::GameActor> mGlobalTerrainPhysicsActor;
 
          // Reference to the State Component to control automatic transitions.
          dtCore::ObserverPtr<StateComponent> mStateComp;

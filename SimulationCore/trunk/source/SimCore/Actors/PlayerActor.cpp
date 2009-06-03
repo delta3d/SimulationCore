@@ -50,9 +50,9 @@ namespace SimCore
       {
          StealthActorProxy::BuildPropertyMap();
 
-         AddProperty(new dtDAL::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool", 
-            dtDAL::MakeFunctor(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::SetEnabledTool), 
-            dtDAL::MakeFunctorRet(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::GetEnabledTool), 
+         AddProperty(new dtDAL::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
+            dtDAL::MakeFunctor(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::SetEnabledTool),
+            dtDAL::MakeFunctorRet(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::GetEnabledTool),
             "Sets the currently enabled tool on the player"));
       }
 
@@ -60,10 +60,10 @@ namespace SimCore
       void PlayerActorProxy::BuildInvokables()
       {
          PlayerActor &pa = static_cast<PlayerActor&>(GetGameActor());
-       
+
          StealthActorProxy::BuildInvokables();
 
-         AddInvokable(*new dtGame::Invokable("Enable Tool", 
+         AddInvokable(*new dtGame::Invokable("Enable Tool",
             dtDAL::MakeFunctor(pa, &PlayerActor::EnableTool)));
 
          // TODO Register same invokable for the other tools when implemented
@@ -74,12 +74,19 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
+      void PlayerActorProxy::CreateActor()
+      {
+         PlayerActor* p = new PlayerActor(*this);
+         SetActor(*p);
+      }
+
+      //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
-      PlayerActor::PlayerActor(dtGame::GameActorProxy &proxy) : 
+      PlayerActor::PlayerActor(dtGame::GameActorProxy &proxy) :
          StealthActor(proxy),
          mActiveTool(&SimCore::MessageType::NO_TOOL)
-      {  
+      {
          SetAttachAsThirdPerson(false);
       }
 
@@ -95,9 +102,9 @@ namespace SimCore
             SetEnabledTool(SimCore::MessageType::NO_TOOL);
 
          dtGame::MessageType &type = const_cast<dtGame::MessageType&>(msg.GetMessageType());
-            
+
          const SimCore::ToolMessage& tm = dynamic_cast<const SimCore::ToolMessage&>(msg);
-                  
+
          SetEnabledTool(tm.IsEnabled() ? static_cast<SimCore::MessageType&>(type) : SimCore::MessageType::NO_TOOL);
       }
 
@@ -111,6 +118,13 @@ namespace SimCore
       void PlayerActor::SetEnabledTool(SimCore::MessageType &tool)
       {
          mActiveTool = &tool;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void PlayerActor::InitDeadReckoningHelper()
+      {
+         BaseClass::InitDeadReckoningHelper();
+         SetGroundOffset(3.0f);
       }
    }
 }

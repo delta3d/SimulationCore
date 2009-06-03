@@ -432,10 +432,6 @@ namespace SimCore
       {
          Human* human = new Human(*this);
          SetActor(*human);
-
-         //we made a virtual function to create our dead reckoning helper so the helper
-         //could be changed by a subclass of entity.... bga
-         human->InitDeadReckoningHelper();
       }
 
       ////////////////////////////////////////////////////////////////////////////

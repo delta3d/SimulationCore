@@ -147,6 +147,13 @@ namespace SimCore
              */
             virtual void BuildPropertyMap();
 
+            /**
+             * This is a virtual method on the proxy called from the base actor proxy.
+             * It is overridden here to call init dr helper.  If you override this, make sure to call
+             * the super version or the actorproxy won't have any properties and create actor won't get called.
+             */
+            virtual void Init(const dtDAL::ActorType& actorType);
+
             virtual void OnRemovedFromWorld();
 
             /// Build the invokables

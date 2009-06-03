@@ -38,7 +38,6 @@
 #include <osgViewer/View>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
@@ -384,12 +383,6 @@ namespace DriverDemo
    void HoverExplodingTargetActorProxy::CreateActor()
    {
       SetActor(*new HoverExplodingTargetActor(*this));
-
-      SimCore::Actors::BaseEntity* entityActor = dynamic_cast<SimCore::Actors::BaseEntity*> (GetActor());
-      if( entityActor != NULL )
-      {
-         entityActor->InitDeadReckoningHelper();
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

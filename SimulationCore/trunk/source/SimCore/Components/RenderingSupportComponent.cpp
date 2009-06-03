@@ -665,12 +665,12 @@ namespace SimCore
          {
 
             // Get the physics land actor
-            SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
-            GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
+            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = NULL;
+            GetGameManager()->FindActorByName(SimCore::Actors::PagedTerrainPhysicsActor::DEFAULT_NAME, landActorProxy);
 
             if (landActorProxy != NULL)
             {
-               SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
                landActorProxy->GetActor(landActor);
 
                // Get the terrain - which has our mesh node
@@ -963,12 +963,12 @@ namespace SimCore
 
          if (mCullVisitor->GetLandActor() == NULL)
          {
-            SimCore::Actors::NxAgeiaTerraPageLandActorProxy* landActorProxy = NULL;
-            GetGameManager()->FindActorByName(SimCore::Actors::NxAgeiaTerraPageLandActor::DEFAULT_NAME, landActorProxy);
+            SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = NULL;
+            GetGameManager()->FindActorByName(SimCore::Actors::PagedTerrainPhysicsActor::DEFAULT_NAME, landActorProxy);
 
             if (landActorProxy != NULL)
             {
-               SimCore::Actors::NxAgeiaTerraPageLandActor* landActor = NULL;
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
                landActorProxy->GetActor(landActor);
                mCullVisitor->SetLandActor(landActor);
             }

@@ -118,7 +118,7 @@
             </property>
         </actor>
         <actor>
-            <type>NxAgeiaPhysicsModels.NxAgeiaTerraPageLandActor</type>
+            <type>Terrain.PagedTerrainPhysicsActor</type>
             <id>d5d7fa53-3c8f-466d-832d-a6f551a99e5c</id>
             <name>Terra Page Listener</name>
             <property>

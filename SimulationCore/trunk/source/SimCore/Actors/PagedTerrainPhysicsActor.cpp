@@ -21,7 +21,7 @@
 * @author Allen Danklefsen, Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/logcontroller.h>
@@ -44,7 +44,7 @@ namespace SimCore
    namespace Actors
    {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      const std::string NxAgeiaTerraPageLandActor::DEFAULT_NAME("Terra Page Listener");
+      const std::string PagedTerrainPhysicsActor::DEFAULT_NAME("Terra Page Listener");
 
       //////////////////////////////////////////////////////////////////////
       // Geode Visitor - This visitor searches for geodes. It then adds each
@@ -55,7 +55,7 @@ namespace SimCore
       {
       public:
          // Constructor
-         GeodeTriangleVisitor(NxAgeiaTerraPageLandActor& landActor, std::string nodeName)
+         GeodeTriangleVisitor(PagedTerrainPhysicsActor& landActor, std::string nodeName)
             : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN)
             , mLandActor(landActor)
             , mNodeName(nodeName)
@@ -77,7 +77,7 @@ namespace SimCore
 
       private:
          std::string mNodeName;
-         NxAgeiaTerraPageLandActor& mLandActor;
+         PagedTerrainPhysicsActor& mLandActor;
          osg::ref_ptr<osg::MatrixTransform> mTempParentTransform;
       };
 
@@ -94,7 +94,7 @@ namespace SimCore
             osg::TriangleFunctor<T> mFunctor;
 
             // Constructor.
-            DrawableTriangleVisitor(NxAgeiaTerraPageLandActor& landActor)
+            DrawableTriangleVisitor(PagedTerrainPhysicsActor& landActor)
                : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN)
                , mLandActor(landActor)
             {
@@ -152,7 +152,7 @@ namespace SimCore
                }
             }
          private:
-            NxAgeiaTerraPageLandActor& mLandActor;
+            PagedTerrainPhysicsActor& mLandActor;
       };
 
       //////////////////////////////////////////////////////////////////////
@@ -181,13 +181,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         NxAgeiaTerraPageLandActor::NxAgeiaTerraPageLandActor(dtGame::GameActorProxy &proxy)
+         PagedTerrainPhysicsActor::PagedTerrainPhysicsActor(dtGame::GameActorProxy &proxy)
             : GameActor(proxy)
             , mNumNodesLoaded(0)
             , mNumVertsLoaded(0)
          {
             mFinalizeTerrainIter = mTerrainMap.begin();
-            SetName(NxAgeiaTerraPageLandActor::DEFAULT_NAME);
+            SetName(PagedTerrainPhysicsActor::DEFAULT_NAME);
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
             mPhysicsHelper->SetBaseInterfaceClass(this);
@@ -199,7 +199,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         NxAgeiaTerraPageLandActor::~NxAgeiaTerraPageLandActor(void)
+         PagedTerrainPhysicsActor::~PagedTerrainPhysicsActor(void)
          {
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper->ReleaseAllPhysXObjects();
@@ -208,7 +208,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::OnEnteredWorld()
+         void PagedTerrainPhysicsActor::OnEnteredWorld()
          {
             dtPhysics::PhysicsComponent* physicsComponent;
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
@@ -217,7 +217,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform)
+         void PagedTerrainPhysicsActor::CheckGeode(osg::Geode& node, bool loadNow, const osg::Matrix& matrixForTransform)
          {
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator iter;
             TerrainNode* currentNode = NULL;
@@ -265,20 +265,20 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::ClearAllTerrainPhysics()
+         void PagedTerrainPhysicsActor::ClearAllTerrainPhysics()
          {
             mPhysicsHelper->ClearAllPhysicsObjects();
             mTerrainMap.clear();
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::ResetTerrainIterator()
+         void PagedTerrainPhysicsActor::ResetTerrainIterator()
          {
             mFinalizeTerrainIter = mTerrainMap.begin();
          }
 
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::FinalizeTerrain(int amountOfFrames)
+         bool PagedTerrainPhysicsActor::FinalizeTerrain(int amountOfFrames)
          {
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
             for(unsigned int i = 0;
@@ -339,7 +339,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::ReloadTerrainPhysics()
+         void PagedTerrainPhysicsActor::ReloadTerrainPhysics()
          {
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator mterrainIter;
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
@@ -366,7 +366,7 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
          //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
+         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, bool buildGeodesSeparately)
          {
             dtAgeiaPhysX::NxAgeiaWorldComponent* worldComponent =  NULL;
@@ -466,7 +466,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
+         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::AddTerrainNode(osg::Node* node,
             const std::string& nameOfNode)
          {
             mNumNodesLoaded ++;
@@ -488,7 +488,7 @@ namespace SimCore
 
 #else
          //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
+         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::BuildTerrainAsStaticMesh(osg::Node* nodeToParse,
             const std::string& nameOfNode, bool buildGeodesSeparately)
          {
             if(nodeToParse == NULL)
@@ -529,7 +529,7 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         dtPhysics::PhysicsObject* NxAgeiaTerraPageLandActor::AddTerrainNode(osg::Node* node,
+         dtPhysics::PhysicsObject* PagedTerrainPhysicsActor::AddTerrainNode(osg::Node* node,
             const std::string& nameOfNode)
          {
             mNumNodesLoaded ++;
@@ -550,7 +550,7 @@ namespace SimCore
 #endif
 
          //////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::PassThisGeometry(int fid, int smc,
+         bool PagedTerrainPhysicsActor::PassThisGeometry(int fid, int smc,
             int soilTemperatureAndPressure, int soilWaterContent)
          {
             // 957 - arid vegetation
@@ -568,14 +568,14 @@ namespace SimCore
          }
 
          ////////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActor::DetermineHowToLoadGeometry(int fid,
+         void PagedTerrainPhysicsActor::DetermineHowToLoadGeometry(int fid,
             int smc, int soilTemperatureAndPressure, int soilWaterContent, osg::Node* nodeToLoad)
          {
             // the case is mostly going to be is this a box or is this a tree...
          }
 
          ////////////////////////////////////////////////////////////////////////
-         bool NxAgeiaTerraPageLandActor::LoadGeomAsGroup(int fid)
+         bool PagedTerrainPhysicsActor::LoadGeomAsGroup(int fid)
          {
             // 301 - commercial building
             // 401 - residential building
@@ -599,16 +599,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         NxAgeiaTerraPageLandActorProxy::NxAgeiaTerraPageLandActorProxy()
+         PagedTerrainPhysicsActorProxy::PagedTerrainPhysicsActorProxy()
          {
             SetClassName("NxAgeiaTerraPageLand");
          }
 
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActorProxy::BuildPropertyMap()
+         void PagedTerrainPhysicsActorProxy::BuildPropertyMap()
          {
             dtGame::GameActorProxy::BuildPropertyMap();
-            NxAgeiaTerraPageLandActor* actor = NULL;
+            PagedTerrainPhysicsActor* actor = NULL;
             GetActor(actor);
             std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
             toFillIn.reserve(15U);
@@ -620,14 +620,14 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         NxAgeiaTerraPageLandActorProxy::~NxAgeiaTerraPageLandActorProxy(){}
+         PagedTerrainPhysicsActorProxy::~PagedTerrainPhysicsActorProxy(){}
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActorProxy::CreateActor()
+         void PagedTerrainPhysicsActorProxy::CreateActor()
          {
-            SetActor(*new NxAgeiaTerraPageLandActor(*this));
+            SetActor(*new PagedTerrainPhysicsActor(*this));
          }
          //////////////////////////////////////////////////////////////////////
-         void NxAgeiaTerraPageLandActorProxy::OnEnteredWorld()
+         void PagedTerrainPhysicsActorProxy::OnEnteredWorld()
          {
             dtGame::GameActorProxy::OnEnteredWorld();
 

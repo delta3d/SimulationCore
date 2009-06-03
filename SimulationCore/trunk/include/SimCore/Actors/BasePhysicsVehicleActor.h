@@ -252,8 +252,6 @@ namespace SimCore
 
          protected:
             virtual ~BasePhysicsVehicleActorProxy();
-            // When you implement CreateActor(), be sure to call InitDeadReckoningHelper on your entityactor
-            //virtual void CreateActor();
             virtual void OnEnteredWorld();
       };
 

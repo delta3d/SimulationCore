@@ -24,7 +24,7 @@
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
-#include <osg/vec3>
+#include <osg/Vec3>
 
 
 
@@ -34,7 +34,7 @@ namespace NetDemo
    //void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix);
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverVehiclePhysicsHelper::HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy) 
+   HoverVehiclePhysicsHelper::HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
       : dtPhysics::PhysicsHelper(proxy)
       , mVehicleMaxForwardMPH(120.0f)
       , mVehicleMaxStrafeMPH(40.0f)
@@ -113,7 +113,7 @@ namespace NetDemo
       //NxVec3 dir(0.0, 0.0, 1.0);
       //physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
       osg::Vec3 dir(0.0, 0.0, 1.0);
-      physicsObject->GetBodyWrapper()->AddForce(dir * upForce); 
+      physicsObject->GetBodyWrapper()->AddForce(dir * upForce);
 
       // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
@@ -137,14 +137,14 @@ namespace NetDemo
       {
          //NxVec3 dir(lookDir[0], lookDir[1], lookDir[2]);
          //physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         //physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier /** deltaTime*/)); 
+         //physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier /** deltaTime*/));
       }
       // REVERSE
       else if(accelReverse)
       {
          //NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier /** deltaTime*/)); 
+         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier /** deltaTime*/));
       }
 
       // LEFT
@@ -152,14 +152,14 @@ namespace NetDemo
       {
          //NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier /** deltaTime*/)); 
+         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier /** deltaTime*/));
       }
       // RIGHT
       else if(accelRight)
       {
          //NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier /** deltaTime*/)); 
+         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier /** deltaTime*/));
       }
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
@@ -184,7 +184,7 @@ namespace NetDemo
 
          // Slow us down! Wind or coast effect
          //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance /** deltaTime*/)); 
+         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance /** deltaTime*/));
       }
 
    }
@@ -193,7 +193,7 @@ namespace NetDemo
    float HoverVehiclePhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3 &location,
       const osg::Vec3 &direction, float &distanceToHit)
    {
-      static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
+      //static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z(); // gravity
       osg::Vec3 terrainHitLocation;
 

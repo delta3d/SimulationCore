@@ -1,5 +1,5 @@
 /* -*-c++-*-
-* Simulation Core - TerraPageLandActorTests (.h & .cpp) - Using 'The MIT License'
+* Simulation Core - PagedTerrainPhysicsActorTests (.h & .cpp) - Using 'The MIT License'
 * Copyright (C) 2007-2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,7 +45,7 @@
 #include <dtGame/message.h>
 #include <dtGame/basemessages.h>
 
-#include <SimCore/Actors/NxAgeiaTerraPageLandActor.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
@@ -54,15 +54,15 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
+class PagedTerrainPhysicsActorTests : public CPPUNIT_NS::TestFixture
 {
-   CPPUNIT_TEST_SUITE(TerraPageLandActorTests);
+   CPPUNIT_TEST_SUITE(PagedTerrainPhysicsActorTests);
       CPPUNIT_TEST(TestFunction);
    CPPUNIT_TEST_SUITE_END();
 
    public:
-      TerraPageLandActorTests() {}
-      ~TerraPageLandActorTests() {}
+      PagedTerrainPhysicsActorTests() {}
+      ~PagedTerrainPhysicsActorTests() {}
 
       void setUp();
       void tearDown();
@@ -76,12 +76,12 @@ class TerraPageLandActorTests : public CPPUNIT_NS::TestFixture
      dtCore::RefPtr<dtUtil::Log> mLogger;
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(TerraPageLandActorTests);
+CPPUNIT_TEST_SUITE_REGISTRATION(PagedTerrainPhysicsActorTests);
 
 /////////////////////////////////////////////////////////
-void TerraPageLandActorTests::setUp()
+void PagedTerrainPhysicsActorTests::setUp()
 {
-   mLogger = &dtUtil::Log::GetInstance("TerraPageLandActorTests.cpp");
+   mLogger = &dtUtil::Log::GetInstance("PagedTerrainPhysicsActorTests.cpp");
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
@@ -100,7 +100,7 @@ void TerraPageLandActorTests::setUp()
 }
 
 /////////////////////////////////////////////////////////
-void TerraPageLandActorTests::tearDown()
+void PagedTerrainPhysicsActorTests::tearDown()
 {
 
    dtCore::System::GetInstance().Stop();
@@ -122,7 +122,7 @@ void TerraPageLandActorTests::tearDown()
 }
 
 /////////////////////////////////////////////////////////
-void TerraPageLandActorTests::TestFunction()
+void PagedTerrainPhysicsActorTests::TestFunction()
 {
    mRenderingSupportComponent = new SimCore::Components::RenderingSupportComponent();
    mGM->AddComponent(*mRenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -136,8 +136,8 @@ void TerraPageLandActorTests::TestFunction()
    dtCore::System::GetInstance().Step();
 
    dtCore::RefPtr<dtGame::GameActorProxy> obj;
-   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::AGEIA_TLAND_ACTOR_TYPE, obj);
-   SimCore::Actors::NxAgeiaTerraPageLandActor* ourActor;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, obj);
+   SimCore::Actors::PagedTerrainPhysicsActor* ourActor;
    obj->GetActor(ourActor);
 
    CPPUNIT_ASSERT(ourActor != NULL);
