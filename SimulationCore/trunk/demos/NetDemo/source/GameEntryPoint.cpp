@@ -51,8 +51,10 @@ namespace NetDemo
       delete entryPoint;
    }
 
+   const std::string GameEntryPoint::APP_NAME("NetDemo");
+
    ///////////////////////////////////////////////////////////////////////////
-   GameEntryPoint::GameEntryPoint() 
+   GameEntryPoint::GameEntryPoint()
       : mIsServer(true)
    {
 
@@ -102,7 +104,7 @@ namespace NetDemo
       // to connect to the federation.
       BaseClass::InitializeComponents(gm);
 
-      // Our GameAppComponent does a lot of the game based logic such as state management, 
+      // Our GameAppComponent does a lot of the game based logic such as state management,
       // creating the vehicle, and changing terrains when the server tells us to.
       dtCore::RefPtr<GameAppComponent> gameAppComp = new GameAppComponent();
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -117,9 +119,9 @@ namespace NetDemo
                dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
-      // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff. 
-      // We disable the physics cull visitor (which is for large tiled terrains like Terrex) 
-      // and also disable the static terrain physics (because we solve this manually everytime 
+      // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff.
+      // We disable the physics cull visitor (which is for large tiled terrains like Terrex)
+      // and also disable the static terrain physics (because we solve this manually everytime
       // the server app changes terrains - see the GameAppComponent)
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
@@ -147,7 +149,7 @@ namespace NetDemo
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
 
-      // Networking 
+      // Networking
       SetupClientServerNetworking(gm);
       // true if we are the server or if NO networking is involved
       gameAppComp->SetIsServer(mIsServer);
@@ -165,7 +167,7 @@ namespace NetDemo
          {
             mIsServer = true;
             dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-               new dtNetGM::ServerNetworkComponent("DriverDemo", 1);
+               new dtNetGM::ServerNetworkComponent(APP_NAME, 1);
             gm.AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
             serverComp->SetupServer(serverPort);
          }
@@ -173,7 +175,7 @@ namespace NetDemo
          {
             mIsServer = false;
             dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
-               new dtNetGM::ClientNetworkComponent("ResGame", 1);
+               new dtNetGM::ClientNetworkComponent(APP_NAME, 1);
             gm.AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
             int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
             const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
