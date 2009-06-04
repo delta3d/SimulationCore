@@ -36,6 +36,8 @@ namespace NetDemo
 
          typedef SimCore::BaseGameEntryPoint BaseClass;
 
+         static const std::string APP_NAME;
+
          GameEntryPoint();
 
          virtual ~GameEntryPoint();
