@@ -31,7 +31,8 @@
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
-#include <StateComponent.h>
+//#include <StateComponent.h>
+#include <SimCore/Components/GameState/GameStateComponent.h>
 
 
 
@@ -65,13 +66,13 @@ namespace NetDemo
     * states and responding to major messages from the server. It also listens for server
     * players and manages/creates the PlayerStatusActor.
     */
-   class GameAppComponent : public SimCore::Components::BaseGameAppComponent
+   class GameLogicComponent : public SimCore::Components::GameStateComponent
    {
       public:
-         typedef SimCore::Components::BaseGameAppComponent BaseClass;
+         typedef SimCore::Components::GameStateComponent BaseClass;
 
          /// Constructor
-         GameAppComponent(const std::string& name = BaseGameAppComponent::DEFAULT_NAME);
+         GameLogicComponent(const std::string& name = SimCore::Components::GameStateComponent::DEFAULT_NAME);
 
          virtual void ProcessMessage(const dtGame::Message& msg);
 
@@ -83,16 +84,11 @@ namespace NetDemo
          // IsServer can only be set at startup, probably from the GameEntryPoint()
          void SetIsServer(bool newValue);
          bool GetIsServer();
-         /// Are we current connected as either a server or a client?
+         /// Are we currently connected (as either a server or a client)?
          bool GetIsConnectedToNetwork() {return mIsConnectedToNetwork; }
 
          void SetMapName(const std::string& mapName);
          const std::string& GetMapName() const;
-
-         StateComponent* GetStateComponent();
-
-         bool HandleTransition( const std::string& transitionName );
-         bool HandleTransition( SimCore::Components::EventType& transition );
 
          // Called from the UI after it knows how the user wants to connect
          bool JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion);
@@ -132,7 +128,7 @@ namespace NetDemo
          dtCore::RefPtr<dtGame::GameActor> mCurrentTerrainDrawActor;
 
          // Reference to the State Component to control automatic transitions.
-         dtCore::ObserverPtr<StateComponent> mStateComp;
+         //dtCore::ObserverPtr<StateComponent> mStateComp;
 
          std::string mMapName;
 

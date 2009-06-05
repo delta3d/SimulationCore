@@ -30,8 +30,9 @@
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
+#include <SimCore/Utilities.h>
 
-#include <GameAppComponent.h>
+#include <GameLogicComponent.h>
 #include <ActorRegistry.h>
 #include <PlayerStatusActor.h>
 #include <States.h>
@@ -43,18 +44,29 @@
 namespace NetDemo
 {
    //////////////////////////////////////////////////////////////////////////
-   GameAppComponent::GameAppComponent(const std::string& name)
+   GameLogicComponent::GameLogicComponent(const std::string& name)
       : BaseClass(name)
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
    { 
       mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
 
+      // Register application-specific states.
+      AddState(&NetDemoState::STATE_CONNECTING);
+      AddState(&NetDemoState::STATE_LOBBY);
+      AddState(&NetDemoState::STATE_UNLOAD);
+      AddState(&NetDemoState::STATE_GAME_RUNNING);
+      AddState(&NetDemoState::STATE_GAME_READYROOM);
+      AddState(&NetDemoState::STATE_GAME_DEAD);
+      AddState(&NetDemoState::STATE_GAME_OPTIONS);
+      AddState(&NetDemoState::STATE_GAME_QUIT);
+      AddState(&NetDemoState::STATE_GAME_UNKNOWN);
+      AddState(&NetDemoState::STATE_SCORE_SCREEN);
    }
 
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::OnAddedToGM()
+   void GameLogicComponent::OnAddedToGM()
    {
 
       ///////////////////////////////////////////////////////////
@@ -86,7 +98,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::ProcessMessage(const dtGame::Message& msg)
+   void GameLogicComponent::ProcessMessage(const dtGame::Message& msg)
    {
 
       BaseClass::ProcessMessage(msg);
@@ -104,7 +116,7 @@ namespace NetDemo
       }
       else if (dtGame::MessageType::INFO_MAP_UNLOADED == msg.GetMessageType())
       {
-         HandleTransition(Transition::TRANSITION_FORWARD);
+         DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
@@ -115,7 +127,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::InitializePlayer()
+   void GameLogicComponent::InitializePlayer()
    {
       dtCore::RefPtr<dtGame::GameActorProxy> ap;
 
@@ -155,7 +167,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
+   void GameLogicComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
    {
       const dtGame::ActorUpdateMessage &updateMessage =
          static_cast<const dtGame::ActorUpdateMessage&> (msg);
@@ -190,7 +202,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////
-   void GameAppComponent::HandleMapLoaded()
+   void GameLogicComponent::HandleMapLoaded()
    {
       InitializePlayer();
 
@@ -205,11 +217,11 @@ namespace NetDemo
       }
 
       // Now we can go to the ready room.
-      HandleTransition(Transition::TRANSITION_FORWARD);
+      DoStateTransition(&Transition::TRANSITION_FORWARD);
    }
 
    ///////////////////////////////////////////////////////////
-   bool GameAppComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
+   bool GameLogicComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
    {
       bool result = false;
 
@@ -234,7 +246,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////
-   bool GameAppComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
+   bool GameLogicComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
       const std::string &gameName, int gameVersion)
    {
       bool result = false;
@@ -260,7 +272,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::DisconnectFromNetwork()
+   void GameLogicComponent::DisconnectFromNetwork()
    {
       if (mIsConnectedToNetwork)
       {
@@ -295,7 +307,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::HandleStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
+   void GameLogicComponent::HandleStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
    {
       const SimCore::Components::StateType& state = stateChange.GetNewState();
       LOG_WARNING("Changing to stage[" + state.GetName() + "].");
@@ -309,7 +321,7 @@ namespace NetDemo
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
-         LoadMaps(mMapName);
+         SimCore::Utils::LoadMaps(*GetGameManager(), mMapName);
          // When loaded, we trap the MAP_LOADED message and finish our setup
       }
       else if (state == NetDemoState::STATE_UNLOAD)
@@ -329,7 +341,7 @@ namespace NetDemo
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
 
          // CMM - Hack - bypass this screen for now, since we don't have one
-         HandleTransition(SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
+         DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
       }
       else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {
@@ -363,11 +375,11 @@ namespace NetDemo
 
          if (success) // start map load
          {
-            HandleTransition(SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
+            DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
          }
          else  // go back
          {
-            HandleTransition(SimCore::Components::EventType::TRANSITION_BACK); // back to menu
+            DoStateTransition(&SimCore::Components::EventType::TRANSITION_BACK); // back to menu
          }
 
       }
@@ -398,7 +410,7 @@ namespace NetDemo
          */
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::HandleUnloadingState()
+   void GameLogicComponent::HandleUnloadingState()
    {
       // Have to disconnect first, else we will get network messages about stuff we don't understand.
       DisconnectFromNetwork();
@@ -408,7 +420,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::UnloadCurrentTerrain()
+   void GameLogicComponent::UnloadCurrentTerrain()
    {
       if (mCurrentTerrainDrawActor.valid())
       {
@@ -422,7 +434,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::LoadNewTerrain()
+   void GameLogicComponent::LoadNewTerrain()
    {
       if (mCurrentTerrainPrototypeName.empty())
          return;
@@ -464,89 +476,33 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::TerrainActor* GameAppComponent::GetCurrentTerrainDrawActor()
+   SimCore::Actors::TerrainActor* GameLogicComponent::GetCurrentTerrainDrawActor()
    {
       return dynamic_cast<SimCore::Actors::TerrainActor *>(mCurrentTerrainDrawActor.get());
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::SetIsServer(bool newValue)
+   void GameLogicComponent::SetIsServer(bool newValue)
    {
       if (!mPlayerStatus.valid()) mIsServer = newValue;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool GameAppComponent::GetIsServer()
+   bool GameLogicComponent::GetIsServer()
    {
       return mIsServer;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::SetMapName(const std::string& mapName)
+   void GameLogicComponent::SetMapName(const std::string& mapName)
    {
       mMapName = mapName;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   const std::string& GameAppComponent::GetMapName() const
+   const std::string& GameLogicComponent::GetMapName() const
    {
       return mMapName;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   StateComponent* GameAppComponent::GetStateComponent()
-   {
-      if( ! mStateComp.valid() )
-      {
-         dtGame::GameManager* gm = GetGameManager();
-         if( gm == NULL )
-         {
-            LOG_ERROR("Could not access Game Manager to access the State Component.");
-         }
-         else
-         {
-            StateComponent* stateComp = NULL;
-            gm->GetComponentByName( StateComponent::DEFAULT_NAME.Get(), stateComp );
-            mStateComp = stateComp;
-         }
-      }
-
-      return mStateComp.get();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   bool GameAppComponent::HandleTransition( const std::string& transitionName )
-   {
-      bool success = false;
-
-      SimCore::Components::EventType* transition
-         = SimCore::Components::EventType::GetValueForName( transitionName );
-
-      if( transition != NULL )
-      {
-         success = HandleTransition( *transition );
-      }
-      else
-      {
-         LOG_WARNING("Could not handle transition \"" + transitionName + "\"");
-      }
-
-      return success;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   bool GameAppComponent::HandleTransition( SimCore::Components::EventType& transition )
-   {
-      bool success = false;
-
-      StateComponent* stateComp = GetStateComponent();
-      if( stateComp != NULL )
-      {
-         stateComp->HandleEvent( &transition );
-         success = true;
-      }
-
-      return success;
    }
 
 }

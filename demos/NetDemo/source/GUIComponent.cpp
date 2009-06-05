@@ -165,12 +165,12 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   GameAppComponent* GUIComponent::GetAppComponent()
+   GameLogicComponent* GUIComponent::GetAppComponent()
    {
       if( ! mAppComp.valid() )
       {
-         GameAppComponent* comp = NULL;
-         GetGameManager()->GetComponentByName( GameAppComponent::DEFAULT_NAME, comp );
+         GameLogicComponent* comp = NULL;
+         GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
          mAppComp = comp;
       }
 
@@ -217,7 +217,7 @@ namespace NetDemo
             LOG_ERROR( oss.str() );
          }
 
-         GetAppComponent()->HandleTransition( action );
+         GetAppComponent()->DoStateTransition( action );
       }
 
       // Let CEGUI know the button has been handled.

@@ -201,7 +201,7 @@ namespace NetDemo
             {
                // Escapce key should act as one would expect, to escape from the
                // program in some manner, even if it means going through the menu system.
-               GetAppComponent()->HandleTransition(Transition::TRANSITION_BACK);
+               GetAppComponent()->DoStateTransition(&Transition::TRANSITION_BACK);
             }
             break;
 
@@ -325,12 +325,12 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   GameAppComponent* InputComponent::GetAppComponent()
+   GameLogicComponent* InputComponent::GetAppComponent()
    {
       if( ! mAppComp.valid() )
       {
-         GameAppComponent* comp = NULL;
-         GetGameManager()->GetComponentByName( GameAppComponent::DEFAULT_NAME, comp );
+         GameLogicComponent* comp = NULL;
+         GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
          mAppComp = comp;
       }
 

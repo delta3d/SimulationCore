@@ -13,9 +13,8 @@
 
 #include <GameEntryPoint.h>
 #include <InputComponent.h>
-#include <GameAppComponent.h>
+#include <GameLogicComponent.h>
 #include <ConfigParameters.h>
-#include <StateComponent.h>
 #include <GUIComponent.h>
 
 #include <SimCore/CollisionGroupEnum.h>
@@ -89,8 +88,8 @@ namespace NetDemo
 
       FinalizeParser();
 
-      GameAppComponent* gameAppComp = NULL;
-      app.GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComp);
+      GameLogicComponent* gameAppComp = NULL;
+      app.GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, gameAppComp);
       gameAppComp->SetMapName( mMapName );
    }
 
@@ -103,9 +102,15 @@ namespace NetDemo
 
       // Our GameAppComponent does a lot of the game based logic such as state management,
       // creating the vehicle, and changing terrains when the server tells us to.
-      dtCore::RefPtr<GameAppComponent> gameAppComp = new GameAppComponent();
+      dtCore::RefPtr<GameLogicComponent> gameAppComp = new GameLogicComponent();
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
-      gameAppComp->InitializeCommandLineOptionsAndRead(parser);
+      //gameAppComp->InitializeCommandLineOptionsAndRead(parser);
+      // Load state transitions.
+      const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
+      gameAppComp->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
+         + pathSep + "Transitions" + pathSep + "NetDemoTransitions.xml");
+      gameAppComp->MakeCurrent( gameAppComp->GetCurrentState() );
+
 
 
       // Physics - we definitely need some of this!
@@ -129,16 +134,6 @@ namespace NetDemo
       // Keyboard, mouse input, etc...
       InputComponent* inputComp = new InputComponent();
       gm.AddComponent(*inputComp, dtGame::GameManager::ComponentPriority::NORMAL);
-
-      // Game State Component for handling game and menu transitions.
-      StateComponent* stateComp = new StateComponent;
-      gm.AddComponent(*stateComp, dtGame::GameManager::ComponentPriority::NORMAL);
-
-      // Load state transitions.
-      const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
-      stateComp->LoadTransitions(dtDAL::Project::GetInstance().GetContext()
-         + pathSep + "Transitions" + pathSep + "NetDemoTransitions.xml");
-      stateComp->MakeCurrent( stateComp->GetCurrentState() );
 
       // GUI Component
       GUIComponent* guiComp = new GUIComponent;
