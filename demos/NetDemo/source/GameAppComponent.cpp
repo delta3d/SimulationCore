@@ -18,6 +18,9 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
+#include <dtNetGM/clientnetworkcomponent.h>
+#include <dtNetGM/servernetworkcomponent.h>
+
 //#include <dtActors/playerstartactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 
@@ -43,8 +46,43 @@ namespace NetDemo
    GameAppComponent::GameAppComponent(const std::string& name)
       : BaseClass(name)
       , mIsServer(false)
-   {
+      , mIsConnectedToNetwork(false)
+   { 
       mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
+
+   }
+
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::OnAddedToGM()
+   {
+
+      ///////////////////////////////////////////////////////////
+      /// CMM - TOTAL AND COMPLETE HACK!!!! DELETE THIS!  aLL OF IT!
+
+      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
+      const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+      int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+      const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+      int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+      const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+
+      if (role == "Server" || role == "server" || role == "SERVER")
+      {
+         dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+            new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
+         GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
+         mNetworkComp = serverComp;
+      }
+      else if (role == "Client" || role == "client" || role == "CLIENT")
+      {
+         dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+            new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
+         GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
+         mNetworkComp = clientComp;
+      }
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -58,12 +96,15 @@ namespace NetDemo
       // Process game state changes.
       if (messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
-         HandleStateChangeMessage( static_cast<const SimCore::Components::GameStateChangedMessage&>(msg) );
+         HandleStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(msg));
       }
-
-      if (dtGame::MessageType::INFO_MAP_LOADED == msg.GetMessageType())
+      else if (dtGame::MessageType::INFO_MAP_LOADED == msg.GetMessageType())
       {
-         InitializePlayer();
+         HandleMapLoaded();
+      }
+      else if (dtGame::MessageType::INFO_MAP_UNLOADED == msg.GetMessageType())
+      {
+         HandleTransition(Transition::TRANSITION_FORWARD);
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
@@ -134,19 +175,122 @@ namespace NetDemo
             if (statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
             {
                mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-                  "Changing terrain to [%s]. Switching to LOADING state.", statusActor->GetTerrainPreference().c_str());
+                  "Changing terrain to [%s].", statusActor->GetTerrainPreference().c_str());
 
-               // Switch to LOADING STATE - Update will be published as soon as actor is ticked,
-               // which will happen later this tick (actors are after components).
-               mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
 
                // Set the terrain to start loading once we switch to loading state.
                mTerrainToLoad = statusActor->GetTerrainPreference();
-
-               // Change state to LOADING here
-               HandleTransition( Transition::TRANSITION_FORWARD );
+               UnloadCurrentTerrain();
+               mCurrentTerrainPrototypeName = mTerrainToLoad;
+               mTerrainToLoad = "";
+               LoadNewTerrain();
             }
          }
+      }
+   }
+
+   ///////////////////////////////////////////////////////////
+   void GameAppComponent::HandleMapLoaded()
+   {
+      InitializePlayer();
+
+      // if we are a client, we let the server know we are now ready to receive messages
+      // We can't receive/send messages to the server until we do this. Do it AFTER the map is loaded.
+      dtNetGM::ClientNetworkComponent *networkComponent = 
+         dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
+
+      if (mIsConnectedToNetwork && !mIsServer && networkComponent != NULL)
+      {
+         networkComponent->SendRequestConnectionMessage();
+      }
+
+      // Now we can go to the ready room.
+      HandleTransition(Transition::TRANSITION_FORWARD);
+   }
+
+   ///////////////////////////////////////////////////////////
+   bool GameAppComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
+   {
+      bool result = false;
+
+      /// HACK - can't add a component while in a tick... so, we hacked it! 
+      LOG_ALWAYS("HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
+      //dtCore::RefPtr<dtNetGM::ServerNetworkComponent> networkComp =
+      //   new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
+      //GetGameManager()->AddComponent(*networkComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+         dynamic_cast<dtNetGM::ServerNetworkComponent*>(mNetworkComp.get());
+
+      result = serverComp->SetupServer(serverPort);
+
+      if (result)
+      {         
+         mIsConnectedToNetwork = true;
+         mIsServer = true;
+         mNetworkComp = serverComp;
+      }
+      return result;
+   }
+
+   ///////////////////////////////////////////////////////////
+   bool GameAppComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
+      const std::string &gameName, int gameVersion)
+   {
+      bool result = false;
+
+      mIsServer = false;
+      /// HACK - can't add a component while in a tick... so, we hacked it! 
+      LOG_ALWAYS("HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
+      //dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+      //   new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
+      //GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
+      dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+         dynamic_cast<dtNetGM::ClientNetworkComponent*>(mNetworkComp.get());
+      result = clientComp->SetupClient(serverIPAddress, serverPort);
+
+      if (result)
+      {
+         mIsConnectedToNetwork = true;
+         mNetworkComp = clientComp;
+      }
+      mIsServer = false;
+
+      return result;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::DisconnectFromNetwork()
+   {
+      if (mIsConnectedToNetwork)
+      {
+         // SERVER
+         if (mIsServer)
+         {
+            dtNetGM::ServerNetworkComponent *serverComponent = 
+               dynamic_cast<dtNetGM::ServerNetworkComponent *>(mNetworkComp.get());
+            if (serverComponent != NULL)
+            {
+               GetGameManager()->RemoveComponent(*serverComponent);
+               // How do we disconnect the server?!?!?!!! 
+               mNetworkComp = NULL;
+            }
+         }
+
+         // CLIENT
+         else 
+         {
+            dtNetGM::ClientNetworkComponent *clientComponent = 
+               dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
+            if (clientComponent != NULL)
+            {
+               GetGameManager()->RemoveComponent(*clientComponent);
+               // How do we disconnect the client?!?!?!!! 
+               mNetworkComp = NULL;
+            }
+         }
+
+         mIsConnectedToNetwork = false;
       }
    }
 
@@ -154,38 +298,80 @@ namespace NetDemo
    void GameAppComponent::HandleStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
    {
       const SimCore::Components::StateType& state = stateChange.GetNewState();
+      LOG_WARNING("Changing to stage[" + state.GetName() + "].");
 
-      if( state == NetDemoState::STATE_CONNECTING )
+      // Note - when we change the player status, it gets published when the actor is ticked.
+
+      if (state == SimCore::Components::StateType::STATE_MENU)
       {
-         // Change state to LOADING here
-         LoadMaps( mMapName );
       }
-      else if( state == SimCore::Components::StateType::STATE_LOADING )
+      else if (state == SimCore::Components::StateType::STATE_LOADING)
       {
-         HandleLoadingState();
+         if (mPlayerStatus != NULL)
+            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::LOADING);
+         LoadMaps(mMapName);
+         // When loaded, we trap the MAP_LOADED message and finish our setup
       }
-      else if( state == SimCore::Components::StateType::STATE_SHUTDOWN )
+      else if (state == NetDemoState::STATE_UNLOAD)
+      {
+         if (mPlayerStatus != NULL)
+            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::UNKNOWN);
+         HandleUnloadingState();
+      }
+      else if (state == NetDemoState::STATE_GAME_RUNNING)
+      {
+         if (mPlayerStatus != NULL)
+            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
+      }
+      else if (state == NetDemoState::STATE_GAME_READYROOM)
+      {
+         if (mPlayerStatus != NULL)
+            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
+
+         // CMM - Hack - bypass this screen for now, since we don't have one
+         HandleTransition(SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
+      }
+      else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {
          GetGameManager()->GetApplication().Quit();
       }
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::HandleLoadingState()
-   {
-      if (mCurrentTerrainPrototypeName != mTerrainToLoad && mTerrainToLoad != "")
+      else if (state == NetDemoState::STATE_LOBBY)
       {
-         UnloadPreviousTerrain();
-         mCurrentTerrainPrototypeName = mTerrainToLoad;
-         mTerrainToLoad = "";
-         LoadNewTerrain();
+         //if (mPlayerStatus != NULL)
+         //   mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
 
-         mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
+         // CMM - TEMP HACK - Eventually, this is a full game state with a UI and this 
+         // Gets done from the UI somewhere, somehow. 
 
-         // Loading state is complete. Automatically advance to the next state.
-         HandleTransition( SimCore::Components::EventType::TRANSITION_FORWARD );
+         bool success = false;
+         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+         //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
+         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+         int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+         const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+         int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+         const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
+         if (role == "Server" || role == "server" || role == "SERVER")
+         {
+            success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
+         }
+         else if (role == "Client" || role == "client" || role == "CLIENT")
+         {
+            success = JoinNetworkAsClient(serverPort, host, gameName, gameVersion);
+         }
 
+         if (success) // start map load
+         {
+            HandleTransition(SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
+         }
+         else  // go back
+         {
+            HandleTransition(SimCore::Components::EventType::TRANSITION_BACK); // back to menu
+         }
+
+      }
+   }
 
 
          /////////////////////////////////////////////////////////
@@ -210,11 +396,19 @@ namespace NetDemo
             //}
          }
          */
-      }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameAppComponent::HandleUnloadingState()
+   {
+      // Have to disconnect first, else we will get network messages about stuff we don't understand.
+      DisconnectFromNetwork();
+
+      GetGameManager()->CloseCurrentMap(); 
+      // When the map is unloaded, we get the UNLOADED msg and change our states back to lobby.
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::UnloadPreviousTerrain()
+   void GameAppComponent::UnloadCurrentTerrain()
    {
       if (mCurrentTerrainDrawActor.valid())
       {
@@ -230,6 +424,8 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    void GameAppComponent::LoadNewTerrain()
    {
+      if (mCurrentTerrainPrototypeName.empty())
+         return;
 
       // NOTE - there are TWO steps. 1) load the DRAWN Terrain. 2) sync the PHYSICS terrain
 

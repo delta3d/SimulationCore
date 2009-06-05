@@ -42,11 +42,16 @@ namespace NetDemo
       : BaseClass(name)
    {
       // Register application-specific states.
-      AddState( &NetDemoState::STATE_LOBBY );
-      AddState( &NetDemoState::STATE_GAME );
-      AddState( &NetDemoState::STATE_GAME_DEAD );
-      AddState( &NetDemoState::STATE_GAME_UNKNOWN );
-      AddState( &NetDemoState::STATE_SCORE_SCREEN );
+      AddState(&NetDemoState::STATE_CONNECTING);
+      AddState(&NetDemoState::STATE_LOBBY);
+      AddState(&NetDemoState::STATE_UNLOAD);
+      AddState(&NetDemoState::STATE_GAME_RUNNING);
+      AddState(&NetDemoState::STATE_GAME_READYROOM);
+      AddState(&NetDemoState::STATE_GAME_DEAD);
+      AddState(&NetDemoState::STATE_GAME_OPTIONS);
+      AddState(&NetDemoState::STATE_GAME_QUIT);
+      AddState(&NetDemoState::STATE_GAME_UNKNOWN);
+      AddState(&NetDemoState::STATE_SCORE_SCREEN);
    }
 
    /////////////////////////////////////////////////////////////////////////////
