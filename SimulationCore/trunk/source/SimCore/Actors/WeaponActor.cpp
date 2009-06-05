@@ -22,6 +22,7 @@
  */
 #include <prefix/SimCorePrefix-src.h>
 
+#include <dtUtil/mswin.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
 
@@ -807,6 +808,12 @@ namespace SimCore
             return;
          }
 
+         if(sound != NULL && sound->GetFilename() != NULL)
+         {
+            dtAudio::AudioManager::GetInstance().FreeSound(sound.get());
+            sound->UnloadFile();
+         }
+
          sound = NULL;
          sound = dtAudio::AudioManager::GetInstance().NewSound();
 
@@ -831,12 +838,7 @@ namespace SimCore
             if( sound->IsPlaying() ) { sound->Stop(); }
 
             RemoveChild( sound.get() );
-            dtAudio::Sound* soundPointer = sound.release();
-            if( soundPointer != NULL )
-            {
-               // Temporarily commented out since there is something wrong with the audio manager.
-//               dtAudio::AudioManager::GetInstance().FreeSound( soundPointer );
-            }
+            dtAudio::AudioManager::GetInstance().FreeSound(sound.get());
          }
       }
 

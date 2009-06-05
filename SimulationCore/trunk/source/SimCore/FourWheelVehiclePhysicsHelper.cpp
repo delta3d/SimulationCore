@@ -100,6 +100,7 @@ namespace SimCore
          return displacement;
       }
 #endif
+      return 0.0;
    }
 
 

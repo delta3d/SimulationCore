@@ -21,6 +21,8 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 
+#include <dtUtil/mswin.h>
+
 #include <SimCore/Actors/BaseEntity.h>
 
 #include <dtGame/deadreckoningcomponent.h>

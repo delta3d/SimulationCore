@@ -25,6 +25,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
+#include <dtUtil/mswin.h>
 // DELTA 3D
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
