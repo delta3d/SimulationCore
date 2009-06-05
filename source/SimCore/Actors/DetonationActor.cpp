@@ -251,8 +251,9 @@ namespace SimCore
       {
          if(mSound.valid())
          {
+            dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
             RemoveChild(mSound.get());
-            mSound.release();
+//            mSound.release();
 //            dtAudio::Sound *sound = mSound.release();
 //            dtAudio::AudioManager::GetInstance().FreeSound(sound);
          }
@@ -383,8 +384,10 @@ namespace SimCore
             return;
          }
 
-         if(mSound != NULL && mSound->GetFilename() != NULL)
-            mSound->UnloadFile();
+         if(mSound != NULL)
+         {
+            dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
+         }
 
          mSound = NULL;
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
