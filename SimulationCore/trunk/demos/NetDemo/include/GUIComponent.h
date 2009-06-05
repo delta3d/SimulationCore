@@ -26,7 +26,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtGame/gmcomponent.h>
-#include <GameAppComponent.h>
+#include <GameLogicComponent.h>
 
 
 
@@ -94,7 +94,7 @@ namespace NetDemo
 
          void InitializeCEGUI( const std::string& schemeFile );
 
-         GameAppComponent* GetAppComponent();
+         GameLogicComponent* GetAppComponent();
 
          /**
           * Helper method for obtaining a CEGUI window from its associated Event Args.
@@ -111,7 +111,7 @@ namespace NetDemo
          bool IsButtonType( const std::string& buttonType ) const;
 
       private:
-         dtCore::ObserverPtr<GameAppComponent> mAppComp;
+         dtCore::ObserverPtr<GameLogicComponent> mAppComp;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
