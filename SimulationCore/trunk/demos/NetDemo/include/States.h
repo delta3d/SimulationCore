@@ -51,7 +51,9 @@ namespace NetDemo
          static StateType STATE_SHUTDOWN;*/
          static NetDemoState STATE_CONNECTING;
          static NetDemoState STATE_LOBBY;
-         static NetDemoState STATE_GAME;
+         static NetDemoState STATE_UNLOAD;
+         static NetDemoState STATE_GAME_RUNNING;
+         static NetDemoState STATE_GAME_READYROOM;
          static NetDemoState STATE_GAME_DEAD;
          static NetDemoState STATE_GAME_OPTIONS;
          static NetDemoState STATE_GAME_QUIT;

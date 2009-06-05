@@ -83,6 +83,8 @@ namespace NetDemo
          // IsServer can only be set at startup, probably from the GameEntryPoint()
          void SetIsServer(bool newValue);
          bool GetIsServer();
+         /// Are we current connected as either a server or a client?
+         bool GetIsConnectedToNetwork() {return mIsConnectedToNetwork; }
 
          void SetMapName(const std::string& mapName);
          const std::string& GetMapName() const;
@@ -92,19 +94,29 @@ namespace NetDemo
          bool HandleTransition( const std::string& transitionName );
          bool HandleTransition( SimCore::Components::EventType& transition );
 
+         // Called from the UI after it knows how the user wants to connect
+         bool JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion);
+         bool JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
+            const std::string &gameName, int gameVersion);
+
+         virtual void OnAddedToGM();
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
 
+         void HandleUnloadingState();
+         void HandleMapLoaded();
+         void DisconnectFromNetwork();
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
          void LoadNewTerrain();
-         void UnloadPreviousTerrain();
-         void HandleLoadingState();
+         void UnloadCurrentTerrain();
 
          dtUtil::Log* mLogger;
 
       private:
          bool mIsServer;
+         bool mIsConnectedToNetwork;
 
          //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
          // Each client & server has one player status that they are publishing.
@@ -123,6 +135,9 @@ namespace NetDemo
          dtCore::ObserverPtr<StateComponent> mStateComp;
 
          std::string mMapName;
+
+         // May be either a Network or Client component. We create it when we connect
+         dtCore::RefPtr<dtGame::GMComponent> mNetworkComp;
    };
 
 }

@@ -106,7 +106,7 @@ namespace NetDemo
    {
       const SimCore::Components::StateType& state = stateChange.GetNewState();
 
-      bool isRunningState = state == NetDemoState::STATE_GAME;
+      bool isRunningState = state == NetDemoState::STATE_GAME_RUNNING;
 
       ShowMouseCursor( ! isRunningState );
 

@@ -193,14 +193,17 @@ namespace NetDemo
    float HoverVehiclePhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3 &location,
       const osg::Vec3 &direction, float &distanceToHit)
    {
-      //static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
+      static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z(); // gravity
       osg::Vec3 terrainHitLocation;
 
       // CURT - Hacked out because dtPhysics is crashing in the ray trace
       distanceToHit = 0.0;
-      //distanceToHit = FindClosestIntersectionUsingDirection(location,
-      //   direction, terrainHitLocation, GROUPS_FLAGS);
+      static int counter = 0;
+      counter ++;
+      if (counter > 50)
+         distanceToHit = FindClosestIntersectionUsingDirection(location,
+            direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
       {

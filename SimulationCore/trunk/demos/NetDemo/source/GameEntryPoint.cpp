@@ -85,16 +85,13 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////
    void GameEntryPoint::OnStartup(dtGame::GameApplication& app)
    {
-      // call base class we're done initializing
       BaseClass::OnStartup(app);
 
       FinalizeParser();
 
-      ///////////////////// TEMP HACK - This UI should control this ////////////////////
       GameAppComponent* gameAppComp = NULL;
       app.GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComp);
       gameAppComp->SetMapName( mMapName );
-      //////////////////////////////////////////////////////////////////////////////////
    }
 
    ///////////////////////////////////////////////////////////////////////////
@@ -115,8 +112,7 @@ namespace NetDemo
       dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
       world->Init();
       dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
-      gm.AddComponent(*physicsComponent,
-               dtGame::GameManager::ComponentPriority::NORMAL);
+      gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 
       // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff.
@@ -150,45 +146,10 @@ namespace NetDemo
       guiComp->Initialize();
 
       // Networking
-      SetupClientServerNetworking(gm);
+      //SetupClientServerNetworking(gm);
       // true if we are the server or if NO networking is involved
-      gameAppComp->SetIsServer(mIsServer);
+      //gameAppComp->SetIsServer(mIsServer);
    }
 
-   ///////////////////////////////////////////////////////////
-   void GameEntryPoint::SetupClientServerNetworking(dtGame::GameManager& gm)
-   {
-      dtUtil::ConfigProperties& configParams = gm.GetConfiguration();
-      if (dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false")))
-      {
-         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "client");
-         int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-         if (role == "Server" || role == "server" || role == "SERVER")
-         {
-            mIsServer = true;
-            dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-               new dtNetGM::ServerNetworkComponent(APP_NAME, 1);
-            gm.AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            serverComp->SetupServer(serverPort);
-         }
-         else if (role == "Client" || role == "client" || role == "CLIENT")
-         {
-            mIsServer = false;
-            dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
-               new dtNetGM::ClientNetworkComponent(APP_NAME, 1);
-            gm.AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-            const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
-            if (clientComp->SetupClient(host, serverPort))
-            {
-               dtCore::RefPtr<dtNetGM::MachineInfoMessage> message;
-               gm.GetMessageFactory().CreateMessage(dtGame::MessageType::NETCLIENT_REQUEST_CONNECTION, message);
-               message->SetDestination(clientComp->GetServer());
-               message->SetMachineInfo(gm.GetMachineInfo());
-               gm.SendNetworkMessage(*message);
-            }
-         }
-      }
-   }
 
 }

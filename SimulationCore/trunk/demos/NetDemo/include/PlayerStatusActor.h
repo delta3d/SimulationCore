@@ -56,6 +56,7 @@ namespace NetDemo
          public:
             static PlayerStatusEnum UNKNOWN;
             static PlayerStatusEnum IN_LOBBY;
+            static PlayerStatusEnum IN_GAME_READYROOM;
             static PlayerStatusEnum IN_GAME_ALIVE;
             static PlayerStatusEnum IN_GAME_DEAD;
             static PlayerStatusEnum IN_GAME_UNKNOWN;

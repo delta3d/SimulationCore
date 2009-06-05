@@ -43,7 +43,9 @@ namespace NetDemo
    static StateType STATE_SHUTDOWN;*/
    NetDemoState NetDemoState::STATE_CONNECTING("STATE_CONNECTING");
    NetDemoState NetDemoState::STATE_LOBBY("STATE_LOBBY");
-   NetDemoState NetDemoState::STATE_GAME("STATE_GAME");
+   NetDemoState NetDemoState::STATE_UNLOAD("STATE_UNLOAD");
+   NetDemoState NetDemoState::STATE_GAME_RUNNING("STATE_GAME_RUNNING");
+   NetDemoState NetDemoState::STATE_GAME_READYROOM("STATE_GAME_READYROOM");
    NetDemoState NetDemoState::STATE_GAME_DEAD("STATE_GAME_DEAD");
    NetDemoState NetDemoState::STATE_GAME_OPTIONS("STATE_GAME_OPTIONS");
    NetDemoState NetDemoState::STATE_GAME_QUIT("STATE_GAME_QUIT");

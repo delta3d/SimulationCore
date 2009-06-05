@@ -12,6 +12,7 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 
+#include <dtUtil/mswin.h>
 #include <PlayerStatusActor.h>
 
 #include <dtDAL/enginepropertytypes.h>
@@ -31,6 +32,7 @@ namespace NetDemo
    IMPLEMENT_ENUM(PlayerStatusActor::PlayerStatusEnum);
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::UNKNOWN("UNKNOWN");
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::IN_LOBBY("IN_LOBBY");
+   PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM("IN_GAME_READYROOM");
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE("IN_GAME_ALIVE");
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::IN_GAME_DEAD("IN_GAME_DEAD");
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::IN_GAME_UNKNOWN("IN_GAME_UNKNOWN");
