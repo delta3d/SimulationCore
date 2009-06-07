@@ -42,6 +42,9 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    static const dtUtil::RefString BUTTON_TYPE_1("WindowsLook/Button");
    static const dtUtil::RefString BUTTON_PROPERTY_ACTION("Action");
+   static const dtUtil::RefString BUTTON_PROPERTY_TYPE("ButtonType");
+
+   static const dtUtil::RefString BUTTON_TYPE_CONNECT("CONNECT");
 
 
 
@@ -54,6 +57,7 @@ namespace NetDemo
    GUIComponent::GUIComponent( const std::string& name )
       : BaseClass(name)
       , mScriptModule(new dtGUI::ScriptModule)
+      , mInputServerPort(NULL)
    {
    }
 
@@ -67,10 +71,25 @@ namespace NetDemo
    void GUIComponent::Initialize()
    {
       InitializeCEGUI("CEGUI/schemes/NetDemo.scheme");
+      CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
 
       // MAIN MENU
       mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
       mScreenMainMenu->Setup( mMainWindow.get() );
+
+      // LOBBY
+      mScreenLobby = new SimCore::GUI::SimpleScreen("Lobby", "CEGUI/layouts/NetDemo/Lobby.layout");
+      mScreenLobby->Setup( mMainWindow.get() );
+      mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
+      mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
+
+      // LOADING
+      mScreenLoading = new SimCore::GUI::SimpleScreen("Loading", "CEGUI/layouts/NetDemo/Loading.layout");
+      mScreenLoading->Setup( mMainWindow.get() );
+
+      // READY ROOM
+      mScreenReadyRoom = new SimCore::GUI::SimpleScreen("Ready Room", "CEGUI/layouts/NetDemo/ReadyRoom.layout");
+      mScreenReadyRoom->Setup( mMainWindow.get() );
 
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
@@ -113,6 +132,15 @@ namespace NetDemo
       mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
       mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
 
+      mScreenLobby->SetVisible( state == NetDemoState::STATE_LOBBY );
+      mScreenLobby->SetEnabled( state == NetDemoState::STATE_LOBBY );
+
+      mScreenLoading->SetVisible( state == NetDemoState::STATE_LOADING );
+      mScreenLoading->SetEnabled( state == NetDemoState::STATE_LOADING );
+
+      mScreenReadyRoom->SetVisible( state == NetDemoState::STATE_GAME_READYROOM );
+      mScreenReadyRoom->SetEnabled( state == NetDemoState::STATE_GAME_READYROOM );
+
       mScreenOptions->SetVisible( state == NetDemoState::STATE_GAME_OPTIONS );
       mScreenOptions->SetEnabled( state == NetDemoState::STATE_GAME_OPTIONS );
 
@@ -123,7 +151,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::InitializeCEGUI( const std::string& schemeFile )
    {
-      dtABC::Application &app = GetGameManager()->GetApplication();
+      dtABC::Application& app = GetGameManager()->GetApplication();
 
       // Initialize CEGUI
       mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
@@ -148,7 +176,7 @@ namespace NetDemo
       {
          CEGUI::SchemeManager::getSingleton().loadScheme(path);
       }
-      catch(CEGUI::Exception &e)
+      catch(CEGUI::Exception& e)
       {
          std::ostringstream oss;
          oss << "CEGUI while setting up GUI Component: " << e.getMessage().c_str();
@@ -201,12 +229,15 @@ namespace NetDemo
       {
          // Prepare to capture the button action name.
          std::string action;
+         std::string buttonType;
 
          // Attempt to access the button's action property.
          try
          {
-            CEGUI::String value = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
-            action = std::string( value.c_str() );
+            CEGUI::String actionValue = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
+            CEGUI::String buttonTypeValue = button->getProperty(BUTTON_PROPERTY_TYPE.Get());
+            action = std::string( actionValue.c_str() );
+            buttonType = std::string( buttonTypeValue.c_str() );
          }
          catch( CEGUI::Exception& ceguiEx )
          {
@@ -215,6 +246,21 @@ namespace NetDemo
                << "\" does not have the \"Action\" property.\n"
                << ceguiEx.getMessage().c_str() << std::endl;
             LOG_ERROR( oss.str() );
+         }
+
+         // Determine if this is a special button.
+         if(buttonType == BUTTON_TYPE_CONNECT.Get())
+         {
+            dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+            const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+            const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+            const std::string hostIP(mInputServerIP->getText().c_str());//configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());//dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+
+            if( ! mAppComp->JoinNetwork(role, serverPort, gameName, hostIP))
+            {
+               // TODO: Show connection failure prompt.
+            }
          }
 
          GetAppComponent()->DoStateTransition( action );

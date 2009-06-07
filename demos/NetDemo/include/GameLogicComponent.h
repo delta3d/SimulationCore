@@ -31,7 +31,6 @@
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
 #include <dtUtil/log.h>
-//#include <StateComponent.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
 
@@ -91,6 +90,7 @@ namespace NetDemo
          const std::string& GetMapName() const;
 
          // Called from the UI after it knows how the user wants to connect
+         bool JoinNetwork(const std::string& role, int serverPort, const std::string &gameName, const std::string& hostIP);
          bool JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion);
          bool JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
             const std::string &gameName, int gameVersion);
