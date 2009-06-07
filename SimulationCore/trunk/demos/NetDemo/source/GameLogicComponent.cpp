@@ -43,7 +43,9 @@
 
 namespace NetDemo
 {
-   //////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////
+   // GAME LOGIC COMPONENT
+   /////////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
       : BaseClass(name)
       , mIsServer(false)
@@ -73,12 +75,9 @@ namespace NetDemo
       /// CMM - TOTAL AND COMPLETE HACK!!!! DELETE THIS!  aLL OF IT!
 
       dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-      //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
       const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-      int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
       const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
       int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-      const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
       if (role == "Server" || role == "server" || role == "SERVER")
       {
@@ -220,7 +219,28 @@ namespace NetDemo
       DoStateTransition(&Transition::TRANSITION_FORWARD);
    }
 
-   ///////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////
+   bool GameLogicComponent::JoinNetwork(const std::string& role, int serverPort,
+      const std::string &gameName, const std::string& hostIP)
+   {
+      bool success = false;
+
+      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+
+      if (role == "Server" || role == "server" || role == "SERVER")
+      {
+         success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
+      }
+      else if (role == "Client" || role == "client" || role == "CLIENT")
+      {
+         success = JoinNetworkAsClient(serverPort, hostIP, gameName, gameVersion);
+      }
+
+      return success;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    bool GameLogicComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
    {
       bool result = false;
@@ -283,9 +303,11 @@ namespace NetDemo
                dynamic_cast<dtNetGM::ServerNetworkComponent *>(mNetworkComp.get());
             if (serverComponent != NULL)
             {
-               GetGameManager()->RemoveComponent(*serverComponent);
+               // Do not do this. This crashes the Game Manager message loop for components.
+               //GetGameManager()->RemoveComponent(*serverComponent);
                // How do we disconnect the server?!?!?!!! 
-               mNetworkComp = NULL;
+               //mNetworkComp = NULL;
+               LOG_ERROR("Still connected. Disable the network component but do not remove it.");
             }
          }
 
@@ -296,9 +318,11 @@ namespace NetDemo
                dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
             if (clientComponent != NULL)
             {
-               GetGameManager()->RemoveComponent(*clientComponent);
+               // Do not do this. This crashes the Game Manager message loop for components.
+               //GetGameManager()->RemoveComponent(*clientComponent);
                // How do we disconnect the client?!?!?!!! 
-               mNetworkComp = NULL;
+               //mNetworkComp = NULL;
+               LOG_ERROR("Still connected. Disable the network component but do not remove it.");
             }
          }
 
@@ -339,49 +363,10 @@ namespace NetDemo
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
-
-         // CMM - Hack - bypass this screen for now, since we don't have one
-         DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
       }
       else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {
          GetGameManager()->GetApplication().Quit();
-      }
-      else if (state == NetDemoState::STATE_LOBBY)
-      {
-         //if (mPlayerStatus != NULL)
-         //   mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
-
-         // CMM - TEMP HACK - Eventually, this is a full game state with a UI and this 
-         // Gets done from the UI somewhere, somehow. 
-
-         bool success = false;
-         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-         //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
-         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-         int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-         const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
-         int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-         const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
-
-         if (role == "Server" || role == "server" || role == "SERVER")
-         {
-            success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
-         }
-         else if (role == "Client" || role == "client" || role == "CLIENT")
-         {
-            success = JoinNetworkAsClient(serverPort, host, gameName, gameVersion);
-         }
-
-         if (success) // start map load
-         {
-            DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
-         }
-         else  // go back
-         {
-            DoStateTransition(&SimCore::Components::EventType::TRANSITION_BACK); // back to menu
-         }
-
       }
    }
 

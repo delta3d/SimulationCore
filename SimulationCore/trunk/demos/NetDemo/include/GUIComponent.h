@@ -35,6 +35,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace CEGUI
 {
+   class Editbox;
    class EventArgs;
    class PushButton;
    class Window;
@@ -118,8 +119,15 @@ namespace NetDemo
 
          // Screens
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLobby;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLoading;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenReadyRoom;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenQuitPrompt;
+
+         // Special Widgets
+         CEGUI::Editbox* mInputServerPort;
+         CEGUI::Editbox* mInputServerIP;
    };
 
 }
