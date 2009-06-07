@@ -139,12 +139,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool GameStateComponent::HandleEvent(const std::string& pEvent)
+      bool GameStateComponent::DoStateTransition(const std::string& pEvent)
       {
          EventType* et = EventType::GetValueForName(pEvent);
          if(et != NULL)
          {
-            return HandleEvent(et);
+            return DoStateTransition(et);
          }
          else
          {
@@ -154,7 +154,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool GameStateComponent::HandleEvent(const EventType* pEvent)
+      bool GameStateComponent::DoStateTransition(const EventType* pEvent)
       {
          if(pEvent == NULL)
          {
