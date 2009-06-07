@@ -186,30 +186,30 @@ void GameStateTests::TestLoadTransitionFile()
    mGameStateComponent->GetState(&ExtendedStateType::STATE_RUNNING_EXIT_PROMPT)->AddEntryCommand(cmd5.get());
    mGameStateComponent->GetState(&ExtendedStateType::STATE_RUNNING_EXIT_PROMPT)->AddExitCommand(cmd51.get());
 
-   mGameStateComponent->HandleEvent(&EventType::TRANSITION_OCCURRED);
+   mGameStateComponent->DoStateTransition(&EventType::TRANSITION_OCCURRED);
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the entry functor to STATE_MENU, thus setting the mCurrFunc to 1", 1, mCurrFunc);
    CPPUNIT_ASSERT_MESSAGE("The Current State should be STATE_MENU", mGameStateComponent->GetCurrentState() == &StateType::STATE_MENU);
 
-   mGameStateComponent->HandleEvent(&EventType::TRANSITION_OCCURRED);
+   mGameStateComponent->DoStateTransition(&EventType::TRANSITION_OCCURRED);
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the entry functor to STATE_LOADING, thus setting the mCurrFunc to 2", 2, mCurrFunc);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the exit functor of STATE_MENU, thus setting the mLastFunc to 1", 1, mLastFunc);
    CPPUNIT_ASSERT_MESSAGE("The Current State should be STATE_LOADING", mGameStateComponent->GetCurrentState() == &StateType::STATE_LOADING);
 
-   mGameStateComponent->HandleEvent(&EventType::TRANSITION_OCCURRED);
+   mGameStateComponent->DoStateTransition(&EventType::TRANSITION_OCCURRED);
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the entry functor to STATE_RUNNING, thus setting the mCurrFunc to 3", 3, mCurrFunc);
       CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the exit functor of STATE_LOADING, thus setting the mLastFunc to 2", 2, mLastFunc);
    CPPUNIT_ASSERT_MESSAGE("The Current State should be STATE_RUNNING", mGameStateComponent->GetCurrentState() == &StateType::STATE_RUNNING);
 
-   mGameStateComponent->HandleEvent(&EventType::TRANSITION_OCCURRED);
+   mGameStateComponent->DoStateTransition(&EventType::TRANSITION_OCCURRED);
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the entry functor to STATE_DEBRIEF, thus setting the mCurrFunc to 4", 4, mCurrFunc);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the exit functor of STATE_RUNNING, thus setting the mLastFunc to 3", 3, mLastFunc);
    CPPUNIT_ASSERT_MESSAGE("The Current State should be STATE_DEBRIEF", mGameStateComponent->GetCurrentState() == &ExtendedStateType::STATE_DEBRIEF);
 
-   mGameStateComponent->HandleEvent(&EventType::TRANSITION_OCCURRED);
+   mGameStateComponent->DoStateTransition(&EventType::TRANSITION_OCCURRED);
    dtCore::System::GetInstance().Step();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the entry functor to STATE_RUNNING_EXIT_PROMPT, thus setting the mCurrFunc to 5", 5, mCurrFunc);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("This Transition should have fired the exit functor of STATE_DEBRIEF, thus setting the mLastFunc to 4", 4, mLastFunc);

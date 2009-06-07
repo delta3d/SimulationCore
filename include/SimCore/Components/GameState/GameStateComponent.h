@@ -77,8 +77,8 @@ namespace SimCore
              * Pass all events through this function
              * @return whether or not the event caused a transition
              */
-            bool HandleEvent(const EventType* eventType);
-            bool HandleEvent(const std::string& eventName);
+            bool DoStateTransition(const EventType* eventType);
+            bool DoStateTransition(const std::string& eventName);
 
             GameState* AddState(const StateType* stateType);
             void AddTransition(const EventType* transitionEvent, const StateType* fromState, const StateType* toState);
