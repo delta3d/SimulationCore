@@ -6,7 +6,8 @@
     ***************************************************
     -->
     <WidgetLook name="WindowsLook/Button">
-        <PropertyDefinition name="Action" initialValue="" /> <!-- ADDED -->
+        <PropertyDefinition name="Action" initialValue="" /><!-- ADDED -->
+        <PropertyDefinition name="ButtonType" initialValue="" /> <!-- ADDED -->
         <PropertyDefinition name="NormalTextColour" initialValue="FF000000" redrawOnWrite="true" />
         <PropertyDefinition name="HoverTextColour" initialValue="FF000000" redrawOnWrite="true" />
         <PropertyDefinition name="PushedTextColour" initialValue="FF000000" redrawOnWrite="true" />
