@@ -83,6 +83,10 @@ namespace NetDemo
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
 
+      // CONNECTION FAIL PROMPT
+      mScreenConnectFailPrompt = new SimCore::GUI::SimpleScreen("Connection Fail Prompt", "CEGUI/layouts/NetDemo/ConnectionFailPrompt.layout");
+      mScreenConnectFailPrompt->Setup( mMainWindow.get() );
+
       // LOADING
       mScreenLoading = new SimCore::GUI::SimpleScreen("Loading", "CEGUI/layouts/NetDemo/Loading.layout");
       mScreenLoading->Setup( mMainWindow.get() );
@@ -134,6 +138,9 @@ namespace NetDemo
 
       mScreenLobby->SetVisible( state == NetDemoState::STATE_LOBBY );
       mScreenLobby->SetEnabled( state == NetDemoState::STATE_LOBBY );
+
+      mScreenConnectFailPrompt->SetVisible( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
+      mScreenConnectFailPrompt->SetEnabled( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
 
       mScreenLoading->SetVisible( state == NetDemoState::STATE_LOADING );
       mScreenLoading->SetEnabled( state == NetDemoState::STATE_LOADING );
@@ -223,7 +230,6 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnButtonClicked( const CEGUI::EventArgs& args )
    {
-      bool successConnecting = false;
       const CEGUI::Window* button = GetWidgetFromEventArgs( args );
 
       if( button != NULL )
@@ -255,30 +261,18 @@ namespace NetDemo
             dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
             const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
             const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
-            int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-            const std::string hostIP(mInputServerIP->getText().c_str());//configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
-            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());//dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+            const std::string hostIP(mInputServerIP->getText().c_str());
+            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());
 
-            if (role == "Server" || role == "server" || role == "SERVER")
+            if( ! mAppComp->JoinNetwork(role, serverPort, gameName, hostIP))
             {
-               successConnecting = GetAppComponent()->JoinNetworkAsServer(serverPort, gameName, gameVersion);
-            }
-            else if (role == "Client" || role == "client" || role == "CLIENT")
-            {
-               successConnecting = GetAppComponent()->JoinNetworkAsClient(serverPort, hostIP, gameName, gameVersion);
-            }
-            if (successConnecting)
-            {
-               GetAppComponent()->DoStateTransition(action); // Forward to loading
+               // Show connection failure prompt.
+               action = Transition::TRANSITION_CONNECTION_FAIL.GetName();
             }
          }
-         // If not the connect button, then it is the start button, so go forward.
-         else
-         {
-            GetAppComponent()->DoStateTransition(action); // Forward to loading
 
-         }
-
+         // Execute the transition specified by the button.
+         GetAppComponent()->DoStateTransition( action );
       }
 
       // Let CEGUI know the button has been handled.
