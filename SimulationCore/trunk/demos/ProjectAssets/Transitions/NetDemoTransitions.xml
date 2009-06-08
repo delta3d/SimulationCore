@@ -21,12 +21,31 @@
       <ToState Type="STATE_LOADING"/>
    </Transition>
    
+   <Transition>
+      <Event Type="TRANSITION_CONNECTION_FAIL"/>
+      <FromState Type="STATE_LOBBY"/>
+      <ToState Type="STATE_LOBBY_CONNECT_FAIL"/>
+   </Transition>
+   
    <Transition> 
       <Event Type="TRANSITION_BACK"/>
       <FromState Type="STATE_LOBBY"/>
       <ToState Type="STATE_MENU"/>
    </Transition>
    
+   <!-- [STATE_LOBBY_CONNECT_FAIL] - The Login lobby screen prompt that informs that connecting has failed. -->
+   <Transition>
+      <Event Type="TRANSITION_FORWARD"/>
+      <FromState Type="STATE_LOBBY_CONNECT_FAIL"/>
+      <ToState Type="STATE_LOBBY"/>
+   </Transition>
+   
+   <Transition>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_LOBBY_CONNECT_FAIL"/>
+      <ToState Type="STATE_LOBBY"/>
+   </Transition>
+
    <!-- [STATE_LOADING] - LOADING screen - the map, net connection, ... -->
    <Transition>
       <Event Type="TRANSITION_FORWARD"/>

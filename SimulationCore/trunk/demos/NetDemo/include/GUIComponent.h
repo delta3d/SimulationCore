@@ -120,6 +120,7 @@ namespace NetDemo
          // Screens
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLobby;
+         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenConnectFailPrompt;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLoading;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenReadyRoom;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
