@@ -19,6 +19,7 @@
 
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/ViewerMessageProcessor.h>
 
 #include <dtDAL/project.h>
 
@@ -96,6 +97,11 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////
    void GameEntryPoint::InitializeComponents(dtGame::GameManager& gm)
    {
+      // This processes remote actors and such on the network
+      dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor = 
+         new SimCore::Components::ViewerMessageProcessor();
+      gm.AddComponent(*defaultProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
+
       // This call does a fair bit of work. For one thing, it causes the HLA component
       // to connect to the federation.
       BaseClass::InitializeComponents(gm);

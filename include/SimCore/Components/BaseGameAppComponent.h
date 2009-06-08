@@ -27,6 +27,7 @@
 // project includes needed
 #include <SimCore/Export.h>
 #include <dtGame/gmcomponent.h>
+#include <dtUtil/deprecationmgr.h>
 
 namespace dtGame
 {
@@ -46,7 +47,7 @@ namespace SimCore
    namespace Components
    {
       ///////////////////////////////////////////////////////
-      //    The Component
+      //    THIS IS DEPRECATED. PLEASE USE GameStateComponent INSTEAD
       ///////////////////////////////////////////////////////
       class SIMCORE_EXPORT BaseGameAppComponent : public dtGame::GMComponent
       {
@@ -58,7 +59,7 @@ namespace SimCore
             static const std::string CMD_LINE_MAP_NAME;
 
             /// Constructor
-            BaseGameAppComponent(const std::string& name = DEFAULT_NAME);
+            DEPRECATE_FUNC BaseGameAppComponent(const std::string& name = DEFAULT_NAME);
 
             /**
              * Processes messages sent from the Game Manager
