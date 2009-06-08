@@ -76,7 +76,7 @@ namespace StealthQt
       mUi->mDeletePushButton->setEnabled(false);
 
       if(!mCurrentConnectionName.isEmpty())
-         mUi->mCurrentFederationLineEdit->setText(mCurrentConnectionName);
+         mUi->mCurrentConnectionLineEdit->setText(mCurrentConnectionName);
 
       bool connect =
          StealthViewerData::GetInstance().GetGeneralConfigObject().GetReconnectOnStartup();
@@ -124,7 +124,7 @@ namespace StealthQt
       if( mHLAComp == NULL )
       {
          QMessageBox::warning(this, tr("Error"),
-            tr("Cannot connect to network because HLA component was not initialized."), QMessageBox::Ok);
+            tr("Cannot connect to network because network component was not initialized."), QMessageBox::Ok);
          return;
       }
 
@@ -133,7 +133,7 @@ namespace StealthQt
       {
          OnDisconnect();
 
-         // If the disconnect from current federation message box
+         // If the disconnect from current network message box
          // is picked to cancel, this flag will be set to true
          // in which case we need to leave this method.
 
@@ -151,11 +151,11 @@ namespace StealthQt
       if(currentItem == NULL)
       {
          QMessageBox::warning(this, tr("Error"),
-            tr("Please select a federation connection from the list"), QMessageBox::Ok);
+            tr("Please select a network connection from the list"), QMessageBox::Ok);
          return;
       }
 
-      mUi->mCurrentFederationLineEdit->setText(currentItem->text());
+      mUi->mCurrentConnectionLineEdit->setText(currentItem->text());
       mCurrentConnectionName = currentItem->text();
 
       QString fedEx = currentItem->text();
@@ -170,7 +170,7 @@ namespace StealthQt
       mUi->mDisconnectPushButton->setEnabled( mIsConnected );
       mUi->mConnectPushButton->setEnabled( ! mIsConnected );
 
-      // connect to federation
+      // connect to network
       OnClose();
 
       accept();
@@ -186,15 +186,15 @@ namespace StealthQt
 
       if(result == QMessageBox::Yes)
       {
-         // Disconnect from federation
+         // Disconnect from network
          if(mHLAComp != NULL)
          {
             mHLAComp->Disconnect();
          }
 
          // Disable applicable buttons
-         mUi->mCurrentFederationLineEdit->setText("None");
-         mCurrentConnectionName = mUi->mCurrentFederationLineEdit->text();
+         mUi->mCurrentConnectionLineEdit->setText("None");
+         mCurrentConnectionName = mUi->mCurrentConnectionLineEdit->text();
          mUi->mDisconnectPushButton->setEnabled(false);
          mUi->mConnectPushButton->setEnabled(true);
 
@@ -206,7 +206,7 @@ namespace StealthQt
 
          mIsConnected = false;
 
-         emit DisconnectedFromHLA();
+         emit DisconnectedFromNetwork();
       }
       else
       {
@@ -249,7 +249,7 @@ namespace StealthQt
       if(currentItem == NULL)
       {
          QMessageBox::information(this, tr("Error"),
-            tr("Please select a federation connection to edit."), QMessageBox::Ok);
+            tr("Please select a network connection to edit."), QMessageBox::Ok);
 
          return;
       }
@@ -281,7 +281,7 @@ namespace StealthQt
       if(currentItem == NULL)
       {
          QMessageBox::information(this, tr("Error"),
-            tr("Please select a federation connection to delete."), QMessageBox::Ok);
+            tr("Please select a network connection to delete."), QMessageBox::Ok);
 
          return;
       }
@@ -308,39 +308,65 @@ namespace StealthQt
 
          std::string fedex        = properties[4].toStdString();
          std::string map          = properties[1].toStdString();
-         std::string config       = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
-         std::string fedFile      = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
+         std::string config; // set below
+         std::string fedFile; // set below
          std::string federateName = properties[5].toStdString();
-         std::string ridFile      = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+         std::string ridFile; // set below
+         std::string connectionType = properties[7].toStdString();
+         std::string serverIPAddress = properties[8].toStdString();
+         std::string serverPort = properties[9].toStdString();
+         std::string serverGameName = properties[10].toStdString();
+         int serverGameVersionInt = properties[11].toInt();
 
          if(mHLAComp != NULL)
          {
             // Assign the primary map to load
             mHLAComp->AddMap(map);
-            mHLAComp->SetConfigFile(config);
-            mHLAComp->SetFedFile(fedFile);
-            mHLAComp->SetFedName(federateName);
-            mHLAComp->SetFedEx(fedex);
-            mHLAComp->SetRidFile(ridFile);
+
+            if (connectionType == StealthViewerSettings::CONNECTIONTYPE_HLA)
+            {
+               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
+
+               config = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
+               fedFile = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
+               ridFile = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+
+               mHLAComp->SetConfigFile(config);
+               mHLAComp->SetFedFile(fedFile);
+               mHLAComp->SetFedName(federateName);
+               mHLAComp->SetFedEx(fedex);
+               mHLAComp->SetRidFile(ridFile);
+            }
+            else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
+            {
+               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_CLIENTSERVER);
+
+               mHLAComp->SetServerIPAddress(serverIPAddress);
+               mHLAComp->SetServerPort(serverPort);
+               mHLAComp->SetServerGameName(serverGameName);
+               mHLAComp->SetServerGameVersion(serverGameVersionInt);
+            }
+            else 
+               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_NONE);
 
             try
             {
-               mHLAComp->Connect();
+               mHLAComp->StartNetworkConnection();
             }
             catch(const dtUtil::Exception &e)
             {
                QMessageBox::warning(this, tr("Error"),
-                  tr("An error occurred while trying to connect to the federation: ") +
+                  tr("An error occurred while trying to connect to the network: ") +
                   tr(e.What().c_str()), QMessageBox::Ok);
             }
 
-            emit ConnectedToHLA(properties[0]);
+            emit ConnectedToNetwork(properties[0]);
          }
       }
       catch(const dtUtil::Exception &ex)
       {
          QMessageBox::warning(this, tr("Error"),
-               tr("Error searching for HLA resource files. Unable to connect to the federation: ") + tr(ex.ToString().c_str()),
+               tr("Error searching for network resource files. Unable to connect to the network: ") + tr(ex.ToString().c_str()),
                QMessageBox::Ok);
          return;
       }

@@ -315,10 +315,10 @@ namespace StealthQt
          /////////////////////////////////////////////////////////////////////////
 
          /// Called when we connect to HLA
-         void OnConnectToHLA(QString connectionName);
+         void OnConnectToNetwork(QString connectionName);
 
          /// Called when we disconnect from HLA
-         void OnDisconnectFromHLA();
+         void OnDisconnectFromNetwork();
 
          /// Called when the seconds timer elapses
          void OnSecondTimerElapsed();
@@ -480,7 +480,7 @@ namespace StealthQt
          QTimer mHLAErrorTimer;
 
          dtCore::RefPtr<dtGame::GameApplication> mApp;
-         bool mIsConnectedToHLA;
+         bool mIsConnectedToANetwork;
 
          std::vector<dtCore::ObserverPtr<dtGame::GameActorProxy> > mFoundActors;
 

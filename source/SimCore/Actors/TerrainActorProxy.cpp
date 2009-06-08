@@ -162,11 +162,7 @@ namespace SimCore
          //Actually load the file, even if it's empty string so that if someone were to
          //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
          //work.
-         if (mNeedToLoad)
-         {
-            LoadFile(mLoadedFile);
-            mNeedToLoad = false;
-         }
+         LoadFile(mLoadedFile);
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -184,7 +180,13 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::LoadFile(const std::string &fileName)
       {
-         //Don't actually load the file unless
+         // Don't do anything if the filenames are the same unless we still need to load
+         if (!mNeedToLoad && mLoadedFile == fileName)
+         {
+            return;
+         }
+
+         //Don't actually load the file unless we are in the scene.
          if (GetSceneParent() != NULL)
          {
             //We should always clear the geometry.  If LoadFile fails, we should have no geometry.
@@ -193,6 +195,7 @@ namespace SimCore
                GetMatrixNode()->removeChild(0, GetMatrixNode()->getNumChildren());
             }
 
+            // Empty string is not an error, just has no geometry.
             if (!fileName.empty())
             {
                dtCore::RefPtr<osg::Node> unused;
@@ -214,6 +217,8 @@ namespace SimCore
                SetShaderGroup(GetShaderGroup());
 
             GetMatrixNode()->addChild(mTerrainNode.get());
+
+            mNeedToLoad = false;
          }
          else
          {

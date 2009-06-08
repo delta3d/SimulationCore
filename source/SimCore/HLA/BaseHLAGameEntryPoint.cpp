@@ -80,7 +80,7 @@ namespace SimCore
                hlaCC->SetFedFile(fedFile);
 
                // loads all maps
-               hlaCC->Connect();
+               hlaCC->StartNetworkConnection();
             }
          }
       }
