@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
+ * @author Eddie Johnson, Curtiss Murphy
  */
 #include <dtGame/gmcomponent.h>
 
@@ -32,33 +32,56 @@ namespace dtHLAGM
    class HLAComponent;
 }
 
+namespace dtActors
+{
+   class CoordinateConfigActor;
+}
+
 namespace SimCore
 {
    namespace HLA
    {
+      ///////////////////////////////////////////////////////////////////////////////
+      /// This component manages connecting and disconnecting from the network. It is used by the StealthViewer
       class SIMCORE_HLA_EXPORT HLAConnectionComponent : public dtGame::GMComponent
       {
          public:
 
-             class SIMCORE_HLA_EXPORT ConnectionState : public dtUtil::Enumeration
-             {
-                DECLARE_ENUM(ConnectionState);
+            ///////////////////////////////////////////////////////////////////////
+            class SIMCORE_HLA_EXPORT ConnectionState : public dtUtil::Enumeration
+            {
+               DECLARE_ENUM(ConnectionState);
 
-                public:
+               public:
+                  static const ConnectionState STATE_NOT_CONNECTED;
+                  static const ConnectionState STATE_CONNECTING;
+                  static const ConnectionState STATE_CONNECTED;
+                  static const ConnectionState STATE_ERROR;
 
-                   static const ConnectionState STATE_NOT_CONNECTED;
-                   static const ConnectionState STATE_CONNECTING;
-                   static const ConnectionState STATE_CONNECTED;
-                   static const ConnectionState STATE_ERROR;
+               protected:
+                  ConnectionState(const std::string &name) : dtUtil::Enumeration(name)
+                  {
+                     AddInstance(this);
+                  }
+            };
 
-                protected:
+            ///////////////////////////////////////////////////////////////////////
+            class SIMCORE_HLA_EXPORT ConnectionType : public dtUtil::Enumeration
+            {
+               DECLARE_ENUM(ConnectionType);
+            public:
+               static ConnectionType TYPE_NONE;;
+               static ConnectionType TYPE_HLA;
+               static ConnectionType TYPE_CLIENTSERVER;
+               static ConnectionType TYPE_OTHER;
 
-                   ConnectionState(const std::string &name) : 
-                      dtUtil::Enumeration(name)
-                   {
-                      AddInstance(this);
-                   }
-             };
+            protected:
+               ConnectionType(const std::string &name) : dtUtil::Enumeration(name)
+               {
+                  AddInstance(this);
+               }
+            };
+
 
             static const std::string DEFAULT_NAME;
             
@@ -138,15 +161,53 @@ namespace SimCore
              */
             const ConnectionState& GetConnectionState() const { return *mState; }
 
+
+            /// Server IP Address is only used with type ClientServer
+            void SetServerIPAddress(const std::string &newValue) { mServerIPAddress = newValue; }
+            /// Server IP Address is only used with type ClientServer
+            const std::string& GetServerIPAddress() const { return mServerIPAddress; }
+
+            /// Server Port is only used with type ClientServer
+            void SetServerPort(const std::string &newValue) { mServerPort = newValue; }
+            /// Server Port is only used with type ClientServer
+            const std::string& GetServerPort() const { return mServerPort; }
+
+            /// Connection Type indicates what type of network we are connecting with.
+            void SetConnectionType(ConnectionType& newValue) { mConnectionType = &newValue; }
+            /// Connection Type indicates what type of network we are connecting with.
+            const ConnectionType& GetConnectionType() const { return *mConnectionType; }
+
+            /// Game Name (ex NetDemo) is only used with type ClientServer
+            void SetServerGameName(const std::string &newValue) { mServerGameName = newValue; }
+            /// Game Name (ex NetDemo) is only used with type ClientServer
+            const std::string& GetServerGameName() const { return mServerGameName; }
+
+            /// Game Version (ex 1) is only used with type ClientServer
+            void SetServerGameVersion(int newValue) { mServerGameVersion = newValue; }
+            /// Game Version (ex 1) is only used with type ClientServer
+            int GetServerGameVersion() const { return mServerGameVersion; }
+
             /**
-             * Tells this component to connect to the federation
+             * Tells this component to start the initial connection to a network. First 
+             * thing it does it reload the maps. The map_loaded message then triggers the connection
              */
-            void Connect();
+            void StartNetworkConnection();
             
+            /** 
+             * Do the actual connection to the network. Called externally, or on the map loaded message.
+             * It's called reconnect, because the AAR playback/record process messes with our connection a lot.
+             */
+            void DoReconnectToNetwork();
+
             /**
              * Disconnects from the federation
              */
-            void Disconnect();
+            void Disconnect(bool closeMap = true);
+
+            /** 
+             * Returns true if any of our network connections are valid.
+             */
+            bool IsConnected(); 
 
             /**
              * Processes messages to we can sync up events on ticks
@@ -155,12 +216,17 @@ namespace SimCore
             virtual void ProcessMessage(const dtGame::Message &msg);
 
          protected:
+            /// Connect to the HLA network. Called internally - after map is loaded based on mConnectionType
+            void DoConnectToHLA(dtActors::CoordinateConfigActor* ccActor);
+            
+            /// Connect to the client server network. Called internally - after map is loaded based on mConnectionType
+            void DoConnectToClientServer(dtActors::CoordinateConfigActor* ccActor);
 
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
              */
-            dtHLAGM::HLAComponent& GetHLAComponent();
+            dtHLAGM::HLAComponent* GetHLAComponent();
 
             /// Destructor
             virtual ~HLAConnectionComponent();
@@ -174,6 +240,13 @@ namespace SimCore
             std::string mFedName;
             std::string mFedFile;
             std::string mRidFile;
+            const ConnectionType *mConnectionType; 
+            // The current connection type refers to the last known active connection type
+            const ConnectionType *mCurrentConnectionType; 
+            std::string mServerIPAddress;
+            std::string mServerPort;
+            std::string mServerGameName;
+            int mServerGameVersion;
 
             const ConnectionState *mState;
       };

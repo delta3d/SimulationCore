@@ -26,6 +26,7 @@
 * @author Eddie Johnson, Curtiss Murphy
 */
 #include <QtGui/QDialog>
+#include <dtUtil/refstring.h>
 
 // Foward declarations
 namespace Ui
@@ -40,12 +41,13 @@ namespace StealthQt
    class MapSelectDialog;
    class FederationFileResourceBrowser;
 
+   ////////////////////////////////////////////////////////////
+   /// The main dialog for options when creating a network connection. Supports both HLA OR Client-Server
    class HLAOptions : public QDialog
    {
       Q_OBJECT
 
       public:
-
          /// Constructor
          HLAOptions(QWidget *parent = NULL, 
                     const QString &connectionName = "",
@@ -82,6 +84,9 @@ namespace StealthQt
 
          /// Called when the rid file tool button is clicked
          void OnRidFileToolButtonClicked(bool checked = false);
+
+         /// Called when the Connection Type combo has been changed
+         void OnConnectionTypeComboChanged(const QString &text);
 
       protected:
 

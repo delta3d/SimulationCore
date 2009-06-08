@@ -291,8 +291,8 @@ namespace StealthGM
       gameManager.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
       // Capture HLA connection parameters for the input component to use later in record/playback
-      // state swapping. Transitions to IDLE should join the federation; PLAYBACK should leave
-      // the connection to the federation.
+      // state swapping. Transitions to IDLE should join the network; PLAYBACK should leave
+      // the connection to the network.
       StealthInputComponent* inputComp = mInputComponent.get();
 
       // AAR logging
@@ -353,7 +353,8 @@ namespace StealthGM
       dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> ageiaComponent = new dtAgeiaPhysX::NxAgeiaWorldComponent();
       gameManager.AddComponent(*ageiaComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 #else
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
+      //dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
       gameManager.AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
                dtGame::GameManager::ComponentPriority::NORMAL);
@@ -383,8 +384,8 @@ namespace StealthGM
          const std::string fedFile = dtDAL::Project::GetInstance().
             GetResourcePath(dtDAL::ResourceDescriptor(mFedFileResource, mFedFileResource));
          // Capture HLA connection parameters for the input component to use later in record/playback
-         // state swapping. Transitions to IDLE should join the federation; PLAYBACK should leave
-         // the connection to the federation.
+         // state swapping. Transitions to IDLE should join the network; PLAYBACK should leave
+         // the connection to the network.
          inputComp->SetConnectionParameters(mFederationExecutionName, fedFile, mFederateName);
       }
    }

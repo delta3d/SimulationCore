@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>HLA Connections</string>
+   <string>Network Connections</string>
   </property>
   <layout class="QVBoxLayout" >
    <property name="spacing" >
@@ -127,7 +127,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="mCurrentFederationLineEdit" >
+       <widget class="QLineEdit" name="mCurrentConnectionLineEdit" >
         <property name="toolTip" >
          <string>The current federation you are connected to.</string>
         </property>

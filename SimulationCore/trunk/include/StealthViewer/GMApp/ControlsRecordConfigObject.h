@@ -107,12 +107,12 @@ namespace StealthGM
          /**
           * Disconnects from the federation
           */
-         void DisconnectFromFederation() { mDisconnect = true; SetIsUpdated(true); }
+         void DisconnectFromNetwork() { mDisconnect = true; SetIsUpdated(true); }
 
          /**
           * Joins the federation
           */
-         void JoinFederation() { mJoinFederation = true; SetIsUpdated(true); }
+         void JoinNetwork() { mJoinNetwork = true; SetIsUpdated(true); }
 
 
       protected:
@@ -131,7 +131,7 @@ namespace StealthGM
          bool mAddKeyFrame;   
          bool mIsRecording;
          bool mDisconnect;
-         bool mJoinFederation;
+         bool mJoinNetwork;
          bool mRequestKeyFrameUpdate;
          double mLastRequestTime;
    }; 

@@ -23,12 +23,13 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
-* @author Eddie Johnson
+* @author Eddie Johnson, Curtiss Murphy
 */
 #ifndef STEALTH_VIEWER_SETTINGS
 #define STEALTH_VIEWER_SETTINGS
 
 #include <QtCore/QSettings>
+#include <dtUtil/refstring.h>
 
 namespace StealthGM
 {
@@ -42,9 +43,14 @@ namespace StealthQt
       Q_OBJECT
 
       public:
+         // public strings for the properties
+         static const dtUtil::RefString CONNECTIONTYPE_NONE;
+         static const dtUtil::RefString CONNECTIONTYPE_HLA;
+         static const dtUtil::RefString CONNECTIONTYPE_CLIENTSERVER;
 
          static const QString ORGANIZATION;
          static const QString APPLICATION;
+
          static const QString CONNECTION;
          static const QString NAME;
          static const QString MAP_RESOURCE;
@@ -53,6 +59,11 @@ namespace StealthQt
          static const QString FEDEX;
          static const QString FEDERATE_NAME;
          static const QString RID_FILE;
+         static const QString CONNECTION_TYPE;
+         static const QString SERVER_IP_ADDRESS;
+         static const QString SERVER_PORT;
+         static const QString SERVER_GAMENAME;
+         static const QString SERVER_GAMEVERSION;
 
          static const QString GENERAL_GROUP;
             static const int WINDOW_DOCK_ID = 0;
@@ -146,17 +157,19 @@ namespace StealthQt
           * @param fedex The name of the federation
           * @param federateName The name of the federate
           * @param ridFile The name of the rid file to use
+          * @param connectionType Should be either 'HLA' or 'Client-Server'.
+          * @param serverIPAddress The IP Address of the server to connect to in Client Server mode
+          * @param serverPort The port of the server to connect to in Client Server mode
           * @param isEditMode True if you are editing an existing connection
           * @return True on success
           */
-         bool AddConnection(const QString &name,
-                            const QString &mapResource,
-                            const QString &configResource,
-                            const QString &fedResource,
-                            const QString &fedex,
-                            const QString &federateName,
-                            const QString &ridFile,
-                            bool isEditMode = false);
+         bool AddConnection(const QString &name, const QString &mapResource,
+            const QString &configResource, const QString &fedResource,
+            const QString &fedex, const QString &federateName,
+            const QString &ridFile, const QString &connectionType,
+            const QString &serverIPAddress, const QString &serverPort, 
+            const QString &serverGameName, const QString &serverGameVersion,
+            bool isEditMode = false);
 
          /**
           * Returns a string list of the properties in the following order:

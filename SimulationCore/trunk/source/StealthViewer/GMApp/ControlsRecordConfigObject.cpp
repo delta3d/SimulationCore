@@ -42,7 +42,7 @@ namespace StealthGM
       mAddKeyFrame(false),
       mIsRecording(false),
       mDisconnect(false),
-      mJoinFederation(false),
+      mJoinNetwork(false),
       mLastRequestTime(5.0)
    {
 
@@ -58,8 +58,11 @@ namespace StealthGM
       StealthInputComponent* inputComponent = NULL;
       gameManager.GetComponentByName(StealthGM::StealthInputComponent::DEFAULT_NAME, inputComponent);
 
+      SimCore::HLA::HLAConnectionComponent* hlaConnectComp;
+      gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaConnectComp);
+
       // Shouldn't happen, but better safe than sorry
-      if(inputComponent == NULL)
+      if(inputComponent == NULL || hlaConnectComp == NULL)
          return;
 
       // if nothing is updated, just check to see if we need to update our key frames.
@@ -109,25 +112,22 @@ namespace StealthGM
 
          if(mDisconnect)
          {
-            if(inputComponent->IsConnected())
-               inputComponent->LeaveFederation();
+            hlaConnectComp->Disconnect(false);
+            //if(inputComponent->IsConnected())
+            //   inputComponent->LeaveFederation();
             mDisconnect = false;
          }
 
-         if(mJoinFederation)
+         if(mJoinNetwork)
          {
-            if(!inputComponent->IsConnected())
-            {
-               SimCore::HLA::HLAConnectionComponent* hlaConnectComp;
-               gameManager.GetComponentByName(SimCore::HLA::HLAConnectionComponent::DEFAULT_NAME, hlaConnectComp);
-
-               inputComponent->SetConnectionParameters(hlaConnectComp->GetFedEx(),
-                                                       hlaConnectComp->GetFedFile(),
-                                                       hlaConnectComp->GetFedName(),
-                                                       hlaConnectComp->GetRidFile());
-               inputComponent->JoinFederation();
-            }
-            mJoinFederation = false;
+            hlaConnectComp->DoReconnectToNetwork();
+            //if(!inputComponent->IsConnected())
+            //{
+            //   inputComponent->SetConnectionParameters(hlaConnectComp->GetFedEx(),
+            //      hlaConnectComp->GetFedFile(), hlaConnectComp->GetFedName(), hlaConnectComp->GetRidFile());
+            //   inputComponent->JoinFederation();
+            //}
+            mJoinNetwork = false;
          }
 
          // Convert from minutes to seconds

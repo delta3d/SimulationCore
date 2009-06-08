@@ -76,9 +76,9 @@ namespace StealthQt
 
       signals:
 
-         void ConnectedToHLA(QString connectionName);
+         void ConnectedToNetwork(QString connectionName);
 
-         void DisconnectedFromHLA();
+         void DisconnectedFromNetwork();
 
       protected slots:
 

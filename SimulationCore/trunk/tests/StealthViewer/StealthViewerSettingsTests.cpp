@@ -254,7 +254,8 @@ void StealthViewerSettingsTests::TestParseIniFile()
 
    settings.AddConnection(QString("TestName"), QString("TestMap"),   QString("TestConfig"),
                           QString("TestFed"),  QString("TestFedex"), QString("TestFedName"),
-                          QString("TestRid"));
+                          QString("TestRid"), QString("HLA"), QString("TestIPAddress"), 
+                          QString("TestServerPort"), QString("TestServerGameName"), QString("1"));
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
    settings.ClearAllSettings(false);
@@ -275,9 +276,15 @@ void StealthViewerSettingsTests::TestParseIniFile()
    testProps.push_back(QString("TestFedex"));
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRid"));
+   testProps.push_back(QString("HLA"));
+   testProps.push_back(QString("TestIPAddress"));
+   testProps.push_back(QString("TestServerPort"));
+   testProps.push_back(QString("TestServerGameName"));
+   testProps.push_back(QString("1"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
-      testProps[3], testProps[4], testProps[5], testProps[6]);
+      testProps[3], testProps[4], testProps[5], testProps[6], 
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11]);
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
 
@@ -302,10 +309,16 @@ void StealthViewerSettingsTests::TestAddConnection()
    testProps.push_back(QString("TestFedex"));
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRid"));
+   testProps.push_back(QString("HLA"));
+   testProps.push_back(QString("TestIPAddress"));
+   testProps.push_back(QString("TestServerPort"));
+   testProps.push_back(QString("TestServerGameName"));
+   testProps.push_back(QString("1"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
                           testProps[3], testProps[4], testProps[5],
-                          testProps[6]);
+                          testProps[6], testProps[7], testProps[8], 
+                          testProps[9], testProps[10], testProps[11]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
@@ -336,7 +349,12 @@ void StealthViewerSettingsTests::TestRemoveConnection()
                              QString("FedFile")  + QString::number(i),
                              QString("FedEx")    + QString::number(i),
                              QString("FedName")  + QString::number(i),
-                             QString("RidFile")  + QString::number(i));
+                             QString("RidFile")  + QString::number(i),
+                             QString("HLA")  + QString::number(i),
+                             QString("ServerIPAddress")  + QString::number(i),
+                             QString("ServerPort")  + QString::number(i),
+                             QString("ServerGameName")  + QString::number(i),
+                             QString("12")  + QString::number(i));
    }
 
    CPPUNIT_ASSERT_EQUAL(numConnections, settings.GetNumConnections());
@@ -355,7 +373,8 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(!resultOne.isEmpty());
    QString name = resultOne[0], map = resultOne[1], config = resultOne[2],
            fedFile = resultOne[3], fedex = resultOne[4], fedName = resultOne[5],
-           ridFile = resultOne[6];
+           ridFile = resultOne[6], connectionType = resultOne[7], serverIPAddress = resultOne[8], 
+           serverPort = resultOne[9], serverGameName = resultOne[10], serverGameVersion = resultOne[11];
 
    CPPUNIT_ASSERT(name == (QString("Name") + QString::number(0)));
    CPPUNIT_ASSERT(map == (QString("Map") + QString::number(0)));
@@ -364,6 +383,11 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(fedex == (QString("FedEx") + QString::number(0)));
    CPPUNIT_ASSERT(fedName == (QString("FedName") + QString::number(0)));
    CPPUNIT_ASSERT(ridFile == (QString("RidFile") + QString::number(0)));
+   CPPUNIT_ASSERT(connectionType == (QString("HLA") + QString::number(0)));
+   CPPUNIT_ASSERT(serverIPAddress == (QString("ServerIPAddress") + QString::number(0)));
+   CPPUNIT_ASSERT(serverPort == (QString("ServerPort") + QString::number(0)));
+   CPPUNIT_ASSERT(serverGameName == (QString("ServerGameName") + QString::number(0)));
+   CPPUNIT_ASSERT(serverGameVersion == (QString("12") + QString::number(0)));
 
    QStringList resultTwo = settings.GetConnectionProperties(QString("Name") + QString::number(2));
    CPPUNIT_ASSERT(!resultTwo.isEmpty());
@@ -374,6 +398,11 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(resultTwo[4] == (QString("FedEx") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[5] == (QString("FedName") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[6] == (QString("RidFile") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[7] == (QString("HLA") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[8] == (QString("ServerIPAddress") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerPort") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerGameName") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[11] == (QString("12") + QString::number(2)));
 
    settings.RemoveConnection(QString("Name") + QString::number(0));
    CPPUNIT_ASSERT_EQUAL_MESSAGE("Connection removed. Number of connections should have decremented.",
@@ -391,6 +420,11 @@ void StealthViewerSettingsTests::TestRemoveConnection()
    CPPUNIT_ASSERT(resultTwo[4] == (QString("FedEx") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[5] == (QString("FedName") + QString::number(2)));
    CPPUNIT_ASSERT(resultTwo[6] == (QString("RidFile") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[7] == (QString("HLA") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[8] == (QString("ServerIPAddress") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[9] == (QString("ServerPort") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[10] == (QString("ServerGameName") + QString::number(2)));
+   CPPUNIT_ASSERT(resultTwo[11] == (QString("12") + QString::number(2)));
 
    settings.RemoveConnection(QString("Name") + QString::number(2));
    shouldBeEmpty = settings.GetConnectionProperties(QString("Name") + QString::number(2));

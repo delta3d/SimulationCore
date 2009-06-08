@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
+ * @author Eddie Johnson, Curtiss Murphy
  */
 #include <StealthViewer/Qt/HLAOptions.h>
 #include <ui_HLAOptionsUi.h>
@@ -54,6 +54,8 @@
 
 namespace StealthQt
 {
+
+   ////////////////////////////////////////////////////////////////////
    HLAOptions::HLAOptions(QWidget *parent, 
                           const QString &connectionName, 
                           bool isEditMode) : 
@@ -73,17 +75,20 @@ namespace StealthQt
          StealthViewerData::GetInstance().SetOldConnectionName(connectionName);
    }
 
+   ////////////////////////////////////////////////////////////////////
    HLAOptions::~HLAOptions()
    {
       delete mUi;
       mUi = NULL;
    }
 
+   ////////////////////////////////////////////////////////////////////
    QString HLAOptions::GetConnectionName() const
    {
       return mUi->mConnectionNameLineEdit->text();
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::ConnectSlots()
    {
       connect(mUi->mMapToolButton,        SIGNAL(clicked(bool)), 
@@ -103,8 +108,12 @@ namespace StealthQt
 
       connect(mUi->mRidFileToolButton, SIGNAL(clicked(bool)), 
              this,                     SLOT(OnRidFileToolButtonClicked(bool)));
+
+      connect(mUi->mConnectionTypeCombo, SIGNAL(currentIndexChanged(const QString&)),
+             this,                     SLOT(OnConnectionTypeComboChanged(const QString&)));
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnMapToolButtonClicked(bool checked)
    {
       MapSelectDialog dlg(this);
@@ -115,6 +124,7 @@ namespace StealthQt
       }
    }
 
+   ////////////////////////////////////////////////////////////////////
    QString HLAOptions::FindFile(const QString& caption, const QString& startingSubDir, const QString& filter)
    {
       const std::string &context = dtDAL::Project::GetInstance().GetContext();
@@ -139,6 +149,7 @@ namespace StealthQt
       return displayName;
    }
    
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnFedResourceToolButtonClicked(bool checked)
    {
       QString result = FindFile(QString("Select a federation resource"), 
@@ -148,6 +159,7 @@ namespace StealthQt
          mUi->mFedFileLineEdit->setText(result);
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnConfigResourceToolButtonClicked(bool checked)
    {
       QString result = FindFile(QString("Select a configuration resource"), 
@@ -178,6 +190,7 @@ namespace StealthQt
          mUi->mConfigFileLineEdit->setText(result);   
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnRidFileToolButtonClicked(bool checked)
    {
       QString result = FindFile(QString("Select a rid file"), 
@@ -187,15 +200,34 @@ namespace StealthQt
          mUi->mRidFileLineEdit->setText(result);   
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnOk(bool checked)
    {
+      int serverGameVersion = 1;
       QString name    = mUi->mConnectionNameLineEdit->text(), 
               map     = mUi->mMapLineEdit->text(), 
               config  = mUi->mConfigFileLineEdit->text(),
               fedFile = mUi->mFedFileLineEdit->text(), 
               fedex   = mUi->mFedExLineEdit->text(), 
               fedName = mUi->mFederateNameLineEdit->text(), 
-              ridFile = mUi->mRidFileLineEdit->text();
+              ridFile = mUi->mRidFileLineEdit->text(),
+              serverIPAddress = mUi->mServerIPAddressEdit->text(),
+              serverPort = mUi->mServerPortEdit->text(),
+              serverGameName = mUi->mServerGameNameEdit->text(), 
+              serverGameVersionStr = mUi->mServerGameVersionEdit->text();
+      QString connectionType = mUi->mConnectionTypeCombo->currentText();
+          //itemText(mUi->mConnectionTypeCombo->getCurrentIndex()).toStdString();
+
+
+      if (connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER && 
+         connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_HLA)
+      {
+         QMessageBox::information(this, tr("Error"), tr("Please select a connection type."), 
+            QMessageBox::Ok);
+
+         reject();
+         return;
+      }
 
       if(name.isEmpty())
       {
@@ -213,48 +245,105 @@ namespace StealthQt
          reject();
          return;
       }
-      if(config.isEmpty())
-      {
-         QMessageBox::information(this, tr("Error"), tr("Please select a configuration file."), 
-            QMessageBox::Ok);
 
-         reject();
-         return;
-      }
-      if(fedFile.isEmpty())
+      /////////////////////////////////////////////
+      // HLA SETTINGS 
+      if (connectionType.toStdString() == StealthViewerSettings::CONNECTIONTYPE_HLA)
       {
-         QMessageBox::information(this, tr("Error"), tr("Please select a federation file."), 
-            QMessageBox::Ok);
+         if(config.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please select a configuration file."), 
+               QMessageBox::Ok);
 
-         reject();
-         return;
-      }
-      if(fedex.isEmpty())
-      {
-         QMessageBox::information(this, tr("Error"), tr("Please enter a federation execution name."), 
-            QMessageBox::Ok);
+            reject();
+            return;
+         }
+         if(fedFile.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please select a federation file."), 
+               QMessageBox::Ok);
 
-         reject();
-         return;
-      }
-      if(fedName.isEmpty())
-      {
-         fedName = "Stealth Viewer";
-      }
-      if(ridFile.isEmpty())
-      {
-         ridFile = "RTI.rid";
+            reject();
+            return;
+         }
+
+         if(fedex.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please enter a federation execution name."), 
+               QMessageBox::Ok);
+
+            reject();
+            return;
+         }
+
+         if(fedName.isEmpty())
+         {
+            fedName = "Stealth Viewer";
+         }
+
+         if(ridFile.isEmpty())
+         {
+            ridFile = "RTI.rid";
+         }
       }
 
-      bool success = 
-         StealthViewerData::GetInstance().GetSettings().AddConnection(name, 
-                                                                      map, 
-                                                                      config, 
-                                                                      fedFile, 
-                                                                      fedex, 
-                                                                      fedName, 
-                                                                      ridFile, 
-                                                                      mIsEditMode);
+      ////////////////////////////////////////////
+      // CLIENT - SERVER OPTIONS
+      if (connectionType.toStdString() == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
+      {
+         if(serverIPAddress.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please enter a server IP Address."), 
+               QMessageBox::Ok);
+
+            reject();
+            return;
+         }
+
+         if(serverPort.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please enter a server port."), 
+               QMessageBox::Ok);
+
+            reject();
+            return;
+         }
+
+         if(serverGameName.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please enter a game name (ex Demo)."), 
+               QMessageBox::Ok);
+
+            reject();
+            return;
+         }
+
+         if(serverGameVersionStr.isEmpty())
+         {
+            QMessageBox::information(this, tr("Error"), tr("Please enter a game version (ex 1, 2, 3)."), 
+               QMessageBox::Ok);
+
+            reject();
+            return;
+         }
+         else 
+         {
+            bool isInt = false;
+            serverGameVersion = serverGameVersionStr.toInt(&isInt);
+            if (!isInt)
+            {
+               QMessageBox::information(this, tr("Error"), tr("Game Version should be an integer (ex 1, 2, 3)."), 
+                  QMessageBox::Ok);
+
+               reject();
+               return;
+            }
+         }
+      }
+
+      bool success = StealthViewerData::GetInstance().GetSettings().AddConnection
+         (name, map, config, fedFile, fedex, fedName, ridFile, connectionType, 
+         serverIPAddress, serverPort, serverGameName, serverGameVersionStr, mIsEditMode);
 
       if(!success)
       {
@@ -266,16 +355,19 @@ namespace StealthQt
       accept();
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnCancel(bool checked)
    {
       reject();
    }
 
+   ////////////////////////////////////////////////////////////////////
    void HLAOptions::PopulateFields(const QString &connectionName)
    {
       if(connectionName.isEmpty())
       {
          mUi->mFederateNameLineEdit->setText(tr("Stealth Viewer"));
+         OnConnectionTypeComboChanged(QString(StealthViewerSettings::CONNECTIONTYPE_NONE.Get().c_str()));
          return;
       }
 
@@ -295,8 +387,33 @@ namespace StealthQt
       mUi->mFedExLineEdit->setText(list[4]);
       mUi->mFederateNameLineEdit->setText(list[5]);
       mUi->mRidFileLineEdit->setText(list[6]);
+      
+      // Get the new connection settings
+      //text 7 is Connection Type. Defaults to HLA
+      // value returns a default string if out of bounds, list[7] might crash
+      QString connectionType = list.value(7);
+      mUi->mServerIPAddressEdit->setText(list.value(8));
+      mUi->mServerPortEdit->setText(list.value(9));
+      mUi->mServerGameNameEdit->setText(list.value(10));
+      mUi->mServerGameVersionEdit->setText(list.value(11));
+
+
+      // We default to HLA in all cases unless ClientServer explictly set.
+      // This supports backward compatibility with existing systems.
+      if (connectionType.toStdString() == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
+      {
+         mUi->mConnectionTypeCombo->setCurrentIndex(2);
+         OnConnectionTypeComboChanged(QString(StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.Get().c_str()));
+      }
+      else 
+      {
+         mUi->mConnectionTypeCombo->setCurrentIndex(1);
+         OnConnectionTypeComboChanged(QString(StealthViewerSettings::CONNECTIONTYPE_HLA.Get().c_str()));
+      }
+
    }
 
+   ////////////////////////////////////////////////////////////////////
    QString HLAOptions::ConvertFileName(const QString &file, const QString& projectDir) const
    {
       if(projectDir.isEmpty())
@@ -350,5 +467,27 @@ namespace StealthQt
       displayName.replace("/", ":");
 
       return displayName;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   void HLAOptions::OnConnectionTypeComboChanged(const QString& text)
+   {
+      const std::string connectionType = text.toStdString();
+
+      if (connectionType == StealthViewerSettings::CONNECTIONTYPE_HLA)
+      {
+         mUi->mHLAOptionsGroup->show();
+         mUi->mClientServerGroup->hide();
+      }
+      else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
+      {
+         mUi->mHLAOptionsGroup->hide();
+         mUi->mClientServerGroup->show();
+      }
+      else  // unknown still. 
+      {
+         mUi->mHLAOptionsGroup->hide();
+         mUi->mClientServerGroup->hide();
+      }
    }
 }

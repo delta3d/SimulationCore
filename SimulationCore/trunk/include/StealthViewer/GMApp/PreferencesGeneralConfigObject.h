@@ -196,7 +196,7 @@ namespace StealthGM
          bool IsStealthActorCurrentlyAttached();
 
          /**
-          * Sets connecting to a federation on startup
+          * Sets connecting to a network on startup
           * @param enable True to connect, false to start ordinarily
           * @param name The name of the connection
           */

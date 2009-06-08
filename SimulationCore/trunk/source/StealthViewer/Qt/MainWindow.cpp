@@ -133,7 +133,7 @@ namespace StealthQt
    , mIsRecording(false)
    , mIsPlayingBack(false)
    , mRecordingStartTime(0.0)
-   , mIsConnectedToHLA(false)
+   , mIsConnectedToANetwork(false)
    , mLatValidator(new QDoubleValidator(-90, 90, 10, this))
    , mLonValidator(new QDoubleValidator(-180, 180, 10, this))
    , mXYZValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 10, this))
@@ -423,13 +423,13 @@ namespace StealthQt
       }
 
       // Even error states should be considered connected so that the UI will make you disconnect first.
-      mIsConnectedToHLA = comp->GetConnectionState() !=
+      mIsConnectedToANetwork = comp->GetConnectionState() !=
          SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_NOT_CONNECTED;
 
-      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToHLA, mCurrentConnectionName);
+      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
-      connect(&window, SIGNAL(ConnectedToHLA(QString)), this, SLOT(OnConnectToHLA(QString)));
-      connect(&window, SIGNAL(DisconnectedFromHLA()), this, SLOT(OnDisconnectFromHLA()));
+      connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
+      connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
 
       if (window.exec() == QDialog::Accepted)
       {
@@ -1015,7 +1015,7 @@ namespace StealthQt
 
       if (mIsPlaybackMode)
       {
-         recConfig.DisconnectFromFederation();
+         recConfig.DisconnectFromNetwork();
          mUi->mPlaybackOptionsGroupBox->show();
          mUi->mPlaybackSwitchToPlaybackModePushButton->setText(tr("End Playback Mode"));
       }
@@ -1026,7 +1026,7 @@ namespace StealthQt
          if (mApp->GetGameManager()->IsPaused())
             mApp->GetGameManager()->SetPaused(false);
 
-         recConfig.JoinFederation();
+         recConfig.JoinNetwork();
          mUi->mPlaybackOptionsGroupBox->hide();
          mUi->mPlaybackSwitchToPlaybackModePushButton->setText(tr("Switch to Playback Mode"));
       }
@@ -2053,9 +2053,9 @@ namespace StealthQt
       logController.SignalReceivedKeyframes().connect_slot(this, &MainWindow::PlaybackKeyFrameSlot);
    }
 
-   void MainWindow::OnConnectToHLA(QString connectionName)
+   void MainWindow::OnConnectToNetwork(QString connectionName)
    {
-      mIsConnectedToHLA = true;
+      mIsConnectedToANetwork = true;
       mCurrentConnectionName = connectionName;
 
       mUi->mPreferencesDockWidget->setEnabled(true);
@@ -2069,9 +2069,9 @@ namespace StealthQt
       EndWaitCursor();
    }
 
-   void MainWindow::OnDisconnectFromHLA()
+   void MainWindow::OnDisconnectFromNetwork()
    {
-      mIsConnectedToHLA = false;
+      mIsConnectedToANetwork = false;
       mCurrentConnectionName = tr("");
 
       mUi->mPreferencesDockWidget->setEnabled(false);
@@ -2150,7 +2150,7 @@ namespace StealthQt
       if (comp->GetConnectionState() == SimCore::HLA::HLAConnectionComponent::ConnectionState::STATE_ERROR)
       {
          QMessageBox::critical(this, tr("Error"),
-                  tr("An error occurred while connecting to HLA. ") +
+                  tr("An error occurred while connecting to the network. ") +
                   tr("Please check your connection settings from the Network tab ") +
                   tr("and ensure they are correct."),
                   QMessageBox::Ok);
@@ -2258,8 +2258,8 @@ namespace StealthQt
       {
          // Apparently not
          QString message = tr("The application failed to reconnect to the connection named: ") +
-         connectionName + tr(" . Please select a new federation to connect to from the Network tab.");
-         QMessageBox::critical(this, tr("Failed to reconnect to the federation"), message, QMessageBox::Ok);
+         connectionName + tr(" . Please select a new network to connect to from the Network tab.");
+         QMessageBox::critical(this, tr("Failed to reconnect to the network"), message, QMessageBox::Ok);
 
          // Peace out
          return;
@@ -2267,10 +2267,10 @@ namespace StealthQt
 
       // Make sure we still pick up the signals from these events. This is important
       // for the UI to update itself properly
-      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToHLA, mCurrentConnectionName);
+      HLAWindow window(*mApp->GetGameManager(), this, NULL, mIsConnectedToANetwork, mCurrentConnectionName);
 
-      connect(&window, SIGNAL(ConnectedToHLA(QString)), this, SLOT(OnConnectToHLA(QString)));
-      connect(&window, SIGNAL(DisconnectedFromHLA()), this, SLOT(OnDisconnectFromHLA()));
+      connect(&window, SIGNAL(ConnectedToNetwork(QString)), this, SLOT(OnConnectToNetwork(QString)));
+      connect(&window, SIGNAL(DisconnectedFromNetwork()), this, SLOT(OnDisconnectFromNetwork()));
 
       // Begin wait cursor
       StartWaitCursor();

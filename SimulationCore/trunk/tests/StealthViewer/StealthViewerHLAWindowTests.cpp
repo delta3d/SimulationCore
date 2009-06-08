@@ -121,9 +121,15 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    testProps.push_back(QString("TestFedex"));
    testProps.push_back(QString("TestFedName"));
    testProps.push_back(QString("TestRidFile"));
+   testProps.push_back(QString("HLA"));
+   testProps.push_back(QString("ServerIPAddress"));
+   testProps.push_back(QString("ServerPort"));
+   testProps.push_back(QString("ServerGameName"));
+   testProps.push_back(QString("ServerVersion"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
-      testProps[3], testProps[4], testProps[5], testProps[6]);
+      testProps[3], testProps[4], testProps[5], testProps[6], 
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
