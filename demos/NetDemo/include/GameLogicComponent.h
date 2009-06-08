@@ -68,6 +68,8 @@ namespace NetDemo
    class GameLogicComponent : public SimCore::Components::GameStateComponent
    {
       public:
+         static const std::string TIMER_UPDATE_TERRAIN;
+
          typedef SimCore::Components::GameStateComponent BaseClass;
 
          /// Constructor
@@ -90,15 +92,15 @@ namespace NetDemo
          const std::string& GetMapName() const;
 
          // Called from the UI after it knows how the user wants to connect
-         bool JoinNetwork(const std::string& role, int serverPort, const std::string &gameName, const std::string& hostIP);
-         bool JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion);
-         bool JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
-            const std::string &gameName, int gameVersion);
+         bool JoinNetwork(const std::string& role, int serverPort, const std::string& hostIP);
+         bool JoinNetworkAsServer(int serverPort);
+         bool JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress);
 
          virtual void OnAddedToGM();
 
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
+         void HandleTimerElapsedMessage(const dtGame::Message& msg);
 
          void HandleUnloadingState();
          void HandleMapLoaded();

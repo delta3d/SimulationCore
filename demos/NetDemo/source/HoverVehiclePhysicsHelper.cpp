@@ -197,13 +197,8 @@ namespace NetDemo
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z(); // gravity
       osg::Vec3 terrainHitLocation;
 
-      // CURT - Hacked out because dtPhysics is crashing in the ray trace
-      distanceToHit = 0.0;
-      static int counter = 0;
-      counter ++;
-      if (counter > 50)
-         distanceToHit = FindClosestIntersectionUsingDirection(location,
-            direction, terrainHitLocation, GROUPS_FLAGS);
+      distanceToHit = FindClosestIntersectionUsingDirection(location,
+         direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
       {

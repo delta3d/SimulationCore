@@ -260,11 +260,11 @@ namespace NetDemo
          {
             dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
             const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-            const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+            //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
             const std::string hostIP(mInputServerIP->getText().c_str());
-            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());
+            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
 
-            if( ! mAppComp->JoinNetwork(role, serverPort, gameName, hostIP))
+            if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
             {
                // Show connection failure prompt.
                action = Transition::TRANSITION_CONNECTION_FAIL.GetName();
