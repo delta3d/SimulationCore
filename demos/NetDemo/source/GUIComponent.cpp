@@ -258,8 +258,6 @@ namespace NetDemo
             int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
             const std::string hostIP(mInputServerIP->getText().c_str());//configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
             int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());//dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-            // curt - delete me
-            //const std::string hostIP = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
             if (role == "Server" || role == "server" || role == "SERVER")
             {
