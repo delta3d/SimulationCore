@@ -223,6 +223,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnButtonClicked( const CEGUI::EventArgs& args )
    {
+      bool successConnecting = false;
       const CEGUI::Window* button = GetWidgetFromEventArgs( args );
 
       if( button != NULL )
@@ -254,16 +255,32 @@ namespace NetDemo
             dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
             const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
             const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+            int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
             const std::string hostIP(mInputServerIP->getText().c_str());//configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
             int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerIP->getText());//dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+            // curt - delete me
+            //const std::string hostIP = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
-            if( ! mAppComp->JoinNetwork(role, serverPort, gameName, hostIP))
+            if (role == "Server" || role == "server" || role == "SERVER")
             {
-               // TODO: Show connection failure prompt.
+               successConnecting = GetAppComponent()->JoinNetworkAsServer(serverPort, gameName, gameVersion);
+            }
+            else if (role == "Client" || role == "client" || role == "CLIENT")
+            {
+               successConnecting = GetAppComponent()->JoinNetworkAsClient(serverPort, hostIP, gameName, gameVersion);
+            }
+            if (successConnecting)
+            {
+               GetAppComponent()->DoStateTransition(action); // Forward to loading
             }
          }
+         // If not the connect button, then it is the start button, so go forward.
+         else
+         {
+            GetAppComponent()->DoStateTransition(action); // Forward to loading
 
-         GetAppComponent()->DoStateTransition( action );
+         }
+
       }
 
       // Let CEGUI know the button has been handled.

@@ -240,36 +240,27 @@ namespace NetDemo
    {
       bool result = false;
 
-      /// HACK - can't add a component while in a tick... so, we hacked it! 
-      LOG_ALWAYS("SERVER - SERVER - HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
       //dtCore::RefPtr<dtNetGM::ServerNetworkComponent> networkComp =
       //   new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
       //GetGameManager()->AddComponent(*networkComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp;
-      GetGameManager()->GetComponentByName("ServerNetworkComponent");
-       =
-         new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
-      GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
-
-      SimCore::Components::RenderingSupportComponent* renderComp;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(
-         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
-         renderComp);
-
-
-
-      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-         dynamic_cast<dtNetGM::ServerNetworkComponent*>(mNetworkComp.get());
-
-      result = serverComp->SetupServer(serverPort);
-
-      if (result)
-      {         
-         mIsConnectedToNetwork = true;
-         mIsServer = true;
-         mNetworkComp = serverComp;
+      dtNetGM::ServerNetworkComponent* serverComp;
+      GetGameManager()->GetComponentByName(dtNetGM::ServerNetworkComponent::DEFAULT_NAME, serverComp);
+      if( serverComp != NULL )
+      {
+         result = serverComp->SetupServer(serverPort);
+         if (result)
+         {         
+            mIsConnectedToNetwork = true;
+            mIsServer = true;
+            mNetworkComp = serverComp;
+         }
       }
+      else
+      {
+         LOG_ERROR("Critical Error - There is no Server Network Component by the default name.");
+      }
+
       return result;
    }
 
@@ -278,23 +269,24 @@ namespace NetDemo
       const std::string &gameName, int gameVersion)
    {
       bool result = false;
-
       mIsServer = false;
-      /// HACK - can't add a component while in a tick... so, we hacked it! 
-      LOG_ALWAYS("CLIENT - CLIENT - HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
+
       //dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
       //   new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
       //GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
-      dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
-         dynamic_cast<dtNetGM::ClientNetworkComponent*>(mNetworkComp.get());
-      result = clientComp->SetupClient(serverIPAddress, serverPort);
-
-      if (result)
+      
+      dtNetGM::ClientNetworkComponent* clientComp;
+      GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientComp);
+      if( clientComp != NULL )
       {
-         mIsConnectedToNetwork = true;
-         mNetworkComp = clientComp;
+         result = clientComp->SetupClient(serverIPAddress, serverPort);
+         if (result)
+         {
+            mIsConnectedToNetwork = true;
+            mNetworkComp = clientComp;
+         }
+         mIsServer = false;
       }
-      mIsServer = false;
 
       return result;
    }
@@ -383,6 +375,7 @@ namespace NetDemo
          // CMM - TEMP HACK - Eventually, this is a full game state with a UI and this 
          // Gets done from the UI somewhere, somehow. 
 
+         /*
          bool success = false;
          dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
          //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
@@ -409,6 +402,7 @@ namespace NetDemo
          {
             DoStateTransition(&SimCore::Components::EventType::TRANSITION_BACK); // back to menu
          }
+         */
 
       }
    }
