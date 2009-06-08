@@ -51,6 +51,7 @@ namespace NetDemo
          static StateType STATE_SHUTDOWN;*/
          static NetDemoState STATE_CONNECTING;
          static NetDemoState STATE_LOBBY;
+         static NetDemoState STATE_LOBBY_CONNECT_FAIL;
          static NetDemoState STATE_UNLOAD;
          static NetDemoState STATE_GAME_RUNNING;
          static NetDemoState STATE_GAME_READYROOM;
@@ -88,6 +89,7 @@ namespace NetDemo
          static EventType TRANSITION_BACK;
          static EventType TRANSITION_QUIT;
          static EventType TRANSITION_GAME_OVER;*/
+         static Transition TRANSITION_CONNECTION_FAIL; // Use when connection fails anywhere during a connected state.
          static Transition TRANSITION_LOBBY;
          static Transition TRANSITION_LOADING;
          static Transition TRANSITION_GAME;
