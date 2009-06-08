@@ -18,6 +18,8 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
+//#include <dtGame/message.h>
+#include <dtGame/basemessages.h>
 #include <dtNetGM/clientnetworkcomponent.h>
 #include <dtNetGM/servernetworkcomponent.h>
 
@@ -43,6 +45,8 @@
 
 namespace NetDemo
 {
+   const std::string GameLogicComponent::TIMER_UPDATE_TERRAIN("FORCE_UPDATE_OF_TERRAIN");
+
    //////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
       : BaseClass(name)
@@ -69,38 +73,28 @@ namespace NetDemo
    void GameLogicComponent::OnAddedToGM()
    {
 
-      ///////////////////////////////////////////////////////////
-      /// CMM - TOTAL AND COMPLETE HACK!!!! DELETE THIS!  aLL OF IT!
-
       dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-      //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
-      const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-      int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-      const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
-      int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-      const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+      //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+      //int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+      const std::string gameName = "NetDemo";// configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+      int gameVersion = 1; //dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+      //const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
-      //if (role == "Server" || role == "server" || role == "SERVER")
-      //{
-         dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
-            new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
-         GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
-         //mNetworkComp = serverComp;
-      //}
-      //else if (role == "Client" || role == "client" || role == "CLIENT")
-      //{
-         dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
-            new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
-         GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
-         //mNetworkComp = clientComp;
-      //}
+      // We can't add components while in a tick message, so we add both components up front.
+      // SERVER COMPONENT 
+      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
+         new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
+      GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
+      // CLIENT COMPONENT
+      dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
+         new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
+      GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
    }
 
    //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::ProcessMessage(const dtGame::Message& msg)
    {
-
       BaseClass::ProcessMessage(msg);
 
       const dtGame::MessageType& messageType = msg.GetMessageType();
@@ -108,7 +102,7 @@ namespace NetDemo
       // Process game state changes.
       if (messageType == dtGame::MessageType::NETSERVER_ACCEPT_CONNECTION)
       {
-         LOG_ALWAYS("We got a net server accept message.");
+         LOG_ALWAYS("The server accepted the connection request message.");
       }
       else if (messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
@@ -120,11 +114,16 @@ namespace NetDemo
       }
       else if (dtGame::MessageType::INFO_MAP_UNLOADED == msg.GetMessageType())
       {
+         mCurrentTerrainDrawActor = NULL;
          DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
       {
          HandleActorUpdateMessage(msg);
+      }
+      else if (dtGame::MessageType::INFO_TIMER_ELAPSED == msg.GetMessageType())
+      {
+         HandleTimerElapsedMessage(msg);
       }
 
       // Something about Game State changing here
@@ -170,7 +169,7 @@ namespace NetDemo
       ////////////////////////
    }
 
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////
    void GameLogicComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
    {
       const dtGame::ActorUpdateMessage &updateMessage =
@@ -186,16 +185,14 @@ namespace NetDemo
          if(statusActor == NULL)  
             return;
 
-         // If the actor belongs to the server, then we have work to do.
-         if (statusActor->GetIsServer())
+         // If it's a local actor and we are the server, then we need to create our terrain.
+         // The terrain will be published to the clients. 
+         if (statusActor->GetIsServer() && !statusActor->IsRemote())
          {
             if (statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
             {
                mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-                  "Changing terrain to [%s].", statusActor->GetTerrainPreference().c_str());
-
-
-               // Set the terrain to start loading once we switch to loading state.
+                  "Creating new terrain [%s] on the Server.", statusActor->GetTerrainPreference().c_str());
                mTerrainToLoad = statusActor->GetTerrainPreference();
                UnloadCurrentTerrain();
                mCurrentTerrainPrototypeName = mTerrainToLoad;
@@ -206,7 +203,22 @@ namespace NetDemo
       }
    }
 
-   ///////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::HandleTimerElapsedMessage(const dtGame::Message& msg)
+   {
+      const dtGame::TimerElapsedMessage& timerMsg =
+         static_cast<const dtGame::TimerElapsedMessage&>(msg);
+
+      // Force an update of the terrain actor. This will pass the actor out to late-joining clients.
+      if(TIMER_UPDATE_TERRAIN == timerMsg.GetTimerName() && mCurrentTerrainDrawActor.valid())
+      {
+         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,"Sending out a terrain actor update.");
+         mCurrentTerrainDrawActor->GetGameActorProxy().NotifyFullActorUpdate();
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////
    void GameLogicComponent::HandleMapLoaded()
    {
       InitializePlayer();
@@ -226,34 +238,26 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   bool GameLogicComponent::JoinNetwork(const std::string& role, int serverPort,
-      const std::string &gameName, const std::string& hostIP)
+   bool GameLogicComponent::JoinNetwork(const std::string& role, int serverPort, const std::string& hostIP)
    {
       bool success = false;
 
-      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-      int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-
       if (role == "Server" || role == "server" || role == "SERVER")
       {
-         success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
+         success = JoinNetworkAsServer(serverPort);
       }
       else if (role == "Client" || role == "client" || role == "CLIENT")
       {
-         success = JoinNetworkAsClient(serverPort, hostIP, gameName, gameVersion);
+         success = JoinNetworkAsClient(serverPort, hostIP);
       }
 
       return success;
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   bool GameLogicComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
+   bool GameLogicComponent::JoinNetworkAsServer(int serverPort)
    {
       bool result = false;
-
-      //dtCore::RefPtr<dtNetGM::ServerNetworkComponent> networkComp =
-      //   new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
-      //GetGameManager()->AddComponent(*networkComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
       dtNetGM::ServerNetworkComponent* serverComp;
       GetGameManager()->GetComponentByName(dtNetGM::ServerNetworkComponent::DEFAULT_NAME, serverComp);
@@ -265,6 +269,9 @@ namespace NetDemo
             mIsConnectedToNetwork = true;
             mIsServer = true;
             mNetworkComp = serverComp;
+
+            // Start a repeating timer - to update terrain
+            GetGameManager()->SetTimer(TIMER_UPDATE_TERRAIN, NULL, 3.0f, true, true);
          }
       }
       else
@@ -276,16 +283,11 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////
-   bool GameLogicComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress, 
-      const std::string &gameName, int gameVersion)
+   bool GameLogicComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress)
    {
       bool result = false;
       mIsServer = false;
 
-      //dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
-      //   new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
-      //GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
-      
       dtNetGM::ClientNetworkComponent* clientComp;
       GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientComp);
       if( clientComp != NULL )
@@ -315,9 +317,9 @@ namespace NetDemo
             if (serverComponent != NULL)
             {
                serverComponent->ShutdownNetwork();
-               //GetGameManager()->RemoveComponent(*serverComponent);
-               //mNetworkComp = NULL;
             }
+
+            GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, NULL); 
          }
 
          // CLIENT
@@ -328,11 +330,10 @@ namespace NetDemo
             if (clientComponent != NULL)
             {
                clientComponent->ShutdownNetwork();
-               //GetGameManager()->RemoveComponent(*clientComponent);
-               //mNetworkComp = NULL;
             }
          }
 
+         mNetworkComp = NULL;
          mIsConnectedToNetwork = false;
       }
    }
@@ -420,8 +421,7 @@ namespace NetDemo
          GetGameManager()->DeleteActor(mCurrentTerrainDrawActor->GetGameActorProxy());
          mCurrentTerrainDrawActor = NULL;
          mCurrentTerrainPrototypeName = "";
-
-         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain.");
+         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain.");
       }
    }
 
@@ -430,9 +430,6 @@ namespace NetDemo
    {
       if (mCurrentTerrainPrototypeName.empty())
          return;
-
-      // NOTE - there are TWO steps. 1) load the DRAWN Terrain. 2) sync the PHYSICS terrain
-
 
       // Find the prototype for the DRAWN terrain.
       SimCore::Actors::TerrainActorProxy* drawLandPrototypeProxy = NULL;
@@ -445,7 +442,6 @@ namespace NetDemo
          mCurrentTerrainPrototypeName = "";
          return;
       }
-
 
       // Create a new instance of the DRAWN Terrain.
       dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
@@ -461,7 +457,7 @@ namespace NetDemo
 
 
       // Add to the GM
-      GetGameManager()->AddActor(*newDrawLandActorProxy, false, false);
+      GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());
 
