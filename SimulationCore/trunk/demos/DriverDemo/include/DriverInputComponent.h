@@ -251,7 +251,7 @@ namespace DriverDemo
       private:
 
          // ?:???? void UpdateInteriorModel();
-         void StopAnyWeaponsFiring();
+         //void StopAnyWeaponsFiring();
 
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();

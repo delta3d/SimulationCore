@@ -291,7 +291,7 @@ namespace DriverDemo
 
 
    ////////////////////////////////////////////////////////////////////////////////
-   void DriverInputComponent::StopAnyWeaponsFiring()
+/*   void DriverInputComponent::StopAnyWeaponsFiring()
    {
       // Depress the weapon trigger if the mode is about to change.
       if( mWeapon.valid() )
@@ -311,7 +311,7 @@ namespace DriverDemo
          }
       }
    }
-
+*/
    ////////////////////////////////////////////////////////////////////////////////
    bool DriverInputComponent::HandleKeyPressed(const dtCore::Keyboard* keyboard, int key)
    {
@@ -507,15 +507,7 @@ namespace DriverDemo
    /////////////////////////////////////////////////////////////////////////////////
    bool DriverInputComponent::HandleKeyReleased(const dtCore::Keyboard* keyboard, int key)
    {
-      bool handled = false;
-
-      GameAppComponent* gameAppComponent = NULL;
-      GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
-
-      if(!handled)
-         return BaseClass::HandleKeyReleased(keyboard, key);
-
-      return handled;
+      return BaseClass::HandleKeyReleased(keyboard, key);
    }
 
    /////////////////////////////////////////////////////////////////////////////////
@@ -523,33 +515,28 @@ namespace DriverDemo
    {
       bool handled = false;
 
-      GameAppComponent* gameAppComponent;
-      GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME, gameAppComponent);
-      if(gameAppComponent != NULL)
+
+      // Left button is fire!  Boom baby!
+      if( button == dtCore::Mouse::LeftButton )
       {
-
-         // Left button is fire!  Boom baby!
-         if( button == dtCore::Mouse::LeftButton )
+         if(mWeapon.valid() && mVehicle.valid()
+            && mVehicle->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED )
          {
-            if(mWeapon.valid() && mVehicle.valid()
-               && mVehicle->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED )
-            {
-               mWeapon->SetTriggerHeld( true );
-            }
+            mWeapon->SetTriggerHeld( true );
          }
-         // Right button should turn turret.
-         else if( button == dtCore::Mouse::RightButton )
+      }
+      // Right button should turn turret.
+      else if( button == dtCore::Mouse::RightButton )
+      {
+         if( ! mRingButtonHeld )
          {
-            if( ! mRingButtonHeld )
-            {
-               HandleTurretEnabled( true );
-               mRingButtonHeld = true;
+            HandleTurretEnabled( true );
+            mRingButtonHeld = true;
 
-               if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
-               {
-                  mRingMM->SetTarget( NULL );
-                  mRingMM->SetTargetDOF( mDOFRing.get() );
-               }
+            if(mVehicle.valid() && IsVehiclePivotable(*mVehicle))
+            {
+               mRingMM->SetTarget( NULL );
+               mRingMM->SetTargetDOF( mDOFRing.get() );
             }
          }
       }

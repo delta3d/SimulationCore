@@ -43,9 +43,7 @@
 
 namespace NetDemo
 {
-   /////////////////////////////////////////////////////////////////////////////
-   // GAME LOGIC COMPONENT
-   /////////////////////////////////////////////////////////////////////////////
+   //////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
       : BaseClass(name)
       , mIsServer(false)
@@ -75,24 +73,27 @@ namespace NetDemo
       /// CMM - TOTAL AND COMPLETE HACK!!!! DELETE THIS!  aLL OF IT!
 
       dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
       const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+      int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
       const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
       int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+      const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
-      if (role == "Server" || role == "server" || role == "SERVER")
-      {
+      //if (role == "Server" || role == "server" || role == "SERVER")
+      //{
          dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
             new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
          GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
-         mNetworkComp = serverComp;
-      }
-      else if (role == "Client" || role == "client" || role == "CLIENT")
-      {
+         //mNetworkComp = serverComp;
+      //}
+      //else if (role == "Client" || role == "client" || role == "CLIENT")
+      //{
          dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
             new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
          GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
-         mNetworkComp = clientComp;
-      }
+         //mNetworkComp = clientComp;
+      //}
 
    }
 
@@ -105,7 +106,11 @@ namespace NetDemo
       const dtGame::MessageType& messageType = msg.GetMessageType();
 
       // Process game state changes.
-      if (messageType == SimCore::MessageType::GAME_STATE_CHANGED)
+      if (messageType == dtGame::MessageType::NETSERVER_ACCEPT_CONNECTION)
+      {
+         LOG_ALWAYS("We got a net server accept message.");
+      }
+      else if (messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
          HandleStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(msg));
       }
@@ -176,9 +181,20 @@ namespace NetDemo
          //if (updateMessage.GetSource() != GetGameManager()->GetMachineInfo()) ... Is remote
          // Find the actor in the GM
          dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+         //   "Got an update for a status actor... Checking.");
          if(gap == NULL) return;
          PlayerStatusActor *statusActor = dynamic_cast<PlayerStatusActor*>(gap->GetActor());
          if(statusActor == NULL)  return;
+
+         if (statusActor->IsRemote())
+            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+            "REMOTE REMOTE REMOTE REMOTE status actor.");
+         else 
+         {
+            //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+            //"LOCAL LOCAL LOCAL LOCAL status actor... Checking.");
+         }
 
          // If the actor belongs to the server, then we have work to do.
          if (statusActor->GetIsServer())
@@ -219,37 +235,29 @@ namespace NetDemo
       DoStateTransition(&Transition::TRANSITION_FORWARD);
    }
 
-   /////////////////////////////////////////////////////////////////////////////
-   bool GameLogicComponent::JoinNetwork(const std::string& role, int serverPort,
-      const std::string &gameName, const std::string& hostIP)
-   {
-      bool success = false;
-
-      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-      int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
-
-      if (role == "Server" || role == "server" || role == "SERVER")
-      {
-         success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
-      }
-      else if (role == "Client" || role == "client" || role == "CLIENT")
-      {
-         success = JoinNetworkAsClient(serverPort, hostIP, gameName, gameVersion);
-      }
-
-      return success;
-   }
-
-   /////////////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////
    bool GameLogicComponent::JoinNetworkAsServer(int serverPort, const std::string &gameName, int gameVersion)
    {
       bool result = false;
 
       /// HACK - can't add a component while in a tick... so, we hacked it! 
-      LOG_ALWAYS("HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
+      LOG_ALWAYS("SERVER - SERVER - HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
       //dtCore::RefPtr<dtNetGM::ServerNetworkComponent> networkComp =
       //   new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
       //GetGameManager()->AddComponent(*networkComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp;
+      GetGameManager()->GetComponentByName("ServerNetworkComponent");
+       =
+         new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
+      GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      SimCore::Components::RenderingSupportComponent* renderComp;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(
+         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+         renderComp);
+
+
 
       dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
          dynamic_cast<dtNetGM::ServerNetworkComponent*>(mNetworkComp.get());
@@ -273,7 +281,7 @@ namespace NetDemo
 
       mIsServer = false;
       /// HACK - can't add a component while in a tick... so, we hacked it! 
-      LOG_ALWAYS("HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
+      LOG_ALWAYS("CLIENT - CLIENT - HACK MESSAGE - WE CANNOT ADD A COMPONENT WHILE IN A tick MESSAGE. FIX ME!");
       //dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientComp =
       //   new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
       //GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -303,11 +311,9 @@ namespace NetDemo
                dynamic_cast<dtNetGM::ServerNetworkComponent *>(mNetworkComp.get());
             if (serverComponent != NULL)
             {
-               // Do not do this. This crashes the Game Manager message loop for components.
+               serverComponent->ShutdownNetwork();
                //GetGameManager()->RemoveComponent(*serverComponent);
-               // How do we disconnect the server?!?!?!!! 
                //mNetworkComp = NULL;
-               LOG_ERROR("Still connected. Disable the network component but do not remove it.");
             }
          }
 
@@ -318,11 +324,9 @@ namespace NetDemo
                dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
             if (clientComponent != NULL)
             {
-               // Do not do this. This crashes the Game Manager message loop for components.
+               clientComponent->ShutdownNetwork();
                //GetGameManager()->RemoveComponent(*clientComponent);
-               // How do we disconnect the client?!?!?!!! 
                //mNetworkComp = NULL;
-               LOG_ERROR("Still connected. Disable the network component but do not remove it.");
             }
          }
 
@@ -363,10 +367,49 @@ namespace NetDemo
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
+
+         // CMM - Hack - bypass this screen for now, since we don't have one
+         DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
       }
       else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {
          GetGameManager()->GetApplication().Quit();
+      }
+      else if (state == NetDemoState::STATE_LOBBY)
+      {
+         //if (mPlayerStatus != NULL)
+         //   mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
+
+         // CMM - TEMP HACK - Eventually, this is a full game state with a UI and this 
+         // Gets done from the UI somewhere, somehow. 
+
+         bool success = false;
+         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+         //bool isGMOn = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue("dtNetGM.On", "false"));
+         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+         int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
+         const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+         int gameVersion = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
+         const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+
+         if (role == "Server" || role == "server" || role == "SERVER")
+         {
+            success = JoinNetworkAsServer(serverPort, gameName, gameVersion);
+         }
+         else if (role == "Client" || role == "client" || role == "CLIENT")
+         {
+            success = JoinNetworkAsClient(serverPort, host, gameName, gameVersion);
+         }
+
+         if (success) // start map load
+         {
+            DoStateTransition(&SimCore::Components::EventType::TRANSITION_FORWARD); // to loading
+         }
+         else  // go back
+         {
+            DoStateTransition(&SimCore::Components::EventType::TRANSITION_BACK); // back to menu
+         }
+
       }
    }
 

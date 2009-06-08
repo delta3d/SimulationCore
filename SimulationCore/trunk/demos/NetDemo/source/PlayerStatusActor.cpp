@@ -78,6 +78,15 @@ namespace NetDemo
          PublishPlayerSettings();
       }
 
+      static float timeToForceTest = 10.0f;
+      timeToForceTest -= tickMessage.GetDeltaRealTime();
+      if (timeToForceTest <= 0.0f)
+      {
+         timeToForceTest = 10.0f;
+         PublishPlayerSettings();
+
+      }
+
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -104,6 +113,10 @@ namespace NetDemo
       GetGameActorProxy().PopulateActorUpdate(static_cast<dtGame::ActorUpdateMessage&>(*msg), propNames);
 
       GetGameActorProxy().GetGameManager()->SendMessage(*msg);
+
+      // CMM - Hack
+      LOG_ALWAYS("Local player is sending an update.");
+      GetGameActorProxy().GetGameManager()->SendNetworkMessage(*msg);
 
       // Clears the dirty flag. Allows others to call this and keep flag in sync.
       mDirtyPlayerSettings = false;
