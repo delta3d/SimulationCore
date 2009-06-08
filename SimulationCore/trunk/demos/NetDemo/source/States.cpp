@@ -43,6 +43,7 @@ namespace NetDemo
    static StateType STATE_SHUTDOWN;*/
    NetDemoState NetDemoState::STATE_CONNECTING("STATE_CONNECTING");
    NetDemoState NetDemoState::STATE_LOBBY("STATE_LOBBY");
+   NetDemoState NetDemoState::STATE_LOBBY_CONNECT_FAIL("STATE_LOBBY_CONNECT_FAIL");
    NetDemoState NetDemoState::STATE_UNLOAD("STATE_UNLOAD");
    NetDemoState NetDemoState::STATE_GAME_RUNNING("STATE_GAME_RUNNING");
    NetDemoState NetDemoState::STATE_GAME_READYROOM("STATE_GAME_READYROOM");
@@ -64,6 +65,7 @@ namespace NetDemo
    static EventType TRANSITION_BACK;
    static EventType TRANSITION_QUIT;
    static EventType TRANSITION_GAME_OVER;*/
+   Transition Transition::TRANSITION_CONNECTION_FAIL("TRANSITION_CONNECTION_FAIL");
    Transition Transition::TRANSITION_LOBBY("TRANSITION_LOBBY");
    Transition Transition::TRANSITION_LOADING("TRANSITION_LOADING");
    Transition Transition::TRANSITION_GAME("TRANSITION_GAME");
