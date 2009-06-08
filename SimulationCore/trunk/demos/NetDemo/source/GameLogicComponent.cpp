@@ -178,23 +178,13 @@ namespace NetDemo
 
       if (updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
-         //if (updateMessage.GetSource() != GetGameManager()->GetMachineInfo()) ... Is remote
          // Find the actor in the GM
          dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-         //   "Got an update for a status actor... Checking.");
-         if(gap == NULL) return;
+         if(gap == NULL) 
+            return;
          PlayerStatusActor *statusActor = dynamic_cast<PlayerStatusActor*>(gap->GetActor());
-         if(statusActor == NULL)  return;
-
-         if (statusActor->IsRemote())
-            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-            "REMOTE REMOTE REMOTE REMOTE status actor.");
-         else 
-         {
-            //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-            //"LOCAL LOCAL LOCAL LOCAL status actor... Checking.");
-         }
+         if(statusActor == NULL)  
+            return;
 
          // If the actor belongs to the server, then we have work to do.
          if (statusActor->GetIsServer())

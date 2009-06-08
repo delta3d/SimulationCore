@@ -63,6 +63,10 @@ namespace NetDemo
             LOG_ERROR("Got a player entered world message, but no player was found.")
             return;
          }
+         else if (gap->IsRemote()) // Somebody else's player.
+         {
+            return;
+         }
 
          dtCore::Transformable* xformable;
          gap->GetActor(xformable);
