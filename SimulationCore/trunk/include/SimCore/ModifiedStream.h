@@ -35,6 +35,8 @@
 #include <cstdio>
 #include <SimCore/Export.h>
 
+#ifdef AGEIA_PHYSICS
+
 namespace SimCore
 {
    /////////////////////////////////////////////////////////////////////
@@ -111,5 +113,7 @@ namespace SimCore
            mutable		const NxU8*		buffer;
    };
 }
+
+#endif //AGEIA_PHYSICS
 
 #endif  // STREAM_H
