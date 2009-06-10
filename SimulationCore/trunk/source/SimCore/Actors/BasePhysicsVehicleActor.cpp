@@ -89,7 +89,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnEnteredWorld()
       {
-         Platform::OnEnteredWorld();
+         BaseClass::OnEnteredWorld();
 
 
          // Register with the Physics Component
@@ -130,6 +130,15 @@ namespace SimCore
             //GetPhysicsHelper()->TurnObjectsGravityOff("Default");
          }
 #endif
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::OnRemovedFromWorld()
+      {
+         BaseClass::OnRemovedFromWorld();
+         dtPhysics::PhysicsComponent* physicsComp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
+         physicsComp->UnregisterHelper(*mPhysicsHelper.get());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +228,7 @@ namespace SimCore
       }
 #endif
       /// Overridden so that it will flag the actor as being transformed when you set the position.
-      void BasePhysicsVehicleActor::SetTransform(dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)
+      void BasePhysicsVehicleActor::SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)
       {
          Platform::SetTransform(xform, cs);
          mPushTransformToPhysics = true;

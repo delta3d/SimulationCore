@@ -58,6 +58,8 @@ namespace SimCore
                                                        public VehicleInterface
       {
          public:
+            typedef Platform BaseClass;
+
             /// Constructor
             BasePhysicsVehicleActor (PlatformActorProxy &proxy);
 
@@ -81,9 +83,16 @@ namespace SimCore
             */
             virtual void OnTickRemote(const dtGame::TickMessage &tickMessage);
 
-            // Called when the actor has been added to the game manager.
-            // You can respond to OnEnteredWorld on either the proxy or actor or both.
+            /**
+             * Called when the actor has been added to the game manager.
+             * You can respond to OnEnteredWorld on either the proxy or actor or both.
+             */
             virtual void OnEnteredWorld();
+
+            /**
+             * Overridden to unregister the helper when removed from the GM.
+             */
+            virtual void OnRemovedFromWorld();
 
 #ifdef AGEIA_PHYSICS
             /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
@@ -118,7 +127,7 @@ namespace SimCore
             virtual void ApplyForce(const osg::Vec3& force);
 
             /// Overridden so that it will flag the actor as being transformed when you set the position.
-            virtual void SetTransform(dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);
+            virtual void SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);
 
             /// Utility Methods
             virtual float GetMPH();
