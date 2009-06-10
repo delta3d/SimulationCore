@@ -198,6 +198,13 @@ namespace NetDemo
 
       PlayerStatusActor &actor = static_cast<PlayerStatusActor &>(GetGameActor());
 
+
+      // OTHER POSSIBLE PROPERTIES
+
+      // COLOR
+      // SCORE
+
+
       static const dtUtil::RefString PROP_PLAYER_STATUS_DESC("Indicates the current status of this network player.");
       AddProperty(new dtDAL::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>(PROP_PLAYER_STATUS, PROP_PLAYER_STATUS,
          dtDAL::MakeFunctor(actor, &PlayerStatusActor::SetPlayerStatus),
