@@ -38,6 +38,7 @@
 #include <ActorRegistry.h>
 #include <PlayerStatusActor.h>
 #include <States.h>
+#include <ServerGameStatusActor.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
@@ -52,6 +53,7 @@ namespace NetDemo
       : BaseClass(name)
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
+      , mStartTheGameOnNextGameRunning(false)
    { 
       mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
 
@@ -115,6 +117,7 @@ namespace NetDemo
       else if (dtGame::MessageType::INFO_MAP_UNLOADED == msg.GetMessageType())
       {
          mCurrentTerrainDrawActor = NULL;
+         mServerGameStatusProxy = NULL;
          DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
@@ -175,7 +178,8 @@ namespace NetDemo
       const dtGame::ActorUpdateMessage &updateMessage =
          static_cast<const dtGame::ActorUpdateMessage&> (msg);
 
-      if (updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
+      // PLAYER STATUS
+      if (mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
          // Find the actor in the GM
          dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
@@ -185,22 +189,57 @@ namespace NetDemo
          if(statusActor == NULL)  
             return;
 
-         // If it's a local actor and we are the server, then we need to create our terrain.
-         // The terrain will be published to the clients. 
-         if (statusActor->GetIsServer() && !statusActor->IsRemote())
+         HandlePlayerStatusUpdated(statusActor);
+
+      }
+
+      // SERVER STATUS
+      else if (!mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE)
+      {
+         // Find the actor in the GM
+         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         if(gap == NULL)  return;
+         ServerGameStatusActor *serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
+
+         // If not the server, do a print out...
+         std::ostringstream oss;
+         oss << "Server Status Updated: [" << serverStatus->GetGameStatus().GetName() << "], Wave[" << 
+            serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" << 
+            serverStatus->GetTimeLeftInCurState() << "], EnemiesKilt[" << serverStatus->GetNumEnemiesKilled() << "].";
+         LOG_ALWAYS(oss.str());
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::HandlePlayerStatusUpdated(PlayerStatusActor *statusActor)
+   {
+      // If it's a local actor and we are the server, then we need to create our terrain.
+      // The terrain will be published to the clients. 
+      if (!statusActor->IsRemote())
+      {
+         if (statusActor->GetIsServer() && statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
          {
-            if (statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
-            {
-               mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-                  "Creating new terrain [%s] on the Server.", statusActor->GetTerrainPreference().c_str());
-               mTerrainToLoad = statusActor->GetTerrainPreference();
-               UnloadCurrentTerrain();
-               mCurrentTerrainPrototypeName = mTerrainToLoad;
-               mTerrainToLoad = "";
-               LoadNewTerrain();
-            }
+            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+               "Creating new terrain [%s] on the Server.", statusActor->GetTerrainPreference().c_str());
+            mTerrainToLoad = statusActor->GetTerrainPreference();
+            UnloadCurrentTerrain();
+            mCurrentTerrainPrototypeName = mTerrainToLoad;
+            mTerrainToLoad = "";
+            LoadNewTerrain();
          }
       }
+
+      // It's remote.
+      else if (mIsServer && mServerGameStatusProxy.valid())
+      {
+         // get the count of player status actors in gm.
+         std::vector<dtDAL::ActorProxy*> playerActors;
+         GetGameManager()->FindActorsByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, playerActors);
+         mServerGameStatusProxy->GetActorAsGameStatus().SetNumPlayers(playerActors.size());
+
+         // (todo - future) Calculate the number of teams
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////
@@ -232,6 +271,25 @@ namespace NetDemo
       {
          networkComponent->SendRequestConnectionMessage();
       }
+
+      // Create the server game status actor
+      if (mIsServer) 
+      {
+         dtCore::RefPtr<dtGame::GameActorProxy> ap;
+         GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, ap);
+         mServerGameStatusProxy = dynamic_cast<ServerGameStatusActorProxy*> (ap.get());
+         ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
+         gameStatus.SetNumTeams(1);
+         gameStatus.SetNumPlayers(1); // we account for ourself already
+         gameStatus.SetGameDifficulty(1);
+         gameStatus.SetGameStatus(ServerGameStatusActor::ServerGameStatusEnum::WAVE_ABOUT_TO_START);
+         gameStatus.SetNumEnemiesKilled(0);
+         gameStatus.SetWaveNumber(1);
+         gameStatus.SetTimeLeftInCurState(10.0f);
+
+         GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
+      }
+
 
       // Now we can go to the ready room.
       DoStateTransition(&Transition::TRANSITION_FORWARD);
@@ -366,11 +424,24 @@ namespace NetDemo
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
+
+         if (mStartTheGameOnNextGameRunning)
+         {
+            mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();            
+            mStartTheGameOnNextGameRunning = false;
+         }
       }
       else if (state == NetDemoState::STATE_GAME_READYROOM)
       {
          if (mPlayerStatus != NULL)
             mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_READYROOM);
+         if (mServerGameStatusProxy != NULL)
+            mServerGameStatusProxy->GetActorAsGameStatus().SetGameStatus
+               (ServerGameStatusActor::ServerGameStatusEnum::READY_ROOM);
+         mStartTheGameOnNextGameRunning = true;
+
+         // curt - hack - replace this with the GUI COMPONENT
+         DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {

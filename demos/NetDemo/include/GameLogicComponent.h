@@ -57,6 +57,7 @@ namespace SimCore
 namespace NetDemo
 {
    class PlayerStatusActor;
+   class ServerGameStatusActorProxy;
 
 
    //////////////////////////////////////////////////////////////////////////////
@@ -98,6 +99,8 @@ namespace NetDemo
 
          virtual void OnAddedToGM();
 
+         void HandlePlayerStatusUpdated(PlayerStatusActor *statusActor);
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
@@ -136,6 +139,10 @@ namespace NetDemo
 
          // May be either a Network or Client component. We create it when we connect
          dtCore::RefPtr<dtGame::GMComponent> mNetworkComp;
+
+         dtCore::RefPtr<ServerGameStatusActorProxy> mServerGameStatusProxy;
+
+         bool mStartTheGameOnNextGameRunning;
    };
 
 }

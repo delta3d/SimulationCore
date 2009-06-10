@@ -16,6 +16,7 @@
 
 #include <HoverVehicleActor.h>
 #include <PlayerStatusActor.h>
+#include <ServerGameStatusActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -32,6 +33,10 @@ namespace NetDemo
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE(
       new dtDAL::ActorType("PlayerStatusActor", "NetDemo", "Status of each real player such as game state, team, and vehicle for NetDemo",
       SimCore::Actors::EntityActorRegistry::PLAYER_ACTOR_TYPE.get()));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE(
+      new dtDAL::ActorType("ServerGameStatusActor", "NetDemo", "Status of the overall game - controlled by the server. "));
+
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -56,5 +61,6 @@ namespace NetDemo
    {
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<ServerGameStatusActorProxy>(SERVER_GAME_STATUS_ACTOR_TYPE.get());
    }
 }
