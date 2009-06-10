@@ -33,8 +33,9 @@
 namespace dtPhysics
 {
 
-
 typedef NxActor PhysicsObject;
+typedef dtAgeiaPhysX::PhysicsComponentInitCallback PhysicsComponentInitCallback;
+
 typedef dtAgeiaPhysX::NxAgeiaPhysicsHelper PhysicsHelper;
 typedef dtAgeiaPhysX::NxAgeiaWorldComponent PhysicsComponent;
 

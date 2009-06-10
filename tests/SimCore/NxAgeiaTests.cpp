@@ -223,17 +223,17 @@ void NxAgeiaTests::TestParticleSystemPerformance()
 /////////////////////////////////////////////////////////
 void NxAgeiaTests::TestFunction()
 {
-   dtGame::GMComponent* comptest = mGM->GetComponentByName("NxAgeiaWorldComponent");
-   CPPUNIT_ASSERT_MESSAGE("Ageia World Component Did not get initialized correctly",  comptest != NULL);
+   NxAgeiaWorldComponent* component = NULL;
 
-   NxAgeiaWorldComponent* component = dynamic_cast<NxAgeiaWorldComponent*>(comptest);
+   mGM->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME, component);
+
    NxScene* tehscene = &component->GetPhysicsScene("Default");
 
    CPPUNIT_ASSERT_MESSAGE("Default scene not initialized", (tehscene != NULL));
 
-   const std::string &SceneNameOne = "LollerzSkates";
-   const std::string &SceneNameTwo = "TehMomWhichIsTeaguez";
-   const std::string &SceneNameThr = "RoflCopterz";
+   const std::string SceneNameOne = "LollerzSkates";
+   const std::string SceneNameTwo = "TehMomWhichIsTeaguez";
+   const std::string SceneNameThr = "RoflCopterz";
    NxSceneDesc desc;
    component->CreateScene(SceneNameOne, desc, false);
    component->CreateScene(SceneNameTwo, desc, false);
@@ -262,14 +262,7 @@ void NxAgeiaTests::TestFunction()
    CPPUNIT_ASSERT_MESSAGE("Failed to create material ageia actor", matActor != NULL);
 
    component->DeleteScene(SceneNameThr);
-   tehscene = &component->GetPhysicsScene(SceneNameThr);
-   NxScene* defaultScene = &component->GetPhysicsScene("Default");
-
-   if(tehscene != defaultScene)
-   {
-      printf("SceneNameThr should be the default scene and its not.\n");
-   }
-   //CPPUNIT_ASSERT_MESSAGE("SceneNameThr should be the default scene and its not.", (tehscene != defaultScene ));
+   CPPUNIT_ASSERT_THROW(component->GetPhysicsScene(SceneNameThr), dtUtil::Exception);
 
    const std::string &TeaguesMomMaterialName = "FluffyBunnyMaterial";
    CPPUNIT_ASSERT_MESSAGE("Material that should have been created was not", false != component->RegisterMaterial(TeaguesMomMaterialName, 0.5, .77, .77) );
