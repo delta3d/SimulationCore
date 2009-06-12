@@ -14,9 +14,9 @@
 #include <ActorRegistry.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-#include <HoverVehicleActor.h>
-#include <PlayerStatusActor.h>
-#include <ServerGameStatusActor.h>
+#include <Actors/HoverVehicleActor.h>
+#include <Actors/PlayerStatusActor.h>
+#include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
 
 #include <dtCore/shadermanager.h>

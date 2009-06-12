@@ -36,14 +36,14 @@
 
 #include <GameLogicComponent.h>
 #include <ActorRegistry.h>
-#include <PlayerStatusActor.h>
+#include <Actors/PlayerStatusActor.h>
 #include <States.h>
-#include <ServerGameStatusActor.h>
+#include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
-#include <HoverVehicleActor.h>
+#include <Actors/HoverVehicleActor.h>
 
 namespace NetDemo
 {

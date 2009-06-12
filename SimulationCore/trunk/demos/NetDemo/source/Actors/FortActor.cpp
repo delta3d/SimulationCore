@@ -13,8 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 //#ifdef AGEIA_PHYSICS
-#include <FortActor.h>
-//#include <HoverVehiclePhysicsHelper.h>
+#include <Actors/FortActor.h>
 #include <dtPhysics/physicshelper.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
