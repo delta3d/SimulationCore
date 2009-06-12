@@ -46,15 +46,15 @@ namespace NetDemo
       , mNumEnemiesKilled(0)
       , mTimeLeftInCurState(0.0f)
       , mLastPublishTime(0.0)
-      , mGameDifficulty(0)
       , mNumPlayers(0)
       , mNumTeams(0)
+      , mWaveStartDuration(5.0f)
+      , mWaveDuration(60.0f)
+      , mGameDifficulty(0)
+      , mMaxNumberWaves(5)
       , mTimeTillNextUpdate(0.0f)
       , mTimeBetweenUpdates(1.0f)
       , mDirtySettings(false)
-      , mWaveDuration(60.0f)
-      , mWaveStartDuration(5.0f)
-      , mMaxNumberWaves(5)
    {
       SetName("ServerGameStatusActor");
    }
@@ -143,7 +143,7 @@ namespace NetDemo
                // TODO - Send a message letting folks know that the game status has changed.
                LOG_ALWAYS("Server - GAME OVER ... (TODO - fire a state change message here).");
             }
-            else 
+            else
             {
                mGameStatus = &ServerGameStatusEnum::WAVE_ABOUT_TO_START;
                mTimeLeftInCurState = mWaveStartDuration;
@@ -204,70 +204,70 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetWaveNumber(int newValue) 
-   { 
+   void ServerGameStatusActor::SetWaveNumber(int newValue)
+   {
       if (mWaveNumber != newValue)
       {
          mDirtySettings = true;
-         mWaveNumber = newValue; 
+         mWaveNumber = newValue;
       }
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetNumEnemiesKilled(int newValue) 
-   { 
+   void ServerGameStatusActor::SetNumEnemiesKilled(int newValue)
+   {
       //mDirtySettings = true;
-      mNumEnemiesKilled = newValue; 
+      mNumEnemiesKilled = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetTimeLeftInCurState(float newValue) 
-   { 
+   void ServerGameStatusActor::SetTimeLeftInCurState(float newValue)
+   {
       //mDirtySettings = true;
-      mTimeLeftInCurState = newValue; 
+      mTimeLeftInCurState = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetLastPublishTime(double newValue) 
-   { 
+   void ServerGameStatusActor::SetLastPublishTime(double newValue)
+   {
       //mDirtySettings = true;
-      mLastPublishTime = newValue; 
+      mLastPublishTime = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetGameDifficulty(int newValue) 
-   { 
+   void ServerGameStatusActor::SetGameDifficulty(int newValue)
+   {
       if (mGameDifficulty != newValue)
       {
          mDirtySettings = true;
-         mGameDifficulty = newValue; 
+         mGameDifficulty = newValue;
       }
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetNumPlayers(int newValue) 
-   { 
+   void ServerGameStatusActor::SetNumPlayers(int newValue)
+   {
       if (mNumPlayers != newValue)
       {
          mDirtySettings = true;
-         mNumPlayers = newValue; 
+         mNumPlayers = newValue;
       }
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void ServerGameStatusActor::SetNumTeams(int newValue) 
-   { 
+   void ServerGameStatusActor::SetNumTeams(int newValue)
+   {
       if (mNumTeams != newValue)
       {
          mDirtySettings = true;
-         mNumTeams = newValue; 
+         mNumTeams = newValue;
       }
    }
 
    //////////////////////////////////////////////////////////////////////
    void ServerGameStatusActor::StartTheGame()
    {
-      // We assume the server knows what it's doing, so we just do what it says. 
+      // We assume the server knows what it's doing, so we just do what it says.
       mWaveNumber = 1;
       mNumEnemiesKilled = 0;
       mGameStatus = &ServerGameStatusEnum::WAVE_ABOUT_TO_START;
