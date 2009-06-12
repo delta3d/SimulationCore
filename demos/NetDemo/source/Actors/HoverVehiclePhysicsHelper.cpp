@@ -10,7 +10,7 @@
 *
 * @author Curtiss Murphy
 */
-#include <HoverVehiclePhysicsHelper.h>
+#include <Actors/HoverVehiclePhysicsHelper.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>

@@ -30,8 +30,8 @@
 #include <States.h>
 #include <InputComponent.h>
 // TEMP STUFF FOR VEHICLE
-#include <HoverVehicleActor.h>
-#include <HoverVehiclePhysicsHelper.h>
+#include <Actors/HoverVehicleActor.h>
+#include <Actors/HoverVehiclePhysicsHelper.h>
 
 #include <osg/io_utils>
 #include <iostream>

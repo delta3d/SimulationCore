@@ -13,7 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #include <dtUtil/mswin.h>
-#include <ServerGameStatusActor.h>
+#include <Actors/ServerGameStatusActor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/basemessages.h>

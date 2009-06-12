@@ -13,7 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #include <dtUtil/mswin.h>
-#include <PlayerStatusActor.h>
+#include <Actors/PlayerStatusActor.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
@@ -21,6 +21,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/actorupdatemessage.h>
+#include <dtGame/gamemanager.h>
 //#include <SimCore/Actors/EntityActorRegistry.h>
 
 
