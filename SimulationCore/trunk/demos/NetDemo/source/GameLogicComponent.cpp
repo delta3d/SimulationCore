@@ -39,6 +39,7 @@
 #include <PlayerStatusActor.h>
 #include <States.h>
 #include <ServerGameStatusActor.h>
+#include <Actors/FortActor.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
@@ -272,24 +273,7 @@ namespace NetDemo
          networkComponent->SendRequestConnectionMessage();
       }
 
-      // Create the server game status actor
-      if (mIsServer) 
-      {
-         dtCore::RefPtr<dtGame::GameActorProxy> ap;
-         GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, ap);
-         mServerGameStatusProxy = dynamic_cast<ServerGameStatusActorProxy*> (ap.get());
-         ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
-         gameStatus.SetNumTeams(1);
-         gameStatus.SetNumPlayers(1); // we account for ourself already
-         gameStatus.SetGameDifficulty(1);
-         gameStatus.SetGameStatus(ServerGameStatusActor::ServerGameStatusEnum::WAVE_ABOUT_TO_START);
-         gameStatus.SetNumEnemiesKilled(0);
-         gameStatus.SetWaveNumber(1);
-         gameStatus.SetTimeLeftInCurState(10.0f);
-
-         GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
-      }
-
+      CreateServerSideActors();
 
       // Now we can go to the ready room.
       DoStateTransition(&Transition::TRANSITION_FORWARD);
@@ -564,4 +548,75 @@ namespace NetDemo
       return mMapName;
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::CreateServerSideActors()
+   {
+      if (mIsServer) 
+      {
+         //////////////////////////
+         // Create the server game status actor
+         dtCore::RefPtr<dtGame::GameActorProxy> ap;
+         GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, ap);
+         mServerGameStatusProxy = dynamic_cast<ServerGameStatusActorProxy*> (ap.get());
+         ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
+         gameStatus.SetNumTeams(1);
+         gameStatus.SetNumPlayers(1); // we account for ourself already
+         gameStatus.SetGameDifficulty(1);
+         gameStatus.SetGameStatus(ServerGameStatusActor::ServerGameStatusEnum::WAVE_ABOUT_TO_START);
+         gameStatus.SetNumEnemiesKilled(0);
+         gameStatus.SetWaveNumber(1);
+         gameStatus.SetTimeLeftInCurState(10.0f);
+         GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
+
+
+         //////////////////////////
+         // Create the Team Tower
+         // Assumes 1 team for now. Future - support more than 1 team
+/*         dtCore::RefPtr<dtGame::GameActorProxy> ap;
+         GetGameManager()->CreateActor(*NetDemo::NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, ap);
+         mServerGameStatusProxy = dynamic_cast<ServerGameStatusActorProxy*> (ap.get());
+         ServerGameStatusActor &gameStatus = mServerGameStatusProxy->GetActorAsGameStatus();
+         gameStatus.SetNumTeams(1);
+         gameStatus.SetNumPlayers(1); // we account for ourself already
+         gameStatus.SetGameDifficulty(1);
+         gameStatus.SetGameStatus(ServerGameStatusActor::ServerGameStatusEnum::WAVE_ABOUT_TO_START);
+         gameStatus.SetNumEnemiesKilled(0);
+         gameStatus.SetWaveNumber(1);
+         gameStatus.SetTimeLeftInCurState(10.0f);
+         GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
+
+         // Find the prototype for the DRAWN terrain.
+         SimCore::Actors::FortActorProxy* drawLandPrototypeProxy = NULL;
+         GetGameManager()->FindPrototypeByName(mCurrentTerrainPrototypeName, drawLandPrototypeProxy);
+         if (drawLandPrototypeProxy == NULL)
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+               "Cannot load the drawLandPrototype [%s] from the GM. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.",
+               mCurrentTerrainPrototypeName.c_str());
+            mCurrentTerrainPrototypeName = "";
+            return;
+         }
+
+         // Create a new instance of the DRAWN Terrain.
+         dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
+         GetGameManager()->CreateActorFromPrototype(drawLandPrototypeProxy->GetId(), newDrawLandActorProxy);
+         if (!newDrawLandActorProxy.valid())
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+               "Cannot create a newDrawLandActor for prototype [%s] from the GM. CRITICAL ERROR!",
+               mCurrentTerrainPrototypeName.c_str());
+            mCurrentTerrainPrototypeName = "";
+            return;
+         }
+
+
+         // Add to the GM
+         GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
+         mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
+            (newDrawLandActorProxy->GetActor());      
+         }
+*/
+      }
+
+   }
 }

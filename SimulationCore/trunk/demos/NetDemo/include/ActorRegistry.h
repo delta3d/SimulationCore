@@ -38,11 +38,10 @@ namespace NetDemo
    {
       public:
 
-         //static dtCore::RefPtr<dtDAL::ActorType> TEST_ACTOR_TYPE;
-
          static dtCore::RefPtr<dtDAL::ActorType> HOVER_VEHICLE_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> PLAYER_STATUS_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
 
 #ifdef AGEIA_PHYSICS
          //static dtCore::RefPtr<dtDAL::ActorType> HOVER_TARGET_ACTOR_TYPE;
