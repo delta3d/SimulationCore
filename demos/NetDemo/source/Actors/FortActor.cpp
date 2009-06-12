@@ -15,6 +15,7 @@
 //#ifdef AGEIA_PHYSICS
 #include <Actors/FortActor.h>
 #include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -57,6 +58,14 @@ namespace NetDemo
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
+      // Add our initial body.
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      helper->AddPhysicsObject(*physicsObject);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+      physicsObject->SetMass(30000.0f);
+      //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -70,10 +79,15 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
+      
       //GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
       //   GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
       ////////dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
+      dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+      physObj->CreateFromProperties(GetNonDamagedFileNode());
+      physObj->SetTransform(ourTransform);
+      physObj->SetActive(true);
 
       if(!IsRemote())
       {

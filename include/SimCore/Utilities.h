@@ -31,6 +31,7 @@
 #include <SimCore/Export.h>
 
 #include <dtGame/gamemanager.h>
+#include <dtGame/exceptionenum.h>
 
 
 namespace SimCore
@@ -56,6 +57,20 @@ namespace Utils
 
    /// A simple utility to check the DeveloperMode config parameter.
    bool SIMCORE_EXPORT IsDevModeOn(dtGame::GameManager& gm); 
+
+   /// Calls the GM CreateActorFromPrototype() method, but throws an exception if there's an error. 
+   template <typename T>
+   void CreateActorFromPrototypeWithException(dtGame::GameManager& gm, const std::string& prototypeName, 
+      dtCore::RefPtr<T>& proxy, const std::string& errorMsg = "")
+   {
+      gm.CreateActorFromPrototype(prototypeName, proxy);
+      if (proxy == NULL)
+      {
+         std::string errorText = "Failed to create actor from prototype named [" + prototypeName + "]. " + errorMsg;
+         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, errorText, __FILE__, __LINE__);
+      }
+   }
+
 }
 }
 
