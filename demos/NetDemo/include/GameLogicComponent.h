@@ -101,6 +101,8 @@ namespace NetDemo
 
          void HandlePlayerStatusUpdated(PlayerStatusActor *statusActor);
 
+         void CreateServerSideActors();
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);

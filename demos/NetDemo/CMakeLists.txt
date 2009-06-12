@@ -5,18 +5,38 @@ SET(SOURCE_PATH ${CMAKE_SOURCE_DIR}/demos/${LIB_NAME}/source)
 
 INCLUDE_DIRECTORIES(${HEADER_PATH})
 
-file(GLOB LIB_PUBLIC_HEADERS 
+file(GLOB LIB_PUBLIC_HEADERS_1 
    "${HEADER_PATH}/*.h"
    )
+file(GLOB LIB_PUBLIC_HEADERS_2 
+   "${HEADER_PATH}/Actors/*.h"
+   )
+file(GLOB LIB_PUBLIC_HEADERS_4 
+   "${HEADER_PATH}/Components/*.h"
+   )
+SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3})
 
-file(GLOB LIB_SOURCES 
+file(GLOB LIB_SOURCES_1
    "${SOURCE_PATH}/*.cpp"
    )
+file(GLOB LIB_SOURCES_2 
+   "${SOURCE_PATH}/Actors/*.cpp"
+   )
+file(GLOB LIB_SOURCES_4 
+   "${SOURCE_PATH}/Components/*.cpp"
+   )
+SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3})
 
 ADD_LIBRARY(${LIB_NAME} SHARED
     ${LIB_PUBLIC_HEADERS}
     ${LIB_SOURCES}
 )
+
+source_group("Header Files\\ActorsH" FILES ${LIB_PUBLIC_HEADERS_2})
+source_group("Header Files\\ComponentsH" FILES ${LIB_PUBLIC_HEADERS_3})
+
+source_group("Source Files\\Actors" FILES ${LIB_SOURCES_2})
+source_group("Source Files\\Components" FILES ${LIB_SOURCES_3})
 
 LINK_WITH_VARIABLES(${LIB_NAME}
    DTNETGM_LIBRARY
