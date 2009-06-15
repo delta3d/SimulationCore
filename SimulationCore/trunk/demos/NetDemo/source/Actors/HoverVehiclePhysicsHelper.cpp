@@ -71,7 +71,11 @@ namespace NetDemo
       dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       float weight = GetMass();
       dtPhysics::VectorType force(0.0, 0.0, 1.0 * weight * testJumpBoost);
+      // An impulse instantaneously applies a force as if it had been applied for 1 full second.
+      // When using ApplyForce(), a force is applied only for 1 frame, so an up force for a mass 
+      // of 1000 at 60 FPS would be about 16.6. But, as an impulse, it's a full 1000. 
       physicsObject->GetBodyWrapper()->ApplyImpulse(force);
+
       //float weight = GetVehicleBaseWeight();
       //NxVec3 dir(0.0, 0.0, 1.0);
       //physicsObject->addForce(dir * (weight * testJumpBoost), NX_SMOOTH_IMPULSE);
@@ -108,7 +112,7 @@ namespace NetDemo
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
       float finalAdjustment = currentAdjustment * 0.95 + futureAdjustment * 0.05;
-      float upForce = weight * finalAdjustment * deltaTime;
+      float upForce = weight * finalAdjustment;// * deltaTime;
       ////std::cout << " **** Up Force [" << upForce << "]." << std::endl;
       //NxVec3 dir(0.0, 0.0, 1.0);
       //physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
@@ -137,14 +141,14 @@ namespace NetDemo
       {
          //NxVec3 dir(lookDir[0], lookDir[1], lookDir[2]);
          //physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         //physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier /** deltaTime*/));
+         physicsObject->GetBodyWrapper()->AddForce(lookDir * (weight * speedModifier));
       }
       // REVERSE
       else if(accelReverse)
       {
          //NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier /** deltaTime*/));
+         physicsObject->GetBodyWrapper()->AddForce(-lookDir * (weight * strafeModifier));
       }
 
       // LEFT
@@ -152,14 +156,14 @@ namespace NetDemo
       {
          //NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier /** deltaTime*/));
+         physicsObject->GetBodyWrapper()->AddForce(-rightDir * (weight * strafeModifier));
       }
       // RIGHT
       else if(accelRight)
       {
          //NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
          //physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier /** deltaTime*/));
+         physicsObject->GetBodyWrapper()->AddForce(rightDir * (weight * strafeModifier));
       }
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
@@ -184,7 +188,7 @@ namespace NetDemo
 
          // Slow us down! Wind or coast effect
          //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
-         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance /** deltaTime*/));
+         physicsObject->GetBodyWrapper()->AddForce(-velocity * (weight * windResistance));
       }
 
    }
