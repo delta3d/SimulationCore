@@ -56,6 +56,7 @@
 #include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/configproperties.h>
 
 #include <dtAudio/sound.h>
 #include <dtAudio/audiomanager.h>
@@ -830,7 +831,16 @@ namespace SimCore
          if (mArticHelper.valid())
          {
             mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
+
+            // Check the config property for reversing the heading value. This is an issue because
+            // in most HLA federations, the heading direction for articulations is reversed. 
+            // In Client-server, this is rarely true, so we default to false.
+            dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
+            std::string reverseStr = configParams.GetConfigPropertyValue("SimCore.Articulation.ReverseHeading", "false");
+            bool reverseHeading = (reverseStr == "true" || reverseStr == "True" || reverseStr == "TRUE" || reverseStr == "1");
+            mArticHelper->SetPublishReverseHeading(reverseHeading);
          }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
