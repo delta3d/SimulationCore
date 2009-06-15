@@ -132,6 +132,14 @@ namespace SimCore
             virtual void SetControlState( SimCore::Actors::ControlStateActor* controlState ) {}
             virtual const SimCore::Actors::ControlStateActor* GetControlState() const { return NULL; }
 
+            /** 
+             * In some networks, we publish heading backwards. This defaults to false, and can 
+             * be set by setting "SimCore.Articulation.ReverseHeading" in the config.xml file. 
+             * This is determined in Platform when the articulation helper is set.
+             */
+            void SetPublishReverseHeading(bool newValue) { mPublishReverseHeading = newValue; } 
+            bool IsPublishReverseHeading() { return mPublishReverseHeading; }
+
             /**
              * Set the name of the articulation array property as found on the
              * associated entity. This will be used as the name for the group
@@ -310,6 +318,7 @@ namespace SimCore
          private:
             bool mIsDirty;
             std::string mArticArrayPropName;
+            bool mPublishReverseHeading;
       };
    }
 }

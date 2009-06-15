@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Chris Rodgers
+ * @author Chris Rodgers, Curtiss Murphy
  */
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,8 +82,9 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       ArticulationHelper::ArticulationHelper()
-         : mIsDirty(false),
-         mArticArrayPropName(PROPERTY_NAME_ARTICULATED_ARRAY)
+         : mIsDirty(false)
+         , mArticArrayPropName(PROPERTY_NAME_ARTICULATED_ARRAY)
+         , mPublishReverseHeading(false)
       {
       }
 
@@ -157,6 +158,7 @@ namespace SimCore
             virtual ~DRDOFDataFromHLA() {}
       };
 
+      ////////////////////////////////////////////////////////////////////////////////////
       void ArticulationHelper::HandleArticulatedParametersArray(
          const dtDAL::NamedGroupParameter& articArrayParam,
          dtUtil::NodeCollector& nodeCollector, dtGame::DeadReckoningHelper& deadReckoningHelper )
