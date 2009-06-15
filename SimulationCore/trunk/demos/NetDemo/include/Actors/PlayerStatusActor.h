@@ -67,6 +67,20 @@ namespace NetDemo
             }
          };
 
+         class NETDEMO_EXPORT VehicleTypeEnum : public dtUtil::Enumeration
+         {
+            DECLARE_ENUM(VehicleTypeEnum);
+         public:
+            static VehicleTypeEnum OBSERVER;
+            static VehicleTypeEnum HOVER;
+            static VehicleTypeEnum FOUR_WHEEL;
+         private:
+            VehicleTypeEnum(const std::string &name) : dtUtil::Enumeration(name)
+            {
+               AddInstance(this);
+            }
+         };
+
 
          //typedef dtGame::GameActor BaseClass;
          typedef SimCore::Actors::PlayerActor BaseClass;
@@ -98,8 +112,8 @@ namespace NetDemo
          // PROPERTIES 
 
          // Player Status - Property
-         void SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum &playerStatus);
-         PlayerStatusActor::PlayerStatusEnum& GetPlayerStatus() const;
+         void SetPlayerStatus(PlayerStatusEnum &playerStatus);
+         PlayerStatusEnum& GetPlayerStatus() const;
 
          // Team Number - Property
          void SetTeamNumber(int newValue);
@@ -114,8 +128,8 @@ namespace NetDemo
          std::string GetTerrainPreference() const { return mTerrainPreference; }
 
          // Vehicle Preference - Property - The desired startup vehicle type, but not necessarily the current vehicle type.
-         void SetVehiclePreference(const std::string& newValue);
-         std::string GetVehiclePreference() const { return mVehiclePreference; }
+         void SetVehiclePreference(VehicleTypeEnum &newValue);
+         VehicleTypeEnum& GetVehiclePreference() const { return *mVehiclePreference; }
 
          // Vehicle Actor ID - Property - The id of the vehicle this player is currently driving.
          //
@@ -136,7 +150,7 @@ namespace NetDemo
          int mTeamNumber;
          bool mIsServer;
          std::string mTerrainPreference;
-         std::string mVehiclePreference;
+         VehicleTypeEnum* mVehiclePreference;
          //std::string mVehicleActorId;
          std::string mIPAddress;
 

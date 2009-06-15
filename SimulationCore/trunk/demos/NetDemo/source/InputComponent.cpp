@@ -79,31 +79,6 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////
-/*   void InputComponent::SetupMaterialsAndTerrain()
-   {
-      dtPhysics::MaterialActorProxy* terrainMaterial = NULL;
-      static const dtUtil::RefString TERRAIN_MATERIAL_NAME("Terrain Material");
-      GetGameManager()->FindActorByName(TERRAIN_MATERIAL_NAME, terrainMaterial);
-
-      dtGame::GameActorProxy* terrain = NULL;
-      static const dtUtil::RefString TERRAIN_NAME("Terrain");
-      GetGameManager()->FindActorByName(TERRAIN_NAME, terrain);
-      if (terrain == NULL)
-      {
-         LOG_ERROR("No Terrain was found, physics can't be loaded.");
-         return;
-      }
-
-      dtPhysics::PhysicsComponent* physicsComponent = NULL;
-      GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
-      if (physicsComponent == NULL)
-      {
-         LOG_ERROR("No Physics Component was found.");
-         return;
-      }
-   }
-*/
-   //////////////////////////////////////////////////////////////
    void InputComponent::OnAddedToGM()
    {
       BaseClass::OnAddedToGM();
@@ -226,6 +201,7 @@ namespace NetDemo
          return keyUsed;
    }
 
+   //////////////////////////////////////////////////////////////
    void InputComponent::DoRayCast()
    {
       dtCore::Transform xform;
@@ -252,6 +228,7 @@ namespace NetDemo
       }
    }
 
+   //////////////////////////////////////////////////////////////
    void InputComponent::FireSomething()
    {
       dtPhysics::MaterialActorProxy* projectileMaterial = NULL;

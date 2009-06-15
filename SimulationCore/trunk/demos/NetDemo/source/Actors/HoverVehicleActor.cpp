@@ -33,11 +33,14 @@
 #include <osgViewer/View>
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 #include <dtUtil/nodeprintout.h>
+#include <iostream>
 
 namespace NetDemo
 {
@@ -73,10 +76,10 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      //dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
-      //std::string nodes = nodePrinter->CollectNodeData(*GetNonDamagedFileNode());
-      //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
-      //std::cout << nodes.c_str() << std::endl;
+      dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
+      std::string nodes = nodePrinter->CollectNodeData(*GetNonDamagedFileNode());
+      std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
+      std::cout << nodes.c_str() << std::endl;
 
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
@@ -102,28 +105,50 @@ namespace NetDemo
          //physActor->clearBodyFlag(NX_BF_KINEMATIC);
       //}
 
-      dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-      if(comp)
+      SimCore::Components::RenderingSupportComponent* renderComp;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(
+         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
+      if(renderComp != NULL)
       {
-         SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-         if(rsComp)
-         {
-            //Add a spot light
-            SimCore::Components::RenderingSupportComponent::SpotLight* sl = new SimCore::Components::RenderingSupportComponent::SpotLight();
-            sl->mIntensity = 1.0f;
-            sl->mColor.set(1.0f, 1.0f, 1.0f);
-            //sl->mAttenuation.set(0.02, 0.004, 0.00008);
-            sl->mAttenuation.set(0.001, 0.004, 0.0002);
-            sl->mDirection.set(0.0f, 1.0f, 0.0f);
-            sl->mSpotExponent = 6.0f;
-            sl->mSpotCosCutoff = 0.6f;
-            sl->mTarget = this;
-            sl->mAutoDeleteLightOnTargetNull = true;
-            sl->mUseAbsoluteDirection = false;
+         //Add a spot light
+         SimCore::Components::RenderingSupportComponent::SpotLight* sl = 
+            new SimCore::Components::RenderingSupportComponent::SpotLight();
+         sl->mIntensity = 1.0f;
+         sl->mColor.set(1.0f, 1.0f, 1.0f);
+         //sl->mAttenuation.set(0.02, 0.004, 0.00008);
+         sl->mAttenuation.set(0.001, 0.004, 0.0002);
+         sl->mDirection.set(0.0f, 1.0f, 0.0f);
+         sl->mSpotExponent = 6.0f;
+         sl->mSpotCosCutoff = 0.6f;
+         sl->mTarget = this;
+         sl->mAutoDeleteLightOnTargetNull = true;
+         sl->mUseAbsoluteDirection = false;
 
-            rsComp->AddDynamicLight(sl);
-         }
+         renderComp->AddDynamicLight(sl);
       }
+
+      if(!IsRemote())
+      {
+         // Register a munitions component to the vehicle
+         SimCore::Components::MunitionsComponent* munitionsComp;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(
+            SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+         if(munitionsComp != NULL)
+         {
+            munitionsComp->Register(*this);
+         }
+
+         // Setup our articulation helper for the vehicle
+         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
+            new SimCore::Components::DefaultFlexibleArticulationHelper();
+         articHelper->SetEntity(this);
+         SetArticulationHelper(articHelper.get());
+         articHelper->AddArticulation("dof_turret_01", 
+            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
+         articHelper->AddArticulation("dof_gun_01", 
+            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
+      }
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

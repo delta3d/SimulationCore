@@ -13,7 +13,7 @@
 #include <prefix/SimCorePrefix-src.h>
 
 //#ifdef AGEIA_PHYSICS
-#include <Actors/FortActor.h>
+#include <Actors/BaseEnemyActor.h>
 #include <dtPhysics/physicshelper.h>
 #include <dtPhysics/physicsobject.h>
 //#include <NxAgeiaWorldComponent.h>
@@ -26,28 +26,33 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
+#include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
-#include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 //#include <dtUtil/nodeprintout.h>
-#include <osgSim/DOFTransform>
-#include <dtUtil/nodecollector.h>
-
 
 namespace NetDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mTimeSinceBorn(0.0f)
+      , mTimeToExistAfterDead(20.0f)
+      , mTimeSinceKilled(0.0f)
    {
+      /////////////////////////////////////////////////////////////////
+      // Set a bunch of initial conditions - Note, some of these may be 
+      // changed if the actor is loaded from a map or when received as a remote actor
+      /////////////////////////////////////////////////////////////////
+
       SetTimeForSendingDeadReckoningInfoOut(0.0f);
       SetTimesASecondYouCanSendOutAnUpdate(2.0f);
 
-      SetPublishLinearVelocity(false);
-      SetPublishAngularVelocity(false);
+      SetPublishLinearVelocity(true);
+      SetPublishAngularVelocity(true);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
@@ -55,32 +60,42 @@ namespace NetDemo
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
-      // Add our initial body.
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
       helper->AddPhysicsObject(*physicsObject);
+      helper->SetMass(500.0f);
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-      physicsObject->SetMass(30000.0f);
+      physicsObject->SetMass(100.0f);
       //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
+      // Preset some Entity values
+      SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::OPPOSING); // Shows up 'red' in Stealth Viewer
+      SetEntityType("EnemyActor"); // Allows munitions to work.
+
+      // Make a semi-unique name - mostly only useful for Stealth Viewer
+      static int uniqueCounter = 0;
+      uniqueCounter ++;
+      SetName("Enemy " + dtUtil::ToString(uniqueCounter));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   FortActor::~FortActor(void)
+   BaseEnemyActor::~BaseEnemyActor(void)
    {
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActor::OnEnteredWorld()
+   void BaseEnemyActor::OnEnteredWorld()
    {
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      
       //GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
       //   GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
       ////////dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
+
+      // TODO - Maybe use sphere instead???
+
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
@@ -88,8 +103,6 @@ namespace NetDemo
 
       if(!IsRemote())
       {
-         SetEntityType("Fort");
-
          // Register a munitions component so the fort can take damage
          SimCore::Components::MunitionsComponent* munitionsComp;
          GetGameActorProxy().GetGameManager()->GetComponentByName
@@ -98,83 +111,52 @@ namespace NetDemo
          {
             munitionsComp->Register(*this);
          }
-
-         // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
-            new SimCore::Components::DefaultFlexibleArticulationHelper();
-         articHelper->SetEntity(this);
-         articHelper->AddArticulation("dof_turret_01", 
-            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         articHelper->AddArticulation("dof_gun_01", 
-            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
-         SetArticulationHelper(articHelper.get());
       }
 
       BaseClass::OnEnteredWorld();
 
-      // Add a dynamic light to our fort
-      SimCore::Components::RenderingSupportComponent* renderComp;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(
-         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
-      {
-         //Add a spot light
-         SimCore::Components::RenderingSupportComponent::DynamicLight* sl = 
-            new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         sl->mRadius = 30.0f;
-         sl->mIntensity = 1.0f;
-         sl->mColor.set(1.0f, 1.0f, 1.0f);
-         sl->mAttenuation.set(0.001, 0.004, 0.0002);
-         sl->mTarget = this;
-         sl->mAutoDeleteLightOnTargetNull = true;
-         renderComp->AddDynamicLight(sl);
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActor::UpdateSoundEffects(float deltaTime)
+   void BaseEnemyActor::UpdateVehicleTorquesAndAngles(float deltaTime)
+   {
+      mTimeSinceBorn += deltaTime;
+
+      if( ! IsMobilityDisabled())
+      {
+         // Do physics/pathing/AI of vehicle
+      }
+      else
+      {
+         // Self-terminate after we're been dead for a bit - allows time for animations, fire, falling from physics, etc...
+         mTimeSinceKilled += deltaTime;
+         if (mTimeSinceKilled > mTimeToExistAfterDead)
+         {
+            GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+         }
+      }
+
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::UpdateSoundEffects(float deltaTime)
    {
       BaseClass::UpdateSoundEffects(deltaTime);
    }
 
   ///////////////////////////////////////////////////////////////////////////////////
-   void FortActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
+   void BaseEnemyActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
    {
    }
 
    //////////////////////////////////////////////////////////////////////
-   void FortActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
+   void BaseEnemyActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickLocal( tickMessage );
-
-      dtUtil::NodeCollector *nodes = GetNodeCollector();
-      osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
-      {
-         // Spin the turret in a circle every few seconds
-         osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
-         osg::Vec3 hprChange;
-         hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
-         hpr[0] += hprChange[0];
-         dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
-         // Let the artics decide if the actor is dirty or not
-         if(GetArticulationHelper() != NULL)
-         {
-            GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
-         }
-      }
-
-      //static float countDownTest = 5.0f;
-      //countDownTest -= tickMessage.GetDeltaSimTime();
-      //if (countDownTest < 0.0f)
-      //{
-      //   countDownTest = 5.0f;
-      //   GetGameActorProxy().NotifyFullActorUpdate();
-      //}
    }
 
    //////////////////////////////////////////////////////////////////////
-   void FortActor::OnTickRemote( const dtGame::TickMessage& tickMessage )
+   void BaseEnemyActor::OnTickRemote( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickRemote( tickMessage );
    }
@@ -182,33 +164,33 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////
-   FortActorProxy::FortActorProxy()
+   BaseEnemyActorProxy::BaseEnemyActorProxy()
    {
-      SetClassName("FortActor");
+      SetClassName("BaseEnemyActor");
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActorProxy::BuildPropertyMap()
+   void BaseEnemyActorProxy::BuildPropertyMap()
    {
-      const std::string VEH_GROUP   = "Fort Values";
+      const std::string GROUP = "Enemy Props";
       BaseClass::BuildPropertyMap();
 
-      FortActor& actor = *static_cast<FortActor*>(GetActor());
+      BaseEnemyActor& actor = *static_cast<BaseEnemyActor*>(GetActor());
 
       // Add properties
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   FortActorProxy::~FortActorProxy(){}
+   BaseEnemyActorProxy::~BaseEnemyActorProxy(){}
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActorProxy::CreateActor()
+   void BaseEnemyActorProxy::CreateActor()
    {
-      SetActor(*new FortActor(*this));
+      SetActor(*new BaseEnemyActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void FortActorProxy::OnEnteredWorld()
+   void BaseEnemyActorProxy::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
    }

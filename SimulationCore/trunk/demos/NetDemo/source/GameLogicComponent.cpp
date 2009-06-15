@@ -400,20 +400,11 @@ namespace NetDemo
       }
       else if (state == NetDemoState::STATE_UNLOAD)
       {
-         if (mPlayerStatus != NULL)
-            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::UNKNOWN);
          HandleUnloadingState();
       }
       else if (state == NetDemoState::STATE_GAME_RUNNING)
       {
-         if (mPlayerStatus != NULL)
-            mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
-
-         if (mStartTheGameOnNextGameRunning)
-         {
-            mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();            
-            mStartTheGameOnNextGameRunning = false;
-         }
+         HandleGameRunningState();
       }
       else if (state == NetDemoState::STATE_GAME_READYROOM)
       {
@@ -425,7 +416,7 @@ namespace NetDemo
          mStartTheGameOnNextGameRunning = true;
 
          // curt - hack - replace this with the GUI COMPONENT
-         DoStateTransition(&Transition::TRANSITION_FORWARD);
+         //DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (state == SimCore::Components::StateType::STATE_SHUTDOWN )
       {
@@ -465,6 +456,9 @@ namespace NetDemo
 
       GetGameManager()->CloseCurrentMap(); 
       // When the map is unloaded, we get the UNLOADED msg and change our states back to lobby.
+
+      if (mPlayerStatus != NULL)
+         mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::UNKNOWN);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -580,5 +574,28 @@ namespace NetDemo
       }
 
    }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::HandleGameRunningState()
+   {
+      mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_GAME_ALIVE);
+
+      if (mStartTheGameOnNextGameRunning)
+      {
+         if (mIsServer)
+         {
+            mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();            
+         }
+         mStartTheGameOnNextGameRunning = false;
+
+         // Create a vehicle and stick our player in it.
+         if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::OBSERVER)
+         {
+
+         }
+      }
+
+   }
+
 
 }

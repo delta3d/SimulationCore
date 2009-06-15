@@ -108,6 +108,7 @@ namespace NetDemo
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
 
          void HandleUnloadingState();
+         void HandleGameRunningState();
          void HandleMapLoaded();
          void DisconnectFromNetwork();
          void HandleStateChangeMessage(
