@@ -423,7 +423,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>1000</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
@@ -822,7 +822,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>10000</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>

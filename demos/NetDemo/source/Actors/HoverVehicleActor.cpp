@@ -193,7 +193,7 @@ namespace NetDemo
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
          {
             GetHoverPhysicsHelper()->DoJump(deltaTime);
-            mTimeTillJumpReady = 3.0f;
+            mTimeTillJumpReady = 2.7f;
          }
       }
    }
