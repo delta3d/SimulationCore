@@ -40,6 +40,11 @@ namespace NetDemo
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::SCORE_SCREEN("SCORE_SCREEN");
    PlayerStatusActor::PlayerStatusEnum PlayerStatusActor::PlayerStatusEnum::LOADING("LOADING");
 
+   IMPLEMENT_ENUM(PlayerStatusActor::VehicleTypeEnum);
+   PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::OBSERVER("OBSERVER");
+   PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::HOVER("HOVER");
+   PlayerStatusActor::VehicleTypeEnum PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL("FOUR_WHEEL");
+
    ///////////////////////////////////////////////////////////////////////////////////
    PlayerStatusActor::PlayerStatusActor(PlayerStatusActorProxy &proxy)
       : BaseClass(proxy)
@@ -47,8 +52,8 @@ namespace NetDemo
       , mTeamNumber(0)
       , mIsServer(false)
       , mTerrainPreference("")
-      , mVehiclePreference("")
-      //, std::string mVehicleActorId
+      , mVehiclePreference(&VehicleTypeEnum::OBSERVER)
+      //, mVehicleActorId("")
       , mIPAddress("")
       , mDirtyPlayerSettings(false)
    {
@@ -156,10 +161,10 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetVehiclePreference(const std::string& newValue) 
+   void PlayerStatusActor::SetVehiclePreference(PlayerStatusActor::VehicleTypeEnum &preference) 
    { 
       mDirtyPlayerSettings = true;
-      mVehiclePreference = newValue; 
+      mVehiclePreference = &preference;
    }
 
    // Vehicle Actor ID - Property - The id of the vehicle this player is currently driving.
@@ -231,9 +236,9 @@ namespace NetDemo
          PROP_TERRAIN_PREFERENCE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_VEHICLE_PREFERENCE_DESC("The desired startup vehicle type for this player. Not necessarily the current vehicle type for the player.");
-      AddProperty(new dtDAL::StringActorProperty(PROP_VEHICLE_PREFERENCE, PROP_VEHICLE_PREFERENCE,
-         dtDAL::StringActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetVehiclePreference),
-         dtDAL::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetVehiclePreference),
+      AddProperty(new dtDAL::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>(PROP_VEHICLE_PREFERENCE, PROP_VEHICLE_PREFERENCE,
+         dtDAL::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::SetFuncType(&actor, &PlayerStatusActor::SetVehiclePreference),
+         dtDAL::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::GetFuncType(&actor, &PlayerStatusActor::GetVehiclePreference),
          PROP_VEHICLE_PREFERENCE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IP_ADDRESS_DESC("The IP Address for this player.");
