@@ -86,7 +86,15 @@ namespace SimCore
             /// Constructor
             MunitionsComponent( const std::string& name = DEFAULT_NAME.Get() );
 
-            bool Register( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true );
+            /** 
+             * Register a local entity to automatically take damage from direct & indirect munitions
+             * Override the ValidateIncomingDamage() or RespondToHit() methods if you want to do 
+             * something custom when you get hit from a munition. 
+             * @param autoNotifyNetwork Defaults to true. Sends actor update when the entity takes damage.
+             * @param maxDamageAmount Lets an entity take more than the default 1.0 damage before dying
+             */
+            bool Register( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true, 
+               float maxDamageAmount = 1.0f);
 
             bool Unregister( const dtCore::UniqueId& entityId );
 
@@ -215,7 +223,8 @@ namespace SimCore
 
             void SetMunitionTypeTable( dtCore::RefPtr<MunitionTypeTable>& table ) { mMunitionTypeTable = table.get(); }
 
-            virtual DamageHelper* CreateDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork );
+            virtual DamageHelper* CreateDamageHelper(SimCore::Actors::BaseEntity& entity, 
+               bool autoNotifyNetwork, float maxDamageAmount);
 
          private:
 

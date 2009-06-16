@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Chris Rodgers
+ * @author Chris Rodgers, Curtiss Murphy
  */
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,30 +45,34 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // DAMAGE HELPER CODE
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper::DamageHelper( bool autoNotifyNetwork )
-         : mAutoNotifyNet(autoNotifyNetwork),
-         mVulnerability(1.0f),
-         mDamageModifier(0.0f),
-         mLastNotifiedDamageState(&DamageType::DAMAGE_NONE),
-         mCurrentDamageState(&DamageType::DAMAGE_NONE),
-         //mLastDRAlgorithm(NULL),
-         mScratchProbs(new DamageProbability("")),
-         mDamageLevels(new DamageProbability("DamageLevels"))
+      DamageHelper::DamageHelper( bool autoNotifyNetwork, float maxDamageAmount)
+         : mAutoNotifyNet(autoNotifyNetwork)
+         , mVulnerability(1.0f)
+         , mCurDamageRatio(0.0f) //mDamageModifier(0.0f),
+         , mLastNotifiedDamageRatio(0.0f)
+         , mMaxDamageAmount(maxDamageAmount)
+         , mLastNotifiedDamageState(&DamageType::DAMAGE_NONE)
+         , mCurrentDamageState(&DamageType::DAMAGE_NONE)
+         //, mLastDRAlgorithm(NULL)
+         , mScratchProbs(new DamageProbability(""))
+         , mDamageLevels(new DamageProbability("DamageLevels"))
       {
          mDamageLevels->Set(0.85f,0.14f,0.0f,0.0f,0.01f);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper::DamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork )
-         : mAutoNotifyNet(autoNotifyNetwork),
-         mVulnerability(1.0f),
-         mDamageModifier(0.0f),
-         mLastNotifiedDamageState(&DamageType::DAMAGE_NONE),
-         mCurrentDamageState(&DamageType::DAMAGE_NONE),
-         //mLastDRAlgorithm(NULL),
-         mEntity(&entity),
-         mScratchProbs(new DamageProbability("")),
-         mDamageLevels(new DamageProbability("DamageLevels"))
+      DamageHelper::DamageHelper(SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork, float maxDamageAmount)
+         : mAutoNotifyNet(autoNotifyNetwork)
+         , mVulnerability(1.0f)
+         , mCurDamageRatio(0.0f) //mDamageModifier(0.0f),
+         , mLastNotifiedDamageRatio(0.0f)
+         , mMaxDamageAmount(maxDamageAmount)
+         , mLastNotifiedDamageState(&DamageType::DAMAGE_NONE)
+         , mCurrentDamageState(&DamageType::DAMAGE_NONE)
+         //, mLastDRAlgorithm(NULL)
+         , mEntity(&entity)
+         , mScratchProbs(new DamageProbability(""))
+         , mDamageLevels(new DamageProbability("DamageLevels"))
       {
          mDamageLevels->Set(0.85f,0.14f,0.0f,0.0f,0.01f);
       }
@@ -162,34 +166,43 @@ namespace SimCore
 
          // Notify the entity of the force
          osg::Vec3 force = munitionDamage->GetForce( entityPos, 
-            message.GetDetonationLocation(), 
-            message.GetFinalVelocityVector() );
+            message.GetDetonationLocation(), message.GetFinalVelocityVector() );
 
          // Compute the probability of damage
          float distanceFromImpact = 0.0f;
-         munitionDamage->GetDamageProbabilities( *mScratchProbs,
-            distanceFromImpact,
-            directFire,
-            message.GetFinalVelocityVector(),
-            message.GetDetonationLocation(),
-            entityPos );
+         munitionDamage->GetDamageProbabilities( *mScratchProbs, distanceFromImpact, directFire, 
+            message.GetFinalVelocityVector(), message.GetDetonationLocation(), entityPos );
 
          // Apply damage and force only if the entity is within the range of effect.
          if( distanceFromImpact <= munitionDamage->GetCutoffRange() )
          {
             // Accumulate damage based on the probability numbers specified for the munition.
             // NOTE: Probabilities are treated as "actual damage" values rather than "chance damage" values.
-            if( mDamageModifier < 1.0f )
+            if( mCurDamageRatio < 1.0f )
             {
-               mDamageModifier += (mScratchProbs->GetMobilityDamage()*0.5f + mScratchProbs->GetKillDamage()) 
-                  * mVulnerability * this->GetDamageProbability(directFire)
-                  * (message.GetQuantityFired()>0?message.GetQuantityFired():1.0f);
-               if( mDamageModifier > 1.0f ) { mDamageModifier = 1.0f; }
+               float quantityMultiplier = (message.GetQuantityFired() > 0) ? message.GetQuantityFired() : 1.0f;
+               float damageFromMunition = (mScratchProbs->GetMobilityDamage()*0.5f + mScratchProbs->GetKillDamage()) 
+                  * mVulnerability * GetDamageProbability(directFire) * quantityMultiplier;
+
+               // The new damage is scaled based on the max damage possible for this entity
+               // In the end, we only store the ratio.
+               float scaledDamageFromMunition = damageFromMunition / mMaxDamageAmount;
+               if (mEntity.valid())
+               {
+                  // Allow the entity to filter out or modify some types of damage
+                  mCurDamageRatio += mEntity->ValidateIncomingDamage(scaledDamageFromMunition, message, munition);
+               }
+               else
+               {
+                  mCurDamageRatio += scaledDamageFromMunition;
+               }
+
+               if( mCurDamageRatio > 1.0f ) { mCurDamageRatio = 1.0f; }
             }
 
             // Update the entity's damage state
             // NOTE: Direct Fire will need greater damage returned from GetDamageType.
-            SetDamage( GetGreaterDamageState( mDamageLevels->GetDamageType( mDamageModifier, false ) ) );
+            SetDamage(GetGreaterDamageState(mDamageLevels->GetDamageType(mCurDamageRatio, false)));
             
             // Notify the entity of an explosive force if one exists
             if( force.length2() > 0.0 )
@@ -209,84 +222,95 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       bool DamageHelper::NotifyNetwork()
       {
-         if( mAutoNotifyNet
-            && mLastNotifiedDamageState != mCurrentDamageState 
-            && mEntity.valid() )
+         if(mAutoNotifyNet && mEntity.valid() && 
+            (mLastNotifiedDamageState != mCurrentDamageState || mLastNotifiedDamageRatio != mCurDamageRatio))
          {
+            // These old props were removed for efficiency. However, it is possible HLA requires them on an update
+            // Once confirmed that this works well on all networks, this cruft can be deleted
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR);
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
+            //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEAD_RECKONING_ALGORITHM);
+
             std::vector<std::string> propNames;
-            propNames.push_back("Last Known Translation");
-            propNames.push_back("Last Known Rotation");
-            propNames.push_back("Velocity Vector");
-            propNames.push_back("Acceleration Vector");
-            propNames.push_back("Angular Velocity Vector");
-            propNames.push_back("Dead Reckoning Algorithm");
-            propNames.push_back("Damage State");
+            propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE);
+            propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_CUR_DAMAGE_RATIO);
             mEntity->GetGameActorProxy().NotifyPartialActorUpdate(propNames);
+
             mLastNotifiedDamageState = mCurrentDamageState;
+            mLastNotifiedDamageRatio = mCurDamageRatio;
             return true;
          }
+
          return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::SetDamage( DamageType& damage )
       {
-         if( *mCurrentDamageState == damage || ! mEntity.valid() ) { return; }
+         if(!mEntity.valid()) { return; }
 
-         mCurrentDamageState = &damage;
-
-         // We no longer deal with the LAST DR algorithm because even if the vehicle is DEAD
-         // it could still be falling or being moved by other things (such as being hit or a munition)
-         // If we stop DR'ing, then we mess up our publishing also.
-         // Store dead reckoning algorithm
-         //if( dtGame::DeadReckoningAlgorithm::STATIC != 
-         //   mEntity->GetDeadReckoningAlgorithm()
-         //   && damage == DamageType::DAMAGE_KILL )
-         //{
-         //   mLastDRAlgorithm = &mEntity->GetDeadReckoningAlgorithm();
-         //}
-
-         if( damage == DamageType::DAMAGE_NONE )
+         if (*mCurrentDamageState != damage)
          {
-            mDamageModifier = 0.0f;
-            mEntity->SetMobilityDisabled(false);
-            mEntity->SetFirepowerDisabled(false);
-            mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
-            //if( mLastDRAlgorithm != NULL )
+            mCurrentDamageState = &damage;
+
+            // We no longer deal with the LAST DR algorithm because even if the vehicle is DEAD
+            // it could still be falling or being moved by other things (such as being hit or a munition)
+            // If we stop DR'ing, then we mess up our publishing also.
+            // Store dead reckoning algorithm
+            //if( dtGame::DeadReckoningAlgorithm::STATIC != 
+            //   mEntity->GetDeadReckoningAlgorithm()
+            //   && damage == DamageType::DAMAGE_KILL )
             //{
-            //   mEntity->SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
+            //   mLastDRAlgorithm = &mEntity->GetDeadReckoningAlgorithm();
             //}
-            mEntity->SetFlamesPresent( false );
-         }
-         else if( damage == DamageType::DAMAGE_MOBILITY || damage == DamageType::DAMAGE_FIREPOWER )
-         {
-            if( damage == DamageType::DAMAGE_MOBILITY )
+
+            if( damage == DamageType::DAMAGE_NONE )
+            {
+               mCurDamageRatio = 0.0f;
+               mEntity->SetMobilityDisabled(false);
+               mEntity->SetFirepowerDisabled(false);
+               mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
+               //if( mLastDRAlgorithm != NULL )
+               //{
+               //   mEntity->SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
+               //}
+               mEntity->SetFlamesPresent( false );
+            }
+            else if( damage == DamageType::DAMAGE_MOBILITY || damage == DamageType::DAMAGE_FIREPOWER )
+            {
+               if( damage == DamageType::DAMAGE_MOBILITY )
+               {
+                  mEntity->SetMobilityDisabled(true);
+               }
+               else
+               {
+                  mEntity->SetFirepowerDisabled(true);
+               }
+               mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE );
+            }
+            else if( damage == DamageType::DAMAGE_MOBILITY_FIREPOWER )
             {
                mEntity->SetMobilityDisabled(true);
-            }
-            else
-            {
                mEntity->SetFirepowerDisabled(true);
+               mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE );
             }
-            mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE );
-         }
-         else if( damage == DamageType::DAMAGE_MOBILITY_FIREPOWER )
-         {
-            mEntity->SetMobilityDisabled(true);
-            mEntity->SetFirepowerDisabled(true);
-            mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE );
-         }
-         else if( damage == DamageType::DAMAGE_KILL )
-         {
-            mEntity->SetMobilityDisabled(true);
-            mEntity->SetFirepowerDisabled(true);
-            mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
-            // We no longer turn off the DR algorithm when we are dead. The reason is that we could 
-            // be pushed around, or falling (if a plane gets shot, it falls down) even though we are dead
-            //mEntity->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
-            mEntity->SetFlamesPresent( true );
+            else if( damage == DamageType::DAMAGE_KILL )
+            {
+               mCurDamageRatio = 1.0;
+               mEntity->SetMobilityDisabled(true);
+               mEntity->SetFirepowerDisabled(true);
+               mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
+               // We no longer turn off the DR algorithm when we are dead. The reason is that we could 
+               // be pushed around, or falling (if a plane gets shot, it falls down) even though we are dead
+               //mEntity->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
+               mEntity->SetFlamesPresent( true );
+            }
          }
 
+         // Attempt to notify the network. It will check for changes
          NotifyNetwork();
       }
 

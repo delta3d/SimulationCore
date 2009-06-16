@@ -1,6 +1,6 @@
 
 const int MAX_SPOT_LIGHTS = 5;
-const int NUM_SPOT_LIGHTS_TO_USE = 5;
+const int NUM_SPOT_LIGHTS_TO_USE = 2;
 const int NUM_SPOT_LIGHT_ATTRIBS = 4;
 
 //each spot light has 4 associated vec4's

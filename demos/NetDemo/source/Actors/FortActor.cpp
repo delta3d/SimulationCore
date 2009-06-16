@@ -63,6 +63,8 @@ namespace NetDemo
       //physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
       physicsObject->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
+      SetEntityType("Fort");
+      SetMunitionDamageTableName("StandardDamageType");
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +90,6 @@ namespace NetDemo
 
       if(!IsRemote())
       {
-         SetEntityType("Fort");
 
          // Register a munitions component so the fort can take damage
          SimCore::Components::MunitionsComponent* munitionsComp;
