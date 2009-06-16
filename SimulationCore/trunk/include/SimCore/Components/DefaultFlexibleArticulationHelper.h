@@ -55,13 +55,13 @@ namespace SimCore
 {
    namespace Components
    {
-      /** 
+      /**
        * DefaultFlexibleArticulationHelper - This helper class provides everything most apps should
-       * needed to dead reckon and publish articulations over a network. To use, create the helper, set 
-       * your entity, and then add each of the articulation dof's that you need. Once you set this up, it 
-       * will automatically examine the articulated dof's on your Entity. If any of them change, it will mark 
-       * them as dirty and cause them to be published in the next actor update. Use like this: 
-       * 
+       * needed to dead reckon and publish articulations over a network. To use, create the helper, set
+       * your entity, and then add each of the articulation dof's that you need. Once you set this up, it
+       * will automatically examine the articulated dof's on your Entity. If any of them change, it will mark
+       * them as dirty and cause them to be published in the next actor update. Use like this:
+       *
        *    dtCore::RefPtr<DefaultFlexibleArticulationHelper> articHelper = new DefaultFlexibleArticulationHelper;
        *    articHelper->SetEntity(yourEntity);
        *    articHelper->AddArticulation("dof_gun_01", ARTIC_TYPE_BOTH);
@@ -77,7 +77,7 @@ namespace SimCore
             /// A simple data class used by the DefaultFlexibleArticulationHelper
             class ArticulationEntry : public osg::Referenced
             {
-            public: 
+            public:
                ArticulationEntry() { };
 
                std::string mDOFName;
@@ -87,11 +87,11 @@ namespace SimCore
                float mTotalChangeHeading;
                float mTotalChangeElevation;
                float mLastHeading;
-               float mLastElevation; 
+               float mLastElevation;
                unsigned mChangeCountHeading;
                unsigned mChangeCountElevation;
                dtCore::ObserverPtr<osgSim::DOFTransform> mDOF;
-            protected: 
+            protected:
                virtual ~ArticulationEntry() { } ;
             };
             ///////////////////////////////////////////////////////////
@@ -100,10 +100,10 @@ namespace SimCore
             DefaultFlexibleArticulationHelper();
 
             /**
-             * Adds an artic to be managed by this helper. Use this to add a turret, gun, door, or whatever. 
+             * Adds an artic to be managed by this helper. Use this to add a turret, gun, door, or whatever.
              * Make sure that a dof node matching the dofName exists in the non-damaged model of your entity
              * Call this once per artic on your entity. See class definition on how to use this.
-             * @param parentDOFName An optional name of the parent dof node of this dof (if important) 
+             * @param parentDOFName An optional name of the parent dof node of this dof (if important)
              */
             void AddArticulation(const std::string &dofName, ARTICULATION_TYPE articType, const std::string &parentDOFName="");
 
@@ -139,7 +139,7 @@ namespace SimCore
             float mThresholdElevation; // degrees
 
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mEntity;
-            std::vector<dtCore::RefPtr<ArticulationEntry>> mArticEntries;
+            std::vector<dtCore::RefPtr<ArticulationEntry> > mArticEntries;
       };
    }
 } //namespace
