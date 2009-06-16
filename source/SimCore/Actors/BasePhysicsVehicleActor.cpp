@@ -328,7 +328,7 @@ namespace SimCore
                   NxVec3 linearVelVec3 = physObj->getLinearVelocity();
                   physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
 #else
-                  physLinearVelocity = physObj->GetBodyWrapper()->GetLinearVelocity();
+                  physLinearVelocity = physObj->GetLinearVelocity();
 #endif
                   // If the value is very close to 0, set it to zero to prevent warbling
                   bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
@@ -349,7 +349,7 @@ namespace SimCore
                   NxVec3 angVelVec3 = physObj->getAngularVelocity();
                   physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
 #else
-                  physAngularVelocity = physObj->GetBodyWrapper()->GetAngularVelocity();
+                  physAngularVelocity = physObj->GetAngularVelocity();
 #endif
                   // If the value is very close to 0, set it to zero to prevent warbling
                   bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
