@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-15T21:06:06-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-06-16T13:54:59-05:00</lastUpdateTimestamp>
         <editorVersion>2.3.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -294,6 +294,14 @@
                 <enumerated>No Damage</enumerated>
             </property>
             <property>
+                <name>Max Damage Amount</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Domain</name>
                 <enumerated>AIR</enumerated>
             </property>
@@ -315,7 +323,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string></string>
+                <string>StandardDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -397,7 +405,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>EnemyActor</string>
+                <string>Enemy</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -673,6 +681,14 @@
                 <enumerated>No Damage</enumerated>
             </property>
             <property>
+                <name>Max Damage Amount</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Domain</name>
                 <enumerated>GROUND</enumerated>
             </property>
@@ -694,7 +710,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>DriverVehicle</string>
+                <string>StandardDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -776,7 +792,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoSim</string>
+                <string>HoverVehicle</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -1072,6 +1088,14 @@
                 <enumerated>No Damage</enumerated>
             </property>
             <property>
+                <name>Max Damage Amount</name>
+                <float>120</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Domain</name>
                 <enumerated>GROUND</enumerated>
             </property>
@@ -1093,7 +1117,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string></string>
+                <string>StandardDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>

@@ -18,6 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U.a S. Government may have rights in the software.
+*
+* @author David Guthrie, Curtiss Murphy 
 */
 #include <prefix/SimCorePrefix-src.h>
 
@@ -136,6 +138,8 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLYING("Flying");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAX_DAMAGE_AMOUNT("Max Damage Amount");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_CUR_DAMAGE_RATIO("Cur Damage Ratio");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DEFAULT_SCALE("Default Scale");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DOMAIN("Domain");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
@@ -277,6 +281,21 @@ namespace SimCore
             dtDAL::MakeFunctor(e, &BaseEntity::SetDamageState),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetDamageState),
             PROPERTY_DAMAGE_STATE_DESC, BASE_ENTITY_GROUP));
+
+
+         static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT_DESC
+            ("The max damage a local entity can take before dying. Default is 1.0, but is based on damage in the munition config tables. ");
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_MAX_DAMAGE_AMOUNT, PROPERTY_MAX_DAMAGE_AMOUNT,
+            dtDAL::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetMaxDamageAmount),
+            dtDAL::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetMaxDamageAmount),
+            PROPERTY_MAX_DAMAGE_AMOUNT_DESC, BASE_ENTITY_GROUP));
+
+         static const dtUtil::RefString PROPERTY_CUR_DAMAGE_RATIO_DESC
+            ("The current damage ratio - used for display purposes. Setting this manually has no effect - it is controlled by the MunitionsComponent.");
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_CUR_DAMAGE_RATIO, PROPERTY_CUR_DAMAGE_RATIO,
+            dtDAL::FloatActorProperty::SetFuncType(&e, &BaseEntity::SetCurDamageRatio),
+            dtDAL::FloatActorProperty::GetFuncType(&e, &BaseEntity::GetCurDamageRatio),
+            PROPERTY_CUR_DAMAGE_RATIO_DESC, BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::DomainEnum>(
             PROPERTY_DOMAIN, PROPERTY_DOMAIN,
@@ -446,30 +465,33 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////
       const float BaseEntity::TIME_BETWEEN_UPDATES(10.0f);
 
-      BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy): IGActor(proxy),
-         mTimeUntilNextUpdate(0.0f),
-         mScaleMatrixNode(new osg::MatrixTransform),
-         mDeadReckoningHelper(NULL),
-         mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE),
-         mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL),
-         mService(&BaseEntityActorProxy::ServiceEnum::MARINES),
-         mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
-         mDomain(&BaseEntityActorProxy::DomainEnum::GROUND),
-         mDefaultScale(1.0f, 1.0f, 1.0f),
-         mScaleMagnification(1.0f, 1.0f, 1.0f),
-         mMaxRotationError(6.0f),
-         mMaxRotationError2(36.0f),
-         mMaxTranslationError(0.5f),
-         mMaxTranslationError2(0.25f),
-         mEngineSmokeOn(false),
-         mSmokePlumePresent(false),
-         mFlamesPresent(false),
-         mDrawing(true),
-         mIsPlayerAttached(false),
-         mDisabledFirepower(false),
-         mDisabledMobility(false),
-         mIsFrozen(false),
-         mFireLightID(0)
+      BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy)
+         : IGActor(proxy)
+         , mTimeUntilNextUpdate(0.0f)
+         , mScaleMatrixNode(new osg::MatrixTransform)
+         , mDeadReckoningHelper(NULL)
+         , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
+         , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
+         , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
+         , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
+         , mMaxDamageAmount(1.0f)
+         , mCurDamageRatio(0.0f)
+         , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
+         , mDefaultScale(1.0f, 1.0f, 1.0f)
+         , mScaleMagnification(1.0f, 1.0f, 1.0f)
+         , mMaxRotationError(6.0f)
+         , mMaxRotationError2(36.0f)
+         , mMaxTranslationError(0.5f)
+         , mMaxTranslationError2(0.25f)
+         , mEngineSmokeOn(false)
+         , mSmokePlumePresent(false)
+         , mFlamesPresent(false)
+         , mDrawing(true)
+         , mIsPlayerAttached(false)
+         , mDisabledFirepower(false)
+         , mDisabledMobility(false)
+         , mIsFrozen(false)
+         , mFireLightID(0)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();

@@ -63,6 +63,8 @@ namespace NetDemo
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
+      SetEntityType("HoverVehicle");
+      SetMunitionDamageTableName("StandardDamageType");
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +93,7 @@ namespace NetDemo
          //GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
          //   dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
-         SetEntityType("HoverTank");
+         //SetEntityType("HoverTank");
       }
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();

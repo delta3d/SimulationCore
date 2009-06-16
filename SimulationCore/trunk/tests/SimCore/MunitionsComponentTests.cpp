@@ -1581,34 +1581,34 @@ namespace SimCore
 
          // --- Test a survivable hit
          SendDetonationMessage( munitionName1, detLocation, entity.get(), &trajectory );
-         float damageMod = helper->GetDamageProbabilityModifier();
+         float damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.3f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should be NO_DAMAGE",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
 
          // --- Test a mobility kill hit
          SendDetonationMessage( munitionName1, detLocation, entity.get(), &trajectory );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.6f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should be SLIGHT DAMAGE",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE );
 
          SendDetonationMessage( munitionName1, detLocation, entity.get(), &trajectory );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.9f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should be SLIGHT DAMAGE",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::SLIGHT_DAMAGE );
 
          // --- Test a kill hit
          SendDetonationMessage( munitionName1, detLocation, entity.get(), &trajectory );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should be DESTROYED",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
 
          // --- Test a survivable hit, make sure damage was NOT decreased
          SendDetonationMessage( munitionName1, detLocation, entity.get(), &trajectory );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0f, damageMod, 0.001 );
          CPPUNIT_ASSERT_MESSAGE( "Entity should still be DESTROYED",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
@@ -1647,7 +1647,7 @@ namespace SimCore
 
          float mobProb = damage2->GetProbability_CarletonEquation( 1.0f, 50.0f, 0.0f, rangeMax, rangeMax );
          float killProb = damage2->GetProbability_CarletonEquation( 1.0f, 50.0f, 0.0f, rangeMax-60.0f, rangeMax-60.0f );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( mobProb*0.5f+killProb, damageMod, 0.001 );
 
          damageType = &helper->GetDamageState();
@@ -1664,7 +1664,7 @@ namespace SimCore
 
          mobProb = damage2->GetProbability_CarletonEquation( 1.0f, 50.0f, 50.0f, rangeMax, rangeMax );
          killProb = damage2->GetProbability_CarletonEquation( 1.0f, 50.0f, 50.0f, rangeMax-60.0f, rangeMax-60.0f );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          CPPUNIT_ASSERT_DOUBLES_EQUAL( mobProb*0.5f+killProb, damageMod, 0.001 );
 
          // NOTE: Originally if the actor had NO damage, the detonation would cause it
@@ -1684,7 +1684,7 @@ namespace SimCore
 
          mobProb = damage2->GetProbability_CarletonEquation( 1.0f, 25.0f, 0.0f, rangeMax, rangeMax );
          killProb = damage2->GetProbability_CarletonEquation( 1.0f, 25.0f, 0.0f, rangeMax-60.0f, rangeMax-60.0f );
-         damageMod = helper->GetDamageProbabilityModifier();
+         damageMod = helper->GetCurrentDamageRatio();
          killProb = mobProb*0.5f+killProb;
          if( killProb > 1.0f ) { killProb = 1.0f; }
          CPPUNIT_ASSERT_DOUBLES_EQUAL( killProb, damageMod, 0.001 );

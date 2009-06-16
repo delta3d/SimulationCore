@@ -18,8 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Chris Rodgers
- */
+* @author Chris Rodgers, Curtiss Murphy
+*/
 
 #ifndef _DAMAGE_HELPER_H_
 #define _DAMAGE_HELPER_H_
@@ -59,18 +59,25 @@ namespace SimCore
       {
          public:
 
-            // Constructor
-            // @param autoNotifyNetwork Determines if this helper has permission to
-            //        automatically send a network update when the observed entity's
-            //        damage state has changed.
-            explicit DamageHelper( bool autoNotifyNetwork = true );
+            /** 
+             * Constructor
+             * @param autoNotifyNetwork Determines if this helper has permission to
+             *        automatically send a network update when the observed entity's
+             *        damage state has changed.
+             * @param maxDamageAmount Allows other than default 1.0 damage value before being killed.
+             */            
+            explicit DamageHelper( bool autoNotifyNetwork = true, float maxDamageAmount = 1.0f);
 
-            // Constructor
-            // @param entity The entity that this helper must observe
-            // @param autoNotifyNetwork Determines if this helper has permission to
-            //        automatically send a network update when the observed entity's
-            //        damage state has changed.
-            DamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true );
+            /** 
+             * Constructor
+             * @param entity The entity that this helper must observe
+             * @param autoNotifyNetwork Determines if this helper has permission to
+             *        automatically send a network update when the observed entity's
+             *        damage state has changed.
+             * @param maxDamageAmount Allows other than default 1.0 damage value before being killed.
+             */            
+            DamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true, 
+               float maxDamageAmount = 1.0f);
 
             void SetEntity( SimCore::Actors::BaseEntity& entity ) { mEntity = &entity; }
             // @return The observed entity to which this DamageHelper is devoted.
@@ -111,9 +118,7 @@ namespace SimCore
             MunitionDamageTable* GetMunitionDamageTable() { return mTable.get(); }
             const MunitionDamageTable* GetMunitionDamageTable() const { return mTable.get(); }
 
-            // This function sets the damage state property on the observed entity.
-            // 
-            // @param damage The type of damage this helper must set on the observed entity.
+            /// This function sets the damage state property on the observed entity. Causes an actor update if AutoPublish is true
             void SetDamage( DamageType& damage );
 
             // @param damageToCompare The damage type to be compared with this 
@@ -153,14 +158,20 @@ namespace SimCore
             void SetVulnerability( float vulnerability );
             float GetVulnerability() const { return mVulnerability; }
 
-            // Access the current damage probability modifier that is added to all
-            // "dice rolls" for damage probability. This value will increase
-            // automatically when taking damage if damage accumulation is
-            // provided by the damage dealing munition.
-            // @return Damage probability modifier, usually ranging from 0 to about 1.
-            //         1 ensures maximum damage.
-            void SetDamageProbabilityModifier( float modifier ) { mDamageModifier = modifier; }
-            float GetDamageProbabilityModifier() const { return mDamageModifier; }
+            /** 
+            * Access the current amount of damage - as a normalized ratio. 
+            * Starts at 0 - hits add to this until the entity is dead at 1.0. 
+            * Entity damage is added as a scaled value based on GetMaxDamageAmount().
+            */
+            float GetCurrentDamageRatio() const { return mCurDamageRatio; }
+            void SetCurrentDamageRatio(float newValue) { mCurDamageRatio = newValue; }
+            //void SetDamageProbabilityModifier( float modifier ) { mDamageModifier = modifier; }
+            //float GetDamageProbabilityModifier() const { return mDamageModifier; }
+
+            /// Max damage amount is the non-normalized maximum damage an entity can take. Default is 1.0.
+            void SetMaxDamageAmount(float newValue) { mMaxDamageAmount = newValue; }
+            float GetMaxDamageAmount() const { return mMaxDamageAmount; }
+            
 
             // Get the damage levels used by this helper.
             // Damage levels determine the type of damage to assign when damage
@@ -192,7 +203,9 @@ namespace SimCore
 
             bool mAutoNotifyNet;
             float mVulnerability;
-            float mDamageModifier;
+            float mCurDamageRatio; //mDamageModifier;
+            float mLastNotifiedDamageRatio; 
+            float mMaxDamageAmount; // Default is 1.0
             DamageType* mLastNotifiedDamageState;
             DamageType* mCurrentDamageState;
             dtGame::DeadReckoningAlgorithm* mLastDRAlgorithm;

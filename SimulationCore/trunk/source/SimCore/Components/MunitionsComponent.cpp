@@ -93,13 +93,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork )
+      DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, 
+         bool autoNotifyNetwork, float maxDamageAmount)
       {
-         return new DamageHelper( entity, autoNotifyNetwork );
+         return new DamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool MunitionsComponent::Register( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork )
+      bool MunitionsComponent::Register(SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork, float maxDamageAmount)
       {
          if( HasRegistered( entity.GetUniqueId() ) )
          {
@@ -112,7 +113,7 @@ namespace SimCore
             return false;
          }
 
-         DamageHelper* newHelper = CreateDamageHelper( entity, autoNotifyNetwork );
+         DamageHelper* newHelper = CreateDamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
 
          if( newHelper == NULL ) { return false; }
 

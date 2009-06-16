@@ -18,6 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
+*
+* @author David Guthrie, Curtiss Murphy 
 */
 #ifndef BASEENTITY_H_
 #define BASEENTITY_H_
@@ -42,6 +44,7 @@ namespace SimCore
       class MunitionTypeActor;
 
 
+      ///////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT BaseEntityActorProxy : public dtGame::GameActorProxy
       {
          public:
@@ -60,6 +63,8 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_ENGINE_POSITION;
             static const dtUtil::RefString PROPERTY_FLYING;
             static const dtUtil::RefString PROPERTY_DAMAGE_STATE;
+            static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT;
+            static const dtUtil::RefString PROPERTY_CUR_DAMAGE_RATIO;
             static const dtUtil::RefString PROPERTY_DEFAULT_SCALE;
             static const dtUtil::RefString PROPERTY_DOMAIN;
             static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR;
@@ -169,6 +174,7 @@ namespace SimCore
          private:
       };
 
+      //////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT BaseEntity : public IGActor
       {
          public:
@@ -194,6 +200,30 @@ namespace SimCore
              * @return the damage state
              */
             BaseEntityActorProxy::DamageStateEnum& GetDamageState() const;
+
+            /**
+             * Controls the maximum damage that the munitions component will allow before killing
+             * this entity. Only applies to local entities, and only before the munitions component 
+             * is registered. See MunitionsComponent and DamageHelper for how this is used. 
+             */
+            void SetMaxDamageAmount(float newValue) { mMaxDamageAmount = newValue;  }
+            /**
+             * Controls the maximum damage that the munitions component will allow before killing
+             * this entity. Only applies to local entities, and only before the munitions component 
+             * is registered. See MunitionsComponent and DamageHelper for how this is used. 
+             */
+            float GetMaxDamageAmount() const { return mMaxDamageAmount; }
+
+            /**
+             * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
+             * This value is controlled by the munitions component - NEVER set this manually. 
+             */
+            void SetCurDamageRatio(float newValue) { mCurDamageRatio = newValue;  }
+            /**
+             * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
+             * Use this for any HUD or UI displays instead of asking the MunitionsComponent for its DamageHelper. 
+             */
+            float GetCurDamageRatio() const { return mCurDamageRatio; }
 
             /**
              * Set the environment the entity is specialized in navigating.
@@ -562,6 +592,19 @@ namespace SimCore
             virtual void RespondToHit(const SimCore::DetonationMessage& message,
                const SimCore::Actors::MunitionTypeActor& munition);
 
+            /**
+             * Gives a local entity an opportunity to filter out certain types of damage or 
+             * take less/more damage from specific munition types. The incoming damage is 'normalized' 
+             * between 0.0 (none) to 1.0 (all). Called from MunitionsComonent::ProcessDetonationMessage()
+             * via the DamageHelper in response to a local entity being hit by a direct or indirect fire. 
+             * Called before damage or forces have been applied. See RespondToHit().
+             */
+            virtual float ValidateIncomingDamage(float incomingDamage, const DetonationMessage& message, 
+               const SimCore::Actors::MunitionTypeActor& munition) 
+            {
+               return incomingDamage;
+            }
+
             /// @return true if this entity should be visible based on the options given.
             bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
@@ -623,6 +666,11 @@ namespace SimCore
             std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;
             ///The entity's DIS/RPR-FOM damage state.
             BaseEntityActorProxy::DamageStateEnum* mDamageState;
+
+            /// The max amount of damage before dead - use when registering local actors with the MunitionsComponent
+            float mMaxDamageAmount;
+            /// The cur damage ratio (0.0 to 1.0 dead). Do not set manually - controlled by the MunitionsComonent when a local entity takes damage
+            float mCurDamageRatio;
 
             /// Environment the entity is specialized in navigating.
             BaseEntityActorProxy::DomainEnum* mDomain;

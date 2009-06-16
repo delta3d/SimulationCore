@@ -70,7 +70,8 @@ namespace NetDemo
 
       // Preset some Entity values
       SetForceAffiliation(SimCore::Actors::BaseEntityActorProxy::ForceEnum::OPPOSING); // Shows up 'red' in Stealth Viewer
-      SetEntityType("EnemyActor"); // Allows munitions to work.
+      SetEntityType("Enemy");
+      SetMunitionDamageTableName("StandardDamageType");
 
       // Make a semi-unique name - mostly only useful for Stealth Viewer
       static int uniqueCounter = 0;
@@ -109,7 +110,7 @@ namespace NetDemo
             (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
          if( munitionsComp != NULL )
          {
-            munitionsComp->Register(*this);
+            munitionsComp->Register(*this, true, GetMaxDamageAmount());
          }
 
          // Setup our articulation helper for the vehicle

@@ -465,7 +465,7 @@ namespace DriverDemo
             mHealthMeter->SetVisible( true );
          }
          float health = mDamageHelper->GetDamageState() == SimCore::Components::DamageType::DAMAGE_KILL
-            ? 0.0f : 1.0f - mDamageHelper->GetDamageProbabilityModifier();
+            ? 0.0f : 1.0f - mDamageHelper->GetCurrentDamageRatio();
          mHealthMeter->SetValue( 100.0f*(health < 0.0f ? 0.0f : health), 100.0f, 0.0f );
       }
 
