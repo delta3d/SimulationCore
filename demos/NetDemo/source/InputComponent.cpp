@@ -32,6 +32,7 @@
 // TEMP STUFF FOR VEHICLE
 #include <Actors/HoverVehicleActor.h>
 #include <Actors/HoverVehiclePhysicsHelper.h>
+#include <Actors/EnemyMine.h>
 
 #include <osg/io_utils>
 #include <iostream>
@@ -126,26 +127,27 @@ namespace NetDemo
          case '5':
             {
                /////////////////////////////////////////////////////////
-               LOG_ALWAYS("Attempting to create vehicle!!! ");
+               LOG_ALWAYS("TEST - HACK - Attempting to create vehicle!!! ");
                // Hack stuff - add a vehicle here. For testing purposes.  
-               HoverVehicleActorProxy* prototypeProxy = NULL;
-               GetGameManager()->FindPrototypeByName("Hover Vehicle", prototypeProxy);
-               if (prototypeProxy == NULL)
-               {
-                  LOG_ERROR("Critical Error - can't find vehicle prototype [Hover Vehicle]. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.");
-                  return true;
-               }
                dtCore::RefPtr<HoverVehicleActorProxy> testVehicleProxy = NULL;
-               GetGameManager()->CreateActorFromPrototype(prototypeProxy->GetId(), testVehicleProxy);
-               if(testVehicleProxy != NULL)
-               {
-                  HoverVehicleActor *vehicleActor = dynamic_cast<HoverVehicleActor*>(&testVehicleProxy->GetGameActor());
-                  vehicleActor->SetHasDriver(true);
-                  if (vehicleActor != NULL)
-                  {
-                     GetGameManager()->AddActor(*testVehicleProxy.get(), false, true);
-                  }
-               }
+               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+                  "Hover Vehicle", testVehicleProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
+               HoverVehicleActor *vehicleActor = dynamic_cast<HoverVehicleActor*>(&testVehicleProxy->GetGameActor());
+               vehicleActor->SetHasDriver(true);
+               GetGameManager()->AddActor(*testVehicleProxy, false, true);
+
+               break;
+            }
+
+         case 't':
+            {
+               /////////////////////////////////////////////////////////
+               LOG_ALWAYS("TEST - HACK - CREATING TARGET!!! ");
+               // Hack stuff - add a vehicle here. For testing purposes.  
+               dtCore::RefPtr<EnemyMineActorProxy> testEnemyMine = NULL;
+               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+                  "Enemy Mine Prototype", testEnemyMine, "Check your additional maps in config.xml (compare to config_example.xml).");
+               GetGameManager()->AddActor(*testEnemyMine, false, true);
 
                break;
             }

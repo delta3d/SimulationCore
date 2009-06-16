@@ -111,6 +111,16 @@ namespace NetDemo
          {
             munitionsComp->Register(*this);
          }
+
+         // Setup our articulation helper for the vehicle
+         //dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
+         //   new SimCore::Components::DefaultFlexibleArticulationHelper();
+         //articHelper->SetEntity(this);
+         //articHelper->AddArticulation("dof_turret_01", 
+         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
+         //articHelper->AddArticulation("dof_gun_01", 
+         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
+         //SetArticulationHelper(articHelper.get());
       }
 
       BaseClass::OnEnteredWorld();

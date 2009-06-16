@@ -67,7 +67,7 @@ namespace SimCore
          , mHasFoundTerrain(false)
          , mNotifyFullUpdate(true)
          , mNotifyPartialUpdate(true)
-         , mPerformAboveGroundSafetyCheck(true)
+         , mPerformAboveGroundSafetyCheck(false)
          , mPublishLinearVelocity(true)
          , mPublishAngularVelocity(true)
          , mPushTransformToPhysics(false)
