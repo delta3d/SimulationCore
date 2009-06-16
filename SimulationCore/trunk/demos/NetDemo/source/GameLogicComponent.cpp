@@ -480,32 +480,9 @@ namespace NetDemo
       if (mCurrentTerrainPrototypeName.empty())
          return;
 
-      // Find the prototype for the DRAWN terrain.
-      SimCore::Actors::TerrainActorProxy* drawLandPrototypeProxy = NULL;
-      GetGameManager()->FindPrototypeByName(mCurrentTerrainPrototypeName, drawLandPrototypeProxy);
-      if (drawLandPrototypeProxy == NULL)
-      {
-         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-            "Cannot load the drawLandPrototype [%s] from the GM. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.",
-            mCurrentTerrainPrototypeName.c_str());
-         mCurrentTerrainPrototypeName = "";
-         return;
-      }
-
-      // Create a new instance of the DRAWN Terrain.
       dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
-      GetGameManager()->CreateActorFromPrototype(drawLandPrototypeProxy->GetId(), newDrawLandActorProxy);
-      if (!newDrawLandActorProxy.valid())
-      {
-         mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-            "Cannot create a newDrawLandActor for prototype [%s] from the GM. CRITICAL ERROR!",
-            mCurrentTerrainPrototypeName.c_str());
-         mCurrentTerrainPrototypeName = "";
-         return;
-      }
-
-
-      // Add to the GM
+      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+         mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
       GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());

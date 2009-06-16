@@ -163,14 +163,6 @@ namespace NetDemo
             GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
          }
       }
-
-      //static float countDownTest = 5.0f;
-      //countDownTest -= tickMessage.GetDeltaSimTime();
-      //if (countDownTest < 0.0f)
-      //{
-      //   countDownTest = 5.0f;
-      //   GetGameActorProxy().NotifyFullActorUpdate();
-      //}
    }
 
    //////////////////////////////////////////////////////////////////////

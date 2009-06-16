@@ -67,18 +67,10 @@ namespace NetDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         //virtual void PostPhysicsUpdate();
-
-         virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
-         virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
+         virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
+         virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
-
-      // PUBLIC METHODS
-      public:
-
-         //HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-         //   return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
 
       protected:
@@ -100,6 +92,7 @@ namespace NetDemo
          float mTimeSinceKilled; // used to self-delete dead entities after they explode, flame, fall, etc...
    };
 
+   ////////////////////////////////////////////////////////////////////////////////
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
    class NETDEMO_EXPORT BaseEnemyActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
    {

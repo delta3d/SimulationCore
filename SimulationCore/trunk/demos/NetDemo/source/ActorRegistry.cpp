@@ -18,6 +18,7 @@
 #include <Actors/PlayerStatusActor.h>
 #include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
+#include <Actors/EnemyMine.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -40,6 +41,10 @@ namespace NetDemo
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FORT_ACTOR_TYPE(
       new dtDAL::ActorType("FortActor", "NetDemo", "The team base - when destroyed the team looses.", 
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE(
+      new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base", 
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
 
@@ -69,5 +74,7 @@ namespace NetDemo
       mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<ServerGameStatusActorProxy>(SERVER_GAME_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
+      
    }
 }
