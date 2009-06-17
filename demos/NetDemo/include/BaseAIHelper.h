@@ -66,6 +66,12 @@ namespace NetDemo
      AIPhysicsModel* GetPhysicsModel() { return mPhysicsModel.get(); }
      const AIPhysicsModel* GetPhysicsModel() const { return mPhysicsModel.get(); }
 
+     /**
+     * A function to add transitions to the finite state machine using the AIStateType
+     * which avoids redundant calls to FSM::GetState.
+     */
+     void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
+
    protected:
      BaseAIHelper(const BaseAIHelper&);  //not implemented by design
      BaseAIHelper& operator=(const BaseAIHelper&);  //not implemented by design
@@ -77,12 +83,6 @@ namespace NetDemo
      virtual void SetupFunctors();
 
      virtual void SelectState(float dt);
-
-     /**
-     * A function to add transitions to the finite state machine using the AIStateType
-     * which avoids redundant calls to FSM::GetState.
-     */
-     void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
 
    private:
      dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
