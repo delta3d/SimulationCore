@@ -109,8 +109,8 @@
             <property>
                 <name>TerrainMesh</name>
                 <resourceType>Terrains</resourceType>
-                <resourceDisplayName>Terrains::Level_DriverDemo.ive</resourceDisplayName>
-                <resource>Terrains::Level_DriverDemo.ive</resource>
+                <resourceDisplayName>Terrains::Level_Desert.ive</resourceDisplayName>
+                <resource>Terrains::Level_Desert.ive</resource>
             </property>
             <property>
                 <name>PhysicsModel</name>
