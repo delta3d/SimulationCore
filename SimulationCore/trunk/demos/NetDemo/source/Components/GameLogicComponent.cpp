@@ -522,12 +522,6 @@ namespace NetDemo
          GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
 
 
-         ///////////////////////////////////////
-         // Create the Team Tower - Assumes 1 team for now. Future - support more than 1 team
-         // Start_Fort1    ....  FortPrototype
-         SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
-            "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
-         GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
       }
 
    }
@@ -539,11 +533,21 @@ namespace NetDemo
 
       if (mStartTheGameOnNextGameRunning)
       {
+         mStartTheGameOnNextGameRunning = false;
+
+         ////// Server stuff
          if (mIsServer)
          {
+            // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
+            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+               "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
+            GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
+
+            // Start our waves up
             mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();            
          }
-         mStartTheGameOnNextGameRunning = false;
+
+         /////// CLIENT STUFF 
 
          // Create a vehicle and stick our player in it.
          if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::OBSERVER)
