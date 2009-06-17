@@ -39,6 +39,8 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/log.h>
 
+#include <iostream>
+
 namespace NetDemo
 {
 
@@ -177,6 +179,23 @@ namespace NetDemo
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
       state->AddEntryCommand(ctbc);
 
+      float speed = 1000.0f;
+      behavior = new BombDive(speed);
+      ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
+      
+      state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      state->AddEntryCommand(ctbc);
+
+      //for all the rest of the states currently lets do nothing by setting the default behavior
+      behavior = new DoNothing();
+      ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
+
+      state = GetStateMachine().GetState(&AIStateType::AI_STATE_DIE);
+      state->AddEntryCommand(ctbc);
+
+      state = GetStateMachine().GetState(&AIStateType::AI_STATE_IDLE);
+      state->AddEntryCommand(ctbc);
+
    }
 
    void EnemyAIHelper::SelectState(float dt)
@@ -236,6 +255,19 @@ namespace NetDemo
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
 
+         //NOTE: HACK!!!! -The fort target is below the ground, I am adding an offset here
+         //todo: find the bounding box of the object and use that to determine a good target point
+         pos[2] += 5.0f;
+
+         //if we are within distance, detonate
+         //this is only for the enemy mine, and should be refactored
+         float dist = GetDistance(pos);
+         if(dist < 4.5)
+         {
+            BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
+            return;
+         }
+
          dtAI::KinematicGoal kg;
          kg.SetPosition(pos);
          BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
@@ -260,6 +292,12 @@ namespace NetDemo
       {
          LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
       }
+   }
+
+   float EnemyAIHelper::GetDistance(const osg::Vec3& vec)
+   {
+      osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(BaseClass::GetPhysicsModel()->GetKinematicState().mTransform, 3);
+      return (vec - pos).length();
    }
 
 

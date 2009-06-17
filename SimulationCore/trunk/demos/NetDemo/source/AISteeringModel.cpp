@@ -30,9 +30,9 @@ namespace NetDemo
 {
 
    AISteeringModel::AISteeringModel()
+      : mSteeringBehavior(new DoNothing()) //the default behavior
    {
-
-
+      mOutput.Reset();
    }
 
    AISteeringModel::~AISteeringModel()
@@ -62,11 +62,11 @@ namespace NetDemo
 
    void AISteeringModel::Update(const Kinematic& currentState, float dt)
    {
+      mOutput.Reset();
+
      //apply controls to achieve kinematic goal
      if(mSteeringBehavior.valid())
      {
-        mOutput.Reset();
-
         mSteeringBehavior->Think(dt, mGoal, currentState, mOutput);
      }
    }

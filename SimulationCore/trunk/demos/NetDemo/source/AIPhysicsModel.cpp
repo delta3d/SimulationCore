@@ -24,6 +24,14 @@
 */
 
 #include <AIPhysicsModel.h>
+#include <dtPhysics/physicshelper.h>
+
+#include <dtGame/gameactor.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+
+#include <dtUtil/matrixutil.h>
 
 namespace NetDemo
 {
@@ -44,6 +52,16 @@ namespace NetDemo
      mKinematicState = ko;
    }
 
+   void AIPhysicsModel::SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper)
+   {
+      mPhysicsHelper = newHelper;
+   }
+
+   dtPhysics::PhysicsHelper* AIPhysicsModel::GetPhysicsHelper()
+   {
+      return mPhysicsHelper.get();
+   }
+
    void AIPhysicsModel::Init()
    {
 
@@ -51,7 +69,30 @@ namespace NetDemo
 
    void AIPhysicsModel::Update(const SteeringOutput& steeringOut, float dt)
    {
+      if(mPhysicsHelper.valid())
+      {
+         //todo: all this should be a derivative of an interface
+         //       it is currently specific to the EnemyMine
+         //       also we need a generic way to set physical constraints
 
+         //TODO: this doesnt seem to work!
+         //osg::Vec3 right = dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 0);
+         //osg::Vec3 up(0.0f, 0.0f, 1.0f); //= dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 2);
+         //osg::Vec3 at = dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 1);
+
+         //float maxLiftForce = 20.0f;
+         //float maxThrustForce = 20.0f;
+         //float maxYawForce = 20.0f;
+
+         //osg::Vec3 force;
+
+         //force += osg::Vec3(0.0f, 0.0f, 9.8f) + (up * (steeringOut.mLift * maxLiftForce));
+         //force += at * (steeringOut.mThrust * maxThrustForce);
+         //force += right * (steeringOut.mYaw * maxYawForce);
+         
+         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(steeringOut.mLinearVelocity);
+
+      }
    }
 
 }//namespace NetDemo

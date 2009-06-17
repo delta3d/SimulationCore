@@ -31,6 +31,19 @@
 
 namespace NetDemo
 {
+   void DoNothing::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   { 
+   }
+
+   void BombDive::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   { 
+      osg::Vec3 targetPos = current_goal.GetPosition();
+      osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(current_state.mTransform, 3);
+      pos = (targetPos - pos);
+      pos.normalize();
+      result.mLinearVelocity = pos * mSpeed;
+   }
+
 
    float Align::Sgn(float x)
    {
@@ -121,12 +134,11 @@ namespace NetDemo
 
       //compute height
       osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(current_state.mTransform, 3);
-      float heightDiffKm = current_goal.GetPosition()[2] - (pos[2] + (current_state.mLinearVelocity[2] * (dt)));
-      heightDiffKm /= 1000.0f;
+      float heightDiff = current_goal.GetPosition()[2] - (pos[2] + (current_state.mLinearVelocity[2] * dt));
 
-      dtUtil::Clamp(heightDiffKm, -1.0f, 1.0f);
-      float absHeightDiff = 8.0f * fabs(heightDiffKm);
-      result.mLift = BaseClass::Sgn(heightDiffKm) * absHeightDiff * absHeightDiff;
+      dtUtil::Clamp(heightDiff, -1.0f, 1.0f);
+      float absHeightDiff = fabs(heightDiff);
+      result.mLift = BaseClass::Sgn(heightDiff) * absHeightDiff * absHeightDiff;
    }
 
 } //namespace NetDemo

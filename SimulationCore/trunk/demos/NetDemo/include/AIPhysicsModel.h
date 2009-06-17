@@ -28,6 +28,12 @@
 #include <DemoExport.h>
 #include <AIUtility.h>
 #include <osg/Referenced>
+#include <dtCore/refptr.h>
+
+namespace dtPhysics
+{
+   class PhysicsHelper;
+}
 
 namespace NetDemo
 {
@@ -41,6 +47,9 @@ namespace NetDemo
 
      virtual void Update(const SteeringOutput& steeringOut, float dt);
 
+     void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
+     dtPhysics::PhysicsHelper* GetPhysicsHelper();
+
      void SetKinematicState(const Kinematic& ko);
      const Kinematic& GetKinematicState() const {return mKinematicState;}
 
@@ -49,6 +58,7 @@ namespace NetDemo
      AIPhysicsModel& operator=(const AIPhysicsModel&);  //not implemented by design
      ~AIPhysicsModel();
 
+     dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
      Kinematic mKinematicState;
 
    };
