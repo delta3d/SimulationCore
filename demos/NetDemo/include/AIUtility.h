@@ -51,11 +51,14 @@ namespace NetDemo
       //which represents percentage of maximum
       float mThrust, mLift, mYaw;
 
+      osg::Vec3 mLinearVelocity;
+
       void Reset()
       {
          mThrust = 0.0f;
          mLift = 0.0f;
          mYaw = 0.0f;
+         mLinearVelocity.set(0.0f, 0.0f, 0.0f);
       }
    };
 
@@ -69,6 +72,29 @@ namespace NetDemo
    //   ErrorCondition(const std::string&);
    //};
 
+   //this allows for a default
+   class DoNothing: public SteeringBehaviorType
+   {
+   public:
+      typedef SteeringBehaviorType BaseClass;
+      DoNothing(){}
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+
+   private:
+   };
+
+   class BombDive: public SteeringBehaviorType
+   {
+   public:
+      typedef SteeringBehaviorType BaseClass;
+      BombDive(float speed): mSpeed(speed){}
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+
+   private:
+      float mSpeed;
+   };
 
    /**
     * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation) 

@@ -75,6 +75,8 @@ namespace NetDemo
 
       private:
 
+         float GetDistance(const osg::Vec3& pos);
+
    };
 
 } //namespace NetDemo

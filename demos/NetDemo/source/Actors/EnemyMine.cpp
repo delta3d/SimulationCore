@@ -95,8 +95,8 @@ namespace NetDemo
 
       if (!IsRemote()) // Local - we give it a boost on creation
       {
-         osg::Vec3 dir(0.0, 0.0, 2000.0);
-         ApplyForce(dir);
+         //osg::Vec3 dir(0.0, 0.0, 2000.0);
+         //ApplyForce(dir);
 
          // Offset the Target Dir so that they spread out around the map.
          mGoalLocation[0] += dtUtil::RandFloat(-40.0, 40.0);
@@ -105,14 +105,23 @@ namespace NetDemo
       }
 
 
+      //AI SETUP CODE
       if (!IsRemote()) // I guess the AI only runs on the server?
       {
          //calling init on the AIHelper will setup the states and transitions
          mAIHelper->Init();
+
+         //this will allow the AI to actually move us
+         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
          
          //redirecting the find target function
          dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
          state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineActor::FindTarget));
+
+         //redirecting the detonate function
+         state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_DETONATE);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineActor::DoExplosion));
+
          
          //calling spawn will start the AI
          mAIHelper->Spawn();
@@ -150,12 +159,23 @@ namespace NetDemo
       BaseClass::OnTickLocal( tickMessage );
 
       //Tick the AI
+      //update the AI's position and orientation
+      dtCore::Transform trans;
+      GetTransform(trans);
+      mAIHelper->PreSync(trans);
+
+      //let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
+
+      //update the entities position and orientation
+      //note: this is commented out because it is updated by the physics
+      //mAIHelper->PostSync(trans);
+      //SetTransform(trans);
    }
 
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyMineActor::DoExplosion()
+   void EnemyMineActor::DoExplosion(float)
    {
       //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
       //printf("Sending DETONATION\r\n");
@@ -184,6 +204,9 @@ namespace NetDemo
 
       gm->SendMessage( *msg );
       gm->SendNetworkMessage( *msg );
+
+      mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

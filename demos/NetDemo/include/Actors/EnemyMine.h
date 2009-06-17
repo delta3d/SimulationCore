@@ -69,7 +69,7 @@ namespace NetDemo
             const osg::Vec3 &direction, float &distanceToHit);
 
 
-         virtual void DoExplosion();
+         virtual void DoExplosion(float);
 
 
       protected:

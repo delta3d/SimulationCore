@@ -32,6 +32,12 @@
 #include <dtAI/npcstate.h>
 #include <dtUtil/log.h>
 
+//these headers should be refactored out of here
+#include <dtGame/gameactor.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+
 namespace NetDemo
 {
 
@@ -62,8 +68,14 @@ namespace NetDemo
    {
      if(mPhysicsModel.valid())
      {
+       //update the position and orientation
        Kinematic k = mPhysicsModel->GetKinematicState();
        trans.Get(k.mTransform);
+
+       //update the linear and angular velocities
+       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+       k.mLinearVelocity = physicsObject->GetLinearVelocity();
+       k.mAngularVelocity = physicsObject->GetAngularVelocity();
 
        mPhysicsModel->SetKinematicState(k);
      }
@@ -86,12 +98,8 @@ namespace NetDemo
    void BaseAIHelper::Update(float dt)
    {
       mStateMachine.Update(dt);
-     
-     if(mSteeringModel.valid() && mPhysicsModel.valid())
-     {    
-         mSteeringModel->Update(mPhysicsModel->GetKinematicState(), dt);
-         mPhysicsModel->Update(mSteeringModel->GetOutput(), dt);
-     }
+      mSteeringModel->Update(mPhysicsModel->GetKinematicState(), dt);
+      mPhysicsModel->Update(mSteeringModel->GetOutput(), dt);
    }
 
    void BaseAIHelper::RegisterStates()
