@@ -40,6 +40,7 @@
 #include <osg/Group>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Messages.h>
 #include <SimCore/VisibilityOptions.h>
@@ -476,6 +477,7 @@ namespace SimCore
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          , mMaxDamageAmount(1.0f)
          , mCurDamageRatio(0.0f)
+         , mAutoRegisterWithMunitionsComponent(true)
          , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
@@ -565,6 +567,19 @@ namespace SimCore
             // should, and be more likely to republish.
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
+
+            // Local entities usually need the ability to take damage. So, register with the munitions component. 
+            if (mAutoRegisterWithMunitionsComponent)
+            {
+               SimCore::Components::MunitionsComponent* munitionsComp;
+               GetGameActorProxy().GetGameManager()->GetComponentByName
+                  (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+               if(munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
+               {
+                  munitionsComp->Register(*this, true, GetMaxDamageAmount());
+               }
+            }
+
          }
          else
          {

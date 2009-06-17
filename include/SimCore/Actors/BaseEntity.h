@@ -225,6 +225,23 @@ namespace SimCore
              */
             float GetCurDamageRatio() const { return mCurDamageRatio; }
 
+            
+            /**
+            * Toggles whether a local version of this entity will automatically attempt to register 
+            * itself with a MunitionsComponent (if one exists). 
+            * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
+            * @param newValue True to enable, false to not. Default is true.
+            */
+            void SetAutoRegisterWithMunitionsComponent(bool newValue) { mAutoRegisterWithMunitionsComponent = newValue; }
+
+            /**
+            * Toggles whether a local version of this entity will automatically attempt to register 
+            * itself with a MunitionsComponent (if one exists). 
+            * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
+            * @return mAutoRegisterWithMunitionsComponent
+            */
+            bool IsAutoRegisterWithMunitionsComponent() const { return mAutoRegisterWithMunitionsComponent; }
+
             /**
              * Set the environment the entity is specialized in navigating.
              * @param domain Type of domain to be set.
@@ -671,6 +688,8 @@ namespace SimCore
             float mMaxDamageAmount;
             /// The cur damage ratio (0.0 to 1.0 dead). Do not set manually - controlled by the MunitionsComonent when a local entity takes damage
             float mCurDamageRatio;
+            /// If true, local actors will automatically attempt to register with the Munitions Component (if one exists). True by default
+            bool mAutoRegisterWithMunitionsComponent; 
 
             /// Environment the entity is specialized in navigating.
             BaseEntityActorProxy::DomainEnum* mDomain;

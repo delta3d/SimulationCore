@@ -27,7 +27,7 @@
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
-#include <SimCore/Components/MunitionsComponent.h>
+//#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -90,15 +90,6 @@ namespace NetDemo
 
       if(!IsRemote())
       {
-
-         // Register a munitions component so the fort can take damage
-         SimCore::Components::MunitionsComponent* munitionsComp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName
-            (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-         if( munitionsComp != NULL )
-         {
-            munitionsComp->Register(*this);
-         }
 
          // Setup our articulation helper for the vehicle
          dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 

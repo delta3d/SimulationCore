@@ -34,7 +34,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/Utilities.h>
 
-#include <GameLogicComponent.h>
+#include <Components/GameLogicComponent.h>
 #include <ActorRegistry.h>
 #include <Actors/PlayerStatusActor.h>
 #include <States.h>
@@ -415,6 +415,9 @@ namespace NetDemo
                (ServerGameStatusActor::ServerGameStatusEnum::READY_ROOM);
          mStartTheGameOnNextGameRunning = true;
 
+         // Clear out any previous vehicle, in case we were previously in a game.
+         ClearPreviousGameStuff();
+
          // curt - hack - replace this with the GUI COMPONENT
          //DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
@@ -424,41 +427,20 @@ namespace NetDemo
       }
    }
 
-
-         /////////////////////////////////////////////////////////
-         // Hack stuff - add a vehicle here. For testing purposes.
-/*         HoverVehicleActorProxy* prototypeProxy = NULL;
-         GetGameManager()->FindPrototypeByName("Hover Vehicle", prototypeProxy);
-         if (prototypeProxy == NULL)
-         {
-            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
-               "Critical Error - can't find vehicle prototype [Hover Vehicle]. Likely error - incorrect additional maps in your config.xml. Compare to the config_example.xml.");
-            return;
-         }
-         dtCore::RefPtr<HoverVehicleActorProxy> testVehicleProxy = NULL;
-         GetGameManager()->CreateActorFromPrototype(prototypeProxy->GetId(), testVehicleProxy);
-         if(testVehicleProxy != NULL)
-         {
-            //HoverVehicleActor *vehicleActor = dynamic_cast<HoverVehicleActor*>(testVehicleProxy->GetGameActor());
-            //if (vehicleActor != NULL)
-            //{
-               GetGameManager()->AddActor(*testVehicleProxy.get(), false, true);
-
-            //}
-         }
-         */
-
    //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::HandleUnloadingState()
    {
       // Have to disconnect first, else we will get network messages about stuff we don't understand.
       DisconnectFromNetwork();
 
+      // Probably not necessary (since close map deletes all), but clear out stuff we already created
+      ClearPreviousGameStuff();
+      mPlayerStatus = NULL;
+      mCurrentTerrainDrawActor = NULL;
+
       GetGameManager()->CloseCurrentMap(); 
       // When the map is unloaded, we get the UNLOADED msg and change our states back to lobby.
 
-      if (mPlayerStatus != NULL)
-         mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::UNKNOWN);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -543,11 +525,9 @@ namespace NetDemo
          ///////////////////////////////////////
          // Create the Team Tower - Assumes 1 team for now. Future - support more than 1 team
          // Start_Fort1    ....  FortPrototype
-         dtCore::RefPtr<FortActorProxy> newFortActor = NULL;
          SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
-            "FortPrototype", newFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
-         GetGameManager()->AddActor(*newFortActor, false, true);
-         //mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>(newDrawLandActorProxy->GetActor());      
+            "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
+         GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
       }
 
    }
@@ -570,9 +550,47 @@ namespace NetDemo
          {
 
          }
+         else if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::HOVER)
+         {
+            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+               "Hover Vehicle", mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
+            SimCore::Actors::BasePhysicsVehicleActor *vehicleActor = 
+               dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor *>(&mPlayerOwnedVehicle->GetGameActor());
+            vehicleActor->SetHasDriver(true);
+            GetGameManager()->AddActor(*mPlayerOwnedVehicle, false, true);
+
+            // Put the vehicle somewhere!
+
+            mPlayerStatus->SetAttachedVehicleID(mPlayerOwnedVehicle->GetId().ToString());
+         }
+         else if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
+         {
+
+         }
+         // No other clause...
+
       }
 
    }
+
+   //////////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::ClearPreviousGameStuff()
+   {
+      if (mPlayerOwnedVehicle.valid())
+      {
+         mPlayerStatus->SetAttachedVehicleID("");
+         GetGameManager()->DeleteActor(*mPlayerOwnedVehicle);
+         mPlayerOwnedVehicle = NULL;
+      }
+
+      if (mServerCreatedFortActor.valid())
+      {
+         GetGameManager()->DeleteActor(*mServerCreatedFortActor);
+         mServerCreatedFortActor = NULL;
+      }
+
+   }
+
 
 
 }

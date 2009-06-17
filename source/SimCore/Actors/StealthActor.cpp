@@ -118,6 +118,7 @@ namespace SimCore
          mAttachOffset(0.0f, 0.0f, 1.5f)
       {
          mLogger = &dtUtil::Log::GetInstance("StealthActor.cpp");
+         SetAutoRegisterWithMunitionsComponent(false);
       }
 
       //////////////////////////////////////////////////////////////////////////////

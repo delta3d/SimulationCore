@@ -27,7 +27,7 @@
 #include <dtCore/refptr.h>
 #include <dtPhysics/physicshelper.h>
 #include <SimCore/Components/BaseInputComponent.h>
-#include <GameLogicComponent.h>
+#include <Components/GameLogicComponent.h>
 
 namespace NetDemo
 {
@@ -69,6 +69,9 @@ namespace NetDemo
          void SetupMaterialsAndTerrain();
          void UpdateHelpers();
          GameLogicComponent* GetAppComponent();
+
+         void HandleActorUpdateMessage(const dtGame::Message& msg);
+
       private:
          typedef std::vector<dtCore::RefPtr<dtPhysics::PhysicsHelper> > HelperList;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;

@@ -59,6 +59,7 @@ namespace SimCore
          mVisible(true)
          , mLoadedDamageFiles(false)
       {
+         SetAutoRegisterWithMunitionsComponent(false);
       }
 
       //////////////////////////////////////////////////////////
