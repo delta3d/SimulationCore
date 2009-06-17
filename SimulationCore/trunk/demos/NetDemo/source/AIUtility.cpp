@@ -94,10 +94,6 @@ namespace NetDemo
       }  
    }
 
-   //void DiveBomb::Think(float dt, Align::BaseClass::ConstKinematicGoalParam current_goal, BaseClass::BaseClass::ConstKinematicParam current_state, BaseClass::BaseClass::SteeringOutByRefParam result)
-   //{
-   //}
-
    void FollowPath::Think(float dt, Align::BaseClass::ConstKinematicGoalParam current_goal, BaseClass::BaseClass::ConstKinematicParam current_state, BaseClass::BaseClass::SteeringOutByRefParam result)
    {
       float lookAhead = mLookAhead * dt;

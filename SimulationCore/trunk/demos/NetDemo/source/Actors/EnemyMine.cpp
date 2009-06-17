@@ -45,6 +45,12 @@
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
 
+#include <EnemyAIHelper.h>
+#include <AIEvent.h>
+#include <AIState.h>
+#include <AIUtility.h>
+#include <ActorRegistry.h>
+#include <Actors/FortActor.h>
 
 namespace NetDemo
 {
@@ -52,6 +58,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMineActor::EnemyMineActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
+      , mAIHelper(new EnemyAIHelper())
       , mGoalLocation(10.0, 10.0, 10.0)
       , mGroundClearance(3.0)
    {
@@ -97,16 +104,42 @@ namespace NetDemo
          mGoalLocation[2] += dtUtil::RandFloat(2.0, 4.0);
       }
 
+
+      if (!IsRemote()) // I guess the AI only runs on the server?
+      {
+         //calling init on the AIHelper will setup the states and transitions
+         mAIHelper->Init();
+         
+         //redirecting the find target function
+         dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineActor::FindTarget));
+         
+         //calling spawn will start the AI
+         mAIHelper->Spawn();
+      }
+   }
+
+   void EnemyMineActor::FindTarget(float)
+   {
+      //temporarily lets just look for a fort to destroy
+      FortActorProxy* fortProxy = NULL;
+      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::FORT_ACTOR_TYPE, fortProxy);
+      if (fortProxy != NULL)
+      {
+         FortActor& fort = *static_cast<FortActor*>(fortProxy->GetActor());
+         mAIHelper->SetCurrentTarget(fort);
+      }
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMineActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
-      if( ! IsMobilityDisabled())
-      {
-         // Do all our movement!
-         ApplyTargetHoverForces(deltaTime, mGoalLocation);
-      }
+      //if( ! IsMobilityDisabled())
+      //{
+      //   // Do all our movement!
+      //   ApplyTargetHoverForces(deltaTime, mGoalLocation);
+      //}
 
       // DoExplosion();
    }
@@ -116,7 +149,8 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      // TODO - Brad - do yer thing here!
+      //Tick the AI
+      mAIHelper->Update(tickMessage.GetDeltaSimTime());
    }
 
 
@@ -158,6 +192,9 @@ namespace NetDemo
    {
       // The target was hit by a munition. We've already taken damage and had forces applied
       // If we aren't about to die, then we can do stuff here... .
+
+      //this lets the AI respond to being hit
+      mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
    }
 
    ////////////////////////////////////////////////////////////////////////////////

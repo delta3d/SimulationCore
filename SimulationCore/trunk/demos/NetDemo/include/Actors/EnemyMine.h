@@ -32,6 +32,7 @@
 
 namespace NetDemo
 {
+   class EnemyAIHelper;
 
    ////////////////////////////////////////////////////////////////////////////////
    /* This class extends BasePhysicsVehicle. It is intended to be a simple target
@@ -77,8 +78,12 @@ namespace NetDemo
 
          void ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation);
 
+         void FindTarget(float);
+
       // Private vars
       private:
+
+         dtCore::RefPtr<EnemyAIHelper> mAIHelper;
 
          osg::Vec3 mGoalLocation;       /// The general location we want to be.
 
