@@ -29,22 +29,26 @@ namespace NetDemo
 {
 
    //////////////////////////////////////////////////////////////////////////
-   IMPLEMENT_ENUM(AIState);
+   IMPLEMENT_ENUM(AIStateType);
 
-   const AIState AIState::AI_STATE_SPAWN("AI_STATE_SPAWN");
-   const AIState AIState::AI_STATE_GO_TO_WAYPOINT("AI_STATE_GO_TO_WAYPOINT");
-   const AIState AIState::AI_STATE_FOLLOW_PATH("AI_STATE_FOLLOW_PATH");
-   const AIState AIState::AI_STATE_ATTACK("AI_STATE_ATTACK");
-   const AIState AIState::AI_STATE_EVADE("AI_STATE_EVADE");
-   const AIState AIState::AI_STATE_FOLLOW("AI_STATE_FOLLOW");
-   const AIState AIState::AI_STATE_FLOCK("AI_STATE_FLOCK");
+   const AIStateType AIStateType::AI_STATE_SPAWN("AI_STATE_SPAWN");
+   const AIStateType AIStateType::AI_STATE_DIE("AI_STATE_DIE");
+   const AIStateType AIStateType::AI_STATE_IDLE("AI_STATE_IDLE");
+   const AIStateType AIStateType::AI_STATE_FIND_TARGET("AI_STATE_FIND_TARGET");
+   const AIStateType AIStateType::AI_STATE_GO_TO_WAYPOINT("AI_STATE_GO_TO_WAYPOINT");
+   const AIStateType AIStateType::AI_STATE_ATTACK("AI_STATE_ATTACK");
+   const AIStateType AIStateType::AI_STATE_EVADE("AI_STATE_EVADE");
+   const AIStateType AIStateType::AI_STATE_FOLLOW("AI_STATE_FOLLOW");
+   const AIStateType AIStateType::AI_STATE_FLOCK("AI_STATE_FLOCK");
+   const AIStateType AIStateType::AI_STATE_WANDER("AI_STATE_WANDER");
+   const AIStateType AIStateType::AI_STATE_DETONATE("AI_STATE_DETONATE");
 
 
-   AIState::AIState(const std::string& pName): dtUtil::Enumeration(pName)
+   AIStateType::AIStateType(const std::string& pName): dtUtil::Enumeration(pName)
    {
    }
 
-   AIState::~AIState()
+   AIStateType::~AIStateType()
    {
    }
 

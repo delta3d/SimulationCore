@@ -29,6 +29,7 @@
 #include <AIEvent.h>
 #include <AIState.h>
 
+#include <dtAI/npcstate.h>
 #include <dtUtil/log.h>
 
 namespace NetDemo
@@ -37,6 +38,8 @@ namespace NetDemo
    BaseAIHelper::BaseAIHelper()
    : mFactory(new dtAI::FSM::FactoryType())
    , mStateMachine(mFactory.get())
+   , mSteeringModel(new AISteeringModel())
+   , mPhysicsModel(new AIPhysicsModel())
    {
      
    }
@@ -48,7 +51,10 @@ namespace NetDemo
 
    void BaseAIHelper::Init()
    {
-
+      RegisterStates();
+      CreateStates();
+      SetupTransitions();
+      SetupFunctors();
    }
 
 
@@ -63,14 +69,6 @@ namespace NetDemo
      }
    }
 
-   void BaseAIHelper::PreSync(const Kinematic& ko)
-   {
-     if(mPhysicsModel.valid())
-     {
-       mPhysicsModel->SetKinematicState(ko);
-     }
-   }
-
    void BaseAIHelper::PostSync(dtCore::Transform& trans) const
    {
      if(mPhysicsModel.valid())
@@ -80,18 +78,9 @@ namespace NetDemo
      }
    }
 
-   void BaseAIHelper::PostSync(Kinematic& ko) const
-   {
-     if(mPhysicsModel.valid())
-     {
-       ko = mPhysicsModel->GetKinematicState();
-     }
-   }
-
    void BaseAIHelper::Spawn()
    {
-     mStateMachine.MakeCurrent(&AIState::AI_STATE_SPAWN);
-     dtAI::NPCState* state = mStateMachine.GetState(&AIState::AI_STATE_SPAWN);
+     mStateMachine.MakeCurrent(&AIStateType::AI_STATE_SPAWN);
    }
 
    void BaseAIHelper::Update(float dt)
@@ -105,8 +94,33 @@ namespace NetDemo
      }
    }
 
+   void BaseAIHelper::RegisterStates()
+   {
+   }
 
-   void BaseAIHelper::AddTransition(const AIEvent* eventToTriggerTransition, const AIState* fromState, const AIState* toState)
+   void BaseAIHelper::CreateStates()
+   {
+      mStateMachine.AddState(&AIStateType::AI_STATE_SPAWN);
+      mStateMachine.AddState(&AIStateType::AI_STATE_DIE);
+      mStateMachine.AddState(&AIStateType::AI_STATE_IDLE);
+   }
+
+   void BaseAIHelper::SetupTransitions()
+   {
+   }
+
+   void BaseAIHelper::SetupFunctors()
+   {
+      dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_SPAWN);
+      state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &BaseAIHelper::SelectState));
+   }
+
+   void BaseAIHelper::SelectState(float dt)
+   {
+      mStateMachine.MakeCurrent(&AIStateType::AI_STATE_IDLE);
+   }
+
+   void BaseAIHelper::AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState)
    {
      mStateMachine.AddTransition(eventToTriggerTransition, fromState, toState);
    }
