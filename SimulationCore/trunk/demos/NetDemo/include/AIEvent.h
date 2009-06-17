@@ -40,8 +40,11 @@ namespace NetDemo
 
      //movement
      static const AIEvent  AI_EVENT_ARRIVED;
+     static const AIEvent  AI_EVENT_GO_TO_POINT;
      static const AIEvent  AI_EVENT_ENEMY_SIGHTED;
      static const AIEvent  AI_EVENT_TOOK_DAMAGE;
+     static const AIEvent  AI_EVENT_DAMAGE_CRITICAL;
+     static const AIEvent  AI_EVENT_TARGET_KILLED;
 
    protected:
      ~AIEvent();

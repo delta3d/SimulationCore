@@ -60,7 +60,7 @@ namespace NetDemo
    };
 
 
-   typedef dtAI::SteeringBehavior<dtAI::KinematicGoal, Kinematic, SteeringOutput> SteeringBehaviorInstance;
+   typedef dtAI::SteeringBehavior<dtAI::KinematicGoal, Kinematic, SteeringOutput> SteeringBehaviorType;
 
    //class ErrorCondition: public dtUtil::Enumeration
    //{
@@ -70,28 +70,13 @@ namespace NetDemo
    //};
 
 
-   class GoStraight: public SteeringBehaviorInstance
-   {
-   public:
-      typedef SteeringBehaviorInstance BaseClass;
-
-      GoStraight(){}
-
-      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
-      {
-         result.mThrust = 0.5f;
-      }
-
-      /*virtual*/ bool GoalAchieved(BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state){return false;}
-   };
-
    /**
     * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation) 
     */
-   class Align: public SteeringBehaviorInstance
+   class Align: public SteeringBehaviorType
    {
    public:
-     typedef SteeringBehaviorInstance BaseClass;
+     typedef SteeringBehaviorType BaseClass;
      Align(float lookAhead, float timeToTarget)
         : mLookAhead(lookAhead) 
         , mTimeToTarget(timeToTarget)
@@ -106,6 +91,19 @@ namespace NetDemo
 
       float mLookAhead, mTimeToTarget;
    };
+
+   /**
+   * DiveBomb is an AI Behavior to do a Kamikaze attack on a target
+   */
+   //class DiveBomb: public Align
+   //{
+   //public:
+   //   typedef Align BaseClass;
+
+   //   DiveBomb(){}
+
+   //   /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+   //};
 
    /**
     * Follow path can be used to follow waypoints

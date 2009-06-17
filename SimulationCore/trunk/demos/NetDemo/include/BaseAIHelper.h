@@ -39,7 +39,7 @@ namespace NetDemo
 {
 
    class AIEvent;
-   class AIState;
+   class AIStateType;
 
 
    class NETDEMO_EXPORT BaseAIHelper: public osg::Referenced
@@ -51,16 +51,14 @@ namespace NetDemo
      virtual void Spawn();
      virtual void Update(float dt);
 
-     //there are two variations just for convenience 
      void PreSync(const dtCore::Transform& trans);
-     void PreSync(const Kinematic& ko);
-
-     //there are two variations just for convenience 
      void PostSync(dtCore::Transform& trans) const;
-     void PostSync(Kinematic& ko) const;
 
      dtAI::FSM& GetStateMachine() { return mStateMachine; }
      const dtAI::FSM& GetStateMachine() const { return mStateMachine; }
+
+     dtAI::FSM::FactoryType* GetStateFactory() { return mFactory.get(); }
+     const dtAI::FSM::FactoryType* GetStateFactory() const { return mFactory.get(); }
 
      AISteeringModel* GetSteeringModel() { return mSteeringModel.get(); }
      const AISteeringModel* GetSteeringModel() const { return mSteeringModel.get(); }
@@ -73,12 +71,20 @@ namespace NetDemo
      BaseAIHelper& operator=(const BaseAIHelper&);  //not implemented by design
      ~BaseAIHelper();
 
+     virtual void RegisterStates();
+     virtual void CreateStates();
+     virtual void SetupTransitions();
+     virtual void SetupFunctors();
+
+     virtual void SelectState(float dt);
+
      /**
-     * A function to add transitions to the finite state machine using the AIState
+     * A function to add transitions to the finite state machine using the AIStateType
      * which avoids redundant calls to FSM::GetState.
      */
-     void AddTransition(const AIEvent* eventToTriggerTransition, const AIState* fromState, const AIState* toState);
+     void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
 
+   private:
      dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
      dtAI::FSM mStateMachine;
 

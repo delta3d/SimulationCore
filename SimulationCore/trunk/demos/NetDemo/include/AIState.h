@@ -34,41 +34,43 @@
 namespace NetDemo
 {
 
-   class NETDEMO_EXPORT AIState : public dtUtil::Enumeration
+   class NETDEMO_EXPORT AIStateType : public dtAI::NPCState::Type
    {
-      DECLARE_ENUM(AIState);
+      DECLARE_ENUM(AIStateType);
 
    public:
-     AIState(const std::string& stateName);
+     AIStateType(const std::string& stateName);
 
      //movement
-     static const AIState  AI_STATE_SPAWN;
-     static const AIState  AI_STATE_GO_TO_WAYPOINT;
-     static const AIState  AI_STATE_FOLLOW_PATH;
-     static const AIState  AI_STATE_ATTACK;
-     static const AIState  AI_STATE_EVADE;
-     static const AIState  AI_STATE_FOLLOW;
-     static const AIState  AI_STATE_FLOCK;
+     static const AIStateType  AI_STATE_SPAWN;
+     static const AIStateType  AI_STATE_DIE;
+     static const AIStateType  AI_STATE_IDLE;
+     static const AIStateType  AI_STATE_FIND_TARGET;
+     static const AIStateType  AI_STATE_GO_TO_WAYPOINT;
+     static const AIStateType  AI_STATE_ATTACK;
+     static const AIStateType  AI_STATE_EVADE;
+     static const AIStateType  AI_STATE_FOLLOW;
+     static const AIStateType  AI_STATE_FLOCK;
+     static const AIStateType  AI_STATE_WANDER;
+     static const AIStateType  AI_STATE_DETONATE;
 
    protected:
-     ~AIState();
+     ~AIStateType();
 
    private:
-     AIState(); //not implemented by design
+     AIStateType(); //not implemented by design
 
    };
 
    template <class T>
-   struct StateData: public dtAI::NPCState
+   class AIState: public dtAI::NPCState
    {
    public:
       typedef dtAI::NPCState BaseClass;
 
       //at the moment the ObjectFactory must use default constructors :(
-      StateData(): BaseClass(){}
-     
-      //void Init(const std::string& message);
-         
+      AIState(): BaseClass(){}
+
       T mStateData;
    };
 
@@ -83,7 +85,7 @@ namespace NetDemo
      osg::Vec3 mCurrentWaypoint;
    };
 
-   typedef StateData<WaypointData> WaypointStateType;
+   typedef AIState<WaypointData> GoToWaypointState;
 
 } //namespace NetDemo
 

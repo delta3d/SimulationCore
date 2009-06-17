@@ -23,28 +23,45 @@
 * @author Bradley Anderegg
 */
 
-#include <AIEvent.h>
+#ifndef DELTA_ENEMYAIHELPER_H
+#define DELTA_ENEMYAIHELPER_H
 
+#include <DemoExport.h>
+#include <BaseAIHelper.h>
 
 namespace NetDemo
 {
-   //////////////////////////////////////////////////////////////////////////
 
-   IMPLEMENT_ENUM(AIEvent);
+   class AIEvent;
+   class AIStateType;
 
-   const AIEvent AIEvent::AI_EVENT_ARRIVED("AI_EVENT_ARRIVED");
-   const AIEvent AIEvent::AI_EVENT_GO_TO_POINT("AI_EVENT_GO_TO_POINT");
-   const AIEvent AIEvent::AI_EVENT_ENEMY_SIGHTED("AI_EVENT_ENEMY_SIGHTED");
-   const AIEvent AIEvent::AI_EVENT_TOOK_DAMAGE("AI_EVENT_TOOK_DAMAGE");
-   const AIEvent AIEvent::AI_EVENT_DAMAGE_CRITICAL("AI_EVENT_DAMAGE_CRITICAL");
-   const AIEvent AIEvent::AI_EVENT_TARGET_KILLED("AI_EVENT_TARGET_KILLED");
 
-   AIEvent::AIEvent(const std::string& pName): dtAI::NPCEvent(pName)
+   class NETDEMO_EXPORT EnemyAIHelper: public BaseAIHelper
    {
-   }
+      public:
+         typedef BaseAIHelper BaseClass;
 
-   AIEvent::~AIEvent()
-   {
-   }
+         EnemyAIHelper();
 
-}//namespace NetDemo
+         /*virtual*/ void Init();
+         /*virtual*/ void Spawn();
+         /*virtual*/ void Update(float dt);
+
+      protected:
+         EnemyAIHelper(const EnemyAIHelper&);  //not implemented by design
+         EnemyAIHelper& operator=(const EnemyAIHelper&);  //not implemented by design
+         ~EnemyAIHelper();
+
+         /*virtual*/ void RegisterStates();
+         /*virtual*/ void CreateStates();
+         /*virtual*/ void SetupTransitions();
+         /*virtual*/ void SetupFunctors();
+
+         /*virtual*/ void SelectState(float dt);
+
+      private:
+   };
+
+} //namespace NetDemo
+
+#endif //DELTA_ENEMYAIHELPER_H
