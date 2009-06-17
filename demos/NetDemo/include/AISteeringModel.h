@@ -48,9 +48,9 @@ namespace NetDemo
 
      const SteeringOutput& GetOutput() const { return mOutput; }
 
-     SteeringBehaviorType* GetSteeringBehavoir(){ return mSteeringBehavoir.get();}
-     const SteeringBehaviorType* GetSteeringBehavoir() const{ return mSteeringBehavoir.get();}
-     void SetSteeringBehavoir(SteeringBehaviorType* sb){mSteeringBehavoir = sb;}
+     SteeringBehaviorType* GetSteeringBehavior(){ return mSteeringBehavior.get();}
+     const SteeringBehaviorType* GetSteeringBehavior() const{ return mSteeringBehavior.get();}
+     void SetSteeringBehavior(SteeringBehaviorType* sb){mSteeringBehavior = sb;}
 
    protected:
      AISteeringModel(const AISteeringModel&);  //not implemented by design
@@ -60,7 +60,7 @@ namespace NetDemo
      dtAI::KinematicGoal mGoal;
      SteeringOutput mOutput;
 
-     dtCore::RefPtr<SteeringBehaviorType> mSteeringBehavoir;
+     dtCore::RefPtr<SteeringBehaviorType> mSteeringBehavior;
    };
 
 } //namespace NetDemo

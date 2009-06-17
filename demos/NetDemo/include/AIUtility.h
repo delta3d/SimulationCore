@@ -93,19 +93,6 @@ namespace NetDemo
    };
 
    /**
-   * DiveBomb is an AI Behavior to do a Kamikaze attack on a target
-   */
-   //class DiveBomb: public Align
-   //{
-   //public:
-   //   typedef Align BaseClass;
-
-   //   DiveBomb(){}
-
-   //   /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
-   //};
-
-   /**
     * Follow path can be used to follow waypoints
     */
    class FollowPath: public Align

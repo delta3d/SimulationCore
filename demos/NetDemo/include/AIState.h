@@ -30,6 +30,7 @@
 #include <dtUtil/enumeration.h>
 #include <dtAI/npcstate.h>
 #include <osg/Vec3>
+#include <dtCore/transformable.h>
 
 namespace NetDemo
 {
@@ -71,6 +72,10 @@ namespace NetDemo
       //at the moment the ObjectFactory must use default constructors :(
       AIState(): BaseClass(){}
 
+      //should we have these? I can't decide!
+      //operator T&() {return mStateData;}
+      //operator const T&() const {return mStateData;}
+
       T mStateData;
    };
 
@@ -86,6 +91,20 @@ namespace NetDemo
    };
 
    typedef AIState<WaypointData> GoToWaypointState;
+
+
+   struct TargetData
+   {
+      void operator=(dtCore::Transformable& v)
+      {
+         mTarget = &v;
+      }
+
+      dtCore::RefPtr<dtCore::Transformable> mTarget;
+   };
+
+   typedef AIState<TargetData> AttackState;
+
 
 } //namespace NetDemo
 

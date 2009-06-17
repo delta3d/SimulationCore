@@ -111,12 +111,14 @@ namespace NetDemo
 
    void BaseAIHelper::SetupFunctors()
    {
+      //on spawn we will call the virtual select state to allow derivatives to choose a default state
       dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_SPAWN);
       state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &BaseAIHelper::SelectState));
    }
 
    void BaseAIHelper::SelectState(float dt)
    {
+      //by default we will go into idle
       mStateMachine.MakeCurrent(&AIStateType::AI_STATE_IDLE);
    }
 

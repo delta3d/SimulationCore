@@ -63,11 +63,11 @@ namespace NetDemo
    void AISteeringModel::Update(const Kinematic& currentState, float dt)
    {
      //apply controls to achieve kinematic goal
-     if(mSteeringBehavoir.valid())
+     if(mSteeringBehavior.valid())
      {
         mOutput.Reset();
 
-        mSteeringBehavoir->Think(dt, mGoal, currentState, mOutput);
+        mSteeringBehavior->Think(dt, mGoal, currentState, mOutput);
      }
    }
 

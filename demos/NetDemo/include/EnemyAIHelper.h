@@ -29,6 +29,11 @@
 #include <DemoExport.h>
 #include <BaseAIHelper.h>
 
+namespace dtCore
+{
+   class Transformable;
+}
+
 namespace NetDemo
 {
 
@@ -47,6 +52,8 @@ namespace NetDemo
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 
+         void SetCurrentTarget(dtCore::Transformable& target);
+
       protected:
          EnemyAIHelper(const EnemyAIHelper&);  //not implemented by design
          EnemyAIHelper& operator=(const EnemyAIHelper&);  //not implemented by design
@@ -59,7 +66,15 @@ namespace NetDemo
 
          /*virtual*/ void SelectState(float dt);
 
+         virtual void Attack(float dt);
+         virtual void CalculateNextWaypoint();
+         virtual void GoToWaypoint(float dt);
+         virtual void DefaultStateUpdate(float dt);
+
+         void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
+
       private:
+
    };
 
 } //namespace NetDemo
