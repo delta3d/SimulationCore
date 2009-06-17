@@ -51,11 +51,32 @@ namespace NetDemo
 
    }
 
+
+   void BaseAIHelper::PreSync(const dtCore::Transform& trans)
+   {
+     if(mPhysicsModel.valid())
+     {
+       Kinematic k = mPhysicsModel->GetKinematicState();
+       trans.Get(k.mTransform);
+
+       mPhysicsModel->SetKinematicState(k);
+     }
+   }
+
    void BaseAIHelper::PreSync(const Kinematic& ko)
    {
      if(mPhysicsModel.valid())
      {
        mPhysicsModel->SetKinematicState(ko);
+     }
+   }
+
+   void BaseAIHelper::PostSync(dtCore::Transform& trans) const
+   {
+     if(mPhysicsModel.valid())
+     {
+       const Kinematic& k = mPhysicsModel->GetKinematicState();
+       trans.Set(k.mTransform);
      }
    }
 
@@ -77,11 +98,7 @@ namespace NetDemo
    {
       mStateMachine.Update(dt);
      
-     //NOTE: the state machine update will call update on the current state
-     //      but the output of that state must set the kinematic goal and the appropriate 
-     //      steering behavior on the steering model
-
-     if(mSteeringModel.valid() && mPhysicsModel.valid() && mSteeringModel->GetSteeringBehavoir() != NULL)
+     if(mSteeringModel.valid() && mPhysicsModel.valid())
      {    
          mSteeringModel->Update(mPhysicsModel->GetKinematicState(), dt);
          mPhysicsModel->Update(mSteeringModel->GetOutput(), dt);
