@@ -132,8 +132,8 @@ namespace NetDemo
          VehicleTypeEnum& GetVehiclePreference() const { return *mVehiclePreference; }
 
          // Vehicle Actor ID - Property - The id of the vehicle this player is currently driving.
-         //
-         //
+         void SetAttachedVehicleID(const std::string& newValue);
+         std::string GetAttachedVehicleID() const { return mAttachedVehicleID; }
 
          // IP Address - Property
          void SetIPAddress(const std::string& newValue);
@@ -151,7 +151,7 @@ namespace NetDemo
          bool mIsServer;
          std::string mTerrainPreference;
          VehicleTypeEnum* mVehiclePreference;
-         //std::string mVehicleActorId;
+         std::string mAttachedVehicleID;
          std::string mIPAddress;
 
          bool mDirtyPlayerSettings;
@@ -173,7 +173,7 @@ namespace NetDemo
          static const dtUtil::RefString PROP_IS_SERVER;
          static const dtUtil::RefString PROP_TERRAIN_PREFERENCE;
          static const dtUtil::RefString PROP_VEHICLE_PREFERENCE;
-         static const dtUtil::RefString PROP_VEHICLE_ACTOR_ID;
+         static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID;
          static const dtUtil::RefString PROP_IP_ADDRESS;
 
          PlayerStatusActorProxy();

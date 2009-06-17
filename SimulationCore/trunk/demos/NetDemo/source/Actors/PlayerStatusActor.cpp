@@ -53,7 +53,7 @@ namespace NetDemo
       , mIsServer(false)
       , mTerrainPreference("")
       , mVehiclePreference(&VehicleTypeEnum::OBSERVER)
-      //, mVehicleActorId("")
+      , mAttachedVehicleID("")
       , mIPAddress("")
       , mDirtyPlayerSettings(false)
    {
@@ -114,7 +114,7 @@ namespace NetDemo
       propNames.push_back(PlayerStatusActorProxy::PROP_IS_SERVER);
       propNames.push_back(PlayerStatusActorProxy::PROP_TERRAIN_PREFERENCE);
       propNames.push_back(PlayerStatusActorProxy::PROP_VEHICLE_PREFERENCE);
-      //propNames.push_back(PlayerStatusActorProxy::PROP_VEHICLE_ACTOR_ID);
+      propNames.push_back(PlayerStatusActorProxy::PROP_ATTACHED_VEHICLE_ID);
       propNames.push_back(PlayerStatusActorProxy::PROP_IP_ADDRESS);
       GetGameActorProxy().PopulateActorUpdate(static_cast<dtGame::ActorUpdateMessage&>(*msg), propNames);
 
@@ -167,7 +167,13 @@ namespace NetDemo
       mVehiclePreference = &preference;
    }
 
-   // Vehicle Actor ID - Property - The id of the vehicle this player is currently driving.
+   ////////////////////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::SetAttachedVehicleID(const std::string& newValue) 
+   { 
+      mDirtyPlayerSettings = true;
+      mAttachedVehicleID = newValue; 
+   }
+
 
    ////////////////////////////////////////////////////////////////////////////////////
    void PlayerStatusActor::SetIPAddress(const std::string& newValue) 
@@ -191,7 +197,7 @@ namespace NetDemo
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IS_SERVER("Is Server");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_TERRAIN_PREFERENCE("Terrain Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_VEHICLE_PREFERENCE("Vehicle Preference");
-   const dtUtil::RefString PlayerStatusActorProxy::PROP_VEHICLE_ACTOR_ID("Vehicle Actor ID");
+   const dtUtil::RefString PlayerStatusActorProxy::PROP_ATTACHED_VEHICLE_ID("Attached Vehicle ID");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IP_ADDRESS("IP Address");
 
 
@@ -240,6 +246,12 @@ namespace NetDemo
          dtDAL::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::SetFuncType(&actor, &PlayerStatusActor::SetVehiclePreference),
          dtDAL::EnumActorProperty<PlayerStatusActor::VehicleTypeEnum>::GetFuncType(&actor, &PlayerStatusActor::GetVehiclePreference),
          PROP_VEHICLE_PREFERENCE_DESC, GROUP));
+
+      static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID_DESC("The ID of the vehicle the player is driving, if any. This property is controlled by the GameLogicComponent, do not set.");
+      AddProperty(new dtDAL::StringActorProperty(PROP_ATTACHED_VEHICLE_ID, PROP_ATTACHED_VEHICLE_ID,
+         dtDAL::StringActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetAttachedVehicleID),
+         dtDAL::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetAttachedVehicleID),
+         PROP_ATTACHED_VEHICLE_ID_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IP_ADDRESS_DESC("The IP Address for this player.");
       AddProperty(new dtDAL::StringActorProperty(PROP_IP_ADDRESS, PROP_IP_ADDRESS,

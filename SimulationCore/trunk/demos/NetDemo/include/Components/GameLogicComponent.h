@@ -43,6 +43,7 @@ namespace SimCore
    namespace Actors
    {
       class TerrainActor;
+      class BasePhysicsVehicleActorProxy;
    }
 
    namespace Components
@@ -58,6 +59,7 @@ namespace NetDemo
 {
    class PlayerStatusActor;
    class ServerGameStatusActorProxy;
+   class FortActorProxy;
 
 
    //////////////////////////////////////////////////////////////////////////////
@@ -115,6 +117,7 @@ namespace NetDemo
             const SimCore::Components::GameStateChangedMessage& stateChange);
          void LoadNewTerrain();
          void UnloadCurrentTerrain();
+         void ClearPreviousGameStuff();
 
          dtUtil::Log* mLogger;
 
@@ -125,6 +128,8 @@ namespace NetDemo
          //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
          // Each client & server has one player status that they are publishing.
          dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
+         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mPlayerOwnedVehicle;
+         dtCore::RefPtr<FortActorProxy> mServerCreatedFortActor;
 
          // This holds the terrain prototype we want to load once we enter LOADING state.
          std::string mTerrainToLoad;

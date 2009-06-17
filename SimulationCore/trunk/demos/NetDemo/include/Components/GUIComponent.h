@@ -26,7 +26,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtGame/gmcomponent.h>
-#include <GameLogicComponent.h>
+#include <Components/GameLogicComponent.h>
 
 
 

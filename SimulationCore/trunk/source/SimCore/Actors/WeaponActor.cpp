@@ -87,6 +87,7 @@ namespace SimCore
          , mFireVelocity(1000.0f)
          , mDynamicLightID(0)
       {
+         SetAutoRegisterWithMunitionsComponent(false);
       }
 
       //////////////////////////////////////////////////////////////////////////

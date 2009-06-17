@@ -37,7 +37,7 @@
 //#include <SimCore/Actors/MunitionTypeActor.h>
 //#include <SimCore/Actors/BasePhysicsVehicleActor.h>
 #include <SimCore/CollisionGroupEnum.h>
-#include <SimCore/Components/MunitionsComponent.h>
+//#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <dtPhysics/physicshelper.h>

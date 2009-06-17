@@ -13,6 +13,7 @@
 #include <osgGA/GUIEventAdapter>
 
 #include <dtGame/messagetype.h>
+#include <dtGame/actorupdatemessage.h>
 #include <dtABC/application.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/playerstartactorproxy.h>
@@ -28,7 +29,7 @@
 #include <SimCore/Utilities.h>
 
 #include <States.h>
-#include <InputComponent.h>
+#include <Components/InputComponent.h>
 // TEMP STUFF FOR VEHICLE
 #include <Actors/HoverVehicleActor.h>
 #include <Actors/HoverVehiclePhysicsHelper.h>
@@ -62,7 +63,7 @@ namespace NetDemo
          if (gap == NULL)
          {
             LOG_ERROR("Got a player entered world message, but no player was found.")
-            return;
+               return;
          }
          else if (gap->IsRemote()) // Somebody else's player.
          {
@@ -73,9 +74,12 @@ namespace NetDemo
          gap->GetActor(xformable);
          mMotionModel->SetTarget(xformable);
       }
+      else if (dtGame::MessageType::INFO_ACTOR_UPDATED == message.GetMessageType())
+      {
+         HandleActorUpdateMessage(message);
+      }
       else if (message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {
-         //SetupMaterialsAndTerrain();
       }
    }
 
@@ -92,6 +96,52 @@ namespace NetDemo
    {
       BaseClass::OnRemovedFromGM();
       mMotionModel = NULL;
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   void InputComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
+   {
+/*
+      const dtGame::ActorUpdateMessage &updateMessage =
+         static_cast<const dtGame::ActorUpdateMessage&> (msg);
+
+      // PLAYER STATUS - if it's ours, then check to see if our vehicle changed
+      if (updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE && 
+         updateMessage.GetSource() == GetGameManager()->GetMachineInfo())
+      {
+         // Find the actor in the GM
+         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         if(gap == NULL) 
+            return;
+         PlayerStatusActor *statusActor = dynamic_cast<PlayerStatusActor*>(gap->GetActor());
+         if(statusActor == NULL)  
+            return;
+
+         HandlePlayerStatusUpdated(statusActor);
+
+      }
+
+      // SERVER STATUS
+      else if (!mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE)
+      {
+         // Find the actor in the GM
+         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         if(gap == NULL)  return;
+         ServerGameStatusActor *serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
+
+         // If not the server, do a print out...
+         std::ostringstream oss;
+         oss << "Server Status Updated: [" << serverStatus->GetGameStatus().GetName() << "], Wave[" << 
+            serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" << 
+            serverStatus->GetTimeLeftInCurState() << "], EnemiesKilt[" << serverStatus->GetNumEnemiesKilled() << "].";
+         LOG_ALWAYS(oss.str());
+      }
+
+
+*/
+
+
+
    }
 
    //////////////////////////////////////////////////////////////
