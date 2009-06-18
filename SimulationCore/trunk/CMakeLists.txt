@@ -15,6 +15,10 @@ if(COMMAND cmake_policy)
    cmake_policy(SET CMP0003 NEW) 
 endif(COMMAND cmake_policy)
 
+if(COMMAND cmake_policy)
+   cmake_policy(SET CMP0005 OLD)
+endif(COMMAND cmake_policy)
+
 PROJECT(SimulationCore)
 
 variable_watch(DTQT_LIBRARY)
@@ -74,8 +78,6 @@ ENDIF(APPLE)
 IF(UNIX)
      # Some Unicies need explicit linkage to the Math library or the build fails.
     FIND_LIBRARY(MATH_LIBRARY m)
-
-    ADD_DEFINITIONS(-DSIGSLOT_PURE_ISO)
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-non-virtual-dtor")
 ENDIF (UNIX)
