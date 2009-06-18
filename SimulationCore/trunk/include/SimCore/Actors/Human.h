@@ -81,32 +81,35 @@ namespace SimCore
       class SIMCORE_EXPORT AnimationOperators
       {
          public:
-            typedef std::map<std::string, dtAI::Operator* > NameOperMap;
+            typedef std::map<dtUtil::RefString, dtAI::Operator* > NameOperMap;
 
-            static const std::string ANIM_STAND_READY;
-            static const std::string ANIM_STAND_DEPLOYED;
-            static const std::string ANIM_WALK_READY;
-            static const std::string ANIM_WALK_DEPLOYED;
-            static const std::string ANIM_LOW_WALK_READY;
-            static const std::string ANIM_LOW_WALK_DEPLOYED;
-            static const std::string ANIM_CRAWL_READY;
-            static const std::string ANIM_CRAWL_DEPLOYED;
-            static const std::string ANIM_KNEEL_READY;
-            static const std::string ANIM_KNEEL_DEPLOYED;
-            static const std::string ANIM_STAND_TO_KNEEL;
-            static const std::string ANIM_KNEEL_TO_STAND;
-            static const std::string ANIM_PRONE_READY;
-            static const std::string ANIM_PRONE_DEPLOYED;
-            static const std::string ANIM_PRONE_TO_KNEEL;
-            static const std::string ANIM_KNEEL_TO_PRONE;
-            static const std::string ANIM_SHOT_STANDING;
-            static const std::string ANIM_SHOT_KNEELING;
-            static const std::string ANIM_SHOT_PRONE;
-            static const std::string ANIM_DEAD_STANDING;
-            static const std::string ANIM_DEAD_KNEELING;
-            static const std::string ANIM_DEAD_PRONE;
-            static const std::string OPER_DEPLOYED_TO_READY;
-            static const std::string OPER_READY_TO_DEPLOYED;
+            static const dtUtil::RefString ANIM_STAND_READY;
+            static const dtUtil::RefString ANIM_STAND_DEPLOYED;
+            static const dtUtil::RefString ANIM_WALK_READY;
+            static const dtUtil::RefString ANIM_WALK_DEPLOYED;
+            static const dtUtil::RefString ANIM_LOW_WALK_READY;
+            static const dtUtil::RefString ANIM_LOW_WALK_DEPLOYED;
+            static const dtUtil::RefString ANIM_CRAWL_READY;
+            static const dtUtil::RefString ANIM_CRAWL_DEPLOYED;
+            static const dtUtil::RefString ANIM_KNEEL_READY;
+            static const dtUtil::RefString ANIM_KNEEL_DEPLOYED;
+            static const dtUtil::RefString ANIM_STAND_TO_KNEEL;
+            static const dtUtil::RefString ANIM_KNEEL_TO_STAND;
+            static const dtUtil::RefString ANIM_PRONE_READY;
+            static const dtUtil::RefString ANIM_PRONE_DEPLOYED;
+            static const dtUtil::RefString ANIM_PRONE_TO_KNEEL;
+            static const dtUtil::RefString ANIM_KNEEL_TO_PRONE;
+            static const dtUtil::RefString ANIM_SHOT_STANDING;
+            static const dtUtil::RefString ANIM_SHOT_KNEELING;
+            static const dtUtil::RefString ANIM_SHOT_PRONE;
+            static const dtUtil::RefString ANIM_DEAD_STANDING;
+            static const dtUtil::RefString ANIM_DEAD_KNEELING;
+            static const dtUtil::RefString ANIM_DEAD_PRONE;
+            static const dtUtil::RefString ANIM_STANDING_ACTION;
+            static const dtUtil::RefString ANIM_KNEELING_ACTION;
+            static const dtUtil::RefString ANIM_PRONE_ACTION;
+            static const dtUtil::RefString OPER_DEPLOYED_TO_READY;
+            static const dtUtil::RefString OPER_READY_TO_DEPLOYED;
 
             AnimationOperators(dtAI::PlannerHelper& plannerHelper, dtAnim::AnimationHelper& animHelper);
             ~AnimationOperators();
@@ -188,12 +191,24 @@ namespace SimCore
          public:
             typedef BaseEntity BaseClass;
 
-            static const std::string STATE_BASIC_STANCE;
-            static const std::string STATE_WEAPON;
-            static const std::string STATE_DEAD;
-            static const std::string STATE_MOVING;
-            static const std::string STATE_TRANSITION;
-            static const std::string STATE_SHOT;
+            /// The basic stance of the character, such as standing or kneeling
+            static const dtUtil::RefString STATE_BASIC_STANCE;
+            /// The state of the weapon such as non-existent, deployed, etc.
+            static const dtUtil::RefString STATE_WEAPON;
+            /// A flag for if the human is dead.
+            static const dtUtil::RefString STATE_DEAD;
+            /// A flag that is true if the person is in motion.
+            static const dtUtil::RefString STATE_MOVING;
+            /// A flag marking that the human is in a transition,  this makes sure it never ends in a transition.
+            static const dtUtil::RefString STATE_TRANSITION;
+            /// The number of completed actions while standing.  This counter increments every time an action should be completed.
+            static const dtUtil::RefString STATE_STANDING_ACTION_COUNT;
+            /// The number of completed actions while kneeling.  This counter increments every time an action should be completed.
+            static const dtUtil::RefString STATE_KNEELING_ACTION_COUNT;
+            /// The number of completed actions while kneeling.  This counter increments every time an action should be completed.
+            static const dtUtil::RefString STATE_PRONE_ACTION_COUNT;
+            /// flag marking that the person has been shot.  Really this means the person is dying.
+            static const dtUtil::RefString STATE_SHOT;
 
             Human(dtGame::GameActorProxy& proxy);
 
@@ -214,6 +229,7 @@ namespace SimCore
 
             /// When the state is updated, this is called internally to update the plan.
             bool GenerateNewAnimationSequence();
+
             /// Actually runs the planner update.
             void UpdatePlanAndAnimations();
             /// Checks the desired state to see if a new plan need to be generated, and if so generates it.
@@ -237,7 +253,7 @@ namespace SimCore
             double GetMaxTimePerIteration() const { return mMaxTimePerIteration; }
 
             /// @return the numeric id of the weapon mesh within the skeletal mesh.
-            std::string GetWeaponMeshName() const { return mWeaponMeshName; }
+            const std::string& GetWeaponMeshName() const { return mWeaponMeshName; }
             /// Sets the numeric id of the weapon mesh within the skeletal mesh.
             void SetWeaponMeshName(const std::string& meshName) { mWeaponMeshName = meshName; }
 
@@ -248,21 +264,33 @@ namespace SimCore
             /// @return true if this Human should be visible based on the options given.
             bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
+            unsigned GetExecutedActionCount(HumanActorProxy::StanceEnum& stance) const;
+
+            void ExecuteAction(HumanActorProxy::StanceEnum& stance = HumanActorProxy::StanceEnum::UPRIGHT_STANDING,
+                     const dtUtil::RefString& animatableName = AnimationOperators::ANIM_STANDING_ACTION);
+
          protected:
             virtual ~Human();
 
             void SetupPlannerHelper();
             float GetRemainingCost(const dtAI::WorldState* pWS) const;
             bool IsDesiredState(const dtAI::WorldState* pWS) const;
+            unsigned CheckActionState(const dtAI::WorldState* pWS, const std::string& stateName, unsigned desiredVal) const;
             void UpdateWeapon();
 
          private:
+            /// Apply the effects of the operator, and get the animatable, if any, associated with it.
+            const dtAnim::Animatable* ApplyOperatorAndGetAnimatable(const dtAI::Operator& op);
+
             std::string mSkeletalMeshFileName;
             std::string mIdleAnimatableName;
             std::string mRunWalkAnimatableName;
             std::string mWeaponMeshName;
 
+            std::string mSequenceId;
+
             dtCore::RefPtr<osg::Node> mModelNode;
+
             dtCore::RefPtr<dtAnim::AnimationHelper> mAnimationHelper;
 
             dtAI::PlannerHelper mPlannerHelper;
@@ -273,6 +301,9 @@ namespace SimCore
 
             HumanActorProxy::StanceEnum* mStance;
             HumanActorProxy::WeaponStateEnum* mPrimaryWeaponStateEnum;
+
+            typedef std::map<BasicStanceEnum*, unsigned> ExecuteActionCountMap;
+            ExecuteActionCountMap mExecutedActionCounts;
 
             float mMinRunVelocity;
             float mFullRunVelocity;
