@@ -492,14 +492,9 @@ namespace NetDemo
 
       //AttachToView(DOF_NAME_VIEW_DEFAULT.Get());
       mMotionModel->SetTarget(NULL);
-      GetStealthActor()->AttachOrDetachActor(&mVehicle->GetGameActorProxy(), 
-         mVehicle->GetUniqueId(), DOF_NAME_WEAPON_PIVOT.Get());
-      //dtCore::RefPtr<SimCore::AttachToActorMessage> msg;
-      //GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, msg);
-      //msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
-      //msg->SetAttachToActor(mVehicle->GetUniqueId());
-      //msg->SetAttachPointNodeName(DOF_NAME_WEAPON_PIVOT.Get());
-      //GetGameManager()->SendMessage(*msg.get());
+      //GetStealthActor()->AttachOrDetachActor(&mVehicle->GetGameActorProxy(), 
+      //   mVehicle->GetUniqueId(), );
+      SendAttachOrDetachMessage(mVehicle.get(), DOF_NAME_WEAPON_PIVOT.Get());
 
       ///////////////////////////////////////////
       // Setup our Motion Models
@@ -537,9 +532,8 @@ namespace NetDemo
          mRingMM->SetTarget(NULL);
          mRingMM->SetTargetDOF(NULL);
 
-         GetStealthActor()->AttachOrDetachActor(NULL, dtCore::UniqueId(""));
-         //if (GetStealthActor()->IsAttachedToActor())
-         //   GetStealthActor()->DoDetach();
+         SendAttachOrDetachMessage(NULL, "");
+
          // Re-enable our base motion model - so we have something
          mMotionModel->SetTarget(GetStealthActor());
       }
@@ -573,6 +567,19 @@ namespace NetDemo
 
          mMotionModel->SetEnabled(false);
       }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::SendAttachOrDetachMessage(
+      SimCore::Actors::BasePhysicsVehicleActor *vehicle, const std::string &dofName)
+   {
+      dtCore::RefPtr<SimCore::AttachToActorMessage> msg;
+      GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, msg);
+      msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
+      msg->SetAttachToActor((vehicle != NULL) ? mVehicle->GetUniqueId() : dtCore::UniqueId(""));
+      msg->SetAttachPointNodeName(dofName);
+      GetGameManager()->SendMessage(*msg.get());
+
    }
 }
 
