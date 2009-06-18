@@ -106,6 +106,10 @@ namespace NetDemo
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
 
+         /// Sending in a vehicle will cause an attach, sending NULL will detach
+         void SendAttachOrDetachMessage(SimCore::Actors::BasePhysicsVehicleActor *vehicle, 
+            const std::string &dofName);
+
       private:
          dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
          typedef std::vector<dtCore::RefPtr<dtPhysics::PhysicsHelper> > HelperList;
