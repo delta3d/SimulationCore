@@ -1089,7 +1089,7 @@
             </property>
             <property>
                 <name>Max Damage Amount</name>
-                <float>120</float>
+                <float>5</float>
             </property>
             <property>
                 <name>Cur Damage Ratio</name>
