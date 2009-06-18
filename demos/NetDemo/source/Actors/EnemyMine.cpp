@@ -219,6 +219,7 @@ namespace NetDemo
 
       mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
 
+      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
