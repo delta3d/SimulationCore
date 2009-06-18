@@ -139,7 +139,6 @@ namespace NetDemo
          void SetIPAddress(const std::string& newValue);
          std::string GetIPAddress() const { return mIPAddress; }
 
-
       protected:
 
 
@@ -178,6 +177,13 @@ namespace NetDemo
 
          PlayerStatusActorProxy();
          virtual void BuildPropertyMap();
+
+         /// Returns a useful reference to our actor. If no actor is created yet, this will likley crash.
+         PlayerStatusActor &GetActorAsPlayerStatus() 
+         {
+            return *(static_cast<PlayerStatusActor*>(GetActor()));
+         }
+
 
       protected:
          virtual ~PlayerStatusActorProxy();

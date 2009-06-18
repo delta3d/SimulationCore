@@ -71,6 +71,11 @@ namespace SimCore
             // Returns true if we think we are attached to something.
             bool IsAttachedToActor();
 
+            /// Direct callable version of attaching/detaching without an attach message
+            void AttachOrDetachActor(dtGame::GameActorProxy* ga, 
+               const dtCore::UniqueId &id, const std::string &attachPointNode = std::string(""), 
+               const osg::Vec3 &attachRotationHPR = osg::Vec3());
+
          protected:
 
             /// Destructor
@@ -83,9 +88,10 @@ namespace SimCore
              * @param ataMsg A pointer to the attach message.  NULL, or an empty attach id mean to detach.
              */
             void AttachOrDetachActor(const AttachToActorMessage* ataMsg = NULL);
-
-            void DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga);
             void DoDetach();
+            virtual void DoAttach(dtGame::GameActorProxy& ga, const std::string &attachPointNode, 
+               const osg::Vec3 &attachRotationHPR);
+            void DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga);
 
             /// This should be set to false in the PlayerActor subclass of this class
             bool mAttachAsThirdPerson;

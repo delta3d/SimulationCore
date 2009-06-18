@@ -91,7 +91,7 @@ namespace SimCore
             // Override CreateDamageHelper to allow this component to
             // use a TestDamageHelper.
             virtual DamageHelper* CreateDamageHelper( 
-               SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork );
+               SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork, float maxDamageAmount = 1.0f);
 
             // Override ProcessMessage to capture all messages
             virtual void ProcessMessage( const dtGame::Message& message );
@@ -124,7 +124,8 @@ namespace SimCore
       class TestDamageHelper : public DamageHelper
       {
          public:
-            TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true );
+            TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true, 
+               float maxDamage = 1.0f);
 
             // Override GetDamageProbability to prevent random numbers
             virtual float GetDamageProbability( bool directFire ) const;
@@ -234,9 +235,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper* TestMunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork )
+      DamageHelper* TestMunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, 
+         bool autoNotifyNetwork, float maxDamageAmount)
       {
-         return new TestDamageHelper( entity, autoNotifyNetwork );
+         return new TestDamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -299,8 +301,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Sub-classed DamageHelper Code
       //////////////////////////////////////////////////////////////////////////
-      TestDamageHelper::TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork )
-         : DamageHelper(entity,autoNotifyNetwork),
+      TestDamageHelper::TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork, float maxDamage )
+         : DamageHelper(entity,autoNotifyNetwork, maxDamage),
          mUsedProbability(0.0f)
       {
       }
@@ -1494,8 +1496,7 @@ namespace SimCore
          // NOTE: The component will try to load the munition table upon registration
          // and also link it to the helper created for the registered entity.
          mDamageComp->Register( *entity );
-         dtCore::RefPtr<TestDamageHelper> helper = 
-            dynamic_cast<TestDamageHelper*>
+         dtCore::RefPtr<TestDamageHelper> helper = dynamic_cast<TestDamageHelper*>
             ( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) );
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have created a valid DamageHelper",
             helper.valid() );
@@ -1503,6 +1504,9 @@ namespace SimCore
             helper->GetMunitionDamageTable() != NULL );
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have linked a valid MunitionDamageTable to the new helper",
             helper->GetMunitionDamageTable()->GetName() == munitionTableName );
+         CPPUNIT_ASSERT_MESSAGE( "Damage helper should have 1.0 damage by default.",
+            helper->GetMaxDamageAmount() == 1.0f );
+         
 
          // --- Capture the loaded tables
          dtCore::RefPtr<MunitionDamageTable> table = helper->GetMunitionDamageTable();
@@ -1742,9 +1746,11 @@ namespace SimCore
          CreateTestEntities( entities, 1, true );
          entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
          CPPUNIT_ASSERT( entity.valid() );
-         CPPUNIT_ASSERT( mDamageComp->Register( *entity ) );
+         CPPUNIT_ASSERT( mDamageComp->Register(*entity, true, 5.0f));
          CPPUNIT_ASSERT( mDamageComp->HasRegistered( entity->GetUniqueId() ) );
          CPPUNIT_ASSERT( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) != NULL );
+         CPPUNIT_ASSERT_MESSAGE("Damage Component should have gotten max damage from entity.", 
+            5.0f == mDamageComp->GetHelperByEntityId(entity->GetUniqueId())->GetMaxDamageAmount());
 
          // --- Send the RESTART message
          mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_RESTARTED, msg );

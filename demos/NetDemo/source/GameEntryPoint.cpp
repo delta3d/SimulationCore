@@ -12,10 +12,10 @@
 */
 
 #include <GameEntryPoint.h>
-#include <InputComponent.h>
-#include <GameLogicComponent.h>
+#include <Components/InputComponent.h>
+#include <Components/GameLogicComponent.h>
 #include <ConfigParameters.h>
-#include <GUIComponent.h>
+#include <Components/GUIComponent.h>
 
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>

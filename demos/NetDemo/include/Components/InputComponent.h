@@ -22,33 +22,59 @@
 #define RES_GAME_INPUT_COMPONENT
 
 #include <DemoExport.h>
-#include <dtGame/baseinputcomponent.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
 #include <dtPhysics/physicshelper.h>
 #include <SimCore/Components/BaseInputComponent.h>
 #include <Components/GameLogicComponent.h>
+#include <dtCore/observerptr.h>
+#include <osgSim/DOFTransform>
+
+//#include <SimCore/MessageType.h>
+//#include <SimCore/PlayerMotionModel.h>
+//#include <SimCore/Actors/WeaponActor.h>
+
+//namespace osgSim
+//{
+//   class DOFTransform;
+//}
+namespace SimCore
+{
+   class ClampedMotionModel;
+   class StealthMotionModel;
+   namespace Actors
+   {
+      class BasePhysicsVehicleActor;
+      class VehicleInterface;
+   }
+   namespace Comonents
+   {
+      class GameStateChangedMessage;
+   }
+}
 
 namespace NetDemo
 {
+   ////////////////////////////////////////////////////////////////////
    class NETDEMO_EXPORT InputComponent : public SimCore::Components::BaseInputComponent
    {
       public:
          typedef SimCore::Components::BaseInputComponent BaseClass;
+
+         // The common DOF names found on most vehicle models
+         static const dtUtil::RefString DOF_NAME_WEAPON_PIVOT;
+         static const dtUtil::RefString DOF_NAME_WEAPON_FIRE_POINT;
+         static const dtUtil::RefString DOF_NAME_RINGMOUNT;
+         static const dtUtil::RefString DOF_NAME_VIEW_01;
+         static const dtUtil::RefString DOF_NAME_VIEW_02;
 
          /// Constructor
          InputComponent(const std::string& name = dtGame::BaseInputComponent::DEFAULT_NAME);
 
          virtual void ProcessMessage(const dtGame::Message& message);
 
-         /**
-          *
-          */
          virtual void OnAddedToGM();
 
-         /**
-          * Called when this component is removed from the GM
-          */
          virtual void OnRemovedFromGM();
 
          /**
@@ -71,12 +97,26 @@ namespace NetDemo
          GameLogicComponent* GetAppComponent();
 
          void HandleActorUpdateMessage(const dtGame::Message& msg);
+         bool IsVehiclePivotable();
+         void DetachFromCurrentVehicle();
+
+         void AttachToVehicle(SimCore::Actors::BasePhysicsVehicleActor *vehicle);
+         void EnableMotionModels();
+
+         void HandleStateChangeMessage(
+            const SimCore::Components::GameStateChangedMessage& stateChange);
 
       private:
+         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
          typedef std::vector<dtCore::RefPtr<dtPhysics::PhysicsHelper> > HelperList;
-         dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
          HelperList mHelpers;
+         dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
+         osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
+         osg::observer_ptr<osgSim::DOFTransform> mDOFWeapon;
+         dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
+         dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
+         bool mIsInGameState;
    };
 }
 
