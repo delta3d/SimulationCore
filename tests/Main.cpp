@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -146,6 +146,10 @@ void SetupCEGUI(dtABC::Application& app)
    //dtUtil::FileUtils::GetInstance().PopDirectory();
 }
 
+#ifndef TEST_ROOT
+#define TEST_ROOT "../"
+#endif
+
 int main (int argc, char* argv[])
 {
    const std::string executable = argv[0];
@@ -177,32 +181,20 @@ int main (int argc, char* argv[])
 
    if (changeDir)
    {
-      // We need to change our directory based on the executable
-      dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);
-      if(info.fileType == dtUtil::FILE_NOT_FOUND)
+      std::string path = TEST_ROOT;
+      LOG_ALWAYS("The test root is: " + path);
+      LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + ".");
+
+      try
       {
-         LOG_ERROR(std::string("Unable to change to the directory of application \"")
-         + executable + "\": file not found.");
+         dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
       }
-      else
+      catch(const dtUtil::Exception &ex)
       {
-         std::string path = info.path;
-         LOG_ALWAYS("The path to the executable is: " + path);
-         LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
-
-         try
-         {
-            if(!info.path.empty())
-               dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
-
-            dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
-         }
-         catch(const dtUtil::Exception &ex)
-         {
-            ex.LogException(dtUtil::Log::LOG_ERROR);
-         }
+         ex.LogException(dtUtil::Log::LOG_ERROR);
       }
    }
+
    dtAudio::AudioManager::Instantiate();
    dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 

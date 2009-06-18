@@ -59,7 +59,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void PlayerActorProxy::BuildInvokables()
       {
-         PlayerActor &pa = static_cast<PlayerActor&>(GetGameActor());
+         PlayerActor& pa = static_cast<PlayerActor&>(GetGameActor());
 
          StealthActorProxy::BuildInvokables();
 
@@ -101,7 +101,7 @@ namespace SimCore
          if (!SimCore::MessageType::IsValidToolType(msg.GetMessageType()))
             SetEnabledTool(SimCore::MessageType::NO_TOOL);
 
-         dtGame::MessageType &type = const_cast<dtGame::MessageType&>(msg.GetMessageType());
+         dtGame::MessageType& type = const_cast<dtGame::MessageType&>(msg.GetMessageType());
 
          const SimCore::ToolMessage& tm = dynamic_cast<const SimCore::ToolMessage&>(msg);
 

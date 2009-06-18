@@ -10,6 +10,8 @@ ENDIF (BUILD_HLA)
 
 INCLUDE_DIRECTORIES(include) 
 
+ADD_DEFINITIONS(-DTEST_ROOT='"${CMAKE_SOURCE_DIR}"')
+
 file(GLOB TEMP_SOURCES "*.cpp" "*.h" "include/*.h")
 SET(ALL_SOURCES ${TEMP_SOURCES})
 
@@ -61,14 +63,14 @@ IF (AUTO_RUN_TESTS)
   IF (MSVC)
     ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
-                          COMMAND $(TargetPath) -nochdir
-                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                          COMMAND $(TargetPath)
+                          #WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                           COMMENT "Run the unit tests")  
   ELSE (MSVC)
      ADD_CUSTOM_COMMAND(TARGET ${PROG_NAME}
                           POST_BUILD
-                          COMMAND ${CMAKE_BINARY_DIR}/bin/allTests -nochdir
-                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                          COMMAND ${CMAKE_BINARY_DIR}/bin/allTests
+                          #WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                           COMMENT Run the unit tests)
   ENDIF (MSVC)
 ENDIF (AUTO_RUN_TESTS)
