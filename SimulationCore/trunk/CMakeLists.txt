@@ -17,6 +17,8 @@ endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
 
+variable_watch(DTQT_LIBRARY)
+
 ################################################################################
 # User Options
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
