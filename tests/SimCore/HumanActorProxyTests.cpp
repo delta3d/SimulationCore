@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -69,7 +69,7 @@ using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
 
-class HumanActorProxyTests : public CPPUNIT_NS::TestFixture 
+class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HumanActorProxyTests);
 
@@ -100,7 +100,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          dtCore::System::GetInstance().Start();
          mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
          mGM->AddComponent(*new dtGame::DeadReckoningComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
-         
+
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::HUMAN_ACTOR_TYPE, mHumanAP);
       }
 
@@ -158,10 +158,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY.Get(), (*iter)->GetName());
       }
 
       void TestPlanDeployedToReady()
@@ -175,22 +175,22 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
                2U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestPlanStandingToKneelingDeployed()
@@ -204,7 +204,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
@@ -216,10 +216,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestPlanStandingToCrouchingNoWeaponMoving()
@@ -251,10 +251,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestCrouchingNoWeaponMovingToCrawlingReady()
@@ -287,16 +287,16 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_PRONE, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_PRONE.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_CRAWL_READY, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_CRAWL_READY.Get(), (*iter)->GetName());
       }
 
       void TestPlanShotStanding()
@@ -319,7 +319,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
                   SimCore::Actors::AnimationOperators::ANIM_SHOT_STANDING,
                   SimCore::Actors::AnimationOperators::ANIM_DEAD_STANDING);
       }
-      
+
       void TestPlanShotKneeling()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING,
@@ -347,7 +347,7 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
                   SimCore::Actors::AnimationOperators::ANIM_SHOT_PRONE,
                   SimCore::Actors::AnimationOperators::ANIM_DEAD_PRONE);
       }
-      
+
       void TestPlanShotCrawling()
       {
          TestPlanShot(SimCore::Actors::HumanActorProxy::StanceEnum::CRAWLING,
@@ -363,11 +363,11 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
          human->SetVelocityVector(osg::Vec3(0.0f,1.0f,0.0f));
-         
+
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
@@ -376,22 +376,22 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
                4U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
       }
 
       void TestStartup()
@@ -402,23 +402,23 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
-         
+
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
          human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
 
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
                1U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED, (*iter)->GetName());
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
       }
    private:
 
@@ -434,17 +434,17 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-         
+
          human->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED);
-         
+
          bool shouldBeTrue = human->GenerateNewAnimationSequence();
          CPPUNIT_ASSERT(shouldBeTrue);
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
-         
+
          std::ostringstream opListText;
-         
+
          opListText << "The plan: " << std::endl;
-         
+
          dtAI::Planner::OperatorList::const_iterator i, end;
          i = result.begin();
          end = result.end();
@@ -453,10 +453,10 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
             opListText << "   ";
             opListText << (*i)->GetName() << std::endl;
          }
-         
+
          CPPUNIT_ASSERT_EQUAL_MESSAGE(opListText.str(),
                2U, unsigned(result.size()));
-         
+
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
          CPPUNIT_ASSERT_EQUAL(expectedShotAnim, (*iter)->GetName());

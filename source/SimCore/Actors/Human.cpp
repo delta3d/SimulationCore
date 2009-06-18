@@ -376,31 +376,31 @@ namespace SimCore
             ("The skeletal mesh file that defines the human's look and animation set.");
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SKELETAL_MESH,
                PROPERTY_SKELETAL_MESH, PROPERTY_SKELETAL_MESH,
-               dtDAL::MakeFunctor(human, &Human::SetSkeletalMeshFile),
+               dtDAL::ResourceActorProperty::SetFuncType(&human, &Human::SetSkeletalMeshFile),
                PROPERTY_SKELETAL_MESH_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_STANCE_DESC
             ("The stance of the human.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>(
                PROPERTY_STANCE, PROPERTY_STANCE,
-               dtDAL::MakeFunctor(human, &Human::SetStance),
-               dtDAL::MakeFunctorRet(human, &Human::GetStance),
+               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::SetFuncType(&human, &Human::SetStance),
+               dtDAL::EnumActorProperty<HumanActorProxy::StanceEnum>::GetFuncType(&human, &Human::GetStance),
                PROPERTY_STANCE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_PRIMARY_WEAPON_STATE_DESC
             ("The state/availability of the primary weapon.");
          AddProperty(new dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>(
                PROPERTY_PRIMARY_WEAPON_STATE, PROPERTY_PRIMARY_WEAPON_STATE,
-               dtDAL::MakeFunctor(human, &Human::SetPrimaryWeaponState),
-               dtDAL::MakeFunctorRet(human, &Human::GetPrimaryWeaponState),
+               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::SetFuncType(&human, &Human::SetPrimaryWeaponState),
+               dtDAL::EnumActorProperty<HumanActorProxy::WeaponStateEnum>::GetFuncType(&human, &Human::GetPrimaryWeaponState),
                PROPERTY_PRIMARY_WEAPON_STATE_DESC, HUMAN_GROUP));
 
          static const dtUtil::RefString PROPERTY_WEAPON_MESH_DESC
             ("The name of the mesh in the skeletal mesh that refers to the weapon");
          AddProperty(new dtDAL::StringActorProperty(
                PROPERTY_WEAPON_MESH, PROPERTY_WEAPON_MESH,
-               dtDAL::MakeFunctor(human, &Human::SetWeaponMeshName),
-               dtDAL::MakeFunctorRet(human, &Human::GetWeaponMeshName),
+               dtDAL::StringActorProperty::SetFuncType(&human, &Human::SetWeaponMeshName),
+               dtDAL::StringActorProperty::GetFuncType(&human, &Human::GetWeaponMeshName),
                PROPERTY_WEAPON_MESH_DESC, HUMAN_GROUP));
 
 //         static const dtUtil::RefString PROPERTY_MIN_RUN_VELOCITY_DESC
@@ -437,12 +437,15 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////    Human                ///////////////////////////
       ////////////////////////////////////////////////////////////////////////////
-      const std::string Human::STATE_BASIC_STANCE("BasicStanceState");
-      const std::string Human::STATE_WEAPON("WeaponState");
-      const std::string Human::STATE_DEAD("DeadState");
-      const std::string Human::STATE_MOVING("MovingState");
-      const std::string Human::STATE_TRANSITION("TranstionState");
-      const std::string Human::STATE_SHOT("ShotState");
+      const dtUtil::RefString Human::STATE_BASIC_STANCE("BasicStanceState");
+      const dtUtil::RefString Human::STATE_WEAPON("WeaponState");
+      const dtUtil::RefString Human::STATE_DEAD("DeadState");
+      const dtUtil::RefString Human::STATE_MOVING("MovingState");
+      const dtUtil::RefString Human::STATE_TRANSITION("TranstionState");
+      const dtUtil::RefString Human::STATE_STANDING_ACTION_COUNT("StandingActionCountState");
+      const dtUtil::RefString Human::STATE_KNEELING_ACTION_COUNT("KneelingActionCountState");
+      const dtUtil::RefString Human::STATE_PRONE_ACTION_COUNT("ProneActionCountState");
+      const dtUtil::RefString Human::STATE_SHOT("ShotState");
 
       ////////////////////////////////////////////////////////////////////////////
       Human::Human(dtGame::GameActorProxy& proxy)
@@ -456,10 +459,17 @@ namespace SimCore
          , mAnimOperators(mPlannerHelper, *mAnimationHelper)
          , mStance(&HumanActorProxy::StanceEnum::UPRIGHT_STANDING)
          , mPrimaryWeaponStateEnum(&HumanActorProxy::WeaponStateEnum::DEPLOYED)
+         , mMinRunVelocity(0.0f)
+         , mFullRunVelocity(0.0f)
          , mLogger(dtUtil::Log::GetInstance("Human.cpp"))
          , mMaxTimePerIteration(0.5)
       {
          SetName("Human");
+         std::vector<BasicStanceEnum*> basicStances = BasicStanceEnum::EnumerateType();
+         for (unsigned i = 0; i < basicStances.size(); ++i)
+         {
+            mExecutedActionCounts.insert(std::make_pair(basicStances[i], 0U));
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -475,18 +485,21 @@ namespace SimCore
          BasicStanceState* stanceState = new BasicStanceState();
          stanceState->SetStance(BasicStanceEnum::STANDING);
 
-         initialState.AddState(STATE_BASIC_STANCE, stanceState);
+         initialState.AddState(STATE_BASIC_STANCE,         stanceState);
 
          WeaponState* weaponState = new WeaponState();
          weaponState->SetWeaponStateEnum(HumanActorProxy::WeaponStateEnum::DEPLOYED);
-         initialState.AddState(STATE_WEAPON,       weaponState);
+         initialState.AddState(STATE_WEAPON,                weaponState);
 
-         initialState.AddState(STATE_DEAD,         new dtAI::StateVariable(false));
+         initialState.AddState(STATE_DEAD,                  new dtAI::StateVariable(false));
 
-         initialState.AddState(STATE_MOVING,       new dtAI::StateVariable(false));
+         initialState.AddState(STATE_MOVING,                new dtAI::StateVariable(false));
          //Setting transition to true will make the planner generate the correct initial animation.
-         initialState.AddState(STATE_TRANSITION,   new dtAI::StateVariable(true));
-         initialState.AddState(STATE_SHOT,         new dtAI::StateVariable(false));
+         initialState.AddState(STATE_TRANSITION,            new dtAI::StateVariable(true));
+         initialState.AddState(STATE_STANDING_ACTION_COUNT, new dtAI::StateVar<unsigned>(0U));
+         initialState.AddState(STATE_KNEELING_ACTION_COUNT, new dtAI::StateVar<unsigned>(0U));
+         initialState.AddState(STATE_PRONE_ACTION_COUNT,    new dtAI::StateVar<unsigned>(0U));
+         initialState.AddState(STATE_SHOT,                  new dtAI::StateVariable(false));
 
          mPlannerHelper.SetCurrentState(initialState);
       }
@@ -697,7 +710,30 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       float Human::GetRemainingCost(const dtAI::WorldState* pWS) const
       {
-         return 1.0f;
+         float value = 1.0f;
+         value += float(CheckActionState(pWS, STATE_STANDING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::STANDING)->second));
+         value += float(CheckActionState(pWS, STATE_KNEELING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::KNEELING)->second));
+         value += float(CheckActionState(pWS, STATE_PRONE_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::PRONE)->second));
+
+         return value;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      unsigned Human::CheckActionState(const dtAI::WorldState* pWS, const std::string& stateName, unsigned desiredVal) const
+      {
+         const dtAI::StateVar<unsigned>* actionState = NULL;
+         pWS->GetState(stateName, actionState);
+         if (actionState == NULL)
+         {
+            return 0U;
+         }
+
+         if (desiredVal < actionState->Get())
+         {
+            return 0U;
+         }
+
+         return desiredVal - actionState->Get();
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -744,9 +780,13 @@ namespace SimCore
          if (movingState->Get() != !dtUtil::Equivalent(GetVelocityVector().length2(), 0.0f))
             return false;
 
-         // we don't care about shot.
-         //const dtAI::StateVariable* shotState;
-         //pWS->GetState(STATE_SHOT, shotState);
+         bool actionStateResult =
+            0U == CheckActionState(pWS, STATE_STANDING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::STANDING)->second) &&
+            0U == CheckActionState(pWS, STATE_KNEELING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::KNEELING)->second) &&
+            0U == CheckActionState(pWS, STATE_PRONE_ACTION_COUNT,    mExecutedActionCounts.find(&BasicStanceEnum::PRONE)->second);
+
+         if (!actionStateResult)
+            { return false; }
 
          return true;
       }
@@ -807,12 +847,19 @@ namespace SimCore
             dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
             dtCore::RefPtr<dtAnim::AnimationSequence> generatedSequence = new dtAnim::AnimationSequence();
 
-            static int count = 0;
-            std::ostringstream ss;
-            //nasty hack to make sure the sequence names don't match.
-            ss << "sequence " << count;
-            ++count;
-            generatedSequence->SetName(ss.str());
+            if (mSequenceId.empty())
+            {
+               mSequenceId = "seq:0";
+            }
+            else
+            {
+               // rather than do an int to string, just change the last character so it does'0'-'9'.
+               // this will require much less overhead, and won't ever require allocating
+               // and deallocating string memory.
+               mSequenceId[4] = (((mSequenceId[4] - '0') + 1) % 10) + '0';
+            }
+
+            generatedSequence->SetName(mSequenceId);
 
             if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
             {
@@ -844,11 +891,8 @@ namespace SimCore
                      }
                   }
 
-                  const dtAI::Operator* op = *i;
+                  const dtAnim::Animatable* animatable = ApplyOperatorAndGetAnimatable(**i);
 
-                  op->Apply(mPlannerHelper.GetCurrentState());
-
-                  const dtAnim::Animatable* animatable = seqMixer.GetRegisteredAnimation(op->GetName());
                   if (animatable != NULL)
                   {
                      if (mLogger.IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
@@ -879,6 +923,14 @@ namespace SimCore
             mAnimationHelper->ClearAll(blendTime);
             mAnimationHelper->PlayAnimation(AnimationOperators::ANIM_WALK_DEPLOYED);
          }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool Human::ShouldBeVisible(const SimCore::VisibilityOptions& options)
+      {
+         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
+         bool baseVal = BaseClass::ShouldBeVisible(options);
+         return baseVal && basicOptions.mDismountedInfantry;
       }
 
       ////////////////////////////////////////////////////////////////////////////
@@ -965,7 +1017,7 @@ namespace SimCore
          public:
             typedef typename StateVarType::EnumValueType StateVarEnumType;
 
-            EnumerationConditional(const std::string& pName, StateVarEnumType& pData): mName(pName), mData(pData) {}
+            EnumerationConditional(const dtUtil::RefString& pName, StateVarEnumType& pData): mName(pName), mData(pData) {}
             ~EnumerationConditional() {}
 
             /*virtual*/ const std::string& GetName() const
@@ -985,7 +1037,7 @@ namespace SimCore
             }
 
          private:
-            std::string mName;
+            dtUtil::RefString mName;
             StateVarEnumType& mData;
       };
 
@@ -995,7 +1047,40 @@ namespace SimCore
       public:
          typedef typename StateVarType::EnumValueType StateVarEnumType;
 
-         EnumeratedEffect(const std::string& pName, StateVarEnumType& pData): mName(pName), mData(pData){}
+         EnumeratedEffect(const dtUtil::RefString& pName, StateVarEnumType& pData): mName(pName), mData(pData){}
+
+         const std::string& GetName() const
+         {
+            return mName;
+         }
+
+         bool Apply(const dtAI::Operator*, dtAI::WorldState* pWSIn) const
+         {
+            StateVarType* pStateVar;
+            pWSIn->GetState(mName, pStateVar);
+            if (pStateVar != NULL)
+            {
+               pStateVar->SetValue(mData);
+            }
+            return true;
+         }
+
+      protected:
+         ~EnumeratedEffect(){}
+
+      private:
+         const dtUtil::RefString mName;
+         StateVarEnumType& mData;
+      };
+
+      /**
+       * Increments a numeric state variable.
+       */
+      template <typename StateVarType>
+      class IncrementEffect: public dtAI::IEffect
+      {
+      public:
+         IncrementEffect(const dtUtil::RefString& pName): mName(pName){}
 
          const std::string& GetName() const
          {
@@ -1008,17 +1093,16 @@ namespace SimCore
             pWSIn->GetState(mName, pStateVar);
             if(pStateVar != NULL)
             {
-               pStateVar->SetValue(mData);
+               pStateVar->Set(pStateVar->Get() + 1);
             }
             return true;
          }
 
       protected:
-         ~EnumeratedEffect(){}
+         ~IncrementEffect(){}
 
       private:
-         std::string mName;
-         StateVarEnumType& mData;
+         const dtUtil::RefString mName;
       };
 
       class HumanOperator: public dtAI::Operator
@@ -1033,24 +1117,45 @@ namespace SimCore
             typedef EnumeratedEffect<BasicStanceState> BasicStanceEnumEffect;
             typedef EnumeratedEffect<WeaponState> WeaponStateEnumEffect;
 
+            typedef IncrementEffect<dtAI::StateVar<unsigned> > UnsignedIntIncrementEffect;
+
          public:
-            HumanOperator(const std::string& pName)
+            HumanOperator(const dtUtil::RefString& pName)
             : Operator(pName, Operator::ApplyOperatorFunctor(this, &HumanOperator::Apply))
             , mCost(1.0f)
             {}
 
-            void SetCost(float pcost){mCost = pcost;}
+            void SetCost(float pcost) { mCost = pcost; }
 
-            void AddEffect(EffectType* pEffect){mEffects.push_back(pEffect);}
+            void AddEffect(EffectType* pEffect) { mEffects.push_back(pEffect); }
+
+            void EnqueueReplacementAnim(const dtUtil::RefString& animName) const
+            {
+               mReplacementQueue.push_back(animName);
+            }
+
+            bool GetNextReplacementAnim(dtUtil::RefString& animName, bool dequeue = true) const
+            {
+               if (mReplacementQueue.empty())
+               {
+                  return false;
+               }
+
+               animName = mReplacementQueue.front();
+               if (dequeue)
+               {
+                  mReplacementQueue.pop_front();
+               }
+               return true;
+            }
 
             bool Apply(const dtAI::Operator* oper, dtAI::WorldState* pWSIn) const
             {
                EffectList::const_iterator iter = mEffects.begin();
                EffectList::const_iterator endOfList = mEffects.end();
-               while(iter != endOfList)
+               for (;iter != endOfList; ++iter)
                {
                   (*iter)->Apply(oper, pWSIn);
-                  ++iter;
                }
 
                pWSIn->AddCost(mCost);
@@ -1061,45 +1166,115 @@ namespace SimCore
 
             float mCost;
             EffectList mEffects;
-
+            mutable std::deque<dtUtil::RefString> mReplacementQueue;
       };
 
       ////////////////////////////////////////////////////////////////////////////
+      const dtAnim::Animatable* Human::ApplyOperatorAndGetAnimatable(const dtAI::Operator& op)
+      {
+         dtAnim::SequenceMixer& seqMixer = mAnimationHelper->GetSequenceMixer();
+         op.Apply(mPlannerHelper.GetCurrentState());
+
+         const dtAnim::Animatable* animatable = NULL;
+
+         const HumanOperator* hOp = dynamic_cast<const HumanOperator*>(&op);
+         dtUtil::RefString nextReplacementAnim;
+         if (hOp != NULL && hOp->GetNextReplacementAnim(nextReplacementAnim))
+         {
+            animatable = seqMixer.GetRegisteredAnimation(nextReplacementAnim);
+         }
+         else
+         {
+            animatable = seqMixer.GetRegisteredAnimation(op.GetName());
+         }
+
+         return animatable;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      unsigned Human::GetExecutedActionCount(HumanActorProxy::StanceEnum& stance) const
+      {
+         BasicStanceEnum& basicStance = stance.GetAssocBasicStanceEnum();
+         return mExecutedActionCounts.find(&basicStance)->second;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Human::ExecuteAction(HumanActorProxy::StanceEnum& stance, const dtUtil::RefString& animatableName)
+      {
+         BasicStanceEnum& basicStance = stance.GetAssocBasicStanceEnum();
+         mExecutedActionCounts[&basicStance]++;
+
+         dtUtil::RefString actionOpName;
+
+         if (basicStance == BasicStanceEnum::STANDING)
+         {
+            actionOpName = AnimationOperators::ANIM_STANDING_ACTION;
+         }
+         else if (basicStance == BasicStanceEnum::KNEELING)
+         {
+            actionOpName = AnimationOperators::ANIM_KNEELING_ACTION;
+         }
+         else if (basicStance == BasicStanceEnum::PRONE)
+         {
+            actionOpName = AnimationOperators::ANIM_PRONE_ACTION;
+         }
+
+         if (animatableName != actionOpName)
+         {
+            const HumanOperator* hOp = NULL;
+            hOp = dynamic_cast<const HumanOperator*>(mPlannerHelper.GetOperator(actionOpName));
+            if (hOp != NULL)
+            {
+               hOp->EnqueueReplacementAnim(animatableName);
+            }
+         }
+         if (!IsRemote())
+         {
+            //TODO send action message.
+         }
+      }
+
       ////////////////////////////////////////////////////////////////////////////
-      const std::string AnimationOperators::ANIM_STAND_READY("Stand Ready");
-      const std::string AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
-      const std::string AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
-      const std::string AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
+      ////////////////////////////////////////////////////////////////////////////
+      const dtUtil::RefString AnimationOperators::ANIM_STAND_READY("Stand Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_STAND_DEPLOYED("Stand Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_WALK_READY("Walk Run Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_WALK_DEPLOYED("Walk Run Deployed");
 
-      const std::string AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
-      const std::string AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_READY("Kneel Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_DEPLOYED("Kneel Deployed");
 
-      const std::string AnimationOperators::ANIM_LOW_WALK_READY("Low Walk Ready");
-      const std::string AnimationOperators::ANIM_LOW_WALK_DEPLOYED("Low Walk Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_READY("Low Walk Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_LOW_WALK_DEPLOYED("Low Walk Deployed");
 
-      const std::string AnimationOperators::ANIM_CRAWL_READY("Crawl Ready");
-      const std::string AnimationOperators::ANIM_CRAWL_DEPLOYED("Crawl Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_READY("Crawl Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_CRAWL_DEPLOYED("Crawl Deployed");
 
-      const std::string AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
-      const std::string AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
+      const dtUtil::RefString AnimationOperators::ANIM_STAND_TO_KNEEL("Stand To Kneel");
+      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_TO_STAND("Kneel To Stand");
 
-      const std::string AnimationOperators::ANIM_PRONE_READY("Prone Ready");
-      const std::string AnimationOperators::ANIM_PRONE_DEPLOYED("Prone Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_PRONE_READY("Prone Ready");
+      const dtUtil::RefString AnimationOperators::ANIM_PRONE_DEPLOYED("Prone Deployed");
 
-      const std::string AnimationOperators::ANIM_PRONE_TO_KNEEL("Prone To Kneel");
-      const std::string AnimationOperators::ANIM_KNEEL_TO_PRONE("Kneel To Prone");
+      const dtUtil::RefString AnimationOperators::ANIM_PRONE_TO_KNEEL("Prone To Kneel");
+      const dtUtil::RefString AnimationOperators::ANIM_KNEEL_TO_PRONE("Kneel To Prone");
 
-      const std::string AnimationOperators::ANIM_SHOT_STANDING("Shot Standing");
-      const std::string AnimationOperators::ANIM_SHOT_KNEELING("Shot Kneeling");
-      const std::string AnimationOperators::ANIM_SHOT_PRONE("Shot Prone");
+      const dtUtil::RefString AnimationOperators::ANIM_SHOT_STANDING("Shot Standing");
+      const dtUtil::RefString AnimationOperators::ANIM_SHOT_KNEELING("Shot Kneeling");
+      const dtUtil::RefString AnimationOperators::ANIM_SHOT_PRONE("Shot Prone");
 
-      const std::string AnimationOperators::ANIM_DEAD_STANDING("Dead Standing");
-      const std::string AnimationOperators::ANIM_DEAD_KNEELING("Dead Kneeling");
-      const std::string AnimationOperators::ANIM_DEAD_PRONE("Dead Prone");
+      const dtUtil::RefString AnimationOperators::ANIM_DEAD_STANDING("Dead Standing");
+      const dtUtil::RefString AnimationOperators::ANIM_DEAD_KNEELING("Dead Kneeling");
+      const dtUtil::RefString AnimationOperators::ANIM_DEAD_PRONE("Dead Prone");
 
-      const std::string AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");
-      const std::string AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
+      const dtUtil::RefString AnimationOperators::ANIM_STANDING_ACTION("Standing Action");
+      const dtUtil::RefString AnimationOperators::ANIM_KNEELING_ACTION("Kneeling Action");
+      const dtUtil::RefString AnimationOperators::ANIM_PRONE_ACTION("Prone Action");
 
+      const dtUtil::RefString AnimationOperators::OPER_DEPLOYED_TO_READY("Deployed To Ready");
+      const dtUtil::RefString AnimationOperators::OPER_READY_TO_DEPLOYED("Ready To Deployed");
+
+      ////////////////////////////////////////////////////////////////////////////
       AnimationOperators::AnimationOperators(dtAI::PlannerHelper& plannerHelper,
             dtAnim::AnimationHelper& animHelper):
          mPlannerHelper(plannerHelper), mAnimHelper(&animHelper)
@@ -1181,6 +1356,12 @@ namespace SimCore
          dtCore::RefPtr<HumanOperator::WeaponStateEnumEffect> deployedEff
             = new HumanOperator::WeaponStateEnumEffect(Human::STATE_WEAPON, HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
+         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+            incrementStandingActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_STANDING_ACTION_COUNT);
+         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+            incrementKneelingActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_KNEELING_ACTION_COUNT);
+         dtCore::RefPtr<HumanOperator::UnsignedIntIncrementEffect >
+            incrementProneActionCount = new HumanOperator::UnsignedIntIncrementEffect(Human::STATE_PRONE_ACTION_COUNT);
 
          dtCore::RefPtr<dtAI::Effect>
             movingEff = new dtAI::Effect(Human::STATE_MOVING, true);
@@ -1371,14 +1552,28 @@ namespace SimCore
          newOp->AddPreCondition(isShot.get());
          newOp->AddEffect(deadEff.get());
          newOp->AddEffect(notTransitionEff.get());
+
+         newOp = AddOperator(ANIM_STANDING_ACTION);
+         newOp->AddPreCondition(standing.get());
+         newOp->AddPreCondition(deployed.get());
+         newOp->AddPreCondition(notMoving.get());
+         newOp->AddEffect(incrementStandingActionCount.get());
+         newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_KNEELING_ACTION);
+         newOp->AddPreCondition(kneeling.get());
+         newOp->AddPreCondition(deployed.get());
+         newOp->AddPreCondition(notMoving.get());
+         newOp->AddEffect(incrementKneelingActionCount.get());
+         newOp->AddEffect(transitionEff.get());
+
+         newOp = AddOperator(ANIM_PRONE_ACTION);
+         newOp->AddPreCondition(prone.get());
+         newOp->AddPreCondition(deployed.get());
+         newOp->AddPreCondition(notMoving.get());
+         newOp->AddEffect(incrementProneActionCount.get());
+         newOp->AddEffect(transitionEff.get());
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool Human::ShouldBeVisible(const SimCore::VisibilityOptions& options)
-      {
-         const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
-         bool baseVal = BaseClass::ShouldBeVisible(options);
-         return baseVal && basicOptions.mDismountedInfantry;
-      }
    }
 }
