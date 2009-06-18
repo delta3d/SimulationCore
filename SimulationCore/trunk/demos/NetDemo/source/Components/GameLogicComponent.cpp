@@ -434,7 +434,7 @@ namespace NetDemo
       DisconnectFromNetwork();
 
       // Probably not necessary (since close map deletes all), but clear out stuff we already created
-      ClearPreviousGameStuff();
+      //ClearPreviousGameStuff();
       mPlayerStatus = NULL;
       mCurrentTerrainDrawActor = NULL;
 

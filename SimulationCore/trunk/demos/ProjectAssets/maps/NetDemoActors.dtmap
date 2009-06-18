@@ -124,7 +124,7 @@
                 </vec3>
             </property>
         </actor>
-        <actor>
+	<!--        <actor>
             <type>Stealth Actor.Stealth Actor</type>
             <id>B29EFE15-8F9D-4149-A9DA-19F62117E919</id>
             <name>Physical</name>
@@ -426,7 +426,8 @@
                     <value3>1.500000</value3>
                 </vec3>
             </property>
-        </actor>
+    </actor>
+    -->
         <actor>
             <type>IG.Environment.Environment</type>
             <id>B537EC6C-F2A7-41D8-9194-E7EC37249DEB</id>

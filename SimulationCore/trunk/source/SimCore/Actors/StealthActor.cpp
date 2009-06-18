@@ -151,16 +151,17 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga)
+      void StealthActor::DoAttach(dtGame::GameActorProxy& ga, const std::string &attachPointNode, 
+         const osg::Vec3 &attachRotationHPR)
       {
-         dtCore::UniqueId id = ataMsg.GetAttachToActor();
+         dtCore::UniqueId id = ga.GetId();
 
          GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, id, "Detach");
          GetGameActorProxy().RegisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, id, "UpdateFromParent");
 
          dtCore::Transform xform;
          xform.MakeIdentity();
-         xform.SetRotation(ataMsg.GetInitialAttachRotationHPR());
+         xform.SetRotation(attachRotationHPR);
 
          BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetActor());
          if (entity != NULL)
@@ -193,11 +194,11 @@ namespace SimCore
               Emancipate();
             }
 
-            foundNode = igActor->AddChild(this, ataMsg.GetAttachPointNodeName());
+            foundNode = igActor->AddChild(this, attachPointNode);
          }
 
          // Only set an offset if there is no attach node.
-         if (ataMsg.GetAttachPointNodeName().empty() || !foundNode)
+         if (attachPointNode.empty() || !foundNode)
          {
             //Set the translation first to be the same as the parent.
             //Make an identity transform and move it up a bit.
@@ -207,18 +208,27 @@ namespace SimCore
 
          SetTransform(xform, REL_CS);
       }
+
       //////////////////////////////////////////////////////////////////////////////
       void StealthActor::AttachOrDetachActor(const AttachToActorMessage* ataMsg)
       {
-         dtGame::GameActorProxy* ga = NULL;
-         dtCore::UniqueId id("");
-
          if (ataMsg != NULL)
          {
-            id = ataMsg->GetAttachToActor();
-            ga = GetGameActorProxy().GetGameManager()->FindGameActorById(id);
+            AttachOrDetachActor(GetGameActorProxy().GetGameManager()->FindGameActorById(ataMsg->GetAttachToActor()),
+               ataMsg->GetAttachToActor(), ataMsg->GetAttachPointNodeName(), 
+               ataMsg->GetInitialAttachRotationHPR());
+         }
+         else
+         {
+            AttachOrDetachActor(NULL, dtCore::UniqueId(""));
          }
 
+      }
+
+      //////////////////////////////////////////////////////////////////////////////
+      void StealthActor::AttachOrDetachActor(dtGame::GameActorProxy* ga, const dtCore::UniqueId &id, 
+         const std::string &attachPointNode, const osg::Vec3 &attachRotationHPR)
+      {
          dtCore::Transform originalTransform;
          GetTransform(originalTransform, dtCore::Transformable::ABS_CS);
 
@@ -241,7 +251,8 @@ namespace SimCore
             }
             else
             {
-               DoAttach(*ataMsg, *ga);
+               //DoAttach(*ataMsg, *ga);
+               DoAttach(*ga, attachPointNode, attachRotationHPR); 
             }
          }
          else if (id.ToString().empty())
