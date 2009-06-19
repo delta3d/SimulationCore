@@ -1172,11 +1172,21 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::RespondToHit(const DetonationMessage& message,
-         const SimCore::Actors::MunitionTypeActor& munition)
+         const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+         const osg::Vec3& location)
       {
          // An opportunity to respond to damage. Only called on local entities that have been
-         // damaged by a munition hit of some sort. Damage & forces have already been
-         // applied by the time this method is called.
+         // damaged by a munition hit of some sort. Damage has already been
+         // applied and published by the time this method is called. We still need to 
+         // apply physics forces though in case it's a physically modeled entity.
+
+         // check mCurDamageRatio if you need to know how damaged you are.
+
+         if (force.length2() > 0.0f)
+         {
+            // Apply an instantaneous impulse force to the entity
+            ApplyForce(force, location, true); 
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

@@ -117,14 +117,9 @@ namespace SimCore
 
             /**
              * Handle forces received from the environment, such as detonations and impacts
-             * Future - use the location as the source of the force impulse
              */
-            virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location);
-
-            /**
-             * Handle forces received from the environment, such as detonations and impacts
-             */
-            virtual void ApplyForce(const osg::Vec3& force);
+            virtual void ApplyForce(const osg::Vec3& force, 
+               const osg::Vec3& location = osg::Vec3(0.0f, 0.0f, 0.0f), bool isImpulse = false);
 
             /// Overridden so that it will flag the actor as being transformed when you set the position.
             virtual void SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);

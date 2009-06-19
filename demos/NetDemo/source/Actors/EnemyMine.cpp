@@ -224,10 +224,11 @@ namespace NetDemo
 
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMineActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition)
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+      const osg::Vec3& location)
    {
-      // The target was hit by a munition. We've already taken damage and had forces applied
-      // If we aren't about to die, then we can do stuff here... .
+      // the base class applies an impulse
+      BaseClass::RespondToHit(message, munition, force, location);
 
       //this lets the AI respond to being hit
       mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);

@@ -62,7 +62,7 @@ namespace NetDemo
    // made into properties on the actor.
    static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
-   static float testJumpBoost = 2.3 * -dtPhysics::DEFAULT_GRAVITY_Z; //dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
+   static float testJumpBoost = 1.6 * -dtPhysics::DEFAULT_GRAVITY_Z; //dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
    static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////////
@@ -95,10 +95,12 @@ namespace NetDemo
       //dtPhysics::PhysicsObject* physicsObject = GetPhysicsObject();  // Tick Local protects us from NULL.
       //NxVec3 velocity = physicsObject->getLinearVelocity();
       //NxVec3 pos = physicsObject->getGlobalPosition();
-      //NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
+      //NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in the future?
       osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
       osg::Vec3 pos = physicsObject->GetTranslation();
-      osg::Vec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
+      osg::Vec3 posLookAhead = pos + velocity * 0.4; // where would our vehicle be in the future?
+      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
+      //float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
       // massively helps smooth out the bouncyness
@@ -109,15 +111,19 @@ namespace NetDemo
       float futureAdjustment = ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
       float currentAdjustment = ComputeEstimatedForceCorrection(pos, direction, distanceToHit);
 
+      // Speedfactor is used to modulate how we correct and other stuff, so that our vehicle
+      // behaves differently as we move faster. It also gives a little downward dip as we speed up
+      float modulation = 0.02;
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
-      float finalAdjustment = currentAdjustment * 0.95 + futureAdjustment * 0.05;
+      float finalAdjustment = currentAdjustment * (1.0f - modulation) + futureAdjustment * (modulation);
       float upForce = weight * finalAdjustment;// * deltaTime;
       ////std::cout << " **** Up Force [" << upForce << "]." << std::endl;
       //NxVec3 dir(0.0, 0.0, 1.0);
       //physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
       osg::Vec3 dir(0.0, 0.0, 1.0);
-      physicsObject->GetBodyWrapper()->AddForce(dir * upForce);
+      //physicsObject->GetBodyWrapper()->AddForce(dir * upForce);
+      physicsObject->GetBodyWrapper()->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
@@ -168,8 +174,6 @@ namespace NetDemo
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
       // prevents you from achieving unheard of velocities.
-      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
-      //float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
       if(speed > 0.001)
       {
          float windResistance = testQuicknessAdjustment * speed * testCorrection;

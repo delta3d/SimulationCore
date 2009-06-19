@@ -187,16 +187,8 @@ namespace SimCore
                // The new damage is scaled based on the max damage possible for this entity
                // In the end, we only store the ratio.
                float scaledDamageFromMunition = damageFromMunition / mMaxDamageAmount;
-               if (mEntity.valid())
-               {
-                  // Allow the entity to filter out or modify some types of damage
-                  mCurDamageRatio += mEntity->ValidateIncomingDamage(scaledDamageFromMunition, message, munition);
-               }
-               else
-               {
-                  mCurDamageRatio += scaledDamageFromMunition;
-               }
-
+               // Allow the entity to filter out or modify some types of damage
+               mCurDamageRatio += mEntity->ValidateIncomingDamage(scaledDamageFromMunition, message, munition);
                if( mCurDamageRatio > 1.0f ) { mCurDamageRatio = 1.0f; }
             }
 
@@ -205,18 +197,17 @@ namespace SimCore
             SetDamage(GetGreaterDamageState(mDamageLevels->GetDamageType(mCurDamageRatio, false)));
             
             // Notify the entity of an explosive force if one exists
-            if( force.length2() > 0.0 )
-            {
-               std::stringstream ss;
-               ss << "DamageHelper.ProcessDetonationMessage: Applying force of \"" 
-                  << force.length() << "\"" << std::endl;
-               LOG_DEBUG( ss.str() );
-               mEntity->ApplyForce( force, message.GetDetonationLocation() );
-            }
+            //if(force.length2() > 0.0)
+            //{
+            //   std::stringstream ss;
+            //   ss << "Applying force of \"" << force.length() << "\"" << std::endl;
+            //   LOG_DEBUG( ss.str() );
+            //   mEntity->ApplyForce(force, message.GetDetonationLocation());
+            //}
 
-            // Give the entity a chance to react. Damage & forces have already been applied.
-            mEntity->RespondToHit(message, munition);
-         }
+            // Give the entity a chance to react and apply forces. Damage has already been applied & published.
+            mEntity->RespondToHit(message, munition, force, message.GetDetonationLocation());
+         } 
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -250,10 +241,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::SetDamage( DamageType& damage )
       {
+         bool dataChanged = false;
          if(!mEntity.valid()) { return; }
+
+         if (mEntity->GetCurDamageRatio() != mCurDamageRatio)
+         {
+            mEntity->SetCurDamageRatio(mCurDamageRatio);
+            dataChanged = true;
+         }
 
          if (*mCurrentDamageState != damage)
          {
+            dataChanged = true;
             mCurrentDamageState = &damage;
 
             // We no longer deal with the LAST DR algorithm because even if the vehicle is DEAD
@@ -310,8 +309,11 @@ namespace SimCore
             }
          }
 
-         // Attempt to notify the network. It will check for changes
-         NotifyNetwork();
+         // Attempt to notify the network. It will also check for publish changes
+         if (dataChanged) 
+         {
+            NotifyNetwork();
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////

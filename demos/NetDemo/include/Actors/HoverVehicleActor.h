@@ -75,8 +75,8 @@ namespace NetDemo
 
          virtual void PostPhysicsUpdate();
 
-         virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
-         virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
+         virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
+         virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
 
       // PUBLIC METHODS
@@ -86,7 +86,7 @@ namespace NetDemo
          virtual void ResetVehicle();
 
          HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-            return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
+            return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper()); }
 
          /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is
          /// separate from the vehicle. On others, the turret is hard attached to the vehicle.
@@ -94,7 +94,7 @@ namespace NetDemo
          void SetVehicleIsTurret( bool vehicleIsTurret ) { mVehicleIsTurret = vehicleIsTurret; }
          bool GetVehicleIsTurret() const { return mVehicleIsTurret; }
 
-         virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
+         virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse = false);
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
