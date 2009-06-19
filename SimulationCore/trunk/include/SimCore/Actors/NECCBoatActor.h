@@ -89,11 +89,6 @@ namespace SimCore
             virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
                const dtPhysics::PhysicsObject& whatWeHit){}
 
-            /**
-            * Handle forces received from the environment, such as detonations and impacts
-            */
-            virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location );
-
             /// Utility Methods
             virtual float GetMPH();
 

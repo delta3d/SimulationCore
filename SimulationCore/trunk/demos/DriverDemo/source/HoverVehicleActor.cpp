@@ -193,13 +193,6 @@ namespace DriverDemo
       //}
    }
 
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
-   {
-      GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
-      //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
-   }
-
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)

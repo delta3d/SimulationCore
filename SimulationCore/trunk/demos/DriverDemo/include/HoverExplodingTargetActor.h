@@ -72,7 +72,8 @@ namespace DriverDemo
          //   const dtPhysics::PhysicsObject& whatWeHit){}
 
          virtual void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition);
+            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+            const osg::Vec3& location);
 
          // Overridden from Platform to bypass the damaged/nodamage/destroyed shaders
          void OnShaderGroupChanged();

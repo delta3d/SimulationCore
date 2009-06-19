@@ -164,7 +164,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
+   void HoverVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
    {
       GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
       /////////dtPhysics::VectorType force(force[0], force[1], force[2]);

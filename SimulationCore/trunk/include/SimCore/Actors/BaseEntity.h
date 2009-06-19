@@ -588,8 +588,11 @@ namespace SimCore
              *              Force is measured in Newtons: mass (1kg) * acceleration (1meter/1sec^2).
              * @param location The location in world space from which the force was generated.
              *              The location components will be measured in meters.
+             * @param isImpulse Impulses are not applied each tick, they are fully applied 
+             *              instantaneous forces. For most physics engines, that means the impulse 
+             *              should not be scaled down to be relative to the current tick timeslice. 
              */
-            virtual void ApplyForce( const osg::Vec3& force, const osg::Vec3& location ) {}
+            virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool IsImpulse = false) {}
 
             /// Getter for the time until next update value.  Used for testing
             float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
@@ -604,10 +607,12 @@ namespace SimCore
              * Gives a local entity an opportunity to respond to damage from a munition.
              * Called from the MunitionsComponent via the DamageHelper. Typically called
              * from ProcessDetonationMessage().
-             * NOTE - Damage and forces have already been applied before this method is called.
+             * NOTE - Damage has already been applied to mCurDamageRatio and published 
+             * on the network. This method must apply forces manually.
              */
             virtual void RespondToHit(const SimCore::DetonationMessage& message,
-               const SimCore::Actors::MunitionTypeActor& munition);
+               const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+               const osg::Vec3& location);
 
             /**
              * Gives a local entity an opportunity to filter out certain types of damage or 

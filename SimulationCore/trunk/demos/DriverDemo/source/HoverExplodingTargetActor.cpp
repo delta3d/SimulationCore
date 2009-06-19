@@ -132,7 +132,7 @@ namespace DriverDemo
       {
          // Give it a boost upwards on creation.
          osg::Vec3 dir(0.0, 0.0, 2000.0);
-         ApplyForce(dir);
+         ApplyForce(dir, osg::Vec3(0.0f, 0.0f, 0.0f), true);
 
          // Offset the Target Dir so that they spread out around the map.
          mGoalLocation[0] += dtUtil::RandFloat(-40.0, 40.0);
@@ -249,8 +249,11 @@ namespace DriverDemo
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverExplodingTargetActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition)
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+      const osg::Vec3& location)
    {
+      SimCore::Actors::BaseEntity::RespondToHit(message, munition, force, location);
+
       // The target was hit by a munition. We've already taken damage and had forces applied
       // If we aren't about to die, then set our new goal target to be the player
       // that shot us. Then, each frame, we will fly toward that player.

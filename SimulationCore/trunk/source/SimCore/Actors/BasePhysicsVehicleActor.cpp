@@ -203,29 +203,24 @@ namespace SimCore
 
 #ifdef AGEIA_PHYSICS
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
+      void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
       {
-         GetPhysicsHelper()->GetMainPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force)
-      {
-         GetPhysicsHelper()->GetMainPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
+         if (isImpulse)
+            GetPhysicsHelper()->GetMainPhysicsObject()->addForce(NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE);
+         else
+            GetPhysicsHelper()->GetMainPhysicsObject()->addForce(NxVec3(force[0],force[1],force[2]), NX_FORCE);
       }
 
 #else
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
+      void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
       {
-         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+         if (isImpulse)
+            GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+         else
+            GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->ApplyImpulse(force);
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce( const osg::Vec3& force)
-      {
-         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
-      }
 #endif
       /// Overridden so that it will flag the actor as being transformed when you set the position.
       void BasePhysicsVehicleActor::SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)

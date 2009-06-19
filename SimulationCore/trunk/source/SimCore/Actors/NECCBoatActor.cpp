@@ -352,13 +352,6 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void NECCBoatActor::ApplyForce( const osg::Vec3& force, const osg::Vec3& location )
-      {
-         //if(GetPhysicsHelper()->GetPhysicsObject() != NULL)
-         //   GetPhysicsHelper()->GetPhysicsObject()->addForce( NxVec3(force[0],force[1],force[2]) );
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
       void NECCBoatActor::OnTickLocal(const dtGame::TickMessage &tickMessage)
       {
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetPhysicsObject();
