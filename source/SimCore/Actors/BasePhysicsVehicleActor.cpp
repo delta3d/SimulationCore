@@ -23,15 +23,22 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
+
+
 #ifdef AGEIA_PHYSICS
+
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaRaycastReport.h>
+
 #else
+
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
+
 #endif
+
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
@@ -499,7 +506,7 @@ namespace SimCore
 
             dtCore::Transform xform;
             GetTransform(xform);
-            physicsObject->SetTransform(xform);
+            physicsObject->SetTransformAsVisual(xform);
          }
 
       }
@@ -521,7 +528,7 @@ namespace SimCore
                if(physicsObject != NULL)
                {
                   dtCore::Transform xform;
-                  physicsObject->GetTransform(xform);
+                  physicsObject->GetTransformAsVisual(xform);
                   SetTransform(xform);
                   SetPushTransformToPhysics(false);
                }

@@ -18,12 +18,10 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
-//#include <dtGame/message.h>
 #include <dtGame/basemessages.h>
 #include <dtNetGM/clientnetworkcomponent.h>
 #include <dtNetGM/servernetworkcomponent.h>
 
-//#include <dtActors/playerstartactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 
 #include <SimCore/Actors/EntityActorRegistry.h>
@@ -48,6 +46,8 @@
 namespace NetDemo
 {
    const std::string GameLogicComponent::TIMER_UPDATE_TERRAIN("FORCE_UPDATE_OF_TERRAIN");
+   const std::string GameLogicComponent::HOVER_VEHICLE_PROTOTYPE("NetDemo.DefaultHoverVehiclePrototype");
+   const std::string GameLogicComponent::WHEELED_VEHICLE_PROTOTYPE("NetDemo.DefaultWheeledVehiclePrototype");
 
    //////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
@@ -55,7 +55,7 @@ namespace NetDemo
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
       , mStartTheGameOnNextGameRunning(false)
-   { 
+   {
       mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
 
       // Register application-specific states.
@@ -76,7 +76,7 @@ namespace NetDemo
    void GameLogicComponent::OnAddedToGM()
    {
 
-      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      //dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
       //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
       //int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
       const std::string gameName = "NetDemo";// configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
@@ -84,7 +84,7 @@ namespace NetDemo
       //const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
       // We can't add components while in a tick message, so we add both components up front.
-      // SERVER COMPONENT 
+      // SERVER COMPONENT
       dtCore::RefPtr<dtNetGM::ServerNetworkComponent> serverComp =
          new dtNetGM::ServerNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*serverComp, dtGame::GameManager::ComponentPriority::NORMAL);
@@ -184,10 +184,10 @@ namespace NetDemo
       {
          // Find the actor in the GM
          dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-         if(gap == NULL) 
+         if(gap == NULL)
             return;
          PlayerStatusActor *statusActor = dynamic_cast<PlayerStatusActor*>(gap->GetActor());
-         if(statusActor == NULL)  
+         if(statusActor == NULL)
             return;
 
          HandlePlayerStatusUpdated(statusActor);
@@ -204,8 +204,8 @@ namespace NetDemo
 
          // If not the server, do a print out...
          std::ostringstream oss;
-         oss << "Server Status Updated: [" << serverStatus->GetGameStatus().GetName() << "], Wave[" << 
-            serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" << 
+         oss << "Server Status Updated: [" << serverStatus->GetGameStatus().GetName() << "], Wave[" <<
+            serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" <<
             serverStatus->GetTimeLeftInCurState() << "], EnemiesKilt[" << serverStatus->GetNumEnemiesKilled() << "].";
          LOG_ALWAYS(oss.str());
       }
@@ -215,7 +215,7 @@ namespace NetDemo
    void GameLogicComponent::HandlePlayerStatusUpdated(PlayerStatusActor *statusActor)
    {
       // If it's a local actor and we are the server, then we need to create our terrain.
-      // The terrain will be published to the clients. 
+      // The terrain will be published to the clients.
       if (!statusActor->IsRemote())
       {
          if (statusActor->GetIsServer() && statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
@@ -265,7 +265,7 @@ namespace NetDemo
 
       // if we are a client, we let the server know we are now ready to receive messages
       // We can't receive/send messages to the server until we do this. Do it AFTER the map is loaded.
-      dtNetGM::ClientNetworkComponent *networkComponent = 
+      dtNetGM::ClientNetworkComponent *networkComponent =
          dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
 
       if (mIsConnectedToNetwork && !mIsServer && networkComponent != NULL)
@@ -307,7 +307,7 @@ namespace NetDemo
       {
          result = serverComp->SetupServer(serverPort);
          if (result)
-         {         
+         {
             mIsConnectedToNetwork = true;
             mIsServer = true;
             mNetworkComp = serverComp;
@@ -354,20 +354,20 @@ namespace NetDemo
          // SERVER
          if (mIsServer)
          {
-            dtNetGM::ServerNetworkComponent *serverComponent = 
+            dtNetGM::ServerNetworkComponent *serverComponent =
                dynamic_cast<dtNetGM::ServerNetworkComponent *>(mNetworkComp.get());
             if (serverComponent != NULL)
             {
                serverComponent->ShutdownNetwork();
             }
 
-            GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, NULL); 
+            GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, NULL);
          }
 
          // CLIENT
-         else 
+         else
          {
-            dtNetGM::ClientNetworkComponent *clientComponent = 
+            dtNetGM::ClientNetworkComponent *clientComponent =
                dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
             if (clientComponent != NULL)
             {
@@ -438,7 +438,7 @@ namespace NetDemo
       mPlayerStatus = NULL;
       mCurrentTerrainDrawActor = NULL;
 
-      GetGameManager()->CloseCurrentMap(); 
+      GetGameManager()->CloseCurrentMap();
       // When the map is unloaded, we get the UNLOADED msg and change our states back to lobby.
 
    }
@@ -463,7 +463,7 @@ namespace NetDemo
          return;
 
       dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
-      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
          mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
       GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
@@ -504,7 +504,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::CreateServerSideActors()
    {
-      if (mIsServer) 
+      if (mIsServer)
       {
          //////////////////////////
          // Create the server game status actor
@@ -539,27 +539,34 @@ namespace NetDemo
          if (mIsServer)
          {
             // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
-            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
+            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
             GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
 
             // Start our waves up
-            mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();            
+            mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();
          }
 
-         /////// CLIENT STUFF 
+         /////// CLIENT STUFF
 
          // Create a vehicle and stick our player in it.
          if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::OBSERVER)
          {
+            if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::HOVER)
+            {
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(HOVER_VEHICLE_PROTOTYPE,"Hover Tank");
+               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+                        vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
+            }
+            else if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
+            {
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(WHEELED_VEHICLE_PROTOTYPE,"Dune Buggy");
+               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+                        vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
+            }
 
-         }
-         else if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::HOVER)
-         {
-            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(), 
-               "Hover Vehicle", mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
-            SimCore::Actors::BasePhysicsVehicleActor *vehicleActor = 
-               dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor *>(&mPlayerOwnedVehicle->GetGameActor());
+            SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;
+            mPlayerOwnedVehicle->GetActor(vehicleActor);
             vehicleActor->SetHasDriver(true);
             GetGameManager()->AddActor(*mPlayerOwnedVehicle, false, true);
 
@@ -567,12 +574,6 @@ namespace NetDemo
 
             mPlayerStatus->SetAttachedVehicleID(mPlayerOwnedVehicle->GetId().ToString());
          }
-         else if (mPlayerStatus->GetVehiclePreference() != PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
-         {
-
-         }
-         // No other clause...
-
       }
 
    }

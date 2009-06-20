@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 #ifndef _DRIVER_ACTOR_REGISTRY_H_
@@ -29,7 +29,7 @@
 #include <DemoExport.h>
 
 
-namespace NetDemo 
+namespace NetDemo
 {
    /**
     * Class that exports the applicable actor proxies to a library
@@ -44,12 +44,13 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
 
+         static dtCore::RefPtr<dtDAL::ActorType> WHEELED_VEHICLE_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
 
          /// Registers all of the actor proxies to be exported
          void RegisterActorTypes();
-   };	
+   };
 }
 
-#endif 
+#endif

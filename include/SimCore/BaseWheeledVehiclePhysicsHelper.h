@@ -32,6 +32,10 @@
 #include <SimCore/PhysicsTypes.h>
 #include <dtGame/gameactor.h>
 
+#include <dtCore/observerptr.h>
+
+#include <osg/Transform>
+
 class palVehicle;
 class palWheel;
 
@@ -47,6 +51,7 @@ namespace SimCore
       bool mPowered;
       bool mSteered;
       bool mBraked;
+      dtCore::ObserverPtr<osg::Transform> mTransform;
 
 #ifdef AGEIA_PHYSICS
       NxWheelShape* mWheel;
@@ -55,10 +60,10 @@ namespace SimCore
 #endif
    };
 
-   class SIMCORE_EXPORT BaseVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
+   class SIMCORE_EXPORT BaseWheeledVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
    {
    public:
-      BaseVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
+      BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
 
       //////////////////////////////////////////////////////////////////////////////////////
       //                               Vehicle Initialization                             //
@@ -67,12 +72,12 @@ namespace SimCore
       /**
       * /brief Purpose : Create Wheels onto the main physics vehicle
       */
-      virtual WheelType AddWheel(const osg::Vec3& position, bool powered = true, bool steered = true, bool braked = true);
+      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, bool powered = true, bool steered = true, bool braked = true);
 
       /**
-      * /brief Purpose : To create a 4 wheeled vehicle
+      * /brief Purpose : To create the chassis for the physics.
       */
-      virtual bool CreateChassis(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode);
+      virtual bool CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode);
 
 
       //////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +93,6 @@ namespace SimCore
       float       GetVehicleTopSpeed() const             {return mVehicleTopSpeed;}
       float       GetVehicleTopSpeedReverse() const      {return mVehicleTopSpeedReverse;}
       int         GetVehicleHorsePower() const           {return mHorsePower;}
-      float       GetVehicleMass() const                 {return mVehicleMass;}
       float       GetVehicleTurnRadiusPerUpdate() const  {return mWheelTurnRadiusPerUpdate;}
       float       GetWheelInverseMass() const            {return mWheelInverseMass;}
       float       GetWheelRadius() const                 {return mWheelRadius;}
@@ -110,7 +114,6 @@ namespace SimCore
       void SetVehicleTopSpeed(float value)            {mVehicleTopSpeed = value;}
       void SetVehicleTopSpeedReverse(float value)     {mVehicleTopSpeedReverse = value;}
       void SetVehicleHorsePower(int value)            {mHorsePower = value;}
-      void SetVehicleMass(float value)                {mVehicleMass = value;}
       void SetVehicleTurnRadiusPerUpdate(float value) {mWheelTurnRadiusPerUpdate = value;}
       void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}
       void SetWheelRadius(float value)                {mWheelRadius = value;}
@@ -127,19 +130,22 @@ namespace SimCore
       void SetTireStiffnessFactor(float value)        {mTireStiffnessFactor = value;}
       void SetTireRestitution(float value)            {mTireRestitution = value;}
 
+      float GetChassisMass() const;
+
       ////////// Vehicle Control///////////////////
       void Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes);
 
       /// Call this once all initialization is done, but before driving.
       virtual void FinalizeInitialization();
 
-   protected:
-      virtual ~BaseVehiclePhysicsHelper();
+      void UpdateWheelTransforms();
 
       /// This currently assumes this dof is placed in the model using the 3DSMax OSG Helper
       /// because the local to world matrix is placed right above the DOF in the export process
       /// since the dof transform does not actually have a matrix
-      void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
+      static void GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix);
+   protected:
+      virtual ~BaseWheeledVehiclePhysicsHelper();
 
 #ifndef AGEIA_PHYSICS
       palVehicle* GetPalVehicle() { return mVehicle; };
@@ -157,7 +163,6 @@ namespace SimCore
       float             mVehicleTopSpeedReverse;     //!< Top speed in reverse
       int               mHorsePower;               //!< @todo Used for brake torque, not implemented currently
 
-      float             mVehicleMass;            //!< Mass of chassis / wheels without people in it
       float             mWheelTurnRadiusPerUpdate; //!< How much do the tires move when you press the movement key
       float             mWheelInverseMass;         //!< Affects acceleration of the vehicle with MOVEMENT_AMOUNT
       float             mWheelRadius;              //!< how big our rims our, cant get exact between meters / inches / etc, have to play with
