@@ -28,6 +28,7 @@
 #include <DemoExport.h>
 
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
+#include <SimCore/FourWheelVehiclePhysicsHelper.h>
 
 namespace NetDemo
 {
@@ -38,8 +39,15 @@ namespace NetDemo
       typedef SimCore::Actors::BasePhysicsVehicleActor BaseClass;
 
       WheeledVehicleActor(SimCore::Actors::PlatformActorProxy& proxy);
+
+      virtual void OnEnteredWorld();
+      virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
+      virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
+      virtual void PostPhysicsUpdate();
    protected:
       virtual ~WheeledVehicleActor();
+   private:
+      dtCore::RefPtr<SimCore::FourWheelVehiclePhysicsHelper> mHelper;
    };
 
    class WheeledVehicleActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
@@ -49,7 +57,6 @@ namespace NetDemo
 
       WheeledVehicleActorProxy();
 
-      //////////////////////////////
       virtual void CreateActor();
 
       /**

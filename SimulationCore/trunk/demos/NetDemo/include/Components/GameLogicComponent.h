@@ -72,6 +72,8 @@ namespace NetDemo
    {
       public:
          static const std::string TIMER_UPDATE_TERRAIN;
+         static const std::string HOVER_VEHICLE_PROTOTYPE;
+         static const std::string WHEELED_VEHICLE_PROTOTYPE;
 
          typedef SimCore::Components::GameStateComponent BaseClass;
 

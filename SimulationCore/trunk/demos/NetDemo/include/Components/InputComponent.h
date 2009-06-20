@@ -24,9 +24,7 @@
 #include <DemoExport.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
-#include <dtPhysics/physicshelper.h>
 #include <SimCore/Components/BaseInputComponent.h>
-#include <Components/GameLogicComponent.h>
 #include <dtCore/observerptr.h>
 #include <osgSim/DOFTransform>
 
@@ -44,10 +42,9 @@ namespace SimCore
    class StealthMotionModel;
    namespace Actors
    {
-      class BasePhysicsVehicleActor;
-      class VehicleInterface;
+      class Platform;
    }
-   namespace Comonents
+   namespace Components
    {
       class GameStateChangedMessage;
    }
@@ -55,6 +52,8 @@ namespace SimCore
 
 namespace NetDemo
 {
+   class GameLogicComponent;
+
    ////////////////////////////////////////////////////////////////////
    class NETDEMO_EXPORT InputComponent : public SimCore::Components::BaseInputComponent
    {
@@ -94,32 +93,30 @@ namespace NetDemo
          void DoRayCast();
          void SetupMaterialsAndTerrain();
          void UpdateHelpers();
-         GameLogicComponent* GetAppComponent();
+         GameLogicComponent* GetLogicComponent();
 
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          bool IsVehiclePivotable();
          void DetachFromCurrentVehicle();
 
-         void AttachToVehicle(SimCore::Actors::BasePhysicsVehicleActor *vehicle);
+         void AttachToVehicle(SimCore::Actors::Platform* vehicle);
          void EnableMotionModels();
 
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
 
          /// Sending in a vehicle will cause an attach, sending NULL will detach
-         void SendAttachOrDetachMessage(SimCore::Actors::BasePhysicsVehicleActor *vehicle, 
-            const std::string &dofName);
+         void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
 
       private:
-         dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActor> mVehicle;
-         typedef std::vector<dtCore::RefPtr<dtPhysics::PhysicsHelper> > HelperList;
-         HelperList mHelpers;
+         dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
-         dtCore::ObserverPtr<GameLogicComponent> mAppComp;
-         osg::observer_ptr<osgSim::DOFTransform> mDOFRing;
-         osg::observer_ptr<osgSim::DOFTransform> mDOFWeapon;
+         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFRing;
+         dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
          dtCore::RefPtr<SimCore::ClampedMotionModel> mRingMM; // moves the seat
          dtCore::RefPtr<SimCore::ClampedMotionModel> mWeaponMM; // moves the weapon pivot
+         std::vector<std::string> mViewPointList;
+         unsigned mCurrentViewPointIndex;
          bool mIsInGameState;
    };
 }

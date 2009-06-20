@@ -18,6 +18,7 @@
 #include <Actors/PlayerStatusActor.h>
 #include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
+#include <WheeledVehicleActor.h>
 #include <Actors/EnemyMine.h>
 
 #include <dtCore/shadermanager.h>
@@ -29,7 +30,7 @@ namespace NetDemo
 {
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::HOVER_VEHICLE_ACTOR_TYPE(
-      new dtDAL::ActorType("HoverActor", "NetDemo", "A floaty drivable vehicle for Driver Demo", 
+      new dtDAL::ActorType("HoverActor", "NetDemo", "A floaty drivable vehicle for Driver Demo",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE(
@@ -39,15 +40,16 @@ namespace NetDemo
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE(
       new dtDAL::ActorType("ServerGameStatusActor", "NetDemo", "Status of the overall game - controlled by the server. "));
 
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::WHEELED_VEHICLE_ACTOR_TYPE(
+      new dtDAL::ActorType("Wheeled Vehicle Actor", "NetDemo", "The wheeled vehicle we all know and love"));
+
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FORT_ACTOR_TYPE(
-      new dtDAL::ActorType("FortActor", "NetDemo", "The team base - when destroyed the team looses.", 
+      new dtDAL::ActorType("FortActor", "NetDemo", "The team base - when destroyed the team looses.",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE(
-      new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base", 
+      new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
-
-
 
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -73,8 +75,9 @@ namespace NetDemo
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<ServerGameStatusActorProxy>(SERVER_GAME_STATUS_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<WheeledVehicleActorProxy>(WHEELED_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
-      
+
    }
 }

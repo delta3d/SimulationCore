@@ -30,6 +30,7 @@
 //#endif
 #include <osg/Matrix>
 #include <osgSim/DOFTransform>
+#include <osg/MatrixTransform>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 
@@ -188,12 +189,8 @@ namespace SimCore
    /// @retval                  false if model wasn't created because of some error.
 
    bool FourWheelVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot,
-            osgSim::DOFTransform* bodyNode, osgSim::DOFTransform* wheels[4])
+            const osg::Node& bodyNode, osgSim::DOFTransform* wheels[4])
    {
-      // Make sure we have a valid node for body geometry.
-      if(bodyNode == NULL)
-         return false;
-
       // Make sure we have valid nodes for geometry of all four wheels.
       for(int i = 0 ; i < 4; ++i)
       {
@@ -203,22 +200,32 @@ namespace SimCore
 
       osg::Matrix WheelMatrix[4];
       osg::Vec3   WheelVec[4];
-      osg::Matrix BodyMatrix;
-      GetLocalMatrix(bodyNode, BodyMatrix);
+      osg::Matrix bodyOffset;
+      GetLocalMatrix(bodyNode, bodyOffset);
+      //To allow the developer to shift the center of mass.
+      bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
 
       for(int i = 0; i < 4; i++)
       {
-         GetLocalMatrix((wheels[i]), WheelMatrix[i]);
-         WheelVec[i] = WheelMatrix[i].getTrans() - BodyMatrix.getTrans();
+         GetLocalMatrix(*(wheels[i]), WheelMatrix[i]);
+         WheelVec[i] = WheelMatrix[i].getTrans() - bodyOffset.getTrans();
       }
 
       float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
       float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
       float wheelbase       = frontLeverArm + rearLeverArm;
-      float frontWheelLoad  = 0.5f * ( GetVehicleMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
-      float rearWheelLoad   = 0.5f * ( GetVehicleMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
-      float frontDeflection = frontWheelLoad / GetSuspensionSpringCoef();
-      float rearDeflection  = rearWheelLoad / GetSuspensionSpringCoef();
+      if (wheelbase <= 0.0)
+      {
+         LOG_ERROR("Wheelbase must be greater than zero. "
+                  "A zero wheel base can be a result of wheels being configured in the wrong order in the array.");
+         //Prevent NAN and INF
+         wheelbase = 1.0;
+      }
+
+      float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
+      float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
+      float frontDeflection = (frontWheelLoad / GetSuspensionSpringCoef());
+      float rearDeflection  = (rearWheelLoad / GetSuspensionSpringCoef());
       mFrontMaxJounce       = GetWheelSuspensionTravel() - frontDeflection;
       mRearMaxJounce        = GetWheelSuspensionTravel() - rearDeflection;
 
@@ -227,13 +234,29 @@ namespace SimCore
       WheelVec[BACK_LEFT][2] += mRearMaxJounce;
       WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
 
-      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], true, false, true);
-      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], true, false, true);
-
-
       CreateChassis(transformForRot, bodyNode);
+
+//      osg::MatrixTransform* mtWheels[4];
+//      for (unsigned i = 0; i < 4; ++i)
+//      {
+//         dtCore::RefPtr<osg::MatrixTransform> mat = new osg::MatrixTransform();
+//         mtWheels[i] = mat.get();
+//         mat->setName(wheels[i]->getName());
+//         wheels[i]->getParent(0)->addChild(mat);
+//         for (unsigned j = 0; j < wheels[i]->getNumChildren(); ++j)
+//         {
+//            mat->addChild(wheels[i]->getChild(j));
+//         }
+//
+//         wheels[i]->getParent(0)->removeChild(wheels[i]);
+//
+//      }
+
+      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), GetIsVehicleFourWheelDrive(), true, true);
+      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), GetIsVehicleFourWheelDrive(), true, true);
+      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), true, false, true);
+      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), true, false, true);
+
 
 #ifdef AGEIA_PHYSICS
       NxMat33 orient;
@@ -242,6 +265,9 @@ namespace SimCore
       orient.setRow(2, NxVec3(0,1,0));
       SwitchCoordinateSystem(orient);
 #endif
+
+      FinalizeInitialization();
+
       return true;
    }
 

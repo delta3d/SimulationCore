@@ -34,10 +34,10 @@ namespace osgSim
 
 namespace SimCore
 {
-   class SIMCORE_EXPORT FourWheelVehiclePhysicsHelper : public SimCore::BaseVehiclePhysicsHelper
+   class SIMCORE_EXPORT FourWheelVehiclePhysicsHelper : public SimCore::BaseWheeledVehiclePhysicsHelper
    {
    public:
-      typedef SimCore::BaseVehiclePhysicsHelper BaseClass;
+      typedef SimCore::BaseWheeledVehiclePhysicsHelper BaseClass;
       enum WheelLocation {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT};
 
    public:
@@ -61,7 +61,7 @@ namespace SimCore
       void Steer(float normalize_wheel_angle);
       void ApplyBrake(float normalized_brake);
 
-      bool CreateVehicle(const dtCore::Transform& transformForRot, osgSim::DOFTransform* bodyNode, osgSim::DOFTransform* wheels[4]);
+      bool CreateVehicle(const dtCore::Transform& transformForRot, const osg::Node& bodyNode, osgSim::DOFTransform* wheels[4]);
 
 
       //////////////////////////////////////////////////////////////////

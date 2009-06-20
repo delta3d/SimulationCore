@@ -52,11 +52,12 @@ namespace NetDemo
       , mTeamNumber(0)
       , mIsServer(false)
       , mTerrainPreference("")
-      , mVehiclePreference(&VehicleTypeEnum::OBSERVER)
+      , mVehiclePreference(&VehicleTypeEnum::FOUR_WHEEL)
       , mAttachedVehicleID("")
       , mIPAddress("")
       , mDirtyPlayerSettings(false)
    {
+      SetAttachAsThirdPerson(true);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -140,46 +141,46 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetTeamNumber(int newValue) 
-   { 
+   void PlayerStatusActor::SetTeamNumber(int newValue)
+   {
       mDirtyPlayerSettings = true;
-      mTeamNumber = newValue; 
+      mTeamNumber = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetIsServer(bool newValue) 
-   { 
+   void PlayerStatusActor::SetIsServer(bool newValue)
+   {
       mDirtyPlayerSettings = true;
-      mIsServer = newValue; 
+      mIsServer = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetTerrainPreference(const std::string& newValue) 
-   { 
+   void PlayerStatusActor::SetTerrainPreference(const std::string& newValue)
+   {
       mDirtyPlayerSettings = true;
-      mTerrainPreference = newValue; 
+      mTerrainPreference = newValue;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetVehiclePreference(PlayerStatusActor::VehicleTypeEnum &preference) 
-   { 
+   void PlayerStatusActor::SetVehiclePreference(PlayerStatusActor::VehicleTypeEnum &preference)
+   {
       mDirtyPlayerSettings = true;
       mVehiclePreference = &preference;
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetAttachedVehicleID(const std::string& newValue) 
-   { 
+   void PlayerStatusActor::SetAttachedVehicleID(const std::string& newValue)
+   {
       mDirtyPlayerSettings = true;
-      mAttachedVehicleID = newValue; 
+      mAttachedVehicleID = newValue;
    }
 
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetIPAddress(const std::string& newValue) 
-   { 
+   void PlayerStatusActor::SetIPAddress(const std::string& newValue)
+   {
       mDirtyPlayerSettings = true;
-      mIPAddress = newValue; 
+      mIPAddress = newValue;
    }
 
 

@@ -113,7 +113,7 @@ namespace NetDemo
       if(renderComp != NULL)
       {
          //Add a spot light
-         SimCore::Components::RenderingSupportComponent::SpotLight* sl = 
+         SimCore::Components::RenderingSupportComponent::SpotLight* sl =
             new SimCore::Components::RenderingSupportComponent::SpotLight();
          sl->mIntensity = 1.0f;
          sl->mColor.set(1.0f, 1.0f, 1.0f);
@@ -133,13 +133,13 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
+         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
          SetArticulationHelper(articHelper.get());
-         articHelper->AddArticulation("dof_turret_01", 
+         articHelper->AddArticulation("dof_turret_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         articHelper->AddArticulation("dof_gun_01", 
+         articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
       }
 
@@ -182,23 +182,31 @@ namespace NetDemo
       bool accelForward = false, accelReverse = false, accelLeft = false, accelRight = false;
       //float currentMPH = GetMPH(); // speed, not a velocity with direction
 
-      if( ! IsMobilityDisabled() && GetHasDriver() )
+      if (!IsMobilityDisabled() && GetHasDriver())
       {
          // FORWARD OR BACKWARD
          if (keyboard->GetKeyState('w') || (keyboard->GetKeyState('W')) ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
+         {
             accelForward = true;
+         }
          else if (keyboard->GetKeyState('s') || keyboard->GetKeyState('S') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
+         {
             accelReverse = true;
+         }
 
          // LEFT OR RIGHT
          if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') ||
               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
+         {
             accelLeft = true;
+         }
          else if(keyboard->GetKeyState('d') || keyboard->GetKeyState('D') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
+         {
             accelRight = true;
+         }
 
       }
 
@@ -206,7 +214,7 @@ namespace NetDemo
          accelForward, accelReverse, accelLeft, accelRight);
 
       // Jump button
-      if( ! IsMobilityDisabled() && GetHasDriver() )
+      if (!IsMobilityDisabled() && GetHasDriver())
       {
          mTimeTillJumpReady -= deltaTime;
          if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
