@@ -21,7 +21,7 @@ endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
 
-variable_watch(DTQT_LIBRARY)
+#variable_watch(DTQT_LIBRARY)
 
 ################################################################################
 # User Options
