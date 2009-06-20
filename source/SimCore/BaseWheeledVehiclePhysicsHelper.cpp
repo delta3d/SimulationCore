@@ -90,7 +90,7 @@ namespace SimCore
    {
 #ifndef AGEIA_PHYSICS
 //Create the vehicle here so we can add wheels any time.
-      mVehicle = dynamic_cast<palVehicle*>(palFactory::GetInstance()->CreateObject("palVehicle"));
+      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().CreatePhysicsObject("palVehicle"));
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       AddPhysicsObject(*physicsObject);
 #endif
