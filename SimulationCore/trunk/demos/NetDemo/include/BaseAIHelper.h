@@ -51,8 +51,8 @@ namespace NetDemo
      virtual void Spawn();
      virtual void Update(float dt);
 
-     void PreSync(const dtCore::Transform& trans);
-     void PostSync(dtCore::Transform& trans) const;
+     virtual void PreSync(const dtCore::Transform& trans);
+     virtual void PostSync(dtCore::Transform& trans) const;
 
      dtAI::FSM& GetStateMachine() { return mStateMachine; }
      const dtAI::FSM& GetStateMachine() const { return mStateMachine; }
