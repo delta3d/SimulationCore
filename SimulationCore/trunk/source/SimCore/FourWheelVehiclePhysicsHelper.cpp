@@ -202,9 +202,11 @@ namespace SimCore
       osg::Vec3   WheelVec[4];
       osg::Matrix bodyOffset;
       GetLocalMatrix(bodyNode, bodyOffset);
+      //This is not needed for physX
+#ifndef AGEIA_PHYSICS
       //To allow the developer to shift the center of mass.
       bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
-
+#endif
       for(int i = 0; i < 4; i++)
       {
          GetLocalMatrix(*(wheels[i]), WheelMatrix[i]);
