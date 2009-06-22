@@ -245,7 +245,7 @@ namespace SimCore
       //the position of the actor which is set to be position of the dof_chassis above
       SetLocalOffSet(osg::Vec3(0.0f, 0.0f, 0.0f));
 
-      dtPhysics::PhysicsObject* physicsObject = SetCollisionConvexMesh(bodyNode, sendInMatrix, 0, GetChassisMass(), false, "", "Default", "Default", 0);
+      dtPhysics::PhysicsObject* physicsObject = SetCollisionConvexMesh(const_cast<osg::Node*>(&bodyNode), sendInMatrix, 0, GetChassisMass(), false, "", "Default", "Default", 0);
 
       dtPhysics::VectorType massPos = physicsObject->getCMassLocalPosition();
       massPos.x += GetVehiclesCenterOfMass()[0];
@@ -267,7 +267,7 @@ namespace SimCore
    float BaseWheeledVehiclePhysicsHelper::GetChassisMass() const
    {
 #ifdef AGEIA_PHYSICS
-      return GetMassForAgeia();
+      return GetMainPhysicsObject()->getMass();
 #else
       return GetMainPhysicsObject()->GetMass();
 #endif
