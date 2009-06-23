@@ -33,6 +33,11 @@
 #include <ActorRegistry.h>
 #include <Components/GameLogicComponent.h>
 #include <Actors/PlayerStatusActor.h>
+#include <Actors/DRGhostActor.h>
+// TEMP STUFF FOR VEHICLE
+#include <Actors/HoverVehicleActor.h>
+#include <Actors/HoverVehiclePhysicsHelper.h>
+#include <Actors/EnemyMine.h>
 
 #include <osg/io_utils>
 #include <iostream>
@@ -56,6 +61,7 @@ namespace NetDemo
       : SimCore::Components::BaseInputComponent(name)
       , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
+      , mOriginalPublishTimesPerSecond(3.0f)
    {
       mViewPointList.push_back(DOF_NAME_WEAPON_PIVOT);
       mViewPointList.push_back(DOF_NAME_RINGMOUNT);
@@ -145,6 +151,7 @@ namespace NetDemo
       }
       else
       {
+         CleanUpDRGhost();
          mIsInGameState = false;
       }
       EnableMotionModels();
@@ -256,6 +263,12 @@ namespace NetDemo
                vehicleActor->SetHasDriver(true);
                GetGameManager()->AddActor(*testVehicleProxy, false, true);
 
+               break;
+            }
+
+         case '6':
+            {
+               ToggleDRGhost();
                break;
             }
 
@@ -414,7 +427,7 @@ namespace NetDemo
          SendAttachOrDetachMessage(dtCore::UniqueId(""), "");
 
          // Re-enable our base motion model - so we have something
-         mMotionModel->SetEnabled(GetStealthActor());
+         mMotionModel->SetEnabled(GetStealthActor() != NULL);
       }
 
       mVehicle = NULL;
@@ -459,5 +472,51 @@ namespace NetDemo
       msg->SetAttachPointNodeName(dofName);
       GetGameManager()->SendMessage(*msg.get());
    }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleDRGhost()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      // If it already exists, then kill it. 
+      if (mDRGhostActorProxy.valid())
+      {
+         CleanUpDRGhost();
+      }
+
+      // Else, create it and put it in the world
+      else if (mVehicle.valid() && mPhysVehicle != NULL)
+      {
+         LOG_ALWAYS("TEST - Enabling Ghost Dead Reckoning behavior.");
+         GetGameManager()->CreateActor(*NetDemoActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
+         if (mDRGhostActorProxy.valid())
+         {
+            mOriginalPublishTimesPerSecond = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
+            mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(1.0f);
+            mDRGhostActorProxy->GetActorAsDRGhost().SetSlavedEntity(mVehicle.get());
+            GetGameManager()->AddActor(*mDRGhostActorProxy.get(), false, false);
+         }
+         
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::CleanUpDRGhost()
+   {
+      if (mDRGhostActorProxy.valid())
+      {
+         GetGameManager()->DeleteActor(*mDRGhostActorProxy.get());
+         mDRGhostActorProxy = NULL;
+         SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+            dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+         if (mVehicle.valid() && mPhysVehicle != NULL)
+         {
+            mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(mOriginalPublishTimesPerSecond);
+         }
+      }
+
+   }
+
 }
 

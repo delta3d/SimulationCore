@@ -554,7 +554,7 @@ namespace NetDemo
          {
             if (mPlayerStatus->GetVehiclePreference() == PlayerStatusActor::VehicleTypeEnum::HOVER)
             {
-               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(HOVER_VEHICLE_PROTOTYPE,"Hover Tank");
+               std::string vehiclePrototype = GetGameManager()->GetConfiguration().GetConfigPropertyValue(HOVER_VEHICLE_PROTOTYPE,"Hover Vehicle");
                SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
                         vehiclePrototype, mPlayerOwnedVehicle, "Check your additional maps in config.xml (compare to config_example.xml).");
             }

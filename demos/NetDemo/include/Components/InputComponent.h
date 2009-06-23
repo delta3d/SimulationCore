@@ -52,6 +52,7 @@ namespace SimCore
 
 namespace NetDemo
 {
+   class DRGhostActorProxy;
    class GameLogicComponent;
 
    ////////////////////////////////////////////////////////////////////
@@ -108,6 +109,11 @@ namespace NetDemo
          /// Sending in a vehicle will cause an attach, sending NULL will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
 
+         /// Clean up method for the dead reckoning ghost actor 
+         void CleanUpDRGhost();
+         /// Create or destroy the dead reckoning ghost actor 
+         void ToggleDRGhost();
+
       private:
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
@@ -118,6 +124,8 @@ namespace NetDemo
          std::vector<std::string> mViewPointList;
          unsigned mCurrentViewPointIndex;
          bool mIsInGameState;
+         dtCore::RefPtr<DRGhostActorProxy> mDRGhostActorProxy;
+         float mOriginalPublishTimesPerSecond;
    };
 }
 

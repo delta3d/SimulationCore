@@ -291,6 +291,8 @@ namespace SimCore
             /// @return true if this platform should be visible based on the options given.
             bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
+            void SetNonDamagedNodeFileName(const std::string& value) {mNonDamagedNodeFileName = value;}
+            std::string GetNonDamagedNodeFileName() {return mNonDamagedNodeFileName;}
          protected:
 
             /**
@@ -368,6 +370,10 @@ namespace SimCore
             std::string                      mSFXSoundIdleEffect; /// What is the filepath / string of the sound effect
             float                            mMinIdleSoundDistance;
             float                            mMaxIdleSoundDistance;
+
+            /// The resource path name of the undamaged file name. Set when the undamaged node is loaded.
+            std::string mNonDamagedNodeFileName;
+
       };
 
    }

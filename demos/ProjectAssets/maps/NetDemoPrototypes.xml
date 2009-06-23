@@ -749,20 +749,20 @@
             <property>
                 <name>Smoke plume particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
             <property>
                 <name>Fire particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:fire.osg</resourceDisplayName>
-                <resource>Particles:fire.osg</resource>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
             <property>
                 <name>Engine smoke particles</name>
                 <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
             </property>
             <property>
                 <name>Flying</name>
@@ -790,7 +790,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>

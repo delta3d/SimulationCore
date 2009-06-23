@@ -44,6 +44,7 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_DESCRIPTION_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> DR_GHOST_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> SPAWN_VOLUME_ACTOR_TYPE;
 

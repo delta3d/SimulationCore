@@ -53,7 +53,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="dtNetGM.ServerPort">7329</Property>
       <Property Name="dtNetGM.ServerHost">127.0.0.1</Property>
 
-      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Tank</Property>
+      <Property Name="NetDemo.DefaultHoverVehiclePrototype">Hover Vehicle</Property>
       <Property Name="NetDemo.DefaultWheeledVehiclePrototype">Truck</Property>
 
       <Property Name="HasMapTool">true</Property>
