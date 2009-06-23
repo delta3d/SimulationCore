@@ -20,6 +20,9 @@
 #include <Actors/FortActor.h>
 #include <WheeledVehicleActor.h>
 #include <Actors/EnemyMine.h>
+#include <Actors/EnemyHelix.h>
+#include <Actors/SpawnVolumeActor.h>
+#include <Actors/EnemyDescriptionActor.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -51,6 +54,16 @@ namespace NetDemo
       new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE(
+      new dtDAL::ActorType("EnemyHelixActor", "NetDemo", "A more sophisticated enemy then the enemy mine.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SPAWN_VOLUME_ACTOR_TYPE(
+      new dtDAL::ActorType("SpawnVolumeActor", "NetDemo", "Spawns enemies randomly within a bounding volume."));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_DESCRIPTION_TYPE(
+      new dtDAL::ActorType("EnemyDecriptionActor", "NetDemo", "Describes the attributes of an enemy prototype."));
+
    ///////////////////////////////////////////////////////////////////////////
    extern "C" NETDEMO_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
    {
@@ -78,6 +91,9 @@ namespace NetDemo
       mActorFactory->RegisterType<WheeledVehicleActorProxy>(WHEELED_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<EnemyHelixActorProxy>(ENEMY_HELIX_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<SpawnVolumeActorProxy>(SPAWN_VOLUME_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<EnemyDescriptionActorProxy>(ENEMY_DESCRIPTION_TYPE.get());
 
    }
 }
