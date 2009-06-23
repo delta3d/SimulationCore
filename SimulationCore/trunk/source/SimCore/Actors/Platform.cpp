@@ -210,6 +210,7 @@ namespace SimCore
       {
          Platform* platform = NULL;
          GetActor(platform);
+         platform->SetNonDamagedNodeFileName(fileName);
          platform->LoadDamageableFile(fileName, BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE);
       }
 

@@ -113,6 +113,20 @@
       </shader>
    </shadergroup>
 
+   <shadergroup name="GhostVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/shader_ghost.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+   </shadergroup>
+
    <shadergroup name="ExplodingTargetShaderGroup">
       <shader name="NormalMode" default="yes">
          <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
