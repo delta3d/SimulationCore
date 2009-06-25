@@ -159,6 +159,7 @@ namespace NetDemo
          SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
             "Enemy Mine Prototype", testEnemyMine, errorMessage);
          
+         osg::Vec3 point;
          EnemyMineActor& mineActor = static_cast<EnemyMineActor&>(*(testEnemyMine->GetActor()));
          
          if(!mSpawnVolumes.empty())
@@ -166,17 +167,18 @@ namespace NetDemo
             int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
             if(mSpawnVolumes[index].valid())
             {
-               osg::Vec3 point = mSpawnVolumes[index]->GetRandomPointInVolume();
-
-               dtCore::Transform trans;
-               mineActor.GetTransform(trans);
-               trans.SetTranslation(point);
-               mineActor.SetTransform(trans);
+               point = mSpawnVolumes[index]->GetRandomPointInVolume();
             }
          }
          
          testEnemyMine->InitAI(desc);
          GetGameManager()->AddActor(*testEnemyMine, false, true);
+
+         //this doesn't appear to work
+         dtCore::Transform trans;
+         mineActor.GetTransform(trans);
+         trans.SetTranslation(point);
+         mineActor.SetTransform(trans);
       }
 
    }

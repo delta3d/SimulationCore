@@ -92,7 +92,7 @@ namespace NetDemo
    private:
 
       EnemyType* mType;
-
+      
       EnemySpawnInfo mSpawnInfo;
   
    };

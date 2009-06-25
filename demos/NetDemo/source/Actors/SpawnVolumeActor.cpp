@@ -166,20 +166,20 @@ namespace NetDemo
 
       SpawnVolumeActor& actor = static_cast<SpawnVolumeActor&>(GetGameActor());
 
-      //dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
-      //   *this, "Enemy", "Enemy",
-      //   dtDAL::MakeFunctor(*this, &SpawnVolumeActorProxy::SetEnemyGroupProperty),
-      //   dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::GetEnemyGroupProperty),
-      //   PROP_ENEMY_ID, "A UniqueId to a EnemyDescriptionActor", GROUP);
+      dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
+         *this, "Enemy", "Enemy",
+         dtDAL::MakeFunctor(*this, &SpawnVolumeActorProxy::SetEnemyGroupProperty),
+         dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::GetEnemyGroupProperty),
+         PROP_ENEMY_ID, "A UniqueId to a EnemyDescriptionActor", GROUP);
 
 
-      //AddProperty(new dtDAL::ArrayActorProperty<EnemyDescriptionId>(
-      //   PROP_ENEMY_ARRAY, "List of enemies to spawn.", "List of enemies to spawn.",
-      //   dtDAL::MakeFunctor(*this, &SpawnVolumeActorProxy::EnemyArraySetIndex),
-      //   dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArrayGetDefault),
-      //   dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArrayGetValue),
-      //   dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArraySetValue),
-      //   actorProp, GROUP));
+      AddProperty(new dtDAL::ArrayActorProperty<EnemyDescriptionId>(
+         PROP_ENEMY_ARRAY, "List of enemies to spawn.", "List of enemies to spawn.",
+         dtDAL::MakeFunctor(*this, &SpawnVolumeActorProxy::EnemyArraySetIndex),
+         dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArrayGetDefault),
+         dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArrayGetValue),
+         dtDAL::MakeFunctorRet(*this, &SpawnVolumeActorProxy::EnemyArraySetValue),
+         actorProp, GROUP));
 
    }
 
