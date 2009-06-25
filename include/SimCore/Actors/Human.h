@@ -74,8 +74,12 @@ namespace SimCore
             static BasicStanceEnum STANDING;
             static BasicStanceEnum KNEELING;
             static BasicStanceEnum PRONE;
+
+            // Used to help the planner determine distance.
+            float GetCostValue() const;
          private:
-            BasicStanceEnum(const std::string& name);
+            BasicStanceEnum(const std::string& name, float costValue);
+            float mCostValue;
       };
 
       class SIMCORE_EXPORT AnimationOperators

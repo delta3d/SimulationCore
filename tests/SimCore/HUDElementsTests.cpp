@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -46,20 +46,11 @@
 
 #include <UnitTestMain.h>
 
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
-
 
 //////////////////////////////////////////////////////////////
 // UNIT TESTS
 //////////////////////////////////////////////////////////////
-class HUDElementsTests : public CPPUNIT_NS::TestFixture 
+class HUDElementsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(HUDElementsTests);
 
@@ -111,7 +102,7 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
       void TestHUDBarMeter();
       void TestHUDSlideBarMeter();
       void TestHUDQuadElement();
-      
+
       //////////////////////////////////////////////////////////////
       void TestStealthButton();
       void TestStealthToolbar();
@@ -150,7 +141,7 @@ void HUDElementsTests::setUp()
 {
    // A window & camera are needed for GUI rendering
    mApp = &GetGlobalApplication();
-   
+
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication(*mApp);
 
@@ -170,9 +161,9 @@ void HUDElementsTests::tearDown()
 
    if(mGM.valid())
       mGM->DeleteAllActors(true);
-   
+
    mMainGUIWindow = NULL;
-   
+
    mGM = NULL;
    if (mApp.valid() && mGUI.valid())
       mApp->GetScene()->RemoveDrawable( mGUI.get() );
@@ -216,7 +207,7 @@ void HUDElementsTests::TestAllHUDElements()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDElement()
 {
-   dtCore::RefPtr<SimCore::Components::HUDElement> element = 
+   dtCore::RefPtr<SimCore::Components::HUDElement> element =
       new SimCore::Components::HUDElement("TestElement",SimCore::Components::HUDElement::DEFAULT_IMAGE_TYPE);
 
    CPPUNIT_ASSERT_MESSAGE( "HUD Element should contain a valid CEGUI window",
@@ -856,7 +847,7 @@ void HUDElementsTests::TestHUDBarMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestHUDSlideBarMeter()
 {
-   dtCore::RefPtr<SimCore::Components::HUDSlideBarMeter> slideMeter = 
+   dtCore::RefPtr<SimCore::Components::HUDSlideBarMeter> slideMeter =
       new SimCore::Components::HUDSlideBarMeter("TestSlideBarMeter");
    dtCore::RefPtr<SimCore::Components::HUDImage> meterImage = new SimCore::Components::HUDImage("SlideImage");
 
@@ -884,7 +875,7 @@ void HUDElementsTests::TestHUDSlideBarMeter()
    // Test slide reversing
    bool reversed = slideMeter->IsSlideReversed();
    slideMeter->SetSlideReversed( ! reversed );
-   CPPUNIT_ASSERT_MESSAGE( "HUD Slide Bar Meter should have a different slide state", 
+   CPPUNIT_ASSERT_MESSAGE( "HUD Slide Bar Meter should have a different slide state",
       slideMeter->IsSlideReversed() != reversed );
 
    // Test sliding (NOT REVERSED)
@@ -940,7 +931,7 @@ void HUDElementsTests::TestHUDQuadElement()
    // relative mode for both size and position.
 
    dtCore::RefPtr<SimCore::Components::HUDQuadElement> quad = new SimCore::Components::HUDQuadElement("TestQuad");
-   
+
    CPPUNIT_ASSERT_MESSAGE( "HUD Quad should have a valid OSG node",
       quad->GetOSGNode() != NULL );
 
@@ -1064,7 +1055,7 @@ void HUDElementsTests::TestHUDQuadElement()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthButton()
 {
-   dtCore::RefPtr<SimCore::Components::StealthButton> button = 
+   dtCore::RefPtr<SimCore::Components::StealthButton> button =
       new SimCore::Components::StealthButton("TestStealthButton","Help","F1");
 
    CPPUNIT_ASSERT_MESSAGE( "Button should have a valid key label image",
@@ -1077,7 +1068,7 @@ void HUDElementsTests::TestStealthButton()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthToolbar()
 {
-   dtCore::RefPtr<SimCore::Components::StealthToolbar> toolbar = 
+   dtCore::RefPtr<SimCore::Components::StealthToolbar> toolbar =
       new SimCore::Components::StealthToolbar("TestStealthToolbar");
    dtCore::RefPtr<SimCore::Components::StealthButton> button1;
    dtCore::RefPtr<SimCore::Components::StealthButton> button2;
@@ -1088,16 +1079,16 @@ void HUDElementsTests::TestStealthToolbar()
       toolbar->GetButtonCount() == 0 );
 
    // Test strings.
-   // NOTE: These names must match those found in the imageset for "Toolbar" 
+   // NOTE: These names must match those found in the imageset for "Toolbar"
    // in CEGUI/imagesets
-   const std::string 
+   const std::string
       name1("Binoculars"),
       name2("LRF"),
       name3("NightVision"),
       name4("GPS");
 
    // Add all buttons
-   // NOTE: Keylabel names must match those found in the imageset for "KeyLabels" 
+   // NOTE: Keylabel names must match those found in the imageset for "KeyLabels"
    // in CEGUI/imagesets
    toolbar->AddButton(name1, name1, "F8");
    toolbar->AddButton(name2, name2, "F9");
@@ -1214,9 +1205,9 @@ void HUDElementsTests::TestStealthToolbar()
 
 
    // Test button replacing
-   int indices[] = { 
+   int indices[] = {
       toolbar->GetElementIndex( *button1 ),
-      toolbar->GetElementIndex( *button2 ), 
+      toolbar->GetElementIndex( *button2 ),
       toolbar->GetElementIndex( *button3 ) };
 
    CPPUNIT_ASSERT_MESSAGE("All toolbar buttons should have different indices",
@@ -1304,7 +1295,7 @@ void HUDElementsTests::TestStealthAmmoMeter()
    // NOTE: This meter is a simple subclass of a unit bar meter.
    // This function merely tests that this object can
    // initialize properly.
-   dtCore::RefPtr<SimCore::Components::StealthAmmoMeter> ammoMeter = 
+   dtCore::RefPtr<SimCore::Components::StealthAmmoMeter> ammoMeter =
       new SimCore::Components::StealthAmmoMeter("TestAmmoMeter");
 
    ammoMeter->Initialize();
@@ -1338,7 +1329,7 @@ void HUDElementsTests::TestStealthCompassMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthGPSMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthGPSMeter> gpsMeter = 
+   dtCore::RefPtr<SimCore::Components::StealthGPSMeter> gpsMeter =
       new SimCore::Components::StealthGPSMeter("TestGPSMeter");
 
    // Test variables
@@ -1372,7 +1363,7 @@ void HUDElementsTests::TestStealthGPSMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthMGRSMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> gmrsMeter = 
+   dtCore::RefPtr<SimCore::Components::StealthMGRSMeter> gmrsMeter =
       new SimCore::Components::StealthMGRSMeter("TestMGRSMeter");
 
    // Test variables
@@ -1390,7 +1381,7 @@ void HUDElementsTests::TestStealthMGRSMeter()
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::TestStealthCartesianMeter()
 {
-   dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> cartMeter = 
+   dtCore::RefPtr<SimCore::Components::StealthCartesianMeter> cartMeter =
       new SimCore::Components::StealthCartesianMeter("TestCartesianMeter");
 
    // Test variables

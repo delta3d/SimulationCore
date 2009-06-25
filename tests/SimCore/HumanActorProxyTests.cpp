@@ -57,14 +57,6 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-#ifdef DELTA_WIN32
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 
@@ -87,6 +79,9 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestPlanShotSquatting);
       CPPUNIT_TEST(TestPlanShotProne);
       CPPUNIT_TEST(TestPlanShotCrouching);
+      CPPUNIT_TEST(TestPlanActionStanding);
+      CPPUNIT_TEST(TestPlanActionKneeling);
+      CPPUNIT_TEST(TestPlanActionProne);
       CPPUNIT_TEST(TestStartup);
       CPPUNIT_TEST(TestPrimaryWeapon);
 
@@ -150,7 +145,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -179,7 +175,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -208,7 +205,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
          human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -242,8 +240,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
          human->SetMaxTimePerIteration(0.35);
 
-         bool value = human->GenerateNewAnimationSequence();
-         CPPUNIT_ASSERT(value);
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -278,8 +276,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetVelocityVector(osg::Vec3(1.1f, 1.2f, 1.3f));
 
-         bool value = human->GenerateNewAnimationSequence();
-         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.", value);
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -374,7 +372,8 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          human->SetMaxTimePerIteration(0.45);
 
-         CPPUNIT_ASSERT(human->GenerateNewAnimationSequence());
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 
          CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
@@ -382,16 +381,173 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
 
          dtAI::Planner::OperatorList::const_iterator iter = result.begin();
 
-         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_READY.Get(), (*iter)->GetName());
-         ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_READY_TO_DEPLOYED.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
          ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
          ++iter;
 
          CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
+      }
+
+      void TestPlanActionStanding()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::CROUCHING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(1.5f, 1.5f, 1.5f));
+
+         mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
+
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING, "Shoot");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING, "Eat");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING, "Spit");
+
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               7U, unsigned(result.size()));
+
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_DEPLOYED.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_STAND.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STANDING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STANDING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STANDING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_DEPLOYED.Get(), (*iter)->GetName());
+      }
+
+      void TestPlanActionKneeling()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(1.5f, 1.5f, 1.5f));
+
+         mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
+
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING, "Shoot");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING, "Eat");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING, "Spit");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING, "Throw Rock");
+
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               8U, unsigned(result.size()));
+
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEELING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEELING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEELING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEELING_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_STAND.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_WALK_DEPLOYED.Get(), (*iter)->GetName());
+      }
+
+      void TestPlanActionProne()
+      {
+         SimCore::Actors::Human* human = NULL;
+         mHumanAP->GetActor(human);
+         //human->SetMaxTimePerIteration(2.00);
+
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_STANDING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::NO_WEAPON);
+
+         human->SetVelocityVector(osg::Vec3(1.5f, 1.5f, 1.5f));
+
+         mGM->AddActor(*mHumanAP, false, false);
+         // have to call this because the human ignores the plan if no model is set..
+         human->UpdatePlanAndAnimations();
+
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::PRONE, "Shoot");
+         human->ExecuteAction(SimCore::Actors::HumanActorProxy::StanceEnum::PRONE, "Play Dead");
+
+         //change the final stance
+         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::KNEELING);
+         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::FIRING_POSITION);
+
+         CPPUNIT_ASSERT_MESSAGE("Plan failed - see error log. May have taken too long, or been impossible.",
+                  human->GenerateNewAnimationSequence());
+         const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The plan length",
+               8U, unsigned(result.size()));
+
+         dtAI::Planner::OperatorList::const_iterator iter = result.begin();
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_DEPLOYED.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_STAND_TO_KNEEL.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_KNEEL_TO_PRONE.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_PRONE_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_PRONE_ACTION.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_PRONE_TO_KNEEL.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::OPER_DEPLOYED_TO_READY.Get(), (*iter)->GetName());
+         ++iter;
+
+         CPPUNIT_ASSERT_EQUAL(SimCore::Actors::AnimationOperators::ANIM_LOW_WALK_READY.Get(), (*iter)->GetName());
+         ++iter;
       }
 
       void TestStartup()
@@ -406,10 +562,6 @@ class HumanActorProxyTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(*mHumanAP, false, false);
          // have to call this because the human ignores the plan if no model is set..
          human->UpdatePlanAndAnimations();
-
-         human->SetStance(SimCore::Actors::HumanActorProxy::StanceEnum::UPRIGHT_WALKING);
-         human->SetPrimaryWeaponState(SimCore::Actors::HumanActorProxy::WeaponStateEnum::DEPLOYED);
-         human->SetVelocityVector(osg::Vec3(0.0f,0.0f,0.0f));
 
          const dtAI::Planner::OperatorList& result = human->GetCurrentPlan();
 

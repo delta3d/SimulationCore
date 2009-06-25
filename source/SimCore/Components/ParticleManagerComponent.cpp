@@ -178,8 +178,8 @@ namespace SimCore
          }
 
          mLayerRefs.clear();
-         std::list<dtCore::ParticleLayer>& layers = particles.GetAllLayers();
-         std::list<dtCore::ParticleLayer>::iterator itor = layers.begin();
+         dtCore::ParticleSystem::LayerList& layers = particles.GetAllLayers();
+         dtCore::ParticleSystem::LayerList::iterator itor = layers.begin();
          for( ; itor != layers.end(); ++itor )
          {
             osgParticle::ParticleSystem* ref = &itor->GetParticleSystem();
@@ -676,8 +676,8 @@ namespace SimCore
          }
 
          // Go through all particle layers and apply the force to each
-         std::list<dtCore::ParticleLayer>& layers = ps.GetAllLayers();
-         std::list<dtCore::ParticleLayer>::iterator itor = layers.begin();
+         dtCore::ParticleSystem::LayerList& layers = ps.GetAllLayers();
+         dtCore::ParticleSystem::LayerList::iterator itor = layers.begin();
          for( ; itor != layers.end(); ++itor )
          {
             curLayer = &(*itor);
