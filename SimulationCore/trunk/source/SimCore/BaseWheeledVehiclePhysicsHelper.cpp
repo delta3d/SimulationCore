@@ -34,6 +34,7 @@
 #ifndef AGEIA_PHYSICS
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palutil.h>
+#include <pal/palBodies.h>
 #include <pal/palVehicle.h>
 #include <pal/palFactory.h>
 #endif
@@ -90,7 +91,7 @@ namespace SimCore
    {
 #ifndef AGEIA_PHYSICS
 //Create the vehicle here so we can add wheels any time.
-      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().CreatePhysicsObject("palVehicle"));
+      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       AddPhysicsObject(*physicsObject);
 #endif
