@@ -44,6 +44,13 @@
 //todo- move WaypointArray out of AIPluginInterface
 #include <dtAI/aiplugininterface.h>
 
+//use a property container to hold ai data
+#include <dtDAL/propertycontainer.h>
+#include <dtDAL/containeractorproperty.h>
+#include <dtDAL/enginepropertytypes.h>
+#include <dtUtil/command.h>
+#include <dtUtil/functor.h>
+
 #include <dtUtil/log.h>
 
 namespace NetDemo
@@ -423,6 +430,208 @@ namespace NetDemo
       //typedef dtUtil::ObjectFactory<std::string, ControllableType> AIEntityFactory;
       //static dtCore::RefPtr<AIEntityFactory> mEntityFactory;
    };
+
+
+
+
+
+   ///////////////////////////////////////////////////////////////////////////
+   //PROPERTY CONTAINER TEMPLATE STUFF
+   //////////////////////////////////////////////////////////////////////////
+   template <typename _Type>
+   struct TypeToActorProperty
+   {
+   private:
+      //if no specializations are used we will just do everything by copy
+      template <class U>
+      struct _TypeToActorProperty_
+      {
+         typedef U value_type;
+         typedef value_type GetValueType;
+         typedef value_type SetValueType;
+
+      };
+
+      //TODO- ActorActor, GameEvent, Resource, Enumeration, and ColorRGBA
+
+      template <>
+      struct _TypeToActorProperty_<bool>
+      {
+         typedef dtDAL::BooleanActorProperty value_type;
+
+         typedef bool GetValueType;
+         typedef bool SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<int>
+      {
+         typedef dtDAL::IntActorProperty value_type;
+
+         typedef int GetValueType;
+         typedef int SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<long>
+      {
+         typedef dtDAL::LongActorProperty value_type;
+
+         typedef long GetValueType;
+         typedef long SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<float>
+      {
+         typedef dtDAL::FloatActorProperty value_type;
+
+         typedef float GetValueType;
+         typedef float SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<double>
+      {
+         typedef dtDAL::DoubleActorProperty value_type;
+
+         typedef double GetValueType;
+         typedef double SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<std::string>
+      {
+         typedef dtDAL::StringActorProperty value_type;
+
+         typedef std::string GetValueType;
+         typedef const std::string& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec2>
+      {
+         typedef dtDAL::Vec3ActorProperty value_type;
+
+         typedef osg::Vec2 GetValueType;
+         typedef const osg::Vec2& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec2d>
+      {
+         typedef dtDAL::Vec3dActorProperty value_type;
+
+         typedef osg::Vec2d GetValueType;
+         typedef const osg::Vec2d& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec3>
+      {
+         typedef dtDAL::Vec3ActorProperty value_type;
+
+         typedef osg::Vec3 GetValueType;
+         typedef const osg::Vec3& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec3d>
+      {
+         typedef dtDAL::Vec3dActorProperty value_type;
+
+         typedef osg::Vec3d GetValueType;
+         typedef const osg::Vec3d& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec4>
+      {
+         typedef dtDAL::Vec4ActorProperty value_type;
+
+         typedef osg::Vec4 GetValueType;
+         typedef const osg::Vec4& SetValueType;
+      };
+
+      template <>
+      struct _TypeToActorProperty_<osg::Vec4d>
+      {
+         typedef dtDAL::Vec4dActorProperty value_type;
+
+         typedef osg::Vec4d GetValueType;
+         typedef const osg::Vec4d& SetValueType;
+      };
+
+
+   public:
+      typedef typename _TypeToActorProperty_<_Type>::value_type value_type;
+      
+      typedef typename _TypeToActorProperty_<_Type>::GetValueType GetValueType;
+      typedef typename _TypeToActorProperty_<_Type>::SetValueType SetValueType;
+
+      typedef dtUtil::Functor<void, TYPELIST_1(SetValueType)> SetFuncType;
+      typedef dtUtil::Functor<GetValueType, TYPELIST_0()> GetFuncType;
+   };
+
+   template <class ContainerType, class FuncObj>
+   struct PropertyRegHelper
+   {
+      typedef PropertyRegHelper<ContainerType, FuncObj> Type;
+      typedef FuncObj FunctorObjectType;
+      typedef ContainerType ContainerObjectType;
+
+      typedef dtDAL::Vec3ActorProperty Vec3;
+
+      PropertyRegHelper(ContainerType con, FuncObj* objPtr, const std::string& str) 
+         : mPropCon(con)
+         , mFuncObj(objPtr)
+         , mGroup(str)
+      {}
+
+      template <class PropType, typename SetPtr, typename GetPtr>
+      void RegisterProperty(PropType prop, SetPtr setter, GetPtr getter, const std::string& name, const std::string& desc)
+      {
+         
+         mPropCon.AddProperty(new typename TypeToActorProperty<PropType>::value_type(name, name,
+            dtUtil::Functor<void, TYPELIST_1(TypeToActorProperty<PropType>::SetValueType)>(mFuncObj, setter),
+            dtUtil::Functor<TypeToActorProperty<PropType>::GetValueType, TYPELIST_0()>(mFuncObj, getter),
+            desc, mGroup));
+      }
+
+      ContainerType mPropCon;
+      FuncObj* mFuncObj;
+
+      const std::string& mGroup;
+   };
+
+#define DECLARE_PROPERTY(PropertyType, PropertyName) \
+   PropertyType  m ## PropertyName; \
+public: \
+   \
+   void Set ## PropertyName(TypeToActorProperty<PropertyType>::SetValueType value)\
+   {\
+      m ## PropertyName = value; \
+   };\
+   \
+   TypeToActorProperty<PropertyType>::GetValueType Get ## PropertyName()\
+   {\
+      return m ## PropertyName;\
+   };\
+   \
+
+
+#define CREATE_PROPERTY_GETTER_HELPER_MACRO(RegHelperType_, PropertyName)\
+   &RegHelperType_::FunctorObjectType::Get ## PropertyName\
+
+#define CREATE_PROPERTY_SETTER_HELPER_MACRO(RegHelperType_, PropertyName)\
+   &RegHelperType_::FunctorObjectType::Set ## PropertyName\
+
+
+#define REGISTER_PROPERTY(PropertyName, PropertyDesc, RegHelperType_, RegHelperInstance) \
+   RegHelperInstance.RegisterProperty(m ## PropertyName, \
+                                      CREATE_PROPERTY_SETTER_HELPER_MACRO(RegHelperType_, PropertyName), \
+                                      CREATE_PROPERTY_GETTER_HELPER_MACRO(RegHelperType_, PropertyName), \
+                                      #PropertyName, #PropertyDesc);\
 
 
 }//namespace NetDemo

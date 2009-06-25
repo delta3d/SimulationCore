@@ -33,6 +33,7 @@
 
 #include <dtAI/fsm.h>
 #include <dtAI/npcstate.h>
+
 #include <dtCore/transform.h>
 
 namespace NetDemo
@@ -40,19 +41,25 @@ namespace NetDemo
 
    class AIEvent;
    class AIStateType;
-
+   class EnemyDescriptionActor;
 
    class NETDEMO_EXPORT BaseAIHelper: public osg::Referenced
    {
    public:
      BaseAIHelper();
+     BaseAIHelper(const EnemyDescriptionActor& desc);
 
-     virtual void Init();
+     void Init(const EnemyDescriptionActor& desc);
+     virtual void OnInit(const EnemyDescriptionActor& desc);
+
      virtual void Spawn();
      virtual void Update(float dt);
 
      virtual void PreSync(const dtCore::Transform& trans);
      virtual void PostSync(dtCore::Transform& trans) const;
+
+     const dtUtil::RefString& GetPrototypeName() const;
+     void GetPrototypeName(const dtUtil::RefString& name);
 
      dtAI::FSM& GetStateMachine() { return mStateMachine; }
      const dtAI::FSM& GetStateMachine() const { return mStateMachine; }
@@ -85,11 +92,13 @@ namespace NetDemo
      virtual void SelectState(float dt);
 
    private:
+     
      dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
      dtAI::FSM mStateMachine;
-
      dtCore::RefPtr<AISteeringModel> mSteeringModel;
      dtCore::RefPtr<AIPhysicsModel> mPhysicsModel;
+
+     dtUtil::RefString mPrototypeName;
    };
 
 } //namespace NetDemo

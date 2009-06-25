@@ -29,10 +29,10 @@
 
 #include <Actors/BaseEnemyActor.h>
 
-
 namespace NetDemo
 {
    class EnemyAIHelper;
+   class EnemyDescriptionActor;
 
    ////////////////////////////////////////////////////////////////////////////////
    /* This class extends BasePhysicsVehicle. It is intended to be a simple target
@@ -52,6 +52,7 @@ namespace NetDemo
 
       // INHERITED PUBLIC
       public:
+
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
@@ -72,6 +73,8 @@ namespace NetDemo
 
          virtual void DoExplosion(float);
 
+         EnemyAIHelper* GetAIHelper();
+         const EnemyAIHelper* GetAIHelper() const;
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
@@ -100,6 +103,8 @@ namespace NetDemo
 
          EnemyMineActorProxy();
          virtual void BuildPropertyMap();
+
+         void InitAI(const EnemyDescriptionActor& desc);
 
       protected:
          virtual ~EnemyMineActorProxy();

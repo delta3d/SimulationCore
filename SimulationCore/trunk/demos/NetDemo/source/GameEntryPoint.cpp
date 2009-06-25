@@ -16,7 +16,7 @@
 #include <Components/GameLogicComponent.h>
 #include <ConfigParameters.h>
 #include <Components/GUIComponent.h>
-
+#include <Components/SpawnComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
@@ -145,6 +145,8 @@ namespace NetDemo
       GUIComponent* guiComp = new GUIComponent;
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
+
+      gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
 
       // Networking
       //SetupClientServerNetworking(gm);

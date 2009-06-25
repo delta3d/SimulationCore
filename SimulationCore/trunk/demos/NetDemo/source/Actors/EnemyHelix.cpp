@@ -71,7 +71,8 @@ namespace NetDemo
       if (!IsRemote()) //only run locally
       {
          //calling init on the AIHelper will setup the states and transitions
-         mAIHelper->Init();
+         //note: init is now called by the spawn component
+         //mAIHelper->Init();
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());

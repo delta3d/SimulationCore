@@ -36,18 +36,66 @@
 namespace NetDemo
 {
    ///////////////////////////////////////////////////////////////////////////////////
+   //EnemyDescriptionActor::EnemyType
+   ///////////////////////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(EnemyDescriptionActor::EnemyType);
    EnemyDescriptionActor::EnemyType EnemyDescriptionActor::EnemyType::ENEMY_DEFAULT("ENEMY_DEFAULT");
    EnemyDescriptionActor::EnemyType EnemyDescriptionActor::EnemyType::ENEMY_MINE("ENEMY_MINE");
    EnemyDescriptionActor::EnemyType EnemyDescriptionActor::EnemyType::ENEMY_HELIX("ENEMY_HELIX");
 
    ///////////////////////////////////////////////////////////////////////////////////
-   EnemyDescriptionActor::EnemyType::EnemyType(const std::string &name)
+   EnemyDescriptionActor::EnemyType::EnemyType()
+      : dtUtil::Enumeration("ENEMY_DEFAULT")
+   {
+      AddInstance(this);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   EnemyDescriptionActor::EnemyType::EnemyType(const std::string& name)
       : dtUtil::Enumeration(name)
    {
       AddInstance(this);
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   //EnemyDescriptionActor::EnemySpawnInfo
+   ///////////////////////////////////////////////////////////////////////////////////
+   EnemyDescriptionActor::EnemySpawnInfo::EnemySpawnInfo()
+      : mLastSpawnTime(0)
+      , mNumSpawnPerMinute(10)
+      , mWaveDenominator(1)
+   {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   EnemyDescriptionActor::EnemySpawnInfo::~EnemySpawnInfo()
+   {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   {
+      typedef PropertyRegHelper<dtDAL::PropertyContainer&, value_type> RegHelperType;
+      RegHelperType propReg(pc, this, group);
+
+      REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
+      REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
+      REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group)
+   {
+      typedef PropertyRegHelper<dtDAL::ContainerActorProperty&, value_type> RegHelperType;
+      RegHelperType propReg(pc, this, group);
+
+      REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
+      REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
+      REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   //EnemyDescriptionActor
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyDescriptionActor::EnemyDescriptionActor(EnemyDescriptionActorProxy &proxy)
       : BaseClass(proxy)
@@ -61,7 +109,7 @@ namespace NetDemo
    {
    }
 
-   ///////////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////////
    void EnemyDescriptionActor::SetEnemyType( EnemyDescriptionActor::EnemyType& newValue )
    {
       mType = &newValue;
@@ -82,8 +130,6 @@ namespace NetDemo
    }
 
    const dtUtil::RefString EnemyDescriptionActorProxy::PROP_ENEMY_TYPE("Enemy Type");
-
-
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyDescriptionActorProxy::BuildPropertyMap()
    {
@@ -91,7 +137,7 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      EnemyDescriptionActor &actor = static_cast<EnemyDescriptionActor &>(GetGameActor());
+      EnemyDescriptionActor& actor = static_cast<EnemyDescriptionActor &>(GetGameActor());
 
       static const dtUtil::RefString PROP_ENEMY_TYPE_DESC("Indicates the enemy type.");
       AddProperty(new dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>(PROP_ENEMY_TYPE, PROP_ENEMY_TYPE,
@@ -99,6 +145,8 @@ namespace NetDemo
          dtDAL::MakeFunctorRet(actor, &EnemyDescriptionActor::GetEnemyType),
          PROP_ENEMY_TYPE_DESC, GROUP));
 
+      //do this to register properties from EnemySpawnInfo
+      actor.GetSpawnInfo().RegisterProperties(*this, GROUP);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
