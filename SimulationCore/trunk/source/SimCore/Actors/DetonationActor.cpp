@@ -442,8 +442,8 @@ namespace SimCore
 
             if(mUsesPhysics && mCollidedMaterial != NULL)
             {
-               std::list<dtCore::ParticleLayer> ourList = mSmokeSystem->GetAllLayers();
-               std::list<dtCore::ParticleLayer>::iterator iter = ourList.begin();
+               dtCore::ParticleSystem::LayerList ourList = mSmokeSystem->GetAllLayers();
+               dtCore::ParticleSystem::LayerList::iterator iter = ourList.begin();
                for(; iter != ourList.end(); ++iter)
                {
                   (*iter).GetParticleSystem().getDefaultParticleTemplate().setColorRange(osgParticle::rangev4(mCollidedMaterial->GetBaseColorvalue(),

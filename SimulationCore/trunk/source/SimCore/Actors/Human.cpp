@@ -71,7 +71,7 @@ namespace SimCore
             public:
                typedef dtAnim::AnimationSequence::AnimationController BaseClass;
 
-               WRController(WalkRunBlend& pWR, Human* h)
+               WRController(WalkRunBlend& pWR, Human& h)
                   : BaseClass(pWR)
                   , mSpeed(0.0f)
                   , mWalkStart(0.000001f)//in m/s
@@ -82,7 +82,7 @@ namespace SimCore
                   , mRunFadeIn(0.15f) //in m/s
                   , mRunStop(std::numeric_limits<float>::max()) //we dont want to stop running
                   , mRunFadeOut(std::numeric_limits<float>::max()) //we dont want to stop running
-                  , mParentHuman(h)
+                  , mParentHuman(&h)
                {
                }
 
@@ -232,7 +232,7 @@ namespace SimCore
          };
 
 
-            WalkRunBlend(Human* h)
+            WalkRunBlend(Human& h)
             {
                mWRController = new WRController(*this, h);
                SetController(mWRController.get());
@@ -521,8 +521,8 @@ namespace SimCore
                transform.addChild(mModelNode.get());
 
                //setup speed blends
-               WalkRunBlend* walkRunReady = new WalkRunBlend(this);
-               WalkRunBlend* walkRunDeployed = new WalkRunBlend(this);
+               WalkRunBlend* walkRunReady = new WalkRunBlend(*this);
+               WalkRunBlend* walkRunDeployed = new WalkRunBlend(*this);
                walkRunReady->SetName(AnimationOperators::ANIM_WALK_READY);
                walkRunDeployed->SetName(AnimationOperators::ANIM_WALK_DEPLOYED);
 
@@ -633,9 +633,16 @@ namespace SimCore
                << *mPlannerHelper.GetCurrentState()
                << "\n\n Going To:\n\n"
                << "Stance:  \"" << GetStance().GetName()
-               << "\" Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
-               << "\" Damage: \"" << GetDamageState().GetName()
-               << "\" Velocty: \"" << GetVelocityVector() << "\"";
+               << "\"\n Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
+               << "\"\n Damage: \"" << GetDamageState().GetName()
+               << "\"\n Velocty: \"" << GetVelocityVector() << "\"\n";
+               ExecuteActionCountMap::const_iterator i, iend;
+               i = mExecutedActionCounts.begin();
+               iend = mExecutedActionCounts.end();
+               for (; i != iend; ++i)
+               {
+                  ss << i->first->GetName() << ": \"" << i->second << "\" \n";
+               }
             mLogger.LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, ss.str());
          }
          return false;
@@ -711,9 +718,43 @@ namespace SimCore
       float Human::GetRemainingCost(const dtAI::WorldState* pWS) const
       {
          float value = 1.0f;
-         value += float(CheckActionState(pWS, STATE_STANDING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::STANDING)->second));
-         value += float(CheckActionState(pWS, STATE_KNEELING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::KNEELING)->second));
-         value += float(CheckActionState(pWS, STATE_PRONE_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::PRONE)->second));
+
+         const WeaponState* weaponState;
+         pWS->GetState(STATE_WEAPON, weaponState);
+         HumanActorProxy::WeaponStateEnum* effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::FIRING_POSITION;
+         if (*mPrimaryWeaponStateEnum != HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
+         {
+            effectiveWeaponState = &HumanActorProxy::WeaponStateEnum::DEPLOYED;
+         }
+
+         if (weaponState->GetWeaponStateEnum() != *effectiveWeaponState)
+         {
+            value += 1.0;
+         }
+
+         float preactionValue = value;
+
+         value += 2.0 * float(CheckActionState(pWS, STATE_STANDING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::STANDING)->second));
+         value += 2.0 * float(CheckActionState(pWS, STATE_KNEELING_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::KNEELING)->second));
+         value += 2.0 * float(CheckActionState(pWS, STATE_PRONE_ACTION_COUNT, mExecutedActionCounts.find(&BasicStanceEnum::PRONE)->second));
+
+         //Only add the stance difference if no actions need to be performed
+         if (preactionValue == value)
+         {
+            const BasicStanceState* stanceState;
+            pWS->GetState(STATE_BASIC_STANCE, stanceState);
+
+            // Use a smaller number for here than the actions so that completing the final action
+            // won't make the planner think it is no closer to its goal.
+            value += dtUtil::Abs(stanceState->GetStance().GetCostValue() - mStance->GetAssocBasicStanceEnum().GetCostValue());
+         }
+
+         const dtAI::StateVariable* deadState;
+         pWS->GetState(STATE_DEAD, deadState);
+
+         //dead is the same as the damage state being equal to destroyed.
+         if (deadState->Get() != (GetDamageState() == BaseEntityActorProxy::DamageStateEnum::DESTROYED))
+            value += 1.0;
 
          return value;
       }
@@ -936,16 +977,27 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////
       IMPLEMENT_ENUM(BasicStanceEnum);
-      BasicStanceEnum BasicStanceEnum::IDLE("IDLE");
-      BasicStanceEnum BasicStanceEnum::STANDING("STANDING");
-      BasicStanceEnum BasicStanceEnum::KNEELING("KNEELING");
-      BasicStanceEnum BasicStanceEnum::PRONE("PRONE");
+      BasicStanceEnum BasicStanceEnum::IDLE("IDLE", 1.75);
+      BasicStanceEnum BasicStanceEnum::STANDING("STANDING", 1.75);
+      BasicStanceEnum BasicStanceEnum::KNEELING("KNEELING", 1.00);
+      BasicStanceEnum BasicStanceEnum::PRONE("PRONE", 0.00);
 
-      BasicStanceEnum::BasicStanceEnum(const std::string& name) : dtUtil::Enumeration(name)
+      ////////////////////////////////////////////////////////////////////////////
+      BasicStanceEnum::BasicStanceEnum(const std::string& name, float costValue)
+      : dtUtil::Enumeration(name)
+      , mCostValue(costValue)
       {
          AddInstance(this);
       }
 
+      ////////////////////////////////////////////////////////////////////////////
+      float BasicStanceEnum::GetCostValue() const
+      {
+         return mCostValue;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////
       BasicStanceState::BasicStanceState():
          mStance(&BasicStanceEnum::IDLE)
       {
@@ -1151,6 +1203,7 @@ namespace SimCore
 
             bool Apply(const dtAI::Operator* oper, dtAI::WorldState* pWSIn) const
             {
+               //std::cout << GetName() << std::endl;
                EffectList::const_iterator iter = mEffects.begin();
                EffectList::const_iterator endOfList = mEffects.end();
                for (;iter != endOfList; ++iter)
@@ -1303,7 +1356,7 @@ namespace SimCore
          dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> standing
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::STANDING);
 
-         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional>  kneeling
+         dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> kneeling
             = new HumanOperator::BasicStanceEnumConditional(Human::STATE_BASIC_STANCE, BasicStanceEnum::KNEELING);
 
          dtCore::RefPtr<HumanOperator::BasicStanceEnumConditional> prone

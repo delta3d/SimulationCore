@@ -286,7 +286,7 @@ namespace SimCore
          {
             bool success = false;
 
-            const std::list<dtCore::ParticleLayer>& layers = ptr->GetAllLayers();
+            const dtCore::ParticleSystem::LayerList& layers = ptr->GetAllLayers();
 
             CPPUNIT_ASSERT(!layers.empty());
 
@@ -349,8 +349,8 @@ namespace SimCore
          osgParticle::ForceOperator* forceOp = NULL;
 
          // Go through all particle layers and apply the force to each
-         std::list<dtCore::ParticleLayer>& layers = ps.GetAllLayers();
-         std::list<dtCore::ParticleLayer>::iterator itor = layers.begin();
+         dtCore::ParticleSystem::LayerList& layers = ps.GetAllLayers();
+         dtCore::ParticleSystem::LayerList::iterator itor = layers.begin();
          for( ; itor != layers.end(); ++itor )
          {
             curLayer = &(*itor);
@@ -852,8 +852,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::GetParticleLayerRefs( dtCore::ParticleSystem& particles, ParticleLayerRefList& outLayerRefs )
       {
-         std::list<dtCore::ParticleLayer>& layers = particles.GetAllLayers();
-         std::list<dtCore::ParticleLayer>::iterator curLayer = layers.begin();
+         dtCore::ParticleSystem::LayerList& layers = particles.GetAllLayers();
+         dtCore::ParticleSystem::LayerList::iterator curLayer = layers.begin();
          for( ; curLayer != layers.end(); ++curLayer )
          {
             outLayerRefs.push_back( new ParticleLayerRef( *curLayer ) );
