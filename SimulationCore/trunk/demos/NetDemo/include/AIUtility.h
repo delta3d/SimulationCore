@@ -49,7 +49,7 @@
 namespace NetDemo
 {
 
-   struct Kinematic 
+   struct Kinematic
    {
       osg::Matrix mTransform;
       osg::Vec3 mLinearVelocity;
@@ -57,9 +57,9 @@ namespace NetDemo
    };
 
    struct SteeringOutput
-   { 
+   {
       //these are the control inputs
-      //all are floats from 1 to -1 
+      //all are floats from 1 to -1
       //which represents percentage of maximum
       float mThrust, mLift, mYaw;
 
@@ -110,14 +110,14 @@ namespace NetDemo
    };
 
    /**
-    * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation) 
+    * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation)
     */
    class Align: public SteeringBehaviorType
    {
    public:
      typedef SteeringBehaviorType BaseClass;
      Align(float lookAhead, float timeToTarget)
-        : mLookAhead(lookAhead) 
+        : mLookAhead(lookAhead)
         , mTimeToTarget(timeToTarget)
      {}
 
@@ -143,13 +143,13 @@ namespace NetDemo
          : BaseClass(lookAheadRot, timeToTargetRot)
          , mMinSpeed(minSpeed)
          , mMaxSpeed(maxSpeed)
-         , mLookAhead(lookAhead) 
+         , mLookAhead(lookAhead)
          , mTimeToTarget(timeToTarget)
       {}
 
      /*virtual*/ void Think(float dt, Align::BaseClass::ConstKinematicGoalParam current_goal, BaseClass::BaseClass::ConstKinematicParam current_state, BaseClass::BaseClass::SteeringOutByRefParam result);
 
-   private: 
+   private:
 
       float mMinSpeed, mMaxSpeed, mLookAhead, mTimeToTarget;
    };
@@ -292,14 +292,14 @@ namespace NetDemo
 
    template<class IterType, class Functor>
    void ForEachIf(IterType from, IterType to, Functor& func)
-   {	
+   {
       bool result = true;
       for (; from != to && result; ++from) result = func(*from);
    }
 
    template<class IterType, class Functor>
    void ForEach(IterType from, IterType to, Functor func)
-   {	
+   {
       for (; from != to; ++from) func(*from);
    }
 
@@ -379,12 +379,12 @@ namespace NetDemo
          if(maxAttempts <= 0 || !mActuator.GetPath(state, g, p))
          {
             //we cannot complete our goal
-            return false;   
+            return false;
          }
 
          //todo- use ForEachIF() as above
-         ConstraintArray::iterator iter = mConstraints.begin();
-         ConstraintArray::iterator iterEnd = mConstraints.end();
+         typename ConstraintArray::iterator iter = mConstraints.begin();
+         typename ConstraintArray::iterator iterEnd = mConstraints.end();
 
          for(;iter != iterEnd; ++iter)
          {
@@ -411,7 +411,7 @@ namespace NetDemo
       typedef std::vector<TargeterType> TargetArray;
       TargetArray mTargeters;
 
-      //An array of Decomposers able to 
+      //An array of Decomposers able to
       typedef std::vector<DecomposerType> DecomposerArray;
       DecomposerArray mDecomposers;
 
