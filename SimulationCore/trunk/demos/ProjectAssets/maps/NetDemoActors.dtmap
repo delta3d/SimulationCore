@@ -7,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2009-05-19T13:51:40-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-25T10:43:15-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-06-25T11:01:55-05:00</lastUpdateTimestamp>
         <editorVersion>2.3.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -251,9 +251,9 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>1162.819336</value1>
-                    <value2>152.500000</value2>
-                    <value3>3819.923828</value3>
+                    <value1>208.000000</value1>
+                    <value2>80.000000</value2>
+                    <value3>47.500000</value3>
                 </vec3>
             </property>
             <property>
@@ -315,6 +315,19 @@
             <property>
                 <name>ShaderGroup</name>
                 <string></string>
+            </property>
+            <property>
+                <name>EnemyArray</name>
+                <array>
+                    <size>1</size>
+                    <element>
+                        <index>0</index>
+                        <property>
+                            <name>Enemy</name>
+                            <actorId></actorId>
+                        </property>
+                    </element>
+                </array>
             </property>
         </actor>
         <actor>
@@ -407,7 +420,7 @@
             </property>
             <property>
                 <name>Time and Date</name>
-                <string>2009-06-25T10:43:15-05:00</string>
+                <string>2009-06-25T11:01:55-05:00</string>
             </property>
             <property>
                 <name>Wind</name>
