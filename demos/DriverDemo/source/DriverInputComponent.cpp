@@ -1108,7 +1108,7 @@ namespace DriverDemo
                shooter->Emancipate();
 
                // Attach the shooter to the weapon's flash point
-               outWeapon->AttachObject( *shooter, "hotspot_01" );
+               outWeapon->AddChild(shooter, "hotspot_01");
             }
          }
       }
@@ -1171,13 +1171,9 @@ namespace DriverDemo
          {
             // Offset the eye point
             mWeapon->AddChild( mWeaponEyePoint.get() );
-            xform.SetTranslation( 0.0f, 0.0f, 0.0f );
+            xform.MakeIdentity();
             mWeaponEyePoint->SetTransform( xform, dtCore::Transformable::REL_CS );
          }
-
-         // Offset the weapon
-         //xform.SetTranslation( 0.0, 0.0, 0.0 );
-         //mWeapon->SetTransform( xform, dtCore::Transformable::REL_CS );
 
          // Set the owner
          if (mVehicle.valid())
