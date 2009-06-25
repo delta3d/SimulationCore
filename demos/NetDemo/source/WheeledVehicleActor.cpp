@@ -39,6 +39,7 @@ namespace NetDemo
    , mHelper(new SimCore::FourWheelVehiclePhysicsHelper(proxy))
    {
       SetPhysicsHelper(mHelper.get());
+      SetMunitionDamageTableName("StandardDamageTable");
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,7 @@ namespace NetDemo
       osg::Group* body = GetNodeCollector()->GetDOFTransform("dof_chassis");
       if (body == NULL)
       {
-         osg::Group* body = GetNodeCollector()->GetGroup("Body");
+         body = GetNodeCollector()->GetGroup("Body");
          if (body == NULL)
          {
             LOG_ERROR("Unable to find the 'Body' node");
