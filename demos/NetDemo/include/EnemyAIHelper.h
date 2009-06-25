@@ -48,7 +48,7 @@ namespace NetDemo
 
          EnemyAIHelper();
 
-         /*virtual*/ void Init();
+         /*virtual*/ void OnInit(const EnemyDescriptionActor& desc);
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 

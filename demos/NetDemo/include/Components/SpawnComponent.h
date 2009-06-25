@@ -25,9 +25,14 @@
 #include <dtGame/gmcomponent.h>
 
 #include <Actors/SpawnVolumeActor.h>
+#include <Actors/ServerGameStatusActor.h>
+
+#include <dtAI/fsm.h>
+#include <AIUtility.h>
 
 namespace NetDemo
 {
+   class EnemyDescriptionActor;
 
    class NETDEMO_EXPORT SpawnComponent : public dtGame::GMComponent
    {
@@ -59,10 +64,25 @@ namespace NetDemo
 
       virtual void CleanUp();
 
+      virtual void SpawnEnemy(const EnemyDescriptionActor& desc);
+
    private:
 
-      typedef std::vector<dtCore::RefPtr<SpawnVolumeActorProxy> > SpawnVolumeArray;
+      typedef std::vector<dtCore::RefPtr<SpawnVolumeActor> > SpawnVolumeArray;
       SpawnVolumeArray mSpawnVolumes;
+
+      typedef std::vector<dtCore::RefPtr<EnemyDescriptionActor> > EnemyDescArray;
+      EnemyDescArray mEnemies;
+
+      void Tick(float dt);
+      void InitGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int difficulty, int numPlayers, int numWaves);
+      void UpdateGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int waveNumber, float timeLeftInWave);
+
+      DECLARE_PROPERTY(int, Difficulty);
+      DECLARE_PROPERTY(int, WaveNumber);
+      DECLARE_PROPERTY(int, NumPlayers);
+      DECLARE_PROPERTY(float, TimeLeftInWave);
+      DECLARE_PROPERTY(const ServerGameStatusActor::ServerGameStatusEnum*, GameStatus);
 
    };
 }//namespace NetDemo

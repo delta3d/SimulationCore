@@ -29,6 +29,7 @@
 #include <AIEvent.h>
 #include <AIState.h>
 #include <AIUtility.h>
+#include <Actors/EnemyDescriptionActor.h>
 
 #include <dtAI/npcstate.h>
 #include <dtAI/npcevent.h>
@@ -54,9 +55,9 @@ namespace NetDemo
 
    }
 
-   void EnemyAIHelper::Init()
+   void EnemyAIHelper::OnInit(const EnemyDescriptionActor& desc)
    {
-      BaseClass::Init();
+
    }
 
    void EnemyAIHelper::Spawn()

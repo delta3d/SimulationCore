@@ -35,34 +35,75 @@
 
 namespace NetDemo
 {
-   struct SpaceShipState
+   struct NETDEMO_EXPORT SpaceShipState
    {
-      osg::Vec3 mPos;
-      osg::Vec3 mForward, mUp;
-      osg::Vec3 mVel, mAccel;
-      float mAngularVel, mAngularAccel;
-      float mVerticalVel, mVerticalAccel;
-      float mPitch, mRoll;
-      float mTimeStep;
+      SpaceShipState();
+      ~SpaceShipState();
+      
+      DECLARE_PROPERTY(osg::Vec3, Pos);
+      DECLARE_PROPERTY(osg::Vec3, Forward);
+      DECLARE_PROPERTY(osg::Vec3, Up);
+
+      DECLARE_PROPERTY(osg::Vec3, Vel);
+      DECLARE_PROPERTY(osg::Vec3, Accel);
+
+      DECLARE_PROPERTY(float, AngularVel);
+      DECLARE_PROPERTY(float, AngularAccel);
+
+      DECLARE_PROPERTY(float, VerticalVel);
+      DECLARE_PROPERTY(float, VerticalAccel);
+
+      DECLARE_PROPERTY(float, Pitch);
+      DECLARE_PROPERTY(float, Roll);
+      
+      DECLARE_PROPERTY(float, TimeStep);
+
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   struct SpaceShipGoalState: public SpaceShipState
+   struct NETDEMO_EXPORT SpaceShipGoalState: public SpaceShipState
    {
-      float mDragCoef, mAngularDragCoef, mVerticalDragCoef;
-      float mMaxVel, mMaxAccel;
-      float mMaxAngularVel, mMaxAngularAccel;
-      float mMaxVerticalVel, mMaxVerticalAccel;
-      float mMaxPitch, mMaxRoll;
-      float mMaxTiltPerSecond, mMaxRollPerSecond;
-      float mMinElevation, mMaxElevation;
+      SpaceShipGoalState();
+      ~SpaceShipGoalState();
+
+      DECLARE_PROPERTY(float, DragCoef);
+      DECLARE_PROPERTY(float, AngularDragCoef);
+      DECLARE_PROPERTY(float, VerticalDragCoef);
+
+      DECLARE_PROPERTY(float, MaxVel);
+      DECLARE_PROPERTY(float, MaxAccel);
+      
+      DECLARE_PROPERTY(float, MaxAngularVel);
+      DECLARE_PROPERTY(float, MaxAngularAccel);
+      
+      DECLARE_PROPERTY(float, MaxVerticalVel);
+      DECLARE_PROPERTY(float, MaxVerticalAccel);
+
+      DECLARE_PROPERTY(float, MaxPitch);
+      DECLARE_PROPERTY(float, MaxRoll);
+      
+      DECLARE_PROPERTY(float, MaxTiltPerSecond);
+      DECLARE_PROPERTY(float, MaxRollPerSecond);
+      
+      DECLARE_PROPERTY(float, MinElevation);
+      DECLARE_PROPERTY(float, MaxElevation);
+
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
    struct SpaceShipControls
-   { 
+   {
+      SpaceShipControls();
+      ~SpaceShipControls();
+
       //these are the control inputs
       //all are floats from 1 to -1 
       //which represents percentage of maximum
-      float mThrust, mLift, mYaw;
+      DECLARE_PROPERTY(float, Thrust);
+      DECLARE_PROPERTY(float, Lift);
+      DECLARE_PROPERTY(float, Yaw);
+
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
    struct SpaceShipControllable: public Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
@@ -188,7 +229,7 @@ namespace NetDemo
 
       SpaceShipAIHelper();
 
-      /*virtual*/ void Init();
+      /*virtual*/ void OnInit(EnemyDescriptionActor& desc);
       /*virtual*/ void Spawn();
       /*virtual*/ void Update(float dt);
 

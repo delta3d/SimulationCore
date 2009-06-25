@@ -29,11 +29,111 @@
 #include <dtCore/transform.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
+
+#include <dtDAL/functor.h>
+#include <dtDAL/enginepropertytypes.h>
+
 #include <osg/Vec2>
 #include <osg/Vec3>
 
 namespace NetDemo
 {
+
+   //////////////////////////////////////////////////////////////////////////
+   //SpaceShipState
+   //////////////////////////////////////////////////////////////////////////
+   SpaceShipState::SpaceShipState()
+   {
+   }
+
+   SpaceShipState::~SpaceShipState()
+   {
+   }
+
+   void SpaceShipState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   {
+      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipState> RegHelperType;
+      RegHelperType propReg(pc, this, group);
+
+      REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Forward, "The world space forward vector.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Up, "The world space up vector.", RegHelperType, propReg);
+      
+      REGISTER_PROPERTY(Vel, "The world space velocity vector.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Accel, "The world space velocity vector.", RegHelperType, propReg);
+      
+      REGISTER_PROPERTY(AngularVel, "The scalar angular velocity.", RegHelperType, propReg);
+      REGISTER_PROPERTY(AngularAccel, "The scalar angular acceleration.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(VerticalVel, "The scalar vertical velocity.", RegHelperType, propReg);
+      REGISTER_PROPERTY(VerticalAccel, "The scalar vertical acceleration.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(Pitch, "The current pitch.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Roll, "The current roll.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(TimeStep, "The per frame time step.", RegHelperType, propReg);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   //SpaceShipGoalState
+   //////////////////////////////////////////////////////////////////////////
+   SpaceShipGoalState::SpaceShipGoalState()
+   {
+   }
+
+   SpaceShipGoalState::~SpaceShipGoalState()
+   {
+   }
+
+   void SpaceShipGoalState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   {
+      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipGoalState> RegHelperType;
+      RegHelperType propReg(pc, this, group);
+
+      REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
+      REGISTER_PROPERTY(AngularDragCoef, "The angular air resistance.", RegHelperType, propReg);
+      REGISTER_PROPERTY(VerticalDragCoef, "The vertical air resistance.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MaxVel, "The maximim scalar velocity.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxAccel, "The maximim scalar acceleration.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MaxAngularVel, "The maximim scalar angular velocity.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxAngularAccel, "The maximim scalar angular acceleration.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MaxVerticalVel, "The maximim scalar vertical velocity.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxVerticalAccel, "The maximim scalar vertical acceleration.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MaxPitch, "The maximim pitch.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxRoll, "The maximim roll.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MaxTiltPerSecond, "The maximim pitch.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxRollPerSecond, "The maximim roll.", RegHelperType, propReg);
+
+      REGISTER_PROPERTY(MinElevation, "The minimum elevation we can fly.", RegHelperType, propReg);
+      REGISTER_PROPERTY(MaxElevation, "The maximum elevation we can fly.", RegHelperType, propReg);
+
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   //SpaceShipControls
+   //////////////////////////////////////////////////////////////////////////
+   SpaceShipControls::SpaceShipControls()
+   {
+   }
+
+   SpaceShipControls::~SpaceShipControls()
+   {
+   }
+
+   void SpaceShipControls::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   {
+      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipControls> RegHelperType;
+      RegHelperType propReg(pc, this, group);
+
+      REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Lift, "Our current scalar lift.", RegHelperType, propReg);
+      REGISTER_PROPERTY(Yaw, "Our current scalar yaw.", RegHelperType, propReg);
+   }
 
    //////////////////////////////////////////////////////////////////////////
    //SpaceShipControllable
@@ -396,9 +496,9 @@ namespace NetDemo
 
    }
 
-   void SpaceShipAIHelper::Init()
+   void SpaceShipAIHelper::OnInit(EnemyDescriptionActor& desc)
    {
-      BaseClass::Init();
+      BaseClass::OnInit(desc);
    }
 
    void SpaceShipAIHelper::Spawn()

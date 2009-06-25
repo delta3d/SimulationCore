@@ -51,6 +51,7 @@
 #include <AIUtility.h>
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
+#include <Actors/EnemyDescriptionActor.h>
 
 namespace NetDemo
 {
@@ -68,6 +69,18 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMineActor::~EnemyMineActor(void)
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   EnemyAIHelper* EnemyMineActor::GetAIHelper()
+   {
+      return mAIHelper.get();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   const EnemyAIHelper* EnemyMineActor::GetAIHelper() const
+   {
+      return mAIHelper.get();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +122,8 @@ namespace NetDemo
       if (!IsRemote()) // I guess the AI only runs on the server?
       {
          //calling init on the AIHelper will setup the states and transitions
-         mAIHelper->Init();
+         //note: init is now called by the spawn component
+         //mAIHelper->Init();
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
@@ -322,7 +336,7 @@ namespace NetDemo
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      EnemyMineActor  &actor = static_cast<EnemyMineActor &>(GetGameActor());
+      EnemyMineActor& actor = static_cast<EnemyMineActor &>(GetGameActor());
 
    }
 
@@ -332,6 +346,12 @@ namespace NetDemo
    void EnemyMineActorProxy::CreateActor()
    {
       SetActor(*new EnemyMineActor(*this));
+   }
+
+   void EnemyMineActorProxy::InitAI(const EnemyDescriptionActor& desc)
+   {
+      EnemyMineActor& actor = static_cast<EnemyMineActor&>(GetGameActor());
+      actor.GetAIHelper()->Init(desc);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

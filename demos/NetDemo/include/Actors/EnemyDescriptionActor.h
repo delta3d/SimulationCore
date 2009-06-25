@@ -27,6 +27,7 @@
 #include <DemoExport.h>
 #include <dtGame/gameactor.h>
 #include <dtDAL/propertycontainer.h>
+#include <dtDAL/containeractorproperty.h>
 
 #include <AIUtility.h>
 
@@ -48,7 +49,27 @@ namespace NetDemo
             static EnemyType ENEMY_HELIX;
 
          private:
+            EnemyType();
             EnemyType(const std::string &name);
+      };
+
+
+
+      
+      struct NETDEMO_EXPORT EnemySpawnInfo
+      {
+         //this is used in RegisterProperties()
+         typedef EnemySpawnInfo value_type;
+
+         EnemySpawnInfo();
+         ~EnemySpawnInfo();
+
+         DECLARE_PROPERTY(float, LastSpawnTime);
+         DECLARE_PROPERTY(float, NumSpawnPerMinute);
+         DECLARE_PROPERTY(int, WaveDenominator);
+
+         void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+         void RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group);
       };
 
 
@@ -61,6 +82,8 @@ namespace NetDemo
       void SetEnemyType(EnemyDescriptionActor::EnemyType& newValue);
       EnemyDescriptionActor::EnemyType& GetEnemyType() const;
 
+      EnemySpawnInfo& GetSpawnInfo(){ return mSpawnInfo; }
+      const EnemySpawnInfo& GetSpawnInfo() const { return mSpawnInfo; }
 
    protected:
       /// Destructor
@@ -69,6 +92,8 @@ namespace NetDemo
    private:
 
       EnemyType* mType;
+
+      EnemySpawnInfo mSpawnInfo;
   
    };
 

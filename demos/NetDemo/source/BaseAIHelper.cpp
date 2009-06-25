@@ -28,6 +28,7 @@
 #include <BaseAIHelper.h>
 #include <AIEvent.h>
 #include <AIState.h>
+#include <Actors/EnemyDescriptionActor.h>
 
 #include <dtAI/npcstate.h>
 #include <dtUtil/log.h>
@@ -55,12 +56,18 @@ namespace NetDemo
 
    }
 
-   void BaseAIHelper::Init()
+   void BaseAIHelper::Init(const EnemyDescriptionActor& desc)
    {
       RegisterStates();
       CreateStates();
       SetupTransitions();
       SetupFunctors();
+
+      OnInit(desc);
+   }
+
+   void BaseAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   {
    }
 
 
