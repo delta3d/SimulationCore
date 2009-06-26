@@ -1094,8 +1094,8 @@ namespace DriverDemo
             // only if the shooter unit was assigned a valid proxy.
             if( proxy != NULL )
             {
-               SimCore::MunitionParticlesActor* shooter
-                  = dynamic_cast<SimCore::MunitionParticlesActor*>(ourActualActorProxy->GetActor());
+               SimCore::Actors::MunitionParticlesActor* shooter
+                  = dynamic_cast<SimCore::Actors::MunitionParticlesActor*>(ourActualActorProxy->GetActor());
 
                // Set other properties of the particle system
                shooter->SetWeapon( *outWeapon );
