@@ -68,6 +68,9 @@ namespace NetDemo
          DECLARE_PROPERTY(float, NumSpawnPerMinute);
          DECLARE_PROPERTY(int, WaveDenominator);
 
+         DECLARE_PROPERTY(std::string, EnemyPrototypeName);
+         DECLARE_PROPERTY(int, MaxVelocity);
+
          void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
          void RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group);
       };

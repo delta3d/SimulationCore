@@ -41,7 +41,13 @@ namespace NetDemo
       osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(current_state.mTransform, 3);
       pos = (targetPos - pos);
       pos.normalize();
+      
       result.mLinearVelocity = pos * mSpeed;
+      
+      //add some randomization
+      //osg::Vec3 randVector(dtUtil::RandFloat(-1.0f, 1.0f), dtUtil::RandFloat(-1.0f, 1.0f), dtUtil::RandFloat(0.0f, 2.0f));
+      //randVector.normalize();
+      //result.mLinearVelocity += randVector * (mSpeed * 0.25f);
    }
 
 
