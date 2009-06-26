@@ -17,6 +17,7 @@
 
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
+#include <dtGame/deadreckoninghelper.h>
 #include <dtABC/application.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/deltawin.h>
@@ -246,6 +247,27 @@ namespace NetDemo
          case '6':
             {
                ToggleDRGhost();
+               break;
+            }
+
+         case '7': 
+            {
+               ModifyVehiclePublishRate(1.10);
+               break;
+            }
+         case '8':
+            {
+               ModifyVehiclePublishRate(0.90);
+               break;
+            }
+         case '9':
+            {
+               if (mVehicle.valid())
+               {
+                  std::cout << "Setting smoothing time to 0.0" << std::endl;
+                  mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
+                  mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
+               }
                break;
             }
 
@@ -493,6 +515,25 @@ namespace NetDemo
          }
       }
 
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
+   {
+      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+      if (mVehicle.valid() && mPhysVehicle != NULL)
+      {
+         float timesPerSecondRate = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
+         timesPerSecondRate *= scaleFactor;
+         mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(timesPerSecondRate);
+
+         float rateInSeconds = 1.0f / timesPerSecondRate;
+         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
+         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
+
+         std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
+      }
    }
 
 }

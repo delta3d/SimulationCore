@@ -62,6 +62,9 @@
 
 #include <osg/io_utils>
 
+// Test
+//#include <iostream>
+
 namespace SimCore
 {
    namespace Actors
@@ -75,8 +78,6 @@ namespace SimCore
          , mNotifyFullUpdate(true)
          , mNotifyPartialUpdate(true)
          , mPerformAboveGroundSafetyCheck(false)
-         , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
          , mPushTransformToPhysics(false)
       {
          mTimeForSendingDeadReckoningInfoOut = 0.0f;
@@ -236,6 +237,7 @@ namespace SimCore
          mPushTransformToPhysics = true;
       }
 
+
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
@@ -272,10 +274,13 @@ namespace SimCore
          //                                          Update everything else                                      //
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          float elapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+
+         UpdateDeadReckoningValues(elapsedTime);
+
          UpdateVehicleTorquesAndAngles(elapsedTime);
          UpdateRotationDOFS(elapsedTime, true);
          UpdateSoundEffects(elapsedTime);
-         UpdateDeadReckoning(elapsedTime);
+
 
          // Allow the base class to handle expected base functionality.
          // NOTE: This is called last since the vehicle's position will be final.
@@ -284,18 +289,53 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
-      {
-         // Do nothing in the base. That's yer job.
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::UpdateDeadReckoning(float deltaTime)
+      void BasePhysicsVehicleActor::UpdateDeadReckoningValues(float deltaTime)
       {
          // Increment how long it's been since our last DR check. We can only send out an update
          // so many times a second.
          mTimeForSendingDeadReckoningInfoOut += deltaTime;
 
+         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+         if(physObj == NULL)
+         {
+            LOG_ERROR("No physics object found. Cannot update Dead Reckoning values from physics.");
+            return;
+         }
+
+         if (IsPublishLinearVelocity())
+         {
+            osg::Vec3 physLinearVelocity;
+#ifdef AGEIA_PHYSICS
+            NxVec3 linearVelVec3 = physObj->getLinearVelocity();
+            mPhysLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+#else
+            physLinearVelocity = physObj->GetLinearVelocity();
+#endif
+            // For Velocity - Blend part of old & part of new - helps soften small jerkiness and warble.
+            SetCurrentVelocity(GetCurrentVelocity() * 0.5f + physLinearVelocity * 0.5f);
+
+            //SetCurrentAcceleration(osg::Vec3()); // Hard to know on a driven vehicle - set it if you can
+         }
+
+         if (IsPublishAngularVelocity())
+         {
+            osg::Vec3 physAngularVelocity;
+#ifdef AGEIA_PHYSICS
+            NxVec3 angVelVec3 = physObj->getAngularVelocity();
+            physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
+#else
+            physAngularVelocity = physObj->GetAngularVelocity();
+#endif
+            SetCurrentAngularVelocity(physAngularVelocity);
+         }
+
+      }
+
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
+      {
+         // Do nothing in the base. That's yer job.
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -312,56 +352,12 @@ namespace SimCore
             if (!fullUpdate)
                forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
 
-            dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
-            if(physObj == NULL)
-            {
-               LOG_ERROR("No physics object on BasePhysicsVehicleActor::ShouldForceUpdate(), no doing dead reckoning");
-               return false;
-            }
-
             // If we are going to update, then set our velocities so others can do remote dead reckoning.
             if (forceUpdateResult)
             {
-               // Linear Velocity - set our linear velocity from the physics object in preparation for a publish
-               if (mPublishLinearVelocity)
-               {
-                  osg::Vec3 physLinearVelocity;
-#ifdef AGEIA_PHYSICS
-                  NxVec3 linearVelVec3 = physObj->getLinearVelocity();
-                  physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
-#else
-                  physLinearVelocity = physObj->GetLinearVelocity();
-#endif
-                  // If the value is very close to 0, set it to zero to prevent warbling
-                  bool physVelocityNearZero = physLinearVelocity.length() < 0.1;
-                  if( physVelocityNearZero )
-                     SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-                  else
-                     SetVelocityVector(physLinearVelocity);
-               }
-               else
-                  SetVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-
-
-               // Angular Velocity - set our angular velocity from the physics object in preparation for a publish
-               if (mPublishAngularVelocity)
-               {
-                  osg::Vec3 physAngularVelocity;
-#ifdef AGEIA_PHYSICS
-                  NxVec3 angVelVec3 = physObj->getAngularVelocity();
-                  physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
-#else
-                  physAngularVelocity = physObj->GetAngularVelocity();
-#endif
-                  // If the value is very close to 0, set it to zero to prevent warbling
-                  bool physAngularVelocityNearZero = physAngularVelocity.length() < 0.1;
-                  if ( physAngularVelocityNearZero ) //
-                     SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
-                  else
-                     SetAngularVelocityVector(physAngularVelocity);
-               }
-               else
-                  SetAngularVelocityVector( osg::Vec3(0.f, 0.f, 0.f) );
+               //if (GetName() == "Hover Vehicle")
+               //   std::cout << "VEHICLE - Vel[" << GetCurrentVelocity() << "] Speed[" << GetCurrentVelocity().length() 
+               //   << "[" << GetName() << "] ." << std::endl;
 
                // Since we are about to publish, set our time since last publish back to 0.
                // This allows us to immediately send out a change the exact moment it happens (ex if we
@@ -428,7 +424,7 @@ namespace SimCore
             // but we want to act like their not.
             if (IsRemote())
             {
-               osg::Vec3 velocity = GetVelocityVector();
+               osg::Vec3 velocity = GetLastKnownVelocity();
                NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
                physObject->setLinearVelocity(physVelocity );
             }
@@ -500,7 +496,7 @@ namespace SimCore
                // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
                // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
                // but we want to act like their not.
-               osg::Vec3 velocity = GetVelocityVector();
+               osg::Vec3 velocity = GetLastKnownVelocity();
                physicsObject->GetBodyWrapper()->SetLinearVelocity(velocity);
             }
 
@@ -592,7 +588,7 @@ namespace SimCore
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
          {
-            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
+            return GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {
@@ -640,7 +636,7 @@ namespace SimCore
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
          {
-            return GetVelocityVector().length() * METERSPS_TO_MILESPH;
+            return GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {

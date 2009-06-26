@@ -76,7 +76,8 @@ namespace NetDemo
             {
                SetMesh(platform->GetNonDamagedNodeFileName());
             }
-            mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
+            mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+            mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.4);
          }
          SetShaderGroup("GhostVehicleShaderGroup");
 
@@ -99,6 +100,7 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
+      // Move to TickRemote().
       UpdateOurPosition();
 
       static float countDownToDebug = 1.0f;
@@ -108,8 +110,8 @@ namespace NetDemo
          countDownToDebug = 1.0f;
          if (mSlavedEntity.valid())
          {
-            std::cout << "GHOST - Vel[" << mSlavedEntity->GetDeadReckoningHelper().GetVelocityVector() << 
-               "]." << std::endl;
+            //std::cout << "GHOST - Vel[" << mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity() << 
+            //   "]." << std::endl;
          } 
          else 
          {

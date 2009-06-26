@@ -404,42 +404,128 @@ namespace SimCore
              *
              * @param vec the velocity vector to copy
              */
-            void SetVelocityVector(const osg::Vec3 &vec);
+            void SetLastKnownVelocity(const osg::Vec3 &vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM velocity vector.
              *
              * @return the velocity vector
              */
-            osg::Vec3 GetVelocityVector() const;
+            osg::Vec3 GetLastKnownVelocity() const;
 
             /**
              * Sets this entity's DIS/RPR-FOM acceleration vector.
              *
              * @param accelerationVector the acceleration vector to copy
              */
-            void SetAccelerationVector(const osg::Vec3 &vec);
+            void SetLastKnownAcceleration(const osg::Vec3 &vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM acceleration vector.
              *
              * @return the acceleration vector
              */
-            osg::Vec3 GetAccelerationVector() const;
+            osg::Vec3 GetLastKnownAcceleration() const;
 
             /**
              * Sets this entity's DIS/RPR-FOM angular velocity vector.
              *
              * @param angularVelocityVector the angular velocity vector to copy
              */
-            void SetAngularVelocityVector(const osg::Vec3 &vec);
+            void SetLastKnownAngularVelocity(const osg::Vec3 &vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM angular velocity vector.
              *
              * @return the angular velocity vector
              */
-            osg::Vec3 GetAngularVelocityVector() const;
+            osg::Vec3 GetLastKnownAngularVelocity() const;
+
+            /**
+            * Sets the CURRENT velocity. This should be updated each frame and is different
+            * from the LastKnownVelocityVector (which is used for DeadReckoning).
+            * If you perform your own physics, you should set this at the start of the frame, 
+            * BEFORE you perform physics for the current frame. BaseEntity sets this as the 
+            * LastKnownVelocity right before it publishes.
+            * Since the physics component runs before entities get ticked, the timing works.
+            * @param vec the velocity vector to copy
+            * @see #SetLastKnownVelocity
+            */
+            void SetCurrentVelocity(const osg::Vec3 &vec) { mCurrentVelocity = vec; }
+            /**
+            * Gets the CURRENT velocity. This is different from the LastKnownVelocity. 
+            * @see #SetCurrentVelocity()
+            * @see #SetLastKnownVelocity()
+            * @return the current instantaneous velocity. 
+            */
+            osg::Vec3 GetCurrentVelocity() const { return mCurrentVelocity; }
+
+            /**
+            * Sets the CURRENT acceleration. This is sort of hard to compute accurately,
+            * but is provided since it is published and will be used for dead reckoning
+            * by entities. If you CAN compute this for a local entity, you should set this at the
+            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity 
+            * will set this as the LastKnownAcceleration right before it publishes.
+            * Since the physics component runs before entities get ticked, the timing works.
+            * @param vec the new value
+            * @see #SetLastKnownAcceleration
+            */
+            void SetCurrentAcceleration(const osg::Vec3 &vec) { mCurrentAcceleration = vec; }
+            /**
+            * Gets the CURRENT acceleration. This is different from the LastKnownAcceleration. 
+            * @see #SetCurrentAcceleration()
+            * @see #SetLastKnownAcceleration()
+            * @return the current acceleration from the start of the frame. 
+            */
+            osg::Vec3 GetCurrentAcceleration() const { return mCurrentAcceleration; }
+
+            /**
+            * Sets the CURRENT angular velocity. This is often hard to compute accurately,
+            * but is provided since it is published and can be used for dead reckoning
+            * remote entities. If you CAN compute this for a local entity, you should set this at the
+            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity 
+            * will set this as the LastKnownAcceleration right before it publishes.
+            * Since the physics component runs before entities get ticked, the timing works.
+            * Note - Angular Velocity is future 'rate' of change in the rotation.
+            * @param vec the new value
+            * @see #SetLastKnownAngularVelocity()
+            */
+            void SetCurrentAngularVelocity(const osg::Vec3 &vec) { mCurrentAngularVelocity = vec; }
+            /**
+            * Gets the CURRENT angular velocity. This is different from the LastKnownAngularVelocity. 
+            * @see #SetCurrentAngularVelocity()
+            * @see #SetLastKnownAngularVelocity()
+            * @return the current angular velocity that was set at the start of the frame. 
+            */
+            osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
+
+            /**
+             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
+             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
+             * If false, linear velocity will be zero. Should be made into a property...
+             * @param newValue True to enable, false to not. Default is true.
+             */
+            void SetPublishLinearVelocity(bool newValue) { mPublishLinearVelocity = newValue; }
+            /**
+             * Are we set to publish linear velocity & acceleration. 
+             * @see #SetPublishLinearVelocity()
+             * @return mPublishLinearVelocity
+             */
+            bool IsPublishLinearVelocity() const { return mPublishLinearVelocity; }
+
+            /**
+            * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
+            * Allows tightly controlled entities that do motion model stuff to not mess up velocity
+            * If false, linear velocity will be zero. Should be made into a property...
+            * @param newValue True to enable, false to not. Default is true.
+            */
+            void SetPublishAngularVelocity(bool newValue) { mPublishAngularVelocity = newValue; }
+            /**
+             * Are we set to publish angular velocity.
+             * @see #SetPublishAngularVelocity()
+             * @return mPublishAngularVelocity
+             */
+            bool IsPublishAngularVelocity() const { return mPublishAngularVelocity; }
 
 
             void SetFrozen(bool frozen);
@@ -665,15 +751,25 @@ namespace SimCore
             // smoke 'stuff'.
             void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
+            /// Called once we decided to publish - push our last known values onto the DR helper
+            virtual void SetLastKnownValuesBeforePublish(const osg::Vec3 &pos, const osg::Vec3 &rot);
+
          private:
             ///a sub-matrix node just for doing scale on the model.
             dtCore::RefPtr<osg::MatrixTransform> mScaleMatrixNode;
 
+            //////////////// DeadReckoning related values
+            // Note that the LastKnown values are stored on the DR helper, but the CURRENT 
+            // values are part of the entity. See the get/set methods for info.
             dtCore::RefPtr<dtGame::DeadReckoningHelper> mDeadReckoningHelper;
-
             //This is stored on both the entity and the helper because the
             //two values are not always the same.
             dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
+            osg::Vec3 mCurrentVelocity;
+            osg::Vec3 mCurrentAcceleration;
+            osg::Vec3 mCurrentAngularVelocity;
+            bool mPublishLinearVelocity;// : 1;
+            bool mPublishAngularVelocity;// : 1;
 
             ///The force for which this entity is fighting.
             BaseEntityActorProxy::ForceEnum* mForceAffiliation;

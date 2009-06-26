@@ -335,7 +335,7 @@ namespace SimCore
                if (entityProxy != NULL)
                {
                   const BaseEntity &entity = static_cast<const BaseEntity&>(entityProxy->GetGameActor());
-                  vehicleVelocity = entity.GetVelocityVector();
+                  vehicleVelocity = entity.GetLastKnownVelocity();
                   //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
                   particleSystem->SetParentsWorldRelativeVelocityVector(vehicleVelocity);
                }

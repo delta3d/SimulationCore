@@ -164,15 +164,6 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
-   {
-      GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
-      /////////dtPhysics::VectorType force(force[0], force[1], force[2]);
-      //GetPhysicsHelper()->GetPhysXObject()->addForce( NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE );
-   }
-
-
-   ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       dtCore::Keyboard *keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();

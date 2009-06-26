@@ -161,36 +161,37 @@ namespace SimCore
          BaseClass::BuildPropertyMap();
 
          static const dtUtil::RefString BASE_ENTITY_GROUP("Base Entity");
+         static const dtUtil::RefString DEAD_RECKONING_GROUP("Dead Reckoning");
 
-         static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last know position of this BaseEntity");
+         static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last known position of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
             dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownTranslation),
-            PROPERTY_LAST_KNOWN_TRANSLATION_DESC, BASE_ENTITY_GROUP));
+            PROPERTY_LAST_KNOWN_TRANSLATION_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION_DESC("Sets the last know rotation of this BaseEntity");
+         static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION_DESC("Sets the last known rotation of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_ROTATION, PROPERTY_LAST_KNOWN_ROTATION,
             dtDAL::MakeFunctor(*this, &BaseEntityActorProxy::SetLastKnownRotation),
             dtDAL::MakeFunctorRet(*this, &BaseEntityActorProxy::GetLastKnownRotation),
-            PROPERTY_LAST_KNOWN_ROTATION_DESC, BASE_ENTITY_GROUP));
+            PROPERTY_LAST_KNOWN_ROTATION_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR_DESC("Sets the velocity vector of this BaseEntity");
+         static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR_DESC("Sets the last known velocity vector of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_VELOCITY_VECTOR, PROPERTY_VELOCITY_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetVelocityVector),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetVelocityVector),
-            PROPERTY_VELOCITY_VECTOR_DESC, BASE_ENTITY_GROUP));
+            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownVelocity),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownVelocity),
+            PROPERTY_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR_DESC("Sets the acceleration vector of this BaseEntity");
+         static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR_DESC("Sets the last known acceleration vector of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ACCELERATION_VECTOR, PROPERTY_ACCELERATION_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetAccelerationVector),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetAccelerationVector),
-            PROPERTY_ACCELERATION_VECTOR_DESC, BASE_ENTITY_GROUP));
+            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAcceleration),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAcceleration),
+            PROPERTY_ACCELERATION_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC("Sets the angular velocity vector of this BaseEntity");
+         static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC("Sets the last known angular velocity vector of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ANGULAR_VELOCITY_VECTOR, PROPERTY_ANGULAR_VELOCITY_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetAngularVelocityVector),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetAngularVelocityVector),
-            PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, BASE_ENTITY_GROUP));
+            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAngularVelocity),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAngularVelocity),
+            PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
          static const dtUtil::RefString PROPERTY_FROZEN_DESC("Whether or not the simulation of the entity is frozen.");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FROZEN, PROPERTY_FROZEN,
@@ -274,7 +275,7 @@ namespace SimCore
          AddProperty(new dtDAL::BooleanActorProperty("DrawingModel", "Draw Model",
             dtDAL::MakeFunctor(e, &BaseEntity::SetDrawingModel),
             dtDAL::MakeFunctorRet(e, &BaseEntity::IsDrawingModel),
-            PROPERTY_DRAWING_MODEL_DESC, BASE_ENTITY_GROUP));
+            PROPERTY_DRAWING_MODEL_DESC, DEAD_RECKONING_GROUP));
 
          static const dtUtil::RefString PROPERTY_DAMAGE_STATE_DESC
             ("Changes which model to show based on the level of damage.");
@@ -472,6 +473,8 @@ namespace SimCore
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
          , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
+         , mPublishLinearVelocity(true)
+         , mPublishAngularVelocity(true)
          , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
          , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
@@ -681,39 +684,39 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetVelocityVector(const osg::Vec3& vec)
+      void BaseEntity::SetLastKnownVelocity(const osg::Vec3& vec)
       {
-         mDeadReckoningHelper->SetVelocityVector(vec);
+         mDeadReckoningHelper->SetLastKnownVelocity(vec);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetVelocityVector() const
+      osg::Vec3 BaseEntity::GetLastKnownVelocity() const
       {
-         return mDeadReckoningHelper->GetVelocityVector();
+         return mDeadReckoningHelper->GetLastKnownVelocity();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetAccelerationVector(const osg::Vec3& vec)
+      void BaseEntity::SetLastKnownAcceleration(const osg::Vec3& vec)
       {
-         mDeadReckoningHelper->SetAccelerationVector(vec);
+         mDeadReckoningHelper->SetLastKnownAcceleration(vec);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetAccelerationVector() const
+      osg::Vec3 BaseEntity::GetLastKnownAcceleration() const
       {
-         return mDeadReckoningHelper->GetAccelerationVector();
+         return mDeadReckoningHelper->GetLastKnownAcceleration();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetAngularVelocityVector(const osg::Vec3 &vec)
+      void BaseEntity::SetLastKnownAngularVelocity(const osg::Vec3 &vec)
       {
-         mDeadReckoningHelper->SetAngularVelocityVector(vec);
+         mDeadReckoningHelper->SetLastKnownAngularVelocity(vec);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetAngularVelocityVector() const
+      osg::Vec3 BaseEntity::GetLastKnownAngularVelocity() const
       {
-         return mDeadReckoningHelper->GetAngularVelocityVector();
+         return mDeadReckoningHelper->GetLastKnownAngularVelocity();
       }
       ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::IsFlying() const
@@ -1004,29 +1007,14 @@ namespace SimCore
             forceUpdate = true;
          }
 
-         //if( ! fullUpdate )
-         //{
-         // Check for update (or child class). Call this even if fullUpdate, because they may set some
+         // Check for update (on sub class). Call this even if fullUpdate, because they may set some
          // properties that we need to publish
          forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
-         //}
+
 
          if (forceUpdate)
          {
-            SetLastKnownTranslation(pos);
-            SetLastKnownRotation(rot);
-
-            /*
-            osg::Vec3 velocity = GetVelocityVector();
-            // Curt - DR Debug stuff.
-            std::ostringstream oss;
-            oss << "PUB [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] <<
-               "] VEL [" << velocity[0] << " " << velocity[1] << " " << velocity[2] << "]";
-            //oss << "Publishing [" << GetName() << "] XYZ [" << pos[0] << " " << pos[1] << " " << pos[2] <<
-            //   "] ROTATION [" << rot[0] << " " << rot[1] << " " << rot[2] << "].";
-            LOG_ALWAYS(oss.str());
-            */
-            //std::cout << "      pub ROT [" << rot[0] << " " << rot[1] << " " << rot[2] << "]." << std::endl;
+            SetLastKnownValuesBeforePublish(pos, rot);
 
             dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
                GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
@@ -1044,6 +1032,44 @@ namespace SimCore
 
             GetGameActorProxy().GetGameManager()->SendMessage(*msg);
          }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetLastKnownValuesBeforePublish(const osg::Vec3 &pos, const osg::Vec3 &rot)
+      {
+         SetLastKnownTranslation(pos);
+         SetLastKnownRotation(rot);
+
+         //SetLastKnownVelocityVector(GetCurrentVelocity());   
+         //SetLastKnownAngularVelocity(GetCurrentAngularVelocity());
+         //SetLastKnownAcceleration(GetCurrentAcceleration());
+
+         // Linear Velocity & acceleration - push the current value to the Last Known 
+         if (mPublishLinearVelocity)
+         {
+            osg::Vec3 velocity = GetCurrentVelocity();
+            // If the value is very close to 0, set it to zero to prevent warbling
+            if (velocity.length() < 0.05)
+               SetLastKnownVelocity(osg::Vec3(0.f, 0.f, 0.f));
+            else
+               SetLastKnownVelocity(velocity);
+
+
+            // Acceleration is paired with velocity
+            SetLastKnownAcceleration(GetCurrentAcceleration());
+         }
+
+         // Angular Velocity - push the current value to the Last Known 
+         if (mPublishAngularVelocity)
+         {
+            osg::Vec3 angularVelocity = GetCurrentAngularVelocity();
+            // If the value is very close to 0, set it to zero to prevent warbling
+            if (angularVelocity.length() < 0.1) 
+               SetLastKnownAngularVelocity(osg::Vec3(0.f, 0.f, 0.f));
+            else
+               SetLastKnownAngularVelocity(angularVelocity);
+         }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

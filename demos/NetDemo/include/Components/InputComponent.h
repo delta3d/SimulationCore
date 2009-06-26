@@ -114,6 +114,10 @@ namespace NetDemo
          /// Create or destroy the dead reckoning ghost actor
          void ToggleDRGhost();
 
+         /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
+         void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
+
+
       private:
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
