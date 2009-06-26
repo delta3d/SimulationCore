@@ -182,7 +182,7 @@ namespace NetDemo
    public:
       typedef AIPipelineFunctorsBase<State_, GoalState_, Controls_, PathType_> BaseClass;
 
-      //typedef Controllable<Kinematic, SteeringOutput, SteeringOutput> MineControllable;\
+      //typedef Controllable<Kinematic, SteeringOutput, SteeringOutput> MineControllable;
       //typedef dtAI::SteeringBehavior<dtAI::KinematicGoal, Kinematic, SteeringOutput> SteeringBehaviorType;
 
 
@@ -443,134 +443,172 @@ namespace NetDemo
    {
    private:
       //if no specializations are used we will just do everything by copy
-      template <class U>
+      template <class U, typename T = _Type>
       struct _TypeToActorProperty_
       {
          typedef U value_type;
          typedef value_type GetValueType;
          typedef value_type SetValueType;
 
+         typedef dtUtil::Functor<GetValueType, TYPELIST_0()> GetFuncType;
+         typedef dtUtil::Functor<void, TYPELIST_1(SetValueType)> SetFuncType;
       };
 
       //TODO- ActorActor, GameEvent, Resource, Enumeration, and ColorRGBA
 
-      template <>
-      struct _TypeToActorProperty_<bool>
+      template <typename T>
+      struct _TypeToActorProperty_<bool, T>
       {
          typedef dtDAL::BooleanActorProperty value_type;
 
          typedef bool GetValueType;
          typedef bool SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<int>
+      template <typename T>
+      struct _TypeToActorProperty_<int, T>
       {
          typedef dtDAL::IntActorProperty value_type;
 
          typedef int GetValueType;
          typedef int SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<long>
+      template <typename T>
+      struct _TypeToActorProperty_<long, T>
       {
          typedef dtDAL::LongActorProperty value_type;
 
          typedef long GetValueType;
          typedef long SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<float>
+      template <typename T>
+      struct _TypeToActorProperty_<float, T>
       {
          typedef dtDAL::FloatActorProperty value_type;
 
          typedef float GetValueType;
          typedef float SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<double>
+      template <typename T>
+      struct _TypeToActorProperty_<double, T>
       {
          typedef dtDAL::DoubleActorProperty value_type;
 
          typedef double GetValueType;
          typedef double SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<std::string>
+      template <typename T>
+      struct _TypeToActorProperty_<std::string, T>
       {
          typedef dtDAL::StringActorProperty value_type;
 
          typedef std::string GetValueType;
          typedef const std::string& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec2>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec2f, T>
       {
          typedef dtDAL::Vec3ActorProperty value_type;
 
-         typedef osg::Vec2 GetValueType;
-         typedef const osg::Vec2& SetValueType;
+         typedef const osg::Vec2f& GetValueType;
+         typedef const osg::Vec2f& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec2d>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec2d, T>
       {
          typedef dtDAL::Vec3dActorProperty value_type;
 
          typedef osg::Vec2d GetValueType;
          typedef const osg::Vec2d& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec3>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec3f, T>
       {
-         typedef dtDAL::Vec3ActorProperty value_type;
+         typedef dtDAL::Vec3fActorProperty value_type;
 
-         typedef osg::Vec3 GetValueType;
-         typedef const osg::Vec3& SetValueType;
+         typedef const osg::Vec3f& GetValueType;
+         typedef const osg::Vec3f& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec3d>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec3d, T>
       {
          typedef dtDAL::Vec3dActorProperty value_type;
 
-         typedef osg::Vec3d GetValueType;
+         typedef const osg::Vec3d& GetValueType;
          typedef const osg::Vec3d& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec4>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec4f, T>
       {
-         typedef dtDAL::Vec4ActorProperty value_type;
+         typedef dtDAL::Vec4fActorProperty value_type;
 
-         typedef osg::Vec4 GetValueType;
-         typedef const osg::Vec4& SetValueType;
+         typedef const osg::Vec4f& GetValueType;
+         typedef const osg::Vec4f& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
-      template <>
-      struct _TypeToActorProperty_<osg::Vec4d>
+      template <typename T>
+      struct _TypeToActorProperty_<osg::Vec4d, T>
       {
          typedef dtDAL::Vec4dActorProperty value_type;
 
-         typedef osg::Vec4d GetValueType;
+         typedef const osg::Vec4d& GetValueType;
          typedef const osg::Vec4d& SetValueType;
+
+         typedef value_type::GetFuncType GetFuncType;
+         typedef value_type::SetFuncType SetFuncType;
       };
 
 
    public:
       typedef typename _TypeToActorProperty_<_Type>::value_type value_type;
-      
+
       typedef typename _TypeToActorProperty_<_Type>::GetValueType GetValueType;
       typedef typename _TypeToActorProperty_<_Type>::SetValueType SetValueType;
 
-      typedef dtUtil::Functor<void, TYPELIST_1(SetValueType)> SetFuncType;
-      typedef dtUtil::Functor<GetValueType, TYPELIST_0()> GetFuncType;
+      typedef typename _TypeToActorProperty_<_Type>::SetFuncType SetFuncType;
+      typedef typename _TypeToActorProperty_<_Type>::GetFuncType GetFuncType;
    };
 
    template <class ContainerType, class FuncObj>
@@ -582,7 +620,7 @@ namespace NetDemo
 
       typedef dtDAL::Vec3ActorProperty Vec3;
 
-      PropertyRegHelper(ContainerType con, FuncObj* objPtr, const std::string& str) 
+      PropertyRegHelper(ContainerType con, FuncObj* objPtr, const std::string& str)
          : mPropCon(con)
          , mFuncObj(objPtr)
          , mGroup(str)
@@ -591,10 +629,10 @@ namespace NetDemo
       template <class PropType, typename SetPtr, typename GetPtr>
       void RegisterProperty(PropType prop, SetPtr setter, GetPtr getter, const std::string& name, const std::string& desc)
       {
-         
+
          mPropCon.AddProperty(new typename TypeToActorProperty<PropType>::value_type(name, name,
-            dtUtil::Functor<void, TYPELIST_1(TypeToActorProperty<PropType>::SetValueType)>(mFuncObj, setter),
-            dtUtil::Functor<TypeToActorProperty<PropType>::GetValueType, TYPELIST_0()>(mFuncObj, getter),
+            typename TypeToActorProperty<PropType>::SetFuncType(mFuncObj, setter),
+            typename TypeToActorProperty<PropType>::GetFuncType(mFuncObj, getter),
             desc, mGroup));
       }
 
