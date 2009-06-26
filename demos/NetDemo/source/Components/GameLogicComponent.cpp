@@ -153,6 +153,10 @@ namespace NetDemo
       //mPlayerStatus->SetTerrainPreference("Terrains:Level_DriverDemo.ive");
       mPlayerStatus->SetTeamNumber(1);
       mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
+      std::string vehicleType = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","HOVER");
+      PlayerStatusActor::VehicleTypeEnum *enumType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleType);
+      if (enumType != NULL)
+         mPlayerStatus->SetVehiclePreference(*enumType);
 
       GetGameManager()->AddActor(mPlayerStatus->GetGameActorProxy(), false, true);
 
