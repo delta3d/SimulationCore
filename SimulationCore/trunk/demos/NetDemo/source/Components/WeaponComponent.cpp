@@ -94,7 +94,11 @@ namespace NetDemo
                mWeaponOwner = NULL;
             }
 
-            InitializeWeapons();
+            if (mWeaponOwner.valid())
+            {
+               InitializeWeapons();
+               SetCurrentWeaponIndex(0);
+            }
          }
 
       }
@@ -255,6 +259,10 @@ namespace NetDemo
          if (mWeaponOwner.valid())
          {
             mCurrentWeapon->SetOwner(mWeaponOwner.get());
+            SimCore::Actors::IGActor* owner = NULL;
+            mWeaponOwner->GetActor(owner);
+            //TODO: get rid if icky quoted string
+            owner->AddChild(mCurrentWeapon.get(), "dof_gun_01");
          }
       }
    }

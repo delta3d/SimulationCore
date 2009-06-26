@@ -109,19 +109,19 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>0.5</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
+                    <value1>0.100000</value1>
+                    <value2>0.100000</value2>
+                    <value3>0.100000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>
@@ -381,19 +381,19 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>5.0</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
+                    <value1>0.300000</value1>
+                    <value2>0.300000</value2>
+                    <value3>0.300000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>
@@ -778,7 +778,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>0.1</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
@@ -1042,7 +1042,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>1.0</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
@@ -2200,7 +2200,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0</float>
+                <float>1.0</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
