@@ -511,7 +511,7 @@
             </property>
             <property>
                 <name>Engine Torque</name>
-                <float>1000</float>
+                <float>1500</float>
             </property>
             <property>
                 <name>Max Break Torque</name>
@@ -1321,7 +1321,7 @@
             </property>
             <property>
                 <name>VehicleBody: Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
