@@ -36,8 +36,6 @@ namespace dtGame
 {
    class GameManager;
    class TickMessage;
-   class ActorPublishedMessage;
-   class ActorDeletedMessage;
    class ActorUpdateMessage;
 };
 
@@ -54,7 +52,7 @@ namespace SimCore
 
             /// Constructor
             ViewerMaterialComponent(const std::string &name = DEFAULT_NAME);
-            
+
             /**
             * Processes messages sent from the Game Manager
             * @param The message to process
@@ -66,7 +64,7 @@ namespace SimCore
             const SimCore::Actors::ViewerMaterialActor& GetConstMaterialByName(const std::string& materialName);
             //////////////////////////////////////////////////////////////////////////////////////
             const SimCore::Actors::ViewerMaterialActor& GetConstMaterialByFID(const unsigned int fidIDToCheckWith);
-            
+
             //////////////////////////////////////////////////////////////////////////////////////
             SimCore::Actors::ViewerMaterialActor& CreateOrChangeMaterialByName(const std::string& materialName);
             //////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +76,7 @@ namespace SimCore
 
             /**
             * /brief   Purpose  : used for having the scene update all around
-            *          Outs     : objects reaccting to physics 
+            *          Outs     : objects reaccting to physics
             * @param   msg : the message
             */
             virtual void ProcessTick(const dtGame::TickMessage &msg);
@@ -90,7 +88,7 @@ namespace SimCore
             const std::string FID_ID_ToString(const unsigned int nID);
 
             // called from an actor - ie from stage.
-            void RegisterAMaterialWithComponent(SimCore::Actors::ViewerMaterialActor* material) 
+            void RegisterAMaterialWithComponent(SimCore::Actors::ViewerMaterialActor* material)
             {
                std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
                for(;iter != mOurMaterials.end(); ++iter)
