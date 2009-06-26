@@ -152,29 +152,29 @@ namespace SimCore
             virtual void SetTimesASecondYouCanSendOutAnUpdate( float timesASecondYouCanSendOutAnUpdate )           { mTimesASecondYouCanSendOutAnUpdate = timesASecondYouCanSendOutAnUpdate; }
             virtual float GetTimesASecondYouCanSendOutAnUpdate() const       { return mTimesASecondYouCanSendOutAnUpdate; }
 
-            void SetPublishLinearVelocity(bool publishLinearVelocity)   { mPublishLinearVelocity = publishLinearVelocity; }
-            bool GetPublishLinearVelocity() const { return mPublishLinearVelocity; }
-
-            void SetPublishAngularVelocity(bool publishAngularVelocity)   { mPublishAngularVelocity = publishAngularVelocity; }
-            bool GetPublishAngularVelocity() const { return mPublishAngularVelocity; }
-
 
          protected:
-            /// Angles/ steering moving etc done here. Of the updates, this is called first.
-            /// This does nothing by default.
+            /** 
+            * Set our DR values - velocity, acceleration, and angular velocity
+            * Note - we MUST do this BEFORE we calculate new physics forces on our vehicle
+            * The physics component runs at the start of the frame, so we set the values
+            * on baseentity in case it needs to do a publish this frame. (see ShouldForceUpdate())
+            * This is called from OnTickLocal() BEFORE the other update methods.
+            * By default - handles most of the settings you need to keep your Dead Reckoning in sync.
+            */
+            virtual void UpdateDeadReckoningValues(float deltaTime);
+
+            /// Angles/ steering moving etc done here. From TickLocal - called second - 
+            /// after UpdateDeadReckoningValues(). This does nothing by default.
             virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-            /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
-            /// By default, this does nothing.
+            /// Called update the dofs for your vehicle. Wheels or whatever. From TickLocal -  
+            /// called third - after UpdateVehicleTorquesAndAngles. The default does nothing.
             virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
 
-            /// called from tick. Do your sounds. Of the updates, this is called third.
-            /// Does nothing by default.
+            /// Do your vehicle, driving specific sounds. From TickLocal - 
+            /// called fourth - after UpdateRotationDOFS. Does nothing by default.
             virtual void UpdateSoundEffects(float deltaTime);
-
-            /// called from tick, does local dead reckon & determines to send out updates. Of the updates, this is called last
-            /// By default, does most of the work you need to do for dead reckoning and sending out actor updates based on position.
-            virtual void UpdateDeadReckoning(float deltaTime);
 
             /// Check if the actor is above ground.
             void KeepAboveGround();
@@ -232,22 +232,16 @@ namespace SimCore
             /// at the cost of some runtime performance.
             bool mPerformAboveGroundSafetyCheck : 1;
 
-            /// When publishing pos/rot updates vs dead reckoning - do we send linear velocity or not?
-            /// Allows tightly controlled entities that do motion model stuff to not mess up linear velocity
-            /// If false, linear velocity will always be zero.
-            bool mPublishLinearVelocity : 1;
-
-            /// When publishing pos/rot updates vs dead reckoning - do we send angular velocity or not?
-            /// Allows tightly controlled entities that do motion model stuff to not mess up angular velocity
-            /// If false, angular velocity will always be zero.
-            bool mPublishAngularVelocity : 1;
-
             /// When this is true, the position and rotation will be pushed to the physics engine on pre physics.
             bool mPushTransformToPhysics : 1;
 
+            osg::Vec3 mLastPos;
+            osg::Vec3 mAccumulatedLinearVelocity;
 
       };
 
+      ////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT BasePhysicsVehicleActorProxy : public PlatformActorProxy
       {
          public:

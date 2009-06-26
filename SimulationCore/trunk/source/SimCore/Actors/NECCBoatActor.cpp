@@ -483,7 +483,7 @@ namespace SimCore
          bool changedTrans = dtUtil::Equivalent(nxVecTemp, translationVec, amountChange);//!dtUtil::Equivalent<osg::Vec3, float>(nxVecTemp, translationVec, 3, amountChange);
          bool changedOrient = !dtUtil::Equivalent(globalOrientation, orientationVec, osg::Vec3::value_type(3.0f));
 
-         const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetVelocityVector();
+         const osg::Vec3 &velocityVec = GetDeadReckoningHelper().GetLastKnownVelocity();
 
          osg::Vec3 AngularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
          osg::Vec3 linearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
@@ -496,13 +496,13 @@ namespace SimCore
          {
             SetLastKnownTranslation(nxVecTemp);
             SetLastKnownRotation(globalOrientation);
-            SetAngularVelocityVector(AngularVelocity);
+            SetLastKnownAngularVelocity(AngularVelocity);
 
             if( velocityNearZero )
             {
                linearVelocity.set(0.0,0.0,0.0);
             }
-            SetVelocityVector(linearVelocity);
+            SetLastKnownVelocity(linearVelocity);
 
             // do not send the update message here but rather flag this vehicle
             // to send the update via the base class though ShouldForceUpdate.
@@ -839,7 +839,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       float NECCBoatActor::GetMPH()
       {
-         return GetVelocityVector().length() * 2.236936291;
+         return GetLastKnownVelocity().length() * 2.236936291;
          //return GetPhysicsHelper()->GetMPH();
          return 0.0f;
       }

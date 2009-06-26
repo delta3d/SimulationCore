@@ -94,8 +94,6 @@ namespace NetDemo
          void SetVehicleIsTurret( bool vehicleIsTurret ) { mVehicleIsTurret = vehicleIsTurret; }
          bool GetVehicleIsTurret() const { return mVehicleIsTurret; }
 
-         virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse = false);
-
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          /// This does nothing by default.

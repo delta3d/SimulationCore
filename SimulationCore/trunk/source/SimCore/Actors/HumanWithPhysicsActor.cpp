@@ -156,8 +156,8 @@ namespace SimCore
 
                GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
 
-               const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetAngularVelocityVector();
-               const osg::Vec3 &velocityVec = GetVelocityVector();
+               const osg::Vec3 &turnVec = GetDeadReckoningHelper().GetLastKnownAngularVelocity();
+               const osg::Vec3 &velocityVec = GetLastKnownVelocity();
 
                osg::Vec3 angularVelocity(physxObj->getAngularVelocity().x, physxObj->getAngularVelocity().y, physxObj->getAngularVelocity().z);
                osg::Vec3 linearVelocity(physxObj->getLinearVelocity().x, physxObj->getLinearVelocity().y, physxObj->getLinearVelocity().z);
@@ -178,7 +178,7 @@ namespace SimCore
 
                      linearVelocity.set(0.0,0.0,0.0);
                   }
-                  SetVelocityVector(linearVelocity);
+                  SetLastKnownVelocity(linearVelocity);
                }
             }
          }
@@ -241,7 +241,7 @@ namespace SimCore
          // DEBUG:
          /*if( mNotifyChangeVelocity )
          {
-            std::cout << "\n\tUpdate Velocity:\t" << GetVelocityVector() << std::endl;
+            std::cout << "\n\tUpdate Velocity:\t" << GetLastKnownVelocity() << std::endl;
          }//*/
 
          // Do full updates for now until partial updates are required.

@@ -294,9 +294,9 @@ namespace SimCore
             return;
 
          SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
-         SetVelocityVector(entity->GetVelocityVector());
-         SetAngularVelocityVector(entity->GetAngularVelocityVector());
-         SetAccelerationVector(entity->GetAccelerationVector());
+         SetLastKnownVelocity(entity->GetLastKnownVelocity());
+         SetLastKnownAngularVelocity(entity->GetLastKnownAngularVelocity());
+         SetLastKnownAcceleration(entity->GetLastKnownAcceleration());
 
          GetGameActorProxy().NotifyActorUpdate();
       }

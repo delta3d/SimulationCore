@@ -2415,7 +2415,7 @@ namespace StealthQt
       oss << roll;
       mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
 
-      osg::Vec3 velocity = entity->GetVelocityVector();
+      osg::Vec3 velocity = entity->GetLastKnownVelocity();
       // speed is distance of velocity. Then, convert from m/s to MPH
       float speed = 2.237 * sqrt((float)(velocity[0] * velocity[0]) +
                (float)(velocity[1] * velocity[1]) + (float)(velocity[2] * velocity[2]));

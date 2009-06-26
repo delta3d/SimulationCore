@@ -149,7 +149,7 @@ namespace SimCore
                   //update our velocity vector
                   if(mParentHuman.valid())
                   {
-                     mSpeed = mParentHuman->GetVelocityVector().length();
+                     mSpeed = mParentHuman->GetLastKnownVelocity().length();
                      //std::cout << "Human Speed: " << mSpeed << std::endl;
                   }
                   else
@@ -635,7 +635,7 @@ namespace SimCore
                << "Stance:  \"" << GetStance().GetName()
                << "\"\n Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
                << "\"\n Damage: \"" << GetDamageState().GetName()
-               << "\"\n Velocty: \"" << GetVelocityVector() << "\"\n";
+               << "\"\n Velocity: \"" << GetLastKnownVelocity() << "\"\n";
                ExecuteActionCountMap::const_iterator i, iend;
                i = mExecutedActionCounts.begin();
                iend = mExecutedActionCounts.end();
@@ -818,7 +818,7 @@ namespace SimCore
 
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
-         if (movingState->Get() != !dtUtil::Equivalent(GetVelocityVector().length2(), 0.0f))
+         if (movingState->Get() != !dtUtil::Equivalent(GetLastKnownVelocity().length2(), 0.0f))
             return false;
 
          bool actionStateResult =
