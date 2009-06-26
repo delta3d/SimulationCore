@@ -444,10 +444,11 @@ namespace SimCore
          //we obtain the rendering support component so that the particle effect can add a dynamic light effect
          SimCore::Components::RenderingSupportComponent* renderComp = NULL;
 
-         if( isTracer )
+         if (isTracer)
          {
-            renderComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-            (GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME));
+            GetGameActorProxy().GetGameManager()->GetComponentByName(
+                     SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
+                     renderComp);
          }
 
 
@@ -540,15 +541,9 @@ namespace SimCore
             }
          }
 
-         if( orientDrawable )
-         {
-            osg::Group* g = particle->mObj->GetOSGNode()->asGroup();
-            osg::MatrixTransform* node = dynamic_cast<osg::MatrixTransform*>(g->getChild(0));
-            if( node != NULL )
-            {
-               node->setMatrix(ourRotationMatrix);
-            }
-         }
+         dtCore::Transform xform;
+         xform.Set(ourRotationMatrix);
+         xform.SetTranslation(osg::Vec3(ourTranslation.x(), ourTranslation.y(), ourTranslation.z()));
 
          dtPhysics::PhysicsObject* newActor = NULL;
    #ifdef AGEIA_PHYSICS
@@ -613,11 +608,19 @@ namespace SimCore
    #else
          dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
          newObject->SetCollisionGroup(collisionGroupToSendIn);
+         newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
          newObject->SetMass(mPhysicsHelper->GetMass());
          newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
          newObject->SetExtents(mPhysicsHelper->GetDimensions());
+         newObject->SetTransform(xform);
          newObject->CreateFromProperties(particle->mObj->GetOSGNode());
+         newActor = newObject.get();
    #endif
+
+         if( orientDrawable )
+         {
+            particle->mObj->SetTransform(xform);
+         }
          //////////////////////////////////////////////////////////////////////////
          // Set up emitter values on the particle...
 
@@ -645,6 +648,16 @@ namespace SimCore
 
 
          if(!mGravityEnabled) newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
+   #else
+         osg::Vec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
+
+         newActor->SetLinearVelocity(vRandVec);
+
+         vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
+                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
+                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[2], mStartingAngularVelocityScaleMin[2]));
+
+         newActor->SetAngularVelocity(vRandVec);
 
    #endif
 

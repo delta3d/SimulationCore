@@ -49,6 +49,8 @@
 #include <osg/Group>
 #include <osg/MatrixTransform>
 
+#include <iostream>
+#include <osg/io_utils>
 
 IMPLEMENT_ENUM(PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum);
 PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::TWO_D("2D");
@@ -414,12 +416,12 @@ void PhysicsParticleSystemActor::AddParticle()
    newActor->userData = mPhysicsHelper.get();
 #else
    osg::Vec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
-   newObject->GetBodyWrapper()->SetLinearVelocity(vRandVec);
+   newObject->SetLinearVelocity(vRandVec);
 
    vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
             GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
             GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[2], mStartingAngularVelocityScaleMin[2]));
-   newObject->GetBodyWrapper()->SetAngularVelocity(vRandVec);
+   newObject->SetAngularVelocity(vRandVec);
    particle->SetPhysicsObject(newObject.get());
 
    if (!mObjectsStayStaticWhenHit)
@@ -645,6 +647,9 @@ void PhysicsParticleSystemActor::PostPhysicsUpdate()
             dtCore::Transform xform;
             physObj->GetTransform(xform);
             particle->mObj->SetTransform(xform);
+            osg::Matrix m;
+            xform.Get(m);
+            std::cout << m << std::endl;
          }
       }
    }

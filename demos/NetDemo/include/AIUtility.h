@@ -545,7 +545,7 @@ namespace NetDemo
       {
          typedef dtDAL::Vec3dActorProperty value_type;
 
-         typedef osg::Vec2d GetValueType;
+         typedef const osg::Vec2d& GetValueType;
          typedef const osg::Vec2d& SetValueType;
 
          typedef value_type::GetFuncType GetFuncType;

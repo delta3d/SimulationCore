@@ -12,6 +12,7 @@
 */
 #include <dtUtil/mswin.h>
 #include <Components/InputComponent.h>
+#include <Components/WeaponComponent.h>
 
 #include <osgGA/GUIEventAdapter>
 
@@ -250,7 +251,7 @@ namespace NetDemo
                break;
             }
 
-         case '7': 
+         case '7':
             {
                ModifyVehiclePublishRate(1.10);
                break;
@@ -310,6 +311,15 @@ namespace NetDemo
             }
             break;
 
+         case 'h':
+            {
+               WeaponComponent* comp = NULL;
+               GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
+
+               comp->SetCurrentWeaponIndex((comp->GetCurrentWeaponIndex() + 1) % comp->GetNumWeapons());
+            }
+            break;
+
          case 'v':
             {
                if (mVehicle.valid())
@@ -343,12 +353,58 @@ namespace NetDemo
       else
          return keyUsed;
    }
+   /////////////////////////////////////////////////////////////////////////////////
+   bool InputComponent::HandleButtonPressed(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button)
+   {
+      bool handled = false;
+
+
+      if( button == dtCore::Mouse::LeftButton )
+      {
+         WeaponComponent* comp = NULL;
+         GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
+         if (comp != NULL)
+         {
+            comp->StartFiring();
+         }
+         handled = true;
+      }
+
+      if(!handled)
+         return BaseClass::HandleButtonPressed(mouse, button);
+
+      return handled;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   bool InputComponent::HandleButtonReleased(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button)
+   {
+      bool handled = false;
+
+      // stop firing
+      if( button == dtCore::Mouse::LeftButton )
+      {
+         WeaponComponent* comp = NULL;
+         GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, comp);
+         if (comp != NULL)
+         {
+            comp->StopFiring();
+         }
+         handled = true;
+      }
+
+      if(!handled)
+         return BaseClass::HandleButtonReleased(mouse, button);
+
+      return handled;
+   }
+
 
    /////////////////////////////////////////////////////////////////////////////
    GameLogicComponent* InputComponent::GetLogicComponent()
    {
       GameLogicComponent* comp = NULL;
-      GetGameManager()->GetComponentByName( GameLogicComponent::DEFAULT_NAME, comp );
+      GetGameManager()->GetComponentByName(GameLogicComponent::DEFAULT_NAME, comp);
 
       if (comp == NULL)
       {
@@ -520,7 +576,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
    {
-      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
       if (mVehicle.valid() && mPhysVehicle != NULL)
       {

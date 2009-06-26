@@ -88,6 +88,10 @@ namespace NetDemo
           */
          virtual bool HandleKeyPressed(const dtCore::Keyboard* keyboard, int key);
 
+         bool HandleButtonPressed(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button);
+
+         bool HandleButtonReleased(const dtCore::Mouse* mouse, dtCore::Mouse::MouseButton button);
+
       protected:
          virtual ~InputComponent();
          void FireSomething();
