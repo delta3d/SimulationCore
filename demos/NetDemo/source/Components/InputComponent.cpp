@@ -275,12 +275,12 @@ namespace NetDemo
          case 't':
             {
                /////////////////////////////////////////////////////////
-               LOG_ALWAYS("TEST - HACK - CREATING TARGET!!! ");
+               //LOG_ALWAYS("TEST - HACK - CREATING TARGET!!! ");
                // Hack stuff - add a vehicle here. For testing purposes.
-               dtCore::RefPtr<dtGame::GameActorProxy> testEnemyMine = NULL;
-               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-                  "Enemy Mine Prototype", testEnemyMine, "Check your additional maps in config.xml (compare to config_example.xml).");
-               GetGameManager()->AddActor(*testEnemyMine, false, true);
+               //dtCore::RefPtr<dtGame::GameActorProxy> testEnemyMine = NULL;
+               //SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+               //   "Enemy Mine Prototype", testEnemyMine, "Check your additional maps in config.xml (compare to config_example.xml).");
+               //GetGameManager()->AddActor(*testEnemyMine, false, true);
 
                break;
             }

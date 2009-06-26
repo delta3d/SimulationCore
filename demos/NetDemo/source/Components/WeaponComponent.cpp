@@ -215,7 +215,7 @@ namespace NetDemo
       shooter->SetFrequencyOfTracers(outWeapon->GetTracerFrequency());
 
       // Attach the shooter to the weapon's flash point
-      outWeapon->AddChild(shooter, "hotspot_01");
+      outWeapon->AddChild(shooter, "dof_hotspot_01");
 
       // Create the flash effect for the weapon
       SimCore::Actors::WeaponFlashActor* flash = NULL;
@@ -226,7 +226,7 @@ namespace NetDemo
       flashFilePath << "Particles/" << flashEffectFile;
       flash->SetParticleEffect(flashFilePath.str());
       outWeapon->SetFlashActor(flash);
-      outWeapon->AddChild(flash, "hotspot_01");
+      outWeapon->AddChild(flash, "dof_hotspot_01");
       gm->AddActor(*flashProxy, false, false);
 
       return true;
