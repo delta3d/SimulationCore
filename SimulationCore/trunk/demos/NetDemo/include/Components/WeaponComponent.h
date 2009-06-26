@@ -36,7 +36,6 @@
 namespace dtGame
 {
    class ActorUpdateMessage;
-   class ActorDeletedMessage;
 }
 
 namespace NetDemo

@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * @author Curtiss Murphy
 */
 
@@ -36,8 +36,6 @@ namespace dtGame
 {
    class GameManager;
    class TickMessage;
-   class ActorPublishedMessage;
-   class ActorDeletedMessage;
    class ActorUpdateMessage;
 }
 
@@ -78,7 +76,7 @@ namespace DriverDemo
          //static const std::string CMD_LINE_START_LAT;
          //static const std::string CMD_LINE_START_LON;
          //static const std::string CMD_LINE_START_MGRS;
-         
+
          static const int  LOG_TIME_AMOUNT = 20; // for logging
 
          /*enum SimMode
@@ -92,7 +90,7 @@ namespace DriverDemo
          };*/
 
          /*enum PlayerStartCordType
-         {  
+         {
             PLAYER_START_NONE = -1,
                PLAYER_START_MGRS,
                PLAYER_START_XYZ,
@@ -109,7 +107,7 @@ namespace DriverDemo
          * @see dtGame::GameManager
          */
          virtual void ProcessMessage(const dtGame::Message &msg);
-         
+
          /// initializes command line to parser and sets the options in the command
          /// line component.
          virtual void InitializeCommandLineOptionsAndRead(osg::ArgumentParser* parser);
@@ -120,7 +118,7 @@ namespace DriverDemo
          /// inits the player for the application
          void InitializePlayer();
 
-         /// inits the vhiecle for app - Uses "Hover_Vehicle" as a default name. Pass in to command line to change. 
+         /// inits the vhiecle for app - Uses "Hover_Vehicle" as a default name. Pass in to command line to change.
          SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle();
 
          /// loads the terrain to the application, specific to CDMTS command line option.
