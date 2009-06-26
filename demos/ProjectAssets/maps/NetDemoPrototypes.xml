@@ -851,20 +851,20 @@
             <property>
                 <name>Non-damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes::physics_happy_sphere.ive</resourceDisplayName>
-                <resource>StaticMeshes::physics_happy_sphere.ive</resource>
+                <resourceDisplayName>StaticMeshes::NetDemo::Enemies::Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes::NetDemo::Enemies::Mine.ive</resource>
             </property>
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes::physics_happy_sphere.ive</resourceDisplayName>
-                <resource>StaticMeshes::physics_happy_sphere.ive</resource>
+                <resourceDisplayName>StaticMeshes::NetDemo::Enemies::Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes::NetDemo::Enemies::Mine.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes::physics_happy_sphere.ive</resourceDisplayName>
-                <resource>StaticMeshes::physics_happy_sphere.ive</resource>
+                <resourceDisplayName>StaticMeshes::NetDemo::Enemies::Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes::NetDemo::Enemies::Mine.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -1653,20 +1653,20 @@
             <property>
                 <name>Non-damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
             </property>
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Towers:SimpleTower.ive</resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Forts:Fort.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Forts:Fort.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
