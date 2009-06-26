@@ -386,9 +386,9 @@
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
-                    <value1>0.300000</value1>
-                    <value2>0.300000</value2>
-                    <value3>0.300000</value3>
+                    <value1>0.0300000</value1>
+                    <value2>0.0300000</value2>
+                    <value3>0.0300000</value3>
                 </vec3>
             </property>
             <property>
@@ -778,7 +778,7 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>0.1</float>
+                <float>0.01</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
