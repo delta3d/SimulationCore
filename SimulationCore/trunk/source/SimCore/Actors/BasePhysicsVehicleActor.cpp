@@ -307,7 +307,7 @@ namespace SimCore
             osg::Vec3 physLinearVelocity;
 #ifdef AGEIA_PHYSICS
             NxVec3 linearVelVec3 = physObj->getLinearVelocity();
-            mPhysLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+            physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
 #else
             physLinearVelocity = physObj->GetLinearVelocity();
 #endif
@@ -356,7 +356,7 @@ namespace SimCore
             if (forceUpdateResult)
             {
                //if (GetName() == "Hover Vehicle")
-               //   std::cout << "VEHICLE - Vel[" << GetCurrentVelocity() << "] Speed[" << GetCurrentVelocity().length() 
+               //   std::cout << "VEHICLE - Vel[" << GetCurrentVelocity() << "] Speed[" << GetCurrentVelocity().length()
                //   << "[" << GetName() << "] ." << std::endl;
 
                // Since we are about to publish, set our time since last publish back to 0.
