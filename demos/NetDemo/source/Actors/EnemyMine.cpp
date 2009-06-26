@@ -170,11 +170,11 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMineActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
-      //if( ! IsMobilityDisabled())
-      //{
-      //   // Do all our movement!
-      //   ApplyTargetHoverForces(deltaTime, mGoalLocation);
-      //}
+      if( ! IsMobilityDisabled())
+      {
+         // Do all our movement!
+         ApplyTargetHoverForces(deltaTime, mGoalLocation);
+      }
 
       // DoExplosion();
    }

@@ -46,6 +46,7 @@ namespace NetDemo
 {
 
    EnemyAIHelper::EnemyAIHelper()
+      : mMaxVelocity(100)
    {
      
    }
@@ -57,7 +58,7 @@ namespace NetDemo
 
    void EnemyAIHelper::OnInit(const EnemyDescriptionActor& desc)
    {
-
+      mMaxVelocity = desc.GetSpawnInfo().GetMaxVelocity();
    }
 
    void EnemyAIHelper::Spawn()
@@ -180,8 +181,7 @@ namespace NetDemo
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
       state->AddEntryCommand(ctbc);
 
-      float speed = 1000.0f;
-      behavior = new BombDive(speed);
+      behavior = new BombDive(mMaxVelocity);
       ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
       
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
@@ -263,7 +263,7 @@ namespace NetDemo
          //if we are within distance, detonate
          //this is only for the enemy mine, and should be refactored
          float dist = GetDistance(pos);
-         if(dist < 5.0f)
+         if(dist < 25.0f)
          {
             BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
             return;

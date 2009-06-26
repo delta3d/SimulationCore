@@ -651,7 +651,7 @@ public: \
       m ## PropertyName = value; \
    };\
    \
-   TypeToActorProperty<PropertyType>::GetValueType Get ## PropertyName()\
+   TypeToActorProperty<PropertyType>::GetValueType Get ## PropertyName() const\
    {\
       return m ## PropertyName;\
    };\

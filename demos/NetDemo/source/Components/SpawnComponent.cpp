@@ -157,7 +157,7 @@ namespace NetDemo
 
          dtCore::RefPtr<EnemyMineActorProxy> testEnemyMine = NULL;
          SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-            "Enemy Mine Prototype", testEnemyMine, errorMessage);
+            desc.GetSpawnInfo().GetEnemyPrototypeName(), testEnemyMine, errorMessage);
          
          osg::Vec3 point;
          EnemyMineActor& mineActor = static_cast<EnemyMineActor&>(*(testEnemyMine->GetActor()));

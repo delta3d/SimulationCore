@@ -75,6 +75,8 @@ namespace NetDemo
 
       private:
 
+         //temporary- used by mine until refactor
+         float mMaxVelocity;
          float GetDistance(const osg::Vec3& pos);
 
    };
