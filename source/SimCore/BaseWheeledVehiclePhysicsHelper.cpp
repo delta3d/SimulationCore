@@ -67,6 +67,7 @@ namespace SimCore
    , mTireStiffnessFactor(1000.0f)
    , mTireRestitution(0.5f)
 #else
+   , mVehicle(NULL)
    , mEngineTorque(1000.0f)
    , mMaxBrakeTorque(100.0f)
    , mVehicleTopSpeed(120.0f)
@@ -90,8 +91,6 @@ namespace SimCore
 #endif
    {
 #ifndef AGEIA_PHYSICS
-//Create the vehicle here so we can add wheels any time.
-      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       AddPhysicsObject(*physicsObject);
 #endif
@@ -225,6 +224,15 @@ namespace SimCore
    /////////////////////////////////////////////////////////
    bool BaseWheeledVehiclePhysicsHelper::CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode)
    {
+      if (mVehicle != NULL)
+      {
+         delete mVehicle;
+         mVehicle = NULL;
+      }
+
+      //Create the vehicle here so we can add wheels any time.
+      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
+
       osg::Matrix BodyMatrix;
       GetLocalMatrix(bodyNode, BodyMatrix);
 
