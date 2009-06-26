@@ -44,8 +44,6 @@ namespace dtGame
 {
    class GameManager;
    class TickMessage;
-   class ActorPublishedMessage;
-   class ActorDeletedMessage;
    class ActorUpdateMessage;
 }
 

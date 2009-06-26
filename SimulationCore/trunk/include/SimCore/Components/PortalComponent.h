@@ -35,8 +35,6 @@ namespace dtGame
 {
    class GameManager;
    class TickMessage;
-   class ActorPublishedMessage;
-   class ActorDeletedMessage;
    class ActorUpdateMessage;
 };
 
@@ -53,7 +51,7 @@ namespace SimCore
             static const std::string DEFAULT_NAME;
             /// Constructor
             PortalComponent(const std::string &name = DEFAULT_NAME);
-            
+
             /**
             * Processes messages sent from the Game Manager
             * @param The message to process
@@ -76,7 +74,7 @@ namespace SimCore
 
             /**
             * /brief   Purpose  : used for having the scene update all around
-            *          Outs     : objects reaccting to physics 
+            *          Outs     : objects reaccting to physics
             * @param   msg : the message
             */
             virtual void ProcessTick(const dtGame::TickMessage &msg);
