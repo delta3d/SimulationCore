@@ -25,25 +25,22 @@
 #ifndef RES_GAMEAPPCOMPONENT_H_
 #define RES_GAMEAPPCOMPONENT_H_
 
-////////////////////////////////////////////////////////////////////////////////
-// INCLUDE DIRECTIVES
-////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Components/BaseGameAppComponent.h>
 #include <SimCore/Actors/StealthActor.h>
-#include <dtUtil/log.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
+namespace dtUtil
+{
+   class Log;
+}
 
-
-////////////////////////////////////////////////////////////////////////////////
-// FORWARD DECLARATIONS
-////////////////////////////////////////////////////////////////////////////////
 namespace SimCore
 {
    namespace Actors
    {
       class TerrainActor;
       class BasePhysicsVehicleActorProxy;
+      class WeaponActor;
    }
 
    namespace Components
@@ -53,8 +50,6 @@ namespace SimCore
    }
 }
 
-
-
 namespace NetDemo
 {
    class PlayerStatusActor;
@@ -62,8 +57,7 @@ namespace NetDemo
    class FortActorProxy;
 
 
-   //////////////////////////////////////////////////////////////////////////////
-   /*
+   /**
     * This component is responsible for some of the core game logic such as changing game
     * states and responding to major messages from the server. It also listens for server
     * players and manages/creates the PlayerStatusActor.
@@ -84,10 +78,10 @@ namespace NetDemo
 
          void InitializePlayer();
 
-         // Returns the DRAW land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
+         /// Returns the DRAW land actor as its real type. Prevents having to hold onto the real type, which allows forward declaration in the header.
          SimCore::Actors::TerrainActor* GetCurrentTerrainDrawActor();
 
-         // IsServer can only be set at startup, probably from the GameEntryPoint()
+         /// IsServer can only be set at startup, probably from the GameEntryPoint()
          void SetIsServer(bool newValue);
          bool GetIsServer();
          /// Are we currently connected (as either a server or a client)?
@@ -96,7 +90,7 @@ namespace NetDemo
          void SetMapName(const std::string& mapName);
          const std::string& GetMapName() const;
 
-         // Called from the UI after it knows how the user wants to connect
+         /// Called from the UI after it knows how the user wants to connect
          bool JoinNetwork(const std::string& role, int serverPort, const std::string& hostIP);
          bool JoinNetworkAsServer(int serverPort);
          bool JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress);
@@ -121,25 +115,25 @@ namespace NetDemo
          void UnloadCurrentTerrain();
          void ClearPreviousGameStuff();
 
-         dtUtil::Log* mLogger;
+         dtUtil::Log& mLogger;
 
       private:
          bool mIsServer;
          bool mIsConnectedToNetwork;
 
          //dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
-         // Each client & server has one player status that they are publishing.
+         /// Each client & server has one player status that they are publishing.
          dtCore::RefPtr<PlayerStatusActor> mPlayerStatus;
          dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> mPlayerOwnedVehicle;
          dtCore::RefPtr<FortActorProxy> mServerCreatedFortActor;
 
-         // This holds the terrain prototype we want to load once we enter LOADING state.
+         /// This holds the terrain prototype we want to load once we enter LOADING state.
          std::string mTerrainToLoad;
 
-         // This is our current terrain prototype name.
+         /// This is our current terrain prototype name.
          std::string mCurrentTerrainPrototypeName;
 
-         // The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics.
+         /// The current DRAWING terrain actor. This actor comes and goes - it's the visible geometry, not physics.
          dtCore::RefPtr<dtGame::GameActor> mCurrentTerrainDrawActor;
 
          // Reference to the State Component to control automatic transitions.
@@ -147,12 +141,13 @@ namespace NetDemo
 
          std::string mMapName;
 
-         // May be either a Network or Client component. We create it when we connect
+         /// May be either a Network or Client component. We create it when we connect
          dtCore::RefPtr<dtGame::GMComponent> mNetworkComp;
 
          dtCore::RefPtr<ServerGameStatusActorProxy> mServerGameStatusProxy;
 
          bool mStartTheGameOnNextGameRunning;
+
    };
 
 }

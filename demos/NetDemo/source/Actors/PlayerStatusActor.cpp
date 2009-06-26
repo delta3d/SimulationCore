@@ -52,8 +52,8 @@ namespace NetDemo
       , mTeamNumber(0)
       , mIsServer(false)
       , mTerrainPreference("")
-      //, mVehiclePreference(&VehicleTypeEnum::FOUR_WHEEL)
-      , mVehiclePreference(&VehicleTypeEnum::HOVER)
+      , mVehiclePreference(&VehicleTypeEnum::FOUR_WHEEL)
+      //, mVehiclePreference(&VehicleTypeEnum::HOVER)
       , mAttachedVehicleID("")
       , mIPAddress("")
       , mDirtyPlayerSettings(false)
@@ -170,7 +170,7 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
-   void PlayerStatusActor::SetAttachedVehicleID(const std::string& newValue)
+   void PlayerStatusActor::SetAttachedVehicleID(const dtCore::UniqueId& newValue)
    {
       mDirtyPlayerSettings = true;
       mAttachedVehicleID = newValue;
@@ -250,9 +250,9 @@ namespace NetDemo
          PROP_VEHICLE_PREFERENCE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID_DESC("The ID of the vehicle the player is driving, if any. This property is controlled by the GameLogicComponent, do not set.");
-      AddProperty(new dtDAL::StringActorProperty(PROP_ATTACHED_VEHICLE_ID, PROP_ATTACHED_VEHICLE_ID,
-         dtDAL::StringActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetAttachedVehicleID),
-         dtDAL::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetAttachedVehicleID),
+      AddProperty(new dtDAL::ActorIDActorProperty(*this, PROP_ATTACHED_VEHICLE_ID, PROP_ATTACHED_VEHICLE_ID,
+         dtDAL::ActorIDActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetAttachedVehicleID),
+         dtDAL::ActorIDActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetAttachedVehicleID),
          PROP_ATTACHED_VEHICLE_ID_DESC, GROUP));
 
       static const dtUtil::RefString PROP_IP_ADDRESS_DESC("The IP Address for this player.");

@@ -42,7 +42,6 @@ namespace dtCore
 namespace dtGame
 {
    class ActorUpdateMessage;
-   class ActorDeletedMessage;
 }
 
 namespace SimCore
@@ -81,26 +80,26 @@ namespace SimCore
              * Cleans up the player ref ptr on delete.
              * @param msg The message
              */
-            virtual void ProcessLocalDeleteActor(const dtGame::ActorDeletedMessage &msg);
+            virtual void ProcessLocalDeleteActor(const dtGame::Message& msg);
 
             /**
              * Process unhandled messages from the DefaultMessageProcessor
              * @param msg The message to process
              * @see class dtGame::DefaultMessageProcessor
              */
-            virtual void ProcessUnhandledLocalMessage(const dtGame::Message &msg);
+            virtual void ProcessUnhandledLocalMessage(const dtGame::Message& msg);
 
             /**
              * Handles the on player entered world message
              * @param msg The message
              */
-            virtual void ProcessPlayerEnteredWorldMessage(const dtGame::Message &msg);
+            virtual void ProcessPlayerEnteredWorldMessage(const dtGame::Message& msg);
 
             /**
              * Sets the player actor on the VMP
              * @param pa The player actor to set, or NULL
              */
-            void SetPlayerActor(SimCore::Actors::StealthActor *pa) { mPlayer = pa; }
+            void SetPlayerActor(SimCore::Actors::StealthActor* pa) { mPlayer = pa; }
 
             /**
              * Gets the player actor on the VMP
@@ -124,7 +123,7 @@ namespace SimCore
              */
             virtual bool AcceptPlayer(dtGame::GameActorProxy& playerProxy);
 
-            virtual void ProcessMessage(const dtGame::Message &msg);
+            virtual void ProcessMessage(const dtGame::Message& msg);
 
             /// @return the name of the time master as was retrieved from a time value message.
             const std::string& GetTimeMasterName() const { return mTimeMasterName; }

@@ -25,6 +25,7 @@
 #include <dtActors/engineactorregistry.h>
 
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
@@ -41,7 +42,6 @@
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
-#include <Actors/HoverVehicleActor.h>
 
 namespace NetDemo
 {
@@ -52,12 +52,11 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    GameLogicComponent::GameLogicComponent(const std::string& name)
       : BaseClass(name)
+      , mLogger(dtUtil::Log::GetInstance("GameLogicComponent.cpp"))
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
       , mStartTheGameOnNextGameRunning(false)
    {
-      mLogger = &dtUtil::Log::GetInstance("GameAppComponent.cpp");
-
       // Register application-specific states.
       AddState(&NetDemoState::STATE_CONNECTING);
       AddState(&NetDemoState::STATE_LOBBY);
@@ -183,12 +182,15 @@ namespace NetDemo
       if (mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
          // Find the actor in the GM
-         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-         if(gap == NULL)
+         PlayerStatusActorProxy* statusActorProxy = NULL;
+         GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId(), statusActorProxy);
+         if (statusActorProxy == NULL)
+         {
             return;
-         PlayerStatusActor *statusActor = dynamic_cast<PlayerStatusActor*>(gap->GetActor());
-         if(statusActor == NULL)
-            return;
+         }
+
+         PlayerStatusActor* statusActor = NULL;
+         statusActorProxy->GetActor(statusActor);
 
          HandlePlayerStatusUpdated(statusActor);
 
@@ -198,13 +200,17 @@ namespace NetDemo
       else if (!mIsServer && updateMessage.GetActorType() == NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE)
       {
          // Find the actor in the GM
-         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-         if(gap == NULL)  return;
-         ServerGameStatusActor *serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
+         dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
+         if (gap == NULL)
+         {
+            return;
+         }
+         ServerGameStatusActor* serverStatus = NULL;
+         gap->GetActor(serverStatus);
 
          // If not the server, do a print out...
          std::ostringstream oss;
-         oss << "Server Status Updated: [" << serverStatus->GetGameStatus().GetName() << "], Wave[" <<
+         oss << "Server Status Updated: \"" << serverStatus->GetGameStatus().GetName() << "], Wave[" <<
             serverStatus->GetWaveNumber() << "] Players[" << serverStatus->GetNumPlayers() << "] TimeLeft[" <<
             serverStatus->GetTimeLeftInCurState() << "], EnemiesKilt[" << serverStatus->GetNumEnemiesKilled() << "].";
          LOG_ALWAYS(oss.str());
@@ -220,7 +226,7 @@ namespace NetDemo
       {
          if (statusActor->GetIsServer() && statusActor->GetTerrainPreference() != mCurrentTerrainPrototypeName)
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
+            mLogger.LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,
                "Creating new terrain [%s] on the Server.", statusActor->GetTerrainPreference().c_str());
             mTerrainToLoad = statusActor->GetTerrainPreference();
             UnloadCurrentTerrain();
@@ -252,7 +258,7 @@ namespace NetDemo
       // Force an update of the terrain actor. This will pass the actor out to late-joining clients.
       if(TIMER_UPDATE_TERRAIN == timerMsg.GetTimerName() && mCurrentTerrainDrawActor.valid())
       {
-         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,"Sending out a terrain actor update.");
+         //mLogger.LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__,"Sending out a terrain actor update.");
          mCurrentTerrainDrawActor->GetGameActorProxy().NotifyFullActorUpdate();
       }
 
@@ -452,7 +458,7 @@ namespace NetDemo
          GetGameManager()->DeleteActor(mCurrentTerrainDrawActor->GetGameActorProxy());
          mCurrentTerrainDrawActor = NULL;
          mCurrentTerrainPrototypeName = "";
-         //mLogger->LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain.");
+         //mLogger.LogMessage(dtUtil::Log::LOG_ALWAYS, __FUNCTION__, __LINE__, "Now unloading the previous terrain.");
       }
    }
 
@@ -570,9 +576,7 @@ namespace NetDemo
             vehicleActor->SetHasDriver(true);
             GetGameManager()->AddActor(*mPlayerOwnedVehicle, false, true);
 
-            // Put the vehicle somewhere!
-
-            mPlayerStatus->SetAttachedVehicleID(mPlayerOwnedVehicle->GetId().ToString());
+            mPlayerStatus->SetAttachedVehicleID(mPlayerOwnedVehicle->GetId());
          }
       }
 
@@ -583,7 +587,7 @@ namespace NetDemo
    {
       if (mPlayerOwnedVehicle.valid())
       {
-         mPlayerStatus->SetAttachedVehicleID("");
+         mPlayerStatus->SetAttachedVehicleID(dtCore::UniqueId(""));
          GetGameManager()->DeleteActor(*mPlayerOwnedVehicle);
          mPlayerOwnedVehicle = NULL;
       }

@@ -28,11 +28,6 @@
 #include <SimCore/Export.h>
 #include <dtGame/defaultnetworkpublishingcomponent.h>
 
-namespace dtGame
-{
-   class ActorPublishedMessage;
-}
-
 namespace SimCore
 {
    namespace Components
@@ -58,7 +53,7 @@ namespace SimCore
              * Overridden to handle Stealth Actor Messages.
              * @param The message
              */
-            virtual void ProcessPublishActor(const dtGame::ActorPublishedMessage &msg);
+            virtual void ProcessPublishActor(const dtGame::Message &msg);
 
             /**
              * Sends out relevant stealth actor message for the given actor update message.

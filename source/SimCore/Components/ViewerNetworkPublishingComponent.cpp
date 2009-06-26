@@ -53,9 +53,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerNetworkPublishingComponent::ProcessPublishActor(const dtGame::ActorPublishedMessage &msg)
+      void ViewerNetworkPublishingComponent::ProcessPublishActor(const dtGame::Message &msg)
       {
-         dtGame::GameActorProxy *gap = GetGameManager()->FindGameActorById(msg.GetSendingActorId());
+         dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(msg.GetSendingActorId());
 
          const dtDAL::ActorType &stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
          const dtDAL::ActorType *actualType = &gap->GetActorType();

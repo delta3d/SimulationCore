@@ -27,7 +27,6 @@
 
 #include <DemoExport.h>
 
-//#include <Actors/HoverVehiclePhysicsHelper.h>
 #include <SimCore/Actors/PlayerActor.h>
 
 
@@ -37,8 +36,8 @@ namespace NetDemo
 
 
    ////////////////////////////////////////////////////////////////////////////////
-   /* This actor holds the basic settings and status for each real player connected to the world. 
-    *    It subclasses the PlayerActor from SimCore, which is probably WAY overkill. However, we 
+   /* This actor holds the basic settings and status for each real player connected to the world.
+    *    It subclasses the PlayerActor from SimCore, which is probably WAY overkill. However, we
     *    will have a PlayerActor anyway, so it simplifies things.
     */
    class NETDEMO_EXPORT PlayerStatusActor : public SimCore::Actors::PlayerActor // dtGame::GameActor
@@ -104,12 +103,12 @@ namespace NetDemo
 
       public:
 
-         // Publishes an actor update message for player settings props to let other players know. 
+         // Publishes an actor update message for player settings props to let other players know.
          void PublishPlayerSettings();
 
 
          /////////////////////////////////////////////////////////////
-         // PROPERTIES 
+         // PROPERTIES
 
          // Player Status - Property
          void SetPlayerStatus(PlayerStatusEnum &playerStatus);
@@ -125,19 +124,19 @@ namespace NetDemo
 
          // Terrain Preference - Property - The server's value here defines what terrain is loaded for all.
          void SetTerrainPreference(const std::string& newValue);
-         std::string GetTerrainPreference() const { return mTerrainPreference; }
+         const std::string& GetTerrainPreference() const { return mTerrainPreference; }
 
          // Vehicle Preference - Property - The desired startup vehicle type, but not necessarily the current vehicle type.
          void SetVehiclePreference(VehicleTypeEnum &newValue);
          VehicleTypeEnum& GetVehiclePreference() const { return *mVehiclePreference; }
 
          // Vehicle Actor ID - Property - The id of the vehicle this player is currently driving.
-         void SetAttachedVehicleID(const std::string& newValue);
-         std::string GetAttachedVehicleID() const { return mAttachedVehicleID; }
+         void SetAttachedVehicleID(const dtCore::UniqueId& newValue);
+         const dtCore::UniqueId& GetAttachedVehicleID() const { return mAttachedVehicleID; }
 
          // IP Address - Property
          void SetIPAddress(const std::string& newValue);
-         std::string GetIPAddress() const { return mIPAddress; }
+         const std::string& GetIPAddress() const { return mIPAddress; }
 
       protected:
 
@@ -150,7 +149,7 @@ namespace NetDemo
          bool mIsServer;
          std::string mTerrainPreference;
          VehicleTypeEnum* mVehiclePreference;
-         std::string mAttachedVehicleID;
+         dtCore::UniqueId mAttachedVehicleID;
          std::string mIPAddress;
 
          bool mDirtyPlayerSettings;
@@ -179,7 +178,7 @@ namespace NetDemo
          virtual void BuildPropertyMap();
 
          /// Returns a useful reference to our actor. If no actor is created yet, this will likley crash.
-         PlayerStatusActor &GetActorAsPlayerStatus() 
+         PlayerStatusActor &GetActorAsPlayerStatus()
          {
             return *(static_cast<PlayerStatusActor*>(GetActor()));
          }
