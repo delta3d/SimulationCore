@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoActors</name>
@@ -8,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2009-05-19T13:51:40-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-26T15:14:14-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-06-26T17:07:14-05:00</lastUpdateTimestamp>
         <editorVersion>2.3.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -915,6 +914,113 @@
             </property>
         </actor>
         <actor>
+            <type>dtcore.Static Mesh</type>
+            <id>6d05b618-ec44-43f6-95e0-572702096f97</id>
+            <name>UFO Mothership 01</name>
+            <property>
+                <name>Description</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>352.013519</value1>
+                    <value2>119.697304</value2>
+                    <value3>47.916237</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Rotation</name>
+                <vec3>
+                    <value1>-0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
+            </property>
+        </actor>
+        <actor>
             <type>NetDemo.EnemyDecriptionActor</type>
             <id>6de49300-a740-42bb-bb7f-5c02338b4fb5</id>
             <name>EnemyDescriptionActor</name>
@@ -1053,7 +1159,7 @@
             </property>
             <property>
                 <name>Show Collision Geometry</name>
-                <boolean>true</boolean>
+                <boolean>false</boolean>
             </property>
             <property>
                 <name>Collision Type</name>
@@ -1070,14 +1176,14 @@
             <property>
                 <name>Collision Box</name>
                 <vec3>
-                    <value1>15.000000</value1>
-                    <value2>15.000000</value2>
+                    <value1>5.000000</value1>
+                    <value2>5.000000</value2>
                     <value3>5.000000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Enable Collision</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Render Proxy Node</name>
@@ -1244,7 +1350,7 @@
                 <vec3>
                     <value1>50.000000</value1>
                     <value2>-300.000000</value2>
-                    <value3>47.500000</value3>
+                    <value3>47.908546</value3>
                 </vec3>
             </property>
             <property>
@@ -1253,7 +1359,7 @@
             </property>
             <property>
                 <name>Show Collision Geometry</name>
-                <boolean>true</boolean>
+                <boolean>false</boolean>
             </property>
             <property>
                 <name>Collision Type</name>
@@ -1270,14 +1376,14 @@
             <property>
                 <name>Collision Box</name>
                 <vec3>
-                    <value1>15.000000</value1>
-                    <value2>15.000000</value2>
+                    <value1>5.000000</value1>
+                    <value2>5.000000</value2>
                     <value3>5.000000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Enable Collision</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>Render Proxy Node</name>
@@ -1319,6 +1425,113 @@
                         </property>
                     </element>
                 </array>
+            </property>
+        </actor>
+        <actor>
+            <type>dtcore.Static Mesh</type>
+            <id>8c9c48a5-5056-48de-a7dc-1ac7ad204254</id>
+            <name>UFO Mothership 02</name>
+            <property>
+                <name>Description</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>-0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>50.000000</value1>
+                    <value2>-300.000000</value2>
+                    <value3>47.916237</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Rotation</name>
+                <vec3>
+                    <value1>-0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>static mesh</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:UFO.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:UFO.ive</resource>
             </property>
         </actor>
         <actor>
@@ -1520,7 +1733,7 @@
             </property>
             <property>
                 <name>Time and Date</name>
-                <string>2009-06-26T15:14:14-05:00</string>
+                <string>2009-06-26T17:07:15-05:00</string>
             </property>
             <property>
                 <name>Wind</name>
