@@ -49,9 +49,6 @@
 #include <osg/Group>
 #include <osg/MatrixTransform>
 
-#include <iostream>
-#include <osg/io_utils>
-
 IMPLEMENT_ENUM(PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum);
 PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::TWO_D("2D");
 PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::THREE_D("3D");
@@ -647,9 +644,6 @@ void PhysicsParticleSystemActor::PostPhysicsUpdate()
             dtCore::Transform xform;
             physObj->GetTransform(xform);
             particle->mObj->SetTransform(xform);
-            osg::Matrix m;
-            xform.Get(m);
-            std::cout << m << std::endl;
          }
       }
    }
