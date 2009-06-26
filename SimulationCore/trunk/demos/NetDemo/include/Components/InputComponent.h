@@ -32,10 +32,10 @@
 //#include <SimCore/PlayerMotionModel.h>
 //#include <SimCore/Actors/WeaponActor.h>
 
-//namespace osgSim
-//{
-//   class DOFTransform;
-//}
+namespace dtGame
+{
+   class ActorUpdateMessage;
+}
 namespace SimCore
 {
    class ClampedMotionModel;
@@ -96,7 +96,7 @@ namespace NetDemo
          void UpdateHelpers();
          GameLogicComponent* GetLogicComponent();
 
-         void HandleActorUpdateMessage(const dtGame::Message& msg);
+         void HandleActorUpdateMessage(const dtGame::ActorUpdateMessage& msg);
          bool IsVehiclePivotable();
          void DetachFromCurrentVehicle();
 
@@ -109,9 +109,9 @@ namespace NetDemo
          /// Sending in a vehicle will cause an attach, sending NULL will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
 
-         /// Clean up method for the dead reckoning ghost actor 
+         /// Clean up method for the dead reckoning ghost actor
          void CleanUpDRGhost();
-         /// Create or destroy the dead reckoning ghost actor 
+         /// Create or destroy the dead reckoning ghost actor
          void ToggleDRGhost();
 
       private:

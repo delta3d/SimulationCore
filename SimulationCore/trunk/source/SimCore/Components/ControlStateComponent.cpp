@@ -110,13 +110,10 @@ namespace SimCore
          }
          else if( type == SimCore::MessageType::INFO_ACTOR_DELETED )
          {
-            const dtGame::ActorDeletedMessage& deleteMsg
-               = static_cast<const dtGame::ActorDeletedMessage&>(message);
-
             // Listen for remote deletes
-            if( deleteMsg.GetSource() != GetGameManager()->GetMachineInfo() )
+            if (message.GetSource() != GetGameManager()->GetMachineInfo())
             {
-               SimCore::Actors::ControlStateActor* controlState = GetControlState( deleteMsg.GetAboutActorId() );
+               SimCore::Actors::ControlStateActor* controlState = GetControlState(message.GetAboutActorId());
                if( controlState != NULL )
                {
                   HandleControlStateDelete( controlState );
@@ -127,7 +124,7 @@ namespace SimCore
             {
                // Notify local control states of an entity being deleted.
                // Remove all local controls states pointing to the entity.
-               HandleEntityDeleted( deleteMsg.GetAboutActorId() );
+               HandleEntityDeleted( message.GetAboutActorId() );
             }
          }
 

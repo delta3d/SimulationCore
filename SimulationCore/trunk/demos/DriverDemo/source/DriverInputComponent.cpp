@@ -1086,8 +1086,8 @@ namespace DriverDemo
          {
             // Give the shooter unit access to the shooter so that it
             // can tell the shooter when to fire.
-            SimCore::MunitionParticlesActorProxy* proxy =
-               dynamic_cast<SimCore::MunitionParticlesActorProxy*>(ourActualActorProxy.get());
+            SimCore::Actors::MunitionParticlesActorProxy* proxy =
+               dynamic_cast<SimCore::Actors::MunitionParticlesActorProxy*>(ourActualActorProxy.get());
             outWeapon->SetShooter( proxy );
 
             // Initialize the physics based particle system/shooter,

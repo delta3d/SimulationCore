@@ -44,9 +44,6 @@
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
 
-// TEMP STUFF FOR VEHICLE
-#include <Actors/HoverVehicleActor.h>
-
 
 namespace NetDemo
 {
@@ -103,7 +100,7 @@ namespace NetDemo
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msgType)
       {
-         HandleActorUpdateMessage(message);
+         HandleActorUpdateMessage(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
       else if (SimCore::MessageType::GAME_STATE_CHANGED == msgType)
       {
@@ -195,12 +192,8 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////
-   void InputComponent::HandleActorUpdateMessage(const dtGame::Message& msg)
+   void InputComponent::HandleActorUpdateMessage(const dtGame::ActorUpdateMessage& updateMessage)
    {
-
-      const dtGame::ActorUpdateMessage& updateMessage =
-         static_cast<const dtGame::ActorUpdateMessage&> (msg);
-
       // PLAYER STATUS - if it's ours, then update our attached vehicle
       if (updateMessage.GetActorType() == NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE &&
          updateMessage.GetSource() == GetGameManager()->GetMachineInfo())
@@ -211,11 +204,11 @@ namespace NetDemo
          PlayerStatusActor& playerStatus = playerProxy->GetActorAsPlayerStatus();
 
          // If we don't have a vehicle yet, or our current vehicle is different, then attach to it.
-         if (!mVehicle.valid() || mVehicle->GetUniqueId().ToString() != playerStatus.GetAttachedVehicleID())
+         if (!mVehicle.valid() || mVehicle->GetUniqueId() != playerStatus.GetAttachedVehicleID())
          {
             // Find our vehicle - we assume it exists... if not, we'll crash
             SimCore::Actors::PlatformActorProxy* vehicleProxy = NULL;
-            GetGameManager()->FindActorById(dtCore::UniqueId(playerStatus.GetAttachedVehicleID()), vehicleProxy);
+            GetGameManager()->FindActorById(playerStatus.GetAttachedVehicleID(), vehicleProxy);
             if (vehicleProxy != NULL)
             {
                SimCore::Actors::Platform* vehicle = NULL;
@@ -249,22 +242,6 @@ namespace NetDemo
             }
             break;
          }
-
-         case '5':
-            {
-               /////////////////////////////////////////////////////////
-               LOG_ALWAYS("TEST - HACK - Attempting to create vehicle!!! ");
-               // Hack stuff - add a vehicle here. For testing purposes.
-               dtCore::RefPtr<SimCore::Actors::BasePhysicsVehicleActorProxy> testVehicleProxy = NULL;
-               SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-                  "Hover Vehicle", testVehicleProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
-               SimCore::Actors::BasePhysicsVehicleActor* vehicleActor = NULL;
-               testVehicleProxy->GetActor(vehicleActor);
-               vehicleActor->SetHasDriver(true);
-               GetGameManager()->AddActor(*testVehicleProxy, false, true);
-
-               break;
-            }
 
          case '6':
             {
@@ -476,10 +453,10 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ToggleDRGhost()
    {
-      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
-      // If it already exists, then kill it. 
+      // If it already exists, then kill it.
       if (mDRGhostActorProxy.valid())
       {
          CleanUpDRGhost();
@@ -495,9 +472,9 @@ namespace NetDemo
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
             mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(1.0f);
             mDRGhostActorProxy->GetActorAsDRGhost().SetSlavedEntity(mVehicle.get());
-            GetGameManager()->AddActor(*mDRGhostActorProxy.get(), false, false);
+            GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
-         
+
       }
    }
 
@@ -508,7 +485,7 @@ namespace NetDemo
       {
          GetGameManager()->DeleteActor(*mDRGhostActorProxy.get());
          mDRGhostActorProxy = NULL;
-         SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle = 
+         SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
             dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
          if (mVehicle.valid() && mPhysVehicle != NULL)
          {

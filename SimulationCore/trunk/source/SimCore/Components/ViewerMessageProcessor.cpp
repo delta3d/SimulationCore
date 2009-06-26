@@ -210,7 +210,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessLocalDeleteActor(const dtGame::ActorDeletedMessage &msg)
+      void ViewerMessageProcessor::ProcessLocalDeleteActor(const dtGame::Message &msg)
       {
          if(mPlayer.valid() && msg.GetAboutActorId() == mPlayer->GetUniqueId())
          {

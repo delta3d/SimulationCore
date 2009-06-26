@@ -14,6 +14,7 @@
 #include <GameEntryPoint.h>
 #include <Components/InputComponent.h>
 #include <Components/GameLogicComponent.h>
+#include <Components/WeaponComponent.h>
 #include <ConfigParameters.h>
 #include <Components/GUIComponent.h>
 #include <Components/SpawnComponent.h>
@@ -98,7 +99,7 @@ namespace NetDemo
    void GameEntryPoint::InitializeComponents(dtGame::GameManager& gm)
    {
       // This processes remote actors and such on the network
-      dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor = 
+      dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor =
          new SimCore::Components::ViewerMessageProcessor();
       gm.AddComponent(*defaultProcessor, dtGame::GameManager::ComponentPriority::HIGHEST);
 
@@ -110,6 +111,9 @@ namespace NetDemo
       // creating the vehicle, and changing terrains when the server tells us to.
       dtCore::RefPtr<GameLogicComponent> gameAppComp = new GameLogicComponent();
       gm.AddComponent(*gameAppComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+      dtCore::RefPtr<WeaponComponent> weaponComp = new WeaponComponent();
+      gm.AddComponent(*weaponComp, dtGame::GameManager::ComponentPriority::NORMAL);
       //gameAppComp->InitializeCommandLineOptionsAndRead(parser);
       // Load state transitions.
       const char pathSep = dtUtil::FileUtils::PATH_SEPARATOR;
