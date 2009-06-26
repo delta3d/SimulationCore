@@ -202,7 +202,7 @@ namespace NetDemo
       gm->AddActor(*shooterProxy, false, false);
       shooter->Emancipate();
 
-      outWeapon->SetShooter(shooterProxy);
+      outWeapon->SetShooter(shooterProxy.get());
 
       // Set other properties of the particle system
       shooter->SetWeapon(*outWeapon);
@@ -270,7 +270,7 @@ namespace NetDemo
       }
 
       mWeaponIndex = index;
-      SetCurrentWeapon(mWeaponList[mWeaponIndex]);
+      SetCurrentWeapon(mWeaponList[mWeaponIndex].get());
    }
 
    ////////////////////////////////////////////////////////////////////////////////
