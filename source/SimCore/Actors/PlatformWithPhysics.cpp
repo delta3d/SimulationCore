@@ -52,7 +52,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
             mPhysicsHelper->SetBaseInterfaceClass(this);
-            mPhysicsHelper->SetAgeiaMass(500.0f)
+            mPhysicsHelper->SetAgeiaMass(500.0f);
             mPhysicsHelper->SetIsKinematic(true);
             mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
 #else
