@@ -224,15 +224,6 @@ namespace SimCore
    /////////////////////////////////////////////////////////
    bool BaseWheeledVehiclePhysicsHelper::CreateChassis(const dtCore::Transform& transformForRot, const osg::Node& bodyNode)
    {
-      if (mVehicle != NULL)
-      {
-         delete mVehicle;
-         mVehicle = NULL;
-      }
-
-      //Create the vehicle here so we can add wheels any time.
-      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
-
       osg::Matrix BodyMatrix;
       GetLocalMatrix(bodyNode, BodyMatrix);
 
@@ -262,10 +253,19 @@ namespace SimCore
       massPos.z += GetVehiclesCenterOfMass()[2];
       physicsObject->setCMassOffsetLocalPosition(massPos);
 #else
+      if (mVehicle != NULL)
+      {
+         delete mVehicle;
+         mVehicle = NULL;
+      }
+
+      //Create the vehicle here so we can add wheels any time.
+      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
+
       GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
+      GetMainPhysicsObject()->SetTransform(transformForRot);
       mVehicle->Init(&GetMainPhysicsObject()->GetBodyWrapper()->GetPalBody(), GetEngineTorque(),
                 GetMaxBrakeTorque());
-      GetMainPhysicsObject()->SetTransform(transformForRot);
 #endif
 
       return true;
