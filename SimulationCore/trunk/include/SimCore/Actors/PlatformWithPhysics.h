@@ -103,10 +103,10 @@ namespace SimCore
             }
 
             /// default name
-            static const std::string& DEFAULT_NAME;
+            static const std::string DEFAULT_NAME;
 
             /// buildings default name
-            static const std::string& BUILDING_DEFAULT_NAME;
+            static const std::string BUILDING_DEFAULT_NAME;
 
          protected:
             /// destructor
