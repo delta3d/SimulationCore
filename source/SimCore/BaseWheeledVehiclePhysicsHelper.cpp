@@ -296,7 +296,7 @@ namespace SimCore
 
       float wheelTorque = -acceleration * GetEngineTorque();
 
-      for(int i = 0 ; i < mWheels.size(); ++i)
+      for(unsigned i = 0 ; i < mWheels.size(); ++i)
       {
          WheelType& curWheel = mWheels[i];
          if (curWheel.mBraked)
