@@ -80,16 +80,17 @@ namespace NetDemo
          //osg::Vec3 up(0.0f, 0.0f, 1.0f); //= dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 2);
          //osg::Vec3 at = dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 1);
 
-         //float maxLiftForce = 20.0f;
-         //float maxThrustForce = 20.0f;
-         //float maxYawForce = 20.0f;
+         //float maxLiftForce = 100.0f;
+         //float maxThrustForce = 100.0f;
+         //float maxYawForce = 100.0f;
 
          //osg::Vec3 force;
 
-         //force += osg::Vec3(0.0f, 0.0f, 9.8f) + (up * (steeringOut.mLift * maxLiftForce));
+         //force += osg::Vec3(0.0f, 0.0f, 100.0f) + (up * (steeringOut.mLift * maxLiftForce));
          //force += at * (steeringOut.mThrust * maxThrustForce);
          //force += right * (steeringOut.mYaw * maxYawForce);
-         
+         //
+         //GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
          GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(steeringOut.mLinearVelocity);
 
       }

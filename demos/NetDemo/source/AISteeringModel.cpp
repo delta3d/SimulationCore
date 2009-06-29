@@ -40,11 +40,6 @@ namespace NetDemo
 
    }
 
-   void AISteeringModel::Init()
-   {
-
-   }
-
    void AISteeringModel::SetKinematicGoal(const dtAI::KinematicGoal& kg)
    {
       mGoal = kg;

@@ -31,7 +31,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtUtil/mathdefines.h>
-
+#include <dtDAL/propertymacros.h>
 
 namespace NetDemo
 {
@@ -75,7 +75,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef PropertyRegHelper<dtDAL::PropertyContainer&, value_type> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
@@ -88,7 +88,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyDescriptionActor::EnemySpawnInfo::RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group)
    {
-      typedef PropertyRegHelper<dtDAL::ContainerActorProperty&, value_type> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::ContainerActorProperty&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);

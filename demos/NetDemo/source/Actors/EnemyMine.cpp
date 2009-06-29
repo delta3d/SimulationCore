@@ -59,28 +59,15 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMineActor::EnemyMineActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
-      , mAIHelper(new EnemyAIHelper())
       , mGoalLocation(10.0, 10.0, 10.0)
       , mGroundClearance(3.0)
    {
-
+      mAIHelper = new EnemyAIHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMineActor::~EnemyMineActor(void)
    {
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   EnemyAIHelper* EnemyMineActor::GetAIHelper()
-   {
-      return mAIHelper.get();
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   const EnemyAIHelper* EnemyMineActor::GetAIHelper() const
-   {
-      return mAIHelper.get();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -346,12 +333,6 @@ namespace NetDemo
    void EnemyMineActorProxy::CreateActor()
    {
       SetActor(*new EnemyMineActor(*this));
-   }
-
-   void EnemyMineActorProxy::InitAI(const EnemyDescriptionActor& desc)
-   {
-      EnemyMineActor& actor = static_cast<EnemyMineActor&>(GetGameActor());
-      actor.GetAIHelper()->Init(desc);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

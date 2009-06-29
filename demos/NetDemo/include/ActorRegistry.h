@@ -42,6 +42,7 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> PLAYER_STATUS_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> SERVER_GAME_STATUS_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> FORT_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> TOWER_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_DESCRIPTION_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_MINE_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> DR_GHOST_ACTOR_TYPE;
@@ -49,6 +50,7 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> SPAWN_VOLUME_ACTOR_TYPE;
 
          static dtCore::RefPtr<dtDAL::ActorType> WHEELED_VEHICLE_ACTOR_TYPE;
+         static dtCore::RefPtr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
 

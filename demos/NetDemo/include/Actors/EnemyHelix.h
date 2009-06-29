@@ -55,6 +55,7 @@ namespace NetDemo
 
          /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
+         void PostPhysicsUpdate();
 
       protected:
       /// Destructor
@@ -67,8 +68,6 @@ namespace NetDemo
 
       // Private vars
       private:
-
-         dtCore::RefPtr<SpaceShipAIHelper> mAIHelper;
 
    };
 
@@ -85,6 +84,7 @@ namespace NetDemo
          virtual ~EnemyHelixActorProxy();
          void CreateActor();
          virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
    };
 
 }

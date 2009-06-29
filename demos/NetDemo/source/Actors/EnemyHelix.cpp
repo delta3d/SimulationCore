@@ -53,9 +53,8 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyHelixActor::EnemyHelixActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
-      , mAIHelper(new SpaceShipAIHelper())
    {
-
+      mAIHelper = new SpaceShipAIHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -107,29 +106,62 @@ namespace NetDemo
    void EnemyHelixActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       //update the entities orientation
-      dtCore::Transform trans;
-      mAIHelper->PostSync(trans);
-      SetTransform(trans);
+      //dtCore::Transform trans;
+      //GetTransform(trans);
+
+      //mAIHelper->PostSync(trans);
+      //SetTransform(trans);
    }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::PostPhysicsUpdate()
+   {
+      // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
+      // take the position and throw away the rotation.
+
+      // This is ONLY called if we are LOCAL (we put the check here just in case... )
+      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      {
+         // The base behavior is that we want to pull the translation and rotation off the object
+         // in our physics scene and apply it to our 3D object in the visual scene.
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
+         //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
+         if (!GetPushTransformToPhysics())
+         {
+            if(physicsObject != NULL)
+            {
+               // Take rotation from physics and apply to current xform - IE NO ROTATION!
+               dtCore::Transform currentXForm;
+               GetTransform(currentXForm);
+               dtCore::Transform physicsXForm;
+               physicsObject->GetTransform(physicsXForm);
+               currentXForm.SetTranslation(physicsXForm.GetTranslation());
+               
+               //apply our own rotation
+               mAIHelper->PostSync(currentXForm);
+               
+               SetTransform(currentXForm);
+               SetPushTransformToPhysics(false);
+            }
+         }
+      }
+   }
+
 
    //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
-      BaseClass::OnTickLocal( tickMessage );
-
       //Tick the AI
       //update the AI's position and orientation
       dtCore::Transform trans;
       GetTransform(trans);
       mAIHelper->PreSync(trans);
 
-      //let the AI do its thing
+      ////////let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
-      //update the entities position and orientation
-      //note: this is commented out because it is done above in UpdateVehicleTorquesAndAngles()
-      //mAIHelper->PostSync(trans);
-      //SetTransform(trans);
+      BaseClass::OnTickLocal(tickMessage);
    }
 
 
@@ -179,7 +211,7 @@ namespace NetDemo
       BaseClass::RespondToHit(message, munition, force, location);
 
       //this lets the AI respond to being hit
-      mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      //mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -197,7 +229,7 @@ namespace NetDemo
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      EnemyHelixActor  &actor = static_cast<EnemyHelixActor &>(GetGameActor());
+      EnemyHelixActor& actor = static_cast<EnemyHelixActor &>(GetGameActor());
 
    }
 
@@ -215,4 +247,9 @@ namespace NetDemo
       BaseClass::OnEnteredWorld();
    }
 
+   void EnemyHelixActorProxy::OnRemovedFromWorld()
+   {
+      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());
+      actor.DoExplosion(1.0f);
+   }
 } // namespace

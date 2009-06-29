@@ -46,59 +46,59 @@ namespace NetDemo
    class NETDEMO_EXPORT BaseAIHelper: public osg::Referenced
    {
    public:
-     BaseAIHelper();
-     BaseAIHelper(const EnemyDescriptionActor& desc);
+      BaseAIHelper();
+      BaseAIHelper(const EnemyDescriptionActor& desc);
 
-     void Init(const EnemyDescriptionActor& desc);
-     virtual void OnInit(const EnemyDescriptionActor& desc);
+      void Init(const EnemyDescriptionActor& desc);
+      virtual void OnInit(const EnemyDescriptionActor& desc);
 
-     virtual void Spawn();
-     virtual void Update(float dt);
+      virtual void Spawn();
+      virtual void Update(float dt);
 
-     virtual void PreSync(const dtCore::Transform& trans);
-     virtual void PostSync(dtCore::Transform& trans) const;
+      virtual void PreSync(const dtCore::Transform& trans);
+      virtual void PostSync(dtCore::Transform& trans) const;
 
-     const dtUtil::RefString& GetPrototypeName() const;
-     void GetPrototypeName(const dtUtil::RefString& name);
+      const dtUtil::RefString& GetPrototypeName() const;
+      void GetPrototypeName(const dtUtil::RefString& name);
 
-     dtAI::FSM& GetStateMachine() { return mStateMachine; }
-     const dtAI::FSM& GetStateMachine() const { return mStateMachine; }
+      dtAI::FSM& GetStateMachine() { return mStateMachine; }
+      const dtAI::FSM& GetStateMachine() const { return mStateMachine; }
 
-     dtAI::FSM::FactoryType* GetStateFactory() { return mFactory.get(); }
-     const dtAI::FSM::FactoryType* GetStateFactory() const { return mFactory.get(); }
+      dtAI::FSM::FactoryType* GetStateFactory() { return mFactory.get(); }
+      const dtAI::FSM::FactoryType* GetStateFactory() const { return mFactory.get(); }
 
-     AISteeringModel* GetSteeringModel() { return mSteeringModel.get(); }
-     const AISteeringModel* GetSteeringModel() const { return mSteeringModel.get(); }
+      AISteeringModel* GetSteeringModel() { return mSteeringModel.get(); }
+      const AISteeringModel* GetSteeringModel() const { return mSteeringModel.get(); }
 
-     AIPhysicsModel* GetPhysicsModel() { return mPhysicsModel.get(); }
-     const AIPhysicsModel* GetPhysicsModel() const { return mPhysicsModel.get(); }
+      AIPhysicsModel* GetPhysicsModel() { return mPhysicsModel.get(); }
+      const AIPhysicsModel* GetPhysicsModel() const { return mPhysicsModel.get(); }
 
-     /**
-     * A function to add transitions to the finite state machine using the AIStateType
-     * which avoids redundant calls to FSM::GetState.
-     */
-     void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
+      /**
+      * A function to add transitions to the finite state machine using the AIStateType
+      * which avoids redundant calls to FSM::GetState.
+      */
+      void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
 
    protected:
-     BaseAIHelper(const BaseAIHelper&);  //not implemented by design
-     BaseAIHelper& operator=(const BaseAIHelper&);  //not implemented by design
-     ~BaseAIHelper();
+      BaseAIHelper(const BaseAIHelper&);  //not implemented by design
+      BaseAIHelper& operator=(const BaseAIHelper&);  //not implemented by design
+      ~BaseAIHelper();
 
-     virtual void RegisterStates();
-     virtual void CreateStates();
-     virtual void SetupTransitions();
-     virtual void SetupFunctors();
+      virtual void RegisterStates();
+      virtual void CreateStates();
+      virtual void SetupTransitions();
+      virtual void SetupFunctors();
 
-     virtual void SelectState(float dt);
+      virtual void SelectState(float dt);
 
    private:
-     
-     dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
-     dtAI::FSM mStateMachine;
-     dtCore::RefPtr<AISteeringModel> mSteeringModel;
-     dtCore::RefPtr<AIPhysicsModel> mPhysicsModel;
 
-     dtUtil::RefString mPrototypeName;
+      dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
+      dtAI::FSM mStateMachine;
+      dtCore::RefPtr<AISteeringModel> mSteeringModel;
+      dtCore::RefPtr<AIPhysicsModel> mPhysicsModel;
+
+      dtUtil::RefString mPrototypeName;
    };
 
 } //namespace NetDemo

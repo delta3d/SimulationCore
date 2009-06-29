@@ -31,6 +31,8 @@
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
+#include <EnemyAIHelper.h>
+
 namespace dtAudio
 {
    class Sound;
@@ -73,6 +75,12 @@ namespace NetDemo
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
 
+         virtual void InitAI(const EnemyDescriptionActor& desc);
+
+         EnemyAIHelper* GetAIHelper();
+         const EnemyAIHelper* GetAIHelper() const;
+
+
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
          /// By default, this does nothing.
@@ -82,6 +90,8 @@ namespace NetDemo
          /// Does nothing by default.
          virtual void UpdateSoundEffects(float deltaTime);
 
+
+         dtCore::RefPtr<EnemyAIHelper> mAIHelper;
 
       // Private vars
       private:

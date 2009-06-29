@@ -29,9 +29,15 @@
 #include <AIUtility.h>
 #include <DemoExport.h>
 #include <EnemyAIHelper.h>
-
+ 
+#include <dtDAL/propertymacros.h>
+#include <dtAI/controllable.h>
+#include <dtAI/steeringbehavior.h>
+#include <dtAI/steeringpipeline.h>
 #include <osg/Matrix>
 #include <osg/Vec3>
+
+#include <stack>
 
 namespace NetDemo
 {
@@ -106,54 +112,36 @@ namespace NetDemo
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   struct SpaceShipControllable: public Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
+   //////////////////////////////////////////////////////////////////////////
+   //SpaceShipSteeringBehavior
+   //////////////////////////////////////////////////////////////////////////
+   typedef dtAI::SteeringBehavior<SpaceShipGoalState, SpaceShipState, SpaceShipControls> SpaceShipSteeringBehavior;
+
+
+   class SpaceShipTargeter: public dtAI::Targeter<SpaceShipState, SpaceShipGoalState>
    {
       public:
-         typedef Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
-   
-         SpaceShipControllable();
-         ~SpaceShipControllable();
-
-         static void InitControllable(const osg::Matrix& matIn, SpaceShipControllable& stateIn);
-         static void ResetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
-         static void SetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
-         static void OrthoNormalize(SpaceShipState& stateIn);
-         static void SetMatrix(const SpaceShipState& stateIn, osg::Matrix& result);
-
-
-         //derived members
-         //typename BaseClass::ControlType mCurrentControls;
-
-         //typename BaseClass::StateType mCurrentState;
-         //typename BaseClass::StateType mNextPredictedState;
-
-         //typename BaseClass::GoalStateType mGoalState;
-
-         //typename BaseClass::StateType mStateConstraints;
-         //typename BaseClass::ControlType mControlConstraints;
-
-         //typename BaseClass::PathType mPathToFollow;
-         //typename BaseClass::PathType mPredictedPath;
-
-   };
-
-   class SpaceShipTargeter: public Targeter<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
-   {
-      public:
-         typedef Targeter<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
+         typedef dtAI::Targeter<SpaceShipState, SpaceShipGoalState> BaseClass;
 
          SpaceShipTargeter();
          virtual ~SpaceShipTargeter();
 
-         /*virtual*/ bool GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result) const;
+         void Pop();
+         const osg::Vec3& Top() const;
+         void Push(const osg::Vec3& pos);
+
+         /*virtual*/ bool GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result);
 
       private:
+
+         std::stack<osg::Vec3> mPointOfInterest;
+
    };
 
-   class SpaceShipDecomposer: public Decomposer<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
+   class SpaceShipDecomposer: public dtAI::Decomposer<SpaceShipState, SpaceShipGoalState>
    {
    public:
-      typedef Decomposer<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
+      typedef dtAI::Decomposer<SpaceShipState, SpaceShipGoalState> BaseClass;
 
       SpaceShipDecomposer();
       ~SpaceShipDecomposer();
@@ -161,80 +149,74 @@ namespace NetDemo
       /*virtual*/ void Decompose(const SpaceShipState& current_state, SpaceShipGoalState& result) const;
    };
 
-   class SpaceShipConstraint: public Constraint<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
+   class SpaceShipConstraint: public dtAI::Constraint<SpaceShipState, SpaceShipGoalState>
    {
    public:
-      typedef Constraint<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
+      typedef dtAI::Constraint<SpaceShipState, SpaceShipGoalState> BaseClass;
 
       SpaceShipConstraint();
       ~SpaceShipConstraint();
 
-      /*virtual*/ bool WillViolate(const BaseClass::PathType& pathToFollow);
-      /*virtual*/ void Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result);
+      /*virtual*/ bool WillViolate(const BaseClass::PathType& pathToFollow) const;
+      /*virtual*/ void Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result) const;
    };
 
 
-   class SpaceShipActuator: public Actuator<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
+   class SpaceShipControllable: public dtAI::Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
    {
    public:
-      typedef Actuator<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
+      typedef dtAI::Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
 
-      SpaceShipActuator();
-      ~SpaceShipActuator();
+      SpaceShipControllable();
+      ~SpaceShipControllable();
 
-      /*virtual*/ bool GetPath(const SpaceShipState& current_state, const SpaceShipGoalState& goal, BaseClass::PathType& result);
-      /*virtual*/ void Output(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipControls& result);
-   };
+      /*virtual*/ bool FindPath(const AIState& fromState, const AIGoal& goal, AIPath& resultingPath) const;
+      /*virtual*/ void UpdateState(float dt, const AIControlState& steerData);
+
+      /*virtual*/ void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+      {
+         BaseClass::RegisterProperties(pc, group);
+      };
+
+      static void InitControllable(const osg::Matrix& matIn, SpaceShipControllable& stateIn);
+      static void ResetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
+      static void SetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
+      static void OrthoNormalize(SpaceShipState& stateIn);
+      static void SetMatrix(const SpaceShipState& stateIn, osg::Matrix& result);
+
+   protected:
 
 
+      void UpdateHeading(const SpaceShipControls& controls);
+      void UpdatePosition(const SpaceShipControls& controls);
+      void UpdateVelocity(const SpaceShipControls& controls);
+      void UpdateAngularVelocity(const SpaceShipControls& controls);
+      void UpdateVerticalVelocity(const SpaceShipControls& controls);
+      void UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt);
+      void UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll);
+      float Clamp(float x, float from, float to);
+      float Dampen(float last, float current, float max, float falloff);
 
-   class SpaceShipUpdater: public Updater<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
-   {
-      public:
-         typedef Updater<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
-
-         SpaceShipUpdater();
-         virtual ~SpaceShipUpdater();
-
-         //const osg::Matrix& Update(const SpaceShipControls& control, double dt);
-         /*virtual*/ void Update(float dt, const SpaceShipControls& steeringOut, SpaceShipControllable::BaseClass& stateIn);
-
-         static void Reset(const osg::Matrix& matIn, SpaceShipControllable& stateIn);
-
-      private:
-
-         void UpdateHeading(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn);
-         void UpdatePosition(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn);
-         void UpdateVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn);
-         void UpdateAngularVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn);
-         void UpdateVerticalVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn);
-
-         void UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt, SpaceShipControllable::BaseClass& stateIn);
-         void UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll, SpaceShipControllable::BaseClass& stateIn);
-
-         float Clamp(float x, float from, float to);
-         float Dampen(float last, float current, float max, float falloff);         
+      DECLARE_PROPERTY(float, TimeStep)
 
    };
 
-
-   typedef SteeringPipeline<SpaceShipControllable, SpaceShipTargeter, SpaceShipDecomposer,
-                            SpaceShipConstraint, SpaceShipActuator, SpaceShipUpdater> SpaceShipAIModel;
-
+   typedef dtAI::SteeringPipeline<SpaceShipControllable> SpaceShipAIModel;
 
    class NETDEMO_EXPORT SpaceShipAIHelper: public EnemyAIHelper
    {
    public:
       typedef EnemyAIHelper BaseClass;
-
       SpaceShipAIHelper();
 
-      /*virtual*/ void OnInit(EnemyDescriptionActor& desc);
+      /*virtual*/ void OnInit(const EnemyDescriptionActor& desc);
       /*virtual*/ void Spawn();
       /*virtual*/ void Update(float dt);
 
       /*virtual*/ void PreSync(const dtCore::Transform& trans);
       /*virtual*/ void PostSync(dtCore::Transform& trans) const;
+
+      void OutputControl(const SpaceShipControllable::PathType& pathToFollow, const SpaceShipControllable::StateType& current_state, SpaceShipControllable::ControlType& result) const;
 
       void SetCurrentTarget(dtCore::Transformable& target);
 
@@ -257,18 +239,65 @@ namespace NetDemo
       /*virtual*/ void SelectState(float dt);
 
       virtual void Attack(float dt);
-      virtual void CalculateNextWaypoint();
-      virtual void GoToWaypoint(float dt);
-      virtual void DefaultStateUpdate(float dt);
-
-      //void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
 
    private:
 
       //float GetDistance(const osg::Vec3& pos);
 
+      SpaceShipTargeter mDefaultTargeter;
+      
+      SpaceShipSteeringBehavior* mDefaultBehavior;
+
       SpaceShipControllable mAIControllable;
       SpaceShipAIModel mAIModel;
+   };
+
+
+
+   /**
+   * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation)
+   */
+   class Align: public SpaceShipSteeringBehavior
+   {
+   public:
+      typedef SpaceShipSteeringBehavior BaseClass;
+
+      Align(float lookAhead, float timeToTarget)
+         : mLookAhead(lookAhead)
+         , mTimeToTarget(timeToTarget)
+      {}
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+
+   protected:
+      float Sgn(float x);
+      osg::Vec3 GetTargetPosition(float dt, const SpaceShipGoalState& goal);
+      float GetTargetForward(float dt, const osg::Vec3& targetPos, const SpaceShipGoalState& current_goal, const SpaceShipState& current_state, osg::Vec3& vec_in);
+
+      float mLookAhead, mTimeToTarget;
+   };
+
+   /**
+   * Follow path can be used to follow waypoints
+   */
+   class FollowPath: public Align
+   {
+   public:
+      typedef Align BaseClass;
+
+      FollowPath(float minSpeed, float maxSpeed, float lookAhead, float timeToTarget, float lookAheadRot, float timeToTargetRot)
+         : BaseClass(lookAheadRot, timeToTargetRot)
+         , mMinSpeed(minSpeed)
+         , mMaxSpeed(maxSpeed)
+         , mLookAhead(lookAhead)
+         , mTimeToTarget(timeToTarget)
+      {}
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+
+   private:
+
+      float mMinSpeed, mMaxSpeed, mLookAhead, mTimeToTarget;
    };
 
 }//namespace NetDemo

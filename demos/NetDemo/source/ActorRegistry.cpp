@@ -25,7 +25,8 @@
 #include <Actors/EnemyHelix.h>
 #include <Actors/SpawnVolumeActor.h>
 #include <Actors/EnemyDescriptionActor.h>
-
+#include <Actors/PropelledVehicleActor.h>
+#include <Actors/TowerActor.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
 
@@ -47,6 +48,14 @@ namespace NetDemo
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::WHEELED_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("Wheeled Vehicle Actor", "NetDemo", "The wheeled vehicle we all know and love"));
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PROPELLED_VEHICLE_ACTOR_TYPE(
+      new dtDAL::ActorType("Propelled Vehicle Actor", "NetDemo", "The propelled vehicle is basically a wheeled vehicle with a jet engine attached."));
+
+
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::TOWER_ACTOR_TYPE(
+      new dtDAL::ActorType("Tower Actor", "NetDemo", "A generic tower with a turret, used for defense.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::FORT_ACTOR_TYPE(
       new dtDAL::ActorType("FortActor", "NetDemo", "The team base - when destroyed the team looses.",
@@ -97,7 +106,9 @@ namespace NetDemo
       mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<ServerGameStatusActorProxy>(SERVER_GAME_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<WheeledVehicleActorProxy>(WHEELED_VEHICLE_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<PropelledVehicleActorProxy>(PROPELLED_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
+      mActorFactory->RegisterType<TowerActorProxy>(TOWER_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyHelixActorProxy>(ENEMY_HELIX_ACTOR_TYPE.get());

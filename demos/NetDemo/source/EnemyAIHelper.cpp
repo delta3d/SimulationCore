@@ -168,21 +168,21 @@ namespace NetDemo
       typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
       typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
       
-      float minSpeedPercent = 0.15f;
-      float maxSpeedPercent = 0.85f;
-      float lookAheadTime = 1.0f;
-      float timeToTarget = 0.5f;
-      float lookAheadRot = 5.0f;
-      float timeToTargetRot = 5.0f;
+      //float minSpeedPercent = 0.15f;
+      //float maxSpeedPercent = 0.85f;
+      //float lookAheadTime = 1.0f;
+      //float timeToTarget = 0.5f;
+      //float lookAheadRot = 5.0f;
+      //float timeToTargetRot = 5.0f;
 
-      SteeringBehaviorType* behavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
+      //SteeringBehaviorType* behavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
+      //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
+
+      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
+      //state->AddEntryCommand(ctbc);
+
+      SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
       ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
-
-      state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      state->AddEntryCommand(ctbc);
-
-      behavior = new BombDive(mMaxVelocity);
-      ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
       
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       state->AddEntryCommand(ctbc);
