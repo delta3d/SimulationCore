@@ -42,8 +42,8 @@ namespace SimCore
 {
    namespace Actors
    {
-      const std::string &PlatformWithPhysics::DEFAULT_NAME = "Default";
-      const std::string &PlatformWithPhysics::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
+      const std::string PlatformWithPhysics::DEFAULT_NAME = "Default";
+      const std::string PlatformWithPhysics::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
 
       /////////////////////////////////////////////////////////////////////////
       PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy &proxy)
@@ -52,8 +52,17 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
             mPhysicsHelper->SetBaseInterfaceClass(this);
+            mPhysicsHelper->SetAgeiaMass(500.0f)
+            mPhysicsHelper->SetIsKinematic(true);
+            mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
 #else
             mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
+            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+            physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+            physObj->SetMass(500.0f);
+            mPhysicsHelper->AddPhysicsObject(*physObj);
+            mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
 #endif
          mLoadGeomFromNode = false;
       }
@@ -93,10 +102,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
             mPhysicsHelper->SetCollisionStaticMesh(mNodeForGeometry.get(), NxVec3(0,0,0), false, "");
 #else
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-            physObj->CreateFromProperties(mNodeForGeometry.get());
-            mPhysicsHelper->AddPhysicsObject(*physObj);
+            mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
 #endif
          }
          else // this is for objects moving around, in our case vehicles
@@ -168,12 +174,9 @@ namespace SimCore
                                           NxVec3(rot(1,0), rot(1,1), rot(1,2)),
                                           NxVec3(rot(2,0), rot(2,1), rot(2,2))),
                                  NxVec3(0,0,0));
-            mPhysicsHelper->SetAgeiaMass(5000);
             mPhysicsHelper->SetResourceName(checkValue);
             mPhysicsHelper->SetLoadAsCached(true);
-            //I don't think we want this.
-            mPhysicsHelper->SetIsKinematic(true);
-            mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
+
             switch(modelToLoad)
             {
                case 0:
@@ -199,8 +202,12 @@ namespace SimCore
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
          {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject("Chassis");
+            dtCore::Transform xform;
+            GetTransform(xform);
+
+            physObj->SetTransform(xform);
+            mPhysicsHelper->AddPhysicsObject(*physObj);
 
             switch(modelToLoad)
             {
@@ -224,14 +231,7 @@ namespace SimCore
                break;
             }
 
-            dtCore::Transform xform;
-            GetTransform(xform);
-
-            physObj->SetMass(5000);
-            physObj->SetTransform(xform);
-            mPhysicsHelper->AddPhysicsObject(*physObj);
          }
-         mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
 #endif
       }
 

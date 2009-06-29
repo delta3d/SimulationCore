@@ -35,6 +35,11 @@ namespace SimCore
       {
          // Which groups collide with each other. Typically, on the world and particles collide.
          // DO NOT FORGET - If you want bullets to collide, make sure to update this line:
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_GROUND, GROUP_VEHICLE_GROUND, true);   // the world interacts with itself
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_GROUND, GROUP_PARTICLE, true);  // particles interact with the world
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_GROUND, GROUP_TERRAIN, true);   // the world interacts with itself
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_GROUND, GROUP_BULLET, false);   // the world interacts with itself
+
          physicsComponent.SetGroupCollision(GROUP_TERRAIN, GROUP_TERRAIN, true);   // the world interacts with itself
          physicsComponent.SetGroupCollision(GROUP_TERRAIN, GROUP_PARTICLE, true);  // particles interact with the world
          physicsComponent.SetGroupCollision(GROUP_BULLET, GROUP_PARTICLE, false);// bullets and particles do not interact
