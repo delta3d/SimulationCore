@@ -25,6 +25,7 @@
 #include <AISpaceShip.h>
 #include <AIState.h>
 #include <AIEvent.h>
+#include <Actors/EnemyDescriptionActor.h>
 
 #include <dtCore/transform.h>
 #include <dtUtil/matrixutil.h>
@@ -32,6 +33,10 @@
 
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
+
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/bodywrapper.h>
 
 #include <osg/Vec2>
 #include <osg/Vec3>
@@ -52,7 +57,7 @@ namespace NetDemo
 
    void SpaceShipState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipState> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
@@ -87,7 +92,7 @@ namespace NetDemo
 
    void SpaceShipGoalState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipGoalState> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipGoalState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
@@ -118,16 +123,19 @@ namespace NetDemo
    //SpaceShipControls
    //////////////////////////////////////////////////////////////////////////
    SpaceShipControls::SpaceShipControls()
+      : mThrust(0.0f)
+      , mLift(0.0f)
+      , mYaw(0.0f)
    {
    }
 
    SpaceShipControls::~SpaceShipControls()
    {
    }
-
+ 
    void SpaceShipControls::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipControls> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipControls> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
@@ -153,19 +161,23 @@ namespace NetDemo
       stateIn.mCurrentControls.mLift = 0.0;
 
       SpaceShipGoalState& goalStateConstraint = stateIn.mGoalState;
-      goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(36.0f);
-      goalStateConstraint.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
+      goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(1000.0f);
+      //goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(10.0f);
+      //goalStateConstraint.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
+      goalStateConstraint.mMaxAngularAccel = 1000.0f;
       goalStateConstraint.mMaxVel = 77.1667f; //150 knots
-      goalStateConstraint.mMaxAccel = 200.0f * 8.77f;
+      //goalStateConstraint.mMaxAccel = 200.0f * 8.77f;
+      goalStateConstraint.mMaxAccel = 1000.0f;
       goalStateConstraint.mMaxPitch = osg::DegreesToRadians(15.0f);
       goalStateConstraint.mMaxRoll = osg::DegreesToRadians(30.0f);
       goalStateConstraint.mMaxTiltPerSecond = osg::DegreesToRadians(5.0f);
       goalStateConstraint.mMaxRollPerSecond = osg::DegreesToRadians(5.0f);
-      goalStateConstraint.mMaxVerticalVel = 15.0f;//7.62f; //1500 feet/min
+      //goalStateConstraint.mMaxVerticalVel = 15.0f;//7.62f; //1500 feet/min
+      goalStateConstraint.mMaxVerticalVel = 50.0f;//7.62f; //1500 feet/min
       goalStateConstraint.mMaxVerticalAccel = 50.0f;
 
-      goalStateConstraint.mMinElevation = 40.0f;
-      goalStateConstraint.mMaxElevation = 80.0f;
+      goalStateConstraint.mMinElevation = 25.0f;
+      goalStateConstraint.mMaxElevation = 200.0f;
       goalStateConstraint.mDragCoef = 0.005f;
       goalStateConstraint.mAngularDragCoef = 0.005f;
       goalStateConstraint.mVerticalDragCoef = 0.005f;
@@ -223,11 +235,10 @@ namespace NetDemo
 
    void SpaceShipControllable::SetMatrix(const SpaceShipState& currentState, osg::Matrix& result)
    {
-      result.makeIdentity();
-
-      result(3,0) = currentState.mPos[0];
-      result(3,1) = currentState.mPos[1];
-      result(3,2) = currentState.mPos[2];
+      //we let the physics set our position, we just set the orientation
+      //result(3,0) = currentState.mPos[0];
+      //result(3,1) = currentState.mPos[1];
+      //result(3,2) = currentState.mPos[2];
 
       osg::Vec3 rightVector = currentState.mForward ^ currentState.mUp;
       rightVector.normalize();
@@ -236,6 +247,165 @@ namespace NetDemo
       dtUtil::MatrixUtil::SetRow(result, currentState.mUp, 2);
       dtUtil::MatrixUtil::SetRow(result, rightVector, 0);
    }
+
+
+   void SpaceShipControllable::UpdateState(float dt, const SpaceShipControls& steeringOut)
+   {
+      mTimeStep = dt;
+
+      osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
+
+      UpdateTilt(steeringOut, tempUpVector);
+      UpdateVelocity(steeringOut);
+
+      UpdateRoll(steeringOut, tempUpVector);
+      UpdateAngularVelocity(steeringOut);
+
+      UpdateVerticalVelocity(steeringOut);
+
+      UpdateHeading(steeringOut);
+      UpdatePosition(steeringOut);
+
+      SpaceShipControllable::OrthoNormalize(mCurrentState);
+   }
+
+   bool SpaceShipControllable::FindPath(const AIState& fromState, const AIGoal& goal, AIPath& resultingPath) const
+   {
+      resultingPath.push_back(goal);
+      return true;
+   }
+
+   void SpaceShipControllable::UpdateHeading(const SpaceShipControls& controls)
+   {
+      float thetaAngle = mCurrentState.mAngularVel * mTimeStep; 
+
+      osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
+
+      mCurrentState.mForward = osg::Matrix::transform3x3(mCurrentState.mForward, rotation); 
+   }
+
+   void SpaceShipControllable::UpdateAngularVelocity(const SpaceShipControls& controls)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+      SpaceShipGoalState& physicalConstraint = mGoalState;
+
+      float newVelocity = controls.mYaw * physicalConstraint.mMaxAngularVel;
+      physicalState.mAngularVel = newVelocity;
+      //float maxAccel = physicalConstraint.mMaxAngularAccel * physicalState.mTimeStep;
+      //physicalState.mAngularVel += Clamp(newVelocity - physicalState.mAngularVel, -maxAccel, maxAccel);
+
+      //physicalState.mAngularVel -= physicalState.mAngularVel * physicalConstraint.mAngularDragCoef;
+
+      //this is necessary because we don't clamp the controls to 1.0 so technically we may need to clamp here
+      //physicalState.mAngularVel = Clamp(physicalState.mAngularVel, -physicalConstraint.mMaxAngularVel, physicalConstraint.mMaxAngularVel);
+   }
+
+   void SpaceShipControllable::UpdateVerticalVelocity(const SpaceShipControls& controls)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+      SpaceShipGoalState& physicalConstraint = mGoalState;
+
+      //update acceleration
+      physicalState.mVerticalAccel = controls.mLift * physicalConstraint.mMaxVerticalAccel;
+
+      //update velocity
+      physicalState.mVerticalVel += physicalState.mVerticalAccel * physicalState.mTimeStep;
+      physicalState.mVerticalVel -= (physicalState.mVerticalVel * physicalConstraint.mVerticalDragCoef);   
+      physicalState.mVerticalVel = Clamp(physicalState.mVerticalVel, -physicalConstraint.mMaxVerticalVel, physicalConstraint.mMaxVerticalVel);    
+   }
+
+   void SpaceShipControllable::UpdatePosition(const SpaceShipControls& controls)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+
+      physicalState.mPos += physicalState.mVel * physicalState.mTimeStep;  
+      physicalState.mPos[2] += physicalState.mVerticalVel * physicalState.mTimeStep;
+   }
+
+   void SpaceShipControllable::UpdateVelocity(const SpaceShipControls& controls)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+      SpaceShipGoalState& physicalConstraint = mGoalState;
+
+      float newVelocity = (controls.mThrust * physicalConstraint.mMaxVel);  
+      float maxAccel = physicalConstraint.mMaxAccel * physicalState.mTimeStep; 
+
+      physicalState.mVel += physicalState.mForward * Clamp(newVelocity - physicalState.mVel.length(), -maxAccel, maxAccel);
+      physicalState.mVel -= (physicalState.mVel * physicalConstraint.mDragCoef);
+
+      //we don't clamp the controls so this is necessary
+      if(physicalState.mVel.length() > physicalConstraint.mMaxVel)
+      {
+         physicalState.mVel.normalize();
+         physicalState.mVel *= physicalConstraint.mMaxVel;
+      }
+   }
+
+   void SpaceShipControllable::UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+      SpaceShipGoalState& physicalConstraint = mGoalState;
+
+      physicalState.mPitch = Dampen(physicalState.mPitch, (controls.mThrust * physicalConstraint.mMaxPitch), physicalConstraint.mMaxTiltPerSecond * physicalState.mTimeStep, (physicalState.mPitch / physicalConstraint.mMaxPitch));
+
+      physicalState.mPitch = Clamp(physicalState.mPitch, -physicalConstraint.mMaxPitch, physicalConstraint.mMaxPitch);
+
+      osg::Vec3 rightVec = (physicalState.mForward ^ physicalState.mUp);
+      rightVec.normalize();
+
+      osg::Matrix rotation = osg::Matrix::rotate( -physicalState.mPitch, rightVec);
+
+      tilt = osg::Matrix::transform3x3(tilt, rotation); 
+
+   }
+
+
+   void SpaceShipControllable::UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll)
+   {
+      SpaceShipState& physicalState = mCurrentState;
+      SpaceShipGoalState& physicalConstraint = mGoalState;
+
+      physicalState.mRoll = Dampen(physicalState.mRoll, controls.mYaw * physicalConstraint.mMaxRoll, physicalConstraint.mMaxRollPerSecond * physicalState.mTimeStep, (physicalState.mRoll / physicalConstraint.mMaxRoll));
+
+      //physicalState.mRoll *= ((0.1 + physicalState.mVel.length()) / physicalConstraint.mMaxVel);
+
+      if(physicalState.mRoll > physicalConstraint.mMaxRoll) physicalState.mRoll = physicalConstraint.mMaxRoll;
+      else if(physicalState.mRoll < -physicalConstraint.mMaxRoll) physicalState.mRoll = -physicalConstraint.mMaxRoll;
+
+      osg::Matrix rotation = osg::Matrix::rotate(-physicalState.mRoll, physicalState.mForward);
+
+      roll = osg::Matrix::transform3x3(roll, rotation); 
+
+   }
+
+   float SpaceShipControllable::Clamp(float x, float from, float to)
+   {
+      if(x < from)
+         return from;
+      else if(x > to)
+         return to;
+      else return x;
+   }
+
+   float SpaceShipControllable::Dampen(float last, float current, float pmax, float falloff)
+   {
+      if(current > last)
+      {
+         float adjust = pmax * (1.0f - falloff);
+
+         if(current - last >= adjust)
+            return last + adjust;
+         else return current;
+      }
+      else
+      {
+         float adjust = pmax * falloff;
+         if(last - current >= pmax)
+            return last - pmax;
+         else return current;
+      }
+   }
+
 
 
 
@@ -250,10 +420,32 @@ namespace NetDemo
    {
    }
 
-   bool SpaceShipTargeter::GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result) const
+   bool SpaceShipTargeter::GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result)
    {
+      if(!mPointOfInterest.empty())
+      {
+         result.mPos = Top();
+         Pop();
+      }
+
       return true;
    }
+
+   void SpaceShipTargeter::Push(const osg::Vec3& pos)
+   {
+         mPointOfInterest.push(pos);
+   }
+
+   void SpaceShipTargeter::Pop()
+   {
+      mPointOfInterest.pop();
+   }
+
+   const osg::Vec3& SpaceShipTargeter::Top() const
+   {
+      return mPointOfInterest.top();
+   }
+
 
    //////////////////////////////////////////////////////////////////////////
    //SpaceShipDecomposer
@@ -281,205 +473,13 @@ namespace NetDemo
    {
    }
 
-   bool SpaceShipConstraint::WillViolate(const BaseClass::PathType& pathToFollow)
+   bool SpaceShipConstraint::WillViolate(const BaseClass::PathType& pathToFollow) const
    {
       return false;
    }
 
-   void SpaceShipConstraint::Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result)
+   void SpaceShipConstraint::Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result) const
    {
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //SpaceShipActuator
-   //////////////////////////////////////////////////////////////////////////
-   SpaceShipActuator::SpaceShipActuator()
-   {
-   }
-
-   SpaceShipActuator::~SpaceShipActuator()
-   {
-   }
-
-   bool SpaceShipActuator::GetPath(const SpaceShipState& current_state, const SpaceShipGoalState& goal, BaseClass::PathType& result)
-   {
-      return true;
-   }
-
-   void SpaceShipActuator::Output(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipControls& result)
-   {
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   //SpaceShipUpdater
-   //////////////////////////////////////////////////////////////////////////
-   SpaceShipUpdater::SpaceShipUpdater()
-   {
-   }
-
-   SpaceShipUpdater::~SpaceShipUpdater()
-   {
-   }
-
-
-
-   void SpaceShipUpdater::Reset(const osg::Matrix& mat, SpaceShipControllable& stateIn)
-   {
-      SpaceShipControllable::InitControllable(mat, stateIn);
-   }
-
-
-   void SpaceShipUpdater::Update(float dt, const SpaceShipControls& steeringOut, SpaceShipControllable::BaseClass& stateIn)
-   {
-      stateIn.mCurrentState.mTimeStep = dt;
-
-      osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
-
-      UpdateTilt(steeringOut, tempUpVector, stateIn);
-      UpdateVelocity(steeringOut, stateIn);
-
-      UpdateRoll(steeringOut, tempUpVector, stateIn);
-      UpdateAngularVelocity(steeringOut, stateIn);
-
-      UpdateVerticalVelocity(steeringOut, stateIn);
-
-      UpdateHeading(steeringOut, stateIn);
-      UpdatePosition(steeringOut, stateIn);
-
-      SpaceShipControllable::OrthoNormalize(stateIn.mCurrentState);
-   }
-   
-
-   void SpaceShipUpdater::UpdateHeading(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-
-      float thetaAngle = physicalState.mAngularVel * physicalState.mTimeStep; 
-
-      osg::Matrix rotation = osg::Matrix::rotate( thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
-
-      physicalState.mForward = osg::Matrix::transform3x3(physicalState.mForward, rotation); 
-   }
-
-   void SpaceShipUpdater::UpdateAngularVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-      SpaceShipGoalState& physicalConstraint = stateIn.mGoalState;
-
-      float newVelocity = controls.mYaw * physicalConstraint.mMaxAngularVel;
-      float maxAccel = physicalConstraint.mMaxAngularAccel * physicalState.mTimeStep;
-      physicalState.mAngularVel += Clamp(newVelocity - physicalState.mAngularVel, -maxAccel, maxAccel);
-
-      physicalState.mAngularVel -= physicalState.mAngularVel * physicalConstraint.mAngularDragCoef;
-
-      //this is necessary because we don't clamp the controls to 1.0 so technically we may need to clamp here
-      physicalState.mAngularVel = Clamp(physicalState.mAngularVel, -physicalConstraint.mMaxAngularVel, physicalConstraint.mMaxAngularVel);
-   }
-
-   void SpaceShipUpdater::UpdateVerticalVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-      SpaceShipGoalState& physicalConstraint = stateIn.mGoalState;
-
-      //update acceleration
-      physicalState.mVerticalAccel = controls.mLift * physicalConstraint.mMaxVerticalAccel;
-
-      //update velocity
-      physicalState.mVerticalVel += physicalState.mVerticalAccel * physicalState.mTimeStep;
-      physicalState.mVerticalVel -= (physicalState.mVerticalVel * physicalConstraint.mVerticalDragCoef);   
-      physicalState.mVerticalVel = Clamp(physicalState.mVerticalVel, -physicalConstraint.mMaxVerticalVel, physicalConstraint.mMaxVerticalVel);    
-   }
-
-   void SpaceShipUpdater::UpdatePosition(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-
-      physicalState.mPos += physicalState.mVel * physicalState.mTimeStep;  
-      physicalState.mPos[2] += physicalState.mVerticalVel * physicalState.mTimeStep;
-   }
-
-   void SpaceShipUpdater::UpdateVelocity(const SpaceShipControls& controls, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-      SpaceShipGoalState& physicalConstraint = stateIn.mGoalState;
-
-      float newVelocity = (controls.mThrust * physicalConstraint.mMaxVel);  
-      float maxAccel = physicalConstraint.mMaxAccel * physicalState.mTimeStep; 
-
-      physicalState.mVel += physicalState.mForward * Clamp(newVelocity - physicalState.mVel.length(), -maxAccel, maxAccel);
-      physicalState.mVel -= (physicalState.mVel * physicalConstraint.mDragCoef);
-
-      //we don't clamp the controls so this is necessary
-      if(physicalState.mVel.length() > physicalConstraint.mMaxVel)
-      {
-         physicalState.mVel.normalize();
-         physicalState.mVel *= physicalConstraint.mMaxVel;
-      }
-   }
-
-   void SpaceShipUpdater::UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-      SpaceShipGoalState& physicalConstraint = stateIn.mGoalState;
-
-      physicalState.mPitch = Dampen(physicalState.mPitch, (controls.mThrust * physicalConstraint.mMaxPitch), physicalConstraint.mMaxTiltPerSecond * physicalState.mTimeStep, (physicalState.mPitch / physicalConstraint.mMaxPitch));
-
-      physicalState.mPitch = Clamp(physicalState.mPitch, -physicalConstraint.mMaxPitch, physicalConstraint.mMaxPitch);
-
-      osg::Vec3 rightVec = (physicalState.mForward ^ physicalState.mUp);
-      rightVec.normalize();
-
-      osg::Matrix rotation = osg::Matrix::rotate( -physicalState.mPitch, rightVec);
-
-      tilt = osg::Matrix::transform3x3(tilt, rotation); 
-
-   }
-
-
-   void SpaceShipUpdater::UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll, SpaceShipControllable::BaseClass& stateIn)
-   {
-      SpaceShipState& physicalState = stateIn.mCurrentState;
-      SpaceShipGoalState& physicalConstraint = stateIn.mGoalState;
-
-      physicalState.mRoll = Dampen(physicalState.mRoll, controls.mYaw * physicalConstraint.mMaxRoll, physicalConstraint.mMaxRollPerSecond * physicalState.mTimeStep, (physicalState.mRoll / physicalConstraint.mMaxRoll));
-      
-      //physicalState.mRoll *= ((0.1 + physicalState.mVel.length()) / physicalConstraint.mMaxVel);
-
-      if(physicalState.mRoll > physicalConstraint.mMaxRoll) physicalState.mRoll = physicalConstraint.mMaxRoll;
-      else if(physicalState.mRoll < -physicalConstraint.mMaxRoll) physicalState.mRoll = -physicalConstraint.mMaxRoll;
-
-      osg::Matrix rotation = osg::Matrix::rotate(-physicalState.mRoll, physicalState.mForward);
-
-      roll = osg::Matrix::transform3x3(roll, rotation); 
-
-   }
-
-   float SpaceShipUpdater::Clamp(float x, float from, float to)
-   {
-      if(x < from)
-         return from;
-      else if(x > to)
-         return to;
-      else return x;
-   }
-
-   float SpaceShipUpdater::Dampen(float last, float current, float pmax, float falloff)
-   {
-      if(current > last)
-      {
-         float adjust = pmax * (1.0f - falloff);
-
-         if(current - last >= adjust)
-            return last + adjust;
-         else return current;
-      }
-      else
-      {
-         float adjust = pmax * falloff;
-         if(last - current >= pmax)
-            return last - pmax;
-         else return current;
-      }
    }
 
 
@@ -496,8 +496,27 @@ namespace NetDemo
 
    }
 
-   void SpaceShipAIHelper::OnInit(EnemyDescriptionActor& desc)
-   {
+   void SpaceShipAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   {      
+      dtCore::Transform xform;
+      desc.GetTransform(xform);
+      osg::Matrix mat;
+      xform.Get(mat);
+
+      SpaceShipControllable::InitControllable(mat, mAIControllable);
+
+      mAIControllable.mTargeters.push_back(&mDefaultTargeter);
+      mAIControllable.mOutputControlFunc = SpaceShipControllable::BaseClass::OutputControlFunctor(this, &SpaceShipAIHelper::OutputControl);
+
+      float minSpeedPercent = 0.15f;
+      float maxSpeedPercent = 0.85f;
+      float lookAheadTime = 1.0f;
+      float timeToTarget = 0.5f;
+      float lookAheadRot = 2.5f;
+      float timeToTargetRot = 1.0f;
+
+      mDefaultBehavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
+
       BaseClass::OnInit(desc);
    }
 
@@ -532,150 +551,111 @@ namespace NetDemo
    {
       GetStateMachine().Update(dt);
       mAIModel.Step(dt, mAIControllable);
-      //mPhysicsModel->Update(mAIControllable.mCurrentControls, dt);
+
+      //osg::Vec3 linearVelocity = mAIControllable.mCurrentState.mVel * 0.25f;
+      //linearVelocity[2] = 2.5f + mAIControllable.mCurrentState.mVerticalVel;
+
+      //osg::Vec3 force = mAIControllable.mCurrentState.GetForward() * 10.0f * mAIControllable.mCurrentState.mVel.length();
+      //GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+      //GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->ApplyImpulse(linearVelocity);
+
+      osg::Vec3 up = mAIControllable.mCurrentState.mUp;
+      osg::Vec3 at = mAIControllable.mCurrentState.mForward;
+
+      osg::Vec3 right = at ^ up;
+      right.normalize();
+
+      float maxLiftForce = 100.0f;
+      float maxThrustForce = 100.0f;
+      float maxYawForce = 100.0f;
+
+      osg::Vec3 force;
+
+      force += osg::Vec3(0.0f, 0.0f, 200.0f) + (up * (mAIControllable.mCurrentControls.mLift * maxLiftForce));
+      //force += at * (mAIControllable.mCurrentControls.mThrust * maxThrustForce);
+      //force += right * (mAIControllable.mCurrentControls.mYaw * maxYawForce);
+      
+      dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+      mAIControllable.mCurrentState.mVel = physicsObject->GetLinearVelocity();
+
+      force += mAIControllable.mCurrentState.GetForward() * (75.0f + (100.0f * mAIControllable.mCurrentControls.mThrust));
+      physicsObject->GetBodyWrapper()->AddForce(force);
    }
 
    void SpaceShipAIHelper::PreSync(const dtCore::Transform& trans)
    {
+      //updates the state of the physics model
+      BaseClass::PreSync(trans);
+
       osg::Matrix xform;
       trans.Get(xform);
       SpaceShipControllable::SetState(xform, mAIControllable.mCurrentState);
+
+      dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+      mAIControllable.mCurrentState.mVel = physicsObject->GetLinearVelocity();
+
    }
 
    void SpaceShipAIHelper::PostSync(dtCore::Transform& trans) const
    {
       osg::Matrix xform;
+      trans.Get(xform);
+
+      //we will set our orientation
       SpaceShipControllable::SetMatrix(mAIControllable.mCurrentState, xform);
-      trans.Set(xform);
+      trans.SetRotation(xform);
+   }
+
+
+   void SpaceShipAIHelper::OutputControl(const SpaceShipControllable::PathType& pathToFollow, const SpaceShipControllable::StateType& current_state, SpaceShipControllable::ControlType& result) const
+   {
+      if(!pathToFollow.empty())
+      {
+         //GetSteeringModel()->Update(current_state.mTimeStep);
+         mDefaultBehavior->Think(current_state.mTimeStep,pathToFollow.front(), current_state, result);
+      }
+      else
+      {
+         result = mAIControllable.mDefaultControls;
+      }
    }
 
    void SpaceShipAIHelper::RegisterStates()
    {
       BaseClass::RegisterStates();
 
-      //GetStateFactory()->RegisterType<GoToWaypointState>(AIStateType::AI_STATE_GO_TO_WAYPOINT.GetName());
-      //GetStateFactory()->RegisterType<AttackState>(AIStateType::AI_STATE_ATTACK.GetName());
+      GetStateFactory()->RegisterType<GoToWaypointState>(AIStateType::AI_STATE_GO_TO_WAYPOINT.GetName());
+      GetStateFactory()->RegisterType<AttackState>(AIStateType::AI_STATE_ATTACK.GetName());
    }
 
    void SpaceShipAIHelper::CreateStates()
    {
       BaseClass::CreateStates();
 
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_FIND_TARGET);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_ATTACK);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_EVADE);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_FOLLOW);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_FLOCK);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_WANDER);
-      //GetStateMachine().AddState(&AIStateType::AI_STATE_DETONATE);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_FIND_TARGET);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_ATTACK);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_EVADE);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_FOLLOW);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_FLOCK);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_WANDER);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_DETONATE);
    }
 
    void SpaceShipAIHelper::SetupTransitions()
    {
       BaseClass::SetupTransitions();
-
-      ////our next waypoint is calculated on the transition into the AI_STATE_GO_TO_WAYPOINT, so this transition will keep us moving on a path
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_ARRIVED, &AIStateType::AI_STATE_GO_TO_WAYPOINT, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_EVADE, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_FOLLOW, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_FLOCK, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_GO_TO_POINT, &AIStateType::AI_STATE_WANDER, &AIStateType::AI_STATE_GO_TO_WAYPOINT);
-
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_ATTACK);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_WANDER, &AIStateType::AI_STATE_ATTACK);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_ATTACK);
-
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_WANDER, &AIStateType::AI_STATE_FIND_TARGET);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_FIND_TARGET);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_GO_TO_WAYPOINT, &AIStateType::AI_STATE_FIND_TARGET);
-
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_DAMAGE_CRITICAL, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_EVADE);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_DAMAGE_CRITICAL, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_EVADE);
-
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_WANDER);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_EVADE, &AIStateType::AI_STATE_WANDER);
-      //BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_FIND_TARGET);
-
    }
 
    void SpaceShipAIHelper::SetupFunctors()
    {
       BaseClass::SetupFunctors();
 
-      ////setting this will allow us to follow a path
-      //dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::GoToWaypoint));
-      ////on entry into the waypoint state we will calculate the next waypoint to go to
-      //state->AddEntryCommand(new dtUtil::Command0<void>(dtUtil::Command0<void>::FunctorType(this, &SpaceShipAIHelper::CalculateNextWaypoint)));
-
-      ////these below all setup the states to call the default update
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_DIE);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_IDLE);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::Attack));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_EVADE);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_FOLLOW);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_FLOCK);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_WANDER);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_DETONATE);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::DefaultStateUpdate));
-
-
-      ////this can be used to change steering behaviors when transitioning into a new state
-      //typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      //typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
-
-      //float minSpeedPercent = 0.15f;
-      //float maxSpeedPercent = 0.85f;
-      //float lookAheadTime = 1.0f;
-      //float timeToTarget = 0.5f;
-      //float lookAheadRot = 5.0f;
-      //float timeToTargetRot = 5.0f;
-
-      //SteeringBehaviorType* behavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
-      //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &SpaceShipAIHelper::ChangeSteeringBehavior), behavior);
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //state->AddEntryCommand(ctbc);
-
-      //float speed = 1000.0f;
-      //behavior = new BombDive(speed);
-      //ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &SpaceShipAIHelper::ChangeSteeringBehavior), behavior);
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      //state->AddEntryCommand(ctbc);
-
-      ////for all the rest of the states currently lets do nothing by setting the default behavior
-      //behavior = new DoNothing();
-      //ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &SpaceShipAIHelper::ChangeSteeringBehavior), behavior);
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_DIE);
-      //state->AddEntryCommand(ctbc);
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_IDLE);
-      //state->AddEntryCommand(ctbc);
-
+      dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      if(state != NULL)
+      {
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::Attack));
+      }
    }
 
    void SpaceShipAIHelper::SelectState(float dt)
@@ -683,95 +663,39 @@ namespace NetDemo
       BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_FIND_TARGET);
    }
 
-   void SpaceShipAIHelper::DefaultStateUpdate(float dt)
-   {
-   }
-
-   //void SpaceShipAIHelper::ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior)
-   //{
-   //   GetSteeringModel()->SetSteeringBehavior(newBehavior.get());
-   //}
-
-   void SpaceShipAIHelper::CalculateNextWaypoint()
-   {
-      ////just go straight until we can work with a bezier node
-      //osg::Matrix mat = GetPhysicsModel()->GetKinematicState().mTransform;
-      //osg::Vec3 forward = dtUtil::MatrixUtil::GetRow3(mat, 1);
-
-      //osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(mat, 3) + (forward * 50.0f);
-
-      //GoToWaypointState* waypointState = dynamic_cast<GoToWaypointState*>(BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT)); 
-      //if(waypointState != NULL)
-      //{
-      //   waypointState->mStateData = pos;
-      //}
-   }
-
-   void SpaceShipAIHelper::GoToWaypoint(float dt)
-   {
-      //dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
-      //GoToWaypointState* waypointState = dynamic_cast<GoToWaypointState*>(npcState);
-      //if(waypointState != NULL)
-      //{
-      //   osg::Vec3 pos = waypointState->mStateData.mCurrentWaypoint;
-
-      //   dtAI::KinematicGoal kg; 
-      //   kg.SetPosition(pos);
-      //   BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
-      //}
-      //else
-      //{
-      //   LOG_ERROR("Invalid state type for state 'AI_STATE_GO_TO_WAYPOINT'");
-      //}
-   }
-
    void SpaceShipAIHelper::Attack(float dt)
    {
-      //dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
-      //AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      //if(attackState != NULL && attackState->mStateData.mTarget.valid())
-      //{
-      //   dtCore::Transform xform;
-      //   attackState->mStateData.mTarget->GetTransform(xform);
-      //   osg::Vec3 pos = xform.GetTranslation();
+      dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
+      AttackState* attackState = dynamic_cast<AttackState*>(npcState);
+      if(attackState != NULL && attackState->mStateData.mTarget.valid())
+      {
+         dtCore::Transform xform;
+         attackState->mStateData.mTarget->GetTransform(xform);
+         osg::Vec3 pos = xform.GetTranslation();
 
-      //   //NOTE: HACK!!!! -The fort target is below the ground, I am adding an offset here
-      //   //todo: find the bounding box of the object and use that to determine a good target point
-      //   pos[2] += 5.0f;
-
-      //   //if we are within distance, detonate
-      //   //this is only for the enemy mine, and should be refactored
-      //   float dist = GetDistance(pos);
-      //   if(dist < 4.5)
-      //   {
-      //      BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
-      //      return;
-      //   }
-
-      //   dtAI::KinematicGoal kg;
-      //   kg.SetPosition(pos);
-      //   BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
-      //}
-      //else
-      //{
-      //   LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
-      //}
+         pos[2] += 25.0f;
+         mDefaultTargeter.Push(pos);
+      }
+      else
+      {
+         LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
+      }
    }
 
    void SpaceShipAIHelper::SetCurrentTarget(dtCore::Transformable& target)
    {
-      //dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      //AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      //if(attackState != NULL)
-      //{
-      //   attackState->mStateData.mTarget = &target;
-      //   //let the system know we have targeted a new entity
-      //   BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_ENEMY_TARGETED);
-      //}
-      //else
-      //{
-      //   LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
-      //}
+      dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      AttackState* attackState = dynamic_cast<AttackState*>(npcState);
+      if(attackState != NULL)
+      {
+         attackState->mStateData.mTarget = &target;
+         //let the system know we have targeted a new entity
+         BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_ENEMY_TARGETED);
+      }
+      else
+      {
+         LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
+      }
    }
 
    //float SpaceShipAIHelper::GetDistance(const osg::Vec3& vec)
@@ -780,5 +704,106 @@ namespace NetDemo
    //   return (vec - pos).length();
    //}
 
+
+
+
+
+   //////////////////////////////////////////////////////////////////////////
+   //SpaceShipSteeringBehavior
+   //////////////////////////////////////////////////////////////////////////
+
+   float Align::Sgn(float x)
+   {
+      if(x < 0.0f)
+      {
+         return -1.0f;
+      }
+      else
+      {
+         return 1.0f;
+      }
+   }
+
+   osg::Vec3 Align::GetTargetPosition(float dt, const SpaceShipGoalState& goal)
+   {
+      //project our target forward in time if it has a velocity
+      osg::Vec3 targetPos = goal.GetPos();
+      //if(goal.HasLinearVelocity())
+      //{
+      //   targetPos += goal.GetLinearVelocity() * dt;
+      //}
+      return targetPos;
+   }
+
+   float Align::GetTargetForward(float dt, const osg::Vec3& targetPos, const SpaceShipGoalState& current_goal, const SpaceShipState& current_state, osg::Vec3& vec_in)
+   {
+      osg::Vec3 projectedPos = current_state.mPos + (current_state.mVel * dt);
+
+      osg::Vec3 goalForward = targetPos - projectedPos;
+
+      vec_in = goalForward;
+      return vec_in.normalize();   
+   }
+
+
+   void Align::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   { 
+      float lookAhead = mTimeToTarget * dt;
+      osg::Vec3 targetPos = GetTargetPosition(lookAhead, current_goal);
+      osg::Vec3 goalForward;
+      float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);      
+
+      osg::Vec3 currForward = current_state.mForward;
+
+      float thetaAngle = (current_state.mAngularVel * lookAhead); 
+      osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
+      currForward = osg::Matrix::transform3x3(currForward, rotation); 
+      currForward.normalize();
+
+      float dot = goalForward * currForward;
+      float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
+
+      float angle = acos(dot);
+      if(angle > 0.1f)
+      {     
+         float yaw = angle / fabs(current_state.mAngularVel);
+         dtUtil::Clamp(yaw, 0.0001f, mTimeToTarget);
+         yaw /= mTimeToTarget;
+         result.mYaw = Sgn(sign) * yaw;         
+      }  
+   }
+
+   void FollowPath::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   {
+      float lookAhead = mLookAhead * dt;
+      BaseClass::Think(lookAhead, current_goal, current_state, result);
+
+      osg::Vec3 targetPos = BaseClass::GetTargetPosition(lookAhead, current_goal);
+      osg::Vec3 goalForward;
+      float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);
+      osg::Vec3 currForward = current_state.mForward;
+
+      float angle = 0.0f;
+      float dot = goalForward * currForward;
+      float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
+
+      angle = acos(dot);
+
+      float timeRemaining = dist / current_state.mVel.length();
+
+      dtUtil::Clamp(timeRemaining, 0.00001f, mTimeToTarget);
+      timeRemaining /= mTimeToTarget;
+
+      result.mThrust = timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed);
+
+      //compute height
+      osg::Vec3 pos = current_state.mPos;
+      float heightDiff = current_goal.GetPos()[2] - (pos[2] + (current_state.mVel[2] * dt));
+      heightDiff /= 100.0f;
+
+      dtUtil::Clamp(heightDiff, -1.0f, 1.0f);
+      float absHeightDiff = fabs(heightDiff);
+      result.mLift = BaseClass::Sgn(heightDiff) * absHeightDiff * absHeightDiff;
+   }
 
 }//namespace NetDemo

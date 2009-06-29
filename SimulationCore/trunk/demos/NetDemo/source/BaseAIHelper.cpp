@@ -43,12 +43,12 @@ namespace NetDemo
 {
 
    BaseAIHelper::BaseAIHelper()
-   : mFactory(new dtAI::FSM::FactoryType())
-   , mStateMachine(mFactory.get())
-   , mSteeringModel(new AISteeringModel())
-   , mPhysicsModel(new AIPhysicsModel())
+      : mFactory(new dtAI::FSM::FactoryType())
+      , mStateMachine(mFactory.get())
+      , mSteeringModel(new AISteeringModel())
+      , mPhysicsModel(new AIPhysicsModel())
    {
-     
+
    }
 
    BaseAIHelper::~BaseAIHelper()
@@ -73,33 +73,33 @@ namespace NetDemo
 
    void BaseAIHelper::PreSync(const dtCore::Transform& trans)
    {
-     if(mPhysicsModel.valid())
-     {
-       //update the position and orientation
-       Kinematic k = mPhysicsModel->GetKinematicState();
-       trans.Get(k.mTransform);
+      if(mPhysicsModel.valid())
+      {
+         //update the position and orientation
+         Kinematic k = mPhysicsModel->GetKinematicState();
+         trans.Get(k.mTransform);
 
-       //update the linear and angular velocities
-       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
-       k.mLinearVelocity = physicsObject->GetLinearVelocity();
-       k.mAngularVelocity = physicsObject->GetAngularVelocity();
+         //update the linear and angular velocities
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+         k.mLinearVelocity = physicsObject->GetLinearVelocity();
+         k.mAngularVelocity = physicsObject->GetAngularVelocity();
 
-       mPhysicsModel->SetKinematicState(k);
-     }
+         mPhysicsModel->SetKinematicState(k);
+      }
    }
 
    void BaseAIHelper::PostSync(dtCore::Transform& trans) const
    {
-     if(mPhysicsModel.valid())
-     {
-       const Kinematic& k = mPhysicsModel->GetKinematicState();
-       trans.Set(k.mTransform);
-     }
+      if(mPhysicsModel.valid())
+      {
+         const Kinematic& k = mPhysicsModel->GetKinematicState();
+         trans.Set(k.mTransform);
+      }
    }
 
    void BaseAIHelper::Spawn()
    {
-     mStateMachine.MakeCurrent(&AIStateType::AI_STATE_SPAWN);
+      mStateMachine.MakeCurrent(&AIStateType::AI_STATE_SPAWN);
    }
 
    void BaseAIHelper::Update(float dt)
@@ -139,7 +139,7 @@ namespace NetDemo
 
    void BaseAIHelper::AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState)
    {
-     mStateMachine.AddTransition(eventToTriggerTransition, fromState, toState);
+      mStateMachine.AddTransition(eventToTriggerTransition, fromState, toState);
    }
 
 } //namespace NetDemo

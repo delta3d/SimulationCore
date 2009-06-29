@@ -7,7 +7,7 @@
         <comment></comment>
         <copyright></copyright>
         <createTimestamp>2009-05-19T13:51:40-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-26T17:07:14-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-06-29T01:37:06-05:00</lastUpdateTimestamp>
         <editorVersion>2.3.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -348,7 +348,7 @@
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
-                    <value1>0.000000</value1>
+                    <value1>2.500000</value1>
                     <value2>0.000000</value2>
                     <value3>0.000000</value3>
                 </vec3>
@@ -363,11 +363,11 @@
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
-                <enumerated>Static</enumerated>
+                <enumerated>Dynamic</enumerated>
             </property>
             <property>
                 <name>VehicleBody: Primitive Type</name>
-                <enumerated>Convex Hull</enumerated>
+                <enumerated>Sphere</enumerated>
             </property>
             <property>
                 <name>VehicleBody: Translation</name>
@@ -396,7 +396,7 @@
             <property>
                 <name>VehicleBody: Dimensions</name>
                 <vec3>
-                    <value1>1.000000</value1>
+                    <value1>2.500000</value1>
                     <value2>1.000000</value2>
                     <value3>1.000000</value3>
                 </vec3>
@@ -739,7 +739,7 @@
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
-                    <value1>0.000000</value1>
+                    <value1>2.500000</value1>
                     <value2>0.000000</value2>
                     <value3>0.000000</value3>
                 </vec3>
@@ -754,11 +754,11 @@
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
-                <enumerated>Static</enumerated>
+                <enumerated>Dynamic</enumerated>
             </property>
             <property>
                 <name>VehicleBody: Primitive Type</name>
-                <enumerated>Convex Hull</enumerated>
+                <enumerated>Sphere</enumerated>
             </property>
             <property>
                 <name>VehicleBody: Translation</name>
@@ -787,7 +787,7 @@
             <property>
                 <name>VehicleBody: Dimensions</name>
                 <vec3>
-                    <value1>1.000000</value1>
+                    <value1>2.500000</value1>
                     <value2>1.000000</value2>
                     <value3>1.000000</value3>
                 </vec3>
@@ -1322,11 +1322,11 @@
             </property>
             <property>
                 <name>MaxVelocity</name>
-                <integer>25</integer>
+                <integer>1000</integer>
             </property>
             <property>
                 <name>EnemyPrototypeName</name>
-                <string>Enemy Mine Prototype1</string>
+                <string>Enemy Mine Prototype2</string>
             </property>
         </actor>
         <actor>
@@ -1421,7 +1421,7 @@
                         <index>0</index>
                         <property>
                             <name>Enemy</name>
-                            <actorId></actorId>
+                            <actorId>a4b31c10-1f7c-4454-ad2a-4a5f33f1f9a3</actorId>
                         </property>
                     </element>
                 </array>
@@ -1439,8 +1439,8 @@
                 <name>Rotation</name>
                 <vec3>
                     <value1>0.000000</value1>
-                    <value2>-0.000000</value2>
-                    <value3>-0.000000</value3>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -1620,7 +1620,7 @@
             </property>
             <property>
                 <name>Enemy Type</name>
-                <enumerated>ENEMY_MINE</enumerated>
+                <enumerated>ENEMY_HELIX</enumerated>
             </property>
             <property>
                 <name>LastSpawnTime</name>
@@ -1640,7 +1640,7 @@
             </property>
             <property>
                 <name>EnemyPrototypeName</name>
-                <string>Enemy Mine Prototype2</string>
+                <string>Enemy Helix Prototype</string>
             </property>
         </actor>
         <actor>
@@ -1733,7 +1733,7 @@
             </property>
             <property>
                 <name>Time and Date</name>
-                <string>2009-06-26T17:07:15-05:00</string>
+                <string>2009-06-29T01:37:06-05:00</string>
             </property>
             <property>
                 <name>Wind</name>

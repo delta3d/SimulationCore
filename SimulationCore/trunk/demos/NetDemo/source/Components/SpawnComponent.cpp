@@ -151,36 +151,39 @@ namespace NetDemo
 
    void SpawnComponent::SpawnEnemy( const EnemyDescriptionActor& desc )
    {
-      if(desc.GetEnemyType() == EnemyDescriptionActor::EnemyType::ENEMY_MINE)
+      //static int count = 0;
+      //if(count++ < 5)
       {
          std::string errorMessage("Error attempting to spawn enemy, cannot find prototype by the name '" + desc.GetPrototypeName() + ".'");
 
-         dtCore::RefPtr<EnemyMineActorProxy> testEnemyMine = NULL;
+         dtCore::RefPtr<BaseEnemyActorProxy> enemyProxy = NULL;
          SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-            desc.GetSpawnInfo().GetEnemyPrototypeName(), testEnemyMine, errorMessage);
-         
-         osg::Vec3 point;
-         EnemyMineActor& mineActor = static_cast<EnemyMineActor&>(*(testEnemyMine->GetActor()));
-         
-         if(!mSpawnVolumes.empty())
+            desc.GetSpawnInfo().GetEnemyPrototypeName(), enemyProxy, errorMessage);
+
+         if(enemyProxy.valid())
          {
-            int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
-            if(mSpawnVolumes[index].valid())
+            osg::Vec3 point;
+            BaseEnemyActor& enemyActor = static_cast<BaseEnemyActor&>(*(enemyProxy->GetActor()));
+
+            if(!mSpawnVolumes.empty())
             {
-               point = mSpawnVolumes[index]->GetRandomPointInVolume();
+               int index = dtUtil::RandRange(0, mSpawnVolumes.size() - 1);
+               if(mSpawnVolumes[index].valid())
+               {
+                  point = mSpawnVolumes[index]->GetRandomPointInVolume();
+               }
             }
+            
+            enemyActor.InitAI(desc);
+            GetGameManager()->AddActor(*enemyProxy, false, true);
+
+            //this doesn't appear to work
+            dtCore::Transform trans;
+            enemyActor.GetTransform(trans);
+            trans.SetTranslation(point);
+            enemyActor.SetTransform(trans);
          }
-         
-         testEnemyMine->InitAI(desc);
-         GetGameManager()->AddActor(*testEnemyMine, false, true);
-
-         //this doesn't appear to work
-         dtCore::Transform trans;
-         mineActor.GetTransform(trans);
-         trans.SetTranslation(point);
-         mineActor.SetTransform(trans);
       }
-
    }
 
 

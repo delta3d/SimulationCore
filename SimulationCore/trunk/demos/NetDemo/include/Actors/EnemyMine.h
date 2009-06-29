@@ -73,9 +73,6 @@ namespace NetDemo
 
          virtual void DoExplosion(float);
 
-         EnemyAIHelper* GetAIHelper();
-         const EnemyAIHelper* GetAIHelper() const;
-
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -86,8 +83,6 @@ namespace NetDemo
 
       // Private vars
       private:
-
-         dtCore::RefPtr<EnemyAIHelper> mAIHelper;
 
          osg::Vec3 mGoalLocation;       /// The general location we want to be.
 
@@ -103,8 +98,6 @@ namespace NetDemo
 
          EnemyMineActorProxy();
          virtual void BuildPropertyMap();
-
-         void InitAI(const EnemyDescriptionActor& desc);
 
       protected:
          virtual ~EnemyMineActorProxy();

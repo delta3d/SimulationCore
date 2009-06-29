@@ -40,7 +40,6 @@ namespace NetDemo
    public:
      AISteeringModel();
 
-     virtual void Init();
      virtual void Update(const Kinematic& currentState, float dt);
 
      void SetKinematicGoal(const dtAI::KinematicGoal& kg);
