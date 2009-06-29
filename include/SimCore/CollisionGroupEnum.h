@@ -61,6 +61,7 @@ namespace SimCore
       {
 #ifdef AGEIA_PHYSICS
          GROUP_TERRAIN        = 0
+         , GROUP_VEHICLE_GROUND = 1
          , GROUP_BULLET         = 15
          , GROUP_PARTICLE       = 20
          , GROUP_WATER          = 23
