@@ -164,7 +164,7 @@ namespace NetDemo
       goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(1000.0f);
       //goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(10.0f);
       //goalStateConstraint.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
-      goalStateConstraint.mMaxAngularAccel = 1000.0f;
+      goalStateConstraint.mMaxAngularAccel = 50.0f;
       goalStateConstraint.mMaxVel = 77.1667f; //150 knots
       //goalStateConstraint.mMaxAccel = 200.0f * 8.77f;
       goalStateConstraint.mMaxAccel = 1000.0f;
@@ -565,13 +565,13 @@ namespace NetDemo
       osg::Vec3 right = at ^ up;
       right.normalize();
 
-      float maxLiftForce = 100.0f;
+      float maxLiftForce = 500.0f;
       float maxThrustForce = 100.0f;
       float maxYawForce = 100.0f;
 
       osg::Vec3 force;
 
-      force += osg::Vec3(0.0f, 0.0f, 200.0f) + (up * (mAIControllable.mCurrentControls.mLift * maxLiftForce));
+      force += osg::Vec3(0.0f, 0.0f, 1000.0f) + (up * (mAIControllable.mCurrentControls.mLift * maxLiftForce));
       //force += at * (mAIControllable.mCurrentControls.mThrust * maxThrustForce);
       //force += right * (mAIControllable.mCurrentControls.mYaw * maxYawForce);
       
