@@ -46,6 +46,7 @@
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaMaterialActor.h>
 #include <NxAgeiaActorRegistry.h>
+#include <PhysicsGlobals.h>
 
 #include <dtUtil/log.h>
 #include <dtDAL/map.h>
@@ -69,6 +70,7 @@ class NxAgeiaTests : public CPPUNIT_NS::TestFixture
    CPPUNIT_TEST_SUITE(NxAgeiaTests);
       CPPUNIT_TEST(TestFunction);
       CPPUNIT_TEST(TestParticleSystemPerformance);
+      CPPUNIT_TEST(TestMatrixConversion);
    CPPUNIT_TEST_SUITE_END();
 
    public:
@@ -80,6 +82,7 @@ class NxAgeiaTests : public CPPUNIT_NS::TestFixture
 
       void TestFunction();
       void TestParticleSystemPerformance();
+      void TestMatrixConversion();
 
    private:
      dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaWorldComponent> worldcomp;
@@ -122,6 +125,34 @@ void NxAgeiaTests::tearDown()
    mGM->DeleteAllActors(true);
    mGM->UnloadActorRegistry(AGEIA_REGISTRY);
    mGM = NULL;
+}
+
+/////////////////////////////////////////////////////////
+void NxAgeiaTests::TestMatrixConversion()
+{
+   osg::Matrix m;
+   osg::Matrixf m2;
+   for (unsigned i = 0; i < 3; ++i)
+   {
+      for (unsigned j = 0; j < 3; ++j)
+      {
+         m(i, j) = i * j;
+      }
+   }
+   NxMat34 mat;
+   dtCore::Transform xform;
+   xform.Set(m);
+   dtCore::Transform xform2;
+
+   TransformToNxMat34(mat, xform);
+   NxMat34ToTransform(xform2, mat);
+
+   CPPUNIT_ASSERT(xform.EpsilonEquals(xform2));
+
+   mat.getColumnMajor44(m2.ptr());
+   xform2.Set(m2);
+
+   CPPUNIT_ASSERT(xform.EpsilonEquals(xform2));
 }
 
 /////////////////////////////////////////////////////////

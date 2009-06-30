@@ -93,7 +93,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, 
+      DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity,
          bool autoNotifyNetwork, float maxDamageAmount)
       {
          return new DamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
@@ -466,8 +466,9 @@ namespace SimCore
             CleanupCreatedMunitionsQueue();
          }
          else if( type == dtGame::MessageType::INFO_RESTARTED
-            || type == dtGame::MessageType::INFO_MAP_UNLOADED )
+            || type == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN )
          {
+            mPlayer = NULL;
             ClearCreatedMunitionsQueue();
             ClearRegisteredEntities();
             ClearTables();

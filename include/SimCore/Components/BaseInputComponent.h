@@ -50,7 +50,7 @@ namespace SimCore
       class SIMCORE_EXPORT BaseInputComponent : public dtGame::BaseInputComponent //public dtGame::GMComponent
       {
          public:
-            typedef dtGame::BaseInputComponent BaseClass; 
+            typedef dtGame::BaseInputComponent BaseClass;
 
             static const std::string DEFAULT_NAME;
 
@@ -89,6 +89,8 @@ namespace SimCore
 
             virtual void OnAddedToGM();
 
+            virtual void ProcessMessage(const dtGame::Message& msg);
+
             // provide an access for the stealth actor. This is used by the Stealth Viewer to check the status of the stealth camera.
             // DO NOT HOLD ONTO THIS MEMORY
             SimCore::Actors::StealthActor* GetStealthActor();
@@ -111,7 +113,7 @@ namespace SimCore
             dtUtil::Coordinates mCoordinateConverter;
          private:
             std::string mFoName;
-            dtCore::RefPtr<SimCore::Actors::StealthActor> mStealthActor;
+            dtCore::ObserverPtr<SimCore::Actors::StealthActor> mStealthActor;
             float mEntityMagnification;
             std::string mTerrainActorName;
             dtUtil::Log* mLogger;

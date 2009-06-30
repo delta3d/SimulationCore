@@ -213,6 +213,14 @@ namespace SimCore
          BaseClass::OnAddedToGM();
          //SetListeners();
       }
+
+      void BaseInputComponent::ProcessMessage(const dtGame::Message& msg)
+      {
+         if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN)
+         {
+            SetStealthActor(NULL);
+         }
+      }
    }
 }
 

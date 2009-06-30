@@ -118,7 +118,7 @@ namespace SimCore
             /**
              * Handle forces received from the environment, such as detonations and impacts
              */
-            virtual void ApplyForce(const osg::Vec3& force, 
+            virtual void ApplyForce(const osg::Vec3& force,
                const osg::Vec3& location = osg::Vec3(0.0f, 0.0f, 0.0f), bool isImpulse = false);
 
             /// Overridden so that it will flag the actor as being transformed when you set the position.
@@ -154,7 +154,7 @@ namespace SimCore
 
 
          protected:
-            /** 
+            /**
             * Set our DR values - velocity, acceleration, and angular velocity
             * Note - we MUST do this BEFORE we calculate new physics forces on our vehicle
             * The physics component runs at the start of the frame, so we set the values
@@ -164,15 +164,15 @@ namespace SimCore
             */
             virtual void UpdateDeadReckoningValues(float deltaTime);
 
-            /// Angles/ steering moving etc done here. From TickLocal - called second - 
+            /// Angles/ steering moving etc done here. From TickLocal - called second -
             /// after UpdateDeadReckoningValues(). This does nothing by default.
             virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-            /// Called update the dofs for your vehicle. Wheels or whatever. From TickLocal -  
+            /// Called update the dofs for your vehicle. Wheels or whatever. From TickLocal -
             /// called third - after UpdateVehicleTorquesAndAngles. The default does nothing.
             virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
 
-            /// Do your vehicle, driving specific sounds. From TickLocal - 
+            /// Do your vehicle, driving specific sounds. From TickLocal -
             /// called fourth - after UpdateRotationDOFS. Does nothing by default.
             virtual void UpdateSoundEffects(float deltaTime);
 

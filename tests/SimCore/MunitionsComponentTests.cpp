@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -33,6 +33,7 @@
 #include <dtCore/refptr.h>
 #include <dtCore/scene.h>
 #include <dtCore/uniqueid.h>
+#include <dtCore/timer.h>
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/project.h>
@@ -58,21 +59,13 @@
 #include <dtUtil/mathdefines.h>
 #include <UnitTestMain.h>
 
-#ifdef DELTA_WIN32
-#include <dtUtil/mswin.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 
 namespace SimCore
 {
    namespace Components
    {
-      
+
       //////////////////////////////////////////////////////////////////////////
       // Sub-classed MunitionsComponent
       //////////////////////////////////////////////////////////////////////////
@@ -90,7 +83,7 @@ namespace SimCore
 
             // Override CreateDamageHelper to allow this component to
             // use a TestDamageHelper.
-            virtual DamageHelper* CreateDamageHelper( 
+            virtual DamageHelper* CreateDamageHelper(
                SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork, float maxDamageAmount = 1.0f);
 
             // Override ProcessMessage to capture all messages
@@ -124,7 +117,7 @@ namespace SimCore
       class TestDamageHelper : public DamageHelper
       {
          public:
-            TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true, 
+            TestDamageHelper( SimCore::Actors::BaseEntity& entity, bool autoNotifyNetwork = true,
                float maxDamage = 1.0f);
 
             // Override GetDamageProbability to prevent random numbers
@@ -177,13 +170,13 @@ namespace SimCore
             void tearDown();
 
             // Utility Function
-            void CreateTestEntities( 
-               std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> >& listToFill, 
+            void CreateTestEntities(
+               std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> >& listToFill,
                int numActors, bool putInGameManager = false );
 
             // Utility Function
-            void SendDetonationMessage( const std::string& munitionName, 
-               const osg::Vec3& detonationLocation, const SimCore::Actors::BaseEntity* targetEntity, 
+            void SendDetonationMessage( const std::string& munitionName,
+               const osg::Vec3& detonationLocation, const SimCore::Actors::BaseEntity* targetEntity,
                const osg::Vec3* trajectory );
 
             // Utility Function
@@ -235,7 +228,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper* TestMunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity, 
+      DamageHelper* TestMunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity,
          bool autoNotifyNetwork, float maxDamageAmount)
       {
          return new TestDamageHelper(entity, autoNotifyNetwork, maxDamageAmount);
@@ -363,8 +356,8 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponentTests::CreateTestEntities( 
-         std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> >& listToFill, 
+      void MunitionsComponentTests::CreateTestEntities(
+         std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> >& listToFill,
          int numActors, bool putInGameManager )
       {
          // Prepare lists memory
@@ -372,7 +365,7 @@ namespace SimCore
          listToFill.reserve(numActors);
 
          // Create the actors and add them to the GM
-         
+
          dtCore::RefPtr<SimCore::Actors::BaseEntityActorProxy> curProxy;
          SimCore::Actors::BaseEntity* curEntity = NULL;
          for( int index = 0; index < numActors; index++ )
@@ -390,8 +383,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponentTests::SendDetonationMessage( const std::string& munitionName, 
-         const osg::Vec3& detonationLocation, const SimCore::Actors::BaseEntity* targetEntity, 
+      void MunitionsComponentTests::SendDetonationMessage( const std::string& munitionName,
+         const osg::Vec3& detonationLocation, const SimCore::Actors::BaseEntity* targetEntity,
          const osg::Vec3* trajectory )
       {
          // Create message
@@ -774,7 +767,7 @@ namespace SimCore
          CPPUNIT_ASSERT( damage->GetDamageRanges1_3() == NULL );
          CPPUNIT_ASSERT( damage->GetDamageRanges2_3() == NULL );
          CPPUNIT_ASSERT( damage->GetDamageRangesMax() == NULL );
-         
+
          // --- Set Range 1/3
          testRanges->SetAngleOfFall( 30.0f );
          testRanges->SetForwardRanges( 100.0, 120.0, 80.0, 50.0 );
@@ -784,7 +777,7 @@ namespace SimCore
          CPPUNIT_ASSERT( (*testRanges) == *(damage->GetDamageRanges1_3()) );
          CPPUNIT_ASSERT_MESSAGE( "MunitionDamage (Range 1/3) should only copy DamageRanges objects",
             testRanges.get() != damage->GetDamageRanges1_3() );
-         
+
          // --- Set Range 2/3
          testRanges->SetAngleOfFall( 45.0f );
          testRanges->SetForwardRanges( 150.0, 180.0, 120.0, 80.0 );
@@ -794,7 +787,7 @@ namespace SimCore
          CPPUNIT_ASSERT( (*testRanges) == *(damage->GetDamageRanges2_3()) );
          CPPUNIT_ASSERT_MESSAGE( "MunitionDamage (Range 2/3) should only copy DamageRanges objects",
             testRanges.get() != damage->GetDamageRanges2_3() );
-         
+
          // --- Set Range Max
          testRanges->SetAngleOfFall( 90.0f );
          testRanges->SetForwardRanges( 200.0, 240.0, 160.0, 100.0 );
@@ -818,7 +811,7 @@ namespace SimCore
          // --- Test straight down
          trajectory.set( 0.0f, 0.0f,-1.0f );
          CPPUNIT_ASSERT( ranges3 == damage->GetDamageRangesByTrajectory(trajectory) );
-         
+
          // --- Test from the sides --- should go to lowest Angle-Of-Fall (Range 1/3 in this case; 30 degrees)
          trajectory.set( 1.0f, 0.0f, 0.0f );
          CPPUNIT_ASSERT( ranges1 == damage->GetDamageRangesByTrajectory(trajectory) );
@@ -828,7 +821,7 @@ namespace SimCore
          CPPUNIT_ASSERT( ranges1 == damage->GetDamageRangesByTrajectory(trajectory) );
          trajectory.set( 0.0f, -1.0f, 0.0f );
          CPPUNIT_ASSERT( ranges1 == damage->GetDamageRangesByTrajectory(trajectory) );
-         
+
          // --- Test angled
          // ------ Between 30 and 45, favor 30 (Range 1/3)
          trajectory.set( 0.798636f, 0.0f, -0.601815f ); // 37 degrees
@@ -869,7 +862,7 @@ namespace SimCore
          CPPUNIT_ASSERT( ranges3 == damage->GetDamageRangesByTrajectory(trajectory) );
          trajectory.set( 0.0f, -0.374607f, -0.927184f ); // 68 degrees
          CPPUNIT_ASSERT( ranges3 == damage->GetDamageRangesByTrajectory(trajectory) );
-         
+
          // Test no trajectory --- defaults to Range Max
          trajectory.set( 0.0f, 0.0f, 0.0f );
          CPPUNIT_ASSERT( ranges3 == damage->GetDamageRangesByTrajectory(trajectory) );
@@ -883,14 +876,14 @@ namespace SimCore
          //   forwardDistance = distance from explosion along the munition's trajectory
          //   deflectDistance = distance from explosion perpendicular from the munition's trajectory
          //   forwardRange = the radial explosion distance along trajectory
-         //   deflectRange = the radial explosion distance perpendicular from trajectory 
+         //   deflectRange = the radial explosion distance perpendicular from trajectory
          //   totalProb = scaled down version of damageProb based on distance; follows a bell curve
          //               Point zero will have full force, thus totalProb == damageProb.
          //
          // GetProbability_CarletonEquation( damageProb, forwardDistance, deflectDistance, forwardRange, deflectRange )
          testValue = damage->GetProbability_CarletonEquation( 20.0f, -5.0f, -2.0f, 30.0f, 10.0f );
-         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.156080604, 
-            testValue, 
+         CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.156080604,
+            testValue,
             0.001 );
 
          // Test the explosive force --- Using Range Max
@@ -905,9 +898,9 @@ namespace SimCore
          // testRanges->SetDeflectRanges( 100.0, 120.0, 80.0, 50.0 );
          targetPos.set( 0.0, -1.0, 10.0f ); // 10 meters above explosion
          testForce = damage->GetForce( targetPos, explosionPos, trajectory );
-         //testValue = damage->GetProbability_CarletonEquation( 
+         //testValue = damage->GetProbability_CarletonEquation(
          //   damage->GetNewtonForce(), targetPos[2], targetPos[1], 240.0f, 120.0f );
-         testValue = damage->GetNewtonForce() * 
+         testValue = damage->GetNewtonForce() *
             damage->GetProbability_CarletonEquation(1.0, targetPos[2], targetPos[1], 240.0f, 120.0f );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( testValue, testForce.length(), 0.01 );
 
@@ -1110,13 +1103,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestDamageHelperProperties()
       {
-         
+
          // Create a test entity
          dtCore::RefPtr<SimCore::Actors::BaseEntity> entity;
          std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          CreateTestEntities( entities, 1, true );
          entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
-         CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created", 
+         CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created",
             entity.valid() );
 
          // Create the test DamageHelper
@@ -1157,7 +1150,7 @@ namespace SimCore
 
 
          // Test damage state changes (which also calls notify network)
-         CPPUNIT_ASSERT_MESSAGE( "The entity's damage state should be NO_DAMAGE", 
+         CPPUNIT_ASSERT_MESSAGE( "The entity's damage state should be NO_DAMAGE",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
 
          entity->SetDeadReckoningAlgorithm( dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY );
@@ -1182,10 +1175,10 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "Last notified damage state should ALSO be KILL",
             helper->GetLastNotifiedDamageState() == DamageType::DAMAGE_KILL );
 
-         CPPUNIT_ASSERT_MESSAGE( "The entity's damage state should have been changed to DESTROYED", 
+         CPPUNIT_ASSERT_MESSAGE( "The entity's damage state should have been changed to DESTROYED",
             entity->GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
 
-         // Note - we no longer override the old dead reckoning algorithm. otherwise, 
+         // Note - we no longer override the old dead reckoning algorithm. otherwise,
          // when a vehicle is killed, it can't fall from the sky correctly, or if it's bumped by a bomb,
          // it won't move smoothly, it will blip statically.
          // --- Ensure the dead reckoning has NOT been changed
@@ -1247,7 +1240,7 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->Register( *entities[1] ) );
          CPPUNIT_ASSERT( mDamageComp->Register( *entities[2] ) );
          // --- Test Re-registering when already registered
-         std::cout << "NOTE: fail message to follow as expected: re-registering an entity that was already registered." 
+         std::cout << "NOTE: fail message to follow as expected: re-registering an entity that was already registered."
             << std::endl;
          CPPUNIT_ASSERT( ! mDamageComp->Register( *entities[0] ) );
 
@@ -1349,7 +1342,7 @@ namespace SimCore
          // --- Create an effects damage actor that will be used by the munition type
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActorProxy> newEffectsInfo;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, newEffectsInfo );
-         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo; 
+         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo;
          newEffectsInfo->GetActor(effectsInfo);
          effectsInfo->SetSmokeLifeTime( 0.0f );
 
@@ -1369,7 +1362,7 @@ namespace SimCore
          detMsg->SetSource(*mMachineInfo);
          detMsg->SetMunitionType(testMunitionName);
          //put the detonation in the air so we can make sure it clamps down on the tank.
-         detMsg->SetDetonationLocation(osg::Vec3(tankLocation.x(), tankLocation.y(), 
+         detMsg->SetDetonationLocation(osg::Vec3(tankLocation.x(), tankLocation.y(),
          tankLocation.z() + 40.0f));
 
          mGM->SendMessage(*detMsg);
@@ -1385,7 +1378,7 @@ namespace SimCore
          xform.SetTranslation(tankLocation);
          mGM->AddActor(*entityAP, false, false);
 
-         SLEEP(10);
+         dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
          std::vector<dtDAL::ActorProxy*> container;
@@ -1430,7 +1423,7 @@ namespace SimCore
          // Ensure a valid munition is returned.
          CPPUNIT_ASSERT( mDamageComp->GetMunition( grenadeMunition->GetName() ) == grenadeMunition );
          CPPUNIT_ASSERT( mDamageComp->GetMunition( grenadeMunition->GetName(), defaultMunitionName ) == grenadeMunition );
-         // Ensure a default munition is returned. 
+         // Ensure a default munition is returned.
          CPPUNIT_ASSERT( mDamageComp->GetMunition( fakeMunitionName, defaultMunitionName ) == defaultMunition );
          CPPUNIT_ASSERT( mDamageComp->GetMunition( defaultMunitionName ) == defaultMunition );
          // Ensure a bad default munition name for the second parameter does not
@@ -1482,7 +1475,7 @@ namespace SimCore
          std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          CreateTestEntities( entities, 1, true );
          entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
-         CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created", 
+         CPPUNIT_ASSERT_MESSAGE( "A valid test entity should have been created",
             entity.valid() );
 
          // Create all necessary objects for detonation test runs
@@ -1506,7 +1499,7 @@ namespace SimCore
             helper->GetMunitionDamageTable()->GetName() == munitionTableName );
          CPPUNIT_ASSERT_MESSAGE( "Damage helper should have 1.0 damage by default.",
             helper->GetMaxDamageAmount() == 1.0f );
-         
+
 
          // --- Capture the loaded tables
          dtCore::RefPtr<MunitionDamageTable> table = helper->GetMunitionDamageTable();
@@ -1749,7 +1742,7 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->Register(*entity, true, 5.0f));
          CPPUNIT_ASSERT( mDamageComp->HasRegistered( entity->GetUniqueId() ) );
          CPPUNIT_ASSERT( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) != NULL );
-         CPPUNIT_ASSERT_MESSAGE("Damage Component should have gotten max damage from entity.", 
+         CPPUNIT_ASSERT_MESSAGE("Damage Component should have gotten max damage from entity.",
             5.0f == mDamageComp->GetHelperByEntityId(entity->GetUniqueId())->GetMaxDamageAmount());
 
          // --- Send the RESTART message
@@ -1799,14 +1792,14 @@ namespace SimCore
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, proxy );
 
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able create a MunitionEffectInfoActorProxy", proxy );
-         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo 
+         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo
             = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy->GetActor());
 
          CPPUNIT_ASSERT( effectsInfo != NULL );
 
          // Creat test variables
          std::string testValue("string test");
-         float value = 0.5f; 
+         float value = 0.5f;
 
          CPPUNIT_ASSERT_MESSAGE("MunitionEffects fire flash probability should default to 1.0",
             effectsInfo->GetFireFlashProbability() == 1.0f );
@@ -1927,11 +1920,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionsComponentTests::TestMunitionFamilyProperties()
       {
-         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN.IsExplosive() ); 
-         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_ROUND.IsExplosive() );  
-         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_EXPLOSIVE_ROUND.IsExplosive() ); 
-         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_GRENADE.IsExplosive() ); 
-         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_MINE.IsExplosive() ); 
+         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_UNKNOWN.IsExplosive() );
+         CPPUNIT_ASSERT( ! SimCore::Actors::MunitionFamily::FAMILY_ROUND.IsExplosive() );
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_EXPLOSIVE_ROUND.IsExplosive() );
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_GRENADE.IsExplosive() );
+         CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_MINE.IsExplosive() );
          CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_MISSILE.IsExplosive() );
          CPPUNIT_ASSERT( SimCore::Actors::MunitionFamily::FAMILY_GENERIC_EXPLOSIVE.IsExplosive() );
       }
@@ -1941,7 +1934,7 @@ namespace SimCore
       {
          dtCore::RefPtr<dtDAL::ActorProxy> proxy;
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_TYPE_ACTOR_TYPE, proxy );
-         dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> munitionType 
+         dtCore::RefPtr<SimCore::Actors::MunitionTypeActor> munitionType
             = dynamic_cast<SimCore::Actors::MunitionTypeActor*>(proxy->GetActor());
 
          // MunitionTypeActor is not drawable so it should have a NULL OSG node.
@@ -1952,7 +1945,7 @@ namespace SimCore
          CPPUNIT_ASSERT( munitionType->GetFamily() == SimCore::Actors::MunitionFamily::FAMILY_GRENADE );
 
          CPPUNIT_ASSERT( munitionType->GetFuseType() == 0 );
-         munitionType->SetFuseType( 1000 );         
+         munitionType->SetFuseType( 1000 );
          CPPUNIT_ASSERT( munitionType->GetFuseType() == 1000 );
 
          CPPUNIT_ASSERT( munitionType->GetWarheadType() == 0 );
@@ -2333,7 +2326,7 @@ namespace SimCore
          CPPUNIT_ASSERT( effectMgr->GetEffectTimeMax() == 2.0f );
 
          // NOTE: WeaponEffectsManager recycles before updating so that effects
-         //       have a chance to exist; recycling afterward may prevent some 
+         //       have a chance to exist; recycling afterward may prevent some
          //       short-lived effects from displaying. Effects that have lived
          //       passed the max effect time will be recycled on a subsequent
          //       call to Update.
@@ -2345,7 +2338,7 @@ namespace SimCore
          mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, effectInfoProxy );
          CPPUNIT_ASSERT_MESSAGE("GameManager should be able create a MunitionEffectInfoActorProxy",
             effectInfoProxy.valid() );
-         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo 
+         SimCore::Actors::MunitionEffectsInfoActor* effectsInfo
             = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(effectInfoProxy->GetActor());
          CPPUNIT_ASSERT( effectsInfo != NULL );
          effectsInfo->SetFireFlashTime( 0.5f );
@@ -2429,7 +2422,7 @@ namespace SimCore
          effectMgr->Update( updateDelta );
          CPPUNIT_ASSERT( effectMgr->GetWeaponEffectCount() == 3 );
 
-         // --- Update once more. 
+         // --- Update once more.
          //     Effects 2 & 3 should be 3 seconds old and thus be recycled.
          //     Effect 1 should be 2 seconds old.
          effectMgr->Update( updateDelta );
@@ -2575,6 +2568,5 @@ namespace SimCore
          CPPUNIT_ASSERT( effectMgr->GetMunitionEffectCount() == 0 );
          CPPUNIT_ASSERT( scene->GetNumberOfAddedDrawable() == oldSceneCount );
       }
-
    }
 }
