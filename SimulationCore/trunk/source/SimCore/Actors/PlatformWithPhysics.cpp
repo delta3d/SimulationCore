@@ -24,6 +24,7 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
+#include <PhysicsGlobals.h>
 #else
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicsobject.h>
@@ -241,22 +242,22 @@ namespace SimCore
       {
          if(!mLoadGeomFromNode)
          {
-            dtCore::Transform ourTransform;
-            GetTransform(ourTransform);
-            osg::Matrix rot;
-            ourTransform.GetRotation(rot);
+            dtCore::Transform xform;
+            GetTransform(xform);
 
-            dtPhysics::PhysicsObject* toFillIn = mPhysicsHelper->GetMainPhysicsObject();
-            if(toFillIn != NULL)
+            dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+            if (physObj != NULL)
             {
-               osg::Vec3 translation;
-               ourTransform.GetTranslation(translation);
-
-               toFillIn->setGlobalPosition(NxVec3(translation[0], translation[1], translation[2]));
-               toFillIn->setGlobalOrientation(
-                  NxMat33( NxVec3(rot(0,0), rot(0,1), rot(0,2)),
-                           -NxVec3(rot(1,0), rot(1,1), rot(1,2)),
-                           NxVec3(rot(2,0), rot(2,1), rot(2,2))));
+               NxMat34 mat;
+               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
+               if (physObj->readBodyFlag(NX_BF_KINEMATIC))
+               {
+                  physObj->moveGlobalPose(mat);
+               }
+               else
+               {
+                  physObj->setGlobalPose(mat);
+               }
             }
          }
       }
@@ -276,8 +277,8 @@ namespace SimCore
             if (physObj != NULL)
             {
                dtCore::Transform xform;
-               physObj->GetTransform(xform);
-               SetTransform(xform);
+               GetTransform(xform);
+               physObj->SetTransformAsVisual(xform);
             }
          }
       }

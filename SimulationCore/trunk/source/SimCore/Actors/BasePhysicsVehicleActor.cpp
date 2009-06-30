@@ -29,6 +29,7 @@
 
 #include <NxAgeiaWorldComponent.h>
 #include <NxAgeiaRaycastReport.h>
+#include <PhysicsGlobals.h>
 
 #else
 
@@ -224,9 +225,9 @@ namespace SimCore
       void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
       {
          if (isImpulse)
-            GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
+            GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
          else
-            GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->ApplyImpulse(force);
+            GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(force);
       }
 
 #endif
@@ -250,8 +251,9 @@ namespace SimCore
          }
 #ifdef AGEIA_PHYSICS
          if(physicsObject->isSleeping())
+         {
             physicsObject->wakeUp();
-
+         }
 #else
          if (!physicsObject->IsActive())
          {
@@ -416,8 +418,6 @@ namespace SimCore
             mPushTransformToPhysics = false;
             dtCore::Transform xform;
             GetTransform(xform);
-            osg::Matrix mat;
-            xform.Get(mat);
 
             // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
             // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
@@ -428,12 +428,21 @@ namespace SimCore
                NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
                physObject->setLinearVelocity(physVelocity );
             }
-            // Move the remote physics object to its dead reckoned position/rotation.
-            physObject->setGlobalPosition(NxVec3(mat(3,0), mat(3,1), mat(3,2)));
-            physObject->setGlobalOrientation(
-                                     NxMat33( NxVec3(mat(0,0), mat(1,0), mat(2,0)),
-                                              NxVec3(mat(0,1), mat(1,1), mat(2,1)),
-                                              NxVec3(mat(0,2), mat(1,2), mat(2,2))));
+
+            if (physObject != NULL)
+            {
+               NxMat34 mat;
+               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
+
+               if (physObject->readBodyFlag(NX_BF_KINEMATIC))
+               {
+                  physObject->moveGlobalPose(mat);
+               }
+               else
+               {
+                  physObject->setGlobalPose(mat);
+               }
+            }
          }
       }
 
@@ -448,28 +457,11 @@ namespace SimCore
             dtPhysics::PhysicsObject* physicsActor = GetPhysicsHelper()->GetMainPhysicsObject();
             if (physicsActor != NULL && !GetPushTransformToPhysics() && !physicsActor->isSleeping())
             {
-               dtCore::Transform ourTransform;
-               //GetTransform(ourTransform);
+               dtCore::Transform xform;
 
-               // Rotation
-               float glmat[16];
-               memset(glmat, 0, 16 * sizeof(float));
-               NxMat33 rotation = physicsActor->getGlobalOrientation();
-               rotation.getColumnMajorStride4(glmat);
-               // Translation
-               glmat[12] = physicsActor->getGlobalPosition()[0];
-               glmat[13] = physicsActor->getGlobalPosition()[1];
-               glmat[14] = physicsActor->getGlobalPosition()[2];
-               glmat[15] = 1.0f;
-               osg::Matrix currentMatrix(glmat);
-               ourTransform.Set(currentMatrix);
-               //std::cout << ourTransform.GetTranslation() << std::endl;
-
-               // Translation
-               //ourTransform.SetTranslation(physicsActor->getGlobalPosition()[0],
-               //   physicsActor->getGlobalPosition()[1], physicsActor->getGlobalPosition()[2]);
-
-               SetTransform(ourTransform);
+               NxMat34 mat = physicsActor->getGlobalPose();
+               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
+               SetTransform(xform);
                SetPushTransformToPhysics(false);
             }
          }
@@ -497,7 +489,7 @@ namespace SimCore
                // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
                // but we want to act like their not.
                osg::Vec3 velocity = GetLastKnownVelocity();
-               physicsObject->GetBodyWrapper()->SetLinearVelocity(velocity);
+               physicsObject->SetLinearVelocity(velocity);
             }
 
             dtCore::Transform xform;
