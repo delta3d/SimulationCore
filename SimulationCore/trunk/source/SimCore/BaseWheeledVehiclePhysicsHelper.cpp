@@ -343,7 +343,7 @@ namespace SimCore
          WheelType& wheel = *i;
          palMatrix4x4& palmat = wheel.mWheel->GetLocationMatrix();
          osg::Matrix m;
-         dtPhysics::PalMatrixToOSGMatrix(m, palmat);
+         dtPhysics::PalMatrixToTransform(m, palmat);
 
          osg::Matrix worldMat;
          dtCore::Transformable::GetAbsoluteMatrix(wheel.mTransform->getParent(0), worldMat);
