@@ -30,12 +30,14 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
+
+
 
 #include <States.h>
 #include <ActorRegistry.h>
 #include <Components/GameLogicComponent.h>
 #include <Actors/PlayerStatusActor.h>
-#include <Actors/DRGhostActor.h>
 // TEMP STUFF FOR VEHICLE
 #include <Actors/HoverVehicleActor.h>
 #include <Actors/HoverVehiclePhysicsHelper.h>
@@ -544,12 +546,14 @@ namespace NetDemo
       else if (mVehicle.valid() && mPhysVehicle != NULL)
       {
          LOG_ALWAYS("TEST - Enabling Ghost Dead Reckoning behavior.");
-         GetGameManager()->CreateActor(*NetDemoActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
+         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
             mOriginalPublishTimesPerSecond = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
             mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(1.0f);
-            mDRGhostActorProxy->GetActorAsDRGhost().SetSlavedEntity(mVehicle.get());
+            SimCore::Actors::DRGhostActor* actor = NULL;
+            mDRGhostActorProxy->GetActor(actor);
+            actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
 

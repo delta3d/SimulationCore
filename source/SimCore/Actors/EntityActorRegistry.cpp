@@ -65,6 +65,9 @@
 #include <SimCore/Actors/LatLongDataActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
+#include <SimCore/Actors/DRGhostActor.h>
+
+#include <dtActors/engineactorregistry.h>
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>
@@ -161,6 +164,11 @@ namespace SimCore
          new dtDAL::ActorType("WaterGridActor", "SimCore", "This is the base water actor.",
          SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE.get() ));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::DR_GHOST_ACTOR_TYPE(
+         new dtDAL::ActorType("DRGhostActor", "SimCore", "Shows how dead reckoning works by following a platform",
+         dtActors::EngineActorRegistry::GAME_MESH_ACTOR_TYPE.get()));
+
+
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
       {
@@ -246,6 +254,7 @@ namespace SimCore
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
 
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
       }
    }
 }

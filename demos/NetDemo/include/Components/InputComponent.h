@@ -27,6 +27,7 @@
 #include <SimCore/Components/BaseInputComponent.h>
 #include <dtCore/observerptr.h>
 #include <osgSim/DOFTransform>
+#include <SimCore/Actors/DRGhostActor.h>
 
 //#include <SimCore/MessageType.h>
 //#include <SimCore/PlayerMotionModel.h>
@@ -52,7 +53,6 @@ namespace SimCore
 
 namespace NetDemo
 {
-   class DRGhostActorProxy;
    class GameLogicComponent;
 
    ////////////////////////////////////////////////////////////////////
@@ -124,6 +124,7 @@ namespace NetDemo
 
       private:
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
+         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFRing;
          dtCore::ObserverPtr<osgSim::DOFTransform> mDOFWeapon;
@@ -132,7 +133,6 @@ namespace NetDemo
          std::vector<std::string> mViewPointList;
          unsigned mCurrentViewPointIndex;
          bool mIsInGameState;
-         dtCore::RefPtr<DRGhostActorProxy> mDRGhostActorProxy;
          float mOriginalPublishTimesPerSecond;
    };
 }

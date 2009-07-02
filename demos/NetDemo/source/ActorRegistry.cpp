@@ -21,7 +21,6 @@
 #include <Actors/FortActor.h>
 #include <WheeledVehicleActor.h>
 #include <Actors/EnemyMine.h>
-#include <Actors/DRGhostActor.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/SpawnVolumeActor.h>
 #include <Actors/EnemyDescriptionActor.h>
@@ -65,11 +64,6 @@ namespace NetDemo
       new dtDAL::ActorType("EnemyMineActor", "NetDemo", "Flies around and destroys self near base",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::DR_GHOST_ACTOR_TYPE(
-      new dtDAL::ActorType("DRGhostActor", "NetDemo", "Shows how dead reckoning works by following our vehicle", 
-      dtActors::EngineActorRegistry::GAME_MESH_ACTOR_TYPE.get()));
-
-
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE(
       new dtDAL::ActorType("EnemyHelixActor", "NetDemo", "A more sophisticated enemy then the enemy mine.",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
@@ -110,7 +104,6 @@ namespace NetDemo
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
       mActorFactory->RegisterType<TowerActorProxy>(TOWER_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
-      mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyHelixActorProxy>(ENEMY_HELIX_ACTOR_TYPE.get());
       mActorFactory->RegisterType<SpawnVolumeActorProxy>(SPAWN_VOLUME_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyDescriptionActorProxy>(ENEMY_DESCRIPTION_TYPE.get());
