@@ -114,10 +114,8 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
          virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf, const dtPhysics::PhysicsObject& whatWeHit){}
 #else
 
-         /// dtPhysics collisions report callback
-         void CollisionReport(const dtPhysics::CollisionContact& cr);
          /// dtPhysics post physics callback.
-         void PostPhysicsUpdate();
+         virtual void PostPhysicsUpdate();
 #endif
 
       public:

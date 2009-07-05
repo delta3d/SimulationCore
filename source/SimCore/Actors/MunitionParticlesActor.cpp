@@ -51,6 +51,9 @@
 #include <osg/MatrixTransform>
 #include <osg/PrimitiveSet>
 
+#include <iostream>
+#include <osg/io_utils>
+
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
 #else
@@ -613,6 +616,7 @@ namespace SimCore
          newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
          newObject->SetExtents(mPhysicsHelper->GetDimensions());
          newObject->SetTransform(xform);
+         newObject->SetNotifyCollisions(true);
          newObject->CreateFromProperties(particle->mObj->GetOSGNode());
          newActor = newObject.get();
    #endif
@@ -652,6 +656,7 @@ namespace SimCore
          osg::Vec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
 
          newActor->SetLinearVelocity(vRandVec);
+         std::cout << vRandVec << std::endl;
 
          vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
                   GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
@@ -731,7 +736,7 @@ namespace SimCore
          for(;iter!= mOurParticleList.end(); ++iter)
          {
             PhysicsParticle& particle = **iter;
-            if(particle.ShouldBeRemoved() == false)
+            if(!particle.ShouldBeRemoved())
             {
                isATracer = false;
                MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>(&particle);
@@ -752,15 +757,15 @@ namespace SimCore
                   if(isATracer)
                   {
                      dtCore::Transform objXform;
-                     particle.mObj->GetTransform(objXform, dtCore::Transformable::REL_CS);
+                     particle.mObj->GetTransform(objXform);
                      osg::Vec3 pos;
                      physicsXform.GetTranslation(pos);
                      objXform.SetTranslation(pos);
-                     particle.mObj->SetTransform(objXform, dtCore::Transformable::REL_CS);
+                     particle.mObj->SetTransform(objXform);
                   }
                   else
                   {
-                     particle.mObj->SetTransform(physicsXform, dtCore::Transformable::REL_CS);
+                     particle.mObj->SetTransform(physicsXform);
                   }
                }
             }
