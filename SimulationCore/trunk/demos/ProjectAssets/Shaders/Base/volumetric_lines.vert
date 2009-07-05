@@ -95,5 +95,5 @@ void main(void)
         vTex1.xy = gl_Color.xy + vec2( 0.25*column, 0.25*row );
         vTex1.zw = vec2(0.0,1.0);
 
-        vColor = blend.xxxx;
+        vColor = vec4(blend);
  }

@@ -790,7 +790,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>3</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>
@@ -1054,7 +1054,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>3</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>
@@ -1948,7 +1948,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>3</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>
@@ -2212,7 +2212,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>3</integer>
             </property>
             <property>
                 <name>TwoDOrThreeDTypeEnum</name>

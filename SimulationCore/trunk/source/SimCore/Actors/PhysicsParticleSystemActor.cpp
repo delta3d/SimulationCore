@@ -99,8 +99,6 @@ PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy &p
    mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
    mPhysicsHelper->SetPostPhysicsCallback(
             dtPhysics::PhysicsHelper::UpdateCallback(this, &PhysicsParticleSystemActor::PostPhysicsUpdate));
-   mPhysicsHelper->SetCollisionCallback(
-            dtPhysics::PhysicsHelper::CollisionCallback(this, &PhysicsParticleSystemActor::CollisionReport));
 #endif
 }
 
@@ -606,47 +604,39 @@ void PhysicsParticleSystemActor::AgeiaPostPhysicsUpdate()
 #else
 
 ////////////////////////////////////////////////////////////////////
-void PhysicsParticleSystemActor::CollisionReport(const dtPhysics::CollisionContact& cr)
+void PhysicsParticleSystemActor::PostPhysicsUpdate()
 {
    if (!mObjectsStayStaticWhenHit == false)
    {
+      std::vector<dtPhysics::CollisionContact> contacts;
       std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter, iterEnd;
       iter = mOurParticleList.begin();
       iterEnd = mOurParticleList.end();
       for(;iter != iterEnd; ++iter)
       {
          PhysicsParticle* particle = (iter->get());
-         if (cr.mObject1 == particle->GetPhysicsObject() ||
-                  cr.mObject2 == particle->GetPhysicsObject())
+         contacts.clear();
+
+         dtPhysics::PhysicsWorld::GetInstance().GetContacts(*particle->GetPhysicsObject(), contacts);
+
+         if (!contacts.empty())
             //if(&ourSelf == mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str()))
          {
             particle->FlagToDelete();
-            return;
          }
-      }
-   }
-}
-
-////////////////////////////////////////////////////////////////////
-void PhysicsParticleSystemActor::PostPhysicsUpdate()
-{
-   std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter, iterEnd;
-   iter = mOurParticleList.begin();
-   iterEnd = mOurParticleList.end();
-   for(;iter != iterEnd; ++iter)
-   {
-      PhysicsParticle* particle = (iter->get());
-      if (!particle->ShouldBeRemoved())
-      {
-         dtPhysics::PhysicsObject* physObj = particle->GetPhysicsObject();
-         if (physObj->IsActive())
+         else if (!particle->ShouldBeRemoved())
          {
-            dtCore::Transform xform;
-            physObj->GetTransform(xform);
-            particle->mObj->SetTransform(xform);
+            dtPhysics::PhysicsObject* physObj = particle->GetPhysicsObject();
+            if (physObj->IsActive())
+            {
+               dtCore::Transform xform;
+               physObj->GetTransform(xform);
+               particle->mObj->SetTransform(xform);
+            }
          }
       }
    }
+
 }
 
 #endif

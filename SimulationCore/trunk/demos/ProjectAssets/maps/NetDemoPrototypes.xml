@@ -451,7 +451,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>chassis: Collision Group</name>
@@ -974,7 +974,7 @@
             </property>
             <property>
                 <name>VehicleBody: Mass</name>
-                <float>30000</float>
+                <float>0</float>
             </property>
             <property>
                 <name>VehicleBody: Skin Thickness</name>
@@ -1708,7 +1708,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>chassis: Collision Group</name>
@@ -2195,11 +2195,11 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
@@ -2586,11 +2586,11 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
@@ -2977,7 +2977,7 @@
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>0</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>VehicleBody: Collision Group</name>
