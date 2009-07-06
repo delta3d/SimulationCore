@@ -180,7 +180,8 @@ namespace SimCore
 
          if (!IsRemote())
          {
-            //So it's not a frame behind, it needs to happen on tick remove, which is where the component does it.
+            //So it's not a frame behind, it needs to happen on tick remote.  This is because the DeadReckoningComponent
+            //ticks on Tick-Remote..
             RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
          }
       }
