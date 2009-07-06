@@ -262,8 +262,8 @@ namespace SimCore
       //Create the vehicle here so we can add wheels any time.
       mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
 
-      GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
       GetMainPhysicsObject()->SetTransform(transformForRot);
+      GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
       mVehicle->Init(&GetMainPhysicsObject()->GetBodyWrapper()->GetPalBody(), GetEngineTorque(),
                 GetMaxBrakeTorque());
 #endif

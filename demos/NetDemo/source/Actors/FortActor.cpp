@@ -43,8 +43,7 @@ namespace NetDemo
    FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
-      SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(2.0f);
+      SetMaxUpdateSendRate(2.0f);
 
       SetPublishLinearVelocity(false);
       SetPublishAngularVelocity(false);
@@ -78,26 +77,26 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      
+
       //GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
       //   GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
       ////////dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
+      physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetActive(true);
 
       if(!IsRemote())
       {
 
          // Setup our articulation helper for the vehicle
-         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
+         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
             new SimCore::Components::DefaultFlexibleArticulationHelper();
          articHelper->SetEntity(this);
-         articHelper->AddArticulation("dof_turret_01", 
+         articHelper->AddArticulation("dof_turret_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         articHelper->AddArticulation("dof_gun_01", 
+         articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
       }
@@ -111,7 +110,7 @@ namespace NetDemo
       if(renderComp != NULL)
       {
          //Add a spot light
-         SimCore::Components::RenderingSupportComponent::DynamicLight* sl = 
+         SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
             new SimCore::Components::RenderingSupportComponent::DynamicLight();
          sl->mRadius = 30.0f;
          sl->mIntensity = 1.0f;

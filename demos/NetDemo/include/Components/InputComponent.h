@@ -118,6 +118,9 @@ namespace NetDemo
          /// Create or destroy the dead reckoning ghost actor
          void ToggleDRGhost();
 
+         /// Turns on/off using the velocity as a factor in when to publish
+         void ToggleVelocityDRCompare();
+
          /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
          void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
 

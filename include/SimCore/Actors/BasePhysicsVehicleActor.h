@@ -135,23 +135,39 @@ namespace SimCore
 
             virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
-            void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper) {mPhysicsHelper = newHelper;}
-            dtPhysics::PhysicsHelper* GetPhysicsHelper() {return mPhysicsHelper.get();}
+            void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
+            dtPhysics::PhysicsHelper* GetPhysicsHelper();
 
             //?? virtual void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
 
-            void SetHasDriver( bool hasDriver )           { mHasDriver = hasDriver; }
-            bool GetHasDriver() const       { return mHasDriver; }
+            void SetHasDriver(bool hasDriver);
+            bool GetHasDriver() const;
 
-            void SetPerformAboveGroundSafetyCheck( bool enable )  { mPerformAboveGroundSafetyCheck = enable; }
-            bool GetPerformAboveGroundSafetyCheck() const  { return mPerformAboveGroundSafetyCheck;}
+            void SetPerformAboveGroundSafetyCheck(bool enable);
+            bool GetPerformAboveGroundSafetyCheck() const;
 
-            virtual void SetTimeForSendingDeadReckoningInfoOut( float timeForSendingDeadReckoningInfoOut )           { mTimeForSendingDeadReckoningInfoOut = timeForSendingDeadReckoningInfoOut; }
-            virtual float GetTimeForSendingDeadReckoningInfoOut() const       { return mTimeForSendingDeadReckoningInfoOut; }
+            void SetSecsSinceLastUpdateSent(float secsSinceLastUpdateSent);
+            float GetSecsSinceLastUpdateSent() const;
 
-            virtual void SetTimesASecondYouCanSendOutAnUpdate( float timesASecondYouCanSendOutAnUpdate )           { mTimesASecondYouCanSendOutAnUpdate = timesASecondYouCanSendOutAnUpdate; }
-            virtual float GetTimesASecondYouCanSendOutAnUpdate() const       { return mTimesASecondYouCanSendOutAnUpdate; }
+            /**
+             * Sets the max number of times per second an update may be sent if the dead reckoning tolerances
+             * this it should be.
+             */
+            void SetMaxUpdateSendRate(float maxUpdateSendRate);
 
+            /**
+             * @return the max number of times per second an update may be sent if the dead reckoning tolerances
+             * this it should be.
+             */
+            float GetMaxUpdateSendRate() const;
+
+            void SetVelocityMagnitudeUpdateThreshold(float);
+            float GetVelocityMagnitudeUpdateThreshold();
+            void SetVelocityDotProductUpdateThreshold(float);
+            float GetVelocityDotProductUpdateThreshold();
+
+            void SetUseVelocityInDRUpdateDecision(bool);
+            bool GetUseVelocityInDRUpdateDecision() const;
 
          protected:
             /**
@@ -210,10 +226,15 @@ namespace SimCore
             std::string VEHICLE_INSIDE_MODEL;      /// for interior views
             ///////////////////////////////////////////////////
 
+            osg::Vec3 mLastPos;
+            osg::Vec3 mAccumulatedLinearVelocity;
+
             ///////////////////////////////////////////////////
             // sending out dead reckoning
-            float mTimeForSendingDeadReckoningInfoOut;
-            float mTimesASecondYouCanSendOutAnUpdate;
+            float mSecsSinceLastUpdateSent;
+            float mMaxUpdateSendRate;
+            float mVelocityMagThreshold;
+            float mVelocityDotThreshold;
 
             ///////////////////////////////////////////////////
             // is there currently a driver inside?
@@ -235,8 +256,7 @@ namespace SimCore
             /// When this is true, the position and rotation will be pushed to the physics engine on pre physics.
             bool mPushTransformToPhysics : 1;
 
-            osg::Vec3 mLastPos;
-            osg::Vec3 mAccumulatedLinearVelocity;
+            bool mUseVelocityInDRUpdateDecision: 1;
 
       };
 

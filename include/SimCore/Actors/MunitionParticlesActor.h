@@ -123,8 +123,6 @@ namespace SimCore
          bool           mUseTracers;               /// Do we use tracers for this particle system?
          int            mCurrentTracerRoundNumber; /// Current count for knowing when to create a tracer
          int            mFrequencyOfTracers;       /// Everytime it hits this number it will reset mCurrentTracerRoundNumber
-         /// to 0 and set the curr particle to be tracer
-         dtCore::RefPtr<dtCore::Isector>                 mISector;
          dtCore::ObserverPtr<SimCore::Actors::WeaponActor>  mWeapon;
       };
 

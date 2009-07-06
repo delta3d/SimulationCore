@@ -61,10 +61,10 @@
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
-#include <osg/io_utils>
 
-// Test
-//#include <iostream>
+//Test
+#include <osg/io_utils>
+#include <iostream>
 
 namespace SimCore
 {
@@ -72,18 +72,20 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////////////
-      BasePhysicsVehicleActor ::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
+      BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
+         , mSecsSinceLastUpdateSent(0.0f)
+         , mMaxUpdateSendRate(3.0f)
+         , mVelocityMagThreshold(1.0f)
+         , mVelocityDotThreshold(0.9f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
          , mNotifyFullUpdate(true)
          , mNotifyPartialUpdate(true)
          , mPerformAboveGroundSafetyCheck(false)
          , mPushTransformToPhysics(false)
+         , mUseVelocityInDRUpdateDecision(false)
       {
-         mTimeForSendingDeadReckoningInfoOut = 0.0f;
-         mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
-
          // If you subclass this actor, you MUST do something like the following in the constructor.
          // The actor can't do it's job without having a physics helper! Might even crash!!!
          //mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaVehiclePhysicsHelper(proxy);
@@ -295,7 +297,7 @@ namespace SimCore
       {
          // Increment how long it's been since our last DR check. We can only send out an update
          // so many times a second.
-         mTimeForSendingDeadReckoningInfoOut += deltaTime;
+         mSecsSinceLastUpdateSent += deltaTime;
 
          dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
          if(physObj == NULL)
@@ -345,26 +347,55 @@ namespace SimCore
          const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
          bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
-         bool enoughTimeHasPassed = (mTimesASecondYouCanSendOutAnUpdate > 0.0f &&
-            (mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate));
+         bool enoughTimeHasPassed = (mMaxUpdateSendRate > 0.0f &&
+            (mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate));
 
-         if(fullUpdate || enoughTimeHasPassed)
+         if (fullUpdate || enoughTimeHasPassed)
          {
             // Let parent determine if we are outside our threshold values
             if (!fullUpdate)
+            {
                forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
+               if (!forceUpdateResult && GetUseVelocityInDRUpdateDecision())
+               {
+                  osg::Vec3 oldVel = GetLastKnownVelocity();
+                  osg::Vec3 curVel = GetCurrentVelocity();
+                  float oldMag = oldVel.normalize();
+                  float curMag = curVel.normalize();
+                  float velMagChange = dtUtil::Abs(curMag - oldMag);
+                  dtUtil::Log::GetInstance("BasePhysicsVehicleActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG,
+                           __FUNCTION__, __LINE__,
+                           "Change in velocity magnitude an vehicle %s: \"%f\"", GetName().c_str(), velMagChange);
+                  if (velMagChange > mVelocityMagThreshold)
+                  {
+                     forceUpdateResult = true;
+                     LOGN_DEBUG("BasePhysicsVehicleActor.cpp", "Forcing update based on velocity magnitude.")
+                  }
+                  else
+                  {
+                     float dotProd = oldVel * curVel;
+                     dtUtil::Log::GetInstance("BasePhysicsVehicleActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG,
+                              __FUNCTION__, __LINE__,
+                              "Dot of old velocity with current velocity: \"%f\"", dotProd);
+                     if (dotProd < mVelocityDotThreshold)
+                     {
+                        forceUpdateResult = true;
+                        LOGN_DEBUG("BasePhysicsVehicleActor.cpp", "Forcing update based on velocity angle.")
+                     }
+                  }
+               }
+            }
 
             // If we are going to update, then set our velocities so others can do remote dead reckoning.
             if (forceUpdateResult)
             {
-               //if (GetName() == "Hover Vehicle")
-               //   std::cout << "VEHICLE - Vel[" << GetCurrentVelocity() << "] Speed[" << GetCurrentVelocity().length()
-               //   << "[" << GetName() << "] ." << std::endl;
+               //std::cout << "VEHICLE - Vel\"" << GetCurrentVelocity() << "\" Speed\"" << GetCurrentVelocity().length()
+               //<< "\"" << GetName() << "\" ." << std::endl;
 
                // Since we are about to publish, set our time since last publish back to 0.
                // This allows us to immediately send out a change the exact moment it happens (ex if we
                // were moving slowly and hadn't updated recently).
-               mTimeForSendingDeadReckoningInfoOut = 0.0f;
+               mSecsSinceLastUpdateSent = 0.0f;
             }
 
          }
@@ -665,9 +696,9 @@ namespace SimCore
          endPos[2] += 100.0f;
          float offsettodo = 5.0f;
          SingleISector.SetSectorAsLineSegment(startPos, endPos);
-         if( iSector->Update(osg::Vec3(0,0,0), true) )
+         if (iSector->Update(osg::Vec3(0,0,0), true))
          {
-            if( SingleISector.GetNumberOfHits() > 0 )
+            if (SingleISector.GetNumberOfHits() > 0)
             {
                SingleISector.GetHitPoint(hp);
 
@@ -731,6 +762,98 @@ namespace SimCore
          return false;
       }
 
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper)
+      {
+         mPhysicsHelper = newHelper;
+      }
+      //////////////////////////////////////////////////////////////////////
+      dtPhysics::PhysicsHelper* BasePhysicsVehicleActor::GetPhysicsHelper()
+      {
+         return mPhysicsHelper.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetHasDriver(bool hasDriver)
+      {
+         mHasDriver = hasDriver;
+      }
+      //////////////////////////////////////////////////////////////////////
+      bool BasePhysicsVehicleActor::GetHasDriver() const
+      {
+         return mHasDriver;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck(bool enable)
+      {
+         mPerformAboveGroundSafetyCheck = enable;
+      }
+      //////////////////////////////////////////////////////////////////////
+      bool BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck() const
+      {
+         return mPerformAboveGroundSafetyCheck;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetSecsSinceLastUpdateSent(float secsSinceLastUpdateSent)
+      {
+         mSecsSinceLastUpdateSent = secsSinceLastUpdateSent;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetSecsSinceLastUpdateSent() const
+      {
+         return mSecsSinceLastUpdateSent;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetMaxUpdateSendRate(float maxUpdateSendRate)
+      {
+         mMaxUpdateSendRate = maxUpdateSendRate;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetMaxUpdateSendRate() const
+      {
+         return mMaxUpdateSendRate;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetVelocityMagnitudeUpdateThreshold(float thresh)
+      {
+         mVelocityMagThreshold = thresh;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold()
+      {
+         return mVelocityMagThreshold;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetVelocityDotProductUpdateThreshold(float thresh)
+      {
+         mVelocityDotThreshold = thresh;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold()
+      {
+         return mVelocityMagThreshold;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetUseVelocityInDRUpdateDecision(bool value)
+      {
+         mUseVelocityInDRUpdateDecision = value;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      bool BasePhysicsVehicleActor::GetUseVelocityInDRUpdateDecision() const
+      {
+         return mUseVelocityInDRUpdateDecision;
+      }
 
       //////////////////////////////////////////////////////////////////////
       // PROXY
@@ -743,7 +866,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActorProxy::BuildPropertyMap()
       {
-         const std::string& VEH_GROUP   = "Vehicle Property Values";
+         const dtUtil::RefString VEH_GROUP("Vehicle Property Values");
 
          PlatformActorProxy::BuildPropertyMap();
 

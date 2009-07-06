@@ -123,15 +123,15 @@ namespace SimCore
 
          private:
 
+            osg::Vec3   mMoveRateConstant;// for multiplying for movement amount.
+            osg::Vec3   mPreviousTransform;
+            osg::Vec3   mSentOverTransform;
+            float mSecsSinceLastUpdateSent;
+            float mMaxUpdateSendRate;
             bool        mAcceptInput;     // for ai vs human.
             bool        mNotifyChangePosition;
             bool        mNotifyChangeOrient;
             bool        mNotifyChangeVelocity;
-            osg::Vec3   mMoveRateConstant;// for multiplying for movement amount.
-            osg::Vec3   mPreviousTransform;
-            osg::Vec3   mSentOverTransform;
-            float mTimeForSendingDeadReckoningInfoOut;
-            float mTimesASecondYouCanSendOutAnUpdate;
       };
 
       // proxy

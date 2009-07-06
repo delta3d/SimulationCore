@@ -86,8 +86,8 @@ namespace SimCore
                {
                   SetMesh(platform->GetNonDamagedNodeFileName());
                }
-               mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
-               mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+               //mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
+               //mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
             }
             SetShaderGroup("GhostVehicleShaderGroup");
 
@@ -106,9 +106,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
+      void DRGhostActor::OnTickRemote( const dtGame::TickMessage& tickMessage )
       {
-         BaseClass::OnTickLocal( tickMessage );
+         BaseClass::OnTickRemote( tickMessage );
 
          // Move to TickRemote().
          UpdateOurPosition();
@@ -180,7 +180,8 @@ namespace SimCore
 
          if (!IsRemote())
          {
-            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+            //So it's not a frame behind, it needs to happen on tick remove, which is where the component does it.
+            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
          }
       }
    }

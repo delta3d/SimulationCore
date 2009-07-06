@@ -34,11 +34,9 @@
 
 #include <dtGame/basemessages.h>
 
-#include <dtCore/batchisector.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/uniqueid.h>
 #include <dtCore/scene.h>
-#include <dtCore/isector.h>
 #include <dtCore/transform.h>
 #include <dtUtil/mathdefines.h>
 
@@ -245,7 +243,6 @@ namespace SimCore
       , mCurrentTracerRoundNumber(0)
       , mFrequencyOfTracers(10)
       {
-         mISector = new dtCore::Isector();
       }
 
       ////////////////////////////////////////////////////////////////////

@@ -44,12 +44,11 @@ namespace NetDemo
       , mTimeSinceKilled(0.0f)
    {
       /////////////////////////////////////////////////////////////////
-      // Set a bunch of initial conditions - Note, some of these may be 
+      // Set a bunch of initial conditions - Note, some of these may be
       // changed if the actor is loaded from a map or when received as a remote actor
       /////////////////////////////////////////////////////////////////
 
-      SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(2.0f);
+      SetMaxUpdateSendRate(2.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
@@ -106,12 +105,12 @@ namespace NetDemo
       {
 
          // Setup our articulation helper for the vehicle
-         //dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper = 
+         //dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
          //   new SimCore::Components::DefaultFlexibleArticulationHelper();
          //articHelper->SetEntity(this);
-         //articHelper->AddArticulation("dof_turret_01", 
+         //articHelper->AddArticulation("dof_turret_01",
          //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         //articHelper->AddArticulation("dof_gun_01", 
+         //articHelper->AddArticulation("dof_gun_01",
          //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          //SetArticulationHelper(articHelper.get());
       }

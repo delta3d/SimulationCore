@@ -173,7 +173,7 @@ namespace NetDemo
                   point = mSpawnVolumes[index]->GetRandomPointInVolume();
                }
             }
-            
+
             enemyActor.InitAI(desc);
             GetGameManager()->AddActor(*enemyProxy, false, true);
 
@@ -208,7 +208,7 @@ namespace NetDemo
       if(1)//GetGameStatus() == &ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
       {
          EnemyDescriptionActor* desc = NULL;
-         
+
          EnemyDescArray::iterator iter = mEnemies.begin();
          EnemyDescArray::iterator iterEnd = mEnemies.end();
          for(;iter != iterEnd; ++iter)
