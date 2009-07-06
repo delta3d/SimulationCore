@@ -36,6 +36,13 @@ if (BUILD_HLA)
    OPTION(USE_CERTI "Use CERTI for the RTI implementation" OFF)
 endif (BUILD_HLA)
 
+IF (WIN32)
+   OPTION(BUILD_WITH_MP "Enables the /MP multi-processor compiler option for Visual Studio 2005 and above" OFF)
+   MARK_AS_ADVANCED(BUILD_WITH_MP)
+   IF(BUILD_WITH_MP)
+     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+   ENDIF(BUILD_WITH_MP)
+ENDIF (WIN32)
 
 IF (WIN32)
    SET(CMAKE_DEBUG_POSTFIX  "d")
@@ -132,7 +139,7 @@ IF (USE_PHYSX)
    MESSAGE("Using Nvidia PhysX for the Physics Engine.")
    FIND_PACKAGE(DTPhysX REQUIRED)
 
-   IF (DTPHYSX_FOUND)
+   #IF (DTPHYSX_FOUND)
       #look for module loaders in dtPhysX CMakeModules
       SET(CMAKE_MODULE_PATH "${DTPHYSX_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
@@ -142,7 +149,7 @@ IF (USE_PHYSX)
       LINK_DIRECTORIES( ${DTPHYSX_LIB_DIR} )
 
       ADD_DEFINITIONS(-DAGEIA_PHYSICS)
-   ENDIF (DTPHYSX_FOUND)
+   #ENDIF (DTPHYSX_FOUND)
    
 ELSE (USE_PHYSX)
    if (USE_dtPhysics)
