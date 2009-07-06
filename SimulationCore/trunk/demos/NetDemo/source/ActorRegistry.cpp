@@ -19,7 +19,6 @@
 #include <Actors/PlayerStatusActor.h>
 #include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
-#include <WheeledVehicleActor.h>
 #include <Actors/EnemyMine.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/SpawnVolumeActor.h>
@@ -44,9 +43,6 @@ namespace NetDemo
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE(
       new dtDAL::ActorType("ServerGameStatusActor", "NetDemo", "Status of the overall game - controlled by the server. "));
-
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::WHEELED_VEHICLE_ACTOR_TYPE(
-      new dtDAL::ActorType("Wheeled Vehicle Actor", "NetDemo", "The wheeled vehicle we all know and love"));
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::PROPELLED_VEHICLE_ACTOR_TYPE(
       new dtDAL::ActorType("Propelled Vehicle Actor", "NetDemo", "The propelled vehicle is basically a wheeled vehicle with a jet engine attached."));
@@ -99,7 +95,6 @@ namespace NetDemo
       mActorFactory->RegisterType<HoverVehicleActorProxy>(HOVER_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<PlayerStatusActorProxy>(PLAYER_STATUS_ACTOR_TYPE.get());
       mActorFactory->RegisterType<ServerGameStatusActorProxy>(SERVER_GAME_STATUS_ACTOR_TYPE.get());
-      mActorFactory->RegisterType<WheeledVehicleActorProxy>(WHEELED_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<PropelledVehicleActorProxy>(PROPELLED_VEHICLE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<FortActorProxy>(FORT_ACTOR_TYPE.get());
       mActorFactory->RegisterType<TowerActorProxy>(TOWER_ACTOR_TYPE.get());

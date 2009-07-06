@@ -48,7 +48,6 @@ namespace NetDemo
          static dtCore::RefPtr<dtDAL::ActorType> ENEMY_HELIX_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> SPAWN_VOLUME_ACTOR_TYPE;
 
-         static dtCore::RefPtr<dtDAL::ActorType> WHEELED_VEHICLE_ACTOR_TYPE;
          static dtCore::RefPtr<dtDAL::ActorType> PROPELLED_VEHICLE_ACTOR_TYPE;
          /// Constructor
          NetDemoActorRegistry();
