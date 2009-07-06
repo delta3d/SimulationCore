@@ -247,9 +247,15 @@ namespace NetDemo
             break;
          }
 
-         case '6':
+         case 'g':
             {
                ToggleDRGhost();
+               break;
+            }
+
+         case 'V':
+            {
+               ToggleVelocityDRCompare();
                break;
             }
 
@@ -260,7 +266,7 @@ namespace NetDemo
             }
          case '8':
             {
-               ModifyVehiclePublishRate(0.90);
+               ModifyVehiclePublishRate(0.9090909);
                break;
             }
          case '9':
@@ -533,7 +539,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ToggleDRGhost()
    {
-      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
       // If it already exists, then kill it.
@@ -549,14 +555,33 @@ namespace NetDemo
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
-            mOriginalPublishTimesPerSecond = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
-            mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(1.0f);
+            mOriginalPublishTimesPerSecond = mPhysVehicle->GetMaxUpdateSendRate();
             SimCore::Actors::DRGhostActor* actor = NULL;
             mDRGhostActorProxy->GetActor(actor);
             actor->SetSlavedEntity(mVehicle);
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
 
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleVelocityDRCompare()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (mPhysVehicle != NULL)
+      {
+         if (mPhysVehicle->GetUseVelocityInDRUpdateDecision())
+         {
+            LOG_ALWAYS("Toggling - disabling using velocity for DR update decision.");
+         }
+         else
+         {
+            LOG_ALWAYS("Toggling - enabling using velocity for DR update decision.");
+         }
+         mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
       }
    }
 
@@ -569,9 +594,9 @@ namespace NetDemo
          mDRGhostActorProxy = NULL;
          SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
             dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-         if (mVehicle.valid() && mPhysVehicle != NULL)
+         if (mPhysVehicle != NULL)
          {
-            mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(mOriginalPublishTimesPerSecond);
+            mPhysVehicle->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
          }
       }
 
@@ -580,13 +605,13 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
    {
-      SimCore::Actors::BasePhysicsVehicleActor *mPhysVehicle =
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (mVehicle.valid() && mPhysVehicle != NULL)
+      if (mPhysVehicle != NULL)
       {
-         float timesPerSecondRate = mPhysVehicle->GetTimesASecondYouCanSendOutAnUpdate();
+         float timesPerSecondRate = mPhysVehicle->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
-         mPhysVehicle->SetTimesASecondYouCanSendOutAnUpdate(timesPerSecondRate);
+         mPhysVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
 
          float rateInSeconds = 1.0f / timesPerSecondRate;
          mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);

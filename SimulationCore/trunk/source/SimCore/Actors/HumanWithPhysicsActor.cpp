@@ -56,18 +56,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       HumanWithPhysicsActor::HumanWithPhysicsActor(dtGame::GameActorProxy &proxy) :
          Human(proxy)
+      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
+      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
+      , mSecsSinceLastUpdateSent(0.0f)
+      , mMaxUpdateSendRate(3.0f)
       , mAcceptInput(false)
       , mNotifyChangePosition(false)
       , mNotifyChangeOrient(false)
       , mNotifyChangeVelocity(false)
-      , mMoveRateConstant(30.0f, 30.0f, 0.0f)
-      // With 30, this is about 12.66 MPH, which is a decently fast sustainable run. The fastest human sprint
       // speed is like 27 MPH. Typically slow walk speed is like 3 MPH. A marathoner can sustain 12.55 MPH
       // for 2 hours. Note, this multiplies times the frame speed using the motion model, but it should be
       // irrelevant of FPS.
       {
-         mTimeForSendingDeadReckoningInfoOut = 0.0f;
-         mTimesASecondYouCanSendOutAnUpdate  = 3.0f;
 #ifdef AGEIA_PHYSICS
          mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaCharacterHelper(proxy);
          mPhysicsHelper->SetBaseInterfaceClass(this);
@@ -94,20 +94,22 @@ namespace SimCore
 
          float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
-         if(mTimesASecondYouCanSendOutAnUpdate == 0)
+         if(mMaxUpdateSendRate == 0)
          {
-            LOG_ERROR("Not sending out dead reckoning, the mTimesASecondYouCanSendOutAnUpdate is set to 0");
+            LOG_ERROR("Not sending out dead reckoning, the mMaxUpdateSendRate is set to 0");
             return;
          }
 
          mTimeForSendingDeadReckoningInfoOut += ElapsedTime;
 
-         if(mTimeForSendingDeadReckoningInfoOut > 1.0f / mTimesASecondYouCanSendOutAnUpdate)
+         if(mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate)
          {
-            mTimeForSendingDeadReckoningInfoOut = 0.0f;
+            mSecsSinceLastUpdateSent = 0.0f;
          }
          else
+         {
             return;
+         }
 
          if( mPhysicsHelper != NULL )
          {
