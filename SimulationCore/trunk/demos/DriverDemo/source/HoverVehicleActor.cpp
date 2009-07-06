@@ -50,8 +50,7 @@ namespace DriverDemo
    , mTimeTillJumpReady(0.0f)
    , mVehicleIsTurret(true)
    {
-      SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(5.0f);
+      SetMaxUpdateSendRate(5.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(false);

@@ -58,8 +58,7 @@ namespace SimCore
       , SOUND_GEAR_CHANGE_MEDIUM(0.0f)
       , SOUND_GEAR_CHANGE_HIGH(0.0f)
       {
-         SetTimeForSendingDeadReckoningInfoOut(0.0f);
-         SetTimesASecondYouCanSendOutAnUpdate(3.0f);
+         SetMaxUpdateSendRate(3.0f);
          dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper *helper =
             new dtAgeiaPhysX::NxAgeiaFourWheelVehiclePhysicsHelper(proxy);
          helper->SetBaseInterfaceClass(this);

@@ -53,8 +53,7 @@ namespace DriverDemo
 
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
 
-      SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(3.0f);
+      SetMaxUpdateSendRate(3.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
