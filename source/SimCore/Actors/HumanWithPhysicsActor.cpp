@@ -100,7 +100,7 @@ namespace SimCore
             return;
          }
 
-         mTimeForSendingDeadReckoningInfoOut += ElapsedTime;
+         mMaxUpdateSendRate += ElapsedTime;
 
          if(mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate)
          {

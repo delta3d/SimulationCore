@@ -64,8 +64,7 @@ namespace DriverDemo
    {
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
 
-      SetTimeForSendingDeadReckoningInfoOut(0.0f);
-      SetTimesASecondYouCanSendOutAnUpdate(3.0f);
+      SetMaxUpdateSendRate(3.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
@@ -249,7 +248,7 @@ namespace DriverDemo
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverExplodingTargetActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force,
       const osg::Vec3& location)
    {
       SimCore::Actors::BaseEntity::RespondToHit(message, munition, force, location);
