@@ -46,6 +46,11 @@ namespace NetDemo
    {
       SetPhysicsHelper(mHelper.get());
       SetMunitionDamageTableName("StandardDamageTable");
+//      SetMaxTranslationError(0.02f);
+//      SetMaxRotationError(1.0f);
+      SetMaxUpdateSendRate(5.0f);
+      SetPublishLinearVelocity(true);
+      SetPublishAngularVelocity(true);
    }
 
    ////////////////////////////////////////////////////////////////////////
