@@ -178,15 +178,9 @@ void PhysicsParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
    {
       ResetParticleSystem();
       mPhysicsHelper->ClearAllPhysicsObjects();
-#ifdef AGEIA_PHYSICS
-      dtAgeiaPhysX::NxAgeiaWorldComponent *worldComponent = NULL;
-      GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent", worldComponent);
-      worldComponent->UnRegisterAgeiaHelper(*mPhysicsHelper.get());
-#else
       dtPhysics::PhysicsComponent* physComponent = NULL;
       GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physComponent);
       physComponent->UnregisterHelper(*mPhysicsHelper);
-#endif
       GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
    }
 }
