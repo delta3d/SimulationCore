@@ -619,39 +619,40 @@ namespace SimCore
          return dtABC::Weather::VIS_UNLIMITED;
       }
 
-      void WeatherComponent::AssignNewProxy(const dtCore::UniqueId &id)
+      //////////////////////////////////////////////////////////
+      void WeatherComponent::AssignNewProxy(const dtCore::UniqueId& id)
       {
-         dtDAL::ActorProxy *actor = GetGameManager()->FindActorById(id);
-         if( actor == NULL )
+         dtDAL::ActorProxy* actor = GetGameManager()->FindActorById(id);
+         if (actor == NULL)
          {
             return;
          }
 
-         const dtDAL::ActorType &type = actor->GetActorType();
+         const dtDAL::ActorType& type = actor->GetActorType();
 
-         if(type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
+         if (type == *SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE)
          {
             Actors::UniformAtmosphereActorProxy* proxy =
                static_cast<Actors::UniformAtmosphereActorProxy*>(actor);
 
-            if(mAtmosphere.valid() && mAtmosphere->GetId() != proxy->GetId())
+            if (mAtmosphere.valid() && mAtmosphere->GetId() != proxy->GetId())
             {
-               LOG_WARNING("WARNING! WeatherComponent.mAtmosphere points to another AtmosphereActor\
-                           The old AtmosphereActor may not have been removed.");
+               LOG_WARNING("WARNING! WeatherComponent.mAtmosphere points to another AtmosphereActor"
+                           "The old AtmosphereActor may not have been removed.");
                mAtmosphere = NULL;
             }
 
-            if(!mAtmosphere.valid())
+            if (!mAtmosphere.valid())
             {
                mAtmosphere = proxy;
             }
 
             UpdateWeather();
          }
-         else if(type == *SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE)
+         else if( type == *SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE)
          {
             Actors::DayTimeActorProxy* proxy = static_cast<Actors::DayTimeActorProxy*>(actor);
-            if(mDayTime.valid() && mDayTime->GetId() != proxy->GetId())
+            if (mDayTime.valid() && mDayTime->GetId() != proxy->GetId())
             {
                LOG_WARNING("WARNING! WeatherComponent.mDayTime points to another DayTimeActor\
                            The old DayTimeActor may not have been removed.");

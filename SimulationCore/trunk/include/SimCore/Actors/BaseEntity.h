@@ -19,7 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
-* @author David Guthrie, Curtiss Murphy 
+* @author David Guthrie, Curtiss Murphy
 */
 #ifndef BASEENTITY_H_
 #define BASEENTITY_H_
@@ -164,7 +164,7 @@ namespace SimCore
             /// Build the invokables
             virtual void BuildInvokables();
 
-            void SetLastKnownRotation(const osg::Vec3 &vec);
+            void SetLastKnownRotation(const osg::Vec3& vec);
 
             osg::Vec3 GetLastKnownRotation() const;
 
@@ -192,7 +192,7 @@ namespace SimCore
              *
              * @param damageState the damage state
              */
-            virtual void SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState);
+            virtual void SetDamageState(BaseEntityActorProxy::DamageStateEnum& damageState);
 
             /**
              * Returns this entity's DIS/RPR-FOM damage state.
@@ -203,40 +203,40 @@ namespace SimCore
 
             /**
              * Controls the maximum damage that the munitions component will allow before killing
-             * this entity. Only applies to local entities, and only before the munitions component 
-             * is registered. See MunitionsComponent and DamageHelper for how this is used. 
+             * this entity. Only applies to local entities, and only before the munitions component
+             * is registered. See MunitionsComponent and DamageHelper for how this is used.
              */
             void SetMaxDamageAmount(float newValue) { mMaxDamageAmount = newValue;  }
             /**
              * Controls the maximum damage that the munitions component will allow before killing
-             * this entity. Only applies to local entities, and only before the munitions component 
-             * is registered. See MunitionsComponent and DamageHelper for how this is used. 
+             * this entity. Only applies to local entities, and only before the munitions component
+             * is registered. See MunitionsComponent and DamageHelper for how this is used.
              */
             float GetMaxDamageAmount() const { return mMaxDamageAmount; }
 
             /**
              * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
-             * This value is controlled by the munitions component - NEVER set this manually. 
+             * This value is controlled by the munitions component - NEVER set this manually.
              */
             void SetCurDamageRatio(float newValue) { mCurDamageRatio = newValue;  }
             /**
              * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
-             * Use this for any HUD or UI displays instead of asking the MunitionsComponent for its DamageHelper. 
+             * Use this for any HUD or UI displays instead of asking the MunitionsComponent for its DamageHelper.
              */
             float GetCurDamageRatio() const { return mCurDamageRatio; }
 
-            
+
             /**
-            * Toggles whether a local version of this entity will automatically attempt to register 
-            * itself with a MunitionsComponent (if one exists). 
+            * Toggles whether a local version of this entity will automatically attempt to register
+            * itself with a MunitionsComponent (if one exists).
             * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
             * @param newValue True to enable, false to not. Default is true.
             */
             void SetAutoRegisterWithMunitionsComponent(bool newValue) { mAutoRegisterWithMunitionsComponent = newValue; }
 
             /**
-            * Toggles whether a local version of this entity will automatically attempt to register 
-            * itself with a MunitionsComponent (if one exists). 
+            * Toggles whether a local version of this entity will automatically attempt to register
+            * itself with a MunitionsComponent (if one exists).
             * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
             * @return mAutoRegisterWithMunitionsComponent
             */
@@ -281,7 +281,7 @@ namespace SimCore
              * Sets the service of this entity
              * @param service The new service
              */
-            virtual void SetService(BaseEntityActorProxy::ServiceEnum &service);
+            virtual void SetService(BaseEntityActorProxy::ServiceEnum& service);
 
             /**
              * Gets the service of this entity
@@ -329,7 +329,7 @@ namespace SimCore
              * Sets the position of engine smoke on a model
              * @param pos The position to set
              */
-            void SetEngineSmokePos(const osg::Vec3 &pos) { mEngineSmokePosition = pos; }
+            void SetEngineSmokePos(const osg::Vec3& pos) { mEngineSmokePosition = pos; }
 
             /**
              * Gets the position of smoke coming from an engine
@@ -341,7 +341,7 @@ namespace SimCore
              * Sets The file name of the fire particle system being used
              * @param fileName The name of the file
              */
-            void SetFlamesPresentFile(const std::string &fileName) { mFlamesSystemFile = fileName; }
+            void SetFlamesPresentFile(const std::string& fileName) { mFlamesSystemFile = fileName; }
 
             /**
              * Gets the name of the the file that the particle system is using
@@ -353,7 +353,7 @@ namespace SimCore
              * Sets The file name of the smoke particle system being used
              * @param fileName The name of the file
              */
-            void SetSmokePlumesFile(const std::string &fileName) { mSmokePlumesSystemFile = fileName; }
+            void SetSmokePlumesFile(const std::string& fileName) { mSmokePlumesSystemFile = fileName; }
 
             /**
              * Gets the name of the the file that the particle system is using
@@ -365,7 +365,7 @@ namespace SimCore
              * Sets The file name of the smoke particle system being used
              * @param fileName The name of the file
              */
-            void SetEngineSmokeFile(const std::string &fileName) { mEngineSmokeSystemFile = fileName; }
+            void SetEngineSmokeFile(const std::string& fileName) { mEngineSmokeSystemFile = fileName; }
 
             /**
              * Gets the name of the the file that the particle system is using
@@ -379,7 +379,7 @@ namespace SimCore
              *
              * @param vec the new last position.
              */
-            virtual void SetLastKnownTranslation(const osg::Vec3 &vec);
+            virtual void SetLastKnownTranslation(const osg::Vec3& vec);
 
             /**
              * @return the last known position for this if it's a remote entity.
@@ -392,7 +392,7 @@ namespace SimCore
              *
              * @param vec the new last rotation as yaw, pitch, roll.
              */
-            virtual void SetLastKnownRotation(const osg::Vec3 &vec);
+            virtual void SetLastKnownRotation(const osg::Vec3& vec);
 
             /**
              * @return the last known rotation for this if it's a remote entity as yaw, pitch, roll.
@@ -404,7 +404,7 @@ namespace SimCore
              *
              * @param vec the velocity vector to copy
              */
-            void SetLastKnownVelocity(const osg::Vec3 &vec);
+            void SetLastKnownVelocity(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM velocity vector.
@@ -418,7 +418,7 @@ namespace SimCore
              *
              * @param accelerationVector the acceleration vector to copy
              */
-            void SetLastKnownAcceleration(const osg::Vec3 &vec);
+            void SetLastKnownAcceleration(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM acceleration vector.
@@ -432,7 +432,7 @@ namespace SimCore
              *
              * @param angularVelocityVector the angular velocity vector to copy
              */
-            void SetLastKnownAngularVelocity(const osg::Vec3 &vec);
+            void SetLastKnownAngularVelocity(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM angular velocity vector.
@@ -444,19 +444,19 @@ namespace SimCore
             /**
             * Sets the CURRENT velocity. This should be updated each frame and is different
             * from the LastKnownVelocityVector (which is used for DeadReckoning).
-            * If you perform your own physics, you should set this at the start of the frame, 
-            * BEFORE you perform physics for the current frame. BaseEntity sets this as the 
+            * If you perform your own physics, you should set this at the start of the frame,
+            * BEFORE you perform physics for the current frame. BaseEntity sets this as the
             * LastKnownVelocity right before it publishes.
             * Since the physics component runs before entities get ticked, the timing works.
             * @param vec the velocity vector to copy
             * @see #SetLastKnownVelocity
             */
-            void SetCurrentVelocity(const osg::Vec3 &vec) { mCurrentVelocity = vec; }
+            void SetCurrentVelocity(const osg::Vec3& vec) { mCurrentVelocity = vec; }
             /**
-            * Gets the CURRENT velocity. This is different from the LastKnownVelocity. 
+            * Gets the CURRENT velocity. This is different from the LastKnownVelocity.
             * @see #SetCurrentVelocity()
             * @see #SetLastKnownVelocity()
-            * @return the current instantaneous velocity. 
+            * @return the current instantaneous velocity.
             */
             osg::Vec3 GetCurrentVelocity() const { return mCurrentVelocity; }
 
@@ -464,18 +464,18 @@ namespace SimCore
             * Sets the CURRENT acceleration. This is sort of hard to compute accurately,
             * but is provided since it is published and will be used for dead reckoning
             * by entities. If you CAN compute this for a local entity, you should set this at the
-            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity 
+            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity
             * will set this as the LastKnownAcceleration right before it publishes.
             * Since the physics component runs before entities get ticked, the timing works.
             * @param vec the new value
             * @see #SetLastKnownAcceleration
             */
-            void SetCurrentAcceleration(const osg::Vec3 &vec) { mCurrentAcceleration = vec; }
+            void SetCurrentAcceleration(const osg::Vec3& vec) { mCurrentAcceleration = vec; }
             /**
-            * Gets the CURRENT acceleration. This is different from the LastKnownAcceleration. 
+            * Gets the CURRENT acceleration. This is different from the LastKnownAcceleration.
             * @see #SetCurrentAcceleration()
             * @see #SetLastKnownAcceleration()
-            * @return the current acceleration from the start of the frame. 
+            * @return the current acceleration from the start of the frame.
             */
             osg::Vec3 GetCurrentAcceleration() const { return mCurrentAcceleration; }
 
@@ -483,19 +483,19 @@ namespace SimCore
             * Sets the CURRENT angular velocity. This is often hard to compute accurately,
             * but is provided since it is published and can be used for dead reckoning
             * remote entities. If you CAN compute this for a local entity, you should set this at the
-            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity 
+            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity
             * will set this as the LastKnownAcceleration right before it publishes.
             * Since the physics component runs before entities get ticked, the timing works.
             * Note - Angular Velocity is future 'rate' of change in the rotation.
             * @param vec the new value
             * @see #SetLastKnownAngularVelocity()
             */
-            void SetCurrentAngularVelocity(const osg::Vec3 &vec) { mCurrentAngularVelocity = vec; }
+            void SetCurrentAngularVelocity(const osg::Vec3& vec) { mCurrentAngularVelocity = vec; }
             /**
-            * Gets the CURRENT angular velocity. This is different from the LastKnownAngularVelocity. 
+            * Gets the CURRENT angular velocity. This is different from the LastKnownAngularVelocity.
             * @see #SetCurrentAngularVelocity()
             * @see #SetLastKnownAngularVelocity()
-            * @return the current angular velocity that was set at the start of the frame. 
+            * @return the current angular velocity that was set at the start of the frame.
             */
             osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
 
@@ -507,7 +507,7 @@ namespace SimCore
              */
             void SetPublishLinearVelocity(bool newValue) { mPublishLinearVelocity = newValue; }
             /**
-             * Are we set to publish linear velocity & acceleration. 
+             * Are we set to publish linear velocity&  acceleration.
              * @see #SetPublishLinearVelocity()
              * @return mPublishLinearVelocity
              */
@@ -674,9 +674,9 @@ namespace SimCore
              *              Force is measured in Newtons: mass (1kg) * acceleration (1meter/1sec^2).
              * @param location The location in world space from which the force was generated.
              *              The location components will be measured in meters.
-             * @param isImpulse Impulses are not applied each tick, they are fully applied 
-             *              instantaneous forces. For most physics engines, that means the impulse 
-             *              should not be scaled down to be relative to the current tick timeslice. 
+             * @param isImpulse Impulses are not applied each tick, they are fully applied
+             *              instantaneous forces. For most physics engines, that means the impulse
+             *              should not be scaled down to be relative to the current tick timeslice.
              */
             virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool IsImpulse = false) {}
 
@@ -693,22 +693,22 @@ namespace SimCore
              * Gives a local entity an opportunity to respond to damage from a munition.
              * Called from the MunitionsComponent via the DamageHelper. Typically called
              * from ProcessDetonationMessage().
-             * NOTE - Damage has already been applied to mCurDamageRatio and published 
+             * NOTE - Damage has already been applied to mCurDamageRatio and published
              * on the network. This method must apply forces manually.
              */
             virtual void RespondToHit(const SimCore::DetonationMessage& message,
-               const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+               const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force,
                const osg::Vec3& location);
 
             /**
-             * Gives a local entity an opportunity to filter out certain types of damage or 
-             * take less/more damage from specific munition types. The incoming damage is 'normalized' 
+             * Gives a local entity an opportunity to filter out certain types of damage or
+             * take less/more damage from specific munition types. The incoming damage is 'normalized'
              * between 0.0 (none) to 1.0 (all). Called from MunitionsComonent::ProcessDetonationMessage()
-             * via the DamageHelper in response to a local entity being hit by a direct or indirect fire. 
+             * via the DamageHelper in response to a local entity being hit by a direct or indirect fire.
              * Called before damage or forces have been applied. See RespondToHit().
              */
-            virtual float ValidateIncomingDamage(float incomingDamage, const DetonationMessage& message, 
-               const SimCore::Actors::MunitionTypeActor& munition) 
+            virtual float ValidateIncomingDamage(float incomingDamage, const DetonationMessage& message,
+               const SimCore::Actors::MunitionTypeActor& munition)
             {
                return incomingDamage;
             }
@@ -752,14 +752,14 @@ namespace SimCore
             void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
 
             /// Called once we decided to publish - push our last known values onto the DR helper
-            virtual void SetLastKnownValuesBeforePublish(const osg::Vec3 &pos, const osg::Vec3 &rot);
+            virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
 
          private:
             ///a sub-matrix node just for doing scale on the model.
             dtCore::RefPtr<osg::MatrixTransform> mScaleMatrixNode;
 
             //////////////// DeadReckoning related values
-            // Note that the LastKnown values are stored on the DR helper, but the CURRENT 
+            // Note that the LastKnown values are stored on the DR helper, but the CURRENT
             // values are part of the entity. See the get/set methods for info.
             dtCore::RefPtr<dtGame::DeadReckoningHelper> mDeadReckoningHelper;
             //This is stored on both the entity and the helper because the
@@ -790,7 +790,7 @@ namespace SimCore
             /// The cur damage ratio (0.0 to 1.0 dead). Do not set manually - controlled by the MunitionsComonent when a local entity takes damage
             float mCurDamageRatio;
             /// If true, local actors will automatically attempt to register with the Munitions Component (if one exists). True by default
-            bool mAutoRegisterWithMunitionsComponent; 
+            bool mAutoRegisterWithMunitionsComponent;
 
             /// Environment the entity is specialized in navigating.
             BaseEntityActorProxy::DomainEnum* mDomain;

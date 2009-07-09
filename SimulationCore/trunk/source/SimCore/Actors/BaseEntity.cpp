@@ -19,7 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U.a S. Government may have rights in the software.
 *
-* @author David Guthrie, Curtiss Murphy 
+* @author David Guthrie, Curtiss Murphy
 */
 #include <prefix/SimCorePrefix-src.h>
 
@@ -513,7 +513,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMappingName( const std::string& name )
+      void BaseEntity::SetMappingName(const std::string& name)
       {
          mMappingName = name;
       }
@@ -525,7 +525,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetEntityType( const std::string& entityType )
+      void BaseEntity::SetEntityType(const std::string& entityType)
       {
          mEntityType = entityType;
       }
@@ -571,13 +571,13 @@ namespace SimCore
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
 
-            // Local entities usually need the ability to take damage. So, register with the munitions component. 
+            // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
             {
                SimCore::Components::MunitionsComponent* munitionsComp;
                GetGameActorProxy().GetGameManager()->GetComponentByName
                   (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-               if(munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
+               if (munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
                {
                   munitionsComp->Register(*this, true, GetMaxDamageAmount());
                }
@@ -762,12 +762,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlamesPresent(bool enable)
       {
-         if(mFlamesPresent == enable)
+         if (mFlamesPresent == enable)
             return;
 
-         if(enable)
+         if (enable)
          {
-            if(!mFlamesSystem.valid())
+            if (!mFlamesSystem.valid())
                mFlamesSystem = new dtCore::ParticleSystem;
 
             mFlamesSystem->LoadFile(mFlamesSystemFile, true);
@@ -777,7 +777,7 @@ namespace SimCore
             Components::ParticleInfoAttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mFlamesSystem,&attrs);
 
-            if(mFireLightID == 0 && GetGameActorProxy().GetGameManager() != NULL )
+            if (mFireLightID == 0 && GetGameActorProxy().GetGameManager() != NULL)
             {
                // HACK: Add lights with copied code
                SimCore::Components::RenderingSupportComponent* renderComp;
@@ -785,7 +785,7 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-               if( renderComp != NULL )
+               if (renderComp != NULL)
                {
                   SimCore::Components::RenderingSupportComponent::DynamicLight* dl =
                      renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
@@ -797,13 +797,13 @@ namespace SimCore
          }
          else
          {
-            if(mFlamesSystem.get())
+            if (mFlamesSystem.get())
             {
                UnregisterParticleSystem(*mFlamesSystem);
                RemoveChild(mFlamesSystem.get());
                mFlamesSystem = NULL;
             }
-            if( mFireLightID != 0 && GetGameActorProxy().GetGameManager() != NULL )
+            if (mFireLightID != 0 && GetGameActorProxy().GetGameManager() != NULL)
             {
                // HACK: Remove the fire light since a NULL target does not remove it.
                SimCore::Components::RenderingSupportComponent* renderComp;
@@ -811,9 +811,9 @@ namespace SimCore
                   SimCore::Components::RenderingSupportComponent::DEFAULT_NAME,
                   renderComp);
 
-               if( renderComp != NULL )
+               if (renderComp != NULL)
                {
-                  renderComp->RemoveDynamicLight( mFireLightID );
+                  renderComp->RemoveDynamicLight(mFireLightID);
                }
                mFireLightID = 0;
             }
@@ -824,12 +824,12 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetEngineSmokeOn(bool enable)
       {
-         if(mEngineSmokeOn == enable)
+         if (mEngineSmokeOn == enable)
             return;
 
-         if(enable)
+         if (enable)
          {
-            if(!mEngineSmokeSystem.valid())
+            if (!mEngineSmokeSystem.valid())
                mEngineSmokeSystem = new dtCore::ParticleSystem;
 
             mEngineSmokeSystem->LoadFile(mEngineSmokeSystemFile, true);
@@ -839,46 +839,46 @@ namespace SimCore
 
             mEngineSmokeSystem->SetTransform(xform, dtCore::Transformable::REL_CS);
             mEngineSmokeSystem->SetEnabled(enable);
-            mEngineSmokeOn = enable;
          }
          else
          {
-            if(mEngineSmokeSystem.valid())
+            if (mEngineSmokeSystem.valid())
             {
                RemoveChild(mEngineSmokeSystem.get());
                mEngineSmokeSystem = NULL;
             }
          }
+         mEngineSmokeOn = enable;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetSmokePlumePresent(bool enable)
       {
-         if(mSmokePlumePresent == enable)
+         if (mSmokePlumePresent == enable)
             return;
 
-         if(enable)
+         if (enable)
          {
-            if(!mSmokePlumesSystem.valid())
+            if (!mSmokePlumesSystem.valid())
                mSmokePlumesSystem = new dtCore::ParticleSystem;
 
             mSmokePlumesSystem->LoadFile(mSmokePlumesSystemFile, true);
             mSmokePlumesSystem->SetEnabled(enable);
             AddChild(mSmokePlumesSystem.get());
-            mSmokePlumePresent = enable;
 
             Components::ParticleInfoAttributeFlags attrs = {true,true};
             RegisterParticleSystem(*mSmokePlumesSystem,&attrs);
          }
          else
          {
-            if(mSmokePlumesSystem.valid())
+            if (mSmokePlumesSystem.valid())
             {
                UnregisterParticleSystem(*mSmokePlumesSystem);
                RemoveChild(mSmokePlumesSystem.get());
                mSmokePlumesSystem = NULL;
             }
          }
+         mSmokePlumePresent = enable;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -1040,11 +1040,11 @@ namespace SimCore
          SetLastKnownTranslation(pos);
          SetLastKnownRotation(rot);
 
-         //SetLastKnownVelocityVector(GetCurrentVelocity());   
+         //SetLastKnownVelocityVector(GetCurrentVelocity());
          //SetLastKnownAngularVelocity(GetCurrentAngularVelocity());
          //SetLastKnownAcceleration(GetCurrentAcceleration());
 
-         // Linear Velocity & acceleration - push the current value to the Last Known 
+         // Linear Velocity & acceleration - push the current value to the Last Known
          if (mPublishLinearVelocity)
          {
             osg::Vec3 velocity = GetCurrentVelocity();
@@ -1059,12 +1059,12 @@ namespace SimCore
             SetLastKnownAcceleration(GetCurrentAcceleration());
          }
 
-         // Angular Velocity - push the current value to the Last Known 
+         // Angular Velocity - push the current value to the Last Known
          if (mPublishAngularVelocity)
          {
             osg::Vec3 angularVelocity = GetCurrentAngularVelocity();
             // If the value is very close to 0, set it to zero to prevent warbling
-            if (angularVelocity.length() < 0.1) 
+            if (angularVelocity.length() < 0.1)
                SetLastKnownAngularVelocity(osg::Vec3(0.f, 0.f, 0.f));
             else
                SetLastKnownAngularVelocity(angularVelocity);
@@ -1097,7 +1097,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMunitionDamageTableName( const std::string& tableName )
+      void BaseEntity::SetMunitionDamageTableName(const std::string& tableName)
       {
          mMunitionTableName = tableName;
       }
@@ -1185,7 +1185,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetFrozen( bool frozen )
+      void BaseEntity::SetFrozen(bool frozen)
       {
          mIsFrozen = frozen;
       }
@@ -1198,12 +1198,12 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::RespondToHit(const DetonationMessage& message,
-         const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+         const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force,
          const osg::Vec3& location)
       {
          // An opportunity to respond to damage. Only called on local entities that have been
          // damaged by a munition hit of some sort. Damage has already been
-         // applied and published by the time this method is called. We still need to 
+         // applied and published by the time this method is called. We still need to
          // apply physics forces though in case it's a physically modeled entity.
 
          // check mCurDamageRatio if you need to know how damaged you are.
@@ -1211,7 +1211,7 @@ namespace SimCore
          if (force.length2() > 0.0f)
          {
             // Apply an instantaneous impulse force to the entity
-            ApplyForce(force, location, true); 
+            ApplyForce(force, location, true);
          }
       }
 
