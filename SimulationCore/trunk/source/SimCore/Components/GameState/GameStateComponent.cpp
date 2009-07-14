@@ -89,12 +89,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void GameStateComponent::SendGameStateChangedMessage(const GameState::Type& oldState, const GameState::Type& newState)
       {
-         dtCore::RefPtr<dtGame::Message> msg = GetGameManager()->GetMessageFactory().CreateMessage(MessageType::GAME_STATE_CHANGED);
-         GameStateChangedMessage &gscm = static_cast<GameStateChangedMessage&>(*msg);
-         gscm.SetOldState(oldState);
-         gscm.SetNewState(newState);
+         dtCore::RefPtr<GameStateChangedMessage> gscm;
+         GetGameManager()->GetMessageFactory().CreateMessage(MessageType::GAME_STATE_CHANGED, gscm);
+         gscm->SetOldState(oldState);
+         gscm->SetNewState(newState);
          LOG_INFO("Changing game state to: " + newState.GetName());
-         GetGameManager()->SendMessage(gscm);
+         GetGameManager()->SendMessage(*gscm);
       }
 
       //////////////////////////////////////////////////////////////////////////

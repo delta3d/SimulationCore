@@ -78,7 +78,7 @@ namespace NetDemo
       //dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
       //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
       //int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
-      const std::string gameName = "NetDemo";// configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+      static const std::string gameName = "NetDemo";// configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
       int gameVersion = 1; //dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.GameVersion", "1"));
       //const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
 
