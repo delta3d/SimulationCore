@@ -596,7 +596,15 @@ namespace SimCore
          {
             ProcessTick(static_cast<const dtGame::TickMessage&>(msg));
          }
-         else if(msg.GetMessageType() == SimCore::MessageType::NIGHT_VISION)
+         else if (msg.GetMessageType() == dtGame::MessageType::SYSTEM_FRAME_SYNCH)
+         {
+            // Compute the dynamic lights position AFTER entities and the camera final positions are done
+            if (mEnableDynamicLights)
+            {
+               UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
+            }
+         }
+         else if (msg.GetMessageType() == SimCore::MessageType::NIGHT_VISION)
          {
             if(mNVGS.valid())
             {
@@ -649,11 +657,6 @@ namespace SimCore
 
          // Should mStaticTerrainPhysicsEnabled & mEnableCullVisitor be mutually exclusive?
 
-
-         if(mEnableDynamicLights)
-         {
-           UpdateDynamicLights(float(static_cast<const dtGame::TickMessage&>(msg).GetDeltaSimTime()));
-         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
