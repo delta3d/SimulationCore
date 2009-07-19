@@ -877,7 +877,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill)
+      void Platform::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
       {
          BaseClass::GetPartialUpdateProperties(propNamesToFill);
 
