@@ -298,7 +298,7 @@ namespace SimCore
          SetLastKnownAngularVelocity(entity->GetLastKnownAngularVelocity());
          SetLastKnownAcceleration(entity->GetLastKnownAcceleration());
 
-         GetGameActorProxy().NotifyActorUpdate();
+         GetGameActorProxy().NotifyFullActorUpdate();
       }
 
       //////////////////////////////////////////////////////////////////////////////

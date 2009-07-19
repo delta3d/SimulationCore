@@ -252,9 +252,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
+      void HumanWithPhysicsActor::GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill)
       {
-         SimCore::Actors::BaseEntity::FillPartialUpdatePropertyVector(propNamesToFill);
+         SimCore::Actors::BaseEntity::GetPartialUpdateProperties(propNamesToFill);
          propNamesToFill.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
       }
 

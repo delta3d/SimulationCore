@@ -877,9 +877,9 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
+      void Platform::GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill)
       {
-         BaseClass::FillPartialUpdatePropertyVector(propNamesToFill);
+         BaseClass::GetPartialUpdateProperties(propNamesToFill);
 
          if( mArticHelper.valid() && mArticHelper->IsDirty() )
          {

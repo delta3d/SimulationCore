@@ -341,7 +341,7 @@ namespace DriverDemo
             if( ! mVehicle->IsRemote() )
             {
                mVehicle->SetHeadLightsEnabled( ! mVehicle->IsHeadLightsEnabled() );
-               std::vector<std::string> paramNames;
+               std::vector<dtUtil::RefString> paramNames;
                paramNames.push_back(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
                mVehicle->GetGameActorProxy().NotifyPartialActorUpdate( paramNames );
             }
