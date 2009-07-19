@@ -746,7 +746,7 @@ namespace SimCore
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
             ///virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
-            virtual void GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill);
+            virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
 
             /// Overridden to remove Pos & rotation. See method for explanation.
             virtual void NotifyFullActorUpdate();
