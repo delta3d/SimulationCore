@@ -99,6 +99,20 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void PlatformActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
+      {
+         BaseClass::GetPartialUpdateProperties(propNamesToFill);
+
+         Platform* platform;
+         GetActor(platform);
+
+         if(platform->GetArticulationHelper() != NULL && platform->GetArticulationHelper()->IsDirty() )
+         {
+            propNamesToFill.push_back(platform->GetArticulationHelper()->GetArticulationArrayPropertyName());
+            platform->GetArticulationHelper()->SetDirty(false);
+         }
+      }
+      ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildPropertyMap()
       {
          Platform &e = static_cast<Platform&>(GetGameActor());
@@ -876,17 +890,6 @@ namespace SimCore
          return forceUpdate;
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
-      void Platform::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
-      {
-         BaseClass::GetPartialUpdateProperties(propNamesToFill);
-
-         if( mArticHelper.valid() && mArticHelper->IsDirty() )
-         {
-            propNamesToFill.push_back( mArticHelper->GetArticulationArrayPropertyName() );
-            mArticHelper->SetDirty(false);
-         }
-      }
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::ShouldBeVisible(const SimCore::VisibilityOptions& options)
       {

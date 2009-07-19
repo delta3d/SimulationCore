@@ -147,6 +147,10 @@ namespace SimCore
              */
             virtual bool IsPlaceable()  { return true; }
 
+            /// Called by tick local when sending a partial update to get a list of the properties to send.
+            ///virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
+            virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
+
             /**
              * Build the properties common to all BaseEntity objects
              */
@@ -743,10 +747,6 @@ namespace SimCore
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-
-            /// Called by tick local when sending a partial update to get a list of the properties to send.
-            ///virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
-            virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
 
             /// Overridden to remove Pos & rotation. See method for explanation.
             virtual void NotifyFullActorUpdate();
