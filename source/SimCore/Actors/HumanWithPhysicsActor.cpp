@@ -252,13 +252,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill)
-      {
-         SimCore::Actors::BaseEntity::GetPartialUpdateProperties(propNamesToFill);
-         propNamesToFill.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
-      }
-
-      ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::SetMovementTransform(const osg::Vec3& movement)
       {
 #ifdef AGEIA_PHYSICS
