@@ -154,6 +154,17 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntityActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
+      {
+         propNamesToFill.reserve(propNamesToFill.size() + 4U);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
+      }
+
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
       {
          BaseEntity &e = static_cast<BaseEntity&>(GetGameActor());
@@ -967,16 +978,6 @@ namespace SimCore
          }
 
          GetGameActorProxy().NotifyPartialActorUpdate(finalPropNameList);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
-      {
-         propNamesToFill.reserve(propNamesToFill.size() + 4U);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

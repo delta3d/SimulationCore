@@ -120,6 +120,9 @@ namespace SimCore
              */
             virtual void CreateActor();
 
+            /// Called by tick local when sending a partial update to get a list of the properties to send.
+            virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
+
             /**
              * Build the properties common to all platform objects
              */
@@ -302,9 +305,6 @@ namespace SimCore
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-
-            /// Called by tick local when sending a partial update to get a list of the properties to send.
-            virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
 
             osg::Vec3 mMuzzleFlashPosition;
 
