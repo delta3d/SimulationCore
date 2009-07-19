@@ -225,7 +225,7 @@ namespace SimCore
             //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
             //propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DEAD_RECKONING_ALGORITHM);
 
-            std::vector<std::string> propNames;
+            std::vector<dtUtil::RefString> propNames;
             propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE);
             propNames.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_CUR_DAMAGE_RATIO);
             mEntity->GetGameActorProxy().NotifyPartialActorUpdate(propNames);

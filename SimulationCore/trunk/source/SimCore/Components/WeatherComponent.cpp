@@ -530,7 +530,7 @@ namespace SimCore
                }
             }
             // Notify the app that the environment actor has changed.
-            mEnvironmentActor->GetGameActorProxy().NotifyActorUpdate();
+            mEnvironmentActor->GetGameActorProxy().NotifyFullActorUpdate();
          }
          else
          {

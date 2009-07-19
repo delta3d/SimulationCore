@@ -304,7 +304,7 @@ namespace SimCore
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
-            virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
+            virtual void GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill);
 
             osg::Vec3 mMuzzleFlashPosition;
 

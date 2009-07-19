@@ -942,9 +942,37 @@ namespace SimCore
                GetName().c_str(), GetUniqueId().ToString().c_str());
          }
       }
+
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill)
+      void BaseEntity::NotifyFullActorUpdate()
       {
+         // If we send pos & rot out in an update, then that sometimes causes problems 
+         // on remote items. Network components usually pick up their data on tick local, which 
+         // sends a message to the DefaultmessageProcessorComponent. However, before that message
+         // gets processed, the tick-remote gets picked up by the DeadReckoningComponent and moves
+         // the 
+         std::vector<dtDAL::ActorProperty* > allProperties;
+         GetGameActorProxy().GetPropertyList(allProperties);
+
+         std::vector<dtUtil::RefString> finalPropNameList;
+         finalPropNameList.reserve(allProperties.size());
+
+         for (size_t i = 0; i < allProperties.size(); ++i)
+         {
+            if (allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_ROTATION &&
+               allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_TRANSLATION)
+            {
+               finalPropNameList.push_back(allProperties[i]->GetName());
+            }
+         }
+
+         GetGameActorProxy().NotifyPartialActorUpdate(finalPropNameList);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::GetPartialUpdateProperties(std::vector<std::string>& propNamesToFill)
+      {
+         propNamesToFill.reserve(propNamesToFill.size() + 4U);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
@@ -1016,21 +1044,14 @@ namespace SimCore
          {
             SetLastKnownValuesBeforePublish(pos, rot);
 
-            dtCore::RefPtr<dtGame::Message> msg = GetGameActorProxy().GetGameManager()->
-               GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
-
             if (fullUpdate)
             {
-               GetGameActorProxy().PopulateActorUpdate(static_cast<dtGame::ActorUpdateMessage&>(*msg));
+               GetGameActorProxy().NotifyFullActorUpdate();
             }
             else
             {
-               std::vector<std::string> propNames;
-               FillPartialUpdatePropertyVector(propNames);
-               GetGameActorProxy().PopulateActorUpdate(static_cast<dtGame::ActorUpdateMessage&>(*msg), propNames);
+               GetGameActorProxy().NotifyPartialActorUpdate();
             }
-
-            GetGameActorProxy().GetGameManager()->SendMessage(*msg);
          }
       }
 
