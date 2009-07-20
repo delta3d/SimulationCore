@@ -349,6 +349,7 @@ namespace SimCore
             {
                LOG_WARNING("An actor was found, but is not an IGEnvironmentActorProxy");
                LOG_DEBUG("The type of the actor is: " + proxy->GetActorType().GetName());
+               SetEphemerisEnvironment(NULL);
             }
             else
             {
