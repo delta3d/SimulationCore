@@ -250,7 +250,7 @@ namespace SimCore
       {
          dtCore::Timer_t t = dtCore::System::GetInstance().GetSimulationClockTime();
          dtUtil::DateTime dt = GetDateTime();
-         dt.SetTime(time_t(t / 1000000));
+         dt.SetTime(time_t(t / dtCore::Timer_t(1000000)));
          mEnvironment->SetDateTime(dt);
 
          OnTimeChanged();
@@ -463,7 +463,7 @@ namespace SimCore
          {
             InitLensFlare();
          }
-         
+
          mLensFlare->GetOSGNode()->setNodeMask(b ? 0xFFFFFFFF : 0x0);
       }
 
