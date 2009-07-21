@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -61,14 +61,6 @@
 
 #include <UnitTestMain.h>
 
-#ifdef DELTA_WIN32
-#include <dtUtil/mswin.h>
-#define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-#include <unistd.h>
-#define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 
 namespace SimCore
@@ -77,7 +69,7 @@ namespace SimCore
    {
 
       //////////////////////////////////////////////////////////////
-      // Testable Sub-classed Component 
+      // Testable Sub-classed Component
       // (allows public access to protected functions)
       //////////////////////////////////////////////////////////////
       class TestWeatherComponent : public WeatherComponent
@@ -86,12 +78,12 @@ namespace SimCore
 
             TestWeatherComponent();
 
-            Actors::DayTimeActorProxy* GetDayTimeActor() 
+            Actors::DayTimeActorProxy* GetDayTimeActor()
             {
                return WeatherComponent::GetDayTimeActor();
             }
 
-            Actors::UniformAtmosphereActorProxy* GetAtmosphereActor() 
+            Actors::UniformAtmosphereActorProxy* GetAtmosphereActor()
             {
                return WeatherComponent::GetAtmosphereActor();
             }
@@ -156,7 +148,7 @@ namespace SimCore
          SimCore::Actors::CloudType* mCloudType;
          SimCore::Actors::PrecipitationType* mPrecipType;
 
-         bool operator == (const AtmosphereParams &rhs) const 
+         bool operator == (const AtmosphereParams &rhs) const
          {
             return mVisibility      == rhs.mVisibility      &&
                    mCloudBaseHeight == rhs.mCloudBaseHeight &&
@@ -244,7 +236,7 @@ namespace SimCore
          try
          {
             dtCore::System::GetInstance().Start();
-            
+
             mApp = &GetGlobalApplication();
 
             mGM = new dtGame::GameManager(*mApp->GetScene());
@@ -277,7 +269,7 @@ namespace SimCore
          {
             mGM->DeleteAllActors(true);
          }
-         
+
          mGM = NULL;
          mMachineInfo = NULL;
       }
@@ -310,34 +302,34 @@ namespace SimCore
 
          CPPUNIT_ASSERT_MESSAGE("DayTimeActor should be valid", actor != NULL );
 
-         CPPUNIT_ASSERT_MESSAGE("Year should be 0", 
+         CPPUNIT_ASSERT_MESSAGE("Year should be 0",
             actor->GetYear() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("Month should be 0", 
+         CPPUNIT_ASSERT_MESSAGE("Month should be 0",
             actor->GetMonth() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("Day should be the 0", 
+         CPPUNIT_ASSERT_MESSAGE("Day should be the 0",
             actor->GetDay() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("Hour should be 0", 
+         CPPUNIT_ASSERT_MESSAGE("Hour should be 0",
             actor->GetHour() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("Minute should be 0", 
+         CPPUNIT_ASSERT_MESSAGE("Minute should be 0",
             actor->GetMinute() == 0 );
-         CPPUNIT_ASSERT_MESSAGE("Second should be 0", 
+         CPPUNIT_ASSERT_MESSAGE("Second should be 0",
             actor->GetSecond() == 0 );
 
          // The following time stamp value was captured from a weather server.
          // 1166207083 == Fri Dec 15 18:24:43 2006
          actor->SetTime(1166207083);
 
-         CPPUNIT_ASSERT_MESSAGE("Year should be 106 (2006-1900)", 
+         CPPUNIT_ASSERT_MESSAGE("Year should be 106 (2006-1900)",
             actor->GetYear() == (2006-1900) );
-         CPPUNIT_ASSERT_MESSAGE("Month should be December (index 11)", 
+         CPPUNIT_ASSERT_MESSAGE("Month should be December (index 11)",
             actor->GetMonth() == 11 );
-         CPPUNIT_ASSERT_MESSAGE("Day should be the 15", 
+         CPPUNIT_ASSERT_MESSAGE("Day should be the 15",
             actor->GetDay() == 15 );
-         CPPUNIT_ASSERT_MESSAGE("Hour should be 18", 
+         CPPUNIT_ASSERT_MESSAGE("Hour should be 18",
             actor->GetHour() == 18 );
-         CPPUNIT_ASSERT_MESSAGE("Minute should be 24", 
+         CPPUNIT_ASSERT_MESSAGE("Minute should be 24",
             actor->GetMinute() == 24 );
-         CPPUNIT_ASSERT_MESSAGE("Second should be 43", 
+         CPPUNIT_ASSERT_MESSAGE("Second should be 43",
             actor->GetSecond() == 43 );
 
          // Test the time zone offset
@@ -359,17 +351,17 @@ namespace SimCore
          // 1166207083 == Fri Dec 15 18:24:43 2006
          actor->SetTime(1166207083);
 
-         CPPUNIT_ASSERT_MESSAGE("Year should still be 106 (2006-1900)", 
+         CPPUNIT_ASSERT_MESSAGE("Year should still be 106 (2006-1900)",
             actor->GetYear() == (2006-1900) );
-         CPPUNIT_ASSERT_MESSAGE("Month should still be December (index 11)", 
+         CPPUNIT_ASSERT_MESSAGE("Month should still be December (index 11)",
             actor->GetMonth() == 11 );
-         CPPUNIT_ASSERT_MESSAGE("Day should still be the 15", 
+         CPPUNIT_ASSERT_MESSAGE("Day should still be the 15",
             actor->GetDay() == 15 );
-         CPPUNIT_ASSERT_MESSAGE("Hour should still be 13", 
+         CPPUNIT_ASSERT_MESSAGE("Hour should still be 13",
             actor->GetHour() == 18 );
-         CPPUNIT_ASSERT_MESSAGE("Minute should still be 24", 
+         CPPUNIT_ASSERT_MESSAGE("Minute should still be 24",
             actor->GetMinute() == 24 );
-         CPPUNIT_ASSERT_MESSAGE("Second should still be 43", 
+         CPPUNIT_ASSERT_MESSAGE("Second should still be 43",
             actor->GetSecond() == 43 );
 
          // Test offsetting the hour out of the 0 to 23 range. This should NOT happen.
@@ -381,7 +373,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::TestAtmosphereActor()      
+      void WeatherComponentTests::TestAtmosphereActor()
       {
          CPPUNIT_ASSERT(mAtmos != NULL);
          Actors::UniformAtmosphereActor* actor = static_cast<Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
@@ -391,83 +383,83 @@ namespace SimCore
          // Note: the tested values are random and have no relevance.
 
          float testValue = 1000.0f;
-         CPPUNIT_ASSERT_MESSAGE("Visibility should NOT be 1000.0", 
+         CPPUNIT_ASSERT_MESSAGE("Visibility should NOT be 1000.0",
             actor->GetVisibilityDistance() != testValue );
          actor->SetVisibilityDistance( testValue );
-         CPPUNIT_ASSERT_MESSAGE("Visibility should be 1000.0", 
+         CPPUNIT_ASSERT_MESSAGE("Visibility should be 1000.0",
             actor->GetVisibilityDistance() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("CloudBaseHeight should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudBaseHeight should be 0.0",
             actor->GetCloudBaseHeight() == 0.0f );
          testValue = 2500.0f;
          actor->SetCloudBaseHeight( testValue );
-         CPPUNIT_ASSERT_MESSAGE("CloudBaseHeight should be 2500.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudBaseHeight should be 2500.0",
             actor->GetCloudBaseHeight() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("CloudTopHeight should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudTopHeight should be 0.0",
             actor->GetCloudTopHeight() == 0.0f );
          testValue = 3600.0f;
          actor->SetCloudTopHeight( testValue );
-         CPPUNIT_ASSERT_MESSAGE("CloudTopHeight should be 3600.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudTopHeight should be 3600.0",
             actor->GetCloudTopHeight() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("CloudThickness should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudThickness should be 0.0",
             actor->GetCloudThickness() == 0.0f );
          testValue = 30.0f;
          actor->SetCloudThickness( testValue );
-         CPPUNIT_ASSERT_MESSAGE("CloudThickness should be 30.0", 
+         CPPUNIT_ASSERT_MESSAGE("CloudThickness should be 30.0",
             actor->GetCloudThickness() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("FogCover should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("FogCover should be 0.0",
             actor->GetFogCover() == 0.0f );
          testValue = 15.0f;
          actor->SetFogCover( testValue );
-         CPPUNIT_ASSERT_MESSAGE("FogCover should be 15.0", 
+         CPPUNIT_ASSERT_MESSAGE("FogCover should be 15.0",
             actor->GetFogCover() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("FogThickness should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("FogThickness should be 0.0",
             actor->GetFogThickness() == 0.0f );
          testValue = 21.0f;
          actor->SetFogThickness( testValue );
-         CPPUNIT_ASSERT_MESSAGE("FogThickness should be 21.0", 
+         CPPUNIT_ASSERT_MESSAGE("FogThickness should be 21.0",
             actor->GetFogThickness() == testValue );
 
-         CPPUNIT_ASSERT_MESSAGE("PrecipitationRate should be 0.0", 
+         CPPUNIT_ASSERT_MESSAGE("PrecipitationRate should be 0.0",
             actor->GetPrecipitationRate() == 0.0f );
          testValue = 63.0f;
          actor->SetPrecipitationRate( testValue );
-         CPPUNIT_ASSERT_MESSAGE("PrecipitationRate should be 63.0", 
+         CPPUNIT_ASSERT_MESSAGE("PrecipitationRate should be 63.0",
             actor->GetPrecipitationRate() == testValue );
 
          testValue = 12.25f;
          actor->SetWindSpeedX( testValue );
-         CPPUNIT_ASSERT_MESSAGE("WindSpeedX should be 12.25", 
+         CPPUNIT_ASSERT_MESSAGE("WindSpeedX should be 12.25",
             actor->GetWindSpeedX() == testValue );
 
          testValue = 13.50f;
          actor->SetWindSpeedY( testValue );
-         CPPUNIT_ASSERT_MESSAGE("WindSpeedY should be 13.50", 
+         CPPUNIT_ASSERT_MESSAGE("WindSpeedY should be 13.50",
             actor->GetWindSpeedY() == testValue );
 
          osg::Vec2 wind( 4.75, 18.92 );
          actor->SetWind( wind );
-         CPPUNIT_ASSERT_MESSAGE("WindSpeedX should be 4.75", 
+         CPPUNIT_ASSERT_MESSAGE("WindSpeedX should be 4.75",
             actor->GetWindSpeedX() == wind[0] );
-         CPPUNIT_ASSERT_MESSAGE("WindSpeedY should be 18.92", 
+         CPPUNIT_ASSERT_MESSAGE("WindSpeedY should be 18.92",
             actor->GetWindSpeedY() == wind[1] );
-         CPPUNIT_ASSERT_MESSAGE("Wind should be [4.75, 18.92]", 
+         CPPUNIT_ASSERT_MESSAGE("Wind should be [4.75, 18.92]",
             actor->GetWind() == wind );
 
-         CPPUNIT_ASSERT_MESSAGE("CloudType should be CLEAR", 
+         CPPUNIT_ASSERT_MESSAGE("CloudType should be CLEAR",
             actor->GetCloudType() == SimCore::Actors::CloudType::CLEAR );
          actor->SetCloudType( SimCore::Actors::CloudType::CIRROCUMULUS );
-         CPPUNIT_ASSERT_MESSAGE("CloudType should be CIRROCUMULUS", 
+         CPPUNIT_ASSERT_MESSAGE("CloudType should be CIRROCUMULUS",
             actor->GetCloudType() == SimCore::Actors::CloudType::CIRROCUMULUS );
 
-         CPPUNIT_ASSERT_MESSAGE("PrecipitationType should be NONE", 
+         CPPUNIT_ASSERT_MESSAGE("PrecipitationType should be NONE",
             actor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::NONE);
          actor->SetPrecipitationType( SimCore::Actors::PrecipitationType::FREEZING_RAIN );
-         CPPUNIT_ASSERT_MESSAGE("PrecipitationType should be FREEZING_RAIN", 
+         CPPUNIT_ASSERT_MESSAGE("PrecipitationType should be FREEZING_RAIN",
             actor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::FREEZING_RAIN );
 
       }
@@ -481,137 +473,136 @@ namespace SimCore
          TestAtmosphereActor();
          TestDayTimeActor();
 
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
 
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
          // Test setting the base elevation (from which fog changes are calculated for the view)
          double testValue = mWeatherComp->GetBaseElevation() + 1000.0;
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW base elevation", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW base elevation",
             mWeatherComp->GetBaseElevation() != testValue );
          mWeatherComp->SetBaseElevation( testValue );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW base elevation", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW base elevation",
             mWeatherComp->GetBaseElevation() == testValue );
 
          // Test setting the max visibility (the horizontal visibility)
          testValue = mWeatherComp->GetMaxVisibility() + 1000.0;
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW max visibility", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW max visibility",
             mWeatherComp->GetMaxVisibility() != testValue );
          mWeatherComp->SetMaxVisibility( testValue );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW max visibility", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW max visibility",
             mWeatherComp->GetMaxVisibility() == testValue );
 
          // Test setting max elevation visibility (the vertical visibility)
          //testValue = mWeatherComp->GetMaxElevationVisibility() + 1000.0;
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW max elevation visibility", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW max elevation visibility",
          //   mWeatherComp->GetMaxElevationVisibility() != testValue );
          //mWeatherComp->SetMaxElevationVisibility( testValue );
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW max elevation visibility", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW max elevation visibility",
          //   mWeatherComp->GetMaxElevationVisibility() == testValue );
 
          // Test setting near
          testValue = mWeatherComp->GetNearClipPlane() + 1000.0;
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW near clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW near clip distance",
             mWeatherComp->GetNearClipPlane() != (float)testValue );
          mWeatherComp->SetNearClipPlane( (float)testValue );
          CPPUNIT_ASSERT_DOUBLES_EQUAL( (float)testValue, mWeatherComp->GetNearClipPlane(), 0.0001 );
 
          // Test setting far
          testValue = mWeatherComp->GetFarClipPlane() + 1000.0;
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW far clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW far clip distance",
             mWeatherComp->GetFarClipPlane() != (float)testValue );
          mWeatherComp->SetFarClipPlane( (float)testValue );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW far clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW far clip distance",
             mWeatherComp->GetFarClipPlane() == (float)testValue );
 
          // Test setting near and far
          testValue = mWeatherComp->GetNearClipPlane() + 1000.0f;
          float testValue2 = mWeatherComp->GetFarClipPlane() + 1000.0f;
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW near clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW near clip distance",
             mWeatherComp->GetNearClipPlane() != (float)testValue );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW far clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a NEW far clip distance",
             mWeatherComp->GetFarClipPlane() != testValue2 );
          mWeatherComp->SetNearFarClipPlanes( (float)testValue, testValue2 );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW near clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW near clip distance",
             mWeatherComp->GetNearClipPlane() == (float)testValue );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW far clip distance", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have a NEW far clip distance",
             mWeatherComp->GetFarClipPlane() == testValue2 );
       }
 
       //////////////////////////////////////////////////////////////
       void WeatherComponentTests::TestMessageProcessing()
       {
-         return;
          // Test actor create messages
          // --- Test the Environment create message
-         
+
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
          // --- Test the DayTime create message
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() == NULL );
          Actors::DayTimeActor* actor = static_cast<Actors::DayTimeActor*> (mDayTime->GetActor());
          actor->SetTime(1166207083);
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() != NULL );
 
          // --- Test the Atmosphere create message
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
          mGM->AddActor( *mAtmos, false, false );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() != NULL );
 
          // Prepare to capture and test the time set on
          // the weather component's environment actor.
          int year, month, day, hour, minute, second;
          year = month = day = hour = minute = second = 0;
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero year", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero year",
             actor->GetYear() != year );
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero month", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero month",
             actor->GetMonth() != month );
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero day", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero day",
             actor->GetDay() != day );
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero hour", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero hour",
             actor->GetHour() != hour );
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero minute", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero minute",
             actor->GetMinute() != minute );
-         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero second", 
+         CPPUNIT_ASSERT_MESSAGE("DayTimeActor SHOULD have a non-zero second",
             actor->GetSecond() != second );
 
          // Make sure the environment actor was updated with the time contained
          // within the DayTimeActor that was captured.
          //const dtActors::BasicEnvironmentActorProxy* env =
          //   dynamic_cast<const dtActors::BasicEnvironmentActorProxy*> (mWeatherComp->GetEphemerisEnvironment());
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an IEnvGameActorProxy", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an IEnvGameActorProxy",
          //   env != NULL );
 
-         //const dtActors::BasicEnvironmentActor* envActor = 
+         //const dtActors::BasicEnvironmentActor* envActor =
          //   dynamic_cast<const dtActors::BasicEnvironmentActor*> (&env->GetGameActor());
-         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent's IEnvGameActorProxy SHOULD have an EnvironmentActor", 
+         //CPPUNIT_ASSERT_MESSAGE("WeatherComponent's IEnvGameActorProxy SHOULD have an EnvironmentActor",
          //   envActor != NULL );
 
          // --- Test the captured values
          /*envActor->GetTimeAndDate(year, month, day, hour, minute, second);
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct year", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct year",
             actor->GetYear() == year-1900 );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct month", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct month",
             actor->GetMonth() == month-1 );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct day", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct day",
             actor->GetDay() == day );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct hour", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct hour",
             actor->GetHour() == hour );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct minute", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct minute",
             actor->GetMinute() == minute );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct second", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent's environment SHOULD be set to the correct second",
             actor->GetSecond() == second );*/
 
          // Run through some atmosphere change tests.
@@ -625,46 +616,48 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          // --- Test the DayTime delete message
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() == NULL );
 
          // --- Test the Atmosphere delete message
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
 
          // Add all actors again to test reset
          // --- Test the Environment create message
          mWeatherComp->SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>(mEnv->GetActor()));
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an EnvironmentActor",
             mWeatherComp->GetEphemerisEnvironment() != NULL );
 
          // --- Test the DayTime create message
          mGM->AddActor( *mDayTime, false, false );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an DayTimeActor",
             mWeatherComp->GetDayTimeActor() != NULL );
 
          // --- Test the Atmosphere create message
          mGM->AddActor( *mAtmos, false, false );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor", 
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() != NULL );
 
 
 
          // Clear the component
          mWeatherComp->Clear();
-         
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor", 
+
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an AtmosphereActor",
             mWeatherComp->GetAtmosphereActor() == NULL );
-         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have a DayTimeActor", 
-            mWeatherComp->GetDayTimeActor() == NULL );
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should still have a DayTimeActor.  See the comments in the code.",
+            mWeatherComp->GetDayTimeActor() != NULL );
+         CPPUNIT_ASSERT_MESSAGE("WeatherComponent should NOT have an Environment Actor",
+            mWeatherComp->GetEphemerisEnvironment() == NULL );
 
 
 
          // Simulate the environment loading from a map file
          dtCore::System::GetInstance().Step();
-         RefPtr<dtGame::Message> msg = 
+         RefPtr<dtGame::Message> msg =
             mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_LOADED );
          mGM->SendMessage( *msg );
          dtCore::System::GetInstance().Step();
@@ -676,7 +669,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the ORIGINAL AtmosphereActor",
             mAtmos.get() == mWeatherComp->GetAtmosphereActor() );
 
-         SimCore::Actors::UniformAtmosphereActor* atmos = 
+         SimCore::Actors::UniformAtmosphereActor* atmos =
             dynamic_cast<SimCore::Actors::UniformAtmosphereActor*> (mAtmos->GetActor());
 
          // Test update changes to the original atmosphere actor
@@ -706,7 +699,7 @@ namespace SimCore
             &SimCore::Actors::CloudType::ALTOSTRATUS, &SimCore::Actors::PrecipitationType::HAIL};
 
          // Ensure that the values exist
-         std::cout << "NOTE: warning will follow as expected: testing replacement of old atmosphere actor with a newly discovered one" 
+         std::cout << "NOTE: warning will follow as expected: testing replacement of old atmosphere actor with a newly discovered one"
             << std::endl;
          TestEnvironmentValues( params2, *atmos );
 
@@ -719,7 +712,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::TestEnvironmentValues( 
+      void WeatherComponentTests::TestEnvironmentValues(
          const AtmosphereParams& params, SimCore::Actors::UniformAtmosphereActor& atmos )
       {
          // Create the update message
@@ -727,7 +720,7 @@ namespace SimCore
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED, msg);
 
          // Ensure message is valid
-         CPPUNIT_ASSERT_MESSAGE( "GameManager could not create an ActorUpdateMessage.", 
+         CPPUNIT_ASSERT_MESSAGE( "GameManager could not create an ActorUpdateMessage.",
             msg.valid() );
 
          // Fill the message with the updated data
@@ -749,20 +742,20 @@ namespace SimCore
 
          //// Test the resulting visibility
          //float visibility = env->GetVisibility()/1000.0f; // convert meters to kilometers
-         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's dtCoreEnvironment SHOULD have the correct visibility", 
+         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's dtCoreEnvironment SHOULD have the correct visibility",
          //   visibility == params.mVisibility );
 
          //// The following lines test unused/incomplete features:
-         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct visibility classification", 
+         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct visibility classification",
          //   weather.GetBasicVisibilityType() == mWeatherComp->ClassifyVisibility( atmos ) );
-         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct wind classification", 
+         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct wind classification",
          //   weather.GetBasicWindType() == mWeatherComp->ClassifyWind( atmos ) );
-         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct cloud classification", 
+         //CPPUNIT_ASSERT_MESSAGE( "WeatherComponent's Weather SHOULD have the correct cloud classification",
          //   weather.GetBasicCloudType() == mWeatherComp->ClassifyClouds( atmos ) );
       }
 
       //////////////////////////////////////////////////////////////
-      void WeatherComponentTests::AssignAtmosphereValues( 
+      void WeatherComponentTests::AssignAtmosphereValues(
          const AtmosphereParams& params, SimCore::Actors::UniformAtmosphereActor& actor )
       {
          actor.SetVisibilityDistance( params.mVisibility );
@@ -778,7 +771,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////
-      void WeatherComponentTests::GetAtmosphereValues(AtmosphereParams &params, 
+      void WeatherComponentTests::GetAtmosphereValues(AtmosphereParams &params,
          const SimCore::Actors::UniformAtmosphereActor& actor)
       {
          params.mVisibility      =  actor.GetVisibilityDistance();
@@ -798,7 +791,7 @@ namespace SimCore
       {
          TestWeatherComponent &weatherComp = *mWeatherComp;
 
-         CPPUNIT_ASSERT_MESSAGE("Updates on the weather component should be enabled by default", 
+         CPPUNIT_ASSERT_MESSAGE("Updates on the weather component should be enabled by default",
             weatherComp.GetUpdatesEnabled());
 
          mWeatherComp->SetUpdatesEnabled(false);
@@ -810,7 +803,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("WeatherComponent SHOULD have the ORIGINAL AtmosphereActor",
             mAtmos.get() == weatherComp.GetAtmosphereActor());
 
-         SimCore::Actors::UniformAtmosphereActor &atmos = 
+         SimCore::Actors::UniformAtmosphereActor &atmos =
             static_cast<SimCore::Actors::UniformAtmosphereActor&>(mAtmos->GetGameActor());
 
          // Test update changes to the original atmosphere actor
@@ -819,17 +812,17 @@ namespace SimCore
             &SimCore::Actors::CloudType::CIRRUS, &SimCore::Actors::PrecipitationType::RAIN};
 
          AssignAtmosphereValues(params, atmos);
-      
+
          dtCore::RefPtr<dtGame::ActorUpdateMessage> msg;
          mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED, msg);
 
          // Ensure message is valid
-         CPPUNIT_ASSERT_MESSAGE("GameManager could not create an ActorUpdateMessage.", 
+         CPPUNIT_ASSERT_MESSAGE("GameManager could not create an ActorUpdateMessage.",
             msg.valid());
 
          // Fill the message with the updated data
          msg->SetAboutActorId(atmos.GetUniqueId());
-         
+
          // Send the message
          mGM->SendMessage(*msg);
          dtCore::System::GetInstance().Step();

@@ -115,6 +115,7 @@ namespace SimCore
       void WeatherComponent::Clear()
       {
          mAtmosphere = NULL;
+         mEnvironmentActor = NULL;
          // Do not set the day time actor to NULL because one
          // is needed if the simulation is not connected to a
          // "Time Master". If a "Time Master" is connected, the
@@ -272,8 +273,7 @@ namespace SimCore
          const dtGame::MessageType& type = msg.GetMessageType();
 
          // Avoid extra comparisons as this is a mere tick message
-         if(type == dtGame::MessageType::TICK_LOCAL ||
-            type == dtGame::MessageType::TICK_REMOTE)
+         if(type == dtGame::MessageType::TICK_LOCAL)
          {
             if(mEnvironmentActor.valid())
             {
@@ -497,7 +497,7 @@ namespace SimCore
                {
                   if(mPrecipEffect.valid())
                   {
-                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->removeChild(mPrecipEffect.get());
+                     mEnvironmentActor->GetOSGNode()->asGroup()->removeChild(mPrecipEffect.get());
                      mPrecipEffect = NULL;
                   }
                   toContinue = false;
@@ -513,7 +513,7 @@ namespace SimCore
 
                      SetStateSet(mPrecipEffect.get());
 
-                     GetGameManager()->GetEnvironmentActor()->GetActor()->GetOSGNode()->asGroup()->addChild(mPrecipEffect.get());
+                     mEnvironmentActor->GetOSGNode()->asGroup()->addChild(mPrecipEffect.get());
                   }
 
                   if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::FREEZING_RAIN
@@ -666,16 +666,6 @@ namespace SimCore
             }
 
             UpdateDayTime();
-         }
-         else if(type == *dtActors::EngineActorRegistry::WEATHER_ENVIRONMENT_ACTOR_TYPE)
-         {
-            SimCore::Actors::IGEnvironmentActorProxy* igproxy =
-               dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(actor);
-            if(igproxy != NULL)
-            {
-               SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>
-                  (igproxy->GetActor()));
-            }
          }
       }
    }

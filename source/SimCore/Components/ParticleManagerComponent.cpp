@@ -390,11 +390,11 @@ namespace SimCore
                return;
             }
 
-            Actors::IGEnvironmentActorProxy* envProxy =
-               static_cast<Actors::IGEnvironmentActorProxy*> (env);
+            SimCore::Actors::IGEnvironmentActorProxy* envProxy =
+               dynamic_cast<Actors::IGEnvironmentActorProxy*> (env);
 
-            Actors::IGEnvironmentActor* envActor = static_cast<Actors::IGEnvironmentActor*>
-               (envProxy->GetActor());
+            SimCore::Actors::IGEnvironmentActor* envActor;
+            envProxy->GetActor(envActor);
 
             // Capture the wind force that must be applied to new
             // particle systems registered to this component.
@@ -403,10 +403,10 @@ namespace SimCore
             // Update the physics particles wind....
             std::vector<dtDAL::ActorProxy*> toFill;
             GetGameManager()->FindActorsByClassName("NxAgeiaParticleSystemActor", toFill);
-            if(!toFill.empty())
+            if (!toFill.empty())
             {
                std::vector<dtDAL::ActorProxy*>::iterator toFillInIter = toFill.begin();
-               for(; toFillInIter != toFill.end(); ++toFillInIter)
+               for (; toFillInIter != toFill.end(); ++toFillInIter)
                {
                    PhysicsParticleSystemActor* currentParticleSystem = static_cast<PhysicsParticleSystemActor*>((*toFillInIter)->GetActor());
                    currentParticleSystem->SetOverTimeForceVecMin(mWind);
@@ -416,7 +416,7 @@ namespace SimCore
          }
 
          // Is this a global application state change?
-         else if( msgType == dtGame::MessageType::INFO_MAP_UNLOADED )
+         else if (msgType == dtGame::MessageType::INFO_MAP_UNLOADED)
          {
             // Release all particle info only, it will not remove the timer.
             // The timer will be removed on GameManager shutdown.
@@ -425,7 +425,7 @@ namespace SimCore
          // Restarts is a special state change, slightly different from
          // complete shutdown. Reset is similar to Clear but is intended
          // to re-initialize this component as if it were new.
-         else if( msgType == dtGame::MessageType::INFO_RESTARTED )
+         else if (msgType == dtGame::MessageType::INFO_RESTARTED)
          {
             Reset();
          }
