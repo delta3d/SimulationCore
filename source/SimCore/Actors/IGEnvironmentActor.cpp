@@ -243,6 +243,9 @@ namespace SimCore
          mEnvironment->SetDateTime(dt);
 
          OnTimeChanged();
+
+         dtUtil::Log::GetInstance("IGEnvironmentActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG, __FILE__, "Sim time set to:%s",
+            dt.ToString(dtUtil::DateTime::TimeFormat::CALENDAR_DATE_AND_TIME_FORMAT).c_str());
       }
 
       /////////////////////////////////////////////////////////////
