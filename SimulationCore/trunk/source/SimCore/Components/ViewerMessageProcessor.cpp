@@ -78,7 +78,7 @@ namespace SimCore
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
-            dtGame::GameManager &gameManager = *GetGameManager();
+            dtGame::GameManager& gameManager = *GetGameManager();
             std::vector<dtDAL::ActorProxy*> actors;
 
             const dtGame::MapMessage& mlm = static_cast<const dtGame::MapMessage&>(msg);
