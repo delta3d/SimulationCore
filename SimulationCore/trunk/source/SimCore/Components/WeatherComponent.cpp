@@ -332,9 +332,10 @@ namespace SimCore
             dt.SetHour(12);
             dt.SetMinute(0);
             dt.SetSecond(0.0f);
-            mEnvironmentActor->SetDateTime(dt);
 
+            LOGN_DEBUG("WeatherComponent.cpp", "Setting Sim Clock Time to Noon");
             dtCore::System::GetInstance().SetSimulationClockTime(dtCore::Timer_t(dt.GetTime()) * 1000000LL);
+            LOGN_DEBUG("WeatherComponent.cpp", "Updating the mEnvironment Actor to the system");
             mEnvironmentActor->SetTimeFromSystem();
 
          }
@@ -347,12 +348,14 @@ namespace SimCore
                dynamic_cast<SimCore::Actors::IGEnvironmentActorProxy*>(proxy);
             if(igproxy == NULL)
             {
-               LOG_WARNING("An actor was found, but is not an IGEnvironmentActorProxy");
-               LOG_DEBUG("The type of the actor is: " + proxy->GetActorType().GetName());
+               LOGN_WARNING("WeatherComponent.cpp", "An actor was found, but is not an IGEnvironmentActorProxy");
+               LOGN_DEBUG("WeatherComponent.cpp","The type of the actor is: " + proxy->GetActorType().GetFullName());
                SetEphemerisEnvironment(NULL);
             }
             else
             {
+               LOGN_DEBUG("WeatherComponent.cpp","Setting Environment Actor to: Id\"" + proxy->GetId().ToString()
+                          + "\" Actor Type: \"" + proxy->GetActorType().GetFullName() + "\"");
                SetEphemerisEnvironment(static_cast<SimCore::Actors::IGEnvironmentActor*>
                   (igproxy->GetActor()));
             }

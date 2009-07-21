@@ -109,6 +109,9 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       EphemerisEnvironmentActor::~EphemerisEnvironmentActor()
       {
+         LOGN_DEBUG("EphemerisEnvironmentActor", "Deleting EphemerisData");
+         osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
+         delete ephem;
       }
 
       /////////////////////////////////////////////////////////////
@@ -229,12 +232,21 @@ namespace SimCore
 
          dtUtil::DateTime dt(GetDateTime().GetGMTTime());
 
-         ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
-         ephem->dateTime.setMonth(dt.GetMonth());    // DateTime numbers months from 1 to 12, not 0 to 11
-         ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
-         ephem->dateTime.setHour(dt.GetHour());
-         ephem->dateTime.setMinute(dt.GetMinute());
-         ephem->dateTime.setSecond(int(dt.GetSecond()));
+         LOGN_DEBUG("IGEnvironmentActor.cpp", dt.ToString());
+         if (ephem != NULL)
+         {
+
+            ephem->dateTime.setYear(dt.GetYear()); // DateTime uses _actual_ year (not since 1900)
+            ephem->dateTime.setMonth(dt.GetMonth());    // DateTime numbers months from 1 to 12, not 0 to 11
+            ephem->dateTime.setDayOfMonth(dt.GetDay()); // DateTime numbers days from 1 to 31, not 0 to 30
+            ephem->dateTime.setHour(dt.GetHour());
+            ephem->dateTime.setMinute(dt.GetMinute());
+            ephem->dateTime.setSecond(int(dt.GetSecond()));
+         }
+         else
+         {
+            LOG_ERROR("Ephemeris Data is NULL");
+         }
       }
 
       /////////////////////////////////////////////////////////////
