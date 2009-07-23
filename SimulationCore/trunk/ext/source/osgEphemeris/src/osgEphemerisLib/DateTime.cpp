@@ -191,13 +191,13 @@ double DateTime::getModifiedJulianDate() const
 
     // Get GMT first
     struct tm gmt = _tm;
-    tzset();
-#ifdef __APPLE__
-    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
-#else
-    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
-#endif
-    mktime(&gmt);
+//    tzset();
+//#ifdef __APPLE__
+//    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+//#else
+//    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+//#endif
+//    mktime(&gmt);
 
     double day   =  (double)(gmt.tm_mday) +           // Day
                     (double(gmt.tm_hour)/24.0) +      // hour
@@ -245,13 +245,13 @@ DateTime DateTime::getGMT() const
 {
     struct tm gmt = _tm;
 
-    tzset();
-#ifdef __APPLE__
-    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
-#else
-    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
-#endif
-    mktime(&gmt);
+//    tzset();
+//#ifdef __APPLE__
+//    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+//#else
+//    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+//#endif
+//    mktime(&gmt);
 
     return DateTime(gmt);
 }
