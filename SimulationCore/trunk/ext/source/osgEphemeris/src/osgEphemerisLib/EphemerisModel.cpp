@@ -38,7 +38,7 @@ EphemerisModel::EphemerisModel():
     _sunLightNum(0),
     _moonLightNum(1)
 {
-    _ephemerisData   = new /*(EphemerisData::getDefaultShmemFileName())*/ EphemerisData;
+    _ephemerisData   = new (EphemerisData::getDefaultShmemFileName()) EphemerisData;
     _ephemerisEngine = new EphemerisEngine(_ephemerisData);
 
     _skyTx = new osg::MatrixTransform;
