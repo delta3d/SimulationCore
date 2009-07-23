@@ -109,9 +109,9 @@ namespace SimCore
       /////////////////////////////////////////////////////////////
       EphemerisEnvironmentActor::~EphemerisEnvironmentActor()
       {
-         LOGN_DEBUG("EphemerisEnvironmentActor", "Deleting EphemerisData");
-         osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
-         delete ephem;
+//         LOGN_DEBUG("EphemerisEnvironmentActor", "Deleting EphemerisData");
+//         osgEphemeris::EphemerisData* ephem = mEphemerisModel->getEphemerisData();
+//         delete ephem;
       }
 
       /////////////////////////////////////////////////////////////
