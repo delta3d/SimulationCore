@@ -68,7 +68,8 @@ DateTime::DateTime( const DateTime &dt ):
 
 DateTime::DateTime()
 {
-    //now();
+    //This is needed to initialize the data.
+    now();
 }
 
 DateTime::DateTime( const struct tm &tm )
