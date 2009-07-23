@@ -40,11 +40,11 @@ char *DateTime::monthNames[12] = {
 };
 
 DateTime::DateTime(
-            int year,    
-            int month,   
-            int day,     
-            int hour,    
-            int minute,  
+            int year,
+            int month,
+            int day,
+            int hour,
+            int minute,
             int second  )
 {
     _tm.tm_year = year - 1900;
@@ -66,8 +66,8 @@ DateTime::DateTime( const DateTime &dt ):
     mktime(&_tm);
 }
 
-DateTime::DateTime() 
-{ 
+DateTime::DateTime()
+{
     //now();
 }
 
@@ -114,7 +114,7 @@ std::string DateTime::getMonthString(int month) // Will pass in 1-12
     return std::string( monthNames[(month-1)%12] );
 }
 
-void DateTime::setDayOfMonth(int day) 
+void DateTime::setDayOfMonth(int day)
 {
     _tm.tm_mday = day;
     mktime(&_tm);
@@ -140,7 +140,7 @@ std::string DateTime::getDayOfWeekString() const
     return std::string(weekDayNames[getDayOfWeek()]);
 }
 
-std::string DateTime::getDayOfWeekString(int wday) 
+std::string DateTime::getDayOfWeekString(int wday)
 {
     return std::string(weekDayNames[wday%7]);
 }
@@ -191,9 +191,13 @@ double DateTime::getModifiedJulianDate() const
 
     // Get GMT first
     struct tm gmt = _tm;
-    //tzset();
-    //gmt.tm_sec += timezone;
-    //mktime(&gmt);
+    tzset();
+#ifdef __APPLE__
+    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+#else
+    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+#endif
+    mktime(&gmt);
 
     double day   =  (double)(gmt.tm_mday) +           // Day
                     (double(gmt.tm_hour)/24.0) +      // hour
@@ -241,9 +245,13 @@ DateTime DateTime::getGMT() const
 {
     struct tm gmt = _tm;
 
-    //tzset();
-    //gmt.tm_sec += timezone;
-    //mktime(&gmt);
+    tzset();
+#ifdef __APPLE__
+    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+#else
+    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+#endif
+    mktime(&gmt);
 
     return DateTime(gmt);
 }
