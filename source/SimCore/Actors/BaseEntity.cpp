@@ -484,6 +484,9 @@ namespace SimCore
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
          , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
+         , mCurrentVelocity(0.0f, 0.0f, 0.0f)
+         , mCurrentAcceleration(0.0f, 0.0f, 0.0f)
+         , mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
          , mPublishLinearVelocity(true)
          , mPublishAngularVelocity(true)
          , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
@@ -1071,7 +1074,7 @@ namespace SimCore
          {
             osg::Vec3 velocity = GetCurrentVelocity();
             // If the value is very close to 0, set it to zero to prevent warbling
-            if (velocity.length() < 0.05)
+            if (velocity.length() < 0.0001)//0.05)
                SetLastKnownVelocity(osg::Vec3(0.f, 0.f, 0.f));
             else
                SetLastKnownVelocity(velocity);
@@ -1086,7 +1089,7 @@ namespace SimCore
          {
             osg::Vec3 angularVelocity = GetCurrentAngularVelocity();
             // If the value is very close to 0, set it to zero to prevent warbling
-            if (angularVelocity.length() < 0.1)
+            if (angularVelocity.length() < 0.001)
                SetLastKnownAngularVelocity(osg::Vec3(0.f, 0.f, 0.f));
             else
                SetLastKnownAngularVelocity(angularVelocity);
