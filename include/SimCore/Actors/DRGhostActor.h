@@ -64,7 +64,8 @@ namespace SimCore
              */
             virtual void OnEnteredWorld();
 
-            virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
+            //virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             void SetSlavedEntity(SimCore::Actors::BaseEntity *newEntity);
             void UpdateOurPosition();
