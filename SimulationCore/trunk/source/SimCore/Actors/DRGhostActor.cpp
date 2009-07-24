@@ -106,9 +106,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::OnTickRemote( const dtGame::TickMessage& tickMessage )
+      void DRGhostActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
       {
-         BaseClass::OnTickRemote( tickMessage );
+         BaseClass::OnTickLocal( tickMessage );
 
          // Move to TickRemote().
          UpdateOurPosition();
@@ -182,7 +182,8 @@ namespace SimCore
          {
             //So it's not a frame behind, it needs to happen on tick remote.  This is because the DeadReckoningComponent
             //ticks on Tick-Remote..
-            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+            //RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
          }
       }
    }
