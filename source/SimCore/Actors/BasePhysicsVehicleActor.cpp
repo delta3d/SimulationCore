@@ -315,14 +315,7 @@ namespace SimCore
 #else
             physLinearVelocity = physObj->GetLinearVelocity();
 #endif
-            // For Velocity - Blend part of old & part of new - helps soften small jerkiness and warble.
-            // We base it on time. if the updates are VERY fast (like 60 Hz), then we blend less. If they are 
-            // slow (like 2 Hz), then we blend more.
-            //SetCurrentVelocity(GetCurrentVelocity() * 0.25f + physLinearVelocity * 0.75f);
-            float newVelBlendPercent = deltaTime; 
-            dtUtil::Clamp(newVelBlendPercent, 0.0f, 1.0f);
-            SetCurrentVelocity(physLinearVelocity * newVelBlendPercent + 
-               GetCurrentVelocity() * (1.0f - newVelBlendPercent));
+            SetCurrentVelocity(physLinearVelocity);
 
             //SetCurrentAcceleration(osg::Vec3()); // Hard to know on a driven vehicle - set it if you can
          }

@@ -473,6 +473,32 @@ namespace SimCore
          return osg::Vec3(result[1], result[2], result[0]);
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntityActorProxy::NotifyFullActorUpdate()
+      {
+         // Remove the rot and trans from the full actor update.
+         // If we send pos & rot out in an update, then that sometimes causes problems 
+         // on remote items. Network components usually pick up their data on tick local, which 
+         // sends a message to the DefaultmessageProcessorComponent. However, before that message
+         // gets processed, the tick-remote gets picked up by the DeadReckoningComponent. Causes jumpiness.
+         std::vector<dtDAL::ActorProperty* > allProperties;
+         GetPropertyList(allProperties);
+
+         std::vector<dtUtil::RefString> finalPropNameList;
+         finalPropNameList.reserve(allProperties.size());
+
+         for (size_t i = 0; i < allProperties.size(); ++i)
+         {
+            if (allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_ROTATION &&
+               allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_TRANSLATION)
+            {
+               finalPropNameList.push_back(allProperties[i]->GetName());
+            }
+         }
+
+         NotifyPartialActorUpdate(finalPropNameList);
+      }
+
       /////////////////////////////////////////////////////////////////////
       ///////////////   BaseEntity                     ////////////////////
       /////////////////////////////////////////////////////////////////////
@@ -579,11 +605,13 @@ namespace SimCore
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
 
-            // For local actors, by default, we don't want to use smoothing on our Dead Reckoning.
-            // If we do, then when we check to see if we should publish, we'll be off by more than we
-            // should, and be more likely to republish.
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
+            // Previously, it set the smoothing time to 0.0 so that local actors would not smooth 
+            // their DR pos & rot to potentially make a cleaner comparison with less publishes. 
+            // In practice, the smoothing time is usually reduced down to the avg time between 
+            // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway. 
+            // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
 
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
@@ -955,32 +983,6 @@ namespace SimCore
                "Actor \"%s\"\"%s\" unable to find DeadReckoningComponent.",
                GetName().c_str(), GetUniqueId().ToString().c_str());
          }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::NotifyFullActorUpdate()
-      {
-         // If we send pos & rot out in an update, then that sometimes causes problems 
-         // on remote items. Network components usually pick up their data on tick local, which 
-         // sends a message to the DefaultmessageProcessorComponent. However, before that message
-         // gets processed, the tick-remote gets picked up by the DeadReckoningComponent and moves
-         // the 
-         std::vector<dtDAL::ActorProperty* > allProperties;
-         GetGameActorProxy().GetPropertyList(allProperties);
-
-         std::vector<dtUtil::RefString> finalPropNameList;
-         finalPropNameList.reserve(allProperties.size());
-
-         for (size_t i = 0; i < allProperties.size(); ++i)
-         {
-            if (allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_ROTATION &&
-               allProperties[i]->GetName() != dtDAL::TransformableActorProxy::PROPERTY_TRANSLATION)
-            {
-               finalPropNameList.push_back(allProperties[i]->GetName());
-            }
-         }
-
-         GetGameActorProxy().NotifyPartialActorUpdate(finalPropNameList);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
