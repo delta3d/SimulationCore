@@ -175,6 +175,10 @@ namespace SimCore
          protected:
             virtual ~BaseEntityActorProxy();
             virtual void OnEnteredWorld();
+
+            /// Overridden to remove Pos & rotation. See method for explanation.
+            virtual void NotifyFullActorUpdate();
+
          private:
       };
 
@@ -747,9 +751,6 @@ namespace SimCore
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-
-            /// Overridden to remove Pos & rotation. See method for explanation.
-            virtual void NotifyFullActorUpdate();
 
             // Allows a sub-class to set the engine smoke value without doing all the engine
             // smoke 'stuff'.
