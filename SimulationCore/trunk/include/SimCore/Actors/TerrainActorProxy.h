@@ -46,7 +46,7 @@ namespace SimCore
 
             static const std::string DEFAULT_NAME;
             /// Constructor
-            TerrainActor(dtGame::GameActorProxy &proxy);
+            TerrainActor(dtGame::GameActorProxy& proxy);
 
             /**
              * Loads a mesh file which contains terrain.
@@ -55,7 +55,7 @@ namespace SimCore
              *  and other geometry, mesh terrains have a special resource of type
              *  DataType::TERRAIN.
              */
-            void LoadFile(const std::string &fileName);
+            void LoadFile(const std::string& fileName);
 
             virtual void AddedToScene(dtCore::Scene* scene);
 
@@ -64,15 +64,18 @@ namespace SimCore
             void SetPhysicsModelFile( const std::string& filename );
             const std::string& GetPhysicsModelFile() const;
 
+            void SetPhysicsDirectory( const std::string& filename );
+            std::string GetPhysicsDirectory() const;
+
 
 #if AGEIA_PHYSICS
             virtual void AgeiaPrePhysicsUpdate() { }
 
             virtual void AgeiaPostPhysicsUpdate() { }
 
-            virtual void AgeiaRaycastReport(const NxRaycastHit &hit,
-               const NxActor &actor,
-               const NxActor &collidedActor)
+            virtual void AgeiaRaycastReport(const NxRaycastHit& hit,
+               const NxActor& actor,
+               const NxActor& collidedActor)
             {}
 
             virtual void AgeiaRaycastReport(const NxRaycastHit& hit,
@@ -80,9 +83,9 @@ namespace SimCore
                NxActor& whatWeHit)
             {}
 
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport &contactReport,
-               NxActor &ourSelf,
-               NxActor &whatWeHit)
+            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
+               NxActor& ourSelf,
+               NxActor& whatWeHit)
             {}
 
 #endif
@@ -96,8 +99,10 @@ namespace SimCore
 
          private:
 
+            void LoadMeshFromFile(const std::string& filename, const std::string& materialType);
+
             dtCore::RefPtr<osg::Node> mTerrainNode;
-            std::string mLoadedFile, mCollisionResourceString;
+            std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
             //This doesn't load the file unless it's in a scene, so this flag tells it to load
             bool mNeedToLoad;
 
