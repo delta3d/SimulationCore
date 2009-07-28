@@ -292,15 +292,6 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       void TerrainActor::LoadFile(const std::string& fileName)
       {
-         return;
-
-
-
-
-
-
-
-
          // Don't do anything if the filenames are the same unless we still need to load
          if (!mNeedToLoad && mLoadedFile == fileName)
          {
