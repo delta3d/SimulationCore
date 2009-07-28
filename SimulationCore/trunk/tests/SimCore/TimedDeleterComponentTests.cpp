@@ -257,6 +257,7 @@ namespace SimCore
       {
          mTestActors.clear();
 
+         dtCore::System::GetInstance().SetPause(false);
          dtCore::System::GetInstance().Stop();
 
          mGM->DeleteAllActors(true);

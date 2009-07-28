@@ -226,11 +226,23 @@ namespace StealthQt
    dtCore::RefPtr<StealthGM::ViewWindowWrapper> ViewDockWidget::CreateNewViewWindow(const std::string& newViewName)
    {
       MainWindow& mainWindow = *StealthViewerData::GetInstance().GetMainWindow();
+      StealthGM::ViewWindowConfigObject& viewConfig =
+        StealthViewerData::GetInstance().GetViewWindowConfigObject();
 
       QRect rect = mainWindow.frameGeometry();
       dtCore::RefPtr<dtCore::View> view = new dtCore::View(newViewName);
+      dtCore::DeltaWin::DeltaWinTraits traits;
+      traits.name = newViewName;
+      traits.x = rect.top() + 50;
+      traits.y = rect.left() + 50;
+      traits.height = 256;
+      traits.width = 256;
+      traits.fullScreen = false;
+      traits.showCursor = true;
+      traits.contextToShare = viewConfig.GetMainViewWindow().GetWindow().GetOsgViewerGraphicsWindow();
+
       dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
-         new dtCore::DeltaWin(newViewName, rect.top() + 50, rect.left() + 50, 256, 256, true, false);
+         new dtCore::DeltaWin(traits);
 
       dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
          new StealthGM::ViewWindowWrapper(newViewName, *view, *deltaWin);

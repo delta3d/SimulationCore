@@ -105,6 +105,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             mGM = NULL;
          }
          mApp = NULL;
+         dtCore::System::GetInstance().SetPause(false);
          dtCore::System::GetInstance().Stop();
       }
 

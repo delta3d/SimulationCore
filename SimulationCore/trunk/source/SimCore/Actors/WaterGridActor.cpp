@@ -238,7 +238,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       WaterGridActor::WaterGridActor(WaterGridActorProxy& proxy)
           : BaseClass(proxy)
-          , mWaterColor(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0, 1.0)
           , mElapsedTime(0.0f)
           , mDeltaTime(0.0f)
           , mRenderWaveTexture(false)
@@ -246,9 +245,6 @@ namespace SimCore
           , mDeveloperMode(false)
           , mComputedRadialDistance(0.0)
           , mTextureWaveAmpOverLength(1.0 / 64.0)
-          , mGeometry()
-          , mGeode()
-          , mWaves()
           , mModForWaveLength(1.0f)
           , mModForSpeed(1.0f)
           , mModForSteepness(1.0f)
@@ -256,6 +252,7 @@ namespace SimCore
           , mModForDirectionInDegrees(0.0f)
           , mModForFOV(1.0f)
           , mCameraFoVScalar(1.0f)
+          , mWaterColor(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0, 1.0)
           , mChoppinessEnum(&WaterGridActor::ChoppinessSettings::CHOP_FLAT)
       {
          SetName("WaterGridActor"); // Set a default name
@@ -915,7 +912,7 @@ namespace SimCore
 
          osg::Uniform* textureWaveArray = ss->getOrCreateUniform(UNIFORM_TEXTURE_WAVE_ARRAY, osg::Uniform::FLOAT_VEC4, MAX_TEXTURE_WAVES);
 
-         int numWaves = float(mTextureWaves.size());
+         //int numWaves = float(mTextureWaves.size());
          TextureWaveArray::iterator tw_iter = mTextureWaves.begin();
          TextureWaveArray::iterator tw_endIter = mTextureWaves.end();
 
@@ -1316,7 +1313,7 @@ namespace SimCore
          {
 
             mReflectionCamera = new osg::Camera();
-            osg::Camera* sceneCam = GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
+            //osg::Camera* sceneCam = GetGameActorProxy().GetGameManager()->GetApplication().GetCamera()->GetOSGCamera();
 
             int width = 512;//sceneCam->getViewport()->width();
             int height = 512;//sceneCam->getViewport()->height();

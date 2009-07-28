@@ -339,11 +339,14 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    deltaWin = NULL;
    view = NULL;
 
+   //Added a step because application doesn't delete views until frame end.
+   dtCore::System::GetInstance().Step();
+
    CPPUNIT_ASSERT(!viewWrapperOb.valid());
    CPPUNIT_ASSERT(!windowOb.valid());
    CPPUNIT_ASSERT(!cameraOb.valid());
-   CPPUNIT_ASSERT(!viewOb.valid());
    CPPUNIT_ASSERT(!graphicsWindowOb.valid());
+   CPPUNIT_ASSERT(!viewOb.valid());
 }
 
 void ConfigObjectTests::TestPreferencesGeneralConfigObject()

@@ -84,7 +84,7 @@ namespace NetDemo
 
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
+      //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
       //dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
 
       if(!IsRemote())

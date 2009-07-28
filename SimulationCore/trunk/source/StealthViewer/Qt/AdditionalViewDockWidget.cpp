@@ -45,8 +45,8 @@
 namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
-   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent)
-   : dtQt::OSGAdapterWidget(false, parent, NULL, Qt::Tool | Qt::Window)
+   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, QGLWidget* sharedContextWidget)
+   : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Tool | Qt::Window)
    , mGLWidget(NULL)
    {
       setFocusPolicy(Qt::StrongFocus);
