@@ -115,7 +115,21 @@ namespace StealthQt
          }
          else
          {
-            return new dtQt::OSGGraphicsWindowQt(traits, new StealthQt::AdditionalViewDockWidget(NULL));
+            QGLWidget* sharedContextWidget = NULL;
+            if (traits->sharedContext != NULL)
+            {
+               dtQt::OSGGraphicsWindowQt* sharedWin = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(traits->sharedContext);
+               if (sharedWin != NULL)
+               {
+                  sharedContextWidget = sharedWin->GetQGLWidget();
+               }
+               else
+               {
+                  LOG_ERROR("A shared context was specified, but it is not a QGLWidget based context, so it can't be shared.");
+               }
+            }
+
+            return new dtQt::OSGGraphicsWindowQt(traits, new StealthQt::AdditionalViewDockWidget(NULL, sharedContextWidget));
          }
       }
    };

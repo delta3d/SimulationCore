@@ -19,7 +19,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 *
@@ -27,7 +27,7 @@
 */
 #include <prefix/SimCorePrefix-src.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <dtGame/gamemanager.h> 
+#include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/defaultmessageprocessor.h>
 #include <dtGame/deadreckoningcomponent.h>
@@ -50,7 +50,7 @@
 
 using dtCore::RefPtr;
 
-class PauseResumeTests : public CPPUNIT_NS::TestFixture 
+class PauseResumeTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(PauseResumeTests);
 
@@ -100,6 +100,7 @@ void PauseResumeTests::setUp()
 
 void PauseResumeTests::tearDown()
 {
+   dtCore::System::GetInstance().SetPause(false);
    dtCore::System::GetInstance().Stop();
 
    mGM->DeleteAllActors(true);
@@ -134,10 +135,10 @@ void PauseResumeTests::TestPauseAndResume()
 
    osg::Vec3 newPos = gap->GetTranslation();
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The system is paused, the new translation should be equal to the old translation", newPos, oldPos);
-   
+
    mGM->SetPaused(false);
    CPPUNIT_ASSERT(!mGM->IsPaused());
-   
+
    SLEEP(5);
    dtCore::System::GetInstance().Step();
 
