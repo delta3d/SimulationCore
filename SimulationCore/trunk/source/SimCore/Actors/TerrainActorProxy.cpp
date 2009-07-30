@@ -41,6 +41,10 @@
 #include <osg/Node>
 #include <osg/StateSet>
 
+#include <osgDB/ReadFile>
+#include <osgDB/Registry>
+
+
 #include <iostream>
 
 namespace SimCore
@@ -59,25 +63,34 @@ namespace SimCore
       void TerrainActorProxy::BuildPropertyMap()
       {
          dtGame::GameActorProxy::BuildPropertyMap();
-         TerrainActor& ta = static_cast<TerrainActor&>(GetGameActor());
+         TerrainActor* ta = NULL;
+         GetActor(ta);
 
          static const dtUtil::RefString GROUP_("Terrain");
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN,
             "TerrainMesh", "TerrainMesh",
-            dtDAL::MakeFunctor(ta, &TerrainActor::LoadFile),
+            dtDAL::ResourceActorProperty::SetFuncType(ta, &TerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", GROUP_));
+
+         static const dtUtil::RefString PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING("LoadTerrainMeshWithCaching");
+         AddProperty(new dtDAL::BooleanActorProperty(
+            PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING, PROPERTY_LOAD_TERRAIN_MESH_WITH_CACHING,
+            dtDAL::BooleanActorProperty::SetFuncType(ta, &TerrainActor::SetLoadTerrainMeshWithCaching),
+            dtDAL::BooleanActorProperty::GetFuncType(ta, &TerrainActor::GetLoadTerrainMeshWithCaching),
+            "Enables OSG caching when loading the terrain mesh.", GROUP_));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
             "PhysicsModel", "PhysicsModel",
-            dtDAL::MakeFunctor(ta, &TerrainActor::SetPhysicsModelFile),
+            dtDAL::ResourceActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsModelFile),
             "Loads a SINGLE physics model file to use for collision.", GROUP_));
 
          static const dtUtil::RefString PROPERTY_PHYSICSDIRECTORY("PhysicsDirectory");
-         AddProperty(new dtDAL::StringActorProperty(PROPERTY_PHYSICSDIRECTORY, PROPERTY_PHYSICSDIRECTORY, 
-            dtDAL::MakeFunctor(ta, &TerrainActor::SetPhysicsDirectory), 
-            dtDAL::MakeFunctorRet(ta, &TerrainActor::GetPhysicsDirectory), 
+         AddProperty(new dtDAL::StringActorProperty(PROPERTY_PHYSICSDIRECTORY, PROPERTY_PHYSICSDIRECTORY,
+            dtDAL::StringActorProperty::SetFuncType(ta, &TerrainActor::SetPhysicsDirectory),
+            dtDAL::StringActorProperty::GetFuncType(ta, &TerrainActor::GetPhysicsDirectory),
             "The directory name of MULTIPLE physics model files to use for collision within the Terrains folder in your map project.", GROUP_));
+
 
       }
 
@@ -91,12 +104,14 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////
-      TerrainActor::TerrainActor(dtGame::GameActorProxy &proxy) : IGActor(proxy), mNeedToLoad(false)
+      TerrainActor::TerrainActor(dtGame::GameActorProxy& proxy) : IGActor(proxy)
 #ifdef AGEIA_PHYSICS
-         , mHelper(new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy))
+      , mHelper(new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy))
 #else
-         , mHelper(new dtPhysics::PhysicsHelper(proxy))
+      , mHelper(new dtPhysics::PhysicsHelper(proxy))
 #endif
+      , mNeedToLoad(false)
+      , mLoadTerrainMeshWithCaching(false)
       {
 #ifdef AGEIA_PHYSICS
          mHelper->SetBaseInterfaceClass(this);
@@ -111,7 +126,6 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////////
       TerrainActor::~TerrainActor()
       {
-
       }
 
       /////////////////////////////////////////////////////////////////////////////
@@ -192,7 +206,7 @@ namespace SimCore
                   e.LogException(dtUtil::Log::LOG_ERROR);
                }
             }
-            
+
             if(!loadSuccess && mTerrainNode.valid())
             {
                //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
@@ -310,13 +324,19 @@ namespace SimCore
             // Empty string is not an error, just has no geometry.
             if (!fileName.empty())
             {
-               dtCore::RefPtr<osg::Node> unused;
-               if( !IGActor::LoadFile(fileName, mTerrainNode, unused, false, true) )
-                  LOG_ERROR("Failed to load the terrain file: " + fileName);
+               dtCore::RefPtr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
 
-               //mTerrainNode = IGActor::LoadFile(fileName, false);
-               //if (mTerrainNode == NULL)
-               //   LOG_ERROR("Failed to load the terrain file: " + fileName);
+               if (mLoadTerrainMeshWithCaching)
+               {
+                  options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
+               }
+               else
+               {
+                  options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_NONE);
+               }
+               options->setOptionString("loadMaterialsToStateSet");
+
+               mTerrainNode = osgDB::readNodeFile(fileName, options.get());
 
                if(mTerrainNode.valid())
                {
@@ -339,6 +359,17 @@ namespace SimCore
          mLoadedFile = fileName;
       }
 
+      ///////////////////////////////////////////////////////////////////
+      void TerrainActor::SetLoadTerrainMeshWithCaching(bool enable)
+      {
+         mLoadTerrainMeshWithCaching = enable;
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      bool TerrainActor::GetLoadTerrainMeshWithCaching()
+      {
+         return mLoadTerrainMeshWithCaching;
+      }
 
    }
 }
