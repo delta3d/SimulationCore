@@ -57,6 +57,11 @@ namespace SimCore
              */
             void LoadFile(const std::string& fileName);
 
+            /// Turn on or off texture, and geometry caching when loading the terrain.
+            void SetLoadTerrainMeshWithCaching(bool enable);
+            /// @return true if texture, and geometry caching when loading the terrain is on.
+            bool GetLoadTerrainMeshWithCaching();
+
             virtual void AddedToScene(dtCore::Scene* scene);
 
             /*virtual*/ void OnEnteredWorld();
@@ -101,17 +106,18 @@ namespace SimCore
 
             void LoadMeshFromFile(const std::string& filename, const std::string& materialType);
 
-            dtCore::RefPtr<osg::Node> mTerrainNode;
-            std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
-            //This doesn't load the file unless it's in a scene, so this flag tells it to load
-            bool mNeedToLoad;
-
 #if AGEIA_PHYSICS
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper> mHelper;
 #else
             dtCore::RefPtr<dtPhysics::PhysicsHelper> mHelper;
 #endif
 
+            dtCore::RefPtr<osg::Node> mTerrainNode;
+            std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
+            //This doesn't load the file unless it's in a scene, so this flag tells it to load
+            bool mNeedToLoad;
+
+            bool mLoadTerrainMeshWithCaching;
       };
 
       class SIMCORE_EXPORT TerrainActorProxy : public dtGame::GameActorProxy
