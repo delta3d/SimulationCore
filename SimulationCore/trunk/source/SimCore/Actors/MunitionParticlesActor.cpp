@@ -695,7 +695,7 @@ namespace SimCore
                   }
                }
 
-               dtPhysics::PhysicsObject* physObj = (*iter)->GetPhysicsObject();//mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str());
+               dtPhysics::PhysicsObject* physObj = (*iter)->GetPhysicsObject();
                if(!physObj->isSleeping())
                {
                   float glmat[16];

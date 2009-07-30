@@ -89,11 +89,6 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      //GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
-      //   GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
-      ////////dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
-
       // TODO - Maybe use sphere instead???
 
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();

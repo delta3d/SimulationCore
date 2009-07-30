@@ -773,8 +773,6 @@ namespace SimCore
             osg::Vec3 mCurrentVelocity;
             osg::Vec3 mCurrentAcceleration;
             osg::Vec3 mCurrentAngularVelocity;
-            bool mPublishLinearVelocity;// : 1;
-            bool mPublishAngularVelocity;// : 1;
 
             ///The force for which this entity is fighting.
             BaseEntityActorProxy::ForceEnum* mForceAffiliation;
@@ -818,19 +816,25 @@ namespace SimCore
             float mMaxTranslationError;
             float mMaxTranslationError2;
 
-            /// Flags for particle effects
-            bool mEngineSmokeOn, mSmokePlumePresent, mFlamesPresent;
-            bool mFlying;
-            bool mDrawing;
-            bool mIsPlayerAttached;
-            bool mDisabledFirepower;
-            bool mDisabledMobility;
-            bool mIsFrozen;
-
             unsigned mFireLightID;
 
             std::string mEntityType;
             std::string mMappingName;
+
+            /// Flags for particle effects
+            bool mEngineSmokeOn: 1;
+            bool mSmokePlumePresent: 1;
+            bool mFlamesPresent: 1;
+            bool mFlying: 1;
+            bool mDrawing: 1;
+            bool mIsPlayerAttached: 1;
+            bool mDisabledFirepower: 1;
+            bool mDisabledMobility: 1;
+            bool mIsFrozen: 1;
+
+            bool mPublishLinearVelocity: 1;
+            bool mPublishAngularVelocity: 1;
+
 
       };
 

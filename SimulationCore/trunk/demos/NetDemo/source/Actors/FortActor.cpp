@@ -78,10 +78,6 @@ namespace NetDemo
       GetTransform(ourTransform);
 
 
-      //GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
-      //   GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
-      ////////dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
       physObj->CreateFromProperties(GetNonDamagedFileNode());
