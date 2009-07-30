@@ -477,8 +477,8 @@ namespace SimCore
       void BaseEntityActorProxy::NotifyFullActorUpdate()
       {
          // Remove the rot and trans from the full actor update.
-         // If we send pos & rot out in an update, then that sometimes causes problems 
-         // on remote items. Network components usually pick up their data on tick local, which 
+         // If we send pos & rot out in an update, then that sometimes causes problems
+         // on remote items. Network components usually pick up their data on tick local, which
          // sends a message to the DefaultmessageProcessorComponent. However, before that message
          // gets processed, the tick-remote gets picked up by the DeadReckoningComponent. Causes jumpiness.
          std::vector<dtDAL::ActorProperty* > allProperties;
@@ -513,8 +513,6 @@ namespace SimCore
          , mCurrentVelocity(0.0f, 0.0f, 0.0f)
          , mCurrentAcceleration(0.0f, 0.0f, 0.0f)
          , mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
-         , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
          , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
          , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
@@ -528,6 +526,7 @@ namespace SimCore
          , mMaxRotationError2(36.0f)
          , mMaxTranslationError(0.5f)
          , mMaxTranslationError2(0.25f)
+         , mFireLightID(0)
          , mEngineSmokeOn(false)
          , mSmokePlumePresent(false)
          , mFlamesPresent(false)
@@ -536,7 +535,8 @@ namespace SimCore
          , mDisabledFirepower(false)
          , mDisabledMobility(false)
          , mIsFrozen(false)
-         , mFireLightID(0)
+         , mPublishLinearVelocity(true)
+         , mPublishAngularVelocity(true)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();
@@ -605,10 +605,10 @@ namespace SimCore
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
 
-            // Previously, it set the smoothing time to 0.0 so that local actors would not smooth 
-            // their DR pos & rot to potentially make a cleaner comparison with less publishes. 
-            // In practice, the smoothing time is usually reduced down to the avg time between 
-            // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway. 
+            // Previously, it set the smoothing time to 0.0 so that local actors would not smooth
+            // their DR pos & rot to potentially make a cleaner comparison with less publishes.
+            // In practice, the smoothing time is usually reduced down to the avg time between
+            // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway.
             // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
@@ -1062,7 +1062,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownValuesBeforePublish(const osg::Vec3 &pos, const osg::Vec3 &rot)
+      void BaseEntity::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
       {
          SetLastKnownTranslation(pos);
          SetLastKnownRotation(rot);
@@ -1075,12 +1075,15 @@ namespace SimCore
          if (mPublishLinearVelocity)
          {
             osg::Vec3 velocity = GetCurrentVelocity();
-            // If the value is very close to 0, set it to zero to prevent warbling
-            if (velocity.length() < 0.0001)//0.05)
+            // If the value is very close to 0, set it to zero to prevent wiggling or shaking
+            if (velocity.length() < 0.0001)
+            {
                SetLastKnownVelocity(osg::Vec3(0.f, 0.f, 0.f));
+            }
             else
+            {
                SetLastKnownVelocity(velocity);
-
+            }
 
             // Acceleration is paired with velocity
             SetLastKnownAcceleration(GetCurrentAcceleration());
@@ -1090,11 +1093,15 @@ namespace SimCore
          if (mPublishAngularVelocity)
          {
             osg::Vec3 angularVelocity = GetCurrentAngularVelocity();
-            // If the value is very close to 0, set it to zero to prevent warbling
+            // If the value is very close to 0, set it to zero to prevent wiggling or shaking
             if (angularVelocity.length() < 0.001)
+            {
                SetLastKnownAngularVelocity(osg::Vec3(0.f, 0.f, 0.f));
+            }
             else
+            {
                SetLastKnownAngularVelocity(angularVelocity);
+            }
          }
 
       }

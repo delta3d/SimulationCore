@@ -89,7 +89,7 @@ namespace DriverDemo
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
-      dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetPhysXObject();
+      dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetMainPhysicsObject();
 
       if(!IsRemote())
       {
@@ -251,7 +251,7 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
    {
-      dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetPhysXObject();
+      dtPhysics::PhysicsObject* physObject = GetPhysicsHelper()->GetMainPhysicsObject();
 
       // The PRE physics update is only trapped if we are remote. It updates the physics
       // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)

@@ -124,7 +124,7 @@ namespace DriverDemo
       {
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
-         GetTargetPhysicsHelper()->GetPhysXObject()->clearBodyFlag(NX_BF_KINEMATIC);
+         GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
       // LOCAL - Finish initial startup conditions
       else

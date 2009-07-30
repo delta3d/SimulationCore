@@ -356,37 +356,16 @@ void PhysicsParticleSystemActor::AddParticle()
 
    //////////////////////////////////////////////////////////////////////////
    // Set up emitter values on the particle...
-   //pNewActor =  mPhysicsHelper->GetPhysXObject(_id.ToString().c_str());
 
    osg::Vec4 linearVelocities;
    linearVelocities[0] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[0], mStartingLinearVelocityScaleMin[0]);
    linearVelocities[1] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[1], mStartingLinearVelocityScaleMin[1]);
    linearVelocities[2] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[2], mStartingLinearVelocityScaleMin[2]);
 
-   //linearVelocities = ourRotationMatrix.preMult(linearVelocities);
 
    linearVelocities[0] += mParentsWorldRelativeVelocityVector[0];
    linearVelocities[1] += mParentsWorldRelativeVelocityVector[1];
    linearVelocities[2] += mParentsWorldRelativeVelocityVector[2];
-
-   //cone capping
-   //for(int i = 0 ; i < 3; i++)
-   //{
-   //   if(linearVelocities[i] > -mStartingLinearVelocityScaleInnerConeCap[i] && linearVelocities[i] < mStartingLinearVelocityScaleInnerConeCap[i])
-   //   {
-   //      float diffone = (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - -mStartingLinearVelocityScaleInnerConeCap[i]);
-   //      float difftwo = (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]) * (linearVelocities[i] - mStartingLinearVelocityScaleInnerConeCap[i]);
-   //
-   //      if(diffone > difftwo)
-   //      {
-   //         linearVelocities[i] = -mStartingLinearVelocityScaleInnerConeCap[i];
-   //      }
-   //      else if(difftwo > diffone)
-   //      {
-   //         linearVelocities[i] = mStartingLinearVelocityScaleInnerConeCap[i];
-   //      }
-   //   }
-   //}
 
 #ifdef AGEIA_PHYSICS
    NxVec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);

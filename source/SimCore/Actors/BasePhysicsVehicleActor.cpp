@@ -300,38 +300,29 @@ namespace SimCore
          mSecsSinceLastUpdateSent += deltaTime;
 
          dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
-         if(physObj == NULL)
+         if (physObj == NULL)
          {
             LOG_ERROR("No physics object found. Cannot update Dead Reckoning values from physics.");
             return;
          }
 
-         if (IsPublishLinearVelocity())
-         {
-            osg::Vec3 physLinearVelocity;
+         osg::Vec3 physLinearVelocity;
 #ifdef AGEIA_PHYSICS
-            NxVec3 linearVelVec3 = physObj->getLinearVelocity();
-            physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
+         NxVec3 linearVelVec3 = physObj->getLinearVelocity();
+         physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
 #else
-            physLinearVelocity = physObj->GetLinearVelocity();
+         physLinearVelocity = physObj->GetLinearVelocity();
 #endif
-            SetCurrentVelocity(physLinearVelocity);
+         SetCurrentVelocity(physLinearVelocity);
 
-            //SetCurrentAcceleration(osg::Vec3()); // Hard to know on a driven vehicle - set it if you can
-         }
-
-         if (IsPublishAngularVelocity())
-         {
-            osg::Vec3 physAngularVelocity;
+         osg::Vec3 physAngularVelocity;
 #ifdef AGEIA_PHYSICS
-            NxVec3 angVelVec3 = physObj->getAngularVelocity();
-            physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
+         NxVec3 angVelVec3 = physObj->getAngularVelocity();
+         physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
 #else
-            physAngularVelocity = physObj->GetAngularVelocity();
+         physAngularVelocity = physObj->GetAngularVelocity();
 #endif
-            SetCurrentAngularVelocity(physAngularVelocity);
-         }
-
+         SetCurrentAngularVelocity(physAngularVelocity);
       }
 
 
