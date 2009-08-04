@@ -840,78 +840,71 @@ namespace SimCore
          unsigned numLights = 0;
          unsigned totalLightSlots = mMaxSpotLights + mMaxDynamicLights;
 
-         for(iter = mLights.begin(), endIter = mLights.end(); numLights < totalLightSlots; ++numLights)
+         // Go over our lights and add them if they have actual intensity.
+         for(iter = mLights.begin(), endIter = mLights.end(); iter != endIter && numLights < totalLightSlots; ++iter)
          {
-            if(iter != endIter)
+            DynamicLight* dl = (*iter).get();
+            SpotLight* sl = NULL;
+
+            bool useSpotLight = false;
+            float spotExp = 0.0f;
+            osg::Vec4 spotParams;
+
+            //if we have an open slot for spot lights and we have a spot light
+            //else we are out of dynamic light spots and we have a dynamic light make a spot light and bind it here
+            if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT))
             {
-               DynamicLight* dl = (*iter).get();
-               SpotLight* sl = NULL;
-
-               bool useSpotLight = false;
-               float spotExp = 0.0f;
-               osg::Vec4 spotParams;
-
-               //if we have an open slot for spot lights and we have a spot light
-               //else we are out of dynamic light spots and we have a dynamic light make a spot light and bind it here
-               if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT) && (sl = dynamic_cast<SpotLight*>(dl)) )
-               {
-                  spotExp = sl->mSpotExponent;
-                  spotParams.set(sl->mCurrentDirection[0], sl->mCurrentDirection[1], sl->mCurrentDirection[2], sl->mSpotCosCutoff);
-                  useSpotLight = true;
-               }
-               else if( !(numDynamicLights < maxDynamicLightUniforms) )
-               {
-                  spotExp = 0.0f;
-                  spotParams.set(0.0f, 1.0f, 0.0f, -1.0f);
-                  useSpotLight = true;
-               }
-
-               //don't bind lights of zero intensity
-               if(dl->mIntensity > 0.0001f)
-               {
-                  if(useSpotLight)
-                  {
-                     spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                     spotLightArray->setElement(numSpotLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                     spotLightArray->setElement(numSpotLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], spotExp));
-                     spotLightArray->setElement(numSpotLights + 3, spotParams);
-                     numSpotLights += numSpotLightAttributes;
-                  }
-                  else
-                  {
-                     lightArray->setElement(numDynamicLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                     lightArray->setElement(numDynamicLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                     lightArray->setElement(numDynamicLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
-                     numDynamicLights += numDynamicLightAttributes;
-                  }
-               }
-
-               ++iter;
+               sl = static_cast<SpotLight*>(dl); // if it's not a SpotLight, crash anyway to let the dev know they messed up
+               spotExp = sl->mSpotExponent;
+               spotParams.set(sl->mCurrentDirection[0], sl->mCurrentDirection[1], sl->mCurrentDirection[2], sl->mSpotCosCutoff);
+               useSpotLight = true;
             }
-            else
+            else if( !(numDynamicLights < maxDynamicLightUniforms) )
             {
-               if(numDynamicLights < maxDynamicLightUniforms)
+               spotExp = 0.0f;
+               spotParams.set(0.0f, 1.0f, 0.0f, -1.0f);
+               useSpotLight = true;
+            }
+
+            //don't bind lights of zero intensity
+            if(dl->mIntensity > 0.0001f)
+            {
+               if(useSpotLight)
                {
-                  //else we turn the light off by setting the intensity to 0
-                  lightArray->setElement(numDynamicLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-                  lightArray->setElement(numDynamicLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-                  lightArray->setElement(numDynamicLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+                  spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                  spotLightArray->setElement(numSpotLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                  spotLightArray->setElement(numSpotLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], spotExp));
+                  spotLightArray->setElement(numSpotLights + 3, spotParams);
+                  numSpotLights += numSpotLightAttributes;
+               }
+               else
+               {
+                  lightArray->setElement(numDynamicLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
+                  lightArray->setElement(numDynamicLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
+                  lightArray->setElement(numDynamicLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
                   numDynamicLights += numDynamicLightAttributes;
                }
 
-               if(numSpotLights < maxSpotLightUniforms)
-               {
-                  //else we turn the light off by setting the intensity to 0
-                  spotLightArray->setElement(numSpotLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-                  spotLightArray->setElement(numSpotLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-                  spotLightArray->setElement(numSpotLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-                  spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.1f));
-                  numSpotLights += numSpotLightAttributes;
-               }
-
-
+               ++numLights;
             }
          }
+
+         // clear out any remaining dynamic lights from previous by setting intensity to 0
+         for(; numDynamicLights < maxDynamicLightUniforms; numDynamicLights += numDynamicLightAttributes) 
+         {
+            lightArray->setElement(numDynamicLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+            lightArray->setElement(numDynamicLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            lightArray->setElement(numDynamicLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+         }
+         // Clear out any remaining spot lights from previous by setting intensity to 0
+         for(; numSpotLights < maxSpotLightUniforms; numSpotLights += numSpotLightAttributes)
+         {
+            spotLightArray->setElement(numSpotLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+            spotLightArray->setElement(numSpotLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            spotLightArray->setElement(numSpotLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+         }
+
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
