@@ -460,7 +460,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::RemoveDynamicLight(RenderingSupportComponent::LightID id)
       {
-         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)));
+         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), findLightById(id)), mLights.end());
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
