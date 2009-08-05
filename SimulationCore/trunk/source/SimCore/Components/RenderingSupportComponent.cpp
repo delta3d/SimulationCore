@@ -73,16 +73,16 @@ namespace SimCore
      //useful functors
       struct findLightById
       {
-         findLightById(RenderingSupportComponent::LightID id): mID(id){}
+         findLightById(RenderingSupportComponent::LightID id): mId(id){}
 
          template<class T>
          bool operator()(T lightPtr)
          {
-            return lightPtr->mID == mID;
+            return lightPtr->GetId() == mId;
          }
       private:
 
-         RenderingSupportComponent::LightID mID;
+         RenderingSupportComponent::LightID mId;
       };
 
       struct removeLightsFunc
@@ -127,7 +127,7 @@ namespace SimCore
 
       const std::string RenderingSupportComponent::DEFAULT_LIGHT_NAME = "DefaultLight";
 
-      RenderingSupportComponent::LightID RenderingSupportComponent::DynamicLight::mLightCounter = 1;
+      OpenThreads::Atomic RenderingSupportComponent::DynamicLight::mLightCounter(1U);
 
       const unsigned RenderingSupportComponent::MAIN_CAMERA_CULL_MASK = 0xFFFFFFFF;
       const unsigned RenderingSupportComponent::ADDITIONAL_CAMERA_CULL_MASK = 0x7FFFFFFF;
@@ -135,7 +135,9 @@ namespace SimCore
 
       //dyamic light constructor
       RenderingSupportComponent::DynamicLight::DynamicLight()
-         : mDeleteMe(false)
+         : mId(++mLightCounter)
+         , mLightType(&RenderingSupportComponent::LightType::OMNI_DIRECTIONAL) //omni by default
+         , mDeleteMe(false)
          , mIntensity(1.0f)
          , mSaturationIntensity(1.0f)
          , mColor(1.0f, 1.0f, 1.0f)
@@ -148,15 +150,15 @@ namespace SimCore
          , mFadeOut(false)
          , mFadeOutTime(0.0f)
          , mRadius(0.0f)
-         , mID(++mLightCounter)
          , mAutoDeleteLightOnTargetNull(false)
-         , mLightType(&RenderingSupportComponent::LightType::OMNI_DIRECTIONAL) //omni by default
          , mTarget(NULL)
       {
       }
 
       RenderingSupportComponent::DynamicLight::DynamicLight(const LightType* lightType)
-         : mDeleteMe(false)
+         : mId(++mLightCounter)
+         , mLightType(lightType)
+         , mDeleteMe(false)
          , mIntensity(1.0f)
          , mSaturationIntensity(1.0f)
          , mColor(1.0f, 1.0f, 1.0f)
@@ -169,9 +171,7 @@ namespace SimCore
          , mFadeOut(false)
          , mFadeOutTime(0.0f)
          , mRadius(0.0f)
-         , mID(++mLightCounter)
          , mAutoDeleteLightOnTargetNull(false)
-         , mLightType(lightType)
          , mTarget(NULL)
       {
       }
@@ -368,10 +368,10 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::LightID RenderingSupportComponent::AddDynamicLight(DynamicLight* dl)
       {
-         if(dl != NULL)
+         if (dl != NULL)
          {
             mLights.push_back(dl);
-            return dl->mID;
+            return dl->GetId();
          }
          else
          {
@@ -807,7 +807,8 @@ namespace SimCore
                //update the light's position
                SetPosition(dl);
             }
-            if(dl->mLightType == &LightType::SPOT_LIGHT)
+
+            if (dl->GetLightType() == LightType::SPOT_LIGHT)
             {
                SpotLight* sLight = dynamic_cast<SpotLight*>(dl);
                if(sLight != NULL)
@@ -852,7 +853,7 @@ namespace SimCore
 
             //if we have an open slot for spot lights and we have a spot light
             //else we are out of dynamic light spots and we have a dynamic light make a spot light and bind it here
-            if( (numSpotLights < maxSpotLightUniforms) && (dl->mLightType == &LightType::SPOT_LIGHT))
+            if( (numSpotLights < maxSpotLightUniforms) && (dl->GetLightType() == LightType::SPOT_LIGHT))
             {
                sl = static_cast<SpotLight*>(dl); // if it's not a SpotLight, crash anyway to let the dev know they messed up
                spotExp = sl->mSpotExponent;
@@ -890,7 +891,7 @@ namespace SimCore
          }
 
          // clear out any remaining dynamic lights from previous by setting intensity to 0
-         for(; numDynamicLights < maxDynamicLightUniforms; numDynamicLights += numDynamicLightAttributes) 
+         for(; numDynamicLights < maxDynamicLightUniforms; numDynamicLights += numDynamicLightAttributes)
          {
             lightArray->setElement(numDynamicLights, osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f));
             lightArray->setElement(numDynamicLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));

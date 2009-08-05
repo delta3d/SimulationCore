@@ -250,7 +250,7 @@ namespace SimCore
             {
                dl = renderComp->AddDynamicLightByPrototypeName("Light-WeaponFlash");
                //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
-               mDynamicLightID = dl->mID;//renderComp->AddDynamicLight(dl);
+               mDynamicLightID = dl->GetId();//renderComp->AddDynamicLight(dl);
             }
 
             //dl->mColor.set(0.97f, 0.98f, 0.482f);//a bright yellow

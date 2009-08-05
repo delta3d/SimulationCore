@@ -833,7 +833,7 @@ namespace SimCore
                      renderComp->AddDynamicLightByPrototypeName("Light-Entity-Flames");
                   dl->mTarget = this;
                   dl->mAutoDeleteLightOnTargetNull = true;
-                  mFireLightID = dl->mID;
+                  mFireLightID = dl->GetId();
                }
             }
          }

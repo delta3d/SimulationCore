@@ -49,14 +49,6 @@
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
 
-#ifdef DELTA_WIN32
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
-
 using dtCore::RefPtr;
 using dtCore::ObserverPtr;
 

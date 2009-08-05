@@ -357,7 +357,7 @@ namespace SimCore
                   //       property, but is not currently for the sake of time.
                   dl = rsComp->AddDynamicLightByPrototypeName( "Light-HMMWV-Headlight" );
                   dl->mTarget = headLightPoint.get();
-                  mHeadLightID = dl->mID;
+                  mHeadLightID = dl->GetId();
                }
             }
             else if( dl != NULL )
@@ -848,7 +848,7 @@ namespace SimCore
             mArticHelper->UpdateDOFReferences( mNodeCollector.get() );
 
             // Check the config property for reversing the heading value. This is an issue because
-            // in most HLA federations, the heading direction for articulations is reversed. 
+            // in most HLA federations, the heading direction for articulations is reversed.
             // In Client-server, this is rarely true, so we default to false.
             dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
             std::string reverseStr = configParams.GetConfigPropertyValue("SimCore.Articulation.ReverseHeading", "false");

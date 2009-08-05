@@ -305,7 +305,7 @@ namespace SimCore
                dl->mTarget = this;
                dl->mColor = color;
 
-               mDynamicLightID = dl->mID;
+               mDynamicLightID = dl->GetId();
                mDynamicLightEnabled = true;
             }
          }
@@ -921,7 +921,7 @@ namespace SimCore
                dl->mTarget = mFlash.get();
 
                //mDynamicLightID = renderComp->AddDynamicLight(dl);
-               mDynamicLightID = dl->mID;
+               mDynamicLightID = dl->GetId();
                mDynamicLightEnabled = true;
             }
          }
