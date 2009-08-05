@@ -35,6 +35,8 @@
 #include <osgUtil/StateGraph>
 #include <osgUtil/RenderStage>
 
+#include <OpenThreads/Atomic>
+
 #include <dtUtil/enumeration.h>
 #include <dtUtil/functor.h>
 
@@ -104,10 +106,24 @@ namespace SimCore
                   DynamicLight(const DynamicLight&); //un-implemented
                   DynamicLight& operator=(const DynamicLight&); //un-implemented
 
+                  DynamicLight(const LightType* lightType);
+
+                  LightID mId;
+
+                  static OpenThreads::Atomic mLightCounter;
+
+                  //This determines which kind of light will be used, omni or spot
+                  const LightType* mLightType;
+
                public:
 
                   DynamicLight();
-                  DynamicLight(const LightType* lightType);
+
+                  static LightID GetCurrentLightIdCounter() { return mLightCounter; }
+
+                  LightID GetId() const { return mId; }
+                  const LightType& GetLightType() const { return *mLightType; }
+
 
                   //this flag is used internally for removing, but I suppose if you want to set it you can
                   bool mDeleteMe;
@@ -135,14 +151,8 @@ namespace SimCore
                   float mRadius;      //this is used to determine how far away we are from the light, it pretty much makes the light into a
                                       //bounding sphere
 
-                  LightID mID;
-                  static LightID mLightCounter;
-
                   bool mAutoDeleteLightOnTargetNull; //setting this flag will auto delete the light when the target becomes NULL, this
                                                      //can be used in conjunction with Fade Out
-
-                  //This determines which kind of light will be used, omni or spot
-                  const LightType* mLightType;
 
                   dtCore::ObserverPtr<dtCore::Transformable> mTarget;
 
