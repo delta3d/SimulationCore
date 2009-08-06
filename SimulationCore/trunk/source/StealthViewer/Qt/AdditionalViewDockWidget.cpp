@@ -51,6 +51,9 @@ namespace StealthQt
    {
       setFocusPolicy(Qt::StrongFocus);
       setLayout(new QVBoxLayout(this));
+
+      setMinimumHeight(300);
+      setMinimumWidth(400);
       // No docking allowed.
       //setAllowedAreas(Qt::NoDockWidgetArea);
 //      connect(this, SIGNAL(topLevelChanged(bool)),
