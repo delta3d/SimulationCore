@@ -79,6 +79,7 @@ namespace SimCore
                dtCore::System::GetInstance().Start();
                mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
 
+               mGM->SetApplication(GetGlobalApplication());
                mDeadReckoningComponent = new dtGame::DeadReckoningComponent();
                mGM->AddComponent(*mDeadReckoningComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
