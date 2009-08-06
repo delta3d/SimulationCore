@@ -197,8 +197,7 @@ namespace SimCore
          , mEnableNVGS(false)
          , mMaxDynamicLights(10)
          , mMaxSpotLights(5)
-         , mDeltaScene(new osg::Group())
-         , mSceneRoot(new osg::Group())
+         //, mSceneRoot(new osg::Group())
          , mGUIRoot(new osg::Camera())
          , mNVGSRoot(new osg::Camera())
          , mNVGS(0)
@@ -255,7 +254,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::InitializeFrameBuffer()
       {
-         GetGameManager()->GetApplication().GetScene()->SetSceneNode(mSceneRoot.get());
+         mSceneRoot = GetGameManager()->GetApplication().GetScene()->GetSceneNode();
 
          /*dtCore::View *view = GetGameManager()->GetApplication().GetView();
          if(view != NULL)
@@ -271,7 +270,6 @@ namespace SimCore
 
          mSceneRoot->addChild(mNVGSRoot.get());
          mSceneRoot->addChild(mGUIRoot.get());
-         mSceneRoot->addChild(mDeltaScene.get());
 
 
          mNVGSRoot->setRenderOrder(osg::Camera::NESTED_RENDER);
@@ -495,6 +493,11 @@ namespace SimCore
             mNVGS = rf;
             mNVGS->Init(mNVGSRoot.get(), GetGameManager()->GetApplication().GetCamera());
          }
+         else
+         {
+            mNVGS = NULL;
+            mEnableNVGS = false;
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -638,7 +641,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::ProcessTick(const dtGame::TickMessage &msg)
+      void RenderingSupportComponent::ProcessTick(const dtGame::TickMessage& msg)
       {
          //we update the view matrix for all the shaders
          //UpdateViewMatrix(); //-- now called during the framesynch message.
@@ -708,28 +711,13 @@ namespace SimCore
          }
       }
 
-
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      void RenderingSupportComponent::UpdateDynamicLights(float dt)
+      void RenderingSupportComponent::TimeoutAndDeleteLights(float dt)
       {
-         //now setup the lighting uniforms necessary for rendering the dynamic lights
-         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
-//temporary hack
-#ifdef __APPLE__
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
-#else
-         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
-         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
-#endif
-         osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
-         osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
-
          LightArray::iterator iter = mLights.begin();
          LightArray::iterator endIter = mLights.end();
 
-         //update lights, the extra check for !mLights.empty() keeps from crashing if we erase the last element
-         for(;!mLights.empty() && iter != endIter; ++iter)
+         for(;iter != endIter; ++iter)
          {
             DynamicLight* dl = (*iter).get();
 
@@ -802,6 +790,22 @@ namespace SimCore
                //std::cout << "Intensity " << dl->mIntensity << std::endl;
             }
 
+         }
+
+         //now remove all flagged lights, note this is actually faster because we only have a single deallocation for N lights
+         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), removeLightsFunc()), mLights.end());
+
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::TransformAndSortLights()
+      {
+         LightArray::iterator iter = mLights.begin();
+         LightArray::iterator endIter = mLights.end();
+
+         for(;iter != endIter; ++iter)
+         {
+            DynamicLight* dl = (*iter).get();
             if(dl->mTarget.valid())
             {
                //update the light's position
@@ -818,9 +822,6 @@ namespace SimCore
             }
          }
 
-         //now remove all flagged lights, note this is actually faster because we only have a single deallocation for N lights
-         mLights.erase(std::remove_if(mLights.begin(), mLights.end(), removeLightsFunc()), mLights.end());
-
          //update uniforms by finding the closest lights to the camera
          dtCore::Transform trans;
          GetGameManager()->GetApplication().GetCamera()->GetTransform(trans);
@@ -828,7 +829,11 @@ namespace SimCore
          trans.GetTranslation(pos);
          //sort the lights, though a heap may be more efficient here, we will sort so that we can combine lights later
          std::sort(mLights.begin(), mLights.end(), funcCompareLights(pos));
+      }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::UpdateDynamicLightUniforms(osg::Uniform* lightArray, osg::Uniform* spotLightArray)
+      {
          unsigned numDynamicLights = 0;
          unsigned numSpotLights = 0;
 
@@ -841,8 +846,11 @@ namespace SimCore
          unsigned numLights = 0;
          unsigned totalLightSlots = mMaxSpotLights + mMaxDynamicLights;
 
+         LightArray::iterator iter = mLights.begin();
+         LightArray::iterator endIter = mLights.end();
+
          // Go over our lights and add them if they have actual intensity.
-         for(iter = mLights.begin(), endIter = mLights.end(); iter != endIter && numLights < totalLightSlots; ++iter)
+         for(; iter != endIter && numLights < totalLightSlots; ++iter)
          {
             DynamicLight* dl = (*iter).get();
             SpotLight* sl = NULL;
@@ -872,17 +880,17 @@ namespace SimCore
             {
                if(useSpotLight)
                {
-                  spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                  spotLightArray->setElement(numSpotLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                  spotLightArray->setElement(numSpotLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], spotExp));
+                  spotLightArray->setElement(numSpotLights, osg::Vec4(dl->mPosition, dl->mIntensity));
+                  spotLightArray->setElement(numSpotLights + 1, osg::Vec4(dl->mColor, 1.0f));
+                  spotLightArray->setElement(numSpotLights + 2, osg::Vec4(dl->mAttenuation, spotExp));
                   spotLightArray->setElement(numSpotLights + 3, spotParams);
                   numSpotLights += numSpotLightAttributes;
                }
                else
                {
-                  lightArray->setElement(numDynamicLights, osg::Vec4(dl->mPosition[0], dl->mPosition[1], dl->mPosition[2], dl->mIntensity));
-                  lightArray->setElement(numDynamicLights + 1, osg::Vec4(dl->mColor[0], dl->mColor[1], dl->mColor[2], 1.0f));
-                  lightArray->setElement(numDynamicLights + 2, osg::Vec4(dl->mAttenuation[0], dl->mAttenuation[1], dl->mAttenuation[2], 1.0f));
+                  lightArray->setElement(numDynamicLights, osg::Vec4(dl->mPosition, dl->mIntensity));
+                  lightArray->setElement(numDynamicLights + 1, osg::Vec4(dl->mColor, 1.0f));
+                  lightArray->setElement(numDynamicLights + 2, osg::Vec4(dl->mAttenuation, 1.0f));
                   numDynamicLights += numDynamicLightAttributes;
                }
 
@@ -897,6 +905,7 @@ namespace SimCore
             lightArray->setElement(numDynamicLights + 1, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
             lightArray->setElement(numDynamicLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
          }
+
          // Clear out any remaining spot lights from previous by setting intensity to 0
          for(; numSpotLights < maxSpotLightUniforms; numSpotLights += numSpotLightAttributes)
          {
@@ -905,7 +914,28 @@ namespace SimCore
             spotLightArray->setElement(numSpotLights + 2, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
             spotLightArray->setElement(numSpotLights + 3, osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
          }
+      }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
+      void RenderingSupportComponent::UpdateDynamicLights(float dt)
+      {
+         TimeoutAndDeleteLights(dt);
+         TransformAndSortLights();
+
+         //now setup the lighting uniforms necessary for rendering the dynamic lights
+         osg::StateSet* ss = GetGameManager()->GetScene().GetSceneNode()->getOrCreateStateSet();
+//temporary hack
+#ifdef __APPLE__
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights[0]";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights[0]";
+#else
+         static const std::string DYN_LIGHT_UNIFORM = "dynamicLights";
+         static const std::string SPOT_LIGHT_UNIFORM = "spotLights";
+#endif
+         osg::Uniform* lightArray = ss->getOrCreateUniform(DYN_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxDynamicLights * 3);
+         osg::Uniform* spotLightArray = ss->getOrCreateUniform(SPOT_LIGHT_UNIFORM, osg::Uniform::FLOAT_VEC4, mMaxSpotLights * 4);
+
+         UpdateDynamicLightUniforms(lightArray, spotLightArray);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
