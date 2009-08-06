@@ -270,6 +270,14 @@ namespace SimCore
             void SetMaxSpotLights(unsigned lights);
             unsigned GetMaxSpotLights() const;
 
+            void TimeoutAndDeleteLights(float dt);
+            void TransformAndSortLights();
+            void UpdateDynamicLightUniforms(osg::Uniform* lightArray, osg::Uniform* spotLightArray);
+
+            osg::Group& GetSceneRoot();
+            osg::Group& GetNVGSRoot();
+            osg::Group& GetGUIRoot();
+
          protected:
             /// Destructor
             virtual ~RenderingSupportComponent(void);
