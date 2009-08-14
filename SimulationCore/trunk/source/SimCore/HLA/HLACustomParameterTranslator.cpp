@@ -193,7 +193,7 @@ namespace SimCore
             decodingControl.Decode( &buffer[bufferOffset] );
             controlParam = decodingControl.GetAsGroupParameter();
 
-            if (controlParam.valid() && ! controlParam->GetName().empty() )
+            if (controlParam.valid() && ! controlParam->GetName()->empty() )
             {
                parameter.AddParameter( *controlParam );
             }
