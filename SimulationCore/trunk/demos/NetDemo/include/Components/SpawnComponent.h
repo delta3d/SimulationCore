@@ -78,11 +78,11 @@ namespace NetDemo
       void InitGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int difficulty, int numPlayers, int numWaves);
       void UpdateGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int waveNumber, float timeLeftInWave);
 
-      DECLARE_PROPERTY(int, Difficulty);
-      DECLARE_PROPERTY(int, WaveNumber);
-      DECLARE_PROPERTY(int, NumPlayers);
-      DECLARE_PROPERTY(float, TimeLeftInWave);
-      DECLARE_PROPERTY(const ServerGameStatusActor::ServerGameStatusEnum*, GameStatus);
+      DECLARE_PROPERTY_INLINE(int, Difficulty);
+      DECLARE_PROPERTY_INLINE(int, WaveNumber);
+      DECLARE_PROPERTY_INLINE(int, NumPlayers);
+      DECLARE_PROPERTY_INLINE(float, TimeLeftInWave);
+      DECLARE_PROPERTY_INLINE(const ServerGameStatusActor::ServerGameStatusEnum*, GameStatus);
 
    };
 }//namespace NetDemo

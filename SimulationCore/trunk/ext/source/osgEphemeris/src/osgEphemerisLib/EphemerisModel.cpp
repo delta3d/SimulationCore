@@ -1,20 +1,29 @@
-/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
- *
- * This library is open source and may be redistributed and/or modified under
- * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
- * (at your option) any later version.  The full license is in LICENSE file
- * included with this distribution, and on the openscenegraph.org website.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * OpenSceneGraph Public License for more details.
-*/
+/*
+ -------------------------------------------------------------------------------
+ | osgEphemeris - Copyright (C) 2007  Don Burns                                |
+ |                                                                             |
+ | This library is free software; you can redistribute it and/or modify        |
+ | it under the terms of the GNU Lesser General Public License as published    |
+ | by the Free Software Foundation; either version 3 of the License, or        |
+ | (at your option) any later version.                                         |
+ |                                                                             |
+ | This library is distributed in the hope that it will be useful, but         |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY  |
+ | or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public     |
+ | License for more details.                                                   |
+ |                                                                             |
+ | You should have received a copy of the GNU Lesser General Public License    |
+ | along with this software; if not, write to the Free Software Foundation,    |
+ | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
+ |                                                                             |
+ -------------------------------------------------------------------------------
+ */
+
 #include <string.h>
 
 #include <osg/MatrixTransform>
 #include <osg/LightSource>
-#include <osgEphemeris/EphemerisModel>
+#include <osgEphemeris/EphemerisModel.h>
 
 #include <osg/StateSet>
 #include <osg/CullFace>
@@ -24,7 +33,7 @@
 using namespace osgEphemeris;
 
 
-EphemerisModel::EphemerisModel(const EphemerisModel& copy,
+EphemerisModel::EphemerisModel(const EphemerisModel& copy, 
                               const osg::CopyOp& copyop )
 {
 }
@@ -98,7 +107,7 @@ void EphemerisModel::setSkyDomeRadius( double radius )
 
 }
 
-double EphemerisModel::getSkyDomeRadius()  const
+double EphemerisModel::getSkyDomeRadius()  const 
 {
     return SkyDome::getMeanDistanceToMoon() * _scale;
 }
@@ -135,7 +144,7 @@ bool EphemerisModel::_init()
         addChild( _moonLightSource.get() );
     }
 
-    // Sky
+    // Sky 
     _skyTx->setMatrix( osg::Matrix::scale( _scale, _scale, _scale ) *
                        osg::Matrix::translate( _center ));
 
@@ -153,7 +162,10 @@ bool EphemerisModel::_init()
 
     // Ground Plane
     if( _members & GROUND_PLANE )
-        _memberGroup->addChild( new GroundPlane( SkyDome::getMeanDistanceToMoon() ));
+    {
+        _groundPlane = new GroundPlane(SkyDome::getMeanDistanceToMoon());
+        _memberGroup->addChild( _groundPlane.get());
+    }
 
     // Moon
     if( _members & MOON )
@@ -262,7 +274,7 @@ bool EphemerisModel::getMoveWithEyePoint() const
 void EphemerisModel::setLatitude( double latitude)
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLatitude( latitude );
+        _ephemerisEngine->setLatitude( latitude ); 
 }
 
 double EphemerisModel::getLatitude() const
@@ -280,10 +292,19 @@ double EphemerisModel::getLongitude() const
     return 0.0;
 }
 
+GroundPlane* EphemerisModel::getGroundPlane()
+{
+    if( _groundPlane.valid() )
+    {
+        return _groundPlane.get();
+    }
+    return 0;
+}
+
 void EphemerisModel::setLongitude( double longitude)
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLongitude( longitude );
+        _ephemerisEngine->setLongitude( longitude ); 
 }
 
 float EphemerisModel::getTurbidity() const
@@ -302,7 +323,7 @@ void EphemerisModel::setTurbidity( float turbidity )
 void EphemerisModel::setLatitudeLongitude( double latitude, double longitude )
 {
     if( _ephemerisEngine.valid() )
-        _ephemerisEngine->setLatitudeLongitude( latitude, longitude );
+        _ephemerisEngine->setLatitudeLongitude( latitude, longitude ); 
 }
 
 void EphemerisModel::getLatitudeLongitude( double &latitude, double &longitude ) const
@@ -358,8 +379,8 @@ bool EphemerisModel::getAutoDateTime() const
 
 void EphemerisModel::update()
 {
-    if( !_inited )
-        _init();
+    //if( !_inited ) 
+    //    _init();
 
     if( _ephemerisUpdateCallback.valid() )
         (*_ephemerisUpdateCallback.get())(_ephemerisData);

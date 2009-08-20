@@ -64,12 +64,12 @@ namespace NetDemo
          EnemySpawnInfo();
          ~EnemySpawnInfo();
 
-         DECLARE_PROPERTY(float, LastSpawnTime);
-         DECLARE_PROPERTY(float, NumSpawnPerMinute);
-         DECLARE_PROPERTY(int, WaveDenominator);
+         DECLARE_PROPERTY_INLINE(float, LastSpawnTime);
+         DECLARE_PROPERTY_INLINE(float, NumSpawnPerMinute);
+         DECLARE_PROPERTY_INLINE(int, WaveDenominator);
 
-         DECLARE_PROPERTY(std::string, EnemyPrototypeName);
-         DECLARE_PROPERTY(int, MaxVelocity);
+         DECLARE_PROPERTY_INLINE(std::string, EnemyPrototypeName);
+         DECLARE_PROPERTY_INLINE(int, MaxVelocity);
 
          void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
          void RegisterProperties(dtDAL::ContainerActorProperty& pc, const std::string& group);

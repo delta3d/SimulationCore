@@ -27,7 +27,7 @@
 #include <SimCore/Export.h>
 #include <SimCore/Actors/IGEnvironmentActor.h>
 
-#include <osgEphemeris/EphemerisModel>
+#include <osgEphemeris/EphemerisModel.h>
 
 namespace SimCore
 {

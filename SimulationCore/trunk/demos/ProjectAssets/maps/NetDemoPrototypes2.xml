@@ -2738,7 +2738,7 @@
                 <boolean>false</boolean>
             </property>
             <property>
-                <name>Entity Type As String</name>
+                <name>Entity Type Id</name>
                 <string></string>
             </property>
             <property>
@@ -3123,7 +3123,7 @@
                 <boolean>false</boolean>
             </property>
             <property>
-                <name>Entity Type As String</name>
+                <name>Entity Type Id</name>
                 <string></string>
             </property>
             <property>

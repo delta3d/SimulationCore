@@ -24,18 +24,17 @@
  * Boston, MA  02111-1307, USA.
  *
  **************************************************************************/
-#include <osgEphemeris/CelestialBodies>
+#include <osgEphemeris/CelestialBodies.h>
 #include <osg/Math>
 
-#include <iostream>
 
 using namespace osgEphemeris;
 
 /**************************************************************************
- * Written by Durk Talsma. Originally started October 1997, for distribution
- * with the FlightGear project. Version 2 was written in August and
- * September 1998. This code is based upon algorithms and data kindly
- * provided by Mr. Paul Schlyter. (pausch@saaf.se).
+ * Written by Durk Talsma. Originally started October 1997, for distribution        
+ * with the FlightGear project. Version 2 was written in August and 
+ * September 1998. This code is based upon algorithms and data kindly 
+ * provided by Mr. Paul Schlyter. (pausch@saaf.se). 
  **************************************************************************/
 
 

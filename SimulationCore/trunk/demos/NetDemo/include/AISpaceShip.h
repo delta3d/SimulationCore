@@ -46,23 +46,23 @@ namespace NetDemo
       SpaceShipState();
       ~SpaceShipState();
       
-      DECLARE_PROPERTY(osg::Vec3, Pos);
-      DECLARE_PROPERTY(osg::Vec3, Forward);
-      DECLARE_PROPERTY(osg::Vec3, Up);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Pos);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Forward);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Up);
 
-      DECLARE_PROPERTY(osg::Vec3, Vel);
-      DECLARE_PROPERTY(osg::Vec3, Accel);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Vel);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Accel);
 
-      DECLARE_PROPERTY(float, AngularVel);
-      DECLARE_PROPERTY(float, AngularAccel);
+      DECLARE_PROPERTY_INLINE(float, AngularVel);
+      DECLARE_PROPERTY_INLINE(float, AngularAccel);
 
-      DECLARE_PROPERTY(float, VerticalVel);
-      DECLARE_PROPERTY(float, VerticalAccel);
+      DECLARE_PROPERTY_INLINE(float, VerticalVel);
+      DECLARE_PROPERTY_INLINE(float, VerticalAccel);
 
-      DECLARE_PROPERTY(float, Pitch);
-      DECLARE_PROPERTY(float, Roll);
+      DECLARE_PROPERTY_INLINE(float, Pitch);
+      DECLARE_PROPERTY_INLINE(float, Roll);
       
-      DECLARE_PROPERTY(float, TimeStep);
+      DECLARE_PROPERTY_INLINE(float, TimeStep);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
@@ -72,27 +72,27 @@ namespace NetDemo
       SpaceShipGoalState();
       ~SpaceShipGoalState();
 
-      DECLARE_PROPERTY(float, DragCoef);
-      DECLARE_PROPERTY(float, AngularDragCoef);
-      DECLARE_PROPERTY(float, VerticalDragCoef);
+      DECLARE_PROPERTY_INLINE(float, DragCoef);
+      DECLARE_PROPERTY_INLINE(float, AngularDragCoef);
+      DECLARE_PROPERTY_INLINE(float, VerticalDragCoef);
 
-      DECLARE_PROPERTY(float, MaxVel);
-      DECLARE_PROPERTY(float, MaxAccel);
+      DECLARE_PROPERTY_INLINE(float, MaxVel);
+      DECLARE_PROPERTY_INLINE(float, MaxAccel);
       
-      DECLARE_PROPERTY(float, MaxAngularVel);
-      DECLARE_PROPERTY(float, MaxAngularAccel);
+      DECLARE_PROPERTY_INLINE(float, MaxAngularVel);
+      DECLARE_PROPERTY_INLINE(float, MaxAngularAccel);
       
-      DECLARE_PROPERTY(float, MaxVerticalVel);
-      DECLARE_PROPERTY(float, MaxVerticalAccel);
+      DECLARE_PROPERTY_INLINE(float, MaxVerticalVel);
+      DECLARE_PROPERTY_INLINE(float, MaxVerticalAccel);
 
-      DECLARE_PROPERTY(float, MaxPitch);
-      DECLARE_PROPERTY(float, MaxRoll);
+      DECLARE_PROPERTY_INLINE(float, MaxPitch);
+      DECLARE_PROPERTY_INLINE(float, MaxRoll);
       
-      DECLARE_PROPERTY(float, MaxTiltPerSecond);
-      DECLARE_PROPERTY(float, MaxRollPerSecond);
+      DECLARE_PROPERTY_INLINE(float, MaxTiltPerSecond);
+      DECLARE_PROPERTY_INLINE(float, MaxRollPerSecond);
       
-      DECLARE_PROPERTY(float, MinElevation);
-      DECLARE_PROPERTY(float, MaxElevation);
+      DECLARE_PROPERTY_INLINE(float, MinElevation);
+      DECLARE_PROPERTY_INLINE(float, MaxElevation);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
@@ -105,9 +105,9 @@ namespace NetDemo
       //these are the control inputs
       //all are floats from 1 to -1 
       //which represents percentage of maximum
-      DECLARE_PROPERTY(float, Thrust);
-      DECLARE_PROPERTY(float, Lift);
-      DECLARE_PROPERTY(float, Yaw);
+      DECLARE_PROPERTY_INLINE(float, Thrust);
+      DECLARE_PROPERTY_INLINE(float, Lift);
+      DECLARE_PROPERTY_INLINE(float, Yaw);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
@@ -197,7 +197,7 @@ namespace NetDemo
       float Clamp(float x, float from, float to);
       float Dampen(float last, float current, float max, float falloff);
 
-      DECLARE_PROPERTY(float, TimeStep)
+      DECLARE_PROPERTY_INLINE(float, TimeStep)
 
    };
 

@@ -147,8 +147,10 @@ void SetupCEGUI(dtABC::Application& app)
 }
 
 #ifndef TEST_ROOT
-#define TEST_ROOT "../"
+#define TEST_ROOT ../
 #endif
+
+#define GET_PATH(testpath) #testpath
 
 int main (int argc, char* argv[])
 {
@@ -181,7 +183,7 @@ int main (int argc, char* argv[])
 
    if (changeDir)
    {
-      std::string path = TEST_ROOT;
+      std::string path = GET_PATH(TEST_ROOT);
       LOG_ALWAYS("The test root is: " + path);
       LOG_ALWAYS(std::string("Changing to directory \"") + path + dtUtil::FileUtils::PATH_SEPARATOR + ".");
 
@@ -189,7 +191,7 @@ int main (int argc, char* argv[])
       {
          dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
       }
-      catch(const dtUtil::Exception &ex)
+      catch(const dtUtil::Exception& ex)
       {
          ex.LogException(dtUtil::Log::LOG_ERROR);
       }

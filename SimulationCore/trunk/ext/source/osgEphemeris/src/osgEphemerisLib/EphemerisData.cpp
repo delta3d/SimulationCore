@@ -1,16 +1,25 @@
-/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
- *
- * This library is open source and may be redistributed and/or modified under
- * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
- * (at your option) any later version.  The full license is in LICENSE file
- * included with this distribution, and on the openscenegraph.org website.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * OpenSceneGraph Public License for more details.
-*/
+/*
+ -------------------------------------------------------------------------------
+ | osgEphemeris - Copyright (C) 2007  Don Burns                                |
+ |                                                                             |
+ | This library is free software; you can redistribute it and/or modify        |
+ | it under the terms of the GNU Lesser General Public License as published    |
+ | by the Free Software Foundation; either version 3 of the License, or        |
+ | (at your option) any later version.                                         |
+ |                                                                             |
+ | This library is distributed in the hope that it will be useful, but         |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY  |
+ | or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public     |
+ | License for more details.                                                   |
+ |                                                                             |
+ | You should have received a copy of the GNU Lesser General Public License    |
+ | along with this software; if not, write to the Free Software Foundation,    |
+ | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
+ |                                                                             |
+ -------------------------------------------------------------------------------
+ */
+
 #include <string>
-#include <osgEphemeris/EphemerisData>
+#include <osgEphemeris/EphemerisData.h>
 
 const std::string osgEphemeris::EphemerisData::_defaultShmemFileName =  "/tmp/EphemerisData.shm";

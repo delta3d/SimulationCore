@@ -635,13 +635,13 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
 
    std::string testValue("This Is A Test String");
    dtDAL::StringActorProperty* strProp = NULL;
-   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty("Entity Type As String"));
-   CPPUNIT_ASSERT_MESSAGE("The \"Entity Type As String\" property should not be NULL", strProp != NULL);
+   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID));
+   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID.Get() + "\" property should not be NULL", strProp != NULL);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 
-   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty("Object Mapping Name"));
-   CPPUNIT_ASSERT_MESSAGE("The \"Object Mapping Name\" property should not be NULL", strProp != NULL);
+   strProp = dynamic_cast<dtDAL::StringActorProperty*>(eap.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME));
+   CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be NULL", strProp != NULL);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 

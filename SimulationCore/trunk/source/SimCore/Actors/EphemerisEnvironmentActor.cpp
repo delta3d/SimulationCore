@@ -23,7 +23,7 @@
  */
 
 #include <SimCore/Actors/EphemerisEnvironmentActor.h>
-#include <osgEphemeris/EphemerisData>
+#include <osgEphemeris/EphemerisData.h>
 #include <dtCore/shadermanager.h>
 #include <ctime>
 

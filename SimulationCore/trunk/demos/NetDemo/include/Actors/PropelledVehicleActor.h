@@ -51,12 +51,12 @@ namespace NetDemo
       virtual ~PropelledVehicleActor();
    private:
       
-      DECLARE_PROPERTY(bool, StartBoost);
-      DECLARE_PROPERTY(float, StartBoostForce);
-      DECLARE_PROPERTY(float, MaximumBoostPerSecond);
-      DECLARE_PROPERTY(float, CurrentBoostTime);
-      DECLARE_PROPERTY(float, TimeToResetBoost);
-      DECLARE_PROPERTY(float, BoostResetTimer);
+      DECLARE_PROPERTY_INLINE(bool, StartBoost);
+      DECLARE_PROPERTY_INLINE(float, StartBoostForce);
+      DECLARE_PROPERTY_INLINE(float, MaximumBoostPerSecond);
+      DECLARE_PROPERTY_INLINE(float, CurrentBoostTime);
+      DECLARE_PROPERTY_INLINE(float, TimeToResetBoost);
+      DECLARE_PROPERTY_INLINE(float, BoostResetTimer);
 
       dtCore::RefPtr<SimCore::FourWheelVehiclePhysicsHelper> mHelper;
    };

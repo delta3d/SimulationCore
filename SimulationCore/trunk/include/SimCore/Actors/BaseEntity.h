@@ -70,7 +70,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_SCALE_MAGNIFICATION_FACTOR;
             static const dtUtil::RefString PROPERTY_MODEL_SCALE;
             static const dtUtil::RefString PROPERTY_MODEL_ROTATION;
-            static const dtUtil::RefString PROPERTY_ENTITY_TYPE;
+            static const dtUtil::RefString PROPERTY_ENTITY_TYPE_ID;
             static const dtUtil::RefString PROPERTY_MAPPING_NAME;
             static const dtUtil::RefString PROPERTY_FORCE;
             static const dtUtil::RefString PROPERTY_GROUND_OFFSET;
@@ -692,10 +692,10 @@ namespace SimCore
             float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
 
             void SetMappingName( const std::string& name );
-            std::string GetMappingName() const;
+            const std::string& GetMappingName() const;
 
-            void SetEntityType( const std::string& entityType );
-            std::string GetEntityType() const;
+            void SetEntityTypeId( const std::string& entityType );
+            const std::string& GetEntityTypeId() const;
 
             /**
              * Gives a local entity an opportunity to respond to damage from a munition.
