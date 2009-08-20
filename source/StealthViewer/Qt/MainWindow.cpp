@@ -2454,7 +2454,7 @@ namespace StealthQt
       // Entity Type will write to Entity Type ID line edit
       // Mapping Name will write to Entity Type line edit.
       const dtDAL::ActorProperty* param
-      = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE);
+      = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID);
       mUi->mEntityTypeIDLineEdit->setText(tr( param == NULL ? "" : param->ToString().c_str() ));
 
       param = proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME);

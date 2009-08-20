@@ -69,8 +69,8 @@
 #include <osgGA/GUIEventAdapter>
 
 #include <osgViewer/GraphicsWindow>
-#include <osgEphemeris/EphemerisModel>
-#include <osgEphemeris/SkyDome>
+#include <osgEphemeris/EphemerisModel.h>
+#include <osgEphemeris/SkyDome.h>
 
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/WeatherComponent.h>

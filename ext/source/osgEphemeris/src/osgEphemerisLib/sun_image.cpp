@@ -1,5 +1,5 @@
 
-#include <osgEphemeris/SkyDome>
+#include <osgEphemeris/SkyDome.h>
 
 unsigned int osgEphemeris::SkyDome::_sunImageInternalTextureFormat = 0x4;
 unsigned int osgEphemeris::SkyDome::_sunImagePixelFormat           = 0x1908;

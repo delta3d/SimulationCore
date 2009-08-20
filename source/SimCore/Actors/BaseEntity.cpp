@@ -146,7 +146,7 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SCALE_MAGNIFICATION_FACTOR("Scale Magnification Factor");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_SCALE("Model Scale");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MODEL_ROTATION("Model Rotation");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENTITY_TYPE("Entity Type As String");
+      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID("Entity Type Id");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FORCE("Force Affiliation");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_GROUND_OFFSET("Ground Offset");
@@ -401,17 +401,17 @@ namespace SimCore
             "Determines if this entity has had its mobility disabled."));
 
          AddProperty(new dtDAL::StringActorProperty(
-            PROPERTY_ENTITY_TYPE,
-            PROPERTY_ENTITY_TYPE,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetEntityType),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetEntityType),
+            PROPERTY_ENTITY_TYPE_ID,
+            PROPERTY_ENTITY_TYPE_ID,
+            dtDAL::StringActorProperty::SetFuncType(&e, &BaseEntity::SetEntityTypeId),
+            dtDAL::StringActorProperty::GetFuncType(&e, &BaseEntity::GetEntityTypeId),
             "String property into which the Entity Type is captured", BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::StringActorProperty(
             PROPERTY_MAPPING_NAME,
             PROPERTY_MAPPING_NAME,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetMappingName),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetMappingName),
+            dtDAL::StringActorProperty::SetFuncType(&e, &BaseEntity::SetMappingName),
+            dtDAL::StringActorProperty::GetFuncType(&e, &BaseEntity::GetMappingName),
             "String property into which the Object Mapping Name is captured", BASE_ENTITY_GROUP));
       }
 
@@ -559,19 +559,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      std::string BaseEntity::GetMappingName() const
+      const std::string& BaseEntity::GetMappingName() const
       {
          return mMappingName;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetEntityType(const std::string& entityType)
+      void BaseEntity::SetEntityTypeId(const std::string& entityType)
       {
          mEntityType = entityType;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      std::string BaseEntity::GetEntityType() const
+      const std::string& BaseEntity::GetEntityTypeId() const
       {
          return mEntityType;
       }

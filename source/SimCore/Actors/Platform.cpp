@@ -115,7 +115,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void PlatformActorProxy::BuildPropertyMap()
       {
-         Platform &e = static_cast<Platform&>(GetGameActor());
+         Platform& plat = static_cast<Platform&>(GetGameActor());
 
          BaseClass::BuildPropertyMap();
 
@@ -140,51 +140,51 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_MUZZLE_FLASH_POSITION("Muzzle Flash Position");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_MUZZLE_FLASH_POSITION,
             PROPERTY_MUZZLE_FLASH_POSITION,
-            dtDAL::MakeFunctor(e, &Platform::SetMuzzleFlashPosition),
-            dtDAL::MakeFunctorRet(e, &Platform::GetMuzzleFlashPosition),
+            dtDAL::MakeFunctor(plat, &Platform::SetMuzzleFlashPosition),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetMuzzleFlashPosition),
             "Sets the muzzle flash position on an entity"));
 
          static const dtUtil::RefString PROPERTY_ARTICULATION_PARAM_ARRAY("Articulated Parameters Array");
          AddProperty(new dtDAL::GroupActorProperty(PROPERTY_ARTICULATION_PARAM_ARRAY,
             PROPERTY_ARTICULATION_PARAM_ARRAY,
-            dtDAL::MakeFunctor(e, &Platform::SetArticulatedParametersArray),
-            dtDAL::MakeFunctorRet(e, &Platform::GetArticulatedParametersArray),
+            dtDAL::MakeFunctor(plat, &Platform::SetArticulatedParametersArray),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetArticulatedParametersArray),
             "The list of articulated parameters for modifying DOF's", ""));
 
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_HEAD_LIGHTS_ENABLED,
             PROPERTY_HEAD_LIGHTS_ENABLED,
-            dtDAL::MakeFunctor(e, &Platform::SetHeadLightsEnabled),
-            dtDAL::MakeFunctorRet(e, &Platform::IsHeadLightsEnabled),
+            dtDAL::MakeFunctor(plat, &Platform::SetHeadLightsEnabled),
+            dtDAL::MakeFunctorRet(plat, &Platform::IsHeadLightsEnabled),
             "Determines if the entity has it head lights on or not."));
 
          static const dtUtil::RefString PROPERTY_SEAT_CONFIG_TABLE_NAME("VehiclesSeatConfigActorNameTable");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_SEAT_CONFIG_TABLE_NAME,
             PROPERTY_SEAT_CONFIG_TABLE_NAME,
-            dtDAL::MakeFunctor(e, &Platform::SetVehiclesSeatConfigActorName),
-            dtDAL::MakeFunctorRet(e, &Platform::GetVehiclesSeatConfigActorName),
+            dtDAL::MakeFunctor(plat, &Platform::SetVehiclesSeatConfigActorName),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetVehiclesSeatConfigActorName),
             "The Vehicle seat config option to coincide with the use of portals.",""));
 
          static const dtUtil::RefString PROPERTY_ENTITY_TYPE("EntityType");
          AddProperty(new dtDAL::StringActorProperty(PROPERTY_ENTITY_TYPE,
             PROPERTY_ENTITY_TYPE,
-            dtDAL::MakeFunctor(e, &Platform::SetEntityType),
-            dtDAL::MakeFunctorRet(e, &Platform::GetEntityType),
+            dtDAL::MakeFunctor(plat, &Platform::SetEntityType),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetEntityType),
             "The type of the entity, such as HMMWVDrivingSim. Used to determine what behaviors this entity can have at runtime, such as embark, gunner, commander, ...", ""));
 
          static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
          AddProperty(new dtDAL::FloatActorProperty("MinDistanceIdleSound", "MinDistanceIdleSound",
-            dtDAL::MakeFunctor(e, &Platform::SetMinDistanceIdleSound),
-            dtDAL::MakeFunctorRet(e, &Platform::GetMinDistanceIdleSound),
+            dtDAL::MakeFunctor(plat, &Platform::SetMinDistanceIdleSound),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetMinDistanceIdleSound),
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
          AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
-            dtDAL::MakeFunctor(e, &Platform::SetMaxDistanceIdleSound),
-            dtDAL::MakeFunctorRet(e, &Platform::GetMaxDistanceIdleSound),
+            dtDAL::MakeFunctor(plat, &Platform::SetMaxDistanceIdleSound),
+            dtDAL::MakeFunctorRet(plat, &Platform::GetMaxDistanceIdleSound),
             "Distance for the sound", SOUND_PROPERTY_TYPE));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(e,
+            "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(plat,
             &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
       }

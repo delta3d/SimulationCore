@@ -1,20 +1,29 @@
-/* -*-c++-*- OpenSceneGraph - Ephemeris Model Copyright (C) 2005 Don Burns
- *
- * This library is open source and may be redistributed and/or modified under
- * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
- * (at your option) any later version.  The full license is in LICENSE file
- * included with this distribution, and on the openscenegraph.org website.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * OpenSceneGraph Public License for more details.
-*/
-#include <osgEphemeris/DateTime>
+/*
+ -------------------------------------------------------------------------------
+ | osgEphemeris - Copyright (C) 2007  Don Burns                                |
+ |                                                                             |
+ | This library is free software; you can redistribute it and/or modify        |
+ | it under the terms of the GNU Lesser General Public License as published    |
+ | by the Free Software Foundation; either version 3 of the License, or        |
+ | (at your option) any later version.                                         |
+ |                                                                             |
+ | This library is distributed in the hope that it will be useful, but         |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY  |
+ | or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public     |
+ | License for more details.                                                   |
+ |                                                                             |
+ | You should have received a copy of the GNU Lesser General Public License    |
+ | along with this software; if not, write to the Free Software Foundation,    |
+ | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
+ |                                                                             |
+ -------------------------------------------------------------------------------
+ */
+
+#include <osgEphemeris/DateTime.h>
 
 using namespace osgEphemeris;
 
-char *DateTime::weekDayNames[7] = {
+const char *DateTime::weekDayNames[7] = {
     "Sunday",
     "Monday",
     "Tuesday",
@@ -24,7 +33,7 @@ char *DateTime::weekDayNames[7] = {
     "Saturday"
 };
 
-char *DateTime::monthNames[12] = {
+const char *DateTime::monthNames[12] = {
     "January",
     "Feburary",
     "March",
@@ -40,11 +49,11 @@ char *DateTime::monthNames[12] = {
 };
 
 DateTime::DateTime(
-            int year,
-            int month,
-            int day,
-            int hour,
-            int minute,
+            int year,    
+            int month,   
+            int day,     
+            int hour,    
+            int minute,  
             int second  )
 {
     _tm.tm_year = year - 1900;
@@ -66,10 +75,9 @@ DateTime::DateTime( const DateTime &dt ):
     mktime(&_tm);
 }
 
-DateTime::DateTime()
-{
-    //This is needed to initialize the data.
-    now();
+DateTime::DateTime() 
+{ 
+    //now();
 }
 
 DateTime::DateTime( const struct tm &tm )
@@ -115,7 +123,7 @@ std::string DateTime::getMonthString(int month) // Will pass in 1-12
     return std::string( monthNames[(month-1)%12] );
 }
 
-void DateTime::setDayOfMonth(int day)
+void DateTime::setDayOfMonth(int day) 
 {
     _tm.tm_mday = day;
     mktime(&_tm);
@@ -141,7 +149,7 @@ std::string DateTime::getDayOfWeekString() const
     return std::string(weekDayNames[getDayOfWeek()]);
 }
 
-std::string DateTime::getDayOfWeekString(int wday)
+std::string DateTime::getDayOfWeekString(int wday) 
 {
     return std::string(weekDayNames[wday%7]);
 }
@@ -192,13 +200,13 @@ double DateTime::getModifiedJulianDate() const
 
     // Get GMT first
     struct tm gmt = _tm;
-//    tzset();
-//#ifdef __APPLE__
-//    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
-//#else
-//    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
-//#endif
-//    mktime(&gmt);
+    tzset();
+#ifdef  _DARWIN
+    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+#else
+    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+#endif
+    mktime(&gmt);
 
     double day   =  (double)(gmt.tm_mday) +           // Day
                     (double(gmt.tm_hour)/24.0) +      // hour
@@ -246,13 +254,13 @@ DateTime DateTime::getGMT() const
 {
     struct tm gmt = _tm;
 
-//    tzset();
-//#ifdef __APPLE__
-//    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
-//#else
-//    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
-//#endif
-//    mktime(&gmt);
+    tzset();
+#ifdef  _DARWIN
+    gmt.tm_sec += gmt.tm_gmtoff;           /* Seconds east of UTC.  */
+#else
+    gmt.tm_sec += timezone;         /* Seconds east of UTC.  */
+#endif
+    mktime(&gmt);
 
     return DateTime(gmt);
 }

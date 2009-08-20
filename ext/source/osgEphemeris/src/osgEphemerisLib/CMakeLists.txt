@@ -25,6 +25,11 @@ IF (WIN32)
 ELSE (WIN32)  
   SET(STATIC_OR_SHARED SHARED)
 ENDIF (WIN32)
+
+if (APPLE)
+   # It uses this weird macro for OS X support.  I'm not sure why.
+   ADD_DEFINITIONS(-D_DARWIN)
+endif (APPLE)
   
 ADD_LIBRARY(${LIB_NAME} ${STATIC_OR_SHARED}
     ${LIB_PUBLIC_HEADERS}
