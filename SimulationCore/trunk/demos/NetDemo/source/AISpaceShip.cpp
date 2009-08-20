@@ -156,31 +156,31 @@ namespace NetDemo
 
    void SpaceShipControllable::InitControllable(const osg::Matrix& matIn, SpaceShipControllable& stateIn)
    {
-      stateIn.mCurrentControls.mYaw = 0.0;
-      stateIn.mCurrentControls.mThrust = 0.0;
-      stateIn.mCurrentControls.mLift = 0.0;
+      stateIn.mCurrentControls.SetYaw(0.0);
+      stateIn.mCurrentControls.SetThrust(0.0);
+      stateIn.mCurrentControls.SetLift(0.0);
 
       SpaceShipGoalState& goalStateConstraint = stateIn.mGoalState;
-      goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(1000.0f);
+      goalStateConstraint.SetMaxAngularVel(osg::DegreesToRadians(1000.0f));
       //goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(10.0f);
       //goalStateConstraint.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
-      goalStateConstraint.mMaxAngularAccel = 50.0f;
-      goalStateConstraint.mMaxVel = 77.1667f; //150 knots
+      goalStateConstraint.SetMaxAngularAccel(50.0f);
+      goalStateConstraint.SetMaxVel(77.1667f); //150 knots
       //goalStateConstraint.mMaxAccel = 200.0f * 8.77f;
-      goalStateConstraint.mMaxAccel = 1000.0f;
-      goalStateConstraint.mMaxPitch = osg::DegreesToRadians(15.0f);
-      goalStateConstraint.mMaxRoll = osg::DegreesToRadians(30.0f);
-      goalStateConstraint.mMaxTiltPerSecond = osg::DegreesToRadians(5.0f);
-      goalStateConstraint.mMaxRollPerSecond = osg::DegreesToRadians(5.0f);
-      //goalStateConstraint.mMaxVerticalVel = 15.0f;//7.62f; //1500 feet/min
-      goalStateConstraint.mMaxVerticalVel = 50.0f;//7.62f; //1500 feet/min
-      goalStateConstraint.mMaxVerticalAccel = 50.0f;
+      goalStateConstraint.SetMaxAccel(1000.0f);
+      goalStateConstraint.SetMaxPitch(osg::DegreesToRadians(15.0f));
+      goalStateConstraint.SetMaxRoll(osg::DegreesToRadians(30.0f));
+      goalStateConstraint.SetMaxTiltPerSecond(osg::DegreesToRadians(5.0f));
+      goalStateConstraint.SetMaxRollPerSecond(osg::DegreesToRadians(5.0f));
+      //goalStateConstraint.mMaxVerticalVel(15.0f;//7.62f; //1500 feet/min
+      goalStateConstraint.SetMaxVerticalVel(50.0f);//7.62f; //1500 feet/min
+      goalStateConstraint.SetMaxVerticalAccel(50.0f);
 
-      goalStateConstraint.mMinElevation = 25.0f;
-      goalStateConstraint.mMaxElevation = 200.0f;
-      goalStateConstraint.mDragCoef = 0.005f;
-      goalStateConstraint.mAngularDragCoef = 0.005f;
-      goalStateConstraint.mVerticalDragCoef = 0.005f;
+      goalStateConstraint.SetMinElevation(25.0f);
+      goalStateConstraint.SetMaxElevation(200.0f);
+      goalStateConstraint.SetDragCoef(0.005f);
+      goalStateConstraint.SetAngularDragCoef(0.005f);
+      goalStateConstraint.SetVerticalDragCoef(0.005f);
 
       SetState(matIn, stateIn.mCurrentState);
       SetState(matIn, stateIn.mGoalState);
@@ -188,63 +188,69 @@ namespace NetDemo
 
    void SpaceShipControllable::ResetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState)
    {
-      spaceShipState.mVel.set(0.0f, 0.0f, 0.0f);
-      spaceShipState.mAccel.set(0.0f, 0.0f, 0.0f);
-      spaceShipState.mPitch = 0.0f;
-      spaceShipState.mRoll = 0.0f;
-      spaceShipState.mAngularAccel = 0.0f;
-      spaceShipState.mAngularVel = 0.0f;
-      spaceShipState.mVerticalVel = 0.0f;
-      spaceShipState.mVerticalAccel = 0.0f;
+      spaceShipState.SetVel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      spaceShipState.SetAccel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      spaceShipState.SetPitch(0.0f);
+      spaceShipState.SetRoll(0.0f);
+      spaceShipState.SetAngularAccel(0.0f);
+      spaceShipState.SetAngularVel(0.0f);
+      spaceShipState.SetVerticalVel(0.0f);
+      spaceShipState.SetVerticalAccel(0.0f);
 
-      spaceShipState.mForward = dtUtil::MatrixUtil::GetRow3(matIn, 1);
-      spaceShipState.mForward.normalize();
+      osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
+      fwd.normalize();
+      spaceShipState.SetForward(fwd);
 
-      spaceShipState.mUp = dtUtil::MatrixUtil::GetRow3(matIn, 2);
-      spaceShipState.mUp.normalize();
+      osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
+      up.normalize();
+      spaceShipState.SetUp(up);
 
-      spaceShipState.mPos[0] = matIn(3,0); spaceShipState.mPos[1] = matIn(3,1); spaceShipState.mPos[2] = matIn(3,2);
+      spaceShipState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1), matIn(3,2)));
 
-      spaceShipState.mTimeStep = 0.0f;
-      spaceShipState.mVel.set(0.0f, 0.0f, 0.0f);
+      spaceShipState.SetTimeStep(0.0f);
+      spaceShipState.SetVel(osg::Vec3());
    }
 
    void SpaceShipControllable::SetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState)
    {
-      spaceShipState.mForward = dtUtil::MatrixUtil::GetRow3(matIn, 1);
-      spaceShipState.mForward.normalize();
+      osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
+      fwd.normalize();
+      spaceShipState.SetForward(fwd);
 
-      spaceShipState.mUp = dtUtil::MatrixUtil::GetRow3(matIn, 2);
-      spaceShipState.mUp.normalize();
+      osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
+      up.normalize();
+      spaceShipState.SetUp(up);
 
-      spaceShipState.mPos[0] = matIn(3,0); spaceShipState.mPos[1] = matIn(3,1); spaceShipState.mPos[2] = matIn(3,2);
+      spaceShipState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1),  matIn(3,2)));
    }
 
    void SpaceShipControllable::OrthoNormalize(SpaceShipState& currentState)
    {
       osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
 
-      currentState.mForward.normalize();
+      osg::Vec3 fwd = currentState.GetForward();
+      fwd.normalize();
+      currentState.SetForward(fwd);
 
-      osg::Vec3 rightVector = currentState.mForward ^ tempUpVector;
+      osg::Vec3 rightVector = currentState.GetForward() ^ tempUpVector;
       rightVector.normalize();
-
-      currentState.mUp = rightVector ^ currentState.mForward;
-      currentState.mUp.normalize();
+      osg::Vec3 up = rightVector ^ currentState.GetForward();
+      up.normalize();
+      currentState.SetUp(up);
    }
 
    void SpaceShipControllable::SetMatrix(const SpaceShipState& currentState, osg::Matrix& result)
    {
       //we let the physics set our position, we just set the orientation
-      //result(3,0) = currentState.mPos[0];
-      //result(3,1) = currentState.mPos[1];
-      //result(3,2) = currentState.mPos[2];
+      //result(3,0) = currentState.GetPos()[0];
+      //result(3,1) = currentState.GetPos()[1];
+      //result(3,2) = currentState.GetPos()[2];
 
-      osg::Vec3 rightVector = currentState.mForward ^ currentState.mUp;
+      osg::Vec3 rightVector = currentState.GetForward() ^ currentState.GetUp();
       rightVector.normalize();
 
-      dtUtil::MatrixUtil::SetRow(result, currentState.mForward, 1);
-      dtUtil::MatrixUtil::SetRow(result, currentState.mUp, 2);
+      dtUtil::MatrixUtil::SetRow(result, currentState.GetForward(), 1);
+      dtUtil::MatrixUtil::SetRow(result, currentState.GetUp(), 2);
       dtUtil::MatrixUtil::SetRow(result, rightVector, 0);
    }
 
@@ -277,11 +283,11 @@ namespace NetDemo
 
    void SpaceShipControllable::UpdateHeading(const SpaceShipControls& controls)
    {
-      float thetaAngle = mCurrentState.mAngularVel * mTimeStep; 
+      float thetaAngle = mCurrentState.GetAngularVel() * mTimeStep;
 
       osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
 
-      mCurrentState.mForward = osg::Matrix::transform3x3(mCurrentState.mForward, rotation); 
+      mCurrentState.SetForward(osg::Matrix::transform3x3(mCurrentState.GetForward(), rotation));
    }
 
    void SpaceShipControllable::UpdateAngularVelocity(const SpaceShipControls& controls)
@@ -289,15 +295,15 @@ namespace NetDemo
       SpaceShipState& physicalState = mCurrentState;
       SpaceShipGoalState& physicalConstraint = mGoalState;
 
-      float newVelocity = controls.mYaw * physicalConstraint.mMaxAngularVel;
-      physicalState.mAngularVel = newVelocity;
+      float newVelocity = controls.GetYaw() * physicalConstraint.GetMaxAngularVel();
+      physicalState.SetAngularVel(newVelocity);
       //float maxAccel = physicalConstraint.mMaxAngularAccel * physicalState.mTimeStep;
-      //physicalState.mAngularVel += Clamp(newVelocity - physicalState.mAngularVel, -maxAccel, maxAccel);
+      //physicalState.GetAngularVel() += Clamp(newVelocity - physicalState.GetAngularVel(), -maxAccel, maxAccel);
 
-      //physicalState.mAngularVel -= physicalState.mAngularVel * physicalConstraint.mAngularDragCoef;
+      //physicalState.GetAngularVel() -= physicalState.GetAngularVel() * physicalConstraint.mAngularDragCoef;
 
       //this is necessary because we don't clamp the controls to 1.0 so technically we may need to clamp here
-      //physicalState.mAngularVel = Clamp(physicalState.mAngularVel, -physicalConstraint.mMaxAngularVel, physicalConstraint.mMaxAngularVel);
+      //physicalState.GetAngularVel() = Clamp(physicalState.GetAngularVel(), -physicalConstraint.mMaxAngularVel, physicalConstraint.mMaxAngularVel);
    }
 
    void SpaceShipControllable::UpdateVerticalVelocity(const SpaceShipControls& controls)
@@ -306,20 +312,21 @@ namespace NetDemo
       SpaceShipGoalState& physicalConstraint = mGoalState;
 
       //update acceleration
-      physicalState.mVerticalAccel = controls.mLift * physicalConstraint.mMaxVerticalAccel;
+      physicalState.SetVerticalAccel(controls.GetLift() * physicalConstraint.GetMaxVerticalAccel());
 
       //update velocity
-      physicalState.mVerticalVel += physicalState.mVerticalAccel * physicalState.mTimeStep;
-      physicalState.mVerticalVel -= (physicalState.mVerticalVel * physicalConstraint.mVerticalDragCoef);   
-      physicalState.mVerticalVel = Clamp(physicalState.mVerticalVel, -physicalConstraint.mMaxVerticalVel, physicalConstraint.mMaxVerticalVel);    
+      physicalState.SetVerticalVel(physicalState.GetVerticalVel() + (physicalState.GetVerticalAccel() * physicalState.GetTimeStep()));
+      physicalState.SetVerticalVel(physicalState.GetVerticalVel() - (physicalState.GetVerticalVel() * physicalConstraint.GetVerticalDragCoef()));
+      physicalState.SetVerticalVel(Clamp(physicalState.GetVerticalVel(), -physicalConstraint.GetMaxVerticalVel(), physicalConstraint.GetMaxVerticalVel()));
    }
 
    void SpaceShipControllable::UpdatePosition(const SpaceShipControls& controls)
    {
       SpaceShipState& physicalState = mCurrentState;
 
-      physicalState.mPos += physicalState.mVel * physicalState.mTimeStep;  
-      physicalState.mPos[2] += physicalState.mVerticalVel * physicalState.mTimeStep;
+      osg::Vec3 newPos = physicalState.GetPos() + (physicalState.GetVel() * physicalState.GetTimeStep());
+      newPos[2] += physicalState.GetVerticalVel() * physicalState.GetTimeStep();
+      physicalState.SetPos(newPos);
    }
 
    void SpaceShipControllable::UpdateVelocity(const SpaceShipControls& controls)
@@ -327,18 +334,21 @@ namespace NetDemo
       SpaceShipState& physicalState = mCurrentState;
       SpaceShipGoalState& physicalConstraint = mGoalState;
 
-      float newVelocity = (controls.mThrust * physicalConstraint.mMaxVel);  
-      float maxAccel = physicalConstraint.mMaxAccel * physicalState.mTimeStep; 
+      float newVelocity = (controls.GetThrust() * physicalConstraint.GetMaxVel());
+      float maxAccel = physicalConstraint.GetMaxAccel() * physicalState.GetTimeStep();
 
-      physicalState.mVel += physicalState.mForward * Clamp(newVelocity - physicalState.mVel.length(), -maxAccel, maxAccel);
-      physicalState.mVel -= (physicalState.mVel * physicalConstraint.mDragCoef);
+      osg::Vec3 newVel = physicalState.GetVel();
+      newVel += physicalState.GetForward() * Clamp(newVelocity - physicalState.GetVel().length(), -maxAccel, maxAccel);
+      newVel -= (physicalState.GetVel() * physicalConstraint.GetDragCoef());
+
 
       //we don't clamp the controls so this is necessary
-      if(physicalState.mVel.length() > physicalConstraint.mMaxVel)
+      if (newVel.length() > physicalConstraint.GetMaxVel())
       {
-         physicalState.mVel.normalize();
-         physicalState.mVel *= physicalConstraint.mMaxVel;
+         newVel.normalize();
+         newVel *= physicalConstraint.GetMaxVel();
       }
+      physicalState.SetVel(newVel);
    }
 
    void SpaceShipControllable::UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt)
@@ -346,14 +356,14 @@ namespace NetDemo
       SpaceShipState& physicalState = mCurrentState;
       SpaceShipGoalState& physicalConstraint = mGoalState;
 
-      physicalState.mPitch = Dampen(physicalState.mPitch, (controls.mThrust * physicalConstraint.mMaxPitch), physicalConstraint.mMaxTiltPerSecond * physicalState.mTimeStep, (physicalState.mPitch / physicalConstraint.mMaxPitch));
+      physicalState.SetPitch(Dampen(physicalState.GetPitch(), (controls.GetThrust() * physicalConstraint.GetMaxPitch()), physicalConstraint.GetMaxTiltPerSecond() * physicalState.GetTimeStep(), (physicalState.GetPitch() / physicalConstraint.GetMaxPitch())));
 
-      physicalState.mPitch = Clamp(physicalState.mPitch, -physicalConstraint.mMaxPitch, physicalConstraint.mMaxPitch);
+      physicalState.SetPitch(Clamp(physicalState.GetPitch(), -physicalConstraint.GetMaxPitch(), physicalConstraint.GetMaxPitch()));
 
-      osg::Vec3 rightVec = (physicalState.mForward ^ physicalState.mUp);
+      osg::Vec3 rightVec = (physicalState.GetForward() ^ physicalState.GetUp());
       rightVec.normalize();
 
-      osg::Matrix rotation = osg::Matrix::rotate( -physicalState.mPitch, rightVec);
+      osg::Matrix rotation = osg::Matrix::rotate( -physicalState.GetPitch(), rightVec);
 
       tilt = osg::Matrix::transform3x3(tilt, rotation); 
 
@@ -365,14 +375,14 @@ namespace NetDemo
       SpaceShipState& physicalState = mCurrentState;
       SpaceShipGoalState& physicalConstraint = mGoalState;
 
-      physicalState.mRoll = Dampen(physicalState.mRoll, controls.mYaw * physicalConstraint.mMaxRoll, physicalConstraint.mMaxRollPerSecond * physicalState.mTimeStep, (physicalState.mRoll / physicalConstraint.mMaxRoll));
+      physicalState.SetRoll(Dampen(physicalState.GetRoll(), controls.GetYaw() * physicalConstraint.GetMaxRoll(), physicalConstraint.GetMaxRollPerSecond() * physicalState.GetTimeStep(), (physicalState.GetRoll() / physicalConstraint.GetMaxRoll())));
 
-      //physicalState.mRoll *= ((0.1 + physicalState.mVel.length()) / physicalConstraint.mMaxVel);
+      //physicalState.mRoll *= ((0.1 + physicalState.GetVel().length()) / physicalConstraint.mMaxVel);
 
-      if(physicalState.mRoll > physicalConstraint.mMaxRoll) physicalState.mRoll = physicalConstraint.mMaxRoll;
-      else if(physicalState.mRoll < -physicalConstraint.mMaxRoll) physicalState.mRoll = -physicalConstraint.mMaxRoll;
+      if (physicalState.GetRoll() > physicalConstraint.GetMaxRoll()) physicalState.SetRoll(physicalConstraint.GetMaxRoll());
+      else if (physicalState.GetRoll() < -physicalConstraint.GetMaxRoll()) physicalState.SetRoll(-physicalConstraint.GetMaxRoll());
 
-      osg::Matrix rotation = osg::Matrix::rotate(-physicalState.mRoll, physicalState.mForward);
+      osg::Matrix rotation = osg::Matrix::rotate(-physicalState.GetRoll(), physicalState.GetForward());
 
       roll = osg::Matrix::transform3x3(roll, rotation); 
 
@@ -424,7 +434,7 @@ namespace NetDemo
    {
       if(!mPointOfInterest.empty())
       {
-         result.mPos = Top();
+         result.SetPos(Top());
          Pop();
       }
 
@@ -552,15 +562,15 @@ namespace NetDemo
       GetStateMachine().Update(dt);
       mAIModel.Step(dt, mAIControllable);
 
-      //osg::Vec3 linearVelocity = mAIControllable.mCurrentState.mVel * 0.25f;
+      //osg::Vec3 linearVelocity = mAIControllable.mCurrentState.GetVel() * 0.25f;
       //linearVelocity[2] = 2.5f + mAIControllable.mCurrentState.mVerticalVel;
 
-      //osg::Vec3 force = mAIControllable.mCurrentState.GetForward() * 10.0f * mAIControllable.mCurrentState.mVel.length();
+      //osg::Vec3 force = mAIControllable.mCurrentState.GetForward() * 10.0f * mAIControllable.mCurrentState.GetVel().length();
       //GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
       //GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->ApplyImpulse(linearVelocity);
 
-      osg::Vec3 up = mAIControllable.mCurrentState.mUp;
-      osg::Vec3 at = mAIControllable.mCurrentState.mForward;
+      osg::Vec3 up = mAIControllable.mCurrentState.GetUp();
+      osg::Vec3 at = mAIControllable.mCurrentState.GetForward();
 
       osg::Vec3 right = at ^ up;
       right.normalize();
@@ -571,14 +581,14 @@ namespace NetDemo
 
       osg::Vec3 force;
 
-      force += osg::Vec3(0.0f, 0.0f, 1000.0f) + (up * (mAIControllable.mCurrentControls.mLift * maxLiftForce));
+      force += osg::Vec3(0.0f, 0.0f, 1000.0f) + (up * (mAIControllable.mCurrentControls.GetLift() * maxLiftForce));
       //force += at * (mAIControllable.mCurrentControls.mThrust * maxThrustForce);
       //force += right * (mAIControllable.mCurrentControls.mYaw * maxYawForce);
       
       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
-      mAIControllable.mCurrentState.mVel = physicsObject->GetLinearVelocity();
+      mAIControllable.mCurrentState.SetVel(physicsObject->GetLinearVelocity());
 
-      force += mAIControllable.mCurrentState.GetForward() * (75.0f + (100.0f * mAIControllable.mCurrentControls.mThrust));
+      force += mAIControllable.mCurrentState.GetForward() * (75.0f + (100.0f * mAIControllable.mCurrentControls.GetThrust()));
       physicsObject->GetBodyWrapper()->AddForce(force);
    }
 
@@ -592,7 +602,7 @@ namespace NetDemo
       SpaceShipControllable::SetState(xform, mAIControllable.mCurrentState);
 
       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
-      mAIControllable.mCurrentState.mVel = physicsObject->GetLinearVelocity();
+      mAIControllable.mCurrentState.SetVel(physicsObject->GetLinearVelocity());
 
    }
 
@@ -609,10 +619,10 @@ namespace NetDemo
 
    void SpaceShipAIHelper::OutputControl(const SpaceShipControllable::PathType& pathToFollow, const SpaceShipControllable::StateType& current_state, SpaceShipControllable::ControlType& result) const
    {
-      if(!pathToFollow.empty())
+      if (!pathToFollow.empty())
       {
          //GetSteeringModel()->Update(current_state.mTimeStep);
-         mDefaultBehavior->Think(current_state.mTimeStep,pathToFollow.front(), current_state, result);
+         mDefaultBehavior->Think(current_state.GetTimeStep(), pathToFollow.front(), current_state, result);
       }
       else
       {
@@ -737,7 +747,7 @@ namespace NetDemo
 
    float Align::GetTargetForward(float dt, const osg::Vec3& targetPos, const SpaceShipGoalState& current_goal, const SpaceShipState& current_state, osg::Vec3& vec_in)
    {
-      osg::Vec3 projectedPos = current_state.mPos + (current_state.mVel * dt);
+      osg::Vec3 projectedPos = current_state.GetPos() + (current_state.GetVel() * dt);
 
       osg::Vec3 goalForward = targetPos - projectedPos;
 
@@ -753,9 +763,9 @@ namespace NetDemo
       osg::Vec3 goalForward;
       float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);      
 
-      osg::Vec3 currForward = current_state.mForward;
+      osg::Vec3 currForward = current_state.GetForward();
 
-      float thetaAngle = (current_state.mAngularVel * lookAhead); 
+      float thetaAngle = (current_state.GetAngularVel() * lookAhead);
       osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
       currForward = osg::Matrix::transform3x3(currForward, rotation); 
       currForward.normalize();
@@ -766,10 +776,10 @@ namespace NetDemo
       float angle = acos(dot);
       if(angle > 0.1f)
       {     
-         float yaw = angle / fabs(current_state.mAngularVel);
+         float yaw = angle / fabs(current_state.GetAngularVel());
          dtUtil::Clamp(yaw, 0.0001f, mTimeToTarget);
          yaw /= mTimeToTarget;
-         result.mYaw = Sgn(sign) * yaw;         
+         result.SetYaw(Sgn(sign) * yaw);
       }  
    }
 
@@ -781,7 +791,7 @@ namespace NetDemo
       osg::Vec3 targetPos = BaseClass::GetTargetPosition(lookAhead, current_goal);
       osg::Vec3 goalForward;
       float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);
-      osg::Vec3 currForward = current_state.mForward;
+      osg::Vec3 currForward = current_state.GetForward();
 
       float angle = 0.0f;
       float dot = goalForward * currForward;
@@ -789,21 +799,21 @@ namespace NetDemo
 
       angle = acos(dot);
 
-      float timeRemaining = dist / current_state.mVel.length();
+      float timeRemaining = dist / current_state.GetVel().length();
 
       dtUtil::Clamp(timeRemaining, 0.00001f, mTimeToTarget);
       timeRemaining /= mTimeToTarget;
 
-      result.mThrust = timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed);
+      result.SetThrust(timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed));
 
       //compute height
-      osg::Vec3 pos = current_state.mPos;
-      float heightDiff = current_goal.GetPos()[2] - (pos[2] + (current_state.mVel[2] * dt));
+      osg::Vec3 pos = current_state.GetPos();
+      float heightDiff = current_goal.GetPos()[2] - (pos[2] + (current_state.GetVel()[2] * dt));
       heightDiff /= 100.0f;
 
       dtUtil::Clamp(heightDiff, -1.0f, 1.0f);
       float absHeightDiff = fabs(heightDiff);
-      result.mLift = BaseClass::Sgn(heightDiff) * absHeightDiff * absHeightDiff;
+      result.SetLift(BaseClass::Sgn(heightDiff) * absHeightDiff * absHeightDiff);
    }
 
 }//namespace NetDemo
