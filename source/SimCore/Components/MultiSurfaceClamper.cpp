@@ -36,6 +36,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
 #include <osg/Geometry>
+#include <osg/Geode>
 #include <osg/Array>
 
 #include <sstream>

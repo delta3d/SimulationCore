@@ -803,7 +803,7 @@ namespace SimCore
             }
 
             SingleISector.GetHitPoint(hp);
-            const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0).getDrawable();
+            const osg::Drawable* drawable = SingleISector.GetIntersectionHit(0).drawable.get();
             if( drawable != NULL && drawable->getStateSet() != NULL)
             {
                RefPtr<const osg::IntArray> mOurList
