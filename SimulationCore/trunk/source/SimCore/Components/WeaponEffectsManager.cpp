@@ -1561,15 +1561,16 @@ namespace SimCore
                if( owner != NULL )
                {
                   const osg::Geode* geode = NULL;
-                  osgUtil::IntersectVisitor::HitList& hitList = isector.GetHitList();
-                  osgUtil::IntersectVisitor::HitList::iterator curHitIter = hitList.begin();
-                  osgUtil::IntersectVisitor::HitList::iterator endHitList = hitList.end();
+                  dtCore::BatchIsector::HitList& hitList = isector.GetHitList();
+                  dtCore::BatchIsector::HitList::iterator curHitIter = hitList.begin();
+                  dtCore::BatchIsector::HitList::iterator endHitList = hitList.end();
                   for( int index = 0; curHitIter != endHitList; ++curHitIter, ++index )
                   {
-                     const osgUtil::Hit& hit = hitList[index];
+                     const dtCore::BatchIsector::Hit& hit = *curHitIter;
 
                      // Get the drawable of the current hit.
-                     geode = hit.getGeode();
+                     const osg::NodePath& nodePath = hit.nodePath;
+                     geode = dynamic_cast<osg::Geode*>(nodePath.back());
                      if( geode == NULL )
                      {
                         continue;
