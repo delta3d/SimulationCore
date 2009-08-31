@@ -146,6 +146,12 @@ namespace SimCore
 
                /*virtual*/ void Update(float dt)
                {
+                  if (!mWalk.valid() || !mRun.valid())
+                  {
+                     //A warning was already printed out that this won't work, so just make sure we don't crash.
+                     return;
+                  }
+
                   //update our velocity vector
                   if(mParentHuman.valid())
                   {
