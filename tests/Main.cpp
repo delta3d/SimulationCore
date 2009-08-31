@@ -150,7 +150,8 @@ void SetupCEGUI(dtABC::Application& app)
 #define TEST_ROOT ../
 #endif
 
-#define GET_PATH(testpath) #testpath
+#define _GET_PATH(testpath) #testpath
+#define GET_PATH(testpath) _GET_PATH(testpath)
 
 int main (int argc, char* argv[])
 {
