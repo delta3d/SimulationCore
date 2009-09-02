@@ -45,7 +45,7 @@
 namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
-   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, QGLWidget* sharedContextWidget)
+   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, const QGLWidget* sharedContextWidget)
    : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Tool | Qt::Window)
    , mGLWidget(NULL)
    {

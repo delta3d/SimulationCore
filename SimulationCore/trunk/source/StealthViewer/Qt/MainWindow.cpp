@@ -97,40 +97,14 @@
 
 namespace StealthQt
 {
-   class StealthWindowSystemWrapper: public dtQt::QtGuiWindowSystemWrapper
+   class StealthWidgetFactory: public dtQt::GLWidgetFactory
    {
    public:
-      StealthWindowSystemWrapper(osg::GraphicsContext::WindowingSystemInterface& oldInterface)
-      : dtQt::QtGuiWindowSystemWrapper(oldInterface)
+      ///Overwrite to generate a custom OSGAdapterWidget
+      virtual dtQt::OSGAdapterWidget* CreateWidget(bool drawOnSeparateThread, QWidget* parent = NULL,
+                                             const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = NULL)
       {
-      }
-
-      osg::GraphicsContext* createGraphicsContext(osg::GraphicsContext::Traits* traits)
-      {
-         //return new osgViewer::GraphicsWindowEmbedded(traits);
-
-         if(traits->pbuffer)
-         {
-            return QtGuiWindowSystemWrapper::createGraphicsContext(traits);
-         }
-         else
-         {
-            QGLWidget* sharedContextWidget = NULL;
-            if (traits->sharedContext != NULL)
-            {
-               dtQt::OSGGraphicsWindowQt* sharedWin = dynamic_cast<dtQt::OSGGraphicsWindowQt*>(traits->sharedContext);
-               if (sharedWin != NULL)
-               {
-                  sharedContextWidget = sharedWin->GetQGLWidget();
-               }
-               else
-               {
-                  LOG_ERROR("A shared context was specified, but it is not a QGLWidget based context, so it can't be shared.");
-               }
-            }
-
-            return new dtQt::OSGGraphicsWindowQt(traits, NULL, new StealthQt::AdditionalViewDockWidget(NULL, sharedContextWidget));
-         }
+         return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget);
       }
    };
 
@@ -390,7 +364,7 @@ namespace StealthQt
 
       if (winSys != NULL)
       {
-         osg::GraphicsContext::setWindowingSystemInterface(new StealthWindowSystemWrapper(*winSys));
+         osg::GraphicsContext::setWindowingSystemInterface(new dtQt::QtGuiWindowSystemWrapper(*winSys));
       }
 
       try

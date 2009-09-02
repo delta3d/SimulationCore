@@ -44,7 +44,7 @@ namespace StealthQt
    {
       Q_OBJECT;
    public:
-      AdditionalViewDockWidget(QWidget* parent = NULL, QGLWidget* sharedContextWidget = NULL);
+      AdditionalViewDockWidget(QWidget* parent = NULL, const QGLWidget* sharedContextWidget = NULL);
       virtual ~AdditionalViewDockWidget();
 
 //      void SetQGLWidget(QGLWidget* widgetChild);
