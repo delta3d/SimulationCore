@@ -129,7 +129,7 @@ namespace StealthQt
                }
             }
 
-            return new dtQt::OSGGraphicsWindowQt(traits, new StealthQt::AdditionalViewDockWidget(NULL, sharedContextWidget));
+            return new dtQt::OSGGraphicsWindowQt(traits, NULL, new StealthQt::AdditionalViewDockWidget(NULL, sharedContextWidget));
          }
       }
    };
