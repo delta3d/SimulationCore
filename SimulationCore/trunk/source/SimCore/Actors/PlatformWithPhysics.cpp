@@ -38,6 +38,7 @@
 #include <dtDAL/enginepropertytypes.h>
 
 #include <osg/Matrix>
+#include <osg/MatrixTransform>
 
 namespace SimCore
 {
@@ -133,11 +134,9 @@ namespace SimCore
       void PlatformWithPhysics::LoadCollision()
       {
          std::string checkValue;
-         unsigned int modelToLoad = 0;
 
          // release if something is already made for this actor
          mPhysicsHelper->RemovePhysicsObject(DEFAULT_NAME);
-
          BaseEntityActorProxy::DamageStateEnum& damState = GetDamageState();
          if (damState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          {
@@ -147,18 +146,16 @@ namespace SimCore
             || damState == BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE )
          {
             checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR)->ToString();
-            modelToLoad = 1;
          }
          else if (damState == BaseEntityActorProxy::DamageStateEnum::DESTROYED)
          {
             checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_DESTROYED_ACTOR)->ToString();
-            modelToLoad = 2;
          }
 
          if(checkValue.empty())
          {
             LOG_DEBUG("Unable to load file, resource was not valid! This is for actor \"" +
-               GetUniqueId().ToString() + "\", damage state \"" + damState.GetName() + "\". However this is called from " +
+               GetUniqueId().ToString() + ". However this is called from " +
                "setdamagestate, and model may not be valid yet.");
             return;
          }
@@ -178,27 +175,7 @@ namespace SimCore
             mPhysicsHelper->SetResourceName(checkValue);
             mPhysicsHelper->SetLoadAsCached(true);
 
-            switch(modelToLoad)
-            {
-               case 0:
-               default:
-               {
-                  mPhysicsHelper->InitializePrimitive(GetNonDamagedFileNode(), sendInMatrix);
-               }
-               break;
-
-               case 1:
-               {
-                  mPhysicsHelper->InitializePrimitive(GetDamagedFileNode(), sendInMatrix);
-               }
-               break;
-
-               case 2:
-               {
-                  mPhysicsHelper->InitializePrimitive(GetDestroyedFileNode(),sendInMatrix);
-               }
-               break;
-            }
+            mPhysicsHelper->InitializePrimitive(&GetScaleMatrixTransform(), sendInMatrix);
          }
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
@@ -212,24 +189,7 @@ namespace SimCore
 
             switch(modelToLoad)
             {
-               case 0:
-               default:
-               {
-                  physObj->CreateFromProperties(GetNonDamagedFileNode());
-               }
-               break;
-
-               case 1:
-               {
-                  physObj->CreateFromProperties(GetDamagedFileNode());
-               }
-               break;
-
-               case 2:
-               {
-                  physObj->CreateFromProperties(GetDestroyedFileNode());
-               }
-               break;
+               physObj->CreateFromProperties(&GetScaleMatrixTransform());
             }
 
          }
