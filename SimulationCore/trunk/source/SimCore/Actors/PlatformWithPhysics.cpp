@@ -187,10 +187,7 @@ namespace SimCore
             physObj->SetTransform(xform);
             mPhysicsHelper->AddPhysicsObject(*physObj);
 
-            switch(modelToLoad)
-            {
-               physObj->CreateFromProperties(&GetScaleMatrixTransform());
-            }
+            physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
          }
 #endif
