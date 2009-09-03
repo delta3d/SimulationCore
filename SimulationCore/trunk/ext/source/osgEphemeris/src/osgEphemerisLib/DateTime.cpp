@@ -77,7 +77,7 @@ DateTime::DateTime( const DateTime &dt ):
 
 DateTime::DateTime() 
 { 
-    //now();
+    now();
 }
 
 DateTime::DateTime( const struct tm &tm )
