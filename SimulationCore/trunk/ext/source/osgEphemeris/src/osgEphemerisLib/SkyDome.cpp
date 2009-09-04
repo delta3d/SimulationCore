@@ -33,6 +33,7 @@
 #include <osg/TexEnv>
 
 #include <osgEphemeris/SkyDome.h>
+#include <osg/Version>
 
 
 using namespace osgEphemeris;
@@ -613,7 +614,7 @@ void SkyDome::_computeSkyTexture()
         if(_current_tex_row >= SKY_DOME_Y_SIZE)
             _current_tex_row = 0;
 
-#if (OSG_VERSION_MAJOR >= 2) && (OSG_VERSION_MINOR >= 6)
+#if (OSG_VERSION_MAJOR >= 2) && (OSG_VERSION_MINOR >= 8)
         image->dirty();
 #else
         _skyTexture->setImage( image );
