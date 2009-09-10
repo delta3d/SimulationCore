@@ -201,7 +201,7 @@ namespace SimCore
          , mGUIRoot(new osg::Camera())
          , mNVGSRoot(new osg::Camera())
          , mNVGS(0)
-         , mCullVisitor(new SimCore::AgeiaTerrainCullVisitor())
+         , mCullVisitor(new SimCore::SimCoreCullVisitor())
       {
       }
 
@@ -232,7 +232,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
-      AgeiaTerrainCullVisitor* RenderingSupportComponent::GetCullVisitor()
+      SimCoreCullVisitor* RenderingSupportComponent::GetCullVisitor()
       {
          return mCullVisitor.get();
       }

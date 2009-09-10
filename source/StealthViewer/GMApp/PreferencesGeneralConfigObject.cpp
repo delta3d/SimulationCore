@@ -99,10 +99,14 @@ namespace StealthGM
       mInputComponent->EnableCameraCollision(GetEnableCameraCollision());
 
       // Update rendering options
-      dtCore::Camera* camera = gameManager.GetApplication().GetCamera();
+      unsigned numViews = gameManager.GetApplication().GetNumberOfViews();
 
+      for (unsigned i = 0; i < numViews; ++i)
+      {
+         dtCore::View* view = gameManager.GetApplication().GetView(i);
+         view->GetCamera()->SetLODScale(GetLODScale());
+      }
       // Updated the LOD scale
-      camera->GetOSGCamera()->setLODScale(GetLODScale());
 
       AttachOrDetach(gameManager);
 

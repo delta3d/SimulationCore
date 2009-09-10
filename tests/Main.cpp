@@ -48,6 +48,7 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/globals.h>
 #include <dtCore/shadermanager.h>
+#include <dtCore/system.h>
 
 #include <dtDAL/project.h>
 #include <dtDAL/map.h>
@@ -207,6 +208,8 @@ int main (int argc, char* argv[])
 
    try
    {
+      //Force this to false because many of the tests expect it to be false.
+      dtCore::System::GetInstance().SetUseFixedTimeStep(false);
       dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
       dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*GlobalApplication);

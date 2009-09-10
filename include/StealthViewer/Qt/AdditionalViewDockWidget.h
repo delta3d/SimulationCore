@@ -30,11 +30,17 @@
 #ifndef ADDITIONALVIEWDOCKWIDGET_H_
 #define ADDITIONALVIEWDOCKWIDGET_H_
 
+#include <cstddef>
 //#include <QtGui/QDockWidget>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <dtQt/osgadapterwidget.h>
 
+//So the Q_Object macro will work
+#include <QtCore/QObject>
+
+/// @cond DOXYGEN_SHOULD_SKIP_THIS
 class QGLWidget;
+/// @endcond
 
 namespace StealthQt
 {
@@ -42,7 +48,8 @@ namespace StealthQt
    /// Simple class to make it easy for code to tell if a dock window is an addition view.
    class AdditionalViewDockWidget: public dtQt::OSGAdapterWidget
    {
-      Q_OBJECT;
+      Q_OBJECT
+
    public:
       AdditionalViewDockWidget(QWidget* parent = NULL, const QGLWidget* sharedContextWidget = NULL);
       virtual ~AdditionalViewDockWidget();
@@ -58,8 +65,7 @@ namespace StealthQt
       static AdditionalViewDockWidget* GetDockWidgetForViewWindow(StealthGM::ViewWindowWrapper& wrapper);
 
       void RequestClose();
-   signals:
-      void closeRequested(AdditionalViewDockWidget&);
+
    protected:
       virtual void closeEvent(QCloseEvent *e);
    private:

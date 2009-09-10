@@ -35,11 +35,11 @@
 namespace SimCore
 {
    ///////////////////////////////////////////////////////////////////////////////
-   class SIMCORE_EXPORT AgeiaTerrainCullVisitor : public osgUtil::CullVisitor
+   class SIMCORE_EXPORT SimCoreCullVisitor : public osgUtil::CullVisitor
    {
       public:
          /// Constructor
-         AgeiaTerrainCullVisitor();
+         SimCoreCullVisitor();
 
          /// In Here we load objects within radius to physics
          virtual void apply(osg::Geode& node);
@@ -84,7 +84,7 @@ namespace SimCore
 
       protected:
          /// Destructor
-         virtual ~AgeiaTerrainCullVisitor();
+         virtual ~SimCoreCullVisitor();
 
       private:
          /// we feed the terrain data through here, it loads the physics
