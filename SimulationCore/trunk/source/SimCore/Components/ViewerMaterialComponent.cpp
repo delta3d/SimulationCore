@@ -105,22 +105,32 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////////////
       const SimCore::Actors::ViewerMaterialActor& ViewerMaterialComponent::GetConstMaterialByName(const std::string& materialName)
       {
+         static const std::string DEFAULT_MATERIAL_NAME("DefaultMaterial");
+
          std::vector<dtCore::RefPtr<SimCore::Actors::ViewerMaterialActor> >::iterator iter =  mOurMaterials.begin();
-         for(;iter != mOurMaterials.end(); ++iter)
+         for (;iter != mOurMaterials.end(); ++iter)
          {
             if((*iter)->GetName() == materialName)
             {
                return *(*iter).get();
             }
          }
-         LOG_WARNING("GetConstMaterialByName(const std::string& materialName) Could not find your material. Returning Default Material"); 
-         if(mOurMaterials.size() == 0)
+
+         if (materialName != DEFAULT_MATERIAL_NAME)
          {
-            LOG_WARNING("Map must not have been intialized, default material wasnt made, making now.");
-            CreateOrChangeMaterialByName("DefaultMaterial");
+            LOG_WARNING("GetConstMaterialByName(const std::string& materialName) Could not find your material. Returning Default Material");
+            if (mOurMaterials.empty())
+            {
+               LOG_WARNING("Map must not have been intialized, default material wasnt made, making now.");
+               CreateOrChangeMaterialByName(DEFAULT_MATERIAL_NAME);
+            }
+         }
+         else
+         {
+            CreateOrChangeMaterialByName(DEFAULT_MATERIAL_NAME);
          }
 
-         return GetConstMaterialByName("DefaultMaterial");
+         return GetConstMaterialByName(DEFAULT_MATERIAL_NAME);
       }
 
       //////////////////////////////////////////////////////////////////////////////////////

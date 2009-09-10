@@ -446,7 +446,7 @@ namespace StealthGM
    {
       GetWindow().GetOsgViewerGraphicsWindow()->getEventQueue()->closeWindow();
       dtCore::View& view = GetView();
-      gameManager.GetApplication().RemoveView(view);
+      gameManager.GetApplication().RemoveView(view, true);
 
       if (view.GetCamera() != NULL)
       {

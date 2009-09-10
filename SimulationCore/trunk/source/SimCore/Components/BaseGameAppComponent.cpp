@@ -30,7 +30,6 @@
 #include <dtGame/actorupdatemessage.h>
 
 #include <SimCore/CommandLineObject.h>
-#include <SimCore/AgeiaTerrainCullVisitor.h>
 #include <SimCore/IGExceptionEnum.h>
 #include <SimCore/Utilities.h>
 

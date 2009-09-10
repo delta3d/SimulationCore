@@ -364,7 +364,9 @@ namespace StealthQt
 
       if (winSys != NULL)
       {
-         osg::GraphicsContext::setWindowingSystemInterface(new dtQt::QtGuiWindowSystemWrapper(*winSys));
+         dtQt::QtGuiWindowSystemWrapper* wsw = new dtQt::QtGuiWindowSystemWrapper(*winSys);
+         wsw->SetGLWidgetFactory(new StealthWidgetFactory);
+         osg::GraphicsContext::setWindowingSystemInterface(wsw);
       }
 
       try

@@ -21,14 +21,14 @@
 * @author Allen Danklefsen
 */
 #include <prefix/SimCorePrefix-src.h>
-#include <SimCore/AgeiaTerrainCullVisitor.h>
+#include <SimCore/SimCoreCullVisitor.h>
 #include <osg/Billboard>
 #include <osg/ProxyNode>
 
 namespace SimCore
 {
    ///////////////////////////////////////////////////////////////////////////
-   AgeiaTerrainCullVisitor::AgeiaTerrainCullVisitor() : CullVisitor()
+   SimCoreCullVisitor::SimCoreCullVisitor() : CullVisitor()
       , mCurrentlyInTerrain(false)
       , mCameraPosition()
       , mRadius(1250)
@@ -41,61 +41,61 @@ namespace SimCore
    {
    }
 
-   AgeiaTerrainCullVisitor::~AgeiaTerrainCullVisitor()
+   SimCoreCullVisitor::~SimCoreCullVisitor()
    {
 
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::SetEnablePhysics(bool b)
+   void SimCoreCullVisitor::SetEnablePhysics(bool b)
    {
       mEnablePhysics = b;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   bool AgeiaTerrainCullVisitor::GetEnablePhysics() const
+   bool SimCoreCullVisitor::GetEnablePhysics() const
    {
       return mEnablePhysics;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::SetCookingRadius(float radius)
+   void SimCoreCullVisitor::SetCookingRadius(float radius)
    {
       mRadius = radius;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   float AgeiaTerrainCullVisitor::GetCookingRadius() const
+   float SimCoreCullVisitor::GetCookingRadius() const
    {
       return mRadius;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::SetCullRadius(float radius)
+   void SimCoreCullVisitor::SetCullRadius(float radius)
    {
       mPagingDistance = radius;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   float AgeiaTerrainCullVisitor::GetCullRadius() const
+   float SimCoreCullVisitor::GetCullRadius() const
    {
       return mPagingDistance;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::SetFrameDelay(int delay)
+   void SimCoreCullVisitor::SetFrameDelay(int delay)
    {
       mCheckTerrainAmount = delay;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   int AgeiaTerrainCullVisitor::GetFrameDelay() const
+   int SimCoreCullVisitor::GetFrameDelay() const
    {
       return mCheckTerrainAmount;
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::apply(osg::Transform& node)
+   void SimCoreCullVisitor::apply(osg::Transform& node)
    {
       if(mTerrainNode.valid() 
          && ++mTerrainStep > mCheckTerrainAmount
@@ -129,7 +129,7 @@ namespace SimCore
    }
 
    ///////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::apply(osg::Geode& node)
+   void SimCoreCullVisitor::apply(osg::Geode& node)
    {
       // Terrex terrain for example
       if(mEnablePhysics)
@@ -175,7 +175,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::apply(osg::Group& node)
+   void SimCoreCullVisitor::apply(osg::Group& node)
    {
       bool hitframeDontCallOtherCull  = false;
       if(mCurrentlyInTerrain)
@@ -195,7 +195,7 @@ namespace SimCore
    }
 
    /////////////////////////////////////////////////////////////////////////
-   void AgeiaTerrainCullVisitor::apply(osg::LOD& node)
+   void SimCoreCullVisitor::apply(osg::LOD& node)
    {
       if(mLandActor.valid() && mCurrentlyInTerrain)
       {

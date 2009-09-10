@@ -29,7 +29,7 @@
 #include <dtGame/gmcomponent.h>
 
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
-#include <SimCore/AgeiaTerrainCullVisitor.h>
+#include <SimCore/SimCoreCullVisitor.h>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/SceneView>
 #include <osgUtil/StateGraph>
@@ -260,7 +260,7 @@ namespace SimCore
             bool UpdateCullVisitor();
 
             ///by default we will always create a cullvisitor
-            AgeiaTerrainCullVisitor* GetCullVisitor();
+            SimCoreCullVisitor* GetCullVisitor();
 
             void AddCamera(osg::Camera* cam);
 
@@ -335,7 +335,7 @@ namespace SimCore
             dtCore::RefPtr<osg::Camera> mGUIRoot;
             dtCore::RefPtr<osg::Camera> mNVGSRoot;
             dtCore::RefPtr<RenderFeature> mNVGS;
-            dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor;
+            dtCore::RefPtr<SimCore::SimCoreCullVisitor> mCullVisitor;
 
             // list of dynamic light actor prototypes
             typedef std::map<const std::string, dtCore::RefPtr<SimCore::Actors::DynamicLightPrototypeProxy> > DynamicLightPrototypeMap;

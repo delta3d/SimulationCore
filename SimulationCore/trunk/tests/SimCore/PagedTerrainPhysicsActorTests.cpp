@@ -49,7 +49,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <SimCore/AgeiaTerrainCullVisitor.h>
+#include <SimCore/SimCoreCullVisitor.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
@@ -166,7 +166,7 @@ void PagedTerrainPhysicsActorTests::TestFunction()
 
 
    // cull visitor
-   dtCore::RefPtr<SimCore::AgeiaTerrainCullVisitor> mCullVisitor = new SimCore::AgeiaTerrainCullVisitor();
+   dtCore::RefPtr<SimCore::SimCoreCullVisitor> mCullVisitor = new SimCore::SimCoreCullVisitor();
    mCullVisitor->SetLandActor(ourActor);
    CPPUNIT_ASSERT(mCullVisitor->GetLandActor() == ourActor);
 

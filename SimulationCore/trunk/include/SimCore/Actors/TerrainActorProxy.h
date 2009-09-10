@@ -29,6 +29,8 @@
 
 #include <SimCore/PhysicsTypes.h>
 
+#include <SimCore/TerrainPhysicsMode.h>
+
 #if AGEIA_PHYSICS
 #include <NxAgeiaPrimitivePhysicsHelper.h>
 #endif
@@ -72,6 +74,11 @@ namespace SimCore
             void SetPhysicsDirectory( const std::string& filename );
             std::string GetPhysicsDirectory() const;
 
+            /// @return the physics mode as in if the physics should be loaded and when.
+            TerrainPhysicsMode& GetTerrainPhysicsMode() const;
+
+            /// @return the physics mode as in if the physics should be loaded and when.
+            void SetTerrainPhysicsMode(TerrainPhysicsMode& physicsMode);
 
 #if AGEIA_PHYSICS
             virtual void AgeiaPrePhysicsUpdate() { }
@@ -112,6 +119,7 @@ namespace SimCore
             dtCore::RefPtr<dtPhysics::PhysicsHelper> mHelper;
 #endif
 
+            TerrainPhysicsMode* mTerrainPhysicsMode;
             dtCore::RefPtr<osg::Node> mTerrainNode;
             std::string mLoadedFile, mCollisionResourceString, mPhysicsDirectory;
             //This doesn't load the file unless it's in a scene, so this flag tells it to load
