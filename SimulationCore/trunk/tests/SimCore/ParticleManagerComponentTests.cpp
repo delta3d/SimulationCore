@@ -255,12 +255,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void ParticleManagerComponentTests::AdvanceTime( float timeDelta )
       {
-         dtCore::RefPtr<dtGame::TickMessage> msg;
-         mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::TICK_LOCAL,msg);
-         msg->SetDeltaSimTime(timeDelta);
-         msg->SetDeltaRealTime(timeDelta);
-         mGM->SendMessage(*msg);
-         dtCore::System::GetInstance().Step();
+         double targetTime = dtCore::System::GetInstance().GetSimulationTime() + timeDelta;
+         //Speed it way up so it this doesn't take long in a real time sense.
+         dtCore::System::GetInstance().SetTimeScale(60.0);
+         while (dtCore::System::GetInstance().GetSimulationTime() < targetTime)
+         {
+            dtCore::System::GetInstance().Step();
+         }
+         dtCore::System::GetInstance().SetTimeScale(1.0);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -532,7 +534,7 @@ namespace SimCore
       {
          // Test the component's update interval timer
          // --- Test default values
-         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("ParticleManagerComponent should have a default update interval of 5.0 seconds.",
+         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("ParticleManagerComponent should have a default update interval of 3.0 seconds.",
                   3.0f, mParticleComp->GetUpdateInterval(), 1e-3f );
          CPPUNIT_ASSERT_MESSAGE("ParticleManagerComponent should have update timer enabled by default.",
             mParticleComp->GetUpdateEnabled() );
