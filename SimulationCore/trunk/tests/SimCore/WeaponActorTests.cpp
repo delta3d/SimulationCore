@@ -273,6 +273,22 @@ namespace SimCore
 
          // Notify the weapon
          mWeapon->ReceiveContactReport( report, target != NULL ? &target->GetGameActorProxy() : NULL );
+#else
+         dtPhysics::CollisionContact report;
+         // Set both vectors with the same value since both seem to be dealing
+         // with the same type of data; normal may just be a normalized version
+         // of the force. The weapon may use either of the two for the same data.
+         if( trajectory != NULL )
+         {
+            report.mNormal = *trajectory;
+         }
+
+         // Set the location
+         if( location != NULL )
+         {
+            report.mPosition = *location;
+         }
+         mWeapon->ReceiveContactReport(report, target != NULL ? &target->GetGameActorProxy() : NULL);
 #endif
       }
 
@@ -632,41 +648,6 @@ namespace SimCore
          mTestComp->ResetShotCount();
          mTestComp->ResetDetonationCount();
 
-         // Reset counters and timers for the next test
-         mWeapon->Reset();
-
-
-
-         // NOTE:
-         // The following test requires AGEIA_PHYSICS pre-processor symbol to
-         // be defined so that the WeaponActor can receive contact reports.
-         // Messages will not be sent as expected if a change in targets has
-         // not been detected by the weapon.
-
-         // TEST MESSAGE BEHAVIOR (OUT-GOING) ----------------------------------
-         mWeapon->SetFireRate( 0.5f );
-         mWeapon->SetUsingBulletPhysics( true ); // means detonations are sent separately from fire messages
-
-         // --- Test switching targets faster than message cycle time
-         mWeapon->OnTickLocal( *tickMsg ); // 0.25
-         SimulateTargetHit( target );            // det 1
-         mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1
-         SimulateTargetHit( NULL );              // det 2
-         mWeapon->OnTickLocal( *tickMsg ); // 0.75
-         mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2
-         mWeapon->OnTickLocal( *tickMsg ); // 1.25
-         mWeapon->OnTickLocal( *tickMsg ); // 1.5            // shot 3
-         SimulateTargetHit( target );            // det 3
-         mWeapon->OnTickLocal( *tickMsg ); // 1.75
-         SimulateTargetHit( target );            // det 3 (within same detonation message cycle time of 1.0 seconds acting on same target)
-         mWeapon->OnTickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4
-         mWeapon->OnTickLocal( *tickMsg ); // 2.25
-         mWeapon->OnTickLocal( *tickMsg ); // 2.5            // shot 5
-         mWeapon->OnTickLocal( *tickMsg ); // 2.75
-         mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6
-         mWeapon->OnTickLocal( *tickMsg ); // 3.25
-         SimulateTargetHit( NULL );              // det 4 (target change causes a shot fired message on next message or trigger time)
-         mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7
          // --- Prevent extra ticks when stepping the system forward in following
          //     tests.
          //     Extra ticks could call TickLocal more times than expected, thus
@@ -674,6 +655,44 @@ namespace SimCore
          mWeaponProxy->UnregisterForMessages(
             dtGame::MessageType::TICK_LOCAL,
             dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE );
+
+         // Reset counters and timers for the next test
+         mWeapon->Reset();
+
+         // TEST MESSAGE BEHAVIOR (OUT-GOING) ----------------------------------
+         mWeapon->SetFireRate( 0.5f );
+         mWeapon->SetUsingBulletPhysics( true ); // means detonations are sent separately from fire messages
+
+         unsigned shots = 0;
+         // --- Test switching targets faster than message cycle time
+         mWeapon->OnTickLocal( *tickMsg ); // 0.25
+         SimulateTargetHit( target );            // det 1
+         mWeapon->OnTickLocal( *tickMsg ); // 0.5  // msg 1  // shot 1
+
+         SimulateTargetHit( NULL );              // det 2
+         mWeapon->OnTickLocal( *tickMsg ); // 0.75
+         mWeapon->OnTickLocal( *tickMsg ); // 1.0  // msg 2  // shot 2
+
+         mWeapon->OnTickLocal( *tickMsg ); // 1.25
+         mWeapon->OnTickLocal( *tickMsg ); // 1.5            // shot 3
+
+         SimulateTargetHit( target );            // det 3
+         mWeapon->OnTickLocal( *tickMsg ); // 1.75
+         SimulateTargetHit( target );            // det 3 (within same detonation message cycle time of 1.0 seconds acting on same target)
+         mWeapon->OnTickLocal( *tickMsg ); // 2.0  // msg 3  // shot 4
+
+         mWeapon->OnTickLocal( *tickMsg ); // 2.25
+         mWeapon->OnTickLocal( *tickMsg ); // 2.5            // shot 5
+
+         mWeapon->OnTickLocal( *tickMsg ); // 2.75
+         mWeapon->OnTickLocal( *tickMsg ); // 3.0  // msg 4  // shot 6
+
+         mWeapon->OnTickLocal( *tickMsg ); // 3.25
+         SimulateTargetHit( NULL );              // det 4 (target change causes a shot fired message on next message or trigger time)
+         mWeapon->OnTickLocal( *tickMsg ); // 3.5  // msg 5  // shot 7
+         mWeapon->OnTickLocal( *tickMsg ); // 3.75 // just for good measure
+         mWeapon->OnTickLocal( *tickMsg ); // 4.00 // just for good measure
+
          // --- Process all queued messages so the test component can listen for them.
          dtCore::System::GetInstance().Step();
          CPPUNIT_ASSERT_EQUAL(7U, mTestComp->GetShotCount());
