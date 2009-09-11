@@ -1759,7 +1759,7 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( munitionTableName ) != NULL );
 
          // --- Send the MAP_UNLOADED message
-         mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_UNLOADED, msg );
+         mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN, msg );
          mGM->SendMessage( *msg );
          dtCore::System::GetInstance().Step();
 
