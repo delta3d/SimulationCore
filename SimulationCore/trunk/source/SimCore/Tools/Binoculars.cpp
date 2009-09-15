@@ -34,11 +34,14 @@
 #include <dtCore/isector.h>
 #include <dtCore/transform.h>
 
+#include <CEGUI/CEGUI.h>
+
 #ifdef None
 #undef None
 #endif
 
-#include <CEGUI/CEGUI.h>
+
+#include <iostream>
 
 namespace SimCore
 {
@@ -174,7 +177,8 @@ namespace SimCore
                mCamera->GetOSGCamera()->setLODScale(mOriginalLODScale);
                double vfov, aspect, nearPlane, farPlane;
                mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
-               mCamera->SetPerspectiveParams(mOriginalVFOV, mCamera->GetAspectRatio(), nearPlane, farPlane);
+               std::cout << mOriginalVFOV << " " << mOriginalAspect << " " << nearPlane << " " << farPlane << std::endl;
+               mCamera->SetPerspectiveParams(mOriginalVFOV, mOriginalAspect, nearPlane, farPlane);
             }
          }
       }
@@ -197,17 +201,9 @@ namespace SimCore
          if(!IsEnabled())
             return;
 
-         // Make sure to check for this whack state
-         if(mZoomFactor == 0)
+         if (mZoomFactor <= 0)
          {
-            LOG_ERROR("The zoom factor is 0. Cannot divide by 0.");
-            return;
-         }
-
-         // Yet another whack state
-         if(mZoomFactor < 0)
-         {
-            LOG_INFO("The zoom factor is negative. Setting zoom factor to 1");
+            LOG_INFO("The zoom factor is less than or equal to 0. Setting zoom factor to 1");
             mZoomFactor = 1.0f;
          }
 
@@ -218,16 +214,16 @@ namespace SimCore
          mOriginalVFOV = vfov;
          mOriginalAspect = aspect;
 
-            // TODO fix this algorithm later
-         if(mIsDynamicZooming)
+         // TODO fix this algorithm later
+         if (mIsDynamicZooming)
          {
             // Check for maximum zoom
             // If this is the very first zoom, the fov will be equal to the original
-            // Therefor, we need to check to make sure the zoomFactor isn't greater than
+            // Therefore, we need to check to make sure the zoomFactor isn't greater than
             // the max zoom factor
-            if(vfov == mZoomFactor)
+            if (vfov == mZoomFactor)
             {
-               if(mZoomFactor >= MAX_ZOOM_DISTANCE)
+               if (mZoomFactor >= MAX_ZOOM_DISTANCE)
                {
                   LOG_ERROR("The zoom factor specified is greater than the maximum zoom distance. Not zooming in.");
                   return;
@@ -235,7 +231,7 @@ namespace SimCore
             }
             else
             {
-               if((vfov / mZoomFactor) > MAX_ZOOM_DISTANCE)
+               if ((vfov / mZoomFactor) > MAX_ZOOM_DISTANCE)
                {
                   vfov /= mZoomFactor;
                }
@@ -247,21 +243,22 @@ namespace SimCore
             }
          }
 
-         if(mCamera->GetAspectRatio() < 1.47)
+         if (mOriginalAspect < 1.47)
          {
-            vfov /= (mZoomFactor *= 1.135f);
+            vfov /= (mZoomFactor * 1.135f);
          }
          else
          {
-            vfov /= (mZoomFactor *= 1.103f);
+            vfov /= (mZoomFactor * 1.103f);
          }
 
          mOriginalLODScale = mCamera->GetOSGCamera()->getLODScale();
-         float newZoom = (1.0f / mZoomFactor) * mOriginalLODScale;
+         float newLODScale = (1.0f / mZoomFactor) * mOriginalLODScale;
 
-         mCamera->GetOSGCamera()->setLODScale(newZoom);
-         //mCamera->SetPerspective(hfov, mCamera->GetAspectRatio(), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE);
-         mCamera->SetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
+         mCamera->GetOSGCamera()->setLODScale(newLODScale);
+
+         std::cout << mZoomFactor << " " << vfov << " " << mOriginalAspect << " " << nearPlane << " " << farPlane << std::endl;
+         mCamera->SetPerspectiveParams(vfov, mOriginalAspect, nearPlane, farPlane);
       }
 
       ////////////////////////////////////////////////
@@ -280,9 +277,9 @@ namespace SimCore
          mCamera->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
 
          // TODO fix this algorithm later, this is currently broken.
-         if(mIsDynamicZooming)
+         if (mIsDynamicZooming)
          {
-            if(vfov* mZoomFactor < mOriginalVFOV)
+            if (vfov * mZoomFactor < mOriginalVFOV)
             {
                vfov *= mZoomFactor;
             }
