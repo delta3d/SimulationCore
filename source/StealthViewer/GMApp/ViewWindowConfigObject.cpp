@@ -383,7 +383,7 @@ namespace StealthGM
 
          /// Setting the view first here is required.
          dtCore::View* mainView = app.GetView();
-         mView->SetDatabasePager(mainView->GetDatabasePager());
+         //mView->SetDatabasePager(mainView->GetDatabasePager());
 
          if (mView->GetScene() == NULL)
          {
@@ -391,6 +391,7 @@ namespace StealthGM
          }
 
          cam->SetWindow(mWindow.get());
+         cam->SetLODScale(mainView->GetCamera()->GetLODScale());
 
          if (!app.ContainsView(*mView))
          {

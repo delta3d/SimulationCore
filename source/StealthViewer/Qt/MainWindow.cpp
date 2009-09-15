@@ -1810,7 +1810,7 @@ namespace StealthQt
       mUi->mGeneralShowAdvancedOptionsCheckBox->setChecked(genConfig.GetShowAdvancedOptions());
 
       // General Environment
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
+      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       // Ensure the correct box displays. Invoke the slot manually
