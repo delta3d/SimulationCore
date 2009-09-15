@@ -200,7 +200,6 @@ int main (int argc, char* argv[])
    }
 
    dtAudio::AudioManager::Instantiate();
-   dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
    GlobalApplication = new dtABC::Application("config.xml");
    GlobalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
