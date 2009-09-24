@@ -210,6 +210,16 @@ namespace SimCore
             */
             bool IsTerrainPresent();
 
+            /**
+             * Sets the distance above the terrain to use when the physics terrain is found, and the vehicle is dropped
+             */
+            void SetTerrainPresentDropHeight(float zDistance);
+
+            /**
+             * @return the distance above the terrain to use when the physics terrain is found, and the vehicle is dropped
+             */
+            float GetTerrainHeightDropHeight() const;
+
             /// utility function for the UpdatedeadReckoning function
             float GetPercentageChangeDifference(float startValue, float newValue);
 
@@ -235,6 +245,8 @@ namespace SimCore
             float mMaxUpdateSendRate;
             float mVelocityMagThreshold;
             float mVelocityDotThreshold;
+
+            float mTerrainPresentDropHeight;
 
             ///////////////////////////////////////////////////
             // is there currently a driver inside?

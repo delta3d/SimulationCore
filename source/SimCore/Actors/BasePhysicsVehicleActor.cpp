@@ -78,6 +78,7 @@ namespace SimCore
          , mMaxUpdateSendRate(3.0f)
          , mVelocityMagThreshold(1.0f)
          , mVelocityDotThreshold(0.9f)
+         , mTerrainPresentDropHeight(5.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
          , mNotifyFullUpdate(true)
@@ -186,7 +187,7 @@ namespace SimCore
 
             // ...and snap just above that point.
 
-            terrainPoint.z() += 5.0f;
+            terrainPoint.z() += mTerrainPresentDropHeight;
 #ifdef AGEIA_PHYSICS
             physicsObject->setGlobalPosition(
                NxVec3( pos.x, pos.y, terrainPoint.z()) );
@@ -210,6 +211,18 @@ namespace SimCore
          }*/
 
          return terrainDetected;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetTerrainPresentDropHeight(float zDistance)
+      {
+         mTerrainPresentDropHeight = zDistance;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      float BasePhysicsVehicleActor::GetTerrainHeightDropHeight() const
+      {
+         return mTerrainPresentDropHeight;
       }
 
 #ifdef AGEIA_PHYSICS
