@@ -24,11 +24,12 @@
 #ifndef UNITS_H_
 #define UNITS_H_
 
+#include <SimCore/Export.h>
 #include <dtUtil/enumeration.h>
 
 namespace SimCore
 {
-   class UnitOfLength : public dtUtil::Enumeration
+   class SIMCORE_EXPORT UnitOfLength : public dtUtil::Enumeration
    {
    public:
       DECLARE_ENUM(UnitOfLength);
@@ -56,7 +57,7 @@ namespace SimCore
    /**
     * Angular units and conversion fro and to.
     */
-   class UnitOfAngle : public dtUtil::Enumeration
+   class SIMCORE_EXPORT UnitOfAngle : public dtUtil::Enumeration
    {
    public:
       DECLARE_ENUM(UnitOfAngle);
