@@ -65,6 +65,7 @@
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
+#include <SimCore/UnitEnums.h>
 #include <SimCore/SimCoreVersion.h>
 
 #include <dtUtil/stringutils.h>
@@ -576,6 +577,12 @@ namespace StealthQt
 
       connect(mUi->mGeneralFarClippingPlaneComboBox,  SIGNAL(currentIndexChanged(const QString&)),
                this,                                  SLOT(OnFarClipplingPlaneChanged(const QString&)));
+
+      connect(mUi->mDistanceUnitCombo,  SIGNAL(currentIndexChanged(const QString&)),
+               this,                                  SLOT(OnUnitOfLengthChanged(const QString&)));
+
+      connect(mUi->mAngleUnitCombo,  SIGNAL(currentIndexChanged(const QString&)),
+               this,                                  SLOT(OnUnitOfAngleChanged(const QString&)));
 
       connect(mUi->mOptionsCoordinateSystemComboBox, SIGNAL(currentIndexChanged(const QString&)),
                this,                                 SLOT(OnToolsCoordinateSystemChanged(const QString&)));
@@ -1420,6 +1427,24 @@ namespace StealthQt
       viewConfig.SetFarClippingPlane(text.toDouble());
    }
 
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnUnitOfLengthChanged(const QString& text)
+   {
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
+         StealthViewerData::GetInstance().GetToolsConfigObject();
+
+      toolsConfig.SetLengthUnit(text.toStdString());
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnUnitOfAngleChanged(const QString& text)
+   {
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
+         StealthViewerData::GetInstance().GetToolsConfigObject();
+
+      toolsConfig.SetAngleUnit(text.toStdString());
+   }
+
    ////////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnWeatherThemedRadioButtonClicked(bool checked)
    {
@@ -1854,6 +1879,9 @@ namespace StealthQt
 
       FillAndSetComboBox(StealthGM::PreferencesToolsConfigObject::CoordinateSystem::Enumerate(),
                *mUi->mOptionsCoordinateSystemComboBox, toolsConfig.GetCoordinateSystem());
+
+      FillAndSetComboBox(SimCore::UnitOfLength::Enumerate(), *mUi->mDistanceUnitCombo, toolsConfig.GetLengthUnit());
+      FillAndSetComboBox(SimCore::UnitOfAngle::Enumerate(), *mUi->mAngleUnitCombo, toolsConfig.GetAngleUnit());
 
       mUi->mToolsMagnificationSpinBox->setValue(int(toolsConfig.GetMagnification()));
       mUi->mToolsShowBinocularImageCheckBox->setChecked(toolsConfig.GetShowBinocularImage());
@@ -2350,12 +2378,9 @@ namespace StealthQt
       dtUtil::Coordinates& coordinateConverter = hudComponent->GetCoordinateConverter();
 
       // Calculate the directional speed from the entities velocity
-      SimCore::Actors::BaseEntity *entity = NULL;
+      SimCore::Actors::BaseEntity* entity = NULL;
       proxy.GetActor(entity);
 
-      // Decided not to use proxy->GetTranslation and proxy->GetRotation() based on David's
-      // recommendation that GetRotation is screwy and will be refactored at some point because
-      // it changes the HPR order to RHP.
       dtCore::Transform trans;
       entity->GetTransform(trans, dtCore::Transformable::REL_CS);
       osg::Vec3 pos;
@@ -2363,55 +2388,80 @@ namespace StealthQt
       osg::Vec3 rot;
       trans.GetRotation(rot);
 
+      StealthGM::PreferencesToolsConfigObject& toolsConfig = StealthViewerData::GetInstance().GetToolsConfigObject();
+
       // Set the Lat Lon pos
       //coordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
       const osg::Vec3d& globePos = coordinateConverter.ConvertToRemoteTranslation(pos);
       oss.str("");
-      oss << globePos[0];
-      mUi->mEntityInfoPosLatEdit->setText(tr(oss.str().c_str()));
+      oss << globePos.x();
+      mUi->mEntityInfoPosLatEdit->setText(QString(oss.str().c_str()));
       oss.str("");
-      oss << globePos[1];
-      mUi->mEntityInfoPosLonEdit->setText(tr(oss.str().c_str()));
+      oss << globePos.y();
+      mUi->mEntityInfoPosLonEdit->setText(QString(oss.str().c_str()));
+      oss.str("");
+      oss.precision(5);
+      oss << SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, toolsConfig.GetLengthUnit(), globePos.z());
+      oss << " " << toolsConfig.GetLengthUnit().GetAbbreviation();
+      mUi->mEntityInfoPosElevLL->setText(QString(oss.str().c_str()));
 
       // Set the MGRS pos
       std::string milgrid = coordinateConverter.XYZToMGRS(pos);
-      mUi->mEntityInfoPositionMGRS->setText(tr(milgrid.c_str()));
+      mUi->mEntityInfoPositionMGRS->setText(QString(milgrid.c_str()));
 
+      mUi->mEntityInfoPositionLabel_XYZ->setText(QString("Position (") +
+               toolsConfig.GetLengthUnit().GetAbbreviation().c_str() + ")");
       // Set the XYZ Pos
       oss.str("");
-      oss << pos[0];
-      mUi->mEntityInfoPosXEdit->setText(tr(oss.str().c_str()));
+      oss.precision(8);
+      oss << SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, toolsConfig.GetLengthUnit(), pos.x());
+      mUi->mEntityInfoPosXEdit->setText(QString(oss.str().c_str()));
       oss.str("");
-      oss << pos[1];
-      mUi->mEntityInfoPosYEdit->setText(tr(oss.str().c_str()));
+      oss << SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, toolsConfig.GetLengthUnit(), pos.y());
+      mUi->mEntityInfoPosYEdit->setText(QString(oss.str().c_str()));
       oss.str("");
-      oss << pos[2];
-      mUi->mEntityInfoPosZEdit->setText(tr(oss.str().c_str()));
+      oss << SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, toolsConfig.GetLengthUnit(), pos.z());
+      mUi->mEntityInfoPosZEdit->setText(QString(oss.str().c_str()));
 
+      mUi->mEntityInfoRotationLabel->setText(QString("Rotation (")
+               + toolsConfig.GetAngleUnit().GetAbbreviation().c_str() + ")");
 
+      oss.precision(4);
       // Heading
-      float heading = ComputeHumanReadableDirection((float) rot[0]);
+      float heading = ComputeHumanReadableDirection(float(rot[0]));
       oss.str("");
-      oss << heading;
+      oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), heading);
       mUi->mEntityInfoRotHeadEdit->setText(tr(oss.str().c_str()));
       // Pitch
-      float pitch = ComputeHumanReadableDirection((float) rot[1]);
+      float pitch = ComputeHumanReadableDirection(float(rot[1]));
       oss.str("");
-      oss << pitch;
+      oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), pitch);
       mUi->mEntityInfoRotPitchEdit->setText(tr(oss.str().c_str()));
       // Roll
-      float roll = ComputeHumanReadableDirection((float) rot[2]);
+      float roll = ComputeHumanReadableDirection(float(rot[2]));
       oss.str("");
-      oss << roll;
+      oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), roll);
       mUi->mEntityInfoRotRollEdit->setText(tr(oss.str().c_str()));
 
       osg::Vec3 velocity = entity->GetLastKnownVelocity();
       // speed is distance of velocity. Then, convert from m/s to MPH
-      float speed = 2.237 * sqrt((float)(velocity[0] * velocity[0]) +
-               (float)(velocity[1] * velocity[1]) + (float)(velocity[2] * velocity[2]));
-      speed = ((int)(speed * 100)) / 100.0f; // truncate to 2 decimal places
+      float speed = velocity.length();
       oss.str("");
-      oss << speed << " MPH";
+      oss.precision(4);
+      // sea entities use knots.
+      if (entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SURFACE
+               || entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::SUBMARINE
+               || entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::AMPHIBIOUS)
+      {
+         // Convert to knots and truncate past two decimal places.
+         oss << std::floor((speed / 1.94384449f) * 100.0f) / 100.0f << " KNOTS";
+      }
+      else
+      {
+         // Convert to miles per hour and truncate past two decimal places.
+         oss << std::floor((speed / 2.23693629f) * 100.0f) / 100.0f << " MPH";
+      }
+
       mUi->mEntityInfoSpeed->setText(tr(oss.str().c_str()));
 
       // compute the direction of movement
@@ -2419,7 +2469,8 @@ namespace StealthQt
       direction = osg::RadiansToDegrees(direction);
       direction = ComputeHumanReadableDirection(direction);
       oss.str("");
-      oss << direction;
+      oss << SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, toolsConfig.GetAngleUnit(), direction);
+      oss << " " << toolsConfig.GetAngleUnit().GetAbbreviation();
       mUi->mEntityInfoSpeedDir->setText(tr(oss.str().c_str()));
 
       mUi->mEntityInfoCallSignLineEdit->setText(tr(proxy.GetName().c_str()));
@@ -2447,51 +2498,45 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////
    void MainWindow::ShowOrHideEntityInfoPositionFields(const dtUtil::Enumeration& system)
    {
+      // Hide the MGRS fields
+      mUi->mEntityInfoPositionMGRS->hide();
+      mUi->mEntityInfoPositionLabel_MGRS->hide();
+      // Hide the XYZ fields
+      mUi->mEntityInfoPositionLabel_XYZ->hide();
+      mUi->mEntityInfoPos_XLabel->hide();
+      mUi->mEntityInfoPosXEdit->hide();
+      mUi->mEntityInfoPos_YLabel->hide();
+      mUi->mEntityInfoPosYEdit->hide();
+      mUi->mEntityInfoPos_ZLabel->hide();
+      mUi->mEntityInfoPosZEdit->hide();
+      // Hide the Lat Lon fields
+      mUi->mEntityInfoPositionLabel_LatLon->hide();
+      mUi->mEntityInfoPos_LatLabel->hide();
+      mUi->mEntityInfoPosLatEdit->hide();
+      mUi->mEntityInfoPos_LonLabel->hide();
+      mUi->mEntityInfoPosLonEdit->hide();
+      mUi->mEntityInfoPos_ElevLLLabel->hide();
+      mUi->mEntityInfoPosElevLL->hide();
+
       if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::MGRS)
       {
          // Show the MGRS fields
          mUi->mEntityInfoPositionMGRS->show();
          mUi->mEntityInfoPositionLabel_MGRS->show();
-         // Hide the XYZ fields
-         mUi->mEntityInfoPositionLabel_XYZ->hide();
-         mUi->mEntityInfoPos_XLabel->hide();
-         mUi->mEntityInfoPosXEdit->hide();
-         mUi->mEntityInfoPos_YLabel->hide();
-         mUi->mEntityInfoPosYEdit->hide();
-         mUi->mEntityInfoPos_ZLabel->hide();
-         mUi->mEntityInfoPosZEdit->hide();
-         // Hide the Lat Lon fields
-         mUi->mEntityInfoPositionLabel_LatLon->hide();
-         mUi->mEntityInfoPos_LatLabel->hide();
-         mUi->mEntityInfoPosLatEdit->hide();
-         mUi->mEntityInfoPos_LonLabel->hide();
-         mUi->mEntityInfoPosLonEdit->hide();
       }
       else if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::LAT_LON)
       {
-         // Hide the MGRS fields
-         mUi->mEntityInfoPositionMGRS->hide();
-         mUi->mEntityInfoPositionLabel_MGRS->hide();
-         // Show the XYZ fields
-         mUi->mEntityInfoPositionLabel_XYZ->hide();
-         mUi->mEntityInfoPos_XLabel->hide();
-         mUi->mEntityInfoPosXEdit->hide();
-         mUi->mEntityInfoPos_YLabel->hide();
-         mUi->mEntityInfoPosYEdit->hide();
-         mUi->mEntityInfoPos_ZLabel->hide();
-         mUi->mEntityInfoPosZEdit->hide();
          // Hide the Lat Lon fields
          mUi->mEntityInfoPositionLabel_LatLon->show();
          mUi->mEntityInfoPos_LatLabel->show();
          mUi->mEntityInfoPosLatEdit->show();
          mUi->mEntityInfoPos_LonLabel->show();
          mUi->mEntityInfoPosLonEdit->show();
+         mUi->mEntityInfoPos_ElevLLLabel->show();
+         mUi->mEntityInfoPosElevLL->show();
       }
       else // if (system == StealthGM::PreferencesToolsConfigObject::CoordinateSystem::RAW_XYZ
       {
-         // Hide the MGRS fields
-         mUi->mEntityInfoPositionMGRS->hide();
-         mUi->mEntityInfoPositionLabel_MGRS->hide();
          // Show the XYZ fields
          mUi->mEntityInfoPositionLabel_XYZ->show();
          mUi->mEntityInfoPos_XLabel->show();
@@ -2500,13 +2545,6 @@ namespace StealthQt
          mUi->mEntityInfoPosYEdit->show();
          mUi->mEntityInfoPos_ZLabel->show();
          mUi->mEntityInfoPosZEdit->show();
-         // Hide the Lat Lon fields
-         mUi->mEntityInfoPositionLabel_LatLon->hide();
-         mUi->mEntityInfoPos_LatLabel->hide();
-         mUi->mEntityInfoPosLatEdit->hide();
-         mUi->mEntityInfoPos_LonLabel->hide();
-         mUi->mEntityInfoPosLonEdit->hide();
-
       }
    }
 

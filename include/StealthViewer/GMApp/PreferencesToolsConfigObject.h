@@ -30,6 +30,9 @@
 
 namespace SimCore
 {
+   class UnitOfLength;
+   class UnitOfAngle;
+
    namespace Tools
    {
       class Binoculars;
@@ -143,6 +146,14 @@ namespace StealthGM
 
          void SetBinocularsTool(SimCore::Tools::Binoculars* binocs);
          SimCore::Tools::Binoculars* GetBinocularsTool();
+
+         void SetLengthUnit(SimCore::UnitOfLength& unit);
+         void SetLengthUnit(const std::string& unitName);
+         SimCore::UnitOfLength& GetLengthUnit() const;
+
+         void SetAngleUnit(SimCore::UnitOfAngle& unit);
+         void SetAngleUnit(const std::string& unitName);
+         SimCore::UnitOfAngle& GetAngleUnit() const;
       protected:
 
          /// Destructor

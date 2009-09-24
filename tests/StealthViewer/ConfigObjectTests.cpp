@@ -49,6 +49,7 @@
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/UnitEnums.h>
 
 #include <dtActors/basicenvironmentactorproxy.h>
 #include <dtActors/engineactorregistry.h>
@@ -264,8 +265,16 @@ void ConfigObjectTests::TestAdditionalViewWindows()
    std::string newViewTwo("newView2");
 
    dtCore::RefPtr<dtCore::View> view = new dtCore::View("");
+   dtCore::DeltaWin::DeltaWinTraits traits;
+   traits.height = 50;
+   traits.width = 50;
+   traits.x = 50;
+   traits.y = 50;
+   traits.showCursor = true;
+   traits.fullScreen = false;
+
    dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
-      new dtCore::DeltaWin("", 50, 50, 50, 50, true, false);
+      new dtCore::DeltaWin(traits);
 
    dtCore::RefPtr<StealthGM::ViewWindowWrapper> newViewWrapper =
       new StealthGM::ViewWindowWrapper(newViewOne, *view, *deltaWin);
@@ -421,7 +430,6 @@ void ConfigObjectTests::TestPreferencesGeneralConfigObject()
    CPPUNIT_ASSERT(genConfig->IsUpdated());
    genConfig->SetIsUpdated(false);
 
-
    genConfig = NULL;
 }
 
@@ -562,6 +570,17 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    CPPUNIT_ASSERT(binocs->GetShowReticle() == toolsConfig->GetShowBinocularImage());
    CPPUNIT_ASSERT(binocs->GetShowElevation() == toolsConfig->GetShowElevationOfObject());
 
+   CPPUNIT_ASSERT(toolsConfig->GetAngleUnit() == SimCore::UnitOfAngle::DEGREE);
+   toolsConfig->SetAngleUnit(SimCore::UnitOfAngle::MIL);
+   CPPUNIT_ASSERT(toolsConfig->GetAngleUnit() == SimCore::UnitOfAngle::MIL);
+   CPPUNIT_ASSERT(toolsConfig->IsUpdated());
+   toolsConfig->SetIsUpdated(false);
+
+   CPPUNIT_ASSERT(toolsConfig->GetLengthUnit() == SimCore::UnitOfLength::METER);
+   toolsConfig->SetLengthUnit(SimCore::UnitOfLength::YARD);
+   CPPUNIT_ASSERT(toolsConfig->GetLengthUnit() == SimCore::UnitOfLength::YARD);
+   CPPUNIT_ASSERT(toolsConfig->IsUpdated());
+   toolsConfig->SetIsUpdated(false);
    toolsConfig = NULL;
 }
 

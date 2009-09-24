@@ -58,12 +58,8 @@ namespace StealthGM
                static const AttachMode THIRD_PERSON;
 
             private:
-
-               AttachMode(const std::string &name) : dtUtil::Enumeration(name)
-               {
-                  AddInstance(this);
-               }
-         };
+               AttachMode(const std::string& name);
+            };
 
          class STEALTH_GAME_EXPORT PerformanceMode : public dtUtil::Enumeration
          {
@@ -78,11 +74,7 @@ namespace StealthGM
                static const PerformanceMode BEST_SPEED;
 
             private:
-
-               PerformanceMode(const std::string &name) : dtUtil::Enumeration(name)
-               {
-                  AddInstance(this);
-               }
+               PerformanceMode(const std::string& name);
          };
 
          /// Constructor
@@ -253,6 +245,7 @@ namespace StealthGM
          const AttachMode* mAttachMode;
          bool mEnableCameraCollision;
          const PerformanceMode* mPerformanceMode;
+
          float mLODScale;
          bool mShowAdvancedOptions;
          dtCore::UniqueId mAttachActorId;

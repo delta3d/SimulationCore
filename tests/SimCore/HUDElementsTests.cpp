@@ -1393,12 +1393,12 @@ void HUDElementsTests::TestStealthCartesianMeter()
       && value2 != cartMeter->GetY().GetText()
       && value3 != cartMeter->GetZ().GetText() );
 
-   cartMeter->SetX( -30.5f );
-   cartMeter->SetY( 60.5f );
-   cartMeter->SetZ( 777.888f );
-   value1 = "-30.5";
-   value2 = "60.5";
-   value3 = "777.888";
+   cartMeter->SetX( -30.5f, "M");
+   cartMeter->SetY( 60.5f, "M" );
+   cartMeter->SetZ( 777.888f, "M" );
+   value1 = "-30.5 M";
+   value2 = "60.5 M";
+   value3 = "777.888 M";
 
    CPPUNIT_ASSERT_MESSAGE( "GPS Meter should have new latitude/longitude text",
       value1 == cartMeter->GetX().GetText()

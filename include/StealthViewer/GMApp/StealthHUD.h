@@ -46,6 +46,12 @@
 
 #define HUDCONTROLMAXTEXTSIZE 100
 
+namespace SimCore
+{
+   class UnitOfAngle;
+   class UnitOfLength;
+}
+
 namespace StealthGM
 {
 
@@ -150,6 +156,18 @@ namespace StealthGM
 
       SimCore::Components::LabelManager& GetLabelManager();
       const SimCore::Components::LabelManager& GetLabelManager() const;
+
+      /// Set the unit to use for the length display.
+      void SetUnitOfLength(SimCore::UnitOfLength& unit);
+      /// Get the unit to use for the length display.
+      SimCore::UnitOfLength& GetUnitOfLength() const;
+
+      /// Set the unit to use for the angle display.
+      void SetUnitOfAngle(SimCore::UnitOfAngle& unit);
+
+      /// Get the unit to use for the angle display.
+      SimCore::UnitOfAngle& GetUnitOfAngle() const;
+
    protected:
 
       void InitHelpOverlay( SimCore::Components::HUDGroup& hudOverlay );
@@ -201,7 +219,6 @@ namespace StealthGM
       dtCore::RefPtr<SimCore::Components::StealthToolbar> mToolbar;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mToolsLayer;
 
-
       // Main info
       dtCore::RefPtr<SimCore::Components::HUDText> mStateText;
       dtCore::RefPtr<SimCore::Components::HUDText> mSimTimeText;
@@ -220,6 +237,9 @@ namespace StealthGM
       // in order to get all data that needs to be displayed.
       dtCore::ObserverPtr<dtCore::MotionModel> mMotionModel;
       dtUtil::Coordinates mCoordinateConverter;
+
+      SimCore::UnitOfLength* mUnitOfLength;
+      SimCore::UnitOfAngle* mUnitOfAngle;
 
       float mRightTextXOffset;
       float mTextYTopOffset;

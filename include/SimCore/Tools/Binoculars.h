@@ -44,6 +44,9 @@ namespace dtCore
 
 namespace SimCore
 {
+   class UnitOfAngle;
+   class UnitOfLength;
+
    namespace Tools
    {
       class SIMCORE_EXPORT Binoculars : public Tool
@@ -51,7 +54,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            Binoculars(dtCore::Camera &camera, CEGUI::Window *mainWindow, bool isLRF = false);
+            Binoculars(dtCore::Camera& camera, CEGUI::Window* mainWindow, bool isLRF = false);
 
             /// Enables/Disables the binoculars
             virtual void Enable(bool enable);
@@ -125,6 +128,12 @@ namespace SimCore
 
             void SetOverlayImage( const std::string& imageset, const std::string& imageName );
 
+            void SetUnitOfLength(SimCore::UnitOfLength& unit);
+            SimCore::UnitOfLength& GetUnitOfLength() const;
+
+            void SetUnitOfAngle(SimCore::UnitOfAngle& unit);
+            SimCore::UnitOfAngle& GetUnitOfAngle() const;
+
          protected:
 
             /// Destructor
@@ -162,8 +171,10 @@ namespace SimCore
 
             CEGUI::Window *mIntersectionText;
             CEGUI::Window *mElevationText;
-
          private:
+
+            SimCore::UnitOfLength* mUnitOfLength;
+            SimCore::UnitOfAngle* mUnitOfAngle;
 
             // Pointer to the camera so the perspective can be changed
             dtCore::RefPtr<dtCore::Camera> mCamera;

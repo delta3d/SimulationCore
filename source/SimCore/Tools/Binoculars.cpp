@@ -25,6 +25,7 @@
 #include <SimCore/Tools/Binoculars.h>
 
 #include <SimCore/Actors/StealthActor.h>
+#include <SimCore/UnitEnums.h>
 
 #include <dtGame/exceptionenum.h>
 
@@ -33,6 +34,8 @@
 #include <dtCore/camera.h>
 #include <dtCore/isector.h>
 #include <dtCore/transform.h>
+
+#include <dtUtil/stringutils.h>
 
 #include <CEGUI/CEGUI.h>
 
@@ -50,23 +53,25 @@ namespace SimCore
       const float Binoculars::FAR_CLIPPING_PLANE  = 11000.0f;
       const float Binoculars::NEAR_CLIPPING_PLANE = 0.25f;
 
-      Binoculars::Binoculars(dtCore::Camera& camera, CEGUI::Window* mainWindow, bool isLRF) :
-         Tool(mainWindow),
-         mIntersectionText(NULL),
-         mElevationText(NULL),
-         mCamera(&camera),
-         mOverlay(NULL),
-         mOriginalVFOV(camera.GetVerticalFov()),
-         mOriginalAspect(camera.GetAspectRatio()),
-         mOriginalNear(NEAR_CLIPPING_PLANE),
-         mOriginalFar(FAR_CLIPPING_PLANE),
-         mOriginalLODScale(camera.GetOSGCamera()->getLODScale()),
-         mIsDynamicZooming(false),
-         mZoomFactor(7.0f)
+      Binoculars::Binoculars(dtCore::Camera& camera, CEGUI::Window* mainWindow, bool isLRF)
+      : Tool(mainWindow)
+      , mIntersectionText(NULL)
+      , mElevationText(NULL)
+      , mUnitOfLength(&SimCore::UnitOfLength::METER)
+      , mUnitOfAngle(&SimCore::UnitOfAngle::MIL)
+      , mCamera(&camera)
+      , mOverlay(NULL)
+      , mOriginalVFOV(camera.GetVerticalFov())
+      , mOriginalAspect(camera.GetAspectRatio())
+      , mOriginalNear(NEAR_CLIPPING_PLANE)
+      , mOriginalFar(FAR_CLIPPING_PLANE)
+      , mOriginalLODScale(camera.GetOSGCamera()->getLODScale())
+      , mIsDynamicZooming(false)
+      , mZoomFactor(7.0f)
  	   {
          try
          {
-            CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
+            CEGUI::WindowManager*wm = CEGUI::WindowManager::getSingletonPtr();
             mOverlay = wm->createWindow("WindowsLook/StaticImage", !isLRF ? "binoculars_overlay" : "lrf_binocs_overlay");
 
             if(mainWindow != NULL)
@@ -93,7 +98,7 @@ namespace SimCore
 
             mOverlay->addChildWindow(mReticle);
 
-            if(!isLRF)
+            if (!isLRF)
             {
                mIntersectionText = wm->createWindow("WindowsLook/StaticText", "binos_intersection_text");
 
@@ -104,7 +109,7 @@ namespace SimCore
                mIntersectionText->setProperty("FrameEnabled", "false");
                mIntersectionText->setProperty("BackgroundEnabled", "false");
                mIntersectionText->setHorizontalAlignment(CEGUI::HA_LEFT);
-               SetDistanceReadoutScreenPosition(0.925f,0.85f);
+               SetDistanceReadoutScreenPosition(0.910f,0.85f);
 
                mElevationText = wm->createWindow("WindowsLook/StaticText", "binos_elevation_text");
 
@@ -115,7 +120,7 @@ namespace SimCore
                mElevationText->setProperty("FrameEnabled", "false");
                mElevationText->setProperty("BackgroundEnabled", "false");
                mElevationText->setHorizontalAlignment(CEGUI::HA_LEFT);
-               SetElevationReadoutScreenPosition(0.925f,0.8f);
+               SetElevationReadoutScreenPosition(0.910f,0.8f);
             }
 
             mOverlay->hide();
@@ -140,20 +145,20 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetOriginalNearFar( float nearValue, float farValue )
+      void Binoculars::SetOriginalNearFar(float nearValue, float farValue)
       {
          mOriginalNear = nearValue;
          mOriginalFar = farValue;
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetOriginalNear( float nearValue )
+      void Binoculars::SetOriginalNear(float nearValue)
       {
          mOriginalNear = nearValue;
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetOriginalFar( float farValue )
+      void Binoculars::SetOriginalFar(float farValue)
       {
          mOriginalFar = farValue;
       }
@@ -184,13 +189,13 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetElevationReadoutScreenPosition( float x, float y )
+      void Binoculars::SetElevationReadoutScreenPosition(float x, float y)
       {
          mElevationText->setPosition(CEGUI::UVector2(cegui_reldim(x), cegui_reldim(y)));
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetDistanceReadoutScreenPosition( float x, float y )
+      void Binoculars::SetDistanceReadoutScreenPosition(float x, float y)
       {
          mIntersectionText->setPosition(CEGUI::UVector2(cegui_reldim(x), cegui_reldim(y)));
       }
@@ -295,7 +300,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::Update(dtCore::DeltaDrawable &terrain)
+      void Binoculars::Update(dtCore::DeltaDrawable& terrain)
       {
          if(!IsEnabled() || GetPlayerActor() == NULL)
             return;
@@ -321,35 +326,51 @@ namespace SimCore
          mIsector->SetEndPosition(playerPos + unitVec);
          mIsector->SetGeometry(&terrain);
 
-         if(mIsector->Update())
+         if (mIsector->Update())
          {
             osg::Vec3 point;
             mIsector->GetHitPoint(point);
 
-            int distance = int(((point - playerPos).length()));
-            mIntersectionText->setText(PadNumber(distance));
+            float distance = int(((point - playerPos).length()));
+            float resultingDistance = SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, distance);
+            if (mUnitOfLength->GetUseWholeUnits())
+            {
+               mIntersectionText->setText(PadNumber(resultingDistance) + " " + mUnitOfLength->GetAbbreviation());
+            }
+            else
+            {
+               mIntersectionText->setText(dtUtil::ToString(resultingDistance, 3) + " " + mUnitOfLength->GetAbbreviation());
+            }
 
             float elevation = point.z() - playerPos.z();
 
-            // Convert to possibly negative mils, formula in dtUtil::Coordinates
-            // forces mils to be positive
-            int mils = int(CalculateMils(distance, elevation));
+            float degrees = CalculateDegrees(distance, elevation);
             // Instead of converting to degrees to clamp between -45, and 45,
             // clamp the mils between -800, 800
-            dtUtil::Clamp(mils, -800, 800);
-            mElevationText->setText(PadNumber(mils));
+            dtUtil::Clamp(degrees, -45.0f, 45.0f);
+
+            float resultingAngle = SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, *mUnitOfAngle, degrees);
+
+            if (mUnitOfAngle->GetUseWholeUnits())
+            {
+               mElevationText->setText(PadNumber(resultingAngle) + " " + mUnitOfAngle->GetAbbreviation());
+            }
+            else
+            {
+               mElevationText->setText(dtUtil::ToString(resultingAngle, 3) + " " + mUnitOfAngle->GetAbbreviation());
+            }
          }
          else
          {
-            mIntersectionText->setText("0");
-            mElevationText->setText("0");
+            mIntersectionText->setText(PadNumber(0) + " " + mUnitOfLength->GetAbbreviation());
+            mElevationText->setText(PadNumber(0) + " " + mUnitOfAngle->GetAbbreviation());
          }
       }
 
       ////////////////////////////////////////////////
       void Binoculars::SetShowReticle(bool enable)
       {
-         if( enable )
+         if (enable)
          {
             mReticle->show();
          }
@@ -362,9 +383,9 @@ namespace SimCore
       ////////////////////////////////////////////////
       void Binoculars::SetShowDistance(bool enable)
       {
-         if( mIntersectionText != NULL )
+         if (mIntersectionText != NULL)
          {
-            if( enable )
+            if (enable)
             {
                mIntersectionText->show();
                mIntersectionText->setAlwaysOnTop(true);
@@ -379,9 +400,9 @@ namespace SimCore
       ////////////////////////////////////////////////
       void Binoculars::SetShowElevation(bool enable)
       {
-         if( mElevationText != NULL )
+         if (mElevationText != NULL)
          {
-            if( enable )
+            if (enable)
             {
                mElevationText->show();
                mElevationText->setAlwaysOnTop(true);
@@ -413,11 +434,34 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////
-      void Binoculars::SetOverlayImage( const std::string& imageset, const std::string& imageName )
+      void Binoculars::SetOverlayImage(const std::string& imageset, const std::string& imageName)
       {
          std::string imageSetAndName("set:"+imageset+" image:"+imageName);
          mReticle->setProperty("Image", imageSetAndName);
       }
 
+      /////////////////////////////////////////////////////////////////////////
+      void Binoculars::SetUnitOfLength(SimCore::UnitOfLength& unit)
+      {
+         mUnitOfLength = &unit;
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      SimCore::UnitOfLength& Binoculars::GetUnitOfLength() const
+      {
+         return *mUnitOfLength;
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      void Binoculars::SetUnitOfAngle(SimCore::UnitOfAngle& unit)
+      {
+         mUnitOfAngle = &unit;
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      SimCore::UnitOfAngle& Binoculars::GetUnitOfAngle() const
+      {
+         return *mUnitOfAngle;
+      }
    }
 }

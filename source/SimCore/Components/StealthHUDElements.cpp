@@ -650,7 +650,7 @@ namespace SimCore
       : HUDImage( name, type )
       {
          SetImage( "MeterBars", "MeterFrame_Cartesian" );
-         SetSize( 384.0f/1920.0f, 64.0f/1200.0f );
+         SetSize( 600.0f/1920.0f, 64.0f/1200.0f );
 
          mX = new HUDText( name+".X" );
          mX->SetSize(100.0f/384.0f,40.0f/64.0f);
@@ -677,11 +677,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthCartesianMeter::SetX( float x )
+      void StealthCartesianMeter::SetX(float x, const std::string& unit)
       {
-         std::stringstream ss;
-         ss << x;
-         mX->SetText( ss.str() );
+         SetFloat(x, unit, *mX);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -697,11 +695,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthCartesianMeter::SetY( float y )
+      void StealthCartesianMeter::SetY(float y, const std::string& unit)
       {
-         std::stringstream ss;
-         ss << y;
-         mY->SetText( ss.str() );
+         SetFloat(y, unit, *mY);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -717,11 +713,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthCartesianMeter::SetZ( float z )
+      void StealthCartesianMeter::SetZ(float z, const std::string& unit)
       {
-         std::stringstream ss;
-         ss << z;
-         mZ->SetText( ss.str() );
+         SetFloat(z, unit, *mZ);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -736,6 +730,14 @@ namespace SimCore
          return *mZ;
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCartesianMeter::SetFloat(float value, const std::string& unit, HUDText& text)
+      {
+         std::stringstream ss;
+         ss << value;
+         ss << " " << unit;
+         text.SetText(ss.str());
+      }
 
 
       //////////////////////////////////////////////////////////////////////////

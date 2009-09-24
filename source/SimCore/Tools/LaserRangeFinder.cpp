@@ -26,6 +26,7 @@
 #include <SimCore/Tools/Binoculars.h>
 
 #include <SimCore/Actors/StealthActor.h>
+#include <SimCore/UnitEnums.h>
 
 #include <dtUtil/log.h>
 #include <dtUtil/coordinates.h>
@@ -168,14 +169,15 @@ namespace SimCore
             mIntersectionText->setText(PadNumber(distance));
 
             float elevation = point.z() - playerPos.z();
-            
-            // Convert to possibly negative mils, formula in dtUtil::Coordinates
-            // forces mils to be positive
-            int mils = int(CalculateMils(distance, elevation));
-            // Instead of converting to degrees to clamp between -45, and 45, 
+
+            float degrees = CalculateDegrees(distance, elevation);
+            // Instead of converting to degrees to clamp between -45, and 45,
             // clamp the mils between -800, 800
-            dtUtil::Clamp(mils, -800, 800);
-            mElevationText->setText(PadNumber(mils));
+            dtUtil::Clamp(degrees, -45.0f, 45.0f);
+
+            float resultingAngle = SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, SimCore::UnitOfAngle::MIL, degrees);
+
+            mElevationText->setText(PadNumber(resultingAngle) + " " + SimCore::UnitOfAngle::MIL.GetAbbreviation());
          }
          else
          {

@@ -265,6 +265,12 @@ namespace StealthQt
          /// Called when the far clip plane is changed
          void OnFarClipplingPlaneChanged(const QString& text);
 
+         /// Called when the user selects a new unit to use when displaying lengths.
+         void OnUnitOfLengthChanged(const QString& text);
+
+         /// Called when the user selects a new unit to use when displaying angles.
+         void OnUnitOfAngleChanged(const QString& text);
+
          /////////////////////////////////////////////////////////////////////////
          // Environment Tab
          /////////////////////////////////////////////////////////////////////////
