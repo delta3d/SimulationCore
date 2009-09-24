@@ -104,7 +104,7 @@ namespace SimCore
              * @param elevation, The elevation
              * @return The mils
              */
-            float CalculateMils(const float distance, const float elevation);
+            float CalculateDegrees(const float distance, const float elevation);
 
          protected:
 

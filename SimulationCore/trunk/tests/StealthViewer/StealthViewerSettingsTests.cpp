@@ -29,8 +29,10 @@
 #include <StealthViewer/Qt/StealthViewerSettings.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
+#include <StealthViewer/GMApp/PreferencesToolsConfigObject.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <SimCore/Components/LabelManager.h>
+#include <SimCore/UnitEnums.h>
 #include <dtUtil/fileutils.h>
 #include <dtUtil/mathdefines.h>
 #include <dtDAL/project.h>
@@ -45,15 +47,13 @@ class SubStealthViewerSettings : public StealthQt::StealthViewerSettings
 {
    public:
 
-      SubStealthViewerSettings(const QString &appName) :
-         StealthQt::StealthViewerSettings(appName)
+      SubStealthViewerSettings(const QString &appName)
+      : StealthQt::StealthViewerSettings(appName)
       {
-
       }
 
       virtual ~SubStealthViewerSettings()
       {
-
       }
 
       void ParseIniFile()
@@ -66,6 +66,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 {
    CPPUNIT_TEST_SUITE(StealthViewerSettingsTests);
 
+      CPPUNIT_TEST(TestToolSettings);
       CPPUNIT_TEST(TestGeneralSettings);
       CPPUNIT_TEST(TestVisibilitySettings);
       CPPUNIT_TEST(TestParseIniFile);
@@ -80,6 +81,7 @@ class StealthViewerSettingsTests : public CPPUNIT_NS::TestFixture
 
       void tearDown();
 
+      void TestToolSettings();
       void TestGeneralSettings();
       void TestVisibilitySettings();
       void TestParseIniFile();
@@ -113,6 +115,30 @@ void StealthViewerSettingsTests::tearDown()
 {
    delete mQApp;
    mQApp = NULL;
+}
+
+void StealthViewerSettingsTests::TestToolSettings()
+{
+   StealthGM::PreferencesToolsConfigObject& toolsConfig =
+      StealthQt::StealthViewerData::GetInstance().GetToolsConfigObject();
+
+   StealthGM::ViewWindowConfigObject& viewConfig =
+      StealthQt::StealthViewerData::GetInstance().GetViewWindowConfigObject();
+
+   dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+   gm->SetApplication(GetGlobalApplication());
+   viewConfig.CreateMainViewWindow(*gm);
+
+   toolsConfig.SetAngleUnit(SimCore::UnitOfAngle::MIL);
+   toolsConfig.SetLengthUnit(SimCore::UnitOfLength::FOOT);
+
+   SubStealthViewerSettings settings(QString("UnitTest"));
+   settings.ClearAllSettings(true);
+   settings.WritePreferencesToFile(false);
+   settings.LoadPreferences();
+
+   CPPUNIT_ASSERT_EQUAL(SimCore::UnitOfAngle::MIL, toolsConfig.GetAngleUnit());
+   CPPUNIT_ASSERT_EQUAL(SimCore::UnitOfLength::FOOT, toolsConfig.GetLengthUnit());
 }
 
 void StealthViewerSettingsTests::TestGeneralSettings()
@@ -188,20 +214,15 @@ void StealthViewerSettingsTests::TestGeneralSettings()
    CPPUNIT_ASSERT_EQUAL(10.0, viewConfig.GetFarClippingPlane());
    CPPUNIT_ASSERT_EQUAL(1.0, viewConfig.GetNearClippingPlane());
 
-
    CPPUNIT_ASSERT_EQUAL(false, genConfig.GetEnableCameraCollision());
 
-
    CPPUNIT_ASSERT_EQUAL(2.0f, genConfig.GetLODScale());
-
 
    CPPUNIT_ASSERT_EQUAL(StealthGM::PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS,
       genConfig.GetPerformanceMode());
 
    CPPUNIT_ASSERT_EQUAL(true, genConfig.GetShowAdvancedOptions());
-
 }
-
 
 void StealthViewerSettingsTests::TestVisibilitySettings()
 {

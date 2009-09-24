@@ -126,7 +126,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
-               new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels", "Human with a physics collision mesh",
+               new dtDAL::ActorType("HumanWithPhysicsActor", "Entity", "Human with a physics collision mesh",
                         EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PORTAL_ACTOR_TYPE(new dtDAL::ActorType("Portal", "PortalModels"));
@@ -252,6 +252,10 @@ namespace SimCore
          dtDAL::ActorType *oldEntityType = new dtDAL::ActorType("Entity", "Entity",
                "OBSOLETE ENTITY TYPE - IS NOW PLATFORM - BACKWARD COMPATIBLE FOR OLDER LOG FILES");
          mActorFactory->RegisterType<PlatformActorProxy>(oldEntityType);
+
+         mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(new dtDAL::ActorType("HumanWithPhysicsActor", "NxAgeiaPhysicsModels", "Human with a physics collision mesh",
+                  EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
+
 
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());

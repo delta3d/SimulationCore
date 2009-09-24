@@ -27,6 +27,7 @@
 #include <SimCore/Components/StealthHUDElements.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
+#include <SimCore/UnitEnums.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
@@ -39,7 +40,6 @@
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
 
-#include <dtGame/binarylogstream.h>
 #include <dtGame/logtag.h>
 #include <dtGame/logkeyframe.h>
 #include <dtGame/logstatus.h>
@@ -50,7 +50,6 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/logcontroller.h>
 #include <dtGame/logstatus.h>
-
 
 #include <dtActors/taskactor.h>
 #include <dtActors/coordinateconfigactor.h>
@@ -331,6 +330,30 @@ namespace StealthGM
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetUnitOfLength(SimCore::UnitOfLength& unit)
+   {
+      mUnitOfLength = &unit;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   SimCore::UnitOfLength& StealthHUD::GetUnitOfLength() const
+   {
+      return *mUnitOfLength;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetUnitOfAngle(SimCore::UnitOfAngle& unit)
+   {
+      mUnitOfAngle = &unit;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   SimCore::UnitOfAngle& StealthHUD::GetUnitOfAngle() const
+   {
+      return *mUnitOfAngle;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void StealthHUD::TickHUD()
    {
       int x(0), y(0), w(0), h(0);
@@ -383,9 +406,12 @@ namespace StealthGM
                mMGRSMeter->SetVisible(false);
             }
 
-            mCartesianMeter->SetX(pos[0]);
-            mCartesianMeter->SetY(pos[1]);
-            mCartesianMeter->SetZ(pos[2]);
+            mCartesianMeter->SetX(SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, pos[0]),
+                     mUnitOfLength->GetAbbreviation());
+            mCartesianMeter->SetY(SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, pos[1]),
+                     mUnitOfLength->GetAbbreviation());
+            mCartesianMeter->SetZ(SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, pos[2]),
+                     mUnitOfLength->GetAbbreviation());
          }
          else
          {
@@ -398,9 +424,10 @@ namespace StealthGM
 
             mCoordinateConverter.SetIncomingCoordinateType(dtUtil::IncomingCoordinateType::GEODETIC);
             const osg::Vec3d& globePos = mCoordinateConverter.ConvertToRemoteTranslation(pos);
-            mGPS->SetX(globePos[0]);
-            mGPS->SetY(globePos[1]);
-            mGPS->SetZ(globePos[2]);
+            mGPS->SetX(globePos[0], SimCore::UnitOfAngle::DEGREE.GetAbbreviation());
+            mGPS->SetY(globePos[1], SimCore::UnitOfAngle::DEGREE.GetAbbreviation());
+            mGPS->SetZ(SimCore::UnitOfLength::Convert(SimCore::UnitOfLength::METER, *mUnitOfLength, globePos[2]),
+                     mUnitOfLength->GetAbbreviation());
          }
       }
 

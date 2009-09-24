@@ -103,6 +103,8 @@ namespace StealthQt
             static const QString SHOW_ELEVATION_OF_OBJECT;
             static const QString MAGNIFICATION;
             static const QString AUTO_ATTACH_ON_SELECTION;
+            static const QString DISTANCE_UNIT;
+            static const QString ANGLE_UNIT;
 
          static const QString PREFERENCES_VISIBILITY_GROUP;
             static const QString SHOW_LABELS;

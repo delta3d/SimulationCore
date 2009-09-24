@@ -200,8 +200,8 @@ void ToolTests::TestLRF()
    lrf->Enable(false);
    CPPUNIT_ASSERT_MESSAGE("Binoculars should be disabled", !lrf->IsEnabled());
 
-   float mils = lrf->CalculateMils(90, 0);
-   CPPUNIT_ASSERT_MESSAGE("The mils should be 0 since a distance of 0 is not valid", mils == 0.0f);
+   float degrees = lrf->CalculateDegrees(90, 0);
+   CPPUNIT_ASSERT_MESSAGE("The degrees should be 0 since a distance of 0 is not valid", degrees == 0.0f);
 }
 
 void ToolTests::TestCompass()

@@ -38,17 +38,28 @@
 
 namespace StealthGM
 {
+   ////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(PreferencesGeneralConfigObject::AttachMode);
    const PreferencesGeneralConfigObject::AttachMode PreferencesGeneralConfigObject::AttachMode::FIRST_PERSON("First Person");
    const PreferencesGeneralConfigObject::AttachMode PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON("Third Person");
+   PreferencesGeneralConfigObject::AttachMode::AttachMode(const std::string& name) : dtUtil::Enumeration(name)
+   {
+      AddInstance(this);
+   }
 
+   ////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(PreferencesGeneralConfigObject::PerformanceMode);
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BEST_GRAPHICS("Best Graphics");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BETTER_GRAPHICS("Better Graphics");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::DEFAULT("Default");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BETTER_SPEED("Better Speed");
    const PreferencesGeneralConfigObject::PerformanceMode PreferencesGeneralConfigObject::PerformanceMode::BEST_SPEED("Best Speed");
+   PreferencesGeneralConfigObject::PerformanceMode::PerformanceMode(const std::string& name) : dtUtil::Enumeration(name)
+   {
+      AddInstance(this);
+   }
 
+   ////////////////////////////////////////////////////////////////
    PreferencesGeneralConfigObject::PreferencesGeneralConfigObject()
    : mAttachMode(&PreferencesGeneralConfigObject::AttachMode::THIRD_PERSON)
    , mEnableCameraCollision(true)
@@ -266,4 +277,5 @@ namespace StealthGM
    {
       return mInitialAttachRotationHPR;
    }
+
 }

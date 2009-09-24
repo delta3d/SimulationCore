@@ -53,32 +53,32 @@ namespace SimCore
          std::ostringstream paddedNum;
          int absNum = abs(num);
 
-         if(absNum == 0)
+         if (absNum == 0)
             paddedNum << "0000";
-         else if(absNum < 10)
+         else if (absNum < 10)
             paddedNum << "000" << absNum;
-         else if(absNum < 100)
+         else if (absNum < 100)
             paddedNum << "00" << absNum;
-         else if(absNum < 1000)
+         else if (absNum < 1000)
             paddedNum << "0" << absNum;
          else
             paddedNum << absNum;
 
-         if(num < 0)
+         if (num < 0)
             paddedNum.str("-" + paddedNum.str());
 
          return paddedNum.str();
       }
 
-      float Tool::CalculateMils(const float distance, const float elevation)
+      float Tool::CalculateDegrees(const float distance, const float elevation)
       {
-         if(distance == 0.0f)
+         if (distance == 0.0f)
          {
             LOG_ERROR("Cannot calculate mils with a distance of 0.");
             return 0.0f;
          }
-         float radians = asinf(elevation / distance);
-         return radians * (6400.0f / (2.0f * osg::PI));
+         float radians = std::asin(elevation / distance);
+         return osg::RadiansToDegrees(radians);
       }
    }
 }

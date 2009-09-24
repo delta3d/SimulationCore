@@ -26,6 +26,7 @@
 #include <StealthViewer/GMApp/StealthHUD.h>
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/MessageType.h>
+#include <SimCore/UnitEnums.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
@@ -52,8 +53,11 @@ namespace StealthGM
       , mAutoAttachOnSelection(true)
       , mHighlightEntities(false)
       , mShowCallSigns(false)
+      , mLengthUnit(&SimCore::UnitOfLength::METER)
+      , mAngleUnit(&SimCore::UnitOfAngle::DEGREE)
       {
       }
+
       const PreferencesToolsConfigObject::CoordinateSystem* mCoordinateSystem;
       bool mShowBinocularImage;
       bool mShowDistanceToObject;
@@ -63,7 +67,8 @@ namespace StealthGM
       bool mHighlightEntities;
       bool mShowCallSigns;
       dtCore::RefPtr<SimCore::Tools::Binoculars> mBinocs;
-
+      SimCore::UnitOfLength* mLengthUnit;
+      SimCore::UnitOfAngle* mAngleUnit;
    };
 
    /////////////////////////////////////////////////////////////////////////////
@@ -175,6 +180,53 @@ namespace StealthGM
       return mPImpl->mBinocs.get();
    }
 
+   /////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetLengthUnit(SimCore::UnitOfLength& unit)
+   {
+      mPImpl->mLengthUnit = &unit;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetLengthUnit(const std::string& unitName)
+   {
+      SimCore::UnitOfLength* uofL = SimCore::UnitOfLength::GetValueForName(unitName);
+      if (uofL != NULL)
+      {
+         SetLengthUnit(*uofL);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   SimCore::UnitOfLength& PreferencesToolsConfigObject::GetLengthUnit() const
+   {
+      return *mPImpl->mLengthUnit;
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetAngleUnit(SimCore::UnitOfAngle& unit)
+   {
+      mPImpl->mAngleUnit = &unit;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetAngleUnit(const std::string& unitName)
+   {
+      SimCore::UnitOfAngle* uofA = SimCore::UnitOfAngle::GetValueForName(unitName);
+      if (uofA != NULL)
+      {
+         SetAngleUnit(*uofA);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   SimCore::UnitOfAngle& PreferencesToolsConfigObject::GetAngleUnit() const
+   {
+      return *mPImpl->mAngleUnit;
+   }
+
+   /////////////////////////////////////////////////////////////////////////
    void PreferencesToolsConfigObject::ApplyChanges(dtGame::GameManager& gameManager)
    {
       /////////////////////////////////////////////////////////////////////////////
@@ -219,9 +271,14 @@ namespace StealthGM
       if (!IsUpdated())
          return;
 
-      StealthHUD* hud = static_cast<StealthHUD*>(gameManager.GetComponentByName(StealthHUD::DEFAULT_NAME));
+      StealthHUD* hud = NULL;
+      gameManager.GetComponentByName(StealthHUD::DEFAULT_NAME, hud);
+
       if (hud != NULL)
       {
+         hud->SetUnitOfAngle(GetAngleUnit());
+         hud->SetUnitOfLength(GetLengthUnit());
+
          if (*mPImpl->mCoordinateSystem == PreferencesToolsConfigObject::CoordinateSystem::MGRS)
          {
             hud->SetCoordinateSystem(CoordSystem::MGRS);
@@ -246,6 +303,8 @@ namespace StealthGM
          binos->SetShowDistance(GetShowDistanceToObject());
          binos->SetShowElevation(GetShowElevationOfObject());
          binos->SetZoomFactor(GetMagnification());
+         binos->SetUnitOfLength(GetLengthUnit());
+         binos->SetUnitOfAngle(GetAngleUnit());
       }
 
       SetIsUpdated(false);

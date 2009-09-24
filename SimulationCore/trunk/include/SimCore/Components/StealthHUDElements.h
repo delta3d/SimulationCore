@@ -279,9 +279,9 @@ namespace SimCore
          public:
             StealthCartesianMeter( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
 
-            void SetX( float x );
-            void SetY( float y );
-            void SetZ( float z );
+            void SetX(float x, const std::string& unit);
+            void SetY(float y, const std::string& unit);
+            void SetZ(float z, const std::string& unit);
 
             HUDText& GetX();
             const HUDText& GetX() const;
@@ -295,6 +295,7 @@ namespace SimCore
          protected:
             virtual ~StealthCartesianMeter();
 
+            static void SetFloat(float value, const std::string& unit, HUDText& text);
          private:
             dtCore::RefPtr<HUDText> mX;
             dtCore::RefPtr<HUDText> mY;

@@ -39,6 +39,7 @@
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 
 #include <SimCore/Components/LabelManager.h>
+#include <SimCore/UnitEnums.h>
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
@@ -108,6 +109,8 @@ namespace StealthQt
       const QString StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT("SHOW_ELEVATION_OF_OBJECT");
       const QString StealthViewerSettings::MAGNIFICATION("MAGNIFICATION");
       const QString StealthViewerSettings::AUTO_ATTACH_ON_SELECTION("AUTO_ATTACH_ON_SELECTION");
+      const QString StealthViewerSettings::DISTANCE_UNIT("DISTANCE_UNIT");
+      const QString StealthViewerSettings::ANGLE_UNIT("ANGLE_UNIT");
 
    const QString StealthViewerSettings::PREFERENCES_VISIBILITY_GROUP("PREFERENCES_VISIBILITY_GROUP");
       const QString StealthViewerSettings::SHOW_LABELS("SHOW_LABELS");
@@ -513,6 +516,8 @@ namespace StealthQt
          setValue(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT, toolsObject.GetShowElevationOfObject());
          setValue(StealthViewerSettings::MAGNIFICATION, toolsObject.GetMagnification());
          setValue(StealthViewerSettings::AUTO_ATTACH_ON_SELECTION, toolsObject.GetAutoAttachOnSelection());
+         setValue(StealthViewerSettings::DISTANCE_UNIT, toolsObject.GetLengthUnit().GetName().c_str());
+         setValue(StealthViewerSettings::ANGLE_UNIT, toolsObject.GetAngleUnit().GetName().c_str());
 
       endGroup();
    }
@@ -917,6 +922,22 @@ namespace StealthQt
          {
             bool savedValue = value(StealthViewerSettings::AUTO_ATTACH_ON_SELECTION).toBool();
             toolsConfig.SetAutoAttachOnSelection(savedValue);
+         }
+
+         if (contains(StealthViewerSettings::DISTANCE_UNIT))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::DISTANCE_UNIT).toString();
+
+            toolsConfig.SetLengthUnit(savedValue.toStdString());
+         }
+
+         if (contains(StealthViewerSettings::ANGLE_UNIT))
+         {
+            QString savedValue =
+               value(StealthViewerSettings::ANGLE_UNIT).toString();
+
+            toolsConfig.SetAngleUnit(savedValue.toStdString());
          }
 
       endGroup();
