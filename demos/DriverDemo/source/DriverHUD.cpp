@@ -506,9 +506,9 @@ namespace DriverDemo
                mMGRSMeter->SetVisible( false );
             }
 
-            mCartesianMeter->SetX( pos[0] );
-            mCartesianMeter->SetY( pos[1] );
-            mCartesianMeter->SetZ( pos[2] );
+            mCartesianMeter->SetX( pos[0], "M");
+            mCartesianMeter->SetY( pos[1], "M" );
+            mCartesianMeter->SetZ( pos[2], "M" );
          }
          else
          {
@@ -522,9 +522,9 @@ namespace DriverDemo
 
             mCoordinateConverter.SetIncomingCoordinateType( dtUtil::IncomingCoordinateType::GEODETIC );
             const osg::Vec3d& globePos = mCoordinateConverter.ConvertToRemoteTranslation( pos );
-            mGPSMeter->SetX( globePos[0] );
-            mGPSMeter->SetY( globePos[1] );
-            mGPSMeter->SetZ( globePos[2] );
+            mGPSMeter->SetX( globePos[0], "deg" );
+            mGPSMeter->SetY( globePos[1], "deg" );
+            mGPSMeter->SetZ( globePos[2], "M" );
          }
 
          // Update the compass HUD element
