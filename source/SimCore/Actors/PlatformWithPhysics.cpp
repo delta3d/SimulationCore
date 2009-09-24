@@ -77,10 +77,19 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////
       void PlatformWithPhysics::SetDamageState(BaseEntityActorProxy::DamageStateEnum& damageState)
       {
+         bool reloadCollision = false;
+         if (damageState != GetDamageState())
+         {
+            reloadCollision = true;
+         }
+
          Platform::SetDamageState( damageState );
          if(mLoadGeomFromNode == true)
             return;
-         LoadCollision();
+         if (reloadCollision)
+         {
+            LoadCollision();
+         }
       }
 
       /////////////////////////////////////////////////////////////////////////
@@ -187,6 +196,7 @@ namespace SimCore
             physObj->SetTransform(xform);
             mPhysicsHelper->AddPhysicsObject(*physObj);
 
+            //TODO: need to clear out the existing geometries.
             physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
          }
