@@ -239,6 +239,7 @@ namespace StealthQt
       traits.width = 256;
       traits.fullScreen = false;
       traits.showCursor = true;
+      traits.realizeUponCreate = false;
       traits.contextToShare = viewConfig.GetMainViewWindow().GetWindow().GetOsgViewerGraphicsWindow();
 
       dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
