@@ -45,12 +45,10 @@
 namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
-   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, const QGLWidget* sharedContextWidget)
-   : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Tool | Qt::Window)
-   , mGLWidget(NULL)
+   AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, const QGLWidget* sharedContextWidget, Qt::WindowFlags f)
+   : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Tool | Qt::Window | f)
    {
       setFocusPolicy(Qt::StrongFocus);
-      setLayout(new QVBoxLayout(this));
 
       setMinimumHeight(300);
       setMinimumWidth(400);
@@ -68,27 +66,6 @@ namespace StealthQt
    AdditionalViewDockWidget::~AdditionalViewDockWidget()
    {
    }
-
-//   ////////////////////////////////////////////////////////////
-//   void AdditionalViewDockWidget::SetQGLWidget(QGLWidget* widgetChild)
-//   {
-//      if (mGLWidget != NULL)
-//      {
-//         layout()->removeWidget(mGLWidget);
-//      }
-//      mGLWidget = widgetChild;
-//      //setWidget(mGLWidget);
-//      if (mGLWidget != NULL)
-//      {
-//         layout()->addWidget(mGLWidget);
-//      }
-//   }
-//
-//   ////////////////////////////////////////////////////////////
-//   QGLWidget* AdditionalViewDockWidget::GetQGLWidget()
-//   {
-//      return mGLWidget;
-//   }
 
    ////////////////////////////////////////////////////////////
    void AdditionalViewDockWidget::RequestClose()

@@ -1564,14 +1564,14 @@ namespace SimCore
                   dtCore::BatchIsector::HitList& hitList = isector.GetHitList();
                   dtCore::BatchIsector::HitList::iterator curHitIter = hitList.begin();
                   dtCore::BatchIsector::HitList::iterator endHitList = hitList.end();
-                  for( int index = 0; curHitIter != endHitList; ++curHitIter, ++index )
+                  for (int index = 0; curHitIter != endHitList; ++curHitIter, ++index)
                   {
                      const dtCore::BatchIsector::Hit& hit = *curHitIter;
 
                      // Get the drawable of the current hit.
-                     const osg::NodePath& nodePath = hit.nodePath;
+                     const osg::NodePath& nodePath = hit.getNodePath();
                      geode = dynamic_cast<osg::Geode*>(nodePath.back());
-                     if( geode == NULL )
+                     if (geode == NULL)
                      {
                         continue;
                      }
