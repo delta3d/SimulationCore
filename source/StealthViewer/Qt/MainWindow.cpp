@@ -103,9 +103,9 @@ namespace StealthQt
    public:
       ///Overwrite to generate a custom OSGAdapterWidget
       virtual dtQt::OSGAdapterWidget* CreateWidget(bool drawOnSeparateThread, QWidget* parent = NULL,
-                                             const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = NULL)
+                                             const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
       {
-         return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget);
+         return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
       }
    };
 

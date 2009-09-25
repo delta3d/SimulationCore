@@ -35,6 +35,7 @@
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
+#include <dtCore/observerptr.h>
 #include <dtDAL/enginepropertytypes.h>
 
 #include <osg/Matrix>
@@ -189,14 +190,26 @@ namespace SimCore
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
          {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject("Chassis");
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = mPhysicsHelper->GetPhysicsObject("Chassis");
+
+            if (physObj.valid())
+            {
+               mPhysicsHelper->RemovePhysicsObject(*physObj);
+               dtCore::ObserverPtr<dtPhysics::PhysicsObject> observer = physObj.get();
+               physObj = NULL;
+               if (observer.valid())
+               {
+                  LOG_ERROR("Removed the physics body from the platform, but it didn't get deleted.  Something is holding onto it.");
+               }
+            }
+
+            physObj= new dtPhysics::PhysicsObject("Chassis");
             dtCore::Transform xform;
             GetTransform(xform);
 
             physObj->SetTransform(xform);
             mPhysicsHelper->AddPhysicsObject(*physObj);
 
-            //TODO: need to clear out the existing geometries.
             physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
          }
