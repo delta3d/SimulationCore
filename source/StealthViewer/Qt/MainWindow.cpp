@@ -105,6 +105,10 @@ namespace StealthQt
       virtual dtQt::OSGAdapterWidget* CreateWidget(bool drawOnSeparateThread, QWidget* parent = NULL,
                                              const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
       {
+         if (shareWidget != NULL)
+         {
+            f |= Qt::Tool;
+         }
          return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
       }
    };

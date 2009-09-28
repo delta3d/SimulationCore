@@ -263,7 +263,7 @@ namespace StealthQt
                      QMessageBox::Ok, QMessageBox::Ok);
             return NULL;
          }
-         widget->hide();
+         //widget->hide();
       }
       return newViewWrapper;
    }

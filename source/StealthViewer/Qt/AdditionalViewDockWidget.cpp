@@ -46,7 +46,7 @@ namespace StealthQt
 {
    ////////////////////////////////////////////////////////////
    AdditionalViewDockWidget::AdditionalViewDockWidget(QWidget* parent, const QGLWidget* sharedContextWidget, Qt::WindowFlags f)
-   : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Tool | Qt::Window | f)
+      : dtQt::OSGAdapterWidget(false, parent, sharedContextWidget, Qt::Window | Qt::WindowStaysOnTopHint | f)
    {
       setFocusPolicy(Qt::StrongFocus);
 
@@ -140,14 +140,8 @@ namespace StealthQt
          AdditionalViewDockWidget* dockWidget = dynamic_cast<AdditionalViewDockWidget*>(widget);
          dtCore::DeltaWin::PositionSize ps = wrapper.GetWindow().GetPosition();
          dockWidget->setGeometry(ps.mX, ps.mY, ps.mWidth, ps.mHeight);
-         //dockWidget->SetQGLWidget(widget);
          dockWidget->SetViewWindowWrapper(&wrapper);
-         //addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-         //dockWidget->setFloating(true);
-         //dockWidget->setWindowTitle(wrapper.GetWindowTitle().c_str());
-         //dockWidget->setParent(StealthViewerData::GetInstance().GetMainWindow());
-         dockWidget->setWindowFlags(Qt::Tool | Qt::Window | Qt::WindowStaysOnTopHint);
-         dockWidget->show();
+         //dockWidget->show();
          gw->resized(ps.mX, ps.mY, ps.mWidth, ps.mHeight);
       }
 
