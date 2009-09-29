@@ -112,7 +112,7 @@ void main (void)
    float waveNDotL = max(0.0, dot(-viewDir, normal));   
    float fresnel = FastFresnel(waveNDotL, 0.05, 6.0);
 
-   if(gl_FrontFacing)
+   if (gl_FrontFacing)
    {     
       vec3 refTexCoords = vec3(gl_FragCoord.x / ScreenWidth, gl_FragCoord.y / ScreenHeight, gl_FragCoord.z);
       refTexCoords.xy = clamp(refTexCoords.xy + 0.4 * normal.xy, 0.0, 1.0);
@@ -124,11 +124,10 @@ void main (void)
       vec3 lightContribFinal;
       lightContribution(normal, lightVector, gl_LightSource[0].diffuse.xyz, 
          gl_LightSource[0].ambient.xyz, lightContribFinal);
-      lightContribFinal.x = pow(lightContribFinal.x, 0.5);
-      lightContribFinal.y = pow(lightContribFinal.y, 0.5);
-      lightContribFinal.z = pow(lightContribFinal.z, 0.5);
 
-      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz, waveNDotL);
+      lightContribFinal = sqrt(lightContribFinal);
+
+      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz,1.0);// waveNDotL);
       
       //calculates a specular contribution
       vec3 normRefLightVec = reflect(lightVect, normal);
@@ -140,7 +139,9 @@ void main (void)
       vec3 finalColor = mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x);
 
       gl_FragColor = vec4(finalColor, WaterColor.a);
-      //gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
+      // gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
+      // vec3 waveColor = 1.0 + waveNormal.xyz;
+      // gl_FragColor = vec4(waveColor / 2.0, WaterColor.a);
    }
    else
    {
