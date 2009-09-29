@@ -127,7 +127,7 @@ void main (void)
 
       lightContribFinal = sqrt(lightContribFinal);
 
-      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz,1.0);// waveNDotL);
+      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz, waveNDotL);
       
       //calculates a specular contribution
       vec3 normRefLightVec = reflect(lightVect, normal);
