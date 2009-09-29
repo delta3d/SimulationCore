@@ -19,7 +19,6 @@ const float UnderWaterViewDistance = 50.0;
 varying vec4 pos;
 varying vec3 lightVector;
 varying float distanceScale;
-varying float distBetweenVertsScalar;
 varying vec2 vFog;
 varying vec3 shaderVertexNormal;
 
@@ -34,7 +33,8 @@ uniform vec3 cameraRecenter;
 float computeFog(float, float, float);
 
 void main(void)
-{
+{   
+   float distBetweenVertsScalar;
    vec4 camPos = inverseViewMatrix[3];
  
 
