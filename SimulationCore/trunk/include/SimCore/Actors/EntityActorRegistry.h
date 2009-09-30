@@ -91,6 +91,9 @@ namespace SimCore
             /// Constructor
             EntityActorRegistry();
 
+            /// Destructor
+            virtual ~EntityActorRegistry();
+
             /// Registers all of the actor proxies to be exported
             void RegisterActorTypes();
          private:

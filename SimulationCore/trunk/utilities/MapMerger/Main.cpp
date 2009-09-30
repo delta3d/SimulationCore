@@ -140,10 +140,12 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
          dtDAL::ActorProperty* toProp = to.GetProperty(curProp.GetName());
          if (toProp == NULL)
          {
-            std::cerr << "Proxies with the same Id, don't have the same properties?? \n\n"
-            << "   Property: \"" << curProp.GetName() << "\"\n   First ActorType: \"" << from.GetActorType().GetFullName() << "\"\n"
-            << "   Second ActorType: \"" << to.GetActorType().GetFullName() << "\""
-            << std::endl;
+            std::cerr << "Proxies with the same Id, don't have the same properties??" << std::endl
+               << "   Actor Id: \"" << from.GetId().ToString() << std::endl 
+               << "   Property: \"" << curProp.GetName() << std::endl 
+               << "   First ActorType: \"" << from.GetActorType().GetFullName() << std::endl 
+               << "   Second ActorType: \"" << to.GetActorType().GetFullName() << "\""
+               << std::endl << std::endl;
          }
          else
          {
