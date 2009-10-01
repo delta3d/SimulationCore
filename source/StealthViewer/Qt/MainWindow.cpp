@@ -108,6 +108,7 @@ namespace StealthQt
          if (shareWidget != NULL)
          {
             f |= Qt::Tool;
+            f |= Qt::WindowStaysOnTopHint;
          }
          return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
       }
