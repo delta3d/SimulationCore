@@ -30,7 +30,6 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 
-
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
@@ -77,7 +76,6 @@
 #include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
-
 
 class UpdateReflectionCameraCallback : public osg::NodeCallback
 {
@@ -157,8 +155,8 @@ osg::Texture2D* CreateTexture(int width, int height)
    tex->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT);
    //tex->setSourceFormat( GL_RGBA );
    tex->setInternalFormat(GL_RGBA);
-   tex->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR/*_MIPMAP_LINEAR*/);
-   tex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR/*_MIPMAP_LINEAR*/);
+   tex->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+   tex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
    return tex;
 }
 
@@ -174,7 +172,7 @@ namespace SimCore
       const dtUtil::RefString WaterGridActor::UNIFORM_ELAPSED_TIME("elapsedTime");
       const dtUtil::RefString WaterGridActor::UNIFORM_MAX_COMPUTED_DISTANCE("maxComputedDistance");
 #ifdef __APPLE__
-      const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray[]");
+      const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray[0]");
 #else
       const dtUtil::RefString WaterGridActor::UNIFORM_WAVE_ARRAY("waveArray");
 #endif
@@ -636,15 +634,15 @@ namespace SimCore
          static float keyTimeOut = 0.0f;
          keyTimeOut -= dt;
 
-         if(kb != NULL && mDeveloperMode && keyTimeOut <= 0.0f)
+         if (kb != NULL && mDeveloperMode && keyTimeOut <= 0.0f)
          {
 
-            if(kb->GetKeyState('9'))
+            if (kb->GetKeyState('9'))
             {
                mModForWaveLength *= 0.96f; // 10% less
                std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
             }
-            else if(kb->GetKeyState('0'))
+            else if (kb->GetKeyState('0'))
             {
                mModForWaveLength *= 1.04f; // 10% more
                std::cout << "WaveLength mod changed to [" << mModForWaveLength << "]." << std::endl;
@@ -747,8 +745,8 @@ namespace SimCore
                keyTimeOut = 0.5;
             }
 
+         }
       }
-   }
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1205,21 +1203,22 @@ namespace SimCore
 
                mWaveTexture = CreateTexture(width, height);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
+               mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
                AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
 
                comp->AddCamera(mWaveCamera.get());
 
 
-               mWaveCameraScreen = new osg::Camera();
-               mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
-               mWaveCameraScreen->setClearMask(GL_NONE);
-               mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-               mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
-               mWaveCameraScreen->setViewport(0, 0, width, height);
-               mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
-               AddOrthoQuad(mWaveCameraScreen.get(), mWaveTexture.get(), "WaveTest", "waveTexture");
-               mWaveCameraScreen->setNodeMask(0x0);
-               comp->AddCamera(mWaveCameraScreen.get());
+//               mWaveCameraScreen = new osg::Camera();
+//               mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
+//               mWaveCameraScreen->setClearMask(GL_NONE);
+//               mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+//               mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
+//               mWaveCameraScreen->setViewport(0, 0, width, height);
+//               mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
+//               AddOrthoQuad(mWaveCameraScreen.get(), mWaveTexture.get(), "WaveTest", "waveTexture");
+//               mWaveCameraScreen->setNodeMask(0x0);
+//               comp->AddCamera(mWaveCameraScreen.get());
             }
 
             osg::Uniform* tex = new osg::Uniform(osg::Uniform::SAMPLER_2D, UNIFORM_WAVE_TEXTURE);
@@ -1341,17 +1340,17 @@ namespace SimCore
             ss->addUniform(tex);
             ss->setTextureAttributeAndModes(1, mReflectionTexture.get(), osg::StateAttribute::ON);
 
-            //this is commented out because we are switching between using it for visualizing the reflection and visualizing the texture waves
-            //mWaveCameraScreen = new osg::Camera();
-            //mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
-            //mWaveCameraScreen->setClearMask(GL_NONE);
-            //mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-            //mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
-            //mWaveCameraScreen->setViewport(0, 0, width, height);
-            //mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
-            //AddOrthoQuad(mWaveCameraScreen.get(), mReflectionTexture.get(), "WaveTest", "waveTexture");
-            //mWaveCameraScreen->setNodeMask(0x0);
-            //comp->AddCamera(mWaveCameraScreen.get());
+//            this is commented out because we are switching between using it for visualizing the reflection and visualizing the texture waves
+            mWaveCameraScreen = new osg::Camera();
+            mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
+            mWaveCameraScreen->setClearMask(GL_NONE);
+            mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+            mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
+            mWaveCameraScreen->setViewport(0, 0, width, height);
+            mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
+            AddOrthoQuad(mWaveCameraScreen.get(), mReflectionTexture.get(), "WaveTest", "waveTexture");
+            mWaveCameraScreen->setNodeMask(0x0);
+            comp->AddCamera(mWaveCameraScreen.get());
          }
 
       }
