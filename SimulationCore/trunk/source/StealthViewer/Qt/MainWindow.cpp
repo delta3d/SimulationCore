@@ -110,7 +110,10 @@ namespace StealthQt
             f |= Qt::Tool;
             f |= Qt::WindowStaysOnTopHint;
          }
-         return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
+//       return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
+         // Shared contexts aren't working with the water right now, so have to pass NULL.
+         // This is an ugly hack becaues we need the shared context to know if it's not the main window.
+         return new StealthQt::AdditionalViewDockWidget(NULL, NULL, f);
       }
    };
 

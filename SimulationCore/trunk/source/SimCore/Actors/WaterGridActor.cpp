@@ -1203,7 +1203,7 @@ namespace SimCore
 
                mWaveTexture = CreateTexture(width, height);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
-               mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
+               //mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
                AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
 
                comp->AddCamera(mWaveCamera.get());
