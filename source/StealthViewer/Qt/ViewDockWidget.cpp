@@ -240,7 +240,7 @@ namespace StealthQt
       traits.fullScreen = false;
       traits.showCursor = true;
       traits.realizeUponCreate = false;
-      traits.contextToShare = viewConfig.GetMainViewWindow().GetWindow().GetOsgViewerGraphicsWindow();
+      //traits.contextToShare = viewConfig.GetMainViewWindow().GetWindow().GetOsgViewerGraphicsWindow();
 
       dtCore::RefPtr<dtCore::DeltaWin> deltaWin =
          new dtCore::DeltaWin(traits);
@@ -263,7 +263,6 @@ namespace StealthQt
                      QMessageBox::Ok, QMessageBox::Ok);
             return NULL;
          }
-         //widget->hide();
       }
       return newViewWrapper;
    }
