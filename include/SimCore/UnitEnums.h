@@ -69,13 +69,16 @@ namespace SimCore
 
       const std::string& GetAbbreviation() const;
 
+      /// Get's the max size for the angle unit, i.e. the number at which in starts to repeat the rotation.
+      double GetMax() const;
+
       bool GetUseWholeUnits() const;
 
    protected:
-      UnitOfAngle(const std::string& name, double conversionFromDegrees, const std::string& abbrev, bool useWholeUnits);
+      UnitOfAngle(const std::string& name, double conversionFromDegrees, double max, const std::string& abbrev, bool useWholeUnits);
       ~UnitOfAngle();
    private:
-      double mConversionFromDegrees;
+      double mConversionFromDegrees, mMax;
       std::string mAbbreviation;
       bool mWholeUnitsOnly;
    };

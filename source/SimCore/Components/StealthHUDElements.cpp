@@ -454,6 +454,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       StealthCompassMeter::StealthCompassMeter( const std::string& name, const std::string& type )
       : StealthMeter( name, type )
+      , mShowWholeNumbersOnly(true)
       {
       }
 
@@ -494,16 +495,54 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void StealthCompassMeter::SetValue( float current, float max, float min )
+      void StealthCompassMeter::SetValue(float current, float max, float min)
       {
          std::stringstream text;
-         float degrees = current+0.5f; // degrees rounded up
-         int mills = (int)((degrees+360.0f)*6400.0f/360.0f);
-         text << (6400-mills%6400); // convert number to a string
 
-         GetTextElement().SetText( text.str() );
-         GetMeterElement().SetValue( ((int)(-degrees+360))%360, max+180.0f, min+180.0f );
+         float range = max - min;
+         float intpart = 0.0; // ignored
+
+         while (current < min)
+         {
+            current += range;
+         }
+
+         while (current > max)
+         {
+            current -= range;
+         }
+
+         float value = (std::modf((current - min) / range, &intpart) * range) + min;
+         if (GetShowWholeNumbersOnly())
+         {
+            text << std::floor(value + 0.5f); // convert number to a string
+         }
+         else
+         {
+            text.precision(3);
+            text << value;
+         }
+
+         GetTextElement().SetText(text.str());
+
+         // We just want 0 - range in the end for the image, so if min isn't 0, we correct for it now.
+         // rather than making the modf code more complex.
+         GetMeterElement().SetValue(value,
+                  max - min, min - min);
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      void StealthCompassMeter::SetShowWholeNumbersOnly(bool whole)
+      {
+         mShowWholeNumbersOnly = whole;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool StealthCompassMeter::GetShowWholeNumbersOnly() const
+      {
+         return mShowWholeNumbersOnly;
+      }
+
 
       //////////////////////////////////////////////////////////////////////////
       void StealthCompassMeter::CreateMeterElement( dtCore::RefPtr<HUDMeter>& outMeterOfThis,

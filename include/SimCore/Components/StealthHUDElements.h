@@ -202,9 +202,15 @@ namespace SimCore
 
             virtual void Initialize();
 
-            // This function is being overridden so that it can prevent
-            // sliding the compass strip too far off either ends.
+            /** This function is being overridden so that it can prevent
+             * sliding the compass strip too far off either ends.
+             */
             virtual void SetValue( float current, float max = 1.0f, float min = 0.0f );
+
+            /// Set this if the numeric compass should round to whole numbers or not.
+            void SetShowWholeNumbersOnly(bool whole);
+            /// @return if the numeric compass should round to whole numbers or not.
+            bool GetShowWholeNumbersOnly() const;
 
          protected:
             virtual ~StealthCompassMeter();
@@ -213,6 +219,7 @@ namespace SimCore
                const std::string& meterName );
 
          private:
+            bool mShowWholeNumbersOnly;
       };
 
 
