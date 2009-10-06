@@ -36,7 +36,8 @@ namespace SimCore
    UnitOfLength UnitOfLength::FURLONG("FURLONG", 1.0/201.168, "fur", false);
 
    //////////////////////////////////////////////////////////////////////
-   UnitOfLength::UnitOfLength(const std::string& name, double conversionFromMeters, const std::string& abbrev, bool useWholeUnits)
+   UnitOfLength::UnitOfLength(const std::string& name, double conversionFromMeters,
+            const std::string& abbrev, bool useWholeUnits)
    : dtUtil::Enumeration(name)
    , mConversionFromMeters(conversionFromMeters)
    , mAbbreviation(abbrev)
@@ -71,14 +72,16 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(UnitOfAngle);
-   UnitOfAngle UnitOfAngle::DEGREE("DEGREE", 1.0, "deg", false);
-   UnitOfAngle UnitOfAngle::MIL("MIL", 6400.0 / 360.0, "mil", true);
-   UnitOfAngle UnitOfAngle::RADIAN("RADIAN", float(osg::PI / 180.0), "rad", false);
+   UnitOfAngle UnitOfAngle::DEGREE("DEGREE", 1.0, 360.0, "deg", false);
+   UnitOfAngle UnitOfAngle::MIL("MIL", 6400.0 / 360.0, 6400.0, "mil", true);
+   UnitOfAngle UnitOfAngle::RADIAN("RADIAN", osg::PI / 180.0, osg::PI * 2.0, "rad", false);
 
    //////////////////////////////////////////////////////////////////////
-   UnitOfAngle::UnitOfAngle(const std::string& name, double conversionFromDegrees, const std::string& abbrev, bool useWholeUnits)
+   UnitOfAngle::UnitOfAngle(const std::string& name, double conversionFromDegrees, double max,
+            const std::string& abbrev, bool useWholeUnits)
    : dtUtil::Enumeration(name)
    , mConversionFromDegrees(conversionFromDegrees)
+   , mMax(max)
    , mAbbreviation(abbrev)
    , mWholeUnitsOnly(useWholeUnits)
    {
@@ -100,6 +103,12 @@ namespace SimCore
    const std::string& UnitOfAngle::GetAbbreviation() const
    {
       return mAbbreviation;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   double UnitOfAngle::GetMax() const
+   {
+      return mMax;
    }
 
    //////////////////////////////////////////////////////////////////////

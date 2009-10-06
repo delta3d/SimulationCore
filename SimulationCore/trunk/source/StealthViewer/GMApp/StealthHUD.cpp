@@ -370,8 +370,12 @@ namespace StealthGM
          osg::Vec3 hpr;
          xform.GetRotation(hpr);
 
+         // negative hpr because we want turning right to be positive.
+         double angle = SimCore::UnitOfAngle::Convert(SimCore::UnitOfAngle::DEGREE, *mUnitOfAngle, -hpr[0]);
+
+         mCompass->SetShowWholeNumbersOnly(mUnitOfAngle->GetUseWholeUnits());
          // Update the compass
-         mCompass->SetValue(hpr[0], 180.0f, -180.0f);
+         mCompass->SetValue(angle, mUnitOfAngle->GetMax(), 0.0f);
 
          // Update the appropriate meter with the current coordinates
          if(*mCoordSystem == CoordSystem::MGRS)
