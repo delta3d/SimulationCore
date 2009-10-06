@@ -437,16 +437,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void WeatherComponent::UpdateWeather()
       {
-         if(!mUpdatesEnabled)
+         if (!mUpdatesEnabled)
             return;
 
-         if(!mEnvironmentActor.valid())
+         if (!mEnvironmentActor.valid())
          {
             return;
          }
 
          // Update the weather conditions
-         if(mAtmosphere.valid())
+         if (mAtmosphere.valid())
          {
             Actors::UniformAtmosphereActor* atmosActor =
                static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
@@ -545,34 +545,34 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       dtABC::Weather::CloudType WeatherComponent::ClassifyClouds( const Actors::UniformAtmosphereActor& atmos )
       {
+         dtABC::Weather::CloudType result = dtABC::Weather::CLOUD_FEW;
+
          SimCore::Actors::CloudType& type  = atmos.GetCloudType();
 
-         if( type == SimCore::Actors::CloudType::ALTOCUMULUS
-            || type == SimCore::Actors::CloudType::CIRROCUMULUS )
+         if (type == SimCore::Actors::CloudType::ALTOCUMULUS
+            || type == SimCore::Actors::CloudType::CIRROCUMULUS)
          {
-            return dtABC::Weather::CLOUD_BROKEN;
+            result =  dtABC::Weather::CLOUD_BROKEN;
          }
-         if( type == SimCore::Actors::CloudType::ALTOSTRATUS
+         else if ( type == SimCore::Actors::CloudType::ALTOSTRATUS
             || type == SimCore::Actors::CloudType::STRATUS
             || type == SimCore::Actors::CloudType::NIMBOSTRATUS)
          {
-            return dtABC::Weather::CLOUD_OVERCAST;
+            result =  dtABC::Weather::CLOUD_OVERCAST;
          }
-         if( type == SimCore::Actors::CloudType::CUMULUS
-            || type == SimCore::Actors::CloudType::CUMULONIMBUS )
+         else if (type == SimCore::Actors::CloudType::CUMULUS
+            || type == SimCore::Actors::CloudType::CUMULONIMBUS)
          {
-            return dtABC::Weather::CLOUD_SCATTERED;
+            result =  dtABC::Weather::CLOUD_SCATTERED;
          }
-         if( type == SimCore::Actors::CloudType::CLEAR )
+         else if (type == SimCore::Actors::CloudType::CLEAR)
          {
-            return dtABC::Weather::CLOUD_CLEAR;
+            result =  dtABC::Weather::CLOUD_CLEAR;
          }
 
-         // SimCore::Actors::CloudType::STRATOCUMULUS
-         // SimCore::Actors::CloudType::CIRRUS
-         // SimCore::Actors::CloudType::CIRROSTRATUS
-         return dtABC::Weather::CLOUD_FEW;
+         return result;
       }
+
       //////////////////////////////////////////////////////////
       dtABC::Weather::WindType WeatherComponent::ClassifyWind( const Actors::UniformAtmosphereActor& atmos )
       {
@@ -596,7 +596,7 @@ namespace SimCore
          return dtABC::Weather::WIND_NONE;
       }
       //////////////////////////////////////////////////////////
-      dtABC::Weather::VisibilityType WeatherComponent::ClassifyVisibility( const Actors::UniformAtmosphereActor& atmos )
+      dtABC::Weather::VisibilityType WeatherComponent::ClassifyVisibility(const Actors::UniformAtmosphereActor& atmos)
       {
          // The following was documented in dtABC::Weather:
          //
@@ -608,16 +608,16 @@ namespace SimCore
 
          float distance = atmos.GetVisibilityDistance();
 
-         if( distance < 1.5f )
+         if (distance < 1.5f)
             return dtABC::Weather::VIS_CLOSE;
 
-         if( distance < 8.0f )
+         if (distance < 8.0f)
             return dtABC::Weather::VIS_LIMITED;
 
-         if( distance < 25.0f )
+         if (distance < 25.0f)
             return dtABC::Weather::VIS_MODERATE;
 
-         if( distance < 50.0f )
+         if (distance < 50.0f)
             return dtABC::Weather::VIS_FAR;
 
          return dtABC::Weather::VIS_UNLIMITED;
@@ -653,7 +653,7 @@ namespace SimCore
 
             UpdateWeather();
          }
-         else if( type == *SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE)
+         else if (type == *SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE)
          {
             Actors::DayTimeActorProxy* proxy = static_cast<Actors::DayTimeActorProxy*>(actor);
             if (mDayTime.valid() && mDayTime->GetId() != proxy->GetId())
@@ -663,7 +663,7 @@ namespace SimCore
                mDayTime = NULL;
             }
 
-            if(!mDayTime.valid())
+            if (!mDayTime.valid())
             {
                mDayTime = proxy;
             }
