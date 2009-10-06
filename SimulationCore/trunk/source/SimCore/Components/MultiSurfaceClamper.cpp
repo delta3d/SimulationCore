@@ -205,7 +205,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       MultiSurfaceClamper::MultiSurfaceRuntimeData::~MultiSurfaceRuntimeData()
       {
-         SetSceneNode( NULL );
+         SetSceneNode(NULL);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -387,18 +387,18 @@ namespace SimCore
       {
          dtGame::BaseGroundClamper::GroundClampingType* clampType = &suggestedClampType;
 
-         if( suggestedClampType != GroundClampingType::NONE )
+         if (suggestedClampType != GroundClampingType::NONE)
          {
             // Make sure all surface vessels always 3-point clamp to moving water
             // even though they may not be moving on their own power.
-            if( IsWaterDomain( GetDomain( data ) ) )
+            if (IsWaterDomain(GetDomain( data )))
             {
                clampType = &dtGame::BaseGroundClamper::GroundClampingType::RANGED;
             }
             // NOTE: Animation component does not specify a velocity but does set
             // transformChanged flag to TRUE. Checking the flag will allow the animated
             // characters clamp as expected.
-            else if( ! transformChanged && velocity.length2() == 0.0f )
+            else if (!transformChanged && velocity.length2() == 0.0f)
             {
                clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
             }
@@ -408,7 +408,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MultiSurfaceClamper::ClampToGround( GroundClampingType& type,
+      void MultiSurfaceClamper::ClampToGround(GroundClampingType& type,
          double currentTime, dtCore::Transform& xform,
          dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity)
@@ -466,7 +466,7 @@ namespace SimCore
          using namespace SimCore::Actors;
          BaseEntityActorProxy::DomainEnum& domain = GetDomain( data );
 
-         if( mSurfaceWater.valid() && IsWaterOnlyDomain( domain ) )
+         if (mSurfaceWater.valid() && IsWaterOnlyDomain( domain ))
          {
             bool isSub = domain == BaseEntityActorProxy::DomainEnum::SUBMARINE;
 
@@ -631,6 +631,7 @@ namespace SimCore
          MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] )
       {
          float timeStep = GetCurrentSimTime() - inOutData.GetLastClampedTime();
+         dtUtil::Clamp(timeStep, 0.0f, inOutData.GetMaxTimeStep());
 
          // Get the surface points and their data.
          SurfacePointDataArray& pointData = inOutData.GetSurfacePointData();
