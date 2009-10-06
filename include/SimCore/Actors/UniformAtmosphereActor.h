@@ -39,7 +39,7 @@ namespace SimCore
       public:
 
          /// Constructor
-         UniformAtmosphereActor(dtGame::GameActorProxy &proxy);
+         UniformAtmosphereActor(dtGame::GameActorProxy& proxy);
 
          void SetVisibilityDistance( float distance ) { mVisibility = distance; }
          float GetVisibilityDistance() const { return mVisibility; }

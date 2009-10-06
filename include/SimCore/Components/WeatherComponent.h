@@ -211,7 +211,6 @@ namespace SimCore
             double mMaxVisibility;
             double mMaxElevationVis;
             bool   mUpdatesEnabled;
-            float  mFogVisibility;
 
             dtABC::Weather::CloudType mLastCloudType;
             dtABC::Weather::WindType mLastWindType;
