@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes</name>
@@ -7,8 +8,8 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-06-29T01:34:00-05:00</lastUpdateTimestamp>
-        <editorVersion>2.3.0</editorVersion>
+        <lastUpdateTimestamp>2009-10-06T16:14:30-05:00</lastUpdateTimestamp>
+        <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
     <libraries>
@@ -107,8 +108,16 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>TerrainShaderGroup</string>
+            </property>
+            <property>
+                <name>Terrain Physics Mode</name>
+                <enumerated>IMMEDIATE</enumerated>
             </property>
             <property>
                 <name>TerrainMesh</name>
@@ -117,10 +126,18 @@
                 <resource>Terrains:Level_Desert.ive</resource>
             </property>
             <property>
+                <name>LoadTerrainMeshWithCaching</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
                 <name>PhysicsModel</name>
                 <resourceType>StaticMeshes</resourceType>
                 <resourceDisplayName></resourceDisplayName>
                 <resource></resource>
+            </property>
+            <property>
+                <name>PhysicsDirectory</name>
+                <string></string>
             </property>
         </actor>
         <actor>
@@ -202,6 +219,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>Server Local</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -595,6 +616,10 @@
                 <enumerated>Server Local</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string></string>
             </property>
@@ -986,6 +1011,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>SimpleVehicleShaderGroup</string>
             </property>
@@ -1268,7 +1297,7 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>-0.000000</value2>
-                    <value3>1.00000</value3>
+                    <value3>1.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -1325,11 +1354,11 @@
             </property>
             <property>
                 <name>Wheel Width</name>
-                <float>0.8000001</float>
+                <float>0.80000007</float>
             </property>
             <property>
                 <name>Suspension Travel</name>
-                <float>0.25000001</float>
+                <float>0.25</float>
             </property>
             <property>
                 <name>Spring Coefficient</name>
@@ -1341,7 +1370,7 @@
             </property>
             <property>
                 <name>Suspension Spring Target</name>
-                <float>0.10</float>
+                <float>0.1</float>
             </property>
             <property>
                 <name>Max Steer Angle</name>
@@ -1471,6 +1500,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -1864,6 +1897,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>SimpleVehicleShaderGroup</string>
             </property>
@@ -2253,6 +2290,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -2666,6 +2707,10 @@
                 <enumerated>PROTOTYPE</enumerated>
             </property>
             <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
                 <name>ShaderGroup</name>
                 <string>SimpleVehicleShaderGroup</string>
             </property>
@@ -3055,6 +3100,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -3450,6 +3499,18 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>StartBoostForce</name>
+                <float>6500</float>
+            </property>
+            <property>
+                <name>MaximumBoostPerSecond</name>
+                <float>1000</float>
+            </property>
+            <property>
+                <name>TimeToResetBoost</name>
+                <float>5</float>
+            </property>
         </actor>
         <actor>
             <type>dtcore.Player Start</type>
@@ -3608,6 +3669,10 @@
             <property>
                 <name>Initial Ownership</name>
                 <enumerated>Server Local</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
             </property>
             <property>
                 <name>ShaderGroup</name>
@@ -3922,4 +3987,5 @@
         </actor>
     </actors>
     <groups></groups>
+    <presetCameras></presetCameras>
 </map>
