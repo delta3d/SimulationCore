@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<hla xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="HLAMapping.xsd">
+
+    <header>
+        <name>RPR1 FOM</name>
+        <description>RPR1 FOM HLA mapping</description>
+        <disEntityTypes>true</disEntityTypes>
+        <disEntityTypeAttribute>EntityType</disEntityTypeAttribute>
+        <author>Olen Bruce, Eddie Johnson, and David Guthrie, Allen Danklefsen</author>
+        <comment></comment>
+        <copyright>2005-2007 Alion Science and Technology</copyright>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+
+    <libraries>
+
+      <actorLibrary>
+        <name>SimCore</name>
+        <version>1.0</version>
+      </actorLibrary>
+
+    </libraries>
+
+   <ddm>
+      <enabled>false</enabled>
+      <space name="Air">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Friendly Region Type">APP_SPACE_ONLY</property>
+         <property name="Enemy Region Type">APP_SPACE_ONLY</property>
+         <property name="Neutral Region Type">APP_SPACE_ONLY</property>
+         <property name="Friendly App Space">1</property>
+         <property name="Enemy App Space">2</property>
+         <property name="Neutral App Space">3</property>
+         <property name="Min Time Between Updates">0.25</property>
+      </space>
+      <space name="Sea">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Friendly Region Type">APP_SPACE_ONLY</property>
+         <property name="Enemy Region Type">APP_SPACE_ONLY</property>
+         <property name="Neutral Region Type">APP_SPACE_ONLY</property>
+         <property name="Friendly App Space">4</property>
+         <property name="Enemy App Space">5</property>
+         <property name="Neutral App Space">6</property>
+         <property name="Min Time Between Updates">0.25</property>
+      </space>
+      <space name="Ground">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="X Subscription Range">10</property>
+         <property name="Y Subscription Range">10</property>
+         <property name="Friendly App Space">7</property>
+         <property name="Enemy App Space">8</property>
+         <property name="Neutral App Space">9</property>
+         <property name="Min Time Between Updates">0.25</property>
+      </space>
+      <space name="Lifeform">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="X Subscription Range">10</property>
+         <property name="Y Subscription Range">10</property>
+         <property name="Friendly App Space">10</property>
+         <property name="Enemy App Space">11</property>
+         <property name="Neutral App Space">12</property>
+         <property name="Min Time Between Updates">0.25</property>
+      </space>
+      <space name="Stealth">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default Region Type">APP_SPACE_ONLY</property>
+         <property name="Default App Space">0</property>
+         <property name="Min Time Between Updates">0.25</property>
+         <property name="Object Kind">OBJECT_KIND_OTHER</property>
+      </space>
+      <space name="Fire">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default App Space">17</property>
+      </space>
+      <space name="Detonation">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default App Space">18</property>
+      </space>
+      <space name="AmbientEnvironment">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default App Space">28</property>
+      </space>
+      <space name="TimeQuery">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default App Space Min">34</property>
+         <property name="Second Dimension Min">0</property>
+         <property name="Second Dimension Max">1</property>
+         <property name="Second Dimension Value">0</property>
+         <property name="Second Dimension Enabled">true</property>
+      </space>
+      <space name="TimeValue">
+         <property name="App Space Min">0</property>
+         <property name="App Space Max">99</property>
+         <property name="Default App Space Min">34</property>
+         <property name="Second Dimension Min">0</property>
+         <property name="Second Dimension Max">1</property>
+         <property name="Second Dimension Value">1</property>
+         <property name="Second Dimension Enabled">true</property>
+      </space>
+    </ddm>
+
+    <objects>
+        <!-- *************************** -->
+        <!-- This is A first tier object -->
+        <!-- *************************** -->
+        <object name="BaseEntity">
+            <abstract/>
+            <entityIdAttributeName>EntityIdentifier</entityIdAttributeName>
+            <!-- RPR2
+            <attrToProp>
+                <hlaName>Spatial</hlaName>
+                <hlaDataType>SPATIAL_TYPE</hlaDataType>
+                <parameter>
+                    <gameName>Dead Reckoning Algorithm</gameName>
+                    <gameDataType>ENUMERATION</gameDataType>
+                    <default>Static</default>
+                    <enumerationMapping>
+                       <value id="1">Static</value>
+                       <value id="2">Velocity Only</value>
+                       <value id="3">Velocity and Acceleration</value>
+                       <value id="4">Velocity and Acceleration</value>
+                       <value id="5">Velocity and Acceleration</value>
+                       <value id="6">Velocity and Acceleration</value>
+                       <value id="7">Velocity and Acceleration</value>
+                       <value id="8">Velocity and Acceleration</value>
+                       <value id="10">Velocity Only</value>
+                    </enumerationMapping>
+                </parameter>
+                <parameter>
+                    <gameName>Frozen</gameName>
+                    <gameDataType>BOOLEAN</gameDataType>
+                    <default></default>
+                </parameter>
+                <parameter>
+                    <gameName>Last Known Translation</gameName>
+                    <gameDataType>VEC3</gameDataType>
+                    <default></default>
+                </parameter>
+                <parameter>
+                    <gameName>Last Known Rotation</gameName>
+                    <gameDataType>VEC3</gameDataType>
+                    <default></default>
+                </parameter>
+                <parameter>
+                   <gameName>Velocity Vector</gameName>
+                   <gameDataType>VEC3</gameDataType>
+                   <default></default>
+                </parameter>
+                <parameter>
+                   <gameName>Acceleration Vector</gameName>
+                   <gameDataType>VEC3</gameDataType>
+                   <default></default>
+                </parameter>
+                <parameter>
+                    <gameName>Angular Velocity Vector</gameName>
+                    <gameDataType>VEC3</gameDataType>
+                    <default></default>
+                </parameter>
+            </attrToProp> -->
+            <!-- RPR 1 -->
+            <attrToProp>
+                <hlaName>DeadReckoningAlgorithm</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>Dead Reckoning Algorithm</gameName>
+                <gameDataType>ENUMERATION</gameDataType>
+                <default>Static</default>
+                <enumerationMapping>
+                   <value id="1">Static</value>
+                   <value id="2">Velocity Only</value>
+                   <value id="3">Velocity and Acceleration</value>
+                   <value id="4">Velocity and Acceleration</value>
+                   <value id="5">Velocity and Acceleration</value>
+                   <value id="6">Velocity and Acceleration</value>
+                   <value id="7">Velocity and Acceleration</value>
+                   <value id="8">Velocity and Acceleration</value>
+                   <value id="10">Velocity Only</value>
+                </enumerationMapping>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>WorldLocation</hlaName>
+                <hlaDataType>WORLD_COORDINATE_TYPE</hlaDataType>
+                <gameName>Last Known Translation</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>Orientation</hlaName>
+                <hlaDataType>EULER_ANGLES_TYPE</hlaDataType>
+                <gameName>Last Known Rotation</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>VelocityVector</hlaName>
+                <hlaDataType>VELOCITY_VECTOR_TYPE</hlaDataType>
+                <gameName>Velocity Vector</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>AccelerationVector</hlaName>
+                <hlaDataType>VELOCITY_VECTOR_TYPE</hlaDataType>
+                <gameName>Acceleration Vector</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>AngularVelocityVector</hlaName>
+                <hlaDataType>ANGULAR_VELOCITY_VECTOR_TYPE</hlaDataType>
+                <gameName>Angular Velocity Vector</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </attrToProp>
+            <!-- RPR 1 -->
+            <attrToProp>
+                <hlaName>DamageState</hlaName>
+                <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+                <gameName>Damage State</gameName>
+                <gameDataType>ENUMERATION</gameDataType>
+                <default>No Damage</default>
+                <enumerationMapping>
+                   <value id="0">No Damage</value>
+                   <value id="1">Slight Damage</value>
+                   <value id="2">Moderate Damage</value>
+                   <value id="3">Destroyed</value>
+                </enumerationMapping>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>Marking</hlaName>
+                <hlaDataType>STRING_TYPE</hlaDataType>
+                <gameName>Name</gameName>
+                <gameDataType>STRING</gameDataType>
+                <default>Entity</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>FirePowerDisabled</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>Immobilized</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameName></gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 2nd tier object                    -->
+        <!--    BaseEntity <- PhysicalEntity        -->
+        <!-- ****************************************************** -->
+        <object name="PhysicalEntity" extends="BaseEntity">
+            <abstract/>
+            <attrToProp>
+                <hlaName>FlamesPresent</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>FlamesPresent</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>SmokePlumePresent</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>SmokePlumePresent</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>EngineSmokeOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>EngineSmokeOn</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>CamouflageType</hlaName>
+                <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameName></gameName>
+                <gameDataType>UINT</gameDataType>
+                <default>0</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>IsConcealed</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameName></gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>ForceIdentifier</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>Force Affiliation</gameName>
+                <gameDataType>ENUMERATION</gameDataType>
+                <default>NEUTRAL</default>
+                <enumerationMapping>
+                   <value id="0">OTHER</value>
+                   <value id="1">FRIENDLY</value>
+                   <value id="2">OPPOSING</value>
+                   <value id="3">NEUTRAL</value>
+                   <value id="4">INSURGENT</value>
+                </enumerationMapping>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>FirePowerDisabled</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameName>Firepower Disabled</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+            <attrToProp>
+                <hlaName>Immobilized</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>true</hlaRequired>
+                <gameName>Mobility Disabled</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+            <!-- RPR 1 -->
+            <attrToProp>
+                <hlaName>service</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>Service</gameName>
+                <gameDataType>ENUMERATION</gameDataType>
+                <default>MARINES</default>
+                <enumerationMapping>
+                   <value id="0">OTHER</value>
+                   <value id="1">ARMY</value>
+                   <value id="2">AIR FORCE</value>
+                   <value id="3">COAST GUARD</value>
+                   <value id="4">MARINES</value>
+                   <value id="5">NAVY</value>
+                   <value id="6">JOINT</value>
+                   <value id="7">CIVILIAN</value>
+                   <value id="8">REFUGEE</value>
+                </enumerationMapping>
+            </attrToProp>
+            <!-- RPR1 -->
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 3rd tier object                              -->
+        <!--    BaseEntity <- PhysicalEntity <- Platform            -->
+        <!-- ****************************************************** -->
+        <object name="Platform" extends="PhysicalEntity">
+            <abstract/>
+            <attrToProp>
+                <hlaName>HeadLightsOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <hlaRequired>false</hlaRequired>
+                <gameName>Head Lights Enabled</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>false</default>
+            </attrToProp>
+            <attrToProp>
+               <hlaName>ArticulatedParametersArray</hlaName> 
+               <hlaDataType>ARTICULATED_PART_TYPE</hlaDataType> 
+               <gameName>Articulated Parameters Array</gameName> 
+               <gameDataType>GROUP</gameDataType> 
+               <default>unknown</default> 
+               <enumerationMapping>
+                  <value id="0">unknown</value> 
+                  <value id="4416">dof_gun_01</value> 
+                  <value id="4096">dof_turret_01</value>
+               </enumerationMapping>
+            </attrToProp>
+        </object>
+
+        <!-- ************************************************************ -->
+        <!-- This is A 4th tier object                                    -->
+        <!--    BaseEntity <- PhysicalEntity <- Platform <- GroundVehicle -->
+        <!-- ************************************************************ -->
+        <object name="GroundVehicle" extends="Platform">
+            <abstract/>
+            <ddmSpace>Ground</ddmSpace>
+            <attrToProp>
+                <!--<hlaName>PowerPlantOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>-->
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+        </object>
+        
+        <object name="Lifeform" extends="PhysicalEntity">
+            <abstract/>
+            <ddmSpace>Lifeform</ddmSpace>
+            <attrToProp>
+                <!--<hlaName>PowerPlantOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>-->
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+        </object>
+
+        <!-- ******************************************************* -->
+        <!-- This is A 4th tier object                               -->
+        <!--    BaseEntity <- PhysicalEntity <- Platform <- Aircraft -->
+        <!-- ******************************************************* -->
+        <object name="Aircraft" extends="Platform">
+            <abstract/>
+            <ddmSpace>Air</ddmSpace>
+            <attrToProp>
+                <!--<hlaName>PowerPlantOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>-->
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>1</default>
+            </attrToProp>
+        </object>
+
+        <!-- ******************************************************    -->
+        <!-- This is A 4th tier object. Heirarchy is:                  -->
+        <!--    BaseEntity <- PhysicalEntity <- Lifeform <- Human      -->
+        <!-- ******************************************************    -->
+        <object extends="Lifeform" name="Human">
+            <abstract/>
+            <attrToProp>
+               <hlaName>StanceCode</hlaName>
+               <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+               <gameName>Stance</gameName>
+               <gameDataType>ENUMERATION</gameDataType>
+               <default>UPRIGHT_STANDING</default>
+                <enumerationMapping>
+                   <value id="0">NOT_APPLICABLE</value>
+                   <value id="1">UPRIGHT_STANDING</value>
+                   <value id="2">UPRIGHT_WALKING</value>
+                   <value id="3">UPRIGHT_RUNNING</value>
+                   <value id="4">KNEELING</value>
+                   <value id="5">PRONE</value>
+                   <value id="6">CRAWLING</value>
+                   <value id="7">SWIMMING</value>
+                   <value id="8">PARACHUTING</value>
+                   <value id="9">JUMPING</value>
+                   <value id="10">SITTING</value>
+                   <value id="11">SQUATTING</value>
+                   <value id="12">CROUCHING</value>
+                   <value id="13">WADING</value>
+                </enumerationMapping>
+            </attrToProp>
+            <attrToProp>
+               <hlaName>PrimaryWeaponState</hlaName>
+               <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+               <gameName>Primary Weapon State</gameName>
+               <gameDataType>ENUMERATION</gameDataType>
+               <default>STOWED</default>
+                <enumerationMapping>
+                   <value id="0">NOT_WEAPON</value>
+                   <value id="1">STOWED</value>
+                   <value id="2">DEPLOYED</value>
+                   <value id="3">FIRING_POSITION</value>
+                </enumerationMapping>
+            </attrToProp>
+            <attrToProp>
+                <!--<hlaName>PowerPlantOn</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>-->
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>0</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>ShaderGroup</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>SimpleVehicleShaderGroup</default>
+            </attrToProp>
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 4th tier object. Heirarchy is:                              -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HMMWV Driving Sim           -->
+        <!-- ****************************************************** -->    
+           <object extends="GroundVehicle" name="HMMWV Driving Sim">
+            <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
+            <actorType>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</actorType>
+            <remoteOnly>false</remoteOnly>
+            <disEntityEnum>
+                <kind>1</kind>
+                <domain>1</domain>
+                <country>225</country>
+                <category>6</category>
+                <subcategory>1</subcategory>
+                <specific>6</specific>
+                <extra>0</extra>
+            </disEntityEnum>
+            <attrToProp>
+               <gameName>EntityType</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>HMMWVDrivingSim</default>
+            </attrToProp>
+             <attrToProp>
+               <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
+               <gameDataType>Sounds</gameDataType>
+               <default>Sounds:Vehicle_Idle.wav</default>
+             </attrToProp>
+             <attrToProp>
+                <gameName>Non-damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:m1045 hmmwv:m1045_hmmwv_ring_mount_good.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Damaged actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:m1045 hmmwv:m1045_hmmwv_ring_mount_damaged.ive</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Destroyed actor</gameName>
+                <gameDataType>StaticMeshes</gameDataType>
+                <default>StaticMeshes:m1045 hmmwv:m1045_hmmwv_ring_mount_destroyed.ive</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>VehiclesSeatConfigActorNameTable</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>Vehicle_HMMWV_Config</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>ShaderGroup</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>M1045_hmmwvShaderGroup</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>Ground Offset</gameName>
+               <gameDataType>FLOAT</gameDataType>
+               <default>0.0</default>
+            </attrToProp>
+            <attrToProp>
+               <gameName>Munition Damage Table</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default>HMMWV</default>
+            </attrToProp>
+        </object>
+
+
+       <!-- ****************************************************** -->
+        <!-- This is A 4th tier object. Heirarchy is:                     -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- SurfaceVessel            -->
+        <!-- ****************************************************** -->    
+        <object extends="GroundVehicle" name="SurfaceVessel">
+            <objectClass>BaseEntity.PhysicalEntity.Platform.SurfaceVessel</objectClass>
+            <actorType>Entity.PlatformWithPhysics</actorType>
+            <remoteOnly>true</remoteOnly>
+            <disEntityEnum>
+                <kind>1</kind>
+                <domain>3</domain>
+                <country>222</country>
+                <category>50</category>
+                <subcategory>12</subcategory>
+                <specific>0</specific>
+                <extra>0</extra>
+            </disEntityEnum>
+        </object>
+
+        <!-- ****************************************************** -->
+        <!-- This is A 3rd tier object. Hierarchy is:      -->
+        <!--    BaseEntity <- PhysicalEntity <- Missile                -->
+        <!-- ****************************************************** -->    
+        <object name="Missile" extends="PhysicalEntity">
+            <abstract/>
+            <!-- RPR 2 -->
+            <attrToProp>
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>1</default>
+            </attrToProp>
+            <!-- RPR 2 END -->
+            <attrToProp>
+                <gameName>Smoke Trail File</gameName>
+                <gameDataType>Particles</gameDataType>
+                <default>Particles:smoketrail.osg</default>
+            </attrToProp>
+            <attrToProp>
+                <gameName>Flame File</gameName>
+                <gameDataType>Particles</gameDataType>
+                <default>Particles:thrustflame.osg</default>
+            </attrToProp>
+        </object>
+
+
+        <!-- *************************** -->
+        <!-- This is A first tier object -->
+        <!-- *************************** -->
+        <object name="Portal">
+            <objectClass>Portal</objectClass>
+            <actorType>PortalModels.Portal</actorType>
+            <remoteOnly>false</remoteOnly>
+            <attrToProp>
+                    <hlaName>name</hlaName>
+                    <hlaDataType>STRING_TYPE</hlaDataType>
+                    <gameName>Portal Name</gameName> 
+                    <gameDataType>STRING</gameDataType>
+            </attrToProp>
+            <attrToProp>
+                    <hlaName>attached_to</hlaName>
+                    <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
+                    <gameName>ActorLink</gameName> 
+                    <gameDataType>ACTOR</gameDataType>
+            </attrToProp>
+            <attrToProp>
+                    <hlaName>open</hlaName>
+               <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                    <gameName>DoorOpen</gameName> 
+                    <gameDataType>BOOLEAN</gameDataType>
+            </attrToProp>
+        </object>
+
+      <object name="Flare">
+          <objectClass>NetEnvironment.Flare</objectClass> 
+          <actorType>Munitions.FlareActor</actorType>  
+          <remoteOnly>true</remoteOnly> 
+          <attrToProp>
+              <hlaName>location</hlaName>
+              <hlaDataType>VEC3D_TYPE</hlaDataType>
+              <gameName>Last Known Translation</gameName>
+              <gameDataType>VEC3</gameDataType>
+              <default></default>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>velocity</hlaName>
+              <hlaDataType>VEC3F_TYPE</hlaDataType>
+              <gameName>Velocity Vector</gameName>
+              <gameDataType>VEC3</gameDataType>
+              <default></default>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>angular_velocity</hlaName>
+              <hlaDataType>VEC3F_TYPE</hlaDataType>
+              <gameName>Angular Velocity Vector</gameName>
+              <gameDataType>VEC3</gameDataType>
+              <default></default>
+          </attrToProp>
+          <attrToProp>
+              <gameName>Dead Reckoning Algorithm</gameName>
+              <gameDataType>ENUMERATION</gameDataType>
+              <default>Velocity Only</default>
+          </attrToProp>
+          <attrToProp>
+                <gameName>Flying</gameName>
+                <gameDataType>BOOLEAN</gameDataType>
+                <default>1</default>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>cell</hlaName> 
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+              <gameName>Cell</gameName>
+              <gameDataType>INT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>guise</hlaName> 
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+              <gameName>Guise</gameName>
+              <gameDataType>INT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>guise</hlaName>
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType> 
+              <gameName>Particle File</gameName> 
+              <gameDataType>STRING</gameDataType> 
+              <default>Particles/illum_how_155mm.osg</default> 
+              <enumerationMapping>
+                  <value id="1221002272">Particles/illum_how_155mm.osg</value> 
+                  <value id="3290431492">Particles/illum_how_155mm.osg</value> 
+                  <value id="3290431490">Particles/illum_mtr_80mm.osg</value> 
+                  <value id="3290451971">Particles/flare_cluster_red.osg</value>
+                  <value id="3290447875">Particles/flare_cluster_green.osg</value>
+                  <value id="1214710848">Particles/illum_how_155mm.osg</value> 
+              </enumerationMapping>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>guise</hlaName>
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType> 
+              <gameName>Light Name</gameName> 
+              <gameDataType>STRING</gameDataType> 
+              <default>Light-Flare-Large</default> 
+              <enumerationMapping>
+                  <value id="1221002272">Light-Flare-Large</value><!-- M930 --> 
+                  <value id="3290431492">Light-Flare-Large</value><!-- illum_how_155mm --> 
+                  <value id="3290431490">Light-Flare-Large</value><!-- illum_mtr_80mm -->
+                  <value id="3290451971">Light-Flare-Large-Red</value><!-- flare_cluster_red -->
+                  <value id="3290447875">Light-Flare-Large-Green</value><!-- flare_cluster_green -->
+                  <value id="1214710848">Light-Flare-Large</value><!-- M721 --> 
+              </enumerationMapping>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>number_of_sources</hlaName> 
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+              <gameName>Number Of Sources</gameName>
+              <gameDataType>INT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>time_since_detonation</hlaName> 
+              <hlaDataType>UNSIGNED_INT_TYPE</hlaDataType>
+              <gameName>Time Since Detonation</gameName>
+              <gameDataType>INT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>height</hlaName> 
+              <hlaDataType>FLOAT_TYPE</hlaDataType>
+              <gameName>Height</gameName>
+              <gameDataType>FLOAT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>d_height_dt</hlaName> 
+              <hlaDataType>FLOAT_TYPE</hlaDataType>
+              <gameName>Height Delta</gameName>
+              <gameDataType>FLOAT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>peak_angle</hlaName> 
+              <hlaDataType>FLOAT_TYPE</hlaDataType>
+              <gameName>Peak Angle</gameName>
+              <gameDataType>FLOAT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>d_peak_angle_dt</hlaName> 
+              <hlaDataType>FLOAT_TYPE</hlaDataType>
+              <gameName>Peak Angle Delta</gameName>
+              <gameDataType>FLOAT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>source_intensity</hlaName> 
+              <hlaDataType>FLOAT_TYPE</hlaDataType>
+              <gameName>Source Intensity</gameName>
+              <gameDataType>FLOAT</gameDataType>
+          </attrToProp>
+          <attrToProp>
+              <hlaName>model</hlaName>
+              <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+              <gameName>Model Type</gameName>
+              <gameDataType>STRING</gameDataType>
+              <default>FLARE</default>
+              <enumerationMapping>
+                 <value id="0">UNKNOWN</value>
+                 <value id="21">FLARE</value>
+              </enumerationMapping>
+          </attrToProp>
+        </object>
+     </objects>
+
+
+    <!-- *************************** -->
+    <!--  Interaction = Munitions    -->
+    <!-- *************************** -->
+    <interactions>
+        <interaction>
+            <interactionClass>MunitionDetonation</interactionClass>
+            <messageType>Detonation</messageType>
+            <ddmSpace>Detonation</ddmSpace>
+            <paramToParam>
+               <hlaName>FiringObjectIdentifier</hlaName>
+               <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
+               <hlaRequired>true</hlaRequired>
+               <gameName>sendingActorId</gameName>
+               <gameDataType>ACTOR</gameDataType>
+               <gameRequired>true</gameRequired>
+            </paramToParam>
+            <paramToParam>
+               <hlaName>TargetObjectIdentifier</hlaName>
+               <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
+               <hlaRequired>false</hlaRequired>
+               <gameName>aboutActorId</gameName>
+               <gameDataType>ACTOR</gameDataType>
+               <gameRequired>false</gameRequired>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>EventIdentifier</hlaName>
+                <hlaDataType>EVENT_IDENTIFIER_TYPE</hlaDataType>
+                <gameName>EventIdentifier</gameName>
+                <gameDataType>USHORT</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>DetonationLocation</hlaName>
+                <hlaDataType>WORLD_COORDINATE_TYPE</hlaDataType>
+                <gameName>DetonationLocation</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>RelativeDetonationLocation</hlaName>
+                <hlaDataType>VELOCITY_VECTOR_TYPE</hlaDataType>
+                <gameName>RelativeDetonationLocation</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>DetonationResultCode</hlaName>
+                <hlaDataType>UNSIGNED_CHAR_TYPE</hlaDataType>
+                <gameName>DetonationResultCode</gameName>
+                <gameDataType>UCHAR</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>FinalVelocityVector</hlaName>
+                <hlaDataType>VELOCITY_VECTOR_TYPE</hlaDataType>
+                <gameName>FinalVelocityVector</gameName>
+                <gameDataType>VEC3</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>MunitionType</hlaName>
+                <hlaDataType>MUNITION_TYPE</hlaDataType>
+                <gameName>MunitionType</gameName>
+                <gameDataType>STRING</gameDataType>
+                <default>Medium HE</default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>RateOfFire</hlaName>
+                <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+                <gameName>RateOfFire</gameName>
+                <gameDataType>USHORT</gameDataType>
+                <default>1</default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>QuantityFired</hlaName>
+                <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+                <gameName>QuantityFired</gameName>
+                <gameDataType>USHORT</gameDataType>
+                <default>0</default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>FuseType</hlaName>
+                <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+                <gameName>FuseType</gameName>
+                <gameDataType>USHORT</gameDataType>
+                <default></default>
+            </paramToParam>
+            <paramToParam>
+                <hlaName>WarheadType</hlaName>
+                <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+                <gameName>WarheadType</gameName>
+                <gameDataType>USHORT</gameDataType>
+                <default>0</default>
+            </paramToParam>
+        </interaction>
+
+        <interaction>
+           <interactionClass>WeaponFire</interactionClass>
+           <messageType>Shot Fired</messageType>
+           <paramToParam>
+              <hlaName>FiringObjectIdentifier</hlaName>
+              <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
+              <hlaRequired>true</hlaRequired>
+              <gameName>sendingActorId</gameName>
+              <gameDataType>ACTOR</gameDataType>
+              <gameRequired>true</gameRequired>
+           </paramToParam>
+           <paramToParam>
+              <hlaName>TargetObjectIdentifier</hlaName>
+              <hlaDataType>RTI_OBJECT_ID_STRUCT_TYPE</hlaDataType>
+              <hlaRequired>false</hlaRequired>
+              <gameName>aboutActorId</gameName>
+              <gameDataType>ACTOR</gameDataType>
+              <gameRequired>false</gameRequired>
+           </paramToParam>
+           <paramToParam>
+               <hlaName>EventIdentifier</hlaName>
+               <hlaDataType>EVENT_IDENTIFIER_TYPE</hlaDataType>
+               <gameName>EventIdentifier</gameName>
+               <gameDataType>USHORT</gameDataType>
+               <default></default>
+           </paramToParam>
+           <paramToParam>
+              <hlaName>FiringLocation</hlaName>
+              <hlaDataType>WORLD_COORDINATE_TYPE</hlaDataType>
+              <gameName>FiringLocation</gameName>
+              <gameDataType>VEC3</gameDataType>
+              <default></default>
+           </paramToParam>
+           <paramToParam>
+              <hlaName>InitialVelocityVector</hlaName>
+              <hlaDataType>VELOCITY_VECTOR_TYPE</hlaDataType>
+              <gameName>InitialVelocityVector</gameName>
+              <gameDataType>VEC3</gameDataType>
+              <default></default>
+           </paramToParam>
+           <paramToParam>
+               <hlaName>MunitionType</hlaName>
+               <hlaDataType>MUNITION_TYPE</hlaDataType>
+               <gameName>MunitionType</gameName>
+               <gameDataType>STRING</gameDataType>
+               <default></default>
+           </paramToParam>
+           <paramToParam>
+              <hlaName>QuantityFired</hlaName>
+              <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+              <gameName>QuantityFired</gameName>
+              <gameDataType>USHORT</gameDataType>
+              <default>1</default>
+           </paramToParam>
+           <paramToParam>
+              <hlaName>RateOfFire</hlaName>
+              <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+              <gameName>RateOfFire</gameName>
+              <gameDataType>USHORT</gameDataType>
+              <default>1</default>
+           </paramToParam>
+           <paramToParam>
+               <hlaName>FuseType</hlaName>
+               <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+               <gameName>FuseType</gameName>
+               <gameDataType>USHORT</gameDataType>
+               <default></default>
+           </paramToParam>
+           <paramToParam>
+               <hlaName>WarheadType</hlaName>
+               <hlaDataType>UNSIGNED_SHORT_TYPE</hlaDataType>
+               <gameName>WarheadType</gameName>
+               <gameDataType>USHORT</gameDataType>
+               <default>0</default>
+           </paramToParam>
+        </interaction>
+        
+    </interactions>
+</hla>

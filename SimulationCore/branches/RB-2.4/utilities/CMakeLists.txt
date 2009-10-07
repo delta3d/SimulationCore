@@ -1,0 +1,4 @@
+
+ADD_SUBDIRECTORY(MapMerger)
+ADD_SUBDIRECTORY(Optimizer)
+

@@ -1,0 +1,470 @@
+MatrixTransform {
+  DataVariance STATIC
+  name "Scene Root"
+  nodeMask 0xffffffff
+  cullingActive TRUE
+  StateSet {
+    UniqueID StateSet_0
+    DataVariance STATIC
+    rendering_hint DEFAULT_BIN
+    renderBinMode INHERIT
+    GL_LIGHTING OFF
+    GL_DEPTH_TEST OFF
+  }
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    0 0 0 1
+  }
+  num_children 4
+  MatrixTransform {
+    DataVariance STATIC
+    name "frame"
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0 29.8391 0 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_1
+      DataVariance STATIC
+      nodeMask 0xffffffff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          DataVariance STATIC
+          rendering_hint TRANSPARENT_BIN
+          renderBinMode USE
+          binNumber 9
+          binName RenderBin
+          GL_CULL_FACE ON
+          GL_LIGHTING OFF
+          0xba1 OVERRIDE|OFF
+          GL_BLEND ON
+          Material {
+            UniqueID Material_2
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 1 1 1 1
+            diffuseColor 1 1 1 1
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 1
+            shininess 0
+          }
+          BlendFunc {
+            UniqueID BlendFunc_3
+            DataVariance STATIC
+            source SRC_ALPHA
+            destination ONE_MINUS_SRC_ALPHA
+          }
+          textureUnit 0 {
+            GL_TEXTURE_2D ON
+            Texture2D {
+              UniqueID Texture2D_4
+              DataVariance STATIC
+              file "Textures/hud/compass/lensatic_frame.tga"
+              wrap_s CLAMP_TO_EDGE
+              wrap_t CLAMP_TO_EDGE
+              wrap_r CLAMP_TO_EDGE
+              min_filter LINEAR_MIPMAP_LINEAR
+              mag_filter LINEAR
+              maxAnisotropy 1
+              borderColor 0 0 0 0
+              borderWidth 0
+              useHardwareMipMapGeneration TRUE
+              unRefImageDataAfterApply FALSE
+              internalFormatMode USE_IMAGE_DATA_FORMAT
+              resizeNonPowerOfTwo TRUE
+            }
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 6
+        }
+        VertexArray Vec3Array 6
+        {
+          -47.3421 50.4754 0
+          -47.3421 -44.2089 0
+          47.3421 50.4754 0
+          47.3421 -44.2089 0
+          47.3421 50.4754 0
+          -47.3421 -44.2089 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 6
+        {
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+        }
+        TexCoordArray 0 Vec2Array 6
+        {
+          0 1
+          0 0
+          1 1
+          1 0
+          1 1
+          0 0
+        }
+      }
+    }
+  }
+  MatrixTransform {
+    DataVariance STATIC
+    name "lens"
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0 23.2719 0 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_5
+      DataVariance STATIC
+      nodeMask 0xffffffff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          DataVariance STATIC
+          rendering_hint TRANSPARENT_BIN
+          renderBinMode USE
+          binNumber 10
+          binName RenderBin
+          GL_CULL_FACE ON
+          GL_LIGHTING OFF
+          0xba1 OVERRIDE|OFF
+          GL_BLEND ON
+          Material {
+            UniqueID Material_6
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 1 1 1 0.4
+            diffuseColor 1 1 1 0.4
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 0.4
+            shininess 0
+          }
+          BlendFunc {
+            UniqueID BlendFunc_7
+            DataVariance STATIC
+            source SRC_ALPHA
+            destination ONE_MINUS_SRC_ALPHA
+          }
+          textureUnit 0 {
+            GL_TEXTURE_2D ON
+            Texture2D {
+              UniqueID Texture2D_8
+              DataVariance STATIC
+              file "Textures/hud/compass/lensatic_lens.tga"
+              wrap_s CLAMP_TO_EDGE
+              wrap_t CLAMP_TO_EDGE
+              wrap_r CLAMP_TO_EDGE
+              min_filter LINEAR_MIPMAP_LINEAR
+              mag_filter LINEAR
+              maxAnisotropy 1
+              borderColor 0 0 0 0
+              borderWidth 0
+              useHardwareMipMapGeneration TRUE
+              unRefImageDataAfterApply FALSE
+              internalFormatMode USE_IMAGE_DATA_FORMAT
+              resizeNonPowerOfTwo TRUE
+            }
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 6
+        }
+        VertexArray Vec3Array 6
+        {
+          -7.85928 -7.85928 0
+          7.85928 -7.85928 0
+          7.85928 7.85928 0
+          7.85928 7.85928 0
+          -7.85928 7.85928 0
+          -7.85928 -7.85928 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 6
+        {
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+        }
+        TexCoordArray 0 Vec2Array 6
+        {
+          0 0
+          1 0
+          1 1
+          1 1
+          0 1
+          0 0
+        }
+      }
+    }
+  }
+  ClipNode {
+    DataVariance DYNAMIC
+    name "cTape"
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    StateSet {
+      DataVariance STATIC
+      rendering_hint DEFAULT_BIN
+      renderBinMode INHERIT
+      GL_CLIP_PLANE0 ON
+      GL_CLIP_PLANE1 ON
+      ClipPlane {
+        UniqueID ClipPlane_0
+        DataVariance STATIC
+        clipPlaneNum 0
+        plane -1 1 0 7
+      }
+      ClipPlane {
+        UniqueID ClipPlane_1
+        DataVariance STATIC
+        clipPlaneNum 1
+        plane 1 1 0 7
+      }
+    }
+    Use ClipPlane_0
+    Use ClipPlane_1
+    num_children 1
+  MatrixTransform {
+    DataVariance STATIC
+    name "dial"
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0 0 0 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_9
+      DataVariance STATIC
+      nodeMask 0xffffffff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          DataVariance STATIC
+          rendering_hint TRANSPARENT_BIN
+          renderBinMode USE
+          binNumber 8
+          binName RenderBin
+          GL_CULL_FACE ON
+          GL_LIGHTING OFF
+          0xba1 OVERRIDE|OFF
+          GL_BLEND ON
+          Material {
+            UniqueID Material_10
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 1 1 1 1
+            diffuseColor 1 1 1 1
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 1
+            shininess 0
+          }
+          BlendFunc {
+            UniqueID BlendFunc_11
+            DataVariance STATIC
+            source SRC_ALPHA
+            destination ONE_MINUS_SRC_ALPHA
+          }
+          textureUnit 0 {
+            GL_TEXTURE_2D ON
+            Texture2D {
+              UniqueID Texture2D_12
+              DataVariance STATIC
+              file "Textures/hud/compass/lensatic_dial.tga"
+              wrap_s REPEAT
+              wrap_t REPEAT
+              wrap_r CLAMP_TO_EDGE
+              min_filter LINEAR_MIPMAP_LINEAR
+              mag_filter LINEAR
+              maxAnisotropy 1
+              borderColor 0 0 0 0
+              borderWidth 0
+              useHardwareMipMapGeneration TRUE
+              unRefImageDataAfterApply FALSE
+              internalFormatMode USE_IMAGE_DATA_FORMAT
+              resizeNonPowerOfTwo TRUE
+            }
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 6
+        }
+        VertexArray Vec3Array 6
+        {
+          -32 32 0
+          -32 -32 0
+          32 32 0
+          32 -32 0
+          32 32 0
+          -32 -32 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 6
+        {
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+        }
+        TexCoordArray 0 Vec2Array 6
+        {
+          1.19209e-007 1
+          -1.19209e-007 1.19209e-007
+          1 1
+          1 -1.19209e-007
+          1 1
+          -1.19209e-007 1.19209e-007
+        }
+      }
+    }
+  }
+}
+  MatrixTransform {
+    DataVariance STATIC
+    name "dial_mask"
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0 0 0 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_13
+      DataVariance STATIC
+      nodeMask 0xffffffff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          DataVariance STATIC
+          rendering_hint TRANSPARENT_BIN
+          renderBinMode USE
+          binNumber 7
+          binName RenderBin
+          GL_CULL_FACE ON
+          GL_LIGHTING OFF
+          0xba1 OVERRIDE|OFF
+          GL_BLEND ON
+          Material {
+            UniqueID Material_14
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 1 1 1 1
+            diffuseColor 1 1 1 1
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 1
+            shininess 0
+          }
+          BlendFunc {
+            UniqueID BlendFunc_15
+            DataVariance STATIC
+            source SRC_ALPHA
+            destination ONE_MINUS_SRC_ALPHA
+          }
+          textureUnit 0 {
+            GL_TEXTURE_2D ON
+            Texture2D {
+              UniqueID Texture2D_16
+              DataVariance STATIC
+              file "Textures/hud/compass/lensatic_dial_mask.tga"
+              wrap_s REPEAT
+              wrap_t REPEAT
+              wrap_r CLAMP_TO_EDGE
+              min_filter LINEAR_MIPMAP_LINEAR
+              mag_filter LINEAR
+              maxAnisotropy 1
+              borderColor 0 0 0 0
+              borderWidth 0
+              useHardwareMipMapGeneration TRUE
+              unRefImageDataAfterApply FALSE
+              internalFormatMode USE_IMAGE_DATA_FORMAT
+              resizeNonPowerOfTwo TRUE
+            }
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 6
+        }
+        VertexArray Vec3Array 6
+        {
+          -32 32 0
+          -32 -32 0
+          32 32 0
+          32 -32 0
+          32 32 0
+          -32 -32 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 6
+        {
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+        }
+        TexCoordArray 0 Vec2Array 6
+        {
+          1.19209e-007 1
+          -1.19209e-007 1.19209e-007
+          1 1
+          1 -1.19209e-007
+          1 1
+          -1.19209e-007 1.19209e-007
+        }
+      }
+    }
+  }
+}

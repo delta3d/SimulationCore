@@ -1,0 +1,6 @@
+
+if (USE_PHYSX)
+   ADD_SUBDIRECTORY(DriverDemo)
+else (USE_PHYSX)
+   ADD_SUBDIRECTORY(NetDemo)
+endif (USE_PHYSX)

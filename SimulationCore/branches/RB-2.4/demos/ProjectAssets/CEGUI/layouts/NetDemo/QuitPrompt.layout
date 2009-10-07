@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+	<Window Name="QuitPrompt_Root" Type="DefaultWindow">
+      <Property Name="UnifiedSize" Value="{{1.0,0},{1.0,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+      <!--Property Name="Image" Value="set:BackgroundImage image:BackgroundImage"/-->
+
+      <!-- BUTTON - NO -->
+      <Window Name="QuitPrompt_Button_No" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.15,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Text" Value="No"/>
+         <Property Name="Action" Value="TRANSITION_BACK"/>
+      </Window>
+
+      <!-- BUTTON - YES -->
+      <Window Name="QuitPrompt_Button_Yes" Type="WindowsLook/Button">
+         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.096667,0}}"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Text" Value="Yes"/>
+         <Property Name="Action" Value="TRANSITION_FORWARD"/>
+      </Window>
+        
+	</Window>
+</GUILayout>
