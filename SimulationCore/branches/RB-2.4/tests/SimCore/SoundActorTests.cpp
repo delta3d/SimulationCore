@@ -225,8 +225,8 @@ void SoundActorTests::TestProperties()
 
       CPPUNIT_ASSERT_THROW_MESSAGE("Play should throw an exception since no resource was set.", proxy->Play(), dtUtil::Exception);
 
-      dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
-      proxy->SetSoundResource(&rd);
+      //dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
+      proxy->SetSoundResource("Sounds/silence.wav");
 
       proxy->SetDirection(osg::Vec3(0.1, 0.3, 0.9));
       proxy->SetVelocity(osg::Vec3(1.2, 3.3, -1.6));
@@ -260,8 +260,8 @@ void SoundActorTests::TestTimedPlay()
    try
    {
       // Test loading a sound.
-      dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
-      mProxy->SetSoundResource(&rd);
+      //dtDAL::ResourceDescriptor rd("Sounds:silence.wav");
+      mProxy->SetSoundResource("Sounds/silence.wav");
       SimCore::Actors::SoundActor* soundActor = NULL;
       mProxy->GetActor(soundActor);
       dtAudio::Sound* sound = soundActor->GetSound();

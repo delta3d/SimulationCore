@@ -98,6 +98,10 @@ namespace SimCore
       {
          if (mSound.valid())
          {
+            // This is a big, ugly hack.  There is a bug in delta 2.4
+            // where if you clear the sound, it won't unload the file when you call
+            // free sound.  We actually don't want to unload the sound because it's not good to reload
+            // the sound from disk every time. This, however, will make the sound NEVER get unloaded.
             mSound->Clear();
             mSound->Emancipate();
             dtAudio::AudioManager::GetInstance().FreeSound(mSound.get());
@@ -208,7 +212,9 @@ namespace SimCore
          GetActor(soundActor);
          soundActor->DestroySound();
 
+         // I don't think this has to be done.
          GetGameManager()->ClearTimer(SoundActorProxy::TIMER_NAME.Get(), this);
+         GetGameManager()->ClearTimer(SoundActorProxy::PLAY_END_TIMER_NAME, this);
       }
 
       ///////////////////////////////////////////////////////////////////////////////
@@ -388,34 +394,37 @@ namespace SimCore
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
                   PROPERTY_SOUND_EFFECT,
                   PROPERTY_SOUND_EFFECT,
-                  dtDAL::ResourceActorProperty::SetDescFuncType(this, &SoundActorProxy::SetSoundResource),
-                  dtDAL::ResourceActorProperty::GetDescFuncType(this, &SoundActorProxy::GetSoundResource),
+                  dtDAL::ResourceActorProperty::SetFuncType(this, &SoundActorProxy::SetSoundResource),
                   "Loads the sound for this to use"));
       }
 
       ///////////////////////////////////////////////////////////////////////////////
-      void SoundActorProxy::SetSoundResource(const dtDAL::ResourceDescriptor* soundResource)
+      void SoundActorProxy::SetSoundResource(const std::string& fileName)
       {
-         if (soundResource == NULL)
-         {
-            mSoundResource = dtDAL::ResourceDescriptor("");
-         }
-         else
-         {
-            mSoundResource = *soundResource;
-         }
+         mSoundResourceFile = fileName;
       }
+//      void SoundActorProxy::SetSoundResource(const dtDAL::ResourceDescriptor* soundResource)
+//      {
+//         if (soundResource == NULL)
+//         {
+//            mSoundResource = dtDAL::ResourceDescriptor("");
+//         }
+//         else
+//         {
+//            mSoundResource = *soundResource;
+//         }
+//      }
 
-      ///////////////////////////////////////////////////////////////////////////////
-      dtDAL::ResourceDescriptor* SoundActorProxy::GetSoundResource()
-      {
-         if (mSoundResource.GetResourceIdentifier().empty())
-         {
-            return NULL;
-         }
-
-         return &mSoundResource;
-      }
+//      ///////////////////////////////////////////////////////////////////////////////
+//      dtDAL::ResourceDescriptor* SoundActorProxy::GetSoundResource()
+//      {
+//         if (mSoundResource.GetResourceIdentifier().empty())
+//         {
+//            return NULL;
+//         }
+//
+//         return &mSoundResource;
+//      }
 
       ///////////////////////////////////////////////////////////////////////////////
       void SoundActorProxy::SetDirection(const osg::Vec3& dir)
@@ -444,12 +453,20 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       void SoundActorProxy::Play()
       {
-         if (mSoundResource.GetResourceIdentifier().empty())
-         {
-            LOG_ERROR("Unable to play SimCore::SoundActor \"" + GetName() + "\" because so sound resource has been assigned.");
-         }
+//         if (mSoundResource.GetResourceIdentifier().empty())
+//         {
+//            throw dtUtil::Exception("Unable to play SimCore::SoundActor \"" + GetName() + "\" because no sound resource has been assigned.",
+//                  __FILE__, __LINE__);
+//         }
+//
+//         std::string file = dtDAL::Project::GetInstance().GetResourcePath(mSoundResource);
 
-         std::string file = dtDAL::Project::GetInstance().GetResourcePath(mSoundResource);
+         std::string file = mSoundResourceFile;
+         if (mSoundResourceFile.empty())
+         {
+            throw dtUtil::Exception("Unable to play SimCore::SoundActor \"" + GetName() + "\" because no sound resource has been assigned.",
+                     __FILE__, __LINE__);
+         }
 
          SoundActor* soundActor;
          GetActor(soundActor);
@@ -483,6 +500,8 @@ namespace SimCore
          int bytesPerSec = freq * (bits/8) * channels;
 
          float seconds = float(size) / float(bytesPerSec);
+         // Add a half a second just to be safe.
+         seconds += 0.5f;
 
          sound->Play();
          GetGameManager()->SetTimer(SoundActorProxy::PLAY_END_TIMER_NAME, this, seconds);
