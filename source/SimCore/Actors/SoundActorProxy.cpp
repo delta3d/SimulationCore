@@ -504,7 +504,11 @@ namespace SimCore
          seconds += 0.5f;
 
          sound->Play();
-         GetGameManager()->SetTimer(SoundActorProxy::PLAY_END_TIMER_NAME, this, seconds);
+
+         if (!sound->IsLooping())
+         {
+            GetGameManager()->SetTimer(SoundActorProxy::PLAY_END_TIMER_NAME, this, seconds);
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////////
