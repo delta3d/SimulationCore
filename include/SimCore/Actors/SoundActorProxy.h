@@ -65,6 +65,20 @@ namespace SimCore
       /**
       * @class SoundActorProxy
       * @brief This proxy wraps the Sound Delta3D object.
+      *
+      * This version works around an issue in the Delta3D version of this class where it allocates an
+      * OpenAL source as soon as the actor is created.  Since OpenAL frequently limits applications to creating
+      * no more than 16 or 32 sources, applications can easily into the situation that they can't add any more
+      * sounds.  This works around it by only allocating a dtAudio sound when it starts playing, and deleting that
+      * sound when it stops.
+      *
+      * Plans exist to change delta3d so that it only allocations sources for sounds that are playing, and to
+      * later add support to choose each frame the N sounds that should have sources based on distance and
+      * perceived volume.  That is, this class is temporary, and some changes in the class will eventually be migrated
+      * into the sound actor proxy in dtAudio.
+      *
+      * If you are not running out of sources with the current sound actor in dtAudio, you should continue using that class.
+      *
       */
       class SIMCORE_EXPORT SoundActorProxy : public dtGame::GameActorProxy
       {
