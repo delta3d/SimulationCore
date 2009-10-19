@@ -103,15 +103,17 @@ namespace SimCore
          */
          virtual void BuildPropertyMap();
 
-         /**
-          * Assigns the sound resource
-          */
-         void SetSoundResource(const dtDAL::ResourceDescriptor* soundResource);
+//         /**
+//          * Assigns the sound resource
+//          */
+//         void SetSoundResource(const dtDAL::ResourceDescriptor* soundResource);
+//
+//         /**
+//          * @return the sound resource
+//          */
+//         dtDAL::ResourceDescriptor* GetSoundResource();
 
-         /**
-          * @return the sound resource
-          */
-         dtDAL::ResourceDescriptor* GetSoundResource();
+         void SetSoundResource(const std::string& fileName);
 
          /**
          * Sets the direction
@@ -284,7 +286,8 @@ namespace SimCore
 
       private:
 
-         dtDAL::ResourceDescriptor mSoundResource;
+         //dtDAL::ResourceDescriptor mSoundResource;
+         std::string mSoundResourceFile;
 
          osg::Vec3 mDirection, mVelocity;
 
