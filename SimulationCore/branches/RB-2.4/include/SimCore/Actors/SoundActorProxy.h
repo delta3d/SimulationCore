@@ -19,8 +19,8 @@
  * William E. Johnson II, Allen Danklefsen, Chris Rodgers
  */
 
-#ifndef DELTA_SOUND_ACTOR_PROXY
-#define DELTA_SOUND_ACTOR_PROXY
+#ifndef SIMCORE_SOUND_ACTOR_PROXY
+#define SIMCORE_SOUND_ACTOR_PROXY
 
 #include <SimCore/Export.h>
 #include <dtGame/gameactor.h>
