@@ -293,6 +293,7 @@ namespace NetDemo
                break;
             }
 
+         case '\\':
          case osgGA::GUIEventAdapter::KEY_Insert:
             {
                std::string developerMode;

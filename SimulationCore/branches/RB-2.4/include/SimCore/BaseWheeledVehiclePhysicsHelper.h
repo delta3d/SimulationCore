@@ -132,6 +132,14 @@ namespace SimCore
 
       float GetChassisMass() const;
 
+      float GetAeroDynDragCoefficient() const;
+      void SetAeroDynDragCoefficient(float drag);
+
+      /// This is the frontal area to use for wind drag.
+      float GetAeroDynDragArea() const;
+      /// This is the frontal area to use for wind drag.
+      void SetAeroDynDragArea(float area);
+
       ////////// Vehicle Control///////////////////
       void Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes);
 
@@ -144,6 +152,9 @@ namespace SimCore
       /// because the local to world matrix is placed right above the DOF in the export process
       /// since the dof transform does not actually have a matrix
       static void GetLocalMatrix(const osg::Node& node, osg::Matrix& wcMatrix);
+
+      /// Computes the aero dynamic drag on the vehicle.  It will be positive, you have to figure out the direction.
+      osg::Vec3 ComputeAeroDynDrag(const osg::Vec3& linearVelocity);
    protected:
       virtual ~BaseWheeledVehiclePhysicsHelper();
 
@@ -193,6 +204,9 @@ namespace SimCore
       * Note that values close to or above 1 may cause stability problems and/or increasing energy.
       */
       float             mTireRestitution;
+
+      float mAeroDynDragCoefficient;
+      float mAeroDynDragArea;
 
       std::vector<WheelType> mWheels;
    };

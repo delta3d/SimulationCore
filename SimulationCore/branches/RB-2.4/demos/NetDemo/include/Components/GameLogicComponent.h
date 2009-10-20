@@ -29,6 +29,8 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
+#include <dtNetGM/networkcomponent.h>
+
 namespace dtUtil
 {
    class Log;
@@ -142,7 +144,7 @@ namespace NetDemo
          std::string mMapName;
 
          /// May be either a Network or Client component. We create it when we connect
-         dtCore::RefPtr<dtGame::GMComponent> mNetworkComp;
+         dtCore::RefPtr<dtNetGM::NetworkComponent> mNetworkComp;
 
          dtCore::RefPtr<ServerGameStatusActorProxy> mServerGameStatusProxy;
 
