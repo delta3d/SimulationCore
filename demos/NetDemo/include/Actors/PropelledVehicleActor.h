@@ -20,6 +20,7 @@
  * circumstances in which the U. S. Government may have rights in the software.
  *
  * Bradley Anderegg
+ * David Guthrie
  */
 
 #ifndef PROPELLEDVEHICLEACTOR_H_

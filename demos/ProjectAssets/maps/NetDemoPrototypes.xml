@@ -1296,7 +1296,7 @@
                 <name>chassis: Origin Offset</name>
                 <vec3>
                     <value1>0.000000</value1>
-                    <value2>-0.000000</value2>
+                    <value2>0.000000</value2>
                     <value3>1.000000</value3>
                 </vec3>
             </property>
@@ -1310,7 +1310,7 @@
             </property>
             <property>
                 <name>chassis: Mass</name>
-                <float>1000</float>
+                <float>1100</float>
             </property>
             <property>
                 <name>chassis: Skin Thickness</name>
@@ -1326,11 +1326,11 @@
             </property>
             <property>
                 <name>Max Break Torque</name>
-                <float>500</float>
+                <float>40</float>
             </property>
             <property>
                 <name>Top Speed (MPH)</name>
-                <float>500</float>
+                <float>60</float>
             </property>
             <property>
                 <name>mVehicleTopSpeedReverse</name>
@@ -1346,7 +1346,7 @@
             </property>
             <property>
                 <name>Inverse Mass of Wheel</name>
-                <float>0.15000001</float>
+                <float>0.015000001</float>
             </property>
             <property>
                 <name>Wheel Radius</name>
@@ -1358,7 +1358,7 @@
             </property>
             <property>
                 <name>Suspension Travel</name>
-                <float>0.25</float>
+                <float>0.12</float>
             </property>
             <property>
                 <name>Spring Coefficient</name>
@@ -1366,11 +1366,11 @@
             </property>
             <property>
                 <name>Suspension Damping Coefficient</name>
-                <float>15.3</float>
+                <float>30.3</float>
             </property>
             <property>
                 <name>Suspension Spring Target</name>
-                <float>0.1</float>
+                <float>0.08</float>
             </property>
             <property>
                 <name>Max Steer Angle</name>
@@ -1378,7 +1378,7 @@
             </property>
             <property>
                 <name>Tire Extreme Slip</name>
-                <float>13.5</float>
+                <float>10.0</float>
             </property>
             <property>
                 <name>Tire Extreme Value</name>
@@ -1394,11 +1394,11 @@
             </property>
             <property>
                 <name>Tire Stiffness</name>
-                <float>50</float>
+                <float>30</float>
             </property>
             <property>
                 <name>Tire Restitution</name>
-                <float>75</float>
+                <float>80</float>
             </property>
             <property>
                 <name>Four Wheel Drive</name>

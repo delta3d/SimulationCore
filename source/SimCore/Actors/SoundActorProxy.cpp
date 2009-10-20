@@ -208,6 +208,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////
       void SoundActorProxy::OnRemovedFromWorld()
       {
+         Stop();
+         // This code is not necessary, but I want to leave it here because it could
+         // become necessary if/when stop no longer deletes the dtAudio sound.
          SoundActor* soundActor;
          GetActor(soundActor);
          soundActor->DestroySound();

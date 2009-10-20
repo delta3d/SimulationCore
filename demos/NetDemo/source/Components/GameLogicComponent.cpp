@@ -361,28 +361,11 @@ namespace NetDemo
    {
       if (mIsConnectedToNetwork)
       {
+         mNetworkComp->Disconnect();
          // SERVER
          if (mIsServer)
          {
-            dtNetGM::ServerNetworkComponent *serverComponent =
-               dynamic_cast<dtNetGM::ServerNetworkComponent *>(mNetworkComp.get());
-            if (serverComponent != NULL)
-            {
-               serverComponent->ShutdownNetwork();
-            }
-
             GetGameManager()->ClearTimer(TIMER_UPDATE_TERRAIN, NULL);
-         }
-
-         // CLIENT
-         else
-         {
-            dtNetGM::ClientNetworkComponent *clientComponent =
-               dynamic_cast<dtNetGM::ClientNetworkComponent *>(mNetworkComp.get());
-            if (clientComponent != NULL)
-            {
-               clientComponent->ShutdownNetwork();
-            }
          }
 
          mNetworkComp = NULL;
