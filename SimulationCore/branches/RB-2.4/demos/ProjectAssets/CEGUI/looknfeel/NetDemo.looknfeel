@@ -1357,7 +1357,8 @@
     ***************************************************
     -->
     <WidgetLook name="WindowsLook/ItemListbox">
-        <NamedArea name="ItemRenderArea">
+       <PropertyDefinition name="BackgroundColours" initialValue="tl:FFDFDFDF tr:FFDFDFDF bl:FFDFDFDF br:FFDFDFDF" redrawOnWrite="true" />
+       <NamedArea name="ItemRenderArea">
             <Area>
                 <Dim type="LeftEdge" ><ImageDim imageset="NetDemo" image="StaticFrameLeft" dimension="Width" /></Dim>
                 <Dim type="TopEdge" ><ImageDim imageset="NetDemo" image="StaticFrameTop" dimension="Height" /></Dim>
@@ -1460,12 +1461,16 @@
         </ImagerySection>
         <StateImagery name="Enabled">
             <Layer>
-                <Section section="main" />
+                <Section section="main">
+                   <ColourRectProperty name="BackgroundColours" />
+                </Section>
             </Layer>
         </StateImagery>
         <StateImagery name="Disabled">
             <Layer>
-                <Section section="main" />
+                <Section section="main">
+                   <ColourRectProperty name="BackgroundColours" />
+                </Section>
             </Layer>
         </StateImagery>
     </WidgetLook>
@@ -4577,4 +4582,214 @@
             </Layer>
         </StateImagery>
     </WidgetLook>
+   
+   
+   
+   <!-- CUSTOM WIDGETS -->
+
+   <!-- FRAME -->
+   <WidgetLook name="NetDemo/Frame">
+      <PropertyDefinition name="BackColour" initialValue="FF000000" redrawOnWrite="true" />
+      <ImagerySection name="Back_Normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <UnifiedDim scale="0" offset="0" type="LeftEdge" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <UnifiedDim scale="0" offset="0" type="TopEdge" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" offset="0" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" offset="0" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image image="WindowFrameTopLeft" imageset="NetDemo" type="TopLeftCorner"/>
+            <Image image="WindowFrameTopRight" imageset="NetDemo" type="TopRightCorner"/>
+            <Image image="WindowFrameBottomLeft" imageset="NetDemo" type="BottomLeftCorner"/>
+            <Image image="WindowFrameBottomRight" imageset="NetDemo" type="BottomRightCorner"/>
+            <Image image="WindowFrameLeft" imageset="NetDemo" type="LeftEdge"/>
+            <Image image="WindowFrameTop" imageset="NetDemo" type="TopEdge"/>
+            <Image image="WindowFrameRight" imageset="NetDemo" type="RightEdge"/>
+            <Image image="WindowFrameBottom" imageset="NetDemo" type="BottomEdge"/>
+            <Image image="Background" imageset="NetDemo" type="Background"/>
+            <ColourProperty name="BackColour"/>
+            <VertFormat type="Stretched"/>
+            <HorzFormat type="Stretched"/>
+         </FrameComponent>
+      </ImagerySection>
+      <StateImagery name="Normal">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Hover">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Pushed">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Disabled">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+   </WidgetLook>
+   
+   <!-- LIST BOX ITEM -->
+   <WidgetLook name="NetDemo/ListBoxItem">
+      <PropertyLinkDefinition name="Action" widget=".Button" targetProperty="Action" initialValue="" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextFont" widget=".Button" targetProperty="Font" initialValue="Arial-Bold-16" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonText" widget=".Button" targetProperty="Text" initialValue="" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Normal" widget=".Button" targetProperty="NormalTextColour" initialValue="FFFFFFFF" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Hover" widget=".Button" targetProperty="HoverTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Pushed" widget=".Button" targetProperty="PushedTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Disabled" widget=".Button" targetProperty="DisabledTextColour" initialValue="FF888888" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonVisible" widget=".Button" targetProperty="Visible" initialValue="False" redrawOnWrite="true"/>
+      <PropertyDefinition name="ButtonWidth" initialValue="1.0" redrawOnWrite="true" />
+      <PropertyDefinition name="TextColour" initialValue="FF5555CC" redrawOnWrite="true" />
+      <PropertyDefinition name="DisabledTextColour" initialValue="FFCCCCCC" redrawOnWrite="true" />
+      <PropertyDefinition name="SelectedTextColour" initialValue="FFCCCC00" redrawOnWrite="true" />
+      <PropertyDefinition name="SelectedDisabledTextColour" initialValue="FFCCCCCC" redrawOnWrite="true" />
+      <PropertyDefinition name="SelectionBrush" initialValue="set:WindowsLook image:Background" redrawOnWrite="true" />
+      <PropertyDefinition name="SelectionColour" initialValue="FF3030FF" redrawOnWrite="true" />
+      <PropertyDefinition name="ItemHeight" initialValue="50" layoutOnWrite="true"/>
+      <PropertyDefinition name="MarginTop" initialValue="0" layoutOnWrite="true"/>
+      <PropertyDefinition name="TextFormatHorizontal" initialValue="WordWrapLeftAligned" redrawOnWrite="true" layoutOnWrite="true" />
+      <PropertyDefinition name="TextFormatVertical" initialValue="CentreAligned" redrawOnWrite="true" layoutOnWrite="true" />
+      <Property name="Selectable" value="True" />
+      <ImagerySection name="label">
+         <TextComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <VertFormatProperty name="TextFormatVertical" />
+            <HorzFormatProperty name="TextFormatHorizontal" />
+         </TextComponent>
+      </ImagerySection>
+      <NamedArea name="ContentSize">
+         <Area>
+            <Dim type="LeftEdge" >
+               <UnifiedDim scale="0" type="LeftEdge"/>
+            </Dim>
+            <Dim type="TopEdge">
+               <UnifiedDim scale="0" type="TopEdge"/>
+            </Dim>
+            <Dim type="Width" >
+               <UnifiedDim scale="1" type="Width" />
+            </Dim>
+            <Dim type="Height" >
+               <PropertyDim name="ItemHeight">
+                  <DimOperator op="Add">
+                     <PropertyDim name="MarginTop"/>
+                  </DimOperator>
+               </PropertyDim>
+            </Dim>
+         </Area>
+      </NamedArea>
+      <!-- Button inside item (the clickable area) -->
+      <Child type ="WindowsLook/Button" nameSuffix=".Button">
+         <Area>
+            <Dim type="LeftEdge">
+               <UnifiedDim scale="0" type="LeftEdge" />
+            </Dim>
+            <Dim type="TopEdge">
+               <UnifiedDim scale="0" type="TopEdge" />
+            </Dim>
+            <Dim type="Width">
+               <UnifiedDim scale="1" type="Width">
+                  <DimOperator op="Multiply">
+                     <PropertyDim name="ButtonWidth"/>
+                  </DimOperator>
+               </UnifiedDim>
+            </Dim>
+            <Dim type="Height">
+               <UnifiedDim scale="1" type="Height"/>
+            </Dim>
+         </Area>
+      </Child>
+      <!-- Detail area that is off to the right of the main item content. -->
+      <Child type ="DefaultWindow" nameSuffix=".DetailsArea">
+         <Area>
+            <Dim type="LeftEdge">
+               <UnifiedDim scale="1" type="LeftEdge">
+                  <DimOperator op="Multiply">
+                     <PropertyDim name="ButtonWidth"/>
+                  </DimOperator>
+               </UnifiedDim>
+            </Dim>
+            <Dim type="TopEdge">
+               <UnifiedDim scale="0" type="TopEdge" />
+            </Dim>
+            <Dim type="Width">
+               <UnifiedDim scale="1" type="Width">
+                  <DimOperator op="Subtract">
+                     <UnifiedDim scale="1" type="Width">
+                        <DimOperator op="Multiply">
+                           <PropertyDim name="ButtonWidth"/>
+                        </DimOperator>
+                     </UnifiedDim>
+                  </DimOperator>
+               </UnifiedDim>
+            </Dim>
+            <Dim type="Height">
+               <UnifiedDim scale="1" type="Height"/>
+            </Dim>
+         </Area>
+      </Child>
+      <StateImagery name="Enabled">
+         <Layer>
+            <Section section="label">
+               <ColourProperty name="TextColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Disabled">
+         <Layer>
+            <Section section="label">
+               <ColourProperty name="DisabledTextColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="SelectedEnabled">
+         <Layer>
+            <Section section="label">
+               <ColourProperty name="SelectedTextColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="SelectedDisabled">
+         <Layer>
+            <Section section="label">
+               <ColourProperty name="SelectedDisabledTextColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+   </WidgetLook>
+   
 </Falagard>
