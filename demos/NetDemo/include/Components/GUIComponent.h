@@ -37,6 +37,7 @@ namespace CEGUI
 {
    class Editbox;
    class EventArgs;
+   class ItemListbox;
    class PushButton;
    class Window;
 }
@@ -88,12 +89,16 @@ namespace NetDemo
 
          virtual void ProcessMessage( const dtGame::Message& message );
 
-         void ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange );
+         void UpdatePlayerList();
 
       protected:
          virtual ~GUIComponent();
 
-         void InitializeCEGUI( const std::string& schemeFile );
+         void InitializeCEGUI(const std::string& schemeFile);
+
+         void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);
+
+         void ProcessPlayerStatusUpdate(const PlayerStatusActor& playerStats);
 
          GameLogicComponent* GetAppComponent();
 
@@ -110,6 +115,8 @@ namespace NetDemo
          void BindButton( CEGUI::PushButton& button );
 
          bool IsButtonType( const std::string& buttonType ) const;
+
+         bool IsInState(const SimCore::Components::StateType& state) const;
 
       private:
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
@@ -129,6 +136,7 @@ namespace NetDemo
          // Special Widgets
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
+         CEGUI::ItemListbox* mListPlayers;
    };
 
 }

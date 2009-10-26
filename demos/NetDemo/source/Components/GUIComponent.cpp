@@ -26,13 +26,20 @@
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>
+#include <dtGame/actorupdatemessage.h>
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/scriptmodule.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/GUI/SimpleScreen.h>
-#include <States.h>
+
+// Local include directives
+#include "ActorRegistry.h"
+#include "Actors/PlayerStatusActor.h"
+#include "GUI/CustomCeguiWidgets.h"
+#include "States.h"
+
 
 
 namespace NetDemo
@@ -58,6 +65,8 @@ namespace NetDemo
       : BaseClass(name)
       , mScriptModule(new dtGUI::ScriptModule)
       , mInputServerPort(NULL)
+      , mInputServerIP(NULL)
+      , mListPlayers(NULL)
    {
    }
 
@@ -94,6 +103,7 @@ namespace NetDemo
       // READY ROOM
       mScreenReadyRoom = new SimCore::GUI::SimpleScreen("Ready Room", "CEGUI/layouts/NetDemo/ReadyRoom.layout");
       mScreenReadyRoom->Setup( mMainWindow.get() );
+      mListPlayers = static_cast<CEGUI::ItemListbox*>(wm.getWindow("ReadyRoom_PlayerList"));
 
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
@@ -114,18 +124,133 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessMessage( const dtGame::Message& message )
+   void GUIComponent::ProcessMessage(const dtGame::Message& message)
    {
       const dtGame::MessageType& messageType = message.GetMessageType();
 
-      if( messageType == SimCore::MessageType::GAME_STATE_CHANGED )
+      if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
-         ProcessStateChangeMessage( static_cast<const SimCore::Components::GameStateChangedMessage&>(message) );
+         ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
+      }
+      else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
+         || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
+      {
+         const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(message);
+         const dtDAL::ActorType& actorType = *updateMessage.GetActorType();
+
+         if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
+         {
+            // Get the actor to which the message refers.
+            dtDAL::ActorProxy* proxy = NULL;
+            GetGameManager()->FindActorById(updateMessage.GetAboutActorId(), proxy);
+            
+            if(proxy != NULL)
+            {
+               NetDemo::PlayerStatusActor* playerStats = NULL;
+               proxy->GetActor(playerStats);
+
+               if(playerStats != NULL)
+               {
+                  // Process the actor.
+                  ProcessPlayerStatusUpdate(*playerStats);
+               }
+            }
+         }
       }
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
+   void GUIComponent::UpdatePlayerList()
+   {
+      CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
+
+      // Clear the old list to be updated with new entries.
+      mListPlayers->resetList();
+
+      // Capture all the player status objects.
+      typedef std::vector<dtDAL::ActorProxy*> ProxyArray;
+      ProxyArray proxies;
+      GetGameManager()->FindActorsByType(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxies);
+
+      // Create list items for each of the player status objects.
+      PlayerStatusActor* curPlayerStats = NULL;
+      dtDAL::ActorProxy* curProxy = NULL;
+      ProxyArray::iterator proxyIter = proxies.begin();
+      ProxyArray::iterator endProxyArray = proxies.end();
+      for( ; proxyIter != endProxyArray; ++proxyIter)
+      {
+         curProxy = *proxyIter;
+         if(curProxy != NULL)
+         {
+            curProxy->GetActor(curPlayerStats);
+            if(curPlayerStats != NULL)
+            {
+               // Create the new list item.
+               CEGUI::String itemName(curPlayerStats->GetUniqueId().ToString().c_str());
+               CEGUI::CustomWidgets::ListItem* item = dynamic_cast<CEGUI::CustomWidgets::ListItem*>
+                  (wm.createWindow(CEGUI::CustomWidgets::ListItem::WidgetTypeName, itemName));
+
+               // Format the item.
+               CEGUI::String itemText(curPlayerStats->GetName().c_str());
+               item->setText(itemText);
+               // TODO: Set ready indicator...
+
+               // Add the new list item to the list box.
+               mListPlayers->addItem(item);
+            }
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::InitializeCEGUI(const std::string& schemeFile)
+   {
+      dtABC::Application& app = GetGameManager()->GetApplication();
+
+      // Initialize CEGUI
+      mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
+      mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+
+      // Add the GUI drawable directly to the OSG scene node rather than
+      // going through the over-managed dtCore Scene. If this is not done,
+      // MapChangeStateData will remove the GUI drawable from the scene
+      // when it tells the dtCore Scene to remove all drawable upon changing maps.
+      // This line works around the over-managed code in scenes and map loading,
+      // preventing the GUI from being unintentionally removed.
+      GetGameManager()->GetScene().GetSceneNode()->addChild(mGUI->GetOSGNode());
+
+      std::string path = dtCore::FindFileInPathList(schemeFile);
+      if(path.empty())
+      {
+         throw dtUtil::Exception(
+            "Failed to find the CEGUI scheme file : " + schemeFile, __FILE__, __LINE__);
+      }
+
+      try
+      {
+         CEGUI::SchemeManager::getSingleton().loadScheme(path);
+
+         // Initialize custom widget factories.
+         CEGUI::CustomWidgets::bindCEGUIWindowFactories();
+      }
+      catch(CEGUI::Exception& e)
+      {
+         std::ostringstream oss;
+         oss << "CEGUI while setting up GUI Component: " << e.getMessage().c_str();
+         throw dtUtil::Exception(oss.str(), __FILE__, __LINE__);
+      }
+
+      CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
+      mMainWindow = new SimCore::Components::HUDGroup("Root","DefaultGUISheet");
+      CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
+
+      // Prepare the main window.
+      mMainWindow->SetVisible( true );
+      mMainWindow->SetSize( 1.0f, 1.0f );
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange)
    {
       const SimCore::Components::StateType& state = stateChange.GetNewState();
 
@@ -156,47 +281,12 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::InitializeCEGUI( const std::string& schemeFile )
+   void GUIComponent::ProcessPlayerStatusUpdate(const PlayerStatusActor& playerStats)
    {
-      dtABC::Application& app = GetGameManager()->GetApplication();
-
-      // Initialize CEGUI
-      mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
-      mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
-
-      // Add the GUI drawable directly to the OSG scene node rather than
-      // going through the over-managed dtCore Scene. If this is not done,
-      // MapChangeStateData will remove the GUI drawable from the scene
-      // when it tells the dtCore Scene to remove all drawable upon changing maps.
-      // This line works around the over-managed code in scenes and map loading,
-      // preventing the GUI from being unintentionally removed.
-      GetGameManager()->GetScene().GetSceneNode()->addChild(mGUI->GetOSGNode());
-
-      std::string path = dtCore::FindFileInPathList(schemeFile);
-      if(path.empty())
+      if(IsInState(NetDemoState::STATE_GAME_READYROOM))
       {
-         throw dtUtil::Exception(
-            "Failed to find the CEGUI scheme file : " + schemeFile, __FILE__, __LINE__);
+         UpdatePlayerList();
       }
-
-      try
-      {
-         CEGUI::SchemeManager::getSingleton().loadScheme(path);
-      }
-      catch(CEGUI::Exception& e)
-      {
-         std::ostringstream oss;
-         oss << "CEGUI while setting up GUI Component: " << e.getMessage().c_str();
-         throw dtUtil::Exception(oss.str(), __FILE__, __LINE__);
-      }
-
-      CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
-      mMainWindow = new SimCore::Components::HUDGroup("Root","DefaultGUISheet");
-      CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
-
-      // Prepare the main window.
-      mMainWindow->SetVisible( true );
-      mMainWindow->SetSize( 1.0f, 1.0f );
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -326,6 +416,13 @@ namespace NetDemo
    {
       // Add any other button types here.
       return buttonType == BUTTON_TYPE_1;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::IsInState(const SimCore::Components::StateType& state) const
+   {
+      const SimCore::Components::StateType* currentState = mAppComp->GetCurrentState();
+      return currentState != NULL && state == *currentState;
    }
 
 }
