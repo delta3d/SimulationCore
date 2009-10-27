@@ -51,6 +51,7 @@
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/Actors/WaterGridActor.h>
 #include <SimCore/Actors/SoundActorProxy.h>
+#include <SimCore/Actors/DynamicParticleSystem.h>
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
@@ -172,6 +173,9 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::SOUND_ACTOR_TYPE(
                new dtDAL::ActorType("SoundActor", "SimCore", "A sound actor that only takes up a source when it's not playing."));
 
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE(
+         new dtDAL::ActorType("DynamicParticleSystemActor", "SimCore", "A particle system actor that can dynamically adjust various attributes of a particle system over time.."));
+
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -269,6 +273,8 @@ namespace SimCore
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
          mActorFactory->RegisterType<SoundActorProxy>(SOUND_ACTOR_TYPE.get());
+
+         mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
       }
    }
 }
