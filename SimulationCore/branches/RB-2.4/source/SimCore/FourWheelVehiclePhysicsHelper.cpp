@@ -44,6 +44,8 @@ namespace SimCore
    /// Constructor that provides default values for properties and initial values for state variables.
    FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
    : BaseClass(proxy)
+   , mFrontTrackAdjustment(0.0f)
+   , mRearTrackAdjustment(0.0f)
    , mCurrentNormalizedSteering(0.0f)
    , mCurrentEngineTorque(0.0f)
    , mCurrentNormalizedBrakes(0.0f)
@@ -104,6 +106,29 @@ namespace SimCore
       return 0.0;
    }
 
+   /////////////////////////////////////////////////////////////////////////////////////
+   float FourWheelVehiclePhysicsHelper::GetFrontTrackAdjustment() const
+   {
+      return mFrontTrackAdjustment;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////////
+   void FourWheelVehiclePhysicsHelper::SetFrontTrackAdjustment(float adjustment)
+   {
+      mFrontTrackAdjustment = adjustment;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////////
+   float FourWheelVehiclePhysicsHelper::GetRearTrackAdjustment() const
+   {
+      return mRearTrackAdjustment;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////////
+   void FourWheelVehiclePhysicsHelper::SetRearTrackAdjustment(float adjustment)
+   {
+      mRearTrackAdjustment = adjustment;
+   }
 
    // ///////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Methods                                 //
@@ -236,6 +261,11 @@ namespace SimCore
       WheelVec[BACK_LEFT][2] += mRearMaxJounce;
       WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
 
+      WheelVec[FRONT_LEFT][0] -= mFrontTrackAdjustment;
+      WheelVec[FRONT_RIGHT][0] += mFrontTrackAdjustment;
+      WheelVec[BACK_LEFT][0] -= mRearTrackAdjustment;
+      WheelVec[BACK_RIGHT][0] += mRearTrackAdjustment;
+
       CreateChassis(transformForRot, bodyNode);
 
 //      osg::MatrixTransform* mtWheels[4];
@@ -291,5 +321,19 @@ namespace SimCore
                dtDAL::BooleanActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetIsVehicleFourWheelDrive),
                dtDAL::BooleanActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetIsVehicleFourWheelDrive),
                "", FOUR_WHEEL_GROUP));
+
+      toFillIn.push_back(new dtDAL::FloatActorProperty("FrontTrackAdjustment", "Front Wheel Track Adjustment",
+               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetFrontTrackAdjustment),
+               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetFrontTrackAdjustment),
+               "Track is the distance along the axle of a wheel from the centerline of a vehicle."
+               "Setting this moves the front wheels closer or farther from the centerline.",
+               FOUR_WHEEL_GROUP));
+
+      toFillIn.push_back(new dtDAL::FloatActorProperty("RearTrackAdjustment", "Rear Wheel Track Adjustment",
+               dtDAL::FloatActorProperty::SetFuncType(this, &FourWheelVehiclePhysicsHelper::SetRearTrackAdjustment),
+               dtDAL::FloatActorProperty::GetFuncType(this, &FourWheelVehiclePhysicsHelper::GetRearTrackAdjustment),
+               "Track is the distance along the axle of a wheel from the centerline of a vehicle."
+               "Setting this moves the rear wheels closer or farther from the centerline.",
+               FOUR_WHEEL_GROUP));
    }
 } // end namespace

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes</name>
@@ -8,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-10-06T16:14:30-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-10-21T13:37:39-05:00</lastUpdateTimestamp>
         <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -1337,20 +1336,12 @@
                 <float>100</float>
             </property>
             <property>
-                <name>Horsepower</name>
-                <integer>500</integer>
-            </property>
-            <property>
                 <name>mWheelTurnRadiusPerUpdate</name>
                 <float>0.029999999</float>
             </property>
             <property>
-                <name>Inverse Mass of Wheel</name>
-                <float>0.015000001</float>
-            </property>
-            <property>
-                <name>Wheel Radius</name>
-                <float>9</float>
+                <name>WheelMass</name>
+                <float>0.15000001</float>
             </property>
             <property>
                 <name>Wheel Width</name>
@@ -1358,19 +1349,19 @@
             </property>
             <property>
                 <name>Suspension Travel</name>
-                <float>0.12</float>
+                <float>0.13</float>
             </property>
             <property>
                 <name>Spring Coefficient</name>
-                <float>5500</float>
+                <float>4800</float>
             </property>
             <property>
                 <name>Suspension Damping Coefficient</name>
-                <float>30.3</float>
+                <float>30.299999</float>
             </property>
             <property>
                 <name>Suspension Spring Target</name>
-                <float>0.08</float>
+                <float>0.079999998</float>
             </property>
             <property>
                 <name>Max Steer Angle</name>
@@ -1378,7 +1369,7 @@
             </property>
             <property>
                 <name>Tire Extreme Slip</name>
-                <float>10.0</float>
+                <float>10</float>
             </property>
             <property>
                 <name>Tire Extreme Value</name>
@@ -1401,8 +1392,24 @@
                 <float>80</float>
             </property>
             <property>
+                <name>AeroDynDragCoefficient</name>
+                <float>0.80000001</float>
+            </property>
+            <property>
+                <name>AeroDynDragArea</name>
+                <float>8</float>
+            </property>
+            <property>
                 <name>Four Wheel Drive</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>FrontTrackAdjustment</name>
+                <float>0.10000001</float>
+            </property>
+            <property>
+                <name>RearTrackAdjustment</name>
+                <float>0</float>
             </property>
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
@@ -3428,20 +3435,12 @@
                 <float>40</float>
             </property>
             <property>
-                <name>Horsepower</name>
-                <integer>150</integer>
-            </property>
-            <property>
                 <name>mWheelTurnRadiusPerUpdate</name>
                 <float>0.029999999</float>
             </property>
             <property>
-                <name>Inverse Mass of Wheel</name>
+                <name>WheelMass</name>
                 <float>0.15000001</float>
-            </property>
-            <property>
-                <name>Wheel Radius</name>
-                <float>9</float>
             </property>
             <property>
                 <name>Wheel Width</name>
@@ -3492,8 +3491,24 @@
                 <float>100</float>
             </property>
             <property>
+                <name>AeroDynDragCoefficient</name>
+                <float>0.80000001</float>
+            </property>
+            <property>
+                <name>AeroDynDragArea</name>
+                <float>8</float>
+            </property>
+            <property>
                 <name>Four Wheel Drive</name>
                 <boolean>true</boolean>
+            </property>
+            <property>
+                <name>FrontTrackAdjustment</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>RearTrackAdjustment</name>
+                <float>0</float>
             </property>
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
