@@ -90,6 +90,8 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> SOUND_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 
