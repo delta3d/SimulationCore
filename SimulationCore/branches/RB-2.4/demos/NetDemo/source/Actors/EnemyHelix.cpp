@@ -210,8 +210,11 @@ namespace NetDemo
       // the base class applies an impulse
       BaseClass::RespondToHit(message, munition, force, location);
 
-      //this lets the AI respond to being hit
-      //mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+      {       
+         //this lets the AI respond to being hit
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      }
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -249,7 +252,6 @@ namespace NetDemo
 
    void EnemyHelixActorProxy::OnRemovedFromWorld()
    {
-      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());
-      actor.DoExplosion(1.0f);
+      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());      
    }
 } // namespace

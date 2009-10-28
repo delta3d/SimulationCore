@@ -23,35 +23,54 @@
 * @author Bradley Anderegg
 */
 
-#include <AIUtility.h>
-#include <dtUtil/matrixutil.h>
-#include <dtUtil/mathdefines.h>
-#include <osg/Vec2>
+#ifndef DELTA_ENEMYMINEAIHELPER_H
+#define DELTA_ENEMYMINEAIHELPER_H
 
+#include <DemoExport.h>
+#include <EnemyAIHelper.h>
+
+namespace dtCore
+{
+   class Transformable;
+}
 
 namespace NetDemo
 {
-   void DoNothing::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
-   { 
-   }
 
-   void BombDive::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
-   { 
-      if(current_state.mLinearVelocity.length() < mSpeed)
-      {
-         osg::Vec3 targetPos = current_goal.GetPosition();
-         osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(current_state.mTransform, 3);
-         pos = (targetPos - pos);
-         pos.normalize();
-         
-         result.mLinearVelocity = /*osg::Vec3(0.0, 0.0, 850.0) +*/  (pos * mSpeed);
-         
-         result.mLinearVelocity[2] = 0.0;
-      }
-      //add some randomization
-      //osg::Vec3 randVector(dtUtil::RandFloat(-1.0f, 1.0f), dtUtil::RandFloat(-1.0f, 1.0f), dtUtil::RandFloat(0.0f, 2.0f));
-      //randVector.normalize();
-      //result.mLinearVelocity += randVector * (mSpeed * 0.25f);
-   }
+   class AIEvent;
+   class AIStateType;
+
+
+   class NETDEMO_EXPORT EnemyMineAIHelper: public EnemyAIHelper
+   {
+      public:
+         typedef EnemyAIHelper BaseClass;
+
+         EnemyMineAIHelper();
+
+         /*virtual*/ void OnInit(const EnemyDescriptionActor& desc);
+         /*virtual*/ void Spawn();
+         /*virtual*/ void Update(float dt);
+
+      protected:
+         EnemyMineAIHelper(const EnemyMineAIHelper&);  //not implemented by design
+         EnemyMineAIHelper& operator=(const EnemyMineAIHelper&);  //not implemented by design
+         ~EnemyMineAIHelper();
+
+         /*virtual*/ void RegisterStates();
+         /*virtual*/ void CreateStates();
+         /*virtual*/ void SetupTransitions();
+         /*virtual*/ void SetupFunctors();
+
+         virtual void Attack(float dt);
+
+
+      private:
+
+         float mMaxVelocity;
+
+   };
 
 } //namespace NetDemo
+
+#endif //DELTA_ENEMYMINEAIHELPER_H

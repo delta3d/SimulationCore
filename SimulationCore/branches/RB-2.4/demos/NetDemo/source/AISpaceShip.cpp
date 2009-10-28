@@ -575,13 +575,13 @@ namespace NetDemo
       osg::Vec3 right = at ^ up;
       right.normalize();
 
-      float maxLiftForce = 500.0f;
-      float maxThrustForce = 100.0f;
-      float maxYawForce = 100.0f;
+      float maxLiftForce = 10000.0f;
+      float maxThrustForce = 1000.0f;
+      float maxYawForce = 1000.0f;
 
       osg::Vec3 force;
 
-      force += osg::Vec3(0.0f, 0.0f, 1000.0f) + (up * (mAIControllable.mCurrentControls.GetLift() * maxLiftForce));
+      force += osg::Vec3(0.0f, 0.0f, 900.0f) + (up * (mAIControllable.mCurrentControls.GetLift() * maxLiftForce));
       //force += at * (mAIControllable.mCurrentControls.mThrust * maxThrustForce);
       //force += right * (mAIControllable.mCurrentControls.mYaw * maxYawForce);
       
