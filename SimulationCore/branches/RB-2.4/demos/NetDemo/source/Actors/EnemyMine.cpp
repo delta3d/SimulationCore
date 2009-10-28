@@ -95,6 +95,7 @@ namespace NetDemo
 
          //all this code is to make the mine detonate when it takes damage
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_DIE, &AIStateType::AI_STATE_DETONATE);
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_DETONATE);
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_GO_TO_WAYPOINT, &AIStateType::AI_STATE_DETONATE);
          mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_DETONATE);
@@ -203,7 +204,7 @@ namespace NetDemo
       msg->SetEventIdentifier( 1 );
       msg->SetDetonationLocation(trans);
       // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
-      msg->SetDetonationResultCode( 3 ); // TO BE DYNAMIC
+      msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
       msg->SetMunitionType("Generic Explosive");
       msg->SetFuseType(0);
       msg->SetWarheadType(0);
@@ -215,8 +216,6 @@ namespace NetDemo
       gm->SendMessage( *msg );
       gm->SendNetworkMessage( *msg );
 
-      mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
-
       GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
    }
 
@@ -227,6 +226,11 @@ namespace NetDemo
    {
       // the base class applies an impulse
       BaseClass::RespondToHit(message, munition, force, location);
+
+      if(IsMobilityDisabled())
+      {
+         mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+      }
 
       if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
       {       

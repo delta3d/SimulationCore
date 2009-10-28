@@ -518,10 +518,10 @@ namespace NetDemo
       mAIControllable.mTargeters.push_back(&mDefaultTargeter);
       mAIControllable.mOutputControlFunc = SpaceShipControllable::BaseClass::OutputControlFunctor(this, &SpaceShipAIHelper::OutputControl);
 
-      float minSpeedPercent = 0.15f;
-      float maxSpeedPercent = 0.85f;
-      float lookAheadTime = 1.0f;
-      float timeToTarget = 0.5f;
+      float minSpeedPercent = 0.0f;
+      float maxSpeedPercent = 1.0f;
+      float lookAheadTime = 2.0f;
+      float timeToTarget = 10.0f;
       float lookAheadRot = 2.5f;
       float timeToTargetRot = 1.0f;
 
@@ -575,20 +575,19 @@ namespace NetDemo
       osg::Vec3 right = at ^ up;
       right.normalize();
 
-      float maxLiftForce = 10000.0f;
-      float maxThrustForce = 1000.0f;
-      float maxYawForce = 1000.0f;
+      float maxLiftForce = 1500.0f;
+      float maxThrustForce = 1500.0f;
 
       osg::Vec3 force;
 
-      force += osg::Vec3(0.0f, 0.0f, 900.0f) + (up * (mAIControllable.mCurrentControls.GetLift() * maxLiftForce));
-      //force += at * (mAIControllable.mCurrentControls.mThrust * maxThrustForce);
+      force += up * (mAIControllable.mCurrentControls.GetLift() * maxLiftForce);
+      force += at * (mAIControllable.mCurrentControls.GetThrust() * maxThrustForce);
       //force += right * (mAIControllable.mCurrentControls.mYaw * maxYawForce);
       
       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
       mAIControllable.mCurrentState.SetVel(physicsObject->GetLinearVelocity());
 
-      force += mAIControllable.mCurrentState.GetForward() * (75.0f + (100.0f * mAIControllable.mCurrentControls.GetThrust()));
+      //force += mAIControllable.mCurrentState.GetForward() * (75.0f + (100.0f * mAIControllable.mCurrentControls.GetThrust()));
       physicsObject->GetBodyWrapper()->AddForce(force);
    }
 
@@ -683,7 +682,7 @@ namespace NetDemo
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
 
-         pos[2] += 25.0f;
+         pos[2] += 5.0f;
          mDefaultTargeter.Push(pos);
       }
       else
@@ -758,6 +757,8 @@ namespace NetDemo
 
    void Align::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
    { 
+      dtUtil::Clamp(dt, 0.0167f, 0.1f);
+
       float lookAhead = mTimeToTarget * dt;
       osg::Vec3 targetPos = GetTargetPosition(lookAhead, current_goal);
       osg::Vec3 goalForward;
@@ -785,12 +786,16 @@ namespace NetDemo
 
    void FollowPath::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
    {
+      dtUtil::Clamp(dt, 0.0167f, 0.1f);
+
       float lookAhead = mLookAhead * dt;
       BaseClass::Think(lookAhead, current_goal, current_state, result);
 
-      osg::Vec3 targetPos = BaseClass::GetTargetPosition(lookAhead, current_goal);
+      const osg::Vec3 goalPos = current_goal.GetPos();
+      const osg::Vec3 pos = current_state.GetPos();
+
       osg::Vec3 goalForward;
-      float dist = GetTargetForward(lookAhead, targetPos, current_goal, current_state, goalForward);
+      float dist = GetTargetForward(mTimeToTarget, goalPos, current_goal, current_state, goalForward);
       osg::Vec3 currForward = current_state.GetForward();
 
       float angle = 0.0f;
@@ -804,16 +809,27 @@ namespace NetDemo
       dtUtil::Clamp(timeRemaining, 0.00001f, mTimeToTarget);
       timeRemaining /= mTimeToTarget;
 
-      result.SetThrust(timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed));
+      osg::Vec3 velNorm = current_state.GetVel();
+      velNorm.normalize();
+
+      float thrustSign = velNorm * goalForward;
+      if(thrustSign < -0.75f && dot < -0.75f) result.SetThrust(-1.0f);
+      else 
+         result.SetThrust(timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed));
 
       //compute height
-      osg::Vec3 pos = current_state.GetPos();
-      float heightDiff = current_goal.GetPos()[2] - (pos[2] + (current_state.GetVel()[2] * dt));
-      heightDiff /= 100.0f;
+      float zVel = current_state.GetVel()[2];
+      if(fabs(zVel) < 0.0001) zVel = BaseClass::Sgn(zVel) * 0.0001;
 
-      dtUtil::Clamp(heightDiff, -1.0f, 1.0f);
-      float absHeightDiff = fabs(heightDiff);
-      result.SetLift(BaseClass::Sgn(heightDiff) * absHeightDiff * absHeightDiff);
+      float heightLookAhead = zVel * mTimeToTarget;
+
+      float heightDiff = goalPos[2] - (pos[2] + heightLookAhead);
+      float remainingFallTime = fabs(heightDiff / zVel);
+      dtUtil::Clamp(remainingFallTime, 0.00001f, mTimeToTarget);
+      remainingFallTime /= mTimeToTarget;
+
+      float sgnHeightDiff = BaseClass::Sgn(heightDiff);
+      result.SetLift(remainingFallTime * sgnHeightDiff);
    }
 
 }//namespace NetDemo
