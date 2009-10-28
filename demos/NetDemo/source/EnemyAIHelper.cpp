@@ -46,7 +46,6 @@ namespace NetDemo
 {
 
    EnemyAIHelper::EnemyAIHelper()
-      : mMaxVelocity(100)
    {
      
    }
@@ -58,7 +57,6 @@ namespace NetDemo
 
    void EnemyAIHelper::OnInit(const EnemyDescriptionActor& desc)
    {
-      mMaxVelocity = desc.GetSpawnInfo().GetMaxVelocity();
    }
 
    void EnemyAIHelper::Spawn()
@@ -146,7 +144,7 @@ namespace NetDemo
       state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyAIHelper::DefaultStateUpdate));
 
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyAIHelper::Attack));
+      state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyAIHelper::DefaultStateUpdate));
 
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_EVADE);
       state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyAIHelper::DefaultStateUpdate));
@@ -166,30 +164,10 @@ namespace NetDemo
 
       //this can be used to change steering behaviors when transitioning into a new state
       typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
-      
-      //float minSpeedPercent = 0.15f;
-      //float maxSpeedPercent = 0.85f;
-      //float lookAheadTime = 1.0f;
-      //float timeToTarget = 0.5f;
-      //float lookAheadRot = 5.0f;
-      //float timeToTargetRot = 5.0f;
-
-      //SteeringBehaviorType* behavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
-      //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
-
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_GO_TO_WAYPOINT);
-      //state->AddEntryCommand(ctbc);
-
-      SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
+      typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;    
+  
+      SteeringBehaviorType* behavior = new DoNothing();
       ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
-      
-      state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      state->AddEntryCommand(ctbc);
-
-      //for all the rest of the states currently lets do nothing by setting the default behavior
-      behavior = new DoNothing();
-      ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
 
       state = GetStateMachine().GetState(&AIStateType::AI_STATE_DIE);
       state->AddEntryCommand(ctbc);
@@ -246,38 +224,6 @@ namespace NetDemo
       }
    }
 
-   void EnemyAIHelper::Attack(float dt)
-   {
-      dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
-      AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL && attackState->mStateData.mTarget.valid())
-      {
-         dtCore::Transform xform;
-         attackState->mStateData.mTarget->GetTransform(xform);
-         osg::Vec3 pos = xform.GetTranslation();
-
-         //NOTE: HACK!!!! -The fort target is below the ground, I am adding an offset here
-         //todo: find the bounding box of the object and use that to determine a good target point
-         pos[2] += 5.0f;
-
-         //if we are within distance, detonate
-         //this is only for the enemy mine, and should be refactored
-         float dist = GetDistance(pos);
-         if(dist < 25.0f)
-         {
-            BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
-            return;
-         }
-
-         dtAI::KinematicGoal kg;
-         kg.SetPosition(pos);
-         BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
-      }
-      else
-      {
-         LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
-      }
-   }
 
    void EnemyAIHelper::SetCurrentTarget(dtCore::Transformable& target)
    {

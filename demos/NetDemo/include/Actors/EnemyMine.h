@@ -63,30 +63,20 @@ namespace NetDemo
 
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-         //////////////// PROPERTIES
-
-         // PUBLIC METHODS
-      public:
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
-            const osg::Vec3 &direction, float &distanceToHit);
-
 
          virtual void DoExplosion(float);
+
+
+         //void PostPhysicsUpdate();
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-         void ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation);
-
          void FindTarget(float);
 
       // Private vars
       private:
-
-         osg::Vec3 mGoalLocation;       /// The general location we want to be.
-
-         float mGroundClearance;        /// Height to hover above the ground
 
    };
 
