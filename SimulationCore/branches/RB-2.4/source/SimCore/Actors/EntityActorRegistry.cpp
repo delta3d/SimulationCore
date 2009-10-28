@@ -50,8 +50,10 @@
 #include <SimCore/Actors/FlareActor.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 #include <SimCore/Actors/WaterGridActor.h>
+#include <SimCore/Actors/SurfaceVesselActor.h>
 #include <SimCore/Actors/SoundActorProxy.h>
 #include <SimCore/Actors/DynamicParticleSystem.h>
+
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
@@ -170,6 +172,10 @@ namespace SimCore
          new dtDAL::ActorType("DRGhostActor", "SimCore", "Shows how dead reckoning works by following a platform",
          dtActors::EngineActorRegistry::GAME_MESH_ACTOR_TYPE.get()));
 
+      dtCore::RefPtr<dtDAL::ActorType> EntityActorRegistry::SURFACE_VESSEL_ACTOR_TYPE(
+         new dtDAL::ActorType("SurfaceVesselActor", "SimCore", "This is the actor used for any type of water vehicle.",
+         EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
+
       RefPtr<dtDAL::ActorType> EntityActorRegistry::SOUND_ACTOR_TYPE(
                new dtDAL::ActorType("SoundActor", "SimCore", "A sound actor that only takes up a source when it's not playing."));
 
@@ -272,6 +278,7 @@ namespace SimCore
 
          mActorFactory->RegisterType<WaterGridActorProxy>(WATER_GRID_ACTOR_TYPE.get());
          mActorFactory->RegisterType<DRGhostActorProxy>(DR_GHOST_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<SurfaceVesselActorProxy>(SURFACE_VESSEL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<SoundActorProxy>(SOUND_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
