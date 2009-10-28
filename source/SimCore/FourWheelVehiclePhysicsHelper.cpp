@@ -228,8 +228,8 @@ namespace SimCore
       float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
       float frontDeflection = (frontWheelLoad / GetSuspensionSpringCoef());
       float rearDeflection  = (rearWheelLoad / GetSuspensionSpringCoef());
-      mFrontMaxJounce       = GetWheelSuspensionTravel() - frontDeflection;
-      mRearMaxJounce        = GetWheelSuspensionTravel() - rearDeflection;
+      mFrontMaxJounce       = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - frontDeflection);
+      mRearMaxJounce        = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - rearDeflection);
 
       WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
       WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;

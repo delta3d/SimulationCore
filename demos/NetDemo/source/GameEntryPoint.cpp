@@ -29,10 +29,6 @@
 
 #include <dtPhysics/physicscomponent.h>
 
-#include <dtNetGM/servernetworkcomponent.h>
-#include <dtNetGM/clientnetworkcomponent.h>
-#include <dtNetGM/machineinfomessage.h>
-
 #include <dtUtil/fileutils.h>
 
 #include <osg/ApplicationUsage>
@@ -152,10 +148,6 @@ namespace NetDemo
 
       gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
 
-      // Networking
-      //SetupClientServerNetworking(gm);
-      // true if we are the server or if NO networking is involved
-      //gameAppComp->SetIsServer(mIsServer);
    }
 
 

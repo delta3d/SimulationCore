@@ -29,6 +29,12 @@
 #include <dtCore/keyboard.h>
 
 #include <osgSim/DOFTransform>
+#include <dtUtil/mathdefines.h>
+
+#include <dtPhysics/bodywrapper.h>
+
+//For debug only.
+#include <iostream>
 
 namespace NetDemo
 {
@@ -100,6 +106,9 @@ namespace NetDemo
 
       mHelper->CreateVehicle(xform, *body, wheels);
       mHelper->GetMainPhysicsObject()->SetTransformAsVisual(xform);
+      osg::Vec3 oldInertia = mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->GetInertia();
+      //std::cout<< oldInertia << std::endl;
+      mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->SetInertia(osg::Vec3(20000, 10000, 20000));
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -123,6 +132,8 @@ namespace NetDemo
       if(keyboard == NULL)
          return;
       //float currentMPH = GetMPH(); // speed, not a velocity with direction
+
+      dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
       float accelerator = 0.0;
       float brakes = 0.0;
@@ -153,25 +164,23 @@ namespace NetDemo
          if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') ||
               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
             steering = 1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, -1.0, 0.0);
             float torqueMagnitude = 1000;
-            po->AddLocalTorque(torqueDirection * torqueMagnitude);
-            po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
+            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
+            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
          }
          else if (keyboard->GetKeyState('d') || keyboard->GetKeyState('D') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
             steering = -1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, 1.0, 0.0);
             float torqueMagnitude = 1000;
 
-            po->AddLocalTorque(torqueDirection * torqueMagnitude);
-            po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
+            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
+            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
          }
 
          if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
@@ -215,7 +224,6 @@ namespace NetDemo
 
          if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
             dtCore::Transform xform;
             po->GetTransform(xform);
             osg::Vec3 trans;
@@ -228,6 +236,33 @@ namespace NetDemo
 
       }
 
+      dtCore::Transform xform;
+      po->GetTransform(xform);
+      osg::Vec3 hpr;
+      xform.GetRotation(hpr);
+
+      osg::Vec3 angVel = po->GetAngularVelocity();
+
+      osg::Vec3 dragVec = mHelper->ComputeAeroDynDrag(po->GetLinearVelocity());
+      po->AddForce(dragVec);
+
+      //std::cout << "Angular Velocity: " << angVel << std::endl;
+//      std::cout << "Linear Velocity: " << po->GetLinearVelocity() << std::endl;
+//      std::cout << "Aero Drag: " << dragVec << std::endl;
+
+      float pitchTorque = -(5.0f * (hpr.y()));
+      pitchTorque -= angVel.x() * 30.0;
+      dtUtil::Clamp(pitchTorque, -1000.0f, 1000.0f);
+
+      //std::cout << "pitch Torque: " << pitchTorque << std::endl;
+
+      float rollTorque = -(5.0f * (hpr.z()));
+      rollTorque -= angVel.y() * 30.0;
+      dtUtil::Clamp(rollTorque, -1000.0f, 1000.0f);
+
+      //std::cout << "roll Torque: " << rollTorque << std::endl;
+
+      //po->AddLocalTorque(osg::Vec3(pitchTorque, rollTorque, 0.0));
       mHelper->Control(accelerator, steering, brakes);
 
    }

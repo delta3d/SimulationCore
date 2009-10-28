@@ -88,6 +88,8 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> DR_GHOST_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> SOUND_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 
