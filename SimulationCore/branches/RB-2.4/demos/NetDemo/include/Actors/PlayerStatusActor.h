@@ -101,8 +101,6 @@ namespace NetDemo
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
          virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
-      public:
-
          // Publishes an actor update message for player settings props to let other players know.
          void PublishPlayerSettings();
 
@@ -121,6 +119,9 @@ namespace NetDemo
          // Is Server - Property
          void SetIsServer(bool newValue);
          bool GetIsServer() const { return mIsServer; }
+
+         void SetReady(bool ready);
+         bool IsReady() const;
 
          // Terrain Preference - Property - The server's value here defines what terrain is loaded for all.
          void SetTerrainPreference(const std::string& newValue);
@@ -147,6 +148,7 @@ namespace NetDemo
          PlayerStatusEnum* mPlayerStatus;
          int mTeamNumber;
          bool mIsServer;
+         bool mIsReady;
          std::string mTerrainPreference;
          VehicleTypeEnum* mVehiclePreference;
          dtCore::UniqueId mAttachedVehicleID;
@@ -169,6 +171,7 @@ namespace NetDemo
          static const dtUtil::RefString PROP_PLAYER_STATUS;
          static const dtUtil::RefString PROP_TEAM_NUM;
          static const dtUtil::RefString PROP_IS_SERVER;
+         static const dtUtil::RefString PROP_IS_READY;
          static const dtUtil::RefString PROP_TERRAIN_PREFERENCE;
          static const dtUtil::RefString PROP_VEHICLE_PREFERENCE;
          static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID;

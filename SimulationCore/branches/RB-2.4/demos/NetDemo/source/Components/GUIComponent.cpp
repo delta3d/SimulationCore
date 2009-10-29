@@ -173,6 +173,7 @@ namespace NetDemo
       GetGameManager()->FindActorsByType(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxies);
 
       // Create list items for each of the player status objects.
+      CEGUI::String checkboxSuffix("_ReadyBox");
       PlayerStatusActor* curPlayerStats = NULL;
       dtDAL::ActorProxy* curProxy = NULL;
       ProxyArray::iterator proxyIter = proxies.begin();
@@ -193,7 +194,17 @@ namespace NetDemo
                // Format the item.
                CEGUI::String itemText(curPlayerStats->GetName().c_str());
                item->setText(itemText);
-               // TODO: Set ready indicator...
+
+               // Set ready indicator...
+               CEGUI::String checkboxName(itemName + checkboxSuffix);
+               CEGUI::Checkbox* readyBox = static_cast<CEGUI::Checkbox*>
+                  (wm.createWindow("WindowsLook/Checkbox", checkboxName));
+               CEGUI::UVector2 dims(CEGUI::UDim(0.0f,40),CEGUI::UDim(0.0f,40));
+               readyBox->setSize(dims);
+               readyBox->setSelected(curPlayerStats->IsReady());
+               readyBox->setEnabled(false);
+               readyBox->setHorizontalAlignment(CEGUI::HA_RIGHT);
+               item->addChildWindow(readyBox);
 
                // Add the new list item to the list box.
                mListPlayers->addItem(item);
