@@ -189,6 +189,28 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void DynamicParticleSystemActor::GetAllInterpolators(InterpolatorArray& outArray)
+      {
+         ParticleLayerInterpMap::iterator curInterp = mLayerInterps.begin();
+         ParticleLayerInterpMap::iterator endInterpArray = mLayerInterps.end();
+         for( ; curInterp != endInterpArray; ++curInterp)
+         {
+            outArray.push_back(curInterp->second.get());
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void DynamicParticleSystemActor::GetAllInterpolators(InterpolatorArray_Const& outArray) const
+      {
+         ParticleLayerInterpMap::const_iterator curInterp = mLayerInterps.begin();
+         ParticleLayerInterpMap::const_iterator endInterpArray = mLayerInterps.end();
+         for( ; curInterp != endInterpArray; ++curInterp)
+         {
+            outArray.push_back(curInterp->second.get());
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void DynamicParticleSystemActor::SetEnabled( bool enabled )
       {
          mParticles->SetEnabled( enabled );

@@ -64,6 +64,11 @@ namespace SimCore
             ParticleLayerInterpolator* GetInterpolator( unsigned index = 0 ); 
             const ParticleLayerInterpolator* GetInterpolator( unsigned index = 0 ) const;
 
+            typedef std::vector<ParticleLayerInterpolator*> InterpolatorArray;
+            typedef std::vector<const ParticleLayerInterpolator*> InterpolatorArray_Const;
+            void GetAllInterpolators(InterpolatorArray& outArray);
+            void GetAllInterpolators(InterpolatorArray_Const& outArray) const;
+
             void SetEnabled( bool enabled );
             bool IsEnabled() const;
 
