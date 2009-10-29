@@ -49,9 +49,14 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       // Proxy code
       //////////////////////////////////////////////////////////
+      const dtUtil::RefString SurfaceVesselActorProxy::CLASS_NAME("SimCore::Actors::SurfaceVesselActor");
+      const dtUtil::RefString SurfaceVesselActorProxy::PROPERTY_SPRAY_VELOCITY_MIN("Spray Velocity Min");
+      const dtUtil::RefString SurfaceVesselActorProxy::PROPERTY_SPRAY_VELOCITY_MAX("Spray Velocity Max");
+
+      //////////////////////////////////////////////////////////
       SurfaceVesselActorProxy::SurfaceVesselActorProxy()
       {
-         SetClassName("SimCore::Actors::SurfaceVesselActor");
+         SetClassName(SurfaceVesselActorProxy::CLASS_NAME);
       }
 
       //////////////////////////////////////////////////////////
@@ -119,10 +124,15 @@ namespace SimCore
             dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayBackOffset),
             "The local offset on the back side to apply the water spray particle effect on the back of the ship.", group));
 
-         AddProperty(new dtDAL::FloatActorProperty("WaterSprayStartSpeed", "Water Spray Start Speed", 
-            dtDAL::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayStartSpeed),
-            dtDAL::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayStartSpeed),
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MIN, PROPERTY_SPRAY_VELOCITY_MIN, 
+            dtDAL::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMin),
+            dtDAL::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMin),
             "The speed at which to start the water spray particle effect.", group));
+
+         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_SPRAY_VELOCITY_MAX, PROPERTY_SPRAY_VELOCITY_MAX, 
+            dtDAL::FloatActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetSprayVelocityMax),
+            dtDAL::FloatActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetSprayVelocityMax),
+            "The speed at which to clamp the water spray particle systems' maximum effect.", group));
 
       }
 
@@ -149,22 +159,17 @@ namespace SimCore
          }
       }
 
-      //////////////////////////////////////////////////////////
-      void SurfaceVesselActorProxy::OnRemovedFromWorld()
-      {
 
-      }
 
       //////////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////////
       SurfaceVesselActor::SurfaceVesselActor(dtGame::GameActorProxy& proxy)
          : Platform(proxy)
-         , mWaterSprayStartSpeed(0.0f)
-         , mLastEffectRatio(0.0f)
-         , mEffectVelocityMin(1.0f)
-         , mEffectVelocityMax(8.0f)
-         , mEffectUpdateTimer(0.0f)
+         , mLastSprayRatio(0.0f)
+         , mSprayVelocityMin(1.0f)
+         , mSprayVelocityMax(8.0f)
+         , mSprayUpdateTimer(0.0f)
       {
       }
 
@@ -278,18 +283,6 @@ namespace SimCore
          {
             LOG_ERROR("Unable to find shader group for particle system manager.");
          }
-      }
-
-      //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::SetWaterSprayStartSpeed( float speed )
-      {
-         mWaterSprayStartSpeed = speed;
-      }
-
-      //////////////////////////////////////////////////////////
-      float SurfaceVesselActor::GetWaterSprayStartSpeed() const
-      {
-         return mWaterSprayStartSpeed;
       }
 
       //////////////////////////////////////////////////////////
@@ -472,27 +465,27 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::SetEffectMinVelocity(float minVelocity)
+      void SurfaceVesselActor::SetSprayVelocityMin(float minVelocity)
       {
-         mEffectVelocityMin = minVelocity;
+         mSprayVelocityMin = minVelocity;
       }
 
       //////////////////////////////////////////////////////////
-      float SurfaceVesselActor::GetEffectMinVelocity() const
+      float SurfaceVesselActor::GetSprayVelocityMin() const
       {
-         return mEffectVelocityMin;
+         return mSprayVelocityMin;
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::SetEffectMaxVelocity(float maxVelocity)
+      void SurfaceVesselActor::SetSprayVelocityMax(float maxVelocity)
       {
-         mEffectVelocityMax = maxVelocity;
+         mSprayVelocityMax = maxVelocity;
       }
       
       //////////////////////////////////////////////////////////
-      float SurfaceVesselActor::GetEffectMaxVelocity() const
+      float SurfaceVesselActor::GetSprayVelocityMax() const
       {
-         return mEffectVelocityMax;
+         return mSprayVelocityMax;
       }
 
       //////////////////////////////////////////////////////////
@@ -500,12 +493,12 @@ namespace SimCore
       {
          float ratio = 0.0f;
 
-         if(mEffectVelocityMax != 0.0f)
+         if(mSprayVelocityMax != 0.0f)
          {
             osg::Vec3 velocity(GetLastKnownVelocity());
-            if(velocity.length2() >= mEffectVelocityMin && mEffectVelocityMax > mEffectVelocityMin)
+            if(velocity.length2() >= mSprayVelocityMin && mSprayVelocityMax > mSprayVelocityMin)
             {
-               ratio = (velocity.length() - mEffectVelocityMin) / (mEffectVelocityMax - mEffectVelocityMin);
+               ratio = (velocity.length() - mSprayVelocityMin) / (mSprayVelocityMax - mSprayVelocityMin);
             }
          }
 
@@ -515,23 +508,23 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::UpdateEffects(float simTimeDelta)
+      void SurfaceVesselActor::UpdateSpray(float simTimeDelta)
       {
          float ratio = GetVelocityRatio();
          float interpTime = 0.01f;
 
-         mEffectUpdateTimer += simTimeDelta;
+         mSprayUpdateTimer += simTimeDelta;
 
-         bool allowInterpolation = mEffectUpdateTimer > simTimeDelta || dtUtil::Abs(mLastEffectRatio - ratio) > 0.1f;
+         bool allowInterpolation = mSprayUpdateTimer > simTimeDelta || dtUtil::Abs(mLastSprayRatio - ratio) > 0.1f;
 
          if(allowInterpolation)
          {
             // Reset control variables that determine the next update should occur.
-            mLastEffectRatio = ratio;
-            mEffectUpdateTimer = 0.0f;
+            mLastSprayRatio = ratio;
+            mSprayUpdateTimer = 0.0f;
 
             // DEBUG:
-            //std::cout << "\n\tUpdating particles ("<< GetLastKnownVelocity().length2() <<" / "<< GetEffectMaxVelocity() <<" = "<< ratio <<")\n\n";
+            //std::cout << "\n\tUpdating particles ("<< GetLastKnownVelocity().length2() <<" / "<< GetSprayVelocityMax() <<" = "<< ratio <<")\n\n";
          }
 
          // Update the particle systems.
@@ -576,7 +569,7 @@ namespace SimCore
          BaseClass::TickLocal(tickMessage);
 
          float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-         UpdateEffects(simTimeDelta);
+         UpdateSpray(simTimeDelta);
       }
 
       //////////////////////////////////////////////////////////
@@ -585,7 +578,7 @@ namespace SimCore
          BaseClass::TickRemote(tickMessage);
 
          float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
-         UpdateEffects(simTimeDelta);
+         UpdateSpray(simTimeDelta);
       }
 
    }

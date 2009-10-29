@@ -57,6 +57,7 @@ namespace SimCore
       class SIMCORE_EXPORT SurfaceVesselActor : public Platform
       {
       public:
+         typedef Platform BaseClass;
 
          /// Constructor
          SurfaceVesselActor(dtGame::GameActorProxy &proxy);
@@ -84,18 +85,15 @@ namespace SimCore
          void SetWaterSprayBackOffset(const osg::Vec3& vec);
          osg::Vec3 GetWaterSprayBackOffset() const;
 
-         void SetWaterSprayStartSpeed(float speed);
-         float GetWaterSprayStartSpeed() const;
+         void SetSprayVelocityMin(float minVelocity);
+         float GetSprayVelocityMin() const;
 
-         void SetEffectMinVelocity(float minVelocity);
-         float GetEffectMinVelocity() const;
-
-         void SetEffectMaxVelocity(float maxVelocity);
-         float GetEffectMaxVelocity() const;
+         void SetSprayVelocityMax(float maxVelocity);
+         float GetSprayVelocityMax() const;
 
          float GetVelocityRatio() const;
 
-         void UpdateEffects(float simTimeDelta);
+         void UpdateSpray(float simTimeDelta);
 
          virtual void TickLocal(const dtGame::Message& tickMessage);
          virtual void TickRemote(const dtGame::Message& tickMessage);
@@ -116,12 +114,10 @@ namespace SimCore
          DynamicParticlesActor* GetParticlesActor(DynamicParticlesProxy* proxy);
 
       private:
-
-         float mWaterSprayStartSpeed;
-         float mLastEffectRatio;
-         float mEffectVelocityMin;
-         float mEffectVelocityMax;
-         float mEffectUpdateTimer;
+         float mLastSprayRatio;
+         float mSprayVelocityMin;
+         float mSprayVelocityMax;
+         float mSprayUpdateTimer;
 
          osg::Vec3 mWaterSprayFrontOffsetStarboard;
          osg::Vec3 mWaterSprayFrontOffsetPort;
@@ -147,6 +143,11 @@ namespace SimCore
       class SIMCORE_EXPORT SurfaceVesselActorProxy : public PlatformActorProxy
       {
       public:
+         typedef PlatformActorProxy BaseClass;
+
+         static const dtUtil::RefString CLASS_NAME;
+         static const dtUtil::RefString PROPERTY_SPRAY_VELOCITY_MIN;
+         static const dtUtil::RefString PROPERTY_SPRAY_VELOCITY_MAX;
 
          /// Constructor
          SurfaceVesselActorProxy();
@@ -160,7 +161,6 @@ namespace SimCore
          void CreateActor();
 
          virtual void OnEnteredWorld();
-         virtual void OnRemovedFromWorld();
 
       protected:
 
