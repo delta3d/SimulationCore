@@ -75,6 +75,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////
    void SpawnComponent::ProcessMessage(const dtGame::Message& message)
    {
+      
       if(message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
       {
          float dt = float(static_cast<const dtGame::TickMessage&>(message).GetDeltaSimTime());
@@ -101,7 +102,7 @@ namespace NetDemo
       else if(message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
       {
          //first look for a server status actor
-         ServerGameStatusActorProxy* proxy;
+         ServerGameStatusActorProxy* proxy = NULL;
          GetGameManager()->FindActorByType(*NetDemoActorRegistry::SERVER_GAME_STATUS_ACTOR_TYPE, proxy);
          if(proxy != NULL)
          {
