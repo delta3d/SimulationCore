@@ -51,6 +51,7 @@ namespace NetDemo
       , mPlayerStatus(&PlayerStatusEnum::UNKNOWN)
       , mTeamNumber(0)
       , mIsServer(false)
+      , mIsReady(false)
       , mTerrainPreference("")
       , mVehiclePreference(&VehicleTypeEnum::FOUR_WHEEL)
       //, mVehiclePreference(&VehicleTypeEnum::HOVER)
@@ -184,6 +185,19 @@ namespace NetDemo
       mIPAddress = newValue;
    }
 
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::SetReady(bool ready)
+   {
+      mIsReady = ready;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   bool PlayerStatusActor::IsReady() const
+   {
+      return mIsReady;
+   }
+
+
 
    //////////////////////////////////////////////////////////////////////
    // PROXY
@@ -197,6 +211,7 @@ namespace NetDemo
    const dtUtil::RefString PlayerStatusActorProxy::PROP_PLAYER_STATUS("Player Status");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_TEAM_NUM("Team Number");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IS_SERVER("Is Server");
+   const dtUtil::RefString PlayerStatusActorProxy::PROP_IS_READY("Is Ready");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_TERRAIN_PREFERENCE("Terrain Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_VEHICLE_PREFERENCE("Vehicle Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_ATTACHED_VEHICLE_ID("Attached Vehicle ID");
@@ -236,6 +251,12 @@ namespace NetDemo
          dtDAL::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetIsServer),
          dtDAL::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIsServer),
          PROP_IS_SERVER_DESC, GROUP));
+
+      static const dtUtil::RefString PROP_IS_READY_DESC("Simple communication flag to allow clients to know if other clients are ready to start a game.");
+      AddProperty(new dtDAL::BooleanActorProperty(PROP_IS_READY, PROP_IS_READY,
+         dtDAL::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetReady),
+         dtDAL::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::IsReady),
+         PROP_IS_READY_DESC, GROUP));
 
       static const dtUtil::RefString PROP_TERRAIN_PREFERENCE_DESC("The desired terrain to load. The server's value will be the actual terrain people load.");
       AddProperty(new dtDAL::StringActorProperty(PROP_TERRAIN_PREFERENCE, PROP_TERRAIN_PREFERENCE,
