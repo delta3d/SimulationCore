@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Chris Rodgers
+ * @author Bradley Anderegg
  */
 #include <prefix/SimCorePrefix-src.h>
 #include <dtActors/particlesystemactorproxy.h>
@@ -29,12 +29,18 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
+#include <dtGame/basemessages.h>
+#include <dtUtil/mathdefines.h>
 #include <SimCore/Actors/SurfaceVesselActor.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/DynamicParticleSystem.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Geode>
+
+
 
 namespace SimCore
 {
@@ -128,6 +134,22 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
+      void SurfaceVesselActorProxy::OnEnteredWorld()
+      {
+         BaseClass::OnEnteredWorld();
+
+         // Remote?
+         if(IsRemote())
+         {
+            RegisterForMessages(dtGame::MessageType::TICK_REMOTE, dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
+         }
+         else // Local
+         {
+            RegisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
+         }
+      }
+
+      //////////////////////////////////////////////////////////
       void SurfaceVesselActorProxy::OnRemovedFromWorld()
       {
 
@@ -138,6 +160,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       SurfaceVesselActor::SurfaceVesselActor(dtGame::GameActorProxy& proxy)
          : Platform(proxy)
+         , mWaterSprayStartSpeed(0.0f)
+         , mLastEffectRatio(0.0f)
+         , mEffectVelocityMin(1.0f)
+         , mEffectVelocityMax(8.0f)
+         , mEffectUpdateTimer(0.0f)
       {
       }
 
@@ -154,8 +181,8 @@ namespace SimCore
 
          if(mWaterSprayFrontStarboard.valid() && mWaterSprayFrontPort.valid())
          {
-            BindShaderToParticleSystem(*mWaterSprayFrontStarboard, "WaterSprayParticle");
-            BindShaderToParticleSystem(*mWaterSprayFrontPort, "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSprayFrontStarboard->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSprayFrontPort->GetParticleSystem(), "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSprayFrontStarboard->GetOSGNode());
@@ -173,8 +200,8 @@ namespace SimCore
     
          if(mWaterSpraySideStarboard.valid() && mWaterSpraySidePort.valid())
          {
-            BindShaderToParticleSystem(*mWaterSpraySideStarboard, "WaterSprayParticle");
-            BindShaderToParticleSystem(*mWaterSpraySidePort, "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSpraySideStarboard->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSpraySidePort->GetParticleSystem(), "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSpraySideStarboard->GetOSGNode());
@@ -192,7 +219,7 @@ namespace SimCore
 
          if(mWaterSprayBack.valid())
          {
-            BindShaderToParticleSystem(*mWaterSprayBack, "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSprayBack->GetParticleSystem(), "WaterSprayParticle");
 
             // Attach the particles to the parent
             GetOSGNode()->asGroup()->addChild(mWaterSprayBack->GetOSGNode());
@@ -325,20 +352,64 @@ namespace SimCore
          return mWaterSprayBackOffset;
       }
 
+      //////////////////////////////////////////////////////////
+      dtCore::RefPtr<SurfaceVesselActor::DynamicParticlesProxy> SurfaceVesselActor::CreatDynamicParticleSystemProxy(
+         const std::string& filename, const std::string& actorName)
+      {
+         dtCore::RefPtr<DynamicParticlesProxy> proxy;
+         
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+         if(gm != NULL)
+         {
+            // Create the actor.
+            DynamicParticlesActor* actor = NULL;
+            gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE, proxy);
+            proxy->GetActor(actor);
+            actor->SetName(actorName);
+            actor->SetParticleSystemFile(filename);
+
+            // Set default settings.
+            typedef DynamicParticlesActor::InterpolatorArray InterpolatorArray;
+            InterpolatorArray interpArray;
+            actor->GetAllInterpolators(interpArray);
+
+            InterpolatorArray::iterator curInterp = interpArray.begin();
+            InterpolatorArray::iterator endInterpArray = interpArray.end();
+            for( ; curInterp != endInterpArray; ++curInterp)
+            {         
+               ParticleSystemSettings& settings = (*curInterp)->GetStartSettings();
+               settings.mRangeRate *= 0.0f;
+               settings.mRangeSpeed *= 0.0f;
+            }
+         }
+
+         return proxy;
+      }
+
+      //////////////////////////////////////////////////////////
+      SurfaceVesselActor::DynamicParticlesActor* SurfaceVesselActor::GetParticlesActor(DynamicParticlesProxy* proxy)
+      {
+         DynamicParticlesActor* actor = NULL;
+         if(proxy != NULL)
+         {
+            proxy->GetActor(actor);
+         }
+         return actor;
+      }
 
       //////////////////////////////////////////////////////////
       void SurfaceVesselActor::LoadWaterSprayFrontFile(const std::string& fileName)
       {
          if(!mWaterSprayFrontStarboard.valid())
          {
-            mWaterSprayFrontStarboard = new dtCore::ParticleSystem("WaterSprayFrontStarboard");
-            mWaterSprayFrontStarboard->LoadFile(fileName);
+            mWaterSprayFrontStarboardProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontStarboard");
+            mWaterSprayFrontStarboard = GetParticlesActor(mWaterSprayFrontStarboardProxy.get());
          }
 
          if(!mWaterSprayFrontPort.valid())
          {
-            mWaterSprayFrontPort = new dtCore::ParticleSystem("WaterSprayFrontPort");
-            mWaterSprayFrontPort->LoadFile(fileName);
+            mWaterSprayFrontPortProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontPort");
+            mWaterSprayFrontPort = GetParticlesActor(mWaterSprayFrontPortProxy.get());
          }
       }
 
@@ -347,14 +418,14 @@ namespace SimCore
       {
          if(!mWaterSpraySideStarboard.valid())
          {
-            mWaterSpraySideStarboard = new dtCore::ParticleSystem("WaterSpraySideStarboard");
-            mWaterSpraySideStarboard->LoadFile(fileName);
+            mWaterSpraySideStarboardProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSpraySideStarboard");
+            mWaterSpraySideStarboard = GetParticlesActor(mWaterSpraySideStarboardProxy.get());
          }
 
          if(!mWaterSpraySidePort.valid())
          {
-            mWaterSpraySidePort = new dtCore::ParticleSystem("WaterSpraySidePort");
-            mWaterSpraySidePort->LoadFile(fileName);
+            mWaterSpraySidePortProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSpraySidePort");
+            mWaterSpraySidePort = GetParticlesActor(mWaterSpraySidePortProxy.get());
          }
       }
 
@@ -363,8 +434,8 @@ namespace SimCore
       {
          if(!mWaterSprayBack.valid())
          {
-            mWaterSprayBack = new dtCore::ParticleSystem("WaterSprayBack");
-            mWaterSprayBack->LoadFile(fileName);
+            mWaterSprayBackProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayBack");
+            mWaterSprayBack = GetParticlesActor(mWaterSprayBackProxy.get());
          }
 
       }
@@ -384,7 +455,7 @@ namespace SimCore
             mWaterSpraySidePort->SetEnabled(enable);
          }
 
-         if(!mWaterSprayBack.valid())
+         if(mWaterSprayBack.valid())
          {
             mWaterSprayBack->SetEnabled(enable);
          }
@@ -398,6 +469,123 @@ namespace SimCore
             return mWaterSprayFrontStarboard->IsEnabled();
          }
          return false;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SurfaceVesselActor::SetEffectMinVelocity(float minVelocity)
+      {
+         mEffectVelocityMin = minVelocity;
+      }
+
+      //////////////////////////////////////////////////////////
+      float SurfaceVesselActor::GetEffectMinVelocity() const
+      {
+         return mEffectVelocityMin;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SurfaceVesselActor::SetEffectMaxVelocity(float maxVelocity)
+      {
+         mEffectVelocityMax = maxVelocity;
+      }
+      
+      //////////////////////////////////////////////////////////
+      float SurfaceVesselActor::GetEffectMaxVelocity() const
+      {
+         return mEffectVelocityMax;
+      }
+
+      //////////////////////////////////////////////////////////
+      float SurfaceVesselActor::GetVelocityRatio() const
+      {
+         float ratio = 0.0f;
+
+         if(mEffectVelocityMax != 0.0f)
+         {
+            osg::Vec3 velocity(GetLastKnownVelocity());
+            if(velocity.length2() >= mEffectVelocityMin && mEffectVelocityMax > mEffectVelocityMin)
+            {
+               ratio = (velocity.length() - mEffectVelocityMin) / (mEffectVelocityMax - mEffectVelocityMin);
+            }
+         }
+
+         dtUtil::Clamp(ratio, 0.0f, 1.0f);
+         
+         return ratio;
+      }
+
+      //////////////////////////////////////////////////////////
+      void SurfaceVesselActor::UpdateEffects(float simTimeDelta)
+      {
+         float ratio = GetVelocityRatio();
+         float interpTime = 0.01f;
+
+         mEffectUpdateTimer += simTimeDelta;
+
+         bool allowInterpolation = mEffectUpdateTimer > simTimeDelta || dtUtil::Abs(mLastEffectRatio - ratio) > 0.1f;
+
+         if(allowInterpolation)
+         {
+            // Reset control variables that determine the next update should occur.
+            mLastEffectRatio = ratio;
+            mEffectUpdateTimer = 0.0f;
+
+            // DEBUG:
+            //std::cout << "\n\tUpdating particles ("<< GetLastKnownVelocity().length2() <<" / "<< GetEffectMaxVelocity() <<" = "<< ratio <<")\n\n";
+         }
+
+         // Update the particle systems.
+         if(mWaterSprayFrontStarboard.valid() && mWaterSprayFrontPort.valid())
+         {
+            mWaterSprayFrontStarboard->Update(simTimeDelta);
+            mWaterSprayFrontPort->Update(simTimeDelta);
+
+            if(allowInterpolation)
+            {
+               mWaterSprayFrontStarboard->InterpolateAllLayers(interpTime, ratio);
+               mWaterSprayFrontPort->InterpolateAllLayers(interpTime, ratio);
+            }
+         }
+
+         if(mWaterSpraySideStarboard.valid() && mWaterSpraySidePort.valid())
+         {
+            mWaterSpraySideStarboard->Update(simTimeDelta);
+            mWaterSpraySidePort->Update(simTimeDelta);
+
+            if(allowInterpolation)
+            {
+               mWaterSpraySideStarboard->InterpolateAllLayers(interpTime, ratio);
+               mWaterSpraySidePort->InterpolateAllLayers(interpTime, ratio);
+            }
+         }
+
+         if(mWaterSprayBack.valid())
+         {
+            mWaterSprayBack->Update(simTimeDelta);
+
+            if(allowInterpolation)
+            {
+               mWaterSprayBack->InterpolateAllLayers(interpTime, ratio);
+            }
+         }
+      }
+      
+      //////////////////////////////////////////////////////////
+      void SurfaceVesselActor::TickLocal(const dtGame::Message& tickMessage)
+      {
+         BaseClass::TickLocal(tickMessage);
+
+         float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateEffects(simTimeDelta);
+      }
+
+      //////////////////////////////////////////////////////////
+      void SurfaceVesselActor::TickRemote(const dtGame::Message& tickMessage)
+      {
+         BaseClass::TickRemote(tickMessage);
+
+         float simTimeDelta = static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         UpdateEffects(simTimeDelta);
       }
 
    }
