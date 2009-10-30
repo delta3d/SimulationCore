@@ -37,7 +37,6 @@ namespace CEGUI
 {
    class Editbox;
    class EventArgs;
-   class ItemListbox;
    class PushButton;
    class Window;
 }
@@ -67,6 +66,14 @@ namespace SimCore
    }
 }
 
+namespace NetDemo
+{
+   namespace GUI
+   {
+      class ReadyRoomScreen;
+   }
+}
+
 
 
 namespace NetDemo
@@ -89,8 +96,6 @@ namespace NetDemo
 
          virtual void ProcessMessage( const dtGame::Message& message );
 
-         void UpdatePlayerList();
-
       protected:
          virtual ~GUIComponent();
 
@@ -111,6 +116,8 @@ namespace NetDemo
 
          bool OnButtonClicked( const CEGUI::EventArgs& args );
 
+         void HandleButton(const std::string& buttonType, std::string& inOutAction);
+
          void BindButtons( CEGUI::Window& rootWindow );
          void BindButton( CEGUI::PushButton& button );
 
@@ -129,14 +136,13 @@ namespace NetDemo
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLobby;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenConnectFailPrompt;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLoading;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenReadyRoom;
+         dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenQuitPrompt;
 
          // Special Widgets
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
-         CEGUI::ItemListbox* mListPlayers;
    };
 
 }
