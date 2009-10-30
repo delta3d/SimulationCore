@@ -38,6 +38,7 @@
 #include "ActorRegistry.h"
 #include "Actors/PlayerStatusActor.h"
 #include "GUI/CustomCeguiWidgets.h"
+#include "GUI/ReadyRoomScreen.h"
 #include "States.h"
 
 
@@ -66,7 +67,6 @@ namespace NetDemo
       , mScriptModule(new dtGUI::ScriptModule)
       , mInputServerPort(NULL)
       , mInputServerIP(NULL)
-      , mListPlayers(NULL)
    {
    }
 
@@ -81,6 +81,9 @@ namespace NetDemo
    {
       InitializeCEGUI("CEGUI/schemes/NetDemo.scheme");
       CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
+
+      // Get the Game Manager since some screens may need it.
+      dtGame::GameManager& gm = *GetGameManager();
 
       // MAIN MENU
       mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
@@ -101,9 +104,8 @@ namespace NetDemo
       mScreenLoading->Setup( mMainWindow.get() );
 
       // READY ROOM
-      mScreenReadyRoom = new SimCore::GUI::SimpleScreen("Ready Room", "CEGUI/layouts/NetDemo/ReadyRoom.layout");
-      mScreenReadyRoom->Setup( mMainWindow.get() );
-      mListPlayers = static_cast<CEGUI::ItemListbox*>(wm.getWindow("ReadyRoom_PlayerList"));
+      mScreenReadyRoom = new NetDemo::GUI::ReadyRoomScreen();
+      mScreenReadyRoom->Setup(gm, mMainWindow.get());
 
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
@@ -154,60 +156,6 @@ namespace NetDemo
                   // Process the actor.
                   ProcessPlayerStatusUpdate(*playerStats);
                }
-            }
-         }
-      }
-   }
-
-   /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::UpdatePlayerList()
-   {
-      CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
-
-      // Clear the old list to be updated with new entries.
-      mListPlayers->resetList();
-
-      // Capture all the player status objects.
-      typedef std::vector<dtDAL::ActorProxy*> ProxyArray;
-      ProxyArray proxies;
-      GetGameManager()->FindActorsByType(*NetDemo::NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxies);
-
-      // Create list items for each of the player status objects.
-      CEGUI::String checkboxSuffix("_ReadyBox");
-      PlayerStatusActor* curPlayerStats = NULL;
-      dtDAL::ActorProxy* curProxy = NULL;
-      ProxyArray::iterator proxyIter = proxies.begin();
-      ProxyArray::iterator endProxyArray = proxies.end();
-      for( ; proxyIter != endProxyArray; ++proxyIter)
-      {
-         curProxy = *proxyIter;
-         if(curProxy != NULL)
-         {
-            curProxy->GetActor(curPlayerStats);
-            if(curPlayerStats != NULL)
-            {
-               // Create the new list item.
-               CEGUI::String itemName(curPlayerStats->GetUniqueId().ToString().c_str());
-               CEGUI::CustomWidgets::ListItem* item = dynamic_cast<CEGUI::CustomWidgets::ListItem*>
-                  (wm.createWindow(CEGUI::CustomWidgets::ListItem::WidgetTypeName, itemName));
-
-               // Format the item.
-               CEGUI::String itemText(curPlayerStats->GetName().c_str());
-               item->setText(itemText);
-
-               // Set ready indicator...
-               CEGUI::String checkboxName(itemName + checkboxSuffix);
-               CEGUI::Checkbox* readyBox = static_cast<CEGUI::Checkbox*>
-                  (wm.createWindow("WindowsLook/Checkbox", checkboxName));
-               CEGUI::UVector2 dims(CEGUI::UDim(0.0f,40),CEGUI::UDim(0.0f,40));
-               readyBox->setSize(dims);
-               readyBox->setSelected(curPlayerStats->IsReady());
-               readyBox->setEnabled(false);
-               readyBox->setHorizontalAlignment(CEGUI::HA_RIGHT);
-               item->addChildWindow(readyBox);
-
-               // Add the new list item to the list box.
-               mListPlayers->addItem(item);
             }
          }
       }
@@ -296,7 +244,7 @@ namespace NetDemo
    {
       if(IsInState(NetDemoState::STATE_GAME_READYROOM))
       {
-         UpdatePlayerList();
+         mScreenReadyRoom->UpdatePlayerList();
       }
    }
 
@@ -357,20 +305,7 @@ namespace NetDemo
          }
 
          // Determine if this is a special button.
-         if(buttonType == BUTTON_TYPE_CONNECT.Get())
-         {
-            dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-            const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-            //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
-            const std::string hostIP(mInputServerIP->getText().c_str());
-            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
-
-            if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
-            {
-               // Show connection failure prompt.
-               action = Transition::TRANSITION_CONNECTION_FAIL.GetName();
-            }
-         }
+         HandleButton(buttonType, action);
 
          // Execute the transition specified by the button.
          GetAppComponent()->DoStateTransition( action );
@@ -378,6 +313,26 @@ namespace NetDemo
 
       // Let CEGUI know the button has been handled.
       return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::HandleButton(const std::string& buttonType, std::string& inOutAction)
+   {
+      // Determine if this is a special button.
+      if(buttonType == BUTTON_TYPE_CONNECT.Get())
+      {
+         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+         //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+         const std::string hostIP(mInputServerIP->getText().c_str());
+         int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
+
+         if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
+         {
+            // Show connection failure prompt.
+            inOutAction = Transition::TRANSITION_CONNECTION_FAIL.GetName();
+         }
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
