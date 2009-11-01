@@ -1,4 +1,4 @@
-/* Net Demo - EnemyHelix (.cpp & .h) - Using 'The MIT License'
+/* Net Demo - EnemyMothership (.cpp & .h) - Using 'The MIT License'
 * Copyright (C) 2009, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +22,7 @@
 * Bradley Anderegg
 */
 #include <dtUtil/mswin.h>
-#include <Actors/EnemyHelix.h>
+#include <Actors/EnemyMothership.h>
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/matrixutil.h>
@@ -37,7 +37,7 @@
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
 
-#include <EnemyHelixAIHelper.h> 
+#include <EnemyMothershipAIHelper.h> 
 //all below are included from the above- #include <AISpaceShip.h> 
 //#include <EnemyAIHelper.h>
 //#include <AIUtility.h>
@@ -51,56 +51,50 @@ namespace NetDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   EnemyHelixActor::EnemyHelixActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
    {
-      mAIHelper = new EnemyHelixAIHelper();
+      mAIHelper = new EnemyMothershipAIHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   EnemyHelixActor::~EnemyHelixActor(void)
+   EnemyMothershipActor::~EnemyMothershipActor(void)
    {
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::OnEnteredWorld()
+   osg::Vec3 EnemyMothershipActor::GetSpawnPoint() const
+   {
+      dtCore::Transform xform;
+
+      GetTransform(xform);
+      osg::Vec3 pos = xform.GetTranslation();
+      pos[2] -= 10.0f;
+      return pos;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyMothershipActor::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
 
       if (!IsRemote()) //only run locally
       {
-         //calling init on the AIHelper will setup the states and transitions
-         //note: init is now called by the spawn component
-         //mAIHelper->Init();
+         mAIHelper->Init(NULL);
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
-         
+
          //redirecting the find target function
          dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixActor::FindTarget));
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMothershipActor::FindTarget));
 
-         //redirecting the detonate function
-         state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_DETONATE);
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixActor::DoExplosion));
-
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_DIE, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_GO_TO_WAYPOINT, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_EVADE, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FOLLOW, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FLOCK, &AIStateType::AI_STATE_DETONATE);
-         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_WANDER, &AIStateType::AI_STATE_DETONATE);
-
-         
          //calling spawn will start the AI
          mAIHelper->Spawn();
       }
    }
 
-   void EnemyHelixActor::FindTarget(float)
+   void EnemyMothershipActor::FindTarget(float)
    {
       //temporarily lets just look for a fort to destroy
       FortActorProxy* fortProxy = NULL;
@@ -114,7 +108,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::UpdateVehicleTorquesAndAngles(float deltaTime)
+   void EnemyMothershipActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       //update the entities orientation
       //dtCore::Transform trans;
@@ -125,7 +119,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::PostPhysicsUpdate()
+   void EnemyMothershipActor::PostPhysicsUpdate()
    {
       // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
       // take the position and throw away the rotation.
@@ -148,10 +142,10 @@ namespace NetDemo
                dtCore::Transform physicsXForm;
                physicsObject->GetTransform(physicsXForm);
                currentXForm.SetTranslation(physicsXForm.GetTranslation());
-               
+
                //apply our own rotation
                mAIHelper->PostSync(currentXForm);
-               
+
                SetTransform(currentXForm);
                SetPushTransformToPhysics(false);
             }
@@ -161,7 +155,7 @@ namespace NetDemo
 
 
    //////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
+   void EnemyMothershipActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       //Tick the AI
       //update the AI's position and orientation
@@ -171,102 +165,66 @@ namespace NetDemo
 
       ////////let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
-   
 
       BaseClass::OnTickLocal(tickMessage);
    }
 
 
    ///////////////////////////////////////////////////////////////////////////////////
-   //TODO- MAKE THIS A HELPER FUNCTION OR BASE, COPIED FROM ENEMYMINE.CPP
-   void EnemyHelixActor::DoExplosion(float)
-   {
-      //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
-      //printf("Sending DETONATION\r\n");
-
-      dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-      dtCore::Transform ourTransform;
-      GetTransform(ourTransform);
-      osg::Vec3 trans = ourTransform.GetTranslation();
-
-      // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
-      gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
-
-      // Required Parameters:
-      msg->SetEventIdentifier( 1 );
-      msg->SetDetonationLocation(trans);
-      // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
-      msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
-      msg->SetMunitionType("Generic Explosive");
-      msg->SetFuseType(0);
-      msg->SetWarheadType(0);
-      msg->SetQuantityFired(1);
-      msg->SetSendingActorId(GetGameActorProxy().GetId());
-      //msg->SetFinalVelocityVector( finalVelocity );
-      msg->SetRateOfFire(1);
-
-      gm->SendMessage( *msg );
-      gm->SendNetworkMessage( *msg );
-
-      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::RespondToHit(const SimCore::DetonationMessage& message,
+   void EnemyMothershipActor::RespondToHit(const SimCore::DetonationMessage& message,
       const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
       const osg::Vec3& location)
    {
       // the base class applies an impulse
       BaseClass::RespondToHit(message, munition, force, location);
 
-      if(IsMobilityDisabled())
-      {
-         mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
-      }
+      //if(IsMobilityDisabled())
+      //{
+      //   mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+      //}
 
-      if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-      {       
-         //this lets the AI respond to being hit
-         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
-      }
+      //if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+      //{       
+      //   //this lets the AI respond to being hit
+      //   mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+      //}
    }
 
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////
-   EnemyHelixActorProxy::EnemyHelixActorProxy()
+   EnemyMothershipActorProxy::EnemyMothershipActorProxy()
    {
-      SetClassName("EnemyHelixActor");
-  }
+      SetClassName("EnemyMothershipActor");
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActorProxy::BuildPropertyMap()
+   void EnemyMothershipActorProxy::BuildPropertyMap()
    {
       const std::string GROUP = "Enemy Props";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      EnemyHelixActor& actor = static_cast<EnemyHelixActor &>(GetGameActor());
+      EnemyMothershipActor& actor = static_cast<EnemyMothershipActor &>(GetGameActor());
 
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   EnemyHelixActorProxy::~EnemyHelixActorProxy(){}
+   EnemyMothershipActorProxy::~EnemyMothershipActorProxy(){}
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActorProxy::CreateActor()
+   void EnemyMothershipActorProxy::CreateActor()
    {
-      SetActor(*new EnemyHelixActor(*this));
+      SetActor(*new EnemyMothershipActor(*this));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActorProxy::OnEnteredWorld()
+   void EnemyMothershipActorProxy::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
    }
 
-   void EnemyHelixActorProxy::OnRemovedFromWorld()
+   void EnemyMothershipActorProxy::OnRemovedFromWorld()
    {
-      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());      
+      EnemyMothershipActor& actor = static_cast<EnemyMothershipActor&>(GetGameActor());      
    }
 } // namespace

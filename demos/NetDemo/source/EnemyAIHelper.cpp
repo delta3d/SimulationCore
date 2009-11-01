@@ -55,7 +55,7 @@ namespace NetDemo
 
    }
 
-   void EnemyAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   void EnemyAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
    }
 

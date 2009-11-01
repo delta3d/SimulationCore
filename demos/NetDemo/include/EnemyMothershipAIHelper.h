@@ -23,8 +23,8 @@
 * @author Bradley Anderegg
 */
 
-#ifndef DELTA_AISPACESHIP_H
-#define DELTA_AISPACESHIP_H
+#ifndef DELTA_AIEnemyMothership_H
+#define DELTA_AIEnemyMothership_H
 
 #include <AIUtility.h>
 #include <DemoExport.h>
@@ -41,10 +41,10 @@
 
 namespace NetDemo
 {
-   struct NETDEMO_EXPORT SpaceShipState
+   struct NETDEMO_EXPORT EnemyMothershipState
    {
-      SpaceShipState();
-      ~SpaceShipState();
+      EnemyMothershipState();
+      ~EnemyMothershipState();
       
       DECLARE_PROPERTY_INLINE(osg::Vec3, Pos);
       DECLARE_PROPERTY_INLINE(osg::Vec3, Forward);
@@ -67,10 +67,10 @@ namespace NetDemo
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   struct NETDEMO_EXPORT SpaceShipGoalState: public SpaceShipState
+   struct NETDEMO_EXPORT EnemyMothershipGoalState: public EnemyMothershipState
    {
-      SpaceShipGoalState();
-      ~SpaceShipGoalState();
+      EnemyMothershipGoalState();
+      ~EnemyMothershipGoalState();
 
       DECLARE_PROPERTY_INLINE(float, DragCoef);
       DECLARE_PROPERTY_INLINE(float, AngularDragCoef);
@@ -97,10 +97,10 @@ namespace NetDemo
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   struct SpaceShipControls
+   struct EnemyMothershipControls
    {
-      SpaceShipControls();
-      ~SpaceShipControls();
+      EnemyMothershipControls();
+      ~EnemyMothershipControls();
 
       //these are the control inputs
       //all are floats from 1 to -1 
@@ -113,24 +113,24 @@ namespace NetDemo
    };
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipSteeringBehavior
+   //EnemyMothershipSteeringBehavior
    //////////////////////////////////////////////////////////////////////////
-   typedef dtAI::SteeringBehavior<SpaceShipGoalState, SpaceShipState, SpaceShipControls> SpaceShipSteeringBehavior;
+   typedef dtAI::SteeringBehavior<EnemyMothershipGoalState, EnemyMothershipState, EnemyMothershipControls> EnemyMothershipSteeringBehavior;
 
 
-   class SpaceShipTargeter: public dtAI::Targeter<SpaceShipState, SpaceShipGoalState>
+   class EnemyMothershipTargeter: public dtAI::Targeter<EnemyMothershipState, EnemyMothershipGoalState>
    {
       public:
-         typedef dtAI::Targeter<SpaceShipState, SpaceShipGoalState> BaseClass;
+         typedef dtAI::Targeter<EnemyMothershipState, EnemyMothershipGoalState> BaseClass;
 
-         SpaceShipTargeter();
-         virtual ~SpaceShipTargeter();
+         EnemyMothershipTargeter();
+         virtual ~EnemyMothershipTargeter();
 
          void Pop();
          const osg::Vec3& Top() const;
          void Push(const osg::Vec3& pos);
 
-         /*virtual*/ bool GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result);
+         /*virtual*/ bool GetGoal(const EnemyMothershipState& current_state, EnemyMothershipGoalState& result);
 
       private:
 
@@ -138,37 +138,37 @@ namespace NetDemo
 
    };
 
-   class SpaceShipDecomposer: public dtAI::Decomposer<SpaceShipState, SpaceShipGoalState>
+   class EnemyMothershipDecomposer: public dtAI::Decomposer<EnemyMothershipState, EnemyMothershipGoalState>
    {
    public:
-      typedef dtAI::Decomposer<SpaceShipState, SpaceShipGoalState> BaseClass;
+      typedef dtAI::Decomposer<EnemyMothershipState, EnemyMothershipGoalState> BaseClass;
 
-      SpaceShipDecomposer();
-      ~SpaceShipDecomposer();
+      EnemyMothershipDecomposer();
+      ~EnemyMothershipDecomposer();
 
-      /*virtual*/ void Decompose(const SpaceShipState& current_state, SpaceShipGoalState& result) const;
+      /*virtual*/ void Decompose(const EnemyMothershipState& current_state, EnemyMothershipGoalState& result) const;
    };
 
-   class SpaceShipConstraint: public dtAI::Constraint<SpaceShipState, SpaceShipGoalState>
+   class EnemyMothershipConstraint: public dtAI::Constraint<EnemyMothershipState, EnemyMothershipGoalState>
    {
    public:
-      typedef dtAI::Constraint<SpaceShipState, SpaceShipGoalState> BaseClass;
+      typedef dtAI::Constraint<EnemyMothershipState, EnemyMothershipGoalState> BaseClass;
 
-      SpaceShipConstraint();
-      ~SpaceShipConstraint();
+      EnemyMothershipConstraint();
+      ~EnemyMothershipConstraint();
 
       /*virtual*/ bool WillViolate(const BaseClass::PathType& pathToFollow) const;
-      /*virtual*/ void Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result) const;
+      /*virtual*/ void Suggest(const BaseClass::PathType& pathToFollow, const EnemyMothershipState& current_state, EnemyMothershipGoalState& result) const;
    };
 
 
-   class SpaceShipControllable: public dtAI::Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls>
+   class EnemyMothershipControllable: public dtAI::Controllable<EnemyMothershipState, EnemyMothershipGoalState, EnemyMothershipControls>
    {
    public:
-      typedef dtAI::Controllable<SpaceShipState, SpaceShipGoalState, SpaceShipControls> BaseClass;
+      typedef dtAI::Controllable<EnemyMothershipState, EnemyMothershipGoalState, EnemyMothershipControls> BaseClass;
 
-      SpaceShipControllable();
-      ~SpaceShipControllable();
+      EnemyMothershipControllable();
+      ~EnemyMothershipControllable();
 
       /*virtual*/ bool FindPath(const AIState& fromState, const AIGoal& goal, AIPath& resultingPath) const;
       /*virtual*/ void UpdateState(float dt, const AIControlState& steerData);
@@ -178,22 +178,22 @@ namespace NetDemo
          BaseClass::RegisterProperties(pc, group);
       };
 
-      static void InitControllable(const osg::Matrix& matIn, SpaceShipControllable& stateIn);
-      static void ResetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
-      static void SetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState);
-      static void OrthoNormalize(SpaceShipState& stateIn);
-      static void SetMatrix(const SpaceShipState& stateIn, osg::Matrix& result);
+      static void InitControllable(const osg::Matrix& matIn, EnemyMothershipControllable& stateIn);
+      static void ResetState(const osg::Matrix& matIn, EnemyMothershipState& EnemyMothershipState);
+      static void SetState(const osg::Matrix& matIn, EnemyMothershipState& EnemyMothershipState);
+      static void OrthoNormalize(EnemyMothershipState& stateIn);
+      static void SetMatrix(const EnemyMothershipState& stateIn, osg::Matrix& result);
 
    protected:
 
 
-      void UpdateHeading(const SpaceShipControls& controls);
-      void UpdatePosition(const SpaceShipControls& controls);
-      void UpdateVelocity(const SpaceShipControls& controls);
-      void UpdateAngularVelocity(const SpaceShipControls& controls);
-      void UpdateVerticalVelocity(const SpaceShipControls& controls);
-      void UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt);
-      void UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll);
+      void UpdateHeading(const EnemyMothershipControls& controls);
+      void UpdatePosition(const EnemyMothershipControls& controls);
+      void UpdateVelocity(const EnemyMothershipControls& controls);
+      void UpdateAngularVelocity(const EnemyMothershipControls& controls);
+      void UpdateVerticalVelocity(const EnemyMothershipControls& controls);
+      void UpdateTilt(const EnemyMothershipControls& controls, osg::Vec3& tilt);
+      void UpdateRoll(const EnemyMothershipControls& controls, osg::Vec3& roll);
       float Clamp(float x, float from, float to);
       float Dampen(float last, float current, float max, float falloff);
 
@@ -201,35 +201,35 @@ namespace NetDemo
 
    };
 
-   typedef dtAI::SteeringPipeline<SpaceShipControllable> SpaceShipAIModel;
+   typedef dtAI::SteeringPipeline<EnemyMothershipControllable> EnemyMothershipAIModel;
 
-   class NETDEMO_EXPORT SpaceShipAIHelper: public EnemyAIHelper
+   class NETDEMO_EXPORT EnemyMothershipAIHelper: public EnemyAIHelper
    {
    public:
       typedef EnemyAIHelper BaseClass;
-      SpaceShipAIHelper();
+      EnemyMothershipAIHelper();
 
-      /*virtual*/ void OnInit(const EnemyDescriptionActor& desc);
+      /*virtual*/ void OnInit(const EnemyDescriptionActor* desc);
       /*virtual*/ void Spawn();
       /*virtual*/ void Update(float dt);
 
       /*virtual*/ void PreSync(const dtCore::Transform& trans);
       /*virtual*/ void PostSync(dtCore::Transform& trans) const;
 
-      void OutputControl(const SpaceShipControllable::PathType& pathToFollow, const SpaceShipControllable::StateType& current_state, SpaceShipControllable::ControlType& result) const;
+      void OutputControl(const EnemyMothershipControllable::PathType& pathToFollow, const EnemyMothershipControllable::StateType& current_state, EnemyMothershipControllable::ControlType& result) const;
 
       void SetCurrentTarget(dtCore::Transformable& target);
 
-      SpaceShipAIModel& GetAIModel();
-      const SpaceShipAIModel& GetAIModel() const;
+      EnemyMothershipAIModel& GetAIModel();
+      const EnemyMothershipAIModel& GetAIModel() const;
 
-      SpaceShipControllable& GetAIControllable();
-      const SpaceShipControllable& GetAIControllable() const;
+      EnemyMothershipControllable& GetAIControllable();
+      const EnemyMothershipControllable& GetAIControllable() const;
 
    protected:
-      SpaceShipAIHelper(const SpaceShipAIHelper&);  //not implemented by design
-      SpaceShipAIHelper& operator=(const SpaceShipAIHelper&);  //not implemented by design
-      ~SpaceShipAIHelper();
+      EnemyMothershipAIHelper(const EnemyMothershipAIHelper&);  //not implemented by design
+      EnemyMothershipAIHelper& operator=(const EnemyMothershipAIHelper&);  //not implemented by design
+      ~EnemyMothershipAIHelper();
 
       /*virtual*/ void RegisterStates();
       /*virtual*/ void CreateStates();
@@ -240,16 +240,19 @@ namespace NetDemo
 
       virtual void Attack(float dt);
 
+      void ComputeTargetOffset();
+
    private:
 
       //float GetDistance(const osg::Vec3& pos);
 
-      SpaceShipTargeter mDefaultTargeter;
+      osg::Vec3 mTargetOffset;
+      EnemyMothershipTargeter mDefaultTargeter;
       
-      SpaceShipSteeringBehavior* mDefaultBehavior;
+      EnemyMothershipSteeringBehavior* mDefaultBehavior;
 
-      SpaceShipControllable mAIControllable;
-      SpaceShipAIModel mAIModel;
+      EnemyMothershipControllable mAIControllable;
+      EnemyMothershipAIModel mAIModel;
    };
 
 
@@ -257,10 +260,10 @@ namespace NetDemo
    /**
    * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation)
    */
-   class Align: public SpaceShipSteeringBehavior
+   class Align: public EnemyMothershipSteeringBehavior
    {
    public:
-      typedef SpaceShipSteeringBehavior BaseClass;
+      typedef EnemyMothershipSteeringBehavior BaseClass;
 
       Align(float lookAhead, float timeToTarget)
          : mLookAhead(lookAhead)
@@ -271,8 +274,8 @@ namespace NetDemo
 
    protected:
       float Sgn(float x);
-      osg::Vec3 GetTargetPosition(float dt, const SpaceShipGoalState& goal);
-      float GetTargetForward(float dt, const osg::Vec3& targetPos, const SpaceShipGoalState& current_goal, const SpaceShipState& current_state, osg::Vec3& vec_in);
+      osg::Vec3 GetTargetPosition(float dt, const EnemyMothershipGoalState& goal);
+      float GetTargetForward(float dt, const osg::Vec3& targetPos, const EnemyMothershipGoalState& current_goal, const EnemyMothershipState& current_state, osg::Vec3& vec_in);
 
       float mLookAhead, mTimeToTarget;
    };
@@ -302,4 +305,4 @@ namespace NetDemo
 
 }//namespace NetDemo
 
-#endif // DELTA_AISPACESHIP_H
+#endif // DELTA_AIEnemyMothership_H

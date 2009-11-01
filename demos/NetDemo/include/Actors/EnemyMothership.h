@@ -1,4 +1,4 @@
-/* Net Demo - EnemyHelix (.cpp & .h) - Using 'The MIT License'
+/* Net Demo - EnemyMothership (.cpp & .h) - Using 'The MIT License'
 * Copyright (C) 2009, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,11 +21,11 @@
 *
 * Bradley Anderegg
 */
-#ifndef NETDEMO_ENEMY_HELIX_ACTOR
-#define NETDEMO_ENEMY_HELIX_ACTOR
+#ifndef NETDEMO_ENEMY_MOTHERSHIP_ACTOR
+#define NETDEMO_ENEMY_MOTHERSHIP_ACTOR
 
 #include <DemoExport.h>
-#include <EnemyHelixAIHelper.h>
+#include <EnemyMothershipAIHelper.h>
 #include <Actors/BaseEnemyActor.h>
 
 
@@ -35,58 +35,58 @@ namespace NetDemo
 
    ////////////////////////////////////////////////////////////////////////////////
    /* This class extends BasePhysicsVehicle. It is intended to be a simple target
-    * that you can shoot at. It will publish itself and can be shot by remote players.
-    */
-   class NETDEMO_EXPORT EnemyHelixActor : public BaseEnemyActor
+   * that you can shoot at. It will publish itself and can be shot by remote players.
+   */
+   class NETDEMO_EXPORT EnemyMothershipActor : public BaseEnemyActor
    {
-      public:
-         typedef BaseEnemyActor BaseClass;
+   public:
+      typedef BaseEnemyActor BaseClass;
 
-         /// Constructor
-         EnemyHelixActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
+      /// Constructor
+      EnemyMothershipActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
-         /*virtual*/ void DoExplosion(float);
+      /*virtual*/ void OnEnteredWorld();
 
-         /*virtual*/ void OnEnteredWorld();
+      /*virtual*/ void RespondToHit(const SimCore::DetonationMessage& message,
+         const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+         const osg::Vec3& location);
 
-         /*virtual*/ void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-            const osg::Vec3& location);
+      /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-         /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
+      void PostPhysicsUpdate();
 
-         void PostPhysicsUpdate();
+      osg::Vec3 GetSpawnPoint() const;
 
-      protected:
+   protected:
       /// Destructor
-      virtual ~EnemyHelixActor();
+      virtual ~EnemyMothershipActor();
 
-         /// Angles/ steering moving etc done here. Of the updates, this is called first.
-         /*virtual*/ void UpdateVehicleTorquesAndAngles(float deltaTime);
+      /// Angles/ steering moving etc done here. Of the updates, this is called first.
+      /*virtual*/ void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-         void FindTarget(float);
+      void FindTarget(float);
 
       // Private vars
-      private:
+   private:
 
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
-   class NETDEMO_EXPORT EnemyHelixActorProxy : public BaseEnemyActorProxy
+   class NETDEMO_EXPORT EnemyMothershipActorProxy : public BaseEnemyActorProxy
    {
-      public:
-         typedef BaseEnemyActorProxy BaseClass;
+   public:
+      typedef BaseEnemyActorProxy BaseClass;
 
-         EnemyHelixActorProxy();
-         virtual void BuildPropertyMap();
+      EnemyMothershipActorProxy();
+      virtual void BuildPropertyMap();
 
-      protected:
-         virtual ~EnemyHelixActorProxy();
-         void CreateActor();
-         virtual void OnEnteredWorld();
-         virtual void OnRemovedFromWorld();
+   protected:
+      virtual ~EnemyMothershipActorProxy();
+      void CreateActor();
+      virtual void OnEnteredWorld();
+      virtual void OnRemovedFromWorld();
    };
 
 }
 
-#endif //NETDEMO_ENEMY_HELIX_ACTOR
+#endif //NETDEMO_ENEMY_MOTHERSHIP_ACTOR
