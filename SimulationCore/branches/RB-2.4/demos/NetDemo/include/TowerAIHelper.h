@@ -23,8 +23,8 @@
 * @author Bradley Anderegg
 */
 
-#ifndef DELTA_ENEMYAIHELPER_H
-#define DELTA_ENEMYAIHELPER_H
+#ifndef DELTA_TOWERAIHELPER_H
+#define DELTA_TOWERAIHELPER_H
 
 #include <DemoExport.h>
 #include <BaseAIHelper.h>
@@ -41,42 +41,36 @@ namespace NetDemo
    class AIStateType;
 
 
-   class NETDEMO_EXPORT EnemyAIHelper: public BaseAIHelper
+   class NETDEMO_EXPORT TowerAIHelper: public BaseAIHelper
    {
       public:
          typedef BaseAIHelper BaseClass;
 
-         EnemyAIHelper();
+         TowerAIHelper();
 
-         /*virtual*/ void OnInit(const EnemyDescriptionActor* desc);
+         /*virtual*/ void OnInit();
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 
-         float GetDistance(const osg::Vec3& pos);
-         void SetCurrentTarget(dtCore::Transformable& target);
-         void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
-
       protected:
-         EnemyAIHelper(const EnemyAIHelper&);  //not implemented by design
-         EnemyAIHelper& operator=(const EnemyAIHelper&);  //not implemented by design
-         ~EnemyAIHelper();
+         TowerAIHelper(const TowerAIHelper&);  //not implemented by design
+         TowerAIHelper& operator=(const TowerAIHelper&);  //not implemented by design
+         ~TowerAIHelper();
 
          /*virtual*/ void RegisterStates();
          /*virtual*/ void CreateStates();
          /*virtual*/ void SetupTransitions();
          /*virtual*/ void SetupFunctors();
 
-         /*virtual*/ void SelectState(float dt);
-
-         virtual void CalculateNextWaypoint();
-         virtual void GoToWaypoint(float dt);
-         virtual void DefaultStateUpdate(float dt);
+         virtual void Attack(float dt);
 
 
       private:
+
+         float mMaxVelocity;
 
    };
 
 } //namespace NetDemo
 
-#endif //DELTA_ENEMYAIHELPER_H
+#endif //DELTA_TOWERAIHELPER_H

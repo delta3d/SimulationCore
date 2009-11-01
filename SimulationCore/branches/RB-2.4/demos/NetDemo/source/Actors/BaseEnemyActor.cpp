@@ -171,7 +171,7 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////
-   void BaseEnemyActor::InitAI( const EnemyDescriptionActor& desc )
+   void BaseEnemyActor::InitAI( const EnemyDescriptionActor* desc )
    {
       mAIHelper->Init(desc);
    }

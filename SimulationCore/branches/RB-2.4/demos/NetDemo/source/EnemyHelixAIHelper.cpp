@@ -22,7 +22,7 @@
 *
 * @author Bradley Anderegg
 */
-#include <AISpaceShip.h>
+#include <EnemyHelixAIHelper.h>
 #include <AIState.h>
 #include <AIEvent.h>
 #include <Actors/EnemyDescriptionActor.h>
@@ -45,19 +45,19 @@ namespace NetDemo
 {
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipState
+   //EnemyHelixState
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipState::SpaceShipState()
+   EnemyHelixState::EnemyHelixState()
    {
    }
 
-   SpaceShipState::~SpaceShipState()
+   EnemyHelixState::~EnemyHelixState()
    {
    }
 
-   void SpaceShipState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void EnemyHelixState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipState> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, EnemyHelixState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
@@ -80,19 +80,19 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipGoalState
+   //EnemyHelixGoalState
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipGoalState::SpaceShipGoalState()
+   EnemyHelixGoalState::EnemyHelixGoalState()
    {
    }
 
-   SpaceShipGoalState::~SpaceShipGoalState()
+   EnemyHelixGoalState::~EnemyHelixGoalState()
    {
    }
 
-   void SpaceShipGoalState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void EnemyHelixGoalState::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipGoalState> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, EnemyHelixGoalState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
@@ -120,22 +120,22 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipControls
+   //EnemyHelixControls
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipControls::SpaceShipControls()
+   EnemyHelixControls::EnemyHelixControls()
       : mThrust(0.0f)
       , mLift(0.0f)
       , mYaw(0.0f)
    {
    }
 
-   SpaceShipControls::~SpaceShipControls()
+   EnemyHelixControls::~EnemyHelixControls()
    {
    }
  
-   void SpaceShipControls::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   void EnemyHelixControls::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
    {
-      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, SpaceShipControls> RegHelperType;
+      typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, EnemyHelixControls> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
       REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
@@ -144,23 +144,23 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipControllable
+   //EnemyHelixControllable
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipControllable::SpaceShipControllable()
+   EnemyHelixControllable::EnemyHelixControllable()
    {
    }
 
-   SpaceShipControllable::~SpaceShipControllable()
+   EnemyHelixControllable::~EnemyHelixControllable()
    {
    }
 
-   void SpaceShipControllable::InitControllable(const osg::Matrix& matIn, SpaceShipControllable& stateIn)
+   void EnemyHelixControllable::InitControllable(const osg::Matrix& matIn, EnemyHelixControllable& stateIn)
    {
       stateIn.mCurrentControls.SetYaw(0.0);
       stateIn.mCurrentControls.SetThrust(0.0);
       stateIn.mCurrentControls.SetLift(0.0);
 
-      SpaceShipGoalState& goalStateConstraint = stateIn.mGoalState;
+      EnemyHelixGoalState& goalStateConstraint = stateIn.mGoalState;
       goalStateConstraint.SetMaxAngularVel(osg::DegreesToRadians(1000.0f));
       //goalStateConstraint.mMaxAngularVel = osg::DegreesToRadians(10.0f);
       //goalStateConstraint.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
@@ -186,45 +186,45 @@ namespace NetDemo
       SetState(matIn, stateIn.mGoalState);
    }
 
-   void SpaceShipControllable::ResetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState)
+   void EnemyHelixControllable::ResetState(const osg::Matrix& matIn, EnemyHelixState& EnemyHelixState)
    {
-      spaceShipState.SetVel(osg::Vec3(0.0f, 0.0f, 0.0f));
-      spaceShipState.SetAccel(osg::Vec3(0.0f, 0.0f, 0.0f));
-      spaceShipState.SetPitch(0.0f);
-      spaceShipState.SetRoll(0.0f);
-      spaceShipState.SetAngularAccel(0.0f);
-      spaceShipState.SetAngularVel(0.0f);
-      spaceShipState.SetVerticalVel(0.0f);
-      spaceShipState.SetVerticalAccel(0.0f);
+      EnemyHelixState.SetVel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      EnemyHelixState.SetAccel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      EnemyHelixState.SetPitch(0.0f);
+      EnemyHelixState.SetRoll(0.0f);
+      EnemyHelixState.SetAngularAccel(0.0f);
+      EnemyHelixState.SetAngularVel(0.0f);
+      EnemyHelixState.SetVerticalVel(0.0f);
+      EnemyHelixState.SetVerticalAccel(0.0f);
 
       osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
       fwd.normalize();
-      spaceShipState.SetForward(fwd);
+      EnemyHelixState.SetForward(fwd);
 
       osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
       up.normalize();
-      spaceShipState.SetUp(up);
+      EnemyHelixState.SetUp(up);
 
-      spaceShipState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1), matIn(3,2)));
+      EnemyHelixState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1), matIn(3,2)));
 
-      spaceShipState.SetTimeStep(0.0f);
-      spaceShipState.SetVel(osg::Vec3());
+      EnemyHelixState.SetTimeStep(0.0f);
+      EnemyHelixState.SetVel(osg::Vec3());
    }
 
-   void SpaceShipControllable::SetState(const osg::Matrix& matIn, SpaceShipState& spaceShipState)
+   void EnemyHelixControllable::SetState(const osg::Matrix& matIn, EnemyHelixState& EnemyHelixState)
    {
       osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
       fwd.normalize();
-      spaceShipState.SetForward(fwd);
+      EnemyHelixState.SetForward(fwd);
 
       osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
       up.normalize();
-      spaceShipState.SetUp(up);
+      EnemyHelixState.SetUp(up);
 
-      spaceShipState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1),  matIn(3,2)));
+      EnemyHelixState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1),  matIn(3,2)));
    }
 
-   void SpaceShipControllable::OrthoNormalize(SpaceShipState& currentState)
+   void EnemyHelixControllable::OrthoNormalize(EnemyHelixState& currentState)
    {
       osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
 
@@ -239,7 +239,7 @@ namespace NetDemo
       currentState.SetUp(up);
    }
 
-   void SpaceShipControllable::SetMatrix(const SpaceShipState& currentState, osg::Matrix& result)
+   void EnemyHelixControllable::SetMatrix(const EnemyHelixState& currentState, osg::Matrix& result)
    {
       //we let the physics set our position, we just set the orientation
       //result(3,0) = currentState.GetPos()[0];
@@ -255,7 +255,7 @@ namespace NetDemo
    }
 
 
-   void SpaceShipControllable::UpdateState(float dt, const SpaceShipControls& steeringOut)
+   void EnemyHelixControllable::UpdateState(float dt, const EnemyHelixControls& steeringOut)
    {
       mTimeStep = dt;
 
@@ -272,16 +272,16 @@ namespace NetDemo
       UpdateHeading(steeringOut);
       UpdatePosition(steeringOut);
 
-      SpaceShipControllable::OrthoNormalize(mCurrentState);
+      EnemyHelixControllable::OrthoNormalize(mCurrentState);
    }
 
-   bool SpaceShipControllable::FindPath(const AIState& fromState, const AIGoal& goal, AIPath& resultingPath) const
+   bool EnemyHelixControllable::FindPath(const AIState& fromState, const AIGoal& goal, AIPath& resultingPath) const
    {
       resultingPath.push_back(goal);
       return true;
    }
 
-   void SpaceShipControllable::UpdateHeading(const SpaceShipControls& controls)
+   void EnemyHelixControllable::UpdateHeading(const EnemyHelixControls& controls)
    {
       float thetaAngle = mCurrentState.GetAngularVel() * mTimeStep;
 
@@ -290,10 +290,10 @@ namespace NetDemo
       mCurrentState.SetForward(osg::Matrix::transform3x3(mCurrentState.GetForward(), rotation));
    }
 
-   void SpaceShipControllable::UpdateAngularVelocity(const SpaceShipControls& controls)
+   void EnemyHelixControllable::UpdateAngularVelocity(const EnemyHelixControls& controls)
    {
-      SpaceShipState& physicalState = mCurrentState;
-      SpaceShipGoalState& physicalConstraint = mGoalState;
+      EnemyHelixState& physicalState = mCurrentState;
+      EnemyHelixGoalState& physicalConstraint = mGoalState;
 
       float newVelocity = controls.GetYaw() * physicalConstraint.GetMaxAngularVel();
       physicalState.SetAngularVel(newVelocity);
@@ -306,10 +306,10 @@ namespace NetDemo
       //physicalState.GetAngularVel() = Clamp(physicalState.GetAngularVel(), -physicalConstraint.mMaxAngularVel, physicalConstraint.mMaxAngularVel);
    }
 
-   void SpaceShipControllable::UpdateVerticalVelocity(const SpaceShipControls& controls)
+   void EnemyHelixControllable::UpdateVerticalVelocity(const EnemyHelixControls& controls)
    {
-      SpaceShipState& physicalState = mCurrentState;
-      SpaceShipGoalState& physicalConstraint = mGoalState;
+      EnemyHelixState& physicalState = mCurrentState;
+      EnemyHelixGoalState& physicalConstraint = mGoalState;
 
       //update acceleration
       physicalState.SetVerticalAccel(controls.GetLift() * physicalConstraint.GetMaxVerticalAccel());
@@ -320,19 +320,19 @@ namespace NetDemo
       physicalState.SetVerticalVel(Clamp(physicalState.GetVerticalVel(), -physicalConstraint.GetMaxVerticalVel(), physicalConstraint.GetMaxVerticalVel()));
    }
 
-   void SpaceShipControllable::UpdatePosition(const SpaceShipControls& controls)
+   void EnemyHelixControllable::UpdatePosition(const EnemyHelixControls& controls)
    {
-      SpaceShipState& physicalState = mCurrentState;
+      EnemyHelixState& physicalState = mCurrentState;
 
       osg::Vec3 newPos = physicalState.GetPos() + (physicalState.GetVel() * physicalState.GetTimeStep());
       newPos[2] += physicalState.GetVerticalVel() * physicalState.GetTimeStep();
       physicalState.SetPos(newPos);
    }
 
-   void SpaceShipControllable::UpdateVelocity(const SpaceShipControls& controls)
+   void EnemyHelixControllable::UpdateVelocity(const EnemyHelixControls& controls)
    {
-      SpaceShipState& physicalState = mCurrentState;
-      SpaceShipGoalState& physicalConstraint = mGoalState;
+      EnemyHelixState& physicalState = mCurrentState;
+      EnemyHelixGoalState& physicalConstraint = mGoalState;
 
       float newVelocity = (controls.GetThrust() * physicalConstraint.GetMaxVel());
       float maxAccel = physicalConstraint.GetMaxAccel() * physicalState.GetTimeStep();
@@ -351,10 +351,10 @@ namespace NetDemo
       physicalState.SetVel(newVel);
    }
 
-   void SpaceShipControllable::UpdateTilt(const SpaceShipControls& controls, osg::Vec3& tilt)
+   void EnemyHelixControllable::UpdateTilt(const EnemyHelixControls& controls, osg::Vec3& tilt)
    {
-      SpaceShipState& physicalState = mCurrentState;
-      SpaceShipGoalState& physicalConstraint = mGoalState;
+      EnemyHelixState& physicalState = mCurrentState;
+      EnemyHelixGoalState& physicalConstraint = mGoalState;
 
       physicalState.SetPitch(Dampen(physicalState.GetPitch(), (controls.GetThrust() * physicalConstraint.GetMaxPitch()), physicalConstraint.GetMaxTiltPerSecond() * physicalState.GetTimeStep(), (physicalState.GetPitch() / physicalConstraint.GetMaxPitch())));
 
@@ -370,10 +370,10 @@ namespace NetDemo
    }
 
 
-   void SpaceShipControllable::UpdateRoll(const SpaceShipControls& controls, osg::Vec3& roll)
+   void EnemyHelixControllable::UpdateRoll(const EnemyHelixControls& controls, osg::Vec3& roll)
    {
-      SpaceShipState& physicalState = mCurrentState;
-      SpaceShipGoalState& physicalConstraint = mGoalState;
+      EnemyHelixState& physicalState = mCurrentState;
+      EnemyHelixGoalState& physicalConstraint = mGoalState;
 
       physicalState.SetRoll(Dampen(physicalState.GetRoll(), controls.GetYaw() * physicalConstraint.GetMaxRoll(), physicalConstraint.GetMaxRollPerSecond() * physicalState.GetTimeStep(), (physicalState.GetRoll() / physicalConstraint.GetMaxRoll())));
 
@@ -388,7 +388,7 @@ namespace NetDemo
 
    }
 
-   float SpaceShipControllable::Clamp(float x, float from, float to)
+   float EnemyHelixControllable::Clamp(float x, float from, float to)
    {
       if(x < from)
          return from;
@@ -397,7 +397,7 @@ namespace NetDemo
       else return x;
    }
 
-   float SpaceShipControllable::Dampen(float last, float current, float pmax, float falloff)
+   float EnemyHelixControllable::Dampen(float last, float current, float pmax, float falloff)
    {
       if(current > last)
       {
@@ -420,17 +420,17 @@ namespace NetDemo
 
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipTargeter
+   //EnemyHelixTargeter
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipTargeter::SpaceShipTargeter()
+   EnemyHelixTargeter::EnemyHelixTargeter()
    {
    }
 
-   SpaceShipTargeter::~SpaceShipTargeter()
+   EnemyHelixTargeter::~EnemyHelixTargeter()
    {
    }
 
-   bool SpaceShipTargeter::GetGoal(const SpaceShipState& current_state, SpaceShipGoalState& result)
+   bool EnemyHelixTargeter::GetGoal(const EnemyHelixState& current_state, EnemyHelixGoalState& result)
    {
       if(!mPointOfInterest.empty())
       {
@@ -441,123 +441,126 @@ namespace NetDemo
       return true;
    }
 
-   void SpaceShipTargeter::Push(const osg::Vec3& pos)
+   void EnemyHelixTargeter::Push(const osg::Vec3& pos)
    {
          mPointOfInterest.push(pos);
    }
 
-   void SpaceShipTargeter::Pop()
+   void EnemyHelixTargeter::Pop()
    {
       mPointOfInterest.pop();
    }
 
-   const osg::Vec3& SpaceShipTargeter::Top() const
+   const osg::Vec3& EnemyHelixTargeter::Top() const
    {
       return mPointOfInterest.top();
    }
 
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipDecomposer
+   //EnemyHelixDecomposer
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipDecomposer::SpaceShipDecomposer()
+   EnemyHelixDecomposer::EnemyHelixDecomposer()
    {
    }
 
-   SpaceShipDecomposer::~SpaceShipDecomposer()
+   EnemyHelixDecomposer::~EnemyHelixDecomposer()
    {
    }
 
-   void SpaceShipDecomposer::Decompose(const SpaceShipState& current_state, SpaceShipGoalState& result) const
+   void EnemyHelixDecomposer::Decompose(const EnemyHelixState& current_state, EnemyHelixGoalState& result) const
    {
    }
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipConstraint
+   //EnemyHelixConstraint
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipConstraint::SpaceShipConstraint()
+   EnemyHelixConstraint::EnemyHelixConstraint()
    {
    }
 
-   SpaceShipConstraint::~SpaceShipConstraint()
+   EnemyHelixConstraint::~EnemyHelixConstraint()
    {
    }
 
-   bool SpaceShipConstraint::WillViolate(const BaseClass::PathType& pathToFollow) const
+   bool EnemyHelixConstraint::WillViolate(const BaseClass::PathType& pathToFollow) const
    {
       return false;
    }
 
-   void SpaceShipConstraint::Suggest(const BaseClass::PathType& pathToFollow, const SpaceShipState& current_state, SpaceShipGoalState& result) const
+   void EnemyHelixConstraint::Suggest(const BaseClass::PathType& pathToFollow, const EnemyHelixState& current_state, EnemyHelixGoalState& result) const
    {
    }
 
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipAIHelper
+   //EnemyHelixAIHelper
    //////////////////////////////////////////////////////////////////////////
-   SpaceShipAIHelper::SpaceShipAIHelper()
+   EnemyHelixAIHelper::EnemyHelixAIHelper()
    {
 
    }
 
-   SpaceShipAIHelper::~SpaceShipAIHelper()
+   EnemyHelixAIHelper::~EnemyHelixAIHelper()
    {
 
    }
 
-   void SpaceShipAIHelper::OnInit(const EnemyDescriptionActor& desc)
-   {      
-      dtCore::Transform xform;
-      desc.GetTransform(xform);
+   void EnemyHelixAIHelper::OnInit(const EnemyDescriptionActor* desc)
+   {  
       osg::Matrix mat;
-      xform.Get(mat);
+      if(desc != NULL)
+      {
+         dtCore::Transform xform;
+         desc->GetTransform(xform);
+         xform.Get(mat);
+      }
 
-      SpaceShipControllable::InitControllable(mat, mAIControllable);
+      EnemyHelixControllable::InitControllable(mat, mAIControllable);
 
       mAIControllable.mTargeters.push_back(&mDefaultTargeter);
-      mAIControllable.mOutputControlFunc = SpaceShipControllable::BaseClass::OutputControlFunctor(this, &SpaceShipAIHelper::OutputControl);
+      mAIControllable.mOutputControlFunc = EnemyHelixControllable::BaseClass::OutputControlFunctor(this, &EnemyHelixAIHelper::OutputControl);
 
       float minSpeedPercent = 0.0f;
       float maxSpeedPercent = 1.0f;
       float lookAheadTime = 2.0f;
-      float timeToTarget = 10.0f;
+      float timeToTarget = 30.0f;
       float lookAheadRot = 2.5f;
       float timeToTargetRot = 1.0f;
 
-      mDefaultBehavior = new FollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
+      mDefaultBehavior = new HelixFollowPath(minSpeedPercent, maxSpeedPercent, lookAheadTime, timeToTarget, lookAheadRot, timeToTargetRot);
 
       BaseClass::OnInit(desc);
    }
 
-   void SpaceShipAIHelper::Spawn()
+   void EnemyHelixAIHelper::Spawn()
    {
       BaseClass::Spawn();
    }
 
 
-   SpaceShipAIModel& SpaceShipAIHelper::GetAIModel()
+   EnemyHelixAIModel& EnemyHelixAIHelper::GetAIModel()
    {
       return mAIModel;
    }
 
-   const SpaceShipAIModel& SpaceShipAIHelper::GetAIModel() const
+   const EnemyHelixAIModel& EnemyHelixAIHelper::GetAIModel() const
    {
       return mAIModel;
    }
 
-   SpaceShipControllable& SpaceShipAIHelper::GetAIControllable()
+   EnemyHelixControllable& EnemyHelixAIHelper::GetAIControllable()
    {
       return mAIControllable;
    }
 
-   const SpaceShipControllable& SpaceShipAIHelper::GetAIControllable() const
+   const EnemyHelixControllable& EnemyHelixAIHelper::GetAIControllable() const
    {
       return mAIControllable;
    }
 
 
-   void SpaceShipAIHelper::Update(float dt)
+   void EnemyHelixAIHelper::Update(float dt)
    {
       GetStateMachine().Update(dt);
       mAIModel.Step(dt, mAIControllable);
@@ -575,8 +578,8 @@ namespace NetDemo
       osg::Vec3 right = at ^ up;
       right.normalize();
 
-      float maxLiftForce = 1500.0f;
-      float maxThrustForce = 1500.0f;
+      float maxLiftForce = 15000.0f;
+      float maxThrustForce = 15000.0f;
 
       osg::Vec3 force;
 
@@ -591,32 +594,32 @@ namespace NetDemo
       physicsObject->GetBodyWrapper()->AddForce(force);
    }
 
-   void SpaceShipAIHelper::PreSync(const dtCore::Transform& trans)
+   void EnemyHelixAIHelper::PreSync(const dtCore::Transform& trans)
    {
       //updates the state of the physics model
       BaseClass::PreSync(trans);
 
       osg::Matrix xform;
       trans.Get(xform);
-      SpaceShipControllable::SetState(xform, mAIControllable.mCurrentState);
+      EnemyHelixControllable::SetState(xform, mAIControllable.mCurrentState);
 
       dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
       mAIControllable.mCurrentState.SetVel(physicsObject->GetLinearVelocity());
 
    }
 
-   void SpaceShipAIHelper::PostSync(dtCore::Transform& trans) const
+   void EnemyHelixAIHelper::PostSync(dtCore::Transform& trans) const
    {
       osg::Matrix xform;
       trans.Get(xform);
 
       //we will set our orientation
-      SpaceShipControllable::SetMatrix(mAIControllable.mCurrentState, xform);
+      EnemyHelixControllable::SetMatrix(mAIControllable.mCurrentState, xform);
       trans.SetRotation(xform);
    }
 
 
-   void SpaceShipAIHelper::OutputControl(const SpaceShipControllable::PathType& pathToFollow, const SpaceShipControllable::StateType& current_state, SpaceShipControllable::ControlType& result) const
+   void EnemyHelixAIHelper::OutputControl(const EnemyHelixControllable::PathType& pathToFollow, const EnemyHelixControllable::StateType& current_state, EnemyHelixControllable::ControlType& result) const
    {
       if (!pathToFollow.empty())
       {
@@ -629,7 +632,7 @@ namespace NetDemo
       }
    }
 
-   void SpaceShipAIHelper::RegisterStates()
+   void EnemyHelixAIHelper::RegisterStates()
    {
       BaseClass::RegisterStates();
 
@@ -637,7 +640,7 @@ namespace NetDemo
       GetStateFactory()->RegisterType<AttackState>(AIStateType::AI_STATE_ATTACK.GetName());
    }
 
-   void SpaceShipAIHelper::CreateStates()
+   void EnemyHelixAIHelper::CreateStates()
    {
       BaseClass::CreateStates();
 
@@ -651,28 +654,28 @@ namespace NetDemo
       GetStateMachine().AddState(&AIStateType::AI_STATE_DETONATE);
    }
 
-   void SpaceShipAIHelper::SetupTransitions()
+   void EnemyHelixAIHelper::SetupTransitions()
    {
       BaseClass::SetupTransitions();
    }
 
-   void SpaceShipAIHelper::SetupFunctors()
+   void EnemyHelixAIHelper::SetupFunctors()
    {
       BaseClass::SetupFunctors();
 
       dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       if(state != NULL)
       {
-         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &SpaceShipAIHelper::Attack));
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixAIHelper::Attack));
       }
    }
 
-   void SpaceShipAIHelper::SelectState(float dt)
+   void EnemyHelixAIHelper::SelectState(float dt)
    {
       BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_FIND_TARGET);
    }
 
-   void SpaceShipAIHelper::Attack(float dt)
+   void EnemyHelixAIHelper::Attack(float dt)
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
@@ -691,7 +694,7 @@ namespace NetDemo
       }
    }
 
-   void SpaceShipAIHelper::SetCurrentTarget(dtCore::Transformable& target)
+   void EnemyHelixAIHelper::SetCurrentTarget(dtCore::Transformable& target)
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
@@ -707,7 +710,7 @@ namespace NetDemo
       }
    }
 
-   //float SpaceShipAIHelper::GetDistance(const osg::Vec3& vec)
+   //float EnemyHelixAIHelper::GetDistance(const osg::Vec3& vec)
    //{
    //   osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(BaseClass::GetPhysicsModel()->GetKinematicState().mTransform, 3);
    //   return (vec - pos).length();
@@ -718,10 +721,10 @@ namespace NetDemo
 
 
    //////////////////////////////////////////////////////////////////////////
-   //SpaceShipSteeringBehavior
+   //EnemyHelixSteeringBehavior
    //////////////////////////////////////////////////////////////////////////
 
-   float Align::Sgn(float x)
+   float HelixAlign::Sgn(float x)
    {
       if(x < 0.0f)
       {
@@ -733,7 +736,7 @@ namespace NetDemo
       }
    }
 
-   osg::Vec3 Align::GetTargetPosition(float dt, const SpaceShipGoalState& goal)
+   osg::Vec3 HelixAlign::GetTargetPosition(float dt, const EnemyHelixGoalState& goal)
    {
       //project our target forward in time if it has a velocity
       osg::Vec3 targetPos = goal.GetPos();
@@ -744,7 +747,7 @@ namespace NetDemo
       return targetPos;
    }
 
-   float Align::GetTargetForward(float dt, const osg::Vec3& targetPos, const SpaceShipGoalState& current_goal, const SpaceShipState& current_state, osg::Vec3& vec_in)
+   float HelixAlign::GetTargetForward(float dt, const osg::Vec3& targetPos, const EnemyHelixGoalState& current_goal, const EnemyHelixState& current_state, osg::Vec3& vec_in)
    {
       osg::Vec3 projectedPos = current_state.GetPos() + (current_state.GetVel() * dt);
 
@@ -755,7 +758,7 @@ namespace NetDemo
    }
 
 
-   void Align::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   void HelixAlign::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
    { 
       dtUtil::Clamp(dt, 0.0167f, 0.1f);
 
@@ -784,7 +787,7 @@ namespace NetDemo
       }  
    }
 
-   void FollowPath::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+   void HelixFollowPath::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
    {
       dtUtil::Clamp(dt, 0.0167f, 0.1f);
 

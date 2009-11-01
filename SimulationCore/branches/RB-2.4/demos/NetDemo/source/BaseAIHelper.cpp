@@ -56,7 +56,7 @@ namespace NetDemo
 
    }
 
-   void BaseAIHelper::Init(const EnemyDescriptionActor& desc)
+   void BaseAIHelper::Init(const EnemyDescriptionActor* desc)
    {
       RegisterStates();
       CreateStates();
@@ -66,7 +66,7 @@ namespace NetDemo
       OnInit(desc);
    }
 
-   void BaseAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   void BaseAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
    }
 

@@ -56,9 +56,12 @@ namespace NetDemo
 
    }
 
-   void EnemyMineAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   void EnemyMineAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
-      mMaxVelocity = desc.GetSpawnInfo().GetMaxVelocity();
+      if(desc != NULL)
+      {
+         mMaxVelocity = desc->GetSpawnInfo().GetMaxVelocity();
+      }
    }
 
    void EnemyMineAIHelper::Spawn()

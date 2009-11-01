@@ -64,6 +64,8 @@ namespace NetDemo
 
       SetEntityType("Fort");
       SetMunitionDamageTableName("StandardDamageType");
+
+      mAIHelper = new TowerAIHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

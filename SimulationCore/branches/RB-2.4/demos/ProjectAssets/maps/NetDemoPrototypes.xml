@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-10-28T09:21:18-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-11-01T17:04:12-05:00</lastUpdateTimestamp>
         <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -1404,6 +1404,14 @@
                 <boolean>false</boolean>
             </property>
             <property>
+                <name>FrontTrackAdjustment</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>RearTrackAdjustment</name>
+                <float>0</float>
+            </property>
+            <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
@@ -1999,7 +2007,7 @@
             </property>
             <property>
                 <name>Max Damage Amount</name>
-                <float>0.2</float>
+                <float>1</float>
             </property>
             <property>
                 <name>Cur Damage Ratio</name>
@@ -2135,23 +2143,23 @@
             </property>
             <property>
                 <name>Physics Mass</name>
-                <float>500</float>
+                <float>1000</float>
             </property>
             <property>
                 <name>Physics Dimensions</name>
                 <vec3>
                     <value1>5.000000</value1>
-                    <value2>5.000000</value2>
-                    <value3>5.000000</value3>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
                 </vec3>
             </property>
             <property>
                 <name>Default Collision Group</name>
-                <integer>1</integer>
+                <integer>0</integer>
             </property>
             <property>
                 <name>VehicleBody: Collision Group</name>
-                <integer>1</integer>
+                <integer>0</integer>
             </property>
             <property>
                 <name>VehicleBody: Mechanics Type</name>
@@ -2195,7 +2203,7 @@
             </property>
             <property>
                 <name>VehicleBody: Mass</name>
-                <float>100</float>
+                <float>1000</float>
             </property>
             <property>
                 <name>VehicleBody: Skin Thickness</name>
@@ -3493,6 +3501,14 @@
             <property>
                 <name>Four Wheel Drive</name>
                 <boolean>true</boolean>
+            </property>
+            <property>
+                <name>FrontTrackAdjustment</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>RearTrackAdjustment</name>
+                <float>0</float>
             </property>
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>

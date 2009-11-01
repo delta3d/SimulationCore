@@ -31,6 +31,8 @@
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
+#include <TowerAIHelper.h>
+
 namespace dtAudio
 {
    class Sound;
@@ -66,6 +68,7 @@ namespace NetDemo
 
       private:
 
+         dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
    };
 

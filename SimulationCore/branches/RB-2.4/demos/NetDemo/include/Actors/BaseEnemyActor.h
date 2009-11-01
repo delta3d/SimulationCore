@@ -75,7 +75,7 @@ namespace NetDemo
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
 
-         virtual void InitAI(const EnemyDescriptionActor& desc);
+         virtual void InitAI(const EnemyDescriptionActor* desc);
 
          EnemyAIHelper* GetAIHelper();
          const EnemyAIHelper* GetAIHelper() const;

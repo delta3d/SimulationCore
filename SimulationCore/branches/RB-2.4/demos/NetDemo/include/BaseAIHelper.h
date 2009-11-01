@@ -47,10 +47,10 @@ namespace NetDemo
    {
    public:
       BaseAIHelper();
-      BaseAIHelper(const EnemyDescriptionActor& desc);
+      BaseAIHelper(const EnemyDescriptionActor* desc);
 
-      void Init(const EnemyDescriptionActor& desc);
-      virtual void OnInit(const EnemyDescriptionActor& desc);
+      void Init(const EnemyDescriptionActor* desc);
+      virtual void OnInit(const EnemyDescriptionActor* desc);
 
       virtual void Spawn();
       virtual void Update(float dt);
