@@ -31,6 +31,12 @@
 
 
 
+namespace osg
+{
+   class MatrixTransform;
+   class Projection;
+}
+
 namespace SimCore
 {
    namespace Tools 
@@ -44,12 +50,20 @@ namespace SimCore
 
             Compass360();
 
+            void Init(osg::Group& sceneNode);
+
             void Enable(bool enable);
 
          protected:
             virtual ~Compass360();
 
+            void CreateDrawable();
+
+            void DetachFromScene();
+
          private:
+            dtCore::RefPtr<osg::Projection> mRoot;
+            dtCore::RefPtr<osg::MatrixTransform> mDrawable;
        };
 
    }
