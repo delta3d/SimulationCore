@@ -54,7 +54,6 @@ namespace NetDemo
    GameEntryPoint::GameEntryPoint()
       : mIsServer(true)
    {
-
    }
 
    ///////////////////////////////////////////////////////////////////////////

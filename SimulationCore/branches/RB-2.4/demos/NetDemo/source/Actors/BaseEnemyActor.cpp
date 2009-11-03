@@ -190,7 +190,7 @@ namespace NetDemo
       const std::string GROUP = "Enemy Props";
       BaseClass::BuildPropertyMap();
 
-      BaseEnemyActor& actor = *static_cast<BaseEnemyActor*>(GetActor());
+      //BaseEnemyActor& actor = *static_cast<BaseEnemyActor*>(GetActor());
 
       // Add properties
    }
