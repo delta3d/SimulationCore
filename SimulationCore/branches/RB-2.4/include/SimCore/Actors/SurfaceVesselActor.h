@@ -91,7 +91,7 @@ namespace SimCore
          void SetSprayVelocityMax(float maxVelocity);
          float GetSprayVelocityMax() const;
 
-         float GetVelocityRatio() const;
+         float GetVelocityRatio(float velocity) const;
 
          void UpdateSpray(float simTimeDelta);
 
@@ -126,6 +126,8 @@ namespace SimCore
          osg::Vec3 mWaterSpraySideOffsetPort;
 
          osg::Vec3 mWaterSprayBackOffset;
+
+         osg::Vec3 mLastPos;
 
          dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontStarboardProxy;
          dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontPortProxy;

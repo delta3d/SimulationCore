@@ -489,16 +489,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      float SurfaceVesselActor::GetVelocityRatio() const
+      float SurfaceVesselActor::GetVelocityRatio(float velocity) const
       {
          float ratio = 0.0f;
 
          if(mSprayVelocityMax != 0.0f)
          {
-            osg::Vec3 velocity(GetLastKnownVelocity());
-            if(velocity.length2() >= mSprayVelocityMin && mSprayVelocityMax > mSprayVelocityMin)
+            if(velocity >= mSprayVelocityMin && mSprayVelocityMax > mSprayVelocityMin)
             {
-               ratio = (velocity.length() - mSprayVelocityMin) / (mSprayVelocityMax - mSprayVelocityMin);
+               ratio = (velocity - mSprayVelocityMin) / (mSprayVelocityMax - mSprayVelocityMin);
             }
          }
 
@@ -510,7 +509,21 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void SurfaceVesselActor::UpdateSpray(float simTimeDelta)
       {
-         float ratio = GetVelocityRatio();
+         // Determine the displacement of the object.
+         dtCore::Transform xform;
+         GetTransform(xform);
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
+
+         // --- Get the displacement from last tick.
+         pos.z() = 0.0f; // The spray effect is not affected by up/down motion.
+         osg::Vec3 dif(mLastPos);
+         mLastPos = pos;
+         dif = pos - dif;
+
+         // Get the velocity and its amount of spray effect.
+         float velocity = dif.length2() > 0.0f ? dif.length() : 0.0f;
+         float ratio = GetVelocityRatio(velocity * (simTimeDelta!=0.0f ? 1.0f/simTimeDelta : 0.0f));
          float interpTime = 0.01f;
 
          mSprayUpdateTimer += simTimeDelta;
