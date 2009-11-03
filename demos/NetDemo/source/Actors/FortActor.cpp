@@ -43,6 +43,7 @@ namespace NetDemo
    FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
+      SetTerrainPresentDropHeight(0.0);
       SetMaxUpdateSendRate(2.0f);
 
       SetPublishLinearVelocity(false);
@@ -81,7 +82,6 @@ namespace NetDemo
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
       physObj->CreateFromProperties(GetNonDamagedFileNode());
-      physObj->SetActive(true);
 
       if(!IsRemote())
       {

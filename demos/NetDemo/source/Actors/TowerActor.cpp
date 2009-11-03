@@ -48,9 +48,11 @@ namespace NetDemo
       SetPublishLinearVelocity(false);
       SetPublishAngularVelocity(false);
 
+      SetTerrainPresentDropHeight(0.0);
+
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
+      dtPhysics::PhysicsHelper* helper = new dtPhysics::PhysicsHelper(proxy);
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
@@ -80,9 +82,8 @@ namespace NetDemo
       GetTransform(ourTransform);
 
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
-      physObj->SetActive(true);
+      physObj->CreateFromProperties(GetNonDamagedFileNode());
 
       if(!IsRemote())
       {

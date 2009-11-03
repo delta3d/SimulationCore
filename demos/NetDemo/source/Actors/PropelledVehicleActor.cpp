@@ -42,12 +42,12 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    PropelledVehicleActor::PropelledVehicleActor(SimCore::Actors::PlatformActorProxy& proxy)
    : BaseClass(proxy)
-   , mStartBoost(false)
-   , mStartBoostForce(6500.0f)
-   , mMaximumBoostPerSecond(1000.0f)
-   , mCurrentBoostTime(0.0f)
-   , mTimeToResetBoost(5.0f)
-   , mBoostResetTimer(0.0f)
+//   , mStartBoost(false)
+//   , mStartBoostForce(6500.0f)
+//   , mMaximumBoostPerSecond(1000.0f)
+//   , mCurrentBoostTime(0.0f)
+//   , mTimeToResetBoost(5.0f)
+//   , mBoostResetTimer(0.0f)
    , mHelper(new SimCore::FourWheelVehiclePhysicsHelper(proxy))
    {
       SetPhysicsHelper(mHelper.get());
@@ -185,41 +185,41 @@ namespace NetDemo
 
          if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
-            //po->AddTorque(osg::Vec3(0.0, 8000.0, 0.0));
-            osg::Vec3 boostDirection(0.0f, 1.0f, 0.0f);
-            float boostForce = 0.0f;
-
-            if(mStartBoost)
-            {
-               mCurrentBoostTime += deltaTime;
-
-               //note: we are ramping down the boost since it
-               //       is being held down and we dont want to fly into space :)
-               boostForce = (mMaximumBoostPerSecond / mCurrentBoostTime);
-            }
-            else
-            {
-               mStartBoost = true;
-
-               //note: we just started boosting so lets boost with a large force
-               boostForce = mStartBoostForce;
-            }
-
-            po->AddLocalForce(boostDirection * boostForce);
+//            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+//            //po->AddTorque(osg::Vec3(0.0, 8000.0, 0.0));
+//            osg::Vec3 boostDirection(0.0f, 1.0f, 0.0f);
+//            float boostForce = 0.0f;
+//
+//            if(mStartBoost)
+//            {
+//               mCurrentBoostTime += deltaTime;
+//
+//               //note: we are ramping down the boost since it
+//               //       is being held down and we dont want to fly into space :)
+//               boostForce = (mMaximumBoostPerSecond / mCurrentBoostTime);
+//            }
+//            else
+//            {
+//               mStartBoost = true;
+//
+//               //note: we just started boosting so lets boost with a large force
+//               boostForce = mStartBoostForce;
+//            }
+//
+//            po->AddLocalForce(boostDirection * boostForce);
          }
          else
          {
-            if(mStartBoost)
-            {
-               mBoostResetTimer += deltaTime;
-               if(mBoostResetTimer >= mTimeToResetBoost)
-               {
-                  mStartBoost = false;
-                  mCurrentBoostTime = 0.0f;
-                  mBoostResetTimer = 0.0f;
-               }
-            }
+//            if(mStartBoost)
+//            {
+//               mBoostResetTimer += deltaTime;
+//               if(mBoostResetTimer >= mTimeToResetBoost)
+//               {
+//                  mStartBoost = false;
+//                  mCurrentBoostTime = 0.0f;
+//                  mBoostResetTimer = 0.0f;
+//               }
+//            }
          }
 
          if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))
@@ -289,9 +289,9 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, PropelledVehicleActor> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(StartBoostForce, "The initial force of the boost in newtons.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaximumBoostPerSecond, "The maximum amount of boost to be applied over time.", RegHelperType, propReg);
-      REGISTER_PROPERTY(TimeToResetBoost, "How long it takes the booster to recharge.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(StartBoostForce, "The initial force of the boost in newtons.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(MaximumBoostPerSecond, "The maximum amount of boost to be applied over time.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(TimeToResetBoost, "How long it takes the booster to recharge.", RegHelperType, propReg);
 
    }
 

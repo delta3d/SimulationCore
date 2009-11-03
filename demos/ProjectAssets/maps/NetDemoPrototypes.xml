@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-11-01T17:04:12-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-10-31T00:12:09-05:00</lastUpdateTimestamp>
         <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -160,7 +160,7 @@
                 <vec3>
                     <value1>-105.879623</value1>
                     <value2>-191.518494</value2>
-                    <value3>-0.000001</value3>
+                    <value3>-12.301304</value3>
                 </vec3>
             </property>
             <property>
@@ -555,7 +555,7 @@
                 <vec3>
                     <value1>80.777473</value1>
                     <value2>-338.802612</value2>
-                    <value3>-0.000001</value3>
+                    <value3>-11.337574</value3>
                 </vec3>
             </property>
             <property>
@@ -1414,18 +1414,6 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
-            </property>
-            <property>
-                <name>StartBoostForce</name>
-                <float>100000</float>
-            </property>
-            <property>
-                <name>MaximumBoostPerSecond</name>
-                <float>2500</float>
-            </property>
-            <property>
-                <name>TimeToResetBoost</name>
-                <float>5</float>
             </property>
         </actor>
         <actor>
@@ -2654,7 +2642,7 @@
                 <vec3>
                     <value1>-6.800001</value1>
                     <value2>-262.899902</value2>
-                    <value3>28.511005</value3>
+                    <value3>-5.073097</value3>
                 </vec3>
             </property>
             <property>
@@ -3514,18 +3502,6 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
-            <property>
-                <name>StartBoostForce</name>
-                <float>6500</float>
-            </property>
-            <property>
-                <name>MaximumBoostPerSecond</name>
-                <float>1000</float>
-            </property>
-            <property>
-                <name>TimeToResetBoost</name>
-                <float>5</float>
-            </property>
         </actor>
         <actor>
             <type>dtcore.Player Start</type>
@@ -3593,16 +3569,48 @@
             <id>be123458-111d-4ec8-bd51-dd49d31abc00</id>
             <name>Vehicle Physics Material</name>
             <property>
-                <name>Kinetic Friction</name>
+                <name>KineticFriction</name>
                 <float>0.5</float>
             </property>
             <property>
-                <name>Static Friction</name>
+                <name>StaticFriction</name>
                 <float>0.5</float>
             </property>
             <property>
                 <name>Restitution</name>
                 <float>0.2</float>
+            </property>
+            <property>
+                <name>KineticAnisotropicFriction</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>StaticAnisotropicFriction</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>DirOfAnisotropy</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>EnableAnisotropicFriction</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>DisableStrongFriction</name>
+                <boolean>false</boolean>
             </property>
         </actor>
         <actor>
@@ -3626,7 +3634,7 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>-166.728088</value2>
-                    <value3>-0.000001</value3>
+                    <value3>-12.074487</value3>
                 </vec3>
             </property>
             <property>

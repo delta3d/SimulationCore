@@ -366,7 +366,7 @@ namespace SimCore
 
                mTerrainNode = osgDB::readNodeFile(fileName, options.get());
 
-               if(mTerrainNode.valid())
+               if (mTerrainNode.valid())
                {
                   osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
                   ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "RenderBin");

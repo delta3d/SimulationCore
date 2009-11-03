@@ -264,25 +264,33 @@ namespace SimCore
             LOG_ERROR("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
          }
+         bool isDynamic = true;
 #ifdef AGEIA_PHYSICS
-         if(physicsObject->isSleeping())
+         if (physicsObject->isSleeping())
          {
             physicsObject->wakeUp();
          }
 #else
-         if (!physicsObject->IsActive())
+         if (physicsObject->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
+         {
+            isDynamic = false;
+            //No need to look for terrain on static objects.
+            mHasFoundTerrain = true;
+         }
+
+         if (isDynamic && !physicsObject->IsActive())
          {
             physicsObject->SetActive(true);
          }
 #endif
          // Check if terrain is available. (For startup)
-         if( ! mHasFoundTerrain )
+         if (!mHasFoundTerrain)
          {
             // Terrain has not been found. Check for it again.
             mHasFoundTerrain = IsTerrainPresent();
          }
          // Check to see if we are currently up under the earth, if so, snap them back up.
-         else if( GetPerformAboveGroundSafetyCheck() == true)
+         else if (GetPerformAboveGroundSafetyCheck())
          {
             KeepAboveGround();
          }
