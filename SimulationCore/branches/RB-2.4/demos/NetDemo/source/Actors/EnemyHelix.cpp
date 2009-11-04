@@ -175,63 +175,7 @@ namespace NetDemo
 
       BaseClass::OnTickLocal(tickMessage);
    }
-
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   //TODO- MAKE THIS A HELPER FUNCTION OR BASE, COPIED FROM ENEMYMINE.CPP
-   void EnemyHelixActor::DoExplosion(float)
-   {
-      //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
-      //printf("Sending DETONATION\r\n");
-
-      dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-      dtCore::Transform ourTransform;
-      GetTransform(ourTransform);
-      osg::Vec3 trans = ourTransform.GetTranslation();
-
-      // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
-      gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
-
-      // Required Parameters:
-      msg->SetEventIdentifier( 1 );
-      msg->SetDetonationLocation(trans);
-      // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
-      msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
-      msg->SetMunitionType("Generic Explosive");
-      msg->SetFuseType(0);
-      msg->SetWarheadType(0);
-      msg->SetQuantityFired(1);
-      msg->SetSendingActorId(GetGameActorProxy().GetId());
-      //msg->SetFinalVelocityVector( finalVelocity );
-      msg->SetRateOfFire(1);
-
-      gm->SendMessage( *msg );
-      gm->SendNetworkMessage( *msg );
-
-      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-      const osg::Vec3& location)
-   {
-      // the base class applies an impulse
-      BaseClass::RespondToHit(message, munition, force, location);
-
-      if(IsMobilityDisabled())
-      {
-         mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
-      }
-
-      if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-      {       
-         //this lets the AI respond to being hit
-         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
-      }
-   }
-
+  
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////

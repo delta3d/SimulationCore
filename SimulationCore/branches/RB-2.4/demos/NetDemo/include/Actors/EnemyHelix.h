@@ -45,13 +45,7 @@ namespace NetDemo
          /// Constructor
          EnemyHelixActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
-         /*virtual*/ void DoExplosion(float);
-
          /*virtual*/ void OnEnteredWorld();
-
-         /*virtual*/ void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-            const osg::Vec3& location);
 
          /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
 

@@ -559,6 +559,14 @@ namespace NetDemo
       return mAIControllable;
    }
 
+   void EnemyHelixAIHelper::ComputeTargetOffset()
+   {
+      mTargetOffset = osg::Vec3(
+         dtUtil::RandFloat(-35.0f, 35.0f),
+         dtUtil::RandFloat(-15.0f, 100.0f),
+         dtUtil::RandFloat(15.0f, 50.0f) );
+   }
+
 
    void EnemyHelixAIHelper::Update(float dt)
    {
@@ -685,8 +693,14 @@ namespace NetDemo
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
 
-         pos[2] += 5.0f;
+         pos += mTargetOffset;
          mDefaultTargeter.Push(pos);
+
+         if(GetDistance(pos) < 25.0f)
+         {
+            ComputeTargetOffset();
+            LOG_ALWAYS("Computing Offset");
+         }
       }
       else
       {

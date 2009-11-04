@@ -66,8 +66,13 @@ namespace NetDemo
          virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
          virtual void UpdateSoundEffects(float deltaTime);
 
+         void FindTarget(float);
+         void Shoot(float);
+         float GetDistance(const dtCore::Transformable& t) const;
+
       private:
 
+         dtCore::RefPtr<dtCore::Transformable> mTarget;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
    };

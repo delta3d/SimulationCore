@@ -46,7 +46,7 @@ namespace NetDemo
 {
 
    EnemyMineAIHelper::EnemyMineAIHelper()
-      : mMaxVelocity(500.0f)
+      : mMaxVelocity(150.0f)
    {
      
    }
@@ -117,10 +117,6 @@ namespace NetDemo
          dtCore::Transform xform;
          attackState->mStateData.mTarget->GetTransform(xform);
          osg::Vec3 pos = xform.GetTranslation();
-
-         //NOTE: HACK!!!! -The fort target is below the ground, I am adding an offset here
-         //todo: find the bounding box of the object and use that to determine a good target point
-         pos[2] += 5.0f;
 
          //if we are within distance, detonate
          //this is only for the enemy mine, and should be refactored

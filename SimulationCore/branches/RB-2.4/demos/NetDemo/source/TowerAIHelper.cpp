@@ -42,6 +42,8 @@
 
 #include <iostream>
 
+#include <AIEvent.h>
+
 namespace NetDemo
 {
 
@@ -73,40 +75,70 @@ namespace NetDemo
    void TowerAIHelper::RegisterStates()
    {
       BaseClass::RegisterStates();
+      GetStateFactory()->RegisterType<AttackState>(AIStateType::AI_STATE_ATTACK.GetName());
    }
 
    void TowerAIHelper::CreateStates()
    {
       BaseClass::CreateStates();
+
+      GetStateMachine().AddState(&AIStateType::AI_STATE_FIND_TARGET);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_ATTACK);
+      GetStateMachine().AddState(&AIStateType::AI_STATE_FIRE_LASER);
    }
 
    void TowerAIHelper::SetupTransitions()
    {
       BaseClass::SetupTransitions();
+
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_ATTACK);
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_ATTACK);
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_FIRE_LASER, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIRE_LASER);
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_FIRE_LASER, &AIStateType::AI_STATE_ATTACK);
+
     }
 
    void TowerAIHelper::SetupFunctors()
    {
       BaseClass::SetupFunctors();
 
-      //dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      //state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerAIHelper::Attack));
-
-      ////this can be used to change steering behaviors when transitioning into a new state
-      //typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      //typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
-      //    
-      //SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
-      //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
-      //
-      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      //state->AddEntryCommand(ctbc);   
+      dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerAIHelper::Attack));
    }
 
+   void TowerAIHelper::SelectState(float dt)
+   {
+      BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_FIND_TARGET);
+   }
 
    void TowerAIHelper::Attack(float dt)
    {
+      dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
+      AttackState* attackState = dynamic_cast<AttackState*>(npcState);
+      if(attackState != NULL && attackState->mStateData.mTarget.valid())
+      {
+         dtCore::Transform xform;
+         attackState->mStateData.mTarget->GetTransform(xform);
+         osg::Vec3 pos = xform.GetTranslation();
 
+         BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
+      }
+   }
+
+   void TowerAIHelper::SetCurrentTarget(dtCore::Transformable& target)
+   {
+      dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      AttackState* attackState = dynamic_cast<AttackState*>(npcState);
+      if(attackState != NULL)
+      {
+         attackState->mStateData.mTarget = &target;
+         //let the system know we have targeted a new entity
+         BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_ENEMY_TARGETED);
+      }
+      else
+      {
+         LOG_ERROR("Invalid state type for state 'AI_STATE_ATTACK'");
+      }
    }
 
 } //namespace NetDemo

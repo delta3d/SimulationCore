@@ -26,12 +26,21 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
+#include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 //#include <dtUtil/nodeprintout.h>
+
+#include <AIState.h>
+#include <AIEvent.h>
+#include <dtGame/gameactor.h>
+#include <ActorRegistry.h>
+#include <dtGame/gamemanager.h>
+
 
 namespace NetDemo
 {
@@ -84,6 +93,16 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   float BaseEnemyActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+
+      //if is enemy true it will multiply incoming damage by a 0
+      return incomingDamage * float(!IsEnemyActor(gap));
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()
    {
       dtCore::Transform ourTransform;
@@ -96,23 +115,70 @@ namespace NetDemo
       physObj->SetTransform(ourTransform);
       physObj->SetActive(true);
 
-      if(!IsRemote())
-      {
-
-         // Setup our articulation helper for the vehicle
-         //dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
-         //   new SimCore::Components::DefaultFlexibleArticulationHelper();
-         //articHelper->SetEntity(this);
-         //articHelper->AddArticulation("dof_turret_01",
-         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         //articHelper->AddArticulation("dof_gun_01",
-         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
-         //SetArticulationHelper(articHelper.get());
-      }
-
       BaseClass::OnEnteredWorld();
 
    }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::DoExplosion(float)
+   {
+      //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
+      //printf("Sending DETONATION\r\n");
+
+      dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+      dtCore::Transform ourTransform;
+      GetTransform(ourTransform);
+      osg::Vec3 trans = ourTransform.GetTranslation();
+
+      // Prepare a detonation message
+      dtCore::RefPtr<SimCore::DetonationMessage> msg;
+      gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
+
+      // Required Parameters:
+      msg->SetEventIdentifier( 1 );
+      msg->SetDetonationLocation(trans);
+      // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
+      msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
+      msg->SetMunitionType("Generic Explosive");
+      msg->SetFuseType(0);
+      msg->SetWarheadType(0);
+      msg->SetQuantityFired(1);
+      msg->SetSendingActorId(GetGameActorProxy().GetId());
+      //msg->SetFinalVelocityVector( finalVelocity );
+      msg->SetRateOfFire(1);
+
+      gm->SendMessage( *msg );
+      gm->SendNetworkMessage( *msg );
+
+      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::RespondToHit(const SimCore::DetonationMessage& message,
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+      const osg::Vec3& location)
+   {
+      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+
+      // the base class applies an impulse
+      if(!IsEnemyActor(gap))
+      {
+         BaseClass::RespondToHit(message, munition, force, location);
+
+         if(IsMobilityDisabled())
+         {
+            mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+         }
+
+         if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
+         {       
+            //this lets the AI respond to being hit
+            mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+         }
+      }
+   } 
+
 
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::UpdateVehicleTorquesAndAngles(float deltaTime)
@@ -176,6 +242,21 @@ namespace NetDemo
       mAIHelper->Init(desc);
    }
 
+   //////////////////////////////////////////////////////////////////////
+   bool BaseEnemyActor::IsEnemyActor( dtGame::GameActorProxy* gap ) const
+   {
+      if(gap != NULL)
+      {
+         const dtDAL::ActorType& atype = gap->GetActorType();
+         if( atype == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE || 
+            atype == * NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
+            atype == * NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE )
+         {
+            return true;
+         }
+      }
+      return false;
+   }
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////

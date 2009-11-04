@@ -49,6 +49,7 @@ namespace NetDemo
      static const AIStateType  AI_STATE_FIND_TARGET;
      static const AIStateType  AI_STATE_GO_TO_WAYPOINT;
      static const AIStateType  AI_STATE_ATTACK;
+     static const AIStateType  AI_STATE_FIRE_LASER;
      static const AIStateType  AI_STATE_EVADE;
      static const AIStateType  AI_STATE_FOLLOW;
      static const AIStateType  AI_STATE_FLOCK;

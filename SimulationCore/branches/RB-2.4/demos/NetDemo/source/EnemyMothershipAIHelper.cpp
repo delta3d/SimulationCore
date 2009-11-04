@@ -509,9 +509,9 @@ namespace NetDemo
    void EnemyMothershipAIHelper::ComputeTargetOffset()
    {
       mTargetOffset = osg::Vec3(
-         dtUtil::RandFloat(-150.0f, 150.0f),
-         dtUtil::RandFloat(-150.0f, 150.0f),
-         dtUtil::RandFloat(125.0f, 200.0f) );
+         dtUtil::RandFloat(-100.0f, 100.0f),
+         dtUtil::RandFloat(50.0f, 350.0f),
+         dtUtil::RandFloat(75.0f, 150.0f) );
    }
 
    void EnemyMothershipAIHelper::OnInit(const EnemyDescriptionActor* desc)
