@@ -35,6 +35,14 @@
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
 
+#include <ActorRegistry.h>
+#include <AIState.h>
+#include <Actors/FortActor.h>
+#include <Actors/EnemyHelix.h>
+#include <Actors/EnemyMine.h>
+
+
+
 
 namespace NetDemo
 {
@@ -97,6 +105,22 @@ namespace NetDemo
          articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
+
+         mAIHelper->Init(NULL);
+
+         //this will allow the AI to actually move us
+         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+
+         //redirecting the find target function
+         dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::FindTarget));
+
+         //redirecting the shoot 
+         state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIRE_LASER);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::Shoot));
+
+         //calling spawn will start the AI
+         mAIHelper->Spawn();
       }
 
       BaseClass::OnEnteredWorld();
@@ -131,27 +155,124 @@ namespace NetDemo
    {
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::FindTarget(float)
+   {
+      float minDist = 200.0;
+      BaseEnemyActor* enemy = NULL;
+
+      EnemyMineActorProxy* mineProxy = NULL;
+      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, mineProxy);
+      if (mineProxy != NULL)
+      {
+         EnemyMineActor& mine = *static_cast<EnemyMineActor*>(mineProxy->GetActor());
+
+         float dist = GetDistance(mine);
+
+         if(dist < minDist)
+         {
+            enemy = &mine;
+         }
+      }
+
+      if(enemy == NULL)
+      {
+         EnemyHelixActorProxy* helixProxy = NULL;
+         GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, helixProxy);
+         if (helixProxy != NULL)
+         {
+            EnemyHelixActor& helix = *static_cast<EnemyHelixActor*>(helixProxy->GetActor());
+
+            float dist = GetDistance(helix);
+
+            if(dist < minDist)
+            {
+               enemy = &helix;
+            }
+         }
+      }
+
+      if(enemy != NULL)
+      {
+         mAIHelper->SetCurrentTarget(*enemy);
+      }
+
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   float TowerActor::GetDistance( const dtCore::Transformable& t ) const
+   {
+
+      dtCore::Transform xform;
+      osg::Vec3 pos, enemyPos;
+      GetTransform(xform);
+      xform.GetTranslation(pos);
+
+      t.GetTransform(xform);
+      xform.GetTranslation(enemyPos);
+
+      return (enemyPos - pos).length();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::Shoot(float)
+   {
+
+      //dtCore::Transform xform;
+      //osg::Vec3 enemyPos;
+
+      //mTarget.GetTransform(xform);
+      //xform.GetTranslation(enemyPos);
+
+      //dtUtil::NodeCollector *nodes = GetNodeCollector();
+      //osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
+      //if (dof != NULL)
+      //{
+      //   // Spin the turret in a circle every few seconds
+      //   osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
+      //   osg::Vec3 hprChange;
+      //   hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
+      //   hpr[0] += hprChange[0];
+      //   dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
+      //   // Let the artics decide if the actor is dirty or not
+      //   if(GetArticulationHelper() != NULL)
+      //   {
+      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
+      //   }
+      //}
+
+   }
+
    //////////////////////////////////////////////////////////////////////
    void TowerActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      dtUtil::NodeCollector *nodes = GetNodeCollector();
-      osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
-      {
-         // Spin the turret in a circle every few seconds
-         osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
-         osg::Vec3 hprChange;
-         hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
-         hpr[0] += hprChange[0];
-         dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
-         // Let the artics decide if the actor is dirty or not
-         if(GetArticulationHelper() != NULL)
-         {
-            GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
-         }
-      }
+      //Tick the AI
+      //update the AI's position and orientation
+      dtCore::Transform trans;
+      GetTransform(trans);
+      mAIHelper->PreSync(trans);
+
+      ////////let the AI do its thing
+      mAIHelper->Update(tickMessage.GetDeltaSimTime());
+
+      //dtUtil::NodeCollector *nodes = GetNodeCollector();
+      //osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
+      //if (dof != NULL)
+      //{
+      //   // Spin the turret in a circle every few seconds
+      //   osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
+      //   osg::Vec3 hprChange;
+      //   hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
+      //   hpr[0] += hprChange[0];
+      //   dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
+      //   // Let the artics decide if the actor is dirty or not
+      //   if(GetArticulationHelper() != NULL)
+      //   {
+      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
+      //   }
+      //}
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -159,6 +280,7 @@ namespace NetDemo
    {
       BaseClass::OnTickRemote( tickMessage );
    }
+
 
    //////////////////////////////////////////////////////////////////////
    // PROXY

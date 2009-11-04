@@ -57,17 +57,7 @@ namespace NetDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         virtual void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-            const osg::Vec3& location);
-
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-
-         virtual void DoExplosion(float);
-
-
-         //void PostPhysicsUpdate();
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.

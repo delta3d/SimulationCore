@@ -239,11 +239,13 @@ namespace NetDemo
       /*virtual*/ void SelectState(float dt);
 
       virtual void Attack(float dt);
+      void ComputeTargetOffset();
 
    private:
 
       //float GetDistance(const osg::Vec3& pos);
 
+      osg::Vec3 mTargetOffset;
       EnemyHelixTargeter mDefaultTargeter;
       
       EnemyHelixSteeringBehavior* mDefaultBehavior;

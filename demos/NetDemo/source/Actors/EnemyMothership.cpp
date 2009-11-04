@@ -169,27 +169,7 @@ namespace NetDemo
       BaseClass::OnTickLocal(tickMessage);
    }
 
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyMothershipActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-      const osg::Vec3& location)
-   {
-      // the base class applies an impulse
-      BaseClass::RespondToHit(message, munition, force, location);
-
-      //if(IsMobilityDisabled())
-      //{
-      //   mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
-      //}
-
-      //if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-      //{       
-      //   //this lets the AI respond to being hit
-      //   mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
-      //}
-   }
-
+  
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////

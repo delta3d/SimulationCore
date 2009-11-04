@@ -52,6 +52,8 @@ namespace NetDemo
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 
+         void SetCurrentTarget(dtCore::Transformable& target);
+
       protected:
          TowerAIHelper(const TowerAIHelper&);  //not implemented by design
          TowerAIHelper& operator=(const TowerAIHelper&);  //not implemented by design
@@ -61,6 +63,8 @@ namespace NetDemo
          /*virtual*/ void CreateStates();
          /*virtual*/ void SetupTransitions();
          /*virtual*/ void SetupFunctors();
+
+         void SelectState(float dt);
 
          virtual void Attack(float dt);
 
