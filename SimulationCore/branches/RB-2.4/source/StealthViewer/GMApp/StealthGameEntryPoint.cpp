@@ -239,9 +239,7 @@ namespace StealthGM
 
       if(mHasCompass360)
       {
-         mCompass360 = new SimCore::Tools::Compass360();
-         mCompass360->Init(*inputComp->GetGameManager()->GetApplication().GetScene()->GetSceneNode());
-         mCompass360->Enable(true);
+         mHudGUI->SetupCompass360();
       }
 
       if( mHasBinoculars )

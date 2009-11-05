@@ -28,6 +28,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/UnitEnums.h>
+#include <SimCore/Tools/Compass360.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
@@ -122,48 +123,6 @@ namespace StealthGM
          // final positions in the world.
 //         mLabelManager->Update( tick.GetDeltaRealTime() );
       }
-      else if( type == SimCore::MessageType::BINOCULARS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&> (message);
-         mToolbar->SetButtonActive("Binoculars",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::NIGHT_VISION )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("NightVision",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::LASER_RANGE_FINDER )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("LRF",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::GPS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("GPS",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::MAP )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("Map",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::COMPASS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("Compass",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
       else if( type == dtGame::MessageType::INFO_MAP_LOADED )
       {
          //Is this a problem now?
@@ -199,6 +158,62 @@ namespace StealthGM
             static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
 
          SetCoordinateConverter(ccActor.GetCoordinateConverter());
+      }
+      else // Is this a tool message?
+      {
+         const SimCore::ToolMessage* toolMessage = dynamic_cast<const SimCore::ToolMessage*>(&message);
+         if(toolMessage != NULL)
+         {
+            ProcessToolMessage(*toolMessage);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void StealthHUD::ProcessToolMessage(const SimCore::ToolMessage& toolMessage)
+   {
+      const dtGame::MessageType& type = toolMessage.GetMessageType();
+      bool toolEnabled = toolMessage.IsEnabled();
+
+      if(type == SimCore::MessageType::BINOCULARS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Binoculars",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::NIGHT_VISION)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("NightVision",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::LASER_RANGE_FINDER)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("LRF",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::GPS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("GPS",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::MAP)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Map",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::COMPASS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Compass",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::COMPASS_360)
+      {
+         SetCompass360Enabled(toolEnabled);
       }
    }
 
@@ -668,4 +683,40 @@ namespace StealthGM
    {
       return *mLabelManager;
    }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetupCompass360()
+   {
+      if( ! mCompass360.valid())
+      {
+         // 360 Compass
+         osg::Group* sceneNode = GetGameManager()->GetApplication().GetScene()->GetSceneNode();
+         mCompass360 = new SimCore::Tools::Compass360();
+         mCompass360->Init(*sceneNode, "Textures/Tools/Compass360.tga");
+         mCompass360->Enable(false);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool StealthHUD::HasCompass360() const
+   {
+      return mCompass360.valid();
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetCompass360Enabled(bool enable)
+   {
+      // The HUD may or may not have a compass 360.
+      if(mCompass360.valid())
+      {
+         mCompass360->Enable(enable);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool StealthHUD::IsCompass360Enabled() const
+   {
+      return mCompass360.valid() && mCompass360->IsEnabled();
+   }
+
 }
