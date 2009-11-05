@@ -600,6 +600,9 @@ namespace StealthQt
       connect(mUi->mToolsAutoAttachOnSelectionCheckBox, SIGNAL(stateChanged(int)),
                this,                                    SLOT(OnAutoAttachOnSelectionChanged(int)));
 
+      connect(mUi->mToolsShowCompass360CheckBox, SIGNAL(stateChanged(int)),
+               this,                             SLOT(OnShowCompass360Changed(int)));
+
       connect(mUi->mToolsShowBinocularImageCheckBox, SIGNAL(stateChanged(int)),
                this,                                 SLOT(OnShowBinocularImageChanged(int)));
 
@@ -1673,6 +1676,15 @@ namespace StealthQt
    }
 
    ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnShowCompass360Changed(int state)
+   {
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
+         StealthViewerData::GetInstance().GetToolsConfigObject();
+
+      toolsConfig.SetShowCompass360(state == Qt::Checked);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnShowBinocularImageChanged(int state)
    {
       StealthGM::PreferencesToolsConfigObject& toolsConfig =
@@ -1891,6 +1903,7 @@ namespace StealthQt
       FillAndSetComboBox(SimCore::UnitOfAngle::Enumerate(), *mUi->mAngleUnitCombo, toolsConfig.GetAngleUnit());
 
       mUi->mToolsMagnificationSpinBox->setValue(int(toolsConfig.GetMagnification()));
+      mUi->mToolsShowCompass360CheckBox->setChecked(toolsConfig.GetShowCompass360());
       mUi->mToolsShowBinocularImageCheckBox->setChecked(toolsConfig.GetShowBinocularImage());
       mUi->mToolsShowDistanceToObjectCheckBox->setChecked(toolsConfig.GetShowDistanceToObject());
       mUi->mToolsShowElevationOfObjectCheckBox->setChecked(toolsConfig.GetShowElevationOfObject());

@@ -104,6 +104,7 @@ namespace StealthQt
 
    const QString StealthViewerSettings::PREFERENCES_TOOLS_GROUP("PREFERENCES_TOOLS_GROUP");
       const QString StealthViewerSettings::COORDINATE_SYSTEM("COORDINATE_SYSTEM");
+      const QString StealthViewerSettings::SHOW_COMPASS_360("SHOW_COMPASS_360");
       const QString StealthViewerSettings::SHOW_BINOCULAR_IMAGE("SHOW_BINOCULAR_IMAGE");
       const QString StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT("SHOW_DISTANCE_TO_OBJECT");
       const QString StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT("SHOW_ELEVATION_OF_OBJECT");
@@ -511,6 +512,7 @@ namespace StealthQt
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
 
          setValue(StealthViewerSettings::COORDINATE_SYSTEM, toolsObject.GetCoordinateSystem().GetName().c_str());
+         setValue(StealthViewerSettings::SHOW_COMPASS_360, toolsObject.GetShowCompass360());
          setValue(StealthViewerSettings::SHOW_BINOCULAR_IMAGE, toolsObject.GetShowBinocularImage());
          setValue(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT, toolsObject.GetShowDistanceToObject());
          setValue(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT, toolsObject.GetShowElevationOfObject());
@@ -892,6 +894,12 @@ namespace StealthQt
 
             if (coordSystem != NULL)
                toolsConfig.SetCoordinateSystem(*coordSystem);
+         }
+
+         if (contains(StealthViewerSettings::SHOW_COMPASS_360))
+         {
+            bool savedValue = value(StealthViewerSettings::SHOW_COMPASS_360).toBool();
+            toolsConfig.SetShowCompass360(savedValue);
          }
 
          if (contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))
