@@ -194,6 +194,8 @@ namespace SimCore
          void SetPrimaryWaveDirection(float degrees);
          float GetPrimaryWaveDirection() const;
 
+         float GetMaxWaveHeight() const;
+
       protected:
          ~WaterGridActor();
 
@@ -218,6 +220,7 @@ namespace SimCore
          void ComputeRay(int x, int y, const osg::Matrix& inverseMVPS, osg::Vec3& rayToFill);
          bool IntersectRayPlane(const osg::Vec4& plane, const osg::Vec3& rayOrigin, const osg::Vec3& rayDirection, osg::Vec3& intersectPoint);
          float GetAngleBetweenVectors(const osg::Vec3& v1, const osg::Vec3& v2);
+         void SetMaxWaveHeight(float height);
 
 
          void SetRenderWaveTexture(bool b);
@@ -246,6 +249,7 @@ namespace SimCore
          float mModForDirectionInDegrees;
          float mModForFOV;
          float mCameraFoVScalar; // changes wave detail based on how much FoV is visible
+         float mMaxWaveHeight;
 
          // Each frame (or as needed), the current set of waves is computed. This data
          // is pulled from the mWaves list based on the current camera height and wavelengths

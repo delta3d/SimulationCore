@@ -147,7 +147,7 @@ osg::Node* CreateQuad( osg::Texture2D *tex, int renderBin )
    return geode;
 }
 
-osg::Texture2D* CreateTexture(int width, int height)
+osg::Texture2D* CreateTexture(int width, int height, bool mipmap)
 {
    osg::Texture2D* tex = new osg::Texture2D();
    tex->setTextureSize(width, height);
@@ -155,7 +155,15 @@ osg::Texture2D* CreateTexture(int width, int height)
    tex->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT);
    //tex->setSourceFormat( GL_RGBA );
    tex->setInternalFormat(GL_RGBA);
-   tex->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+   if(mipmap)
+   {
+      tex->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::LINEAR_MIPMAP_LINEAR);
+   }
+   else
+   {
+      tex->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::LINEAR);
+   }
+
    tex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
    return tex;
 }
@@ -254,6 +262,7 @@ namespace SimCore
           , mModForDirectionInDegrees(0.0f)
           , mModForFOV(1.0f)
           , mCameraFoVScalar(1.0f)
+          , mMaxWaveHeight(0.0f)
           , mWaterColor(10.0 / 256.0, 69.0 / 256.0, 39.0 / 256.0, 1.0)
           , mChoppinessEnum(&WaterGridActor::ChoppinessSettings::CHOP_FLAT)
       {
@@ -301,6 +310,17 @@ namespace SimCore
          return mWaterColor;
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void WaterGridActor::SetMaxWaveHeight(float height)
+      {
+         mMaxWaveHeight = height;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      float WaterGridActor::GetMaxWaveHeight() const
+      {
+         return mMaxWaveHeight;
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::Init(const dtGame::Message&)
@@ -770,31 +790,32 @@ namespace SimCore
 
          //for reflection texture
          //CreateReflectionTexture();
-         //CreateNoiseTexture();
-
+         
+         CreateNoiseTexture();
          CreateWaveTexture();
          CreateReflectionCamera();
 
-         // Curt - temp test - mapping in a wave foam texture uniform by hand.
-         // I had issues using the ShaderManager with all of the other manual shader uniforms...
-         /*
-         osg::Texture2D *foamTexture2D = new osg::Texture2D();
-         std::string foamTextureFile = dtCore::FindFileInPathList("Textures\\ShadersBase\\wavesbump.bmp");
-         osg::Image *newImage = osgDB::readImageFile(foamTextureFile);
-         if (newImage == 0)
+           
+         osg::Texture2D* foamTexture2D = new osg::Texture2D();
+         std::string foamTextureFile = dtCore::FindFileInPathList("Textures\\OceanFoam.tga");
+         osg::Image* newImage = osgDB::readImageFile(foamTextureFile);
+         if (newImage == NULL)
+         {
             LOG_ERROR("WaterGridActor failed to load Foam Texture file [" + foamTextureFile + "].");
+         }
+
          foamTexture2D->setImage(newImage);
          foamTexture2D->dirtyTextureObject();
-         foamTexture2D->setFilter( osg::Texture3D::MIN_FILTER, osg::Texture3D::LINEAR );
+         foamTexture2D->setFilter( osg::Texture3D::MIN_FILTER, osg::Texture3D::LINEAR_MIPMAP_LINEAR);
          foamTexture2D->setFilter( osg::Texture3D::MAG_FILTER, osg::Texture3D::LINEAR );
          foamTexture2D->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
          foamTexture2D->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
          foamTexture2D->setUnRefImageDataAfterApply(true);
          osg::Uniform* foamTexUniform = new osg::Uniform(osg::Uniform::SAMPLER_2D, "foamTexture");
-         foamTexUniform->set(3);
+         foamTexUniform->set(2);
          ss->addUniform(foamTexUniform);
-         ss->setTextureAttributeAndModes(3, foamTexture2D, osg::StateAttribute::ON);
-         */
+         ss->setTextureAttributeAndModes(2, foamTexture2D, osg::StateAttribute::ON);
+         
 
          //add a custom compute bounding box callback
          mGeometry->setComputeBoundingBoxCallback(new WaterGridComputeBound());
@@ -891,6 +912,7 @@ namespace SimCore
 
          // Loop through the current list of waves and put them in the uniform
          DetermineCurrentWaveSet(pCamera);
+         float maxWaveHeight = 0.0f;
          for(int count = 0; count < MAX_WAVES; count++)
          {
             // Order is: waveLength, speed, amp, freq, UNUSED, UNUSED, dirX, dirY
@@ -898,7 +920,16 @@ namespace SimCore
                mProcessedWaveData[count][2], mProcessedWaveData[count][3]));
             waveArray->setElement(2 * count + 1, osg::Vec4(mProcessedWaveData[count][4], mProcessedWaveData[count][5],
                mProcessedWaveData[count][6], mProcessedWaveData[count][7]));
+
+            maxWaveHeight += mProcessedWaveData[2 * count][2];
          }
+
+         SetMaxWaveHeight(maxWaveHeight);
+         //std::cout << "Max Wave Height: " << maxWaveHeight << std::endl;
+
+         //set the foam height
+         osg::Uniform* foamMaxHeight = ss->getOrCreateUniform("foamMaxHeight", osg::Uniform::FLOAT);
+         foamMaxHeight->set(GetWaterHeight() + GetMaxWaveHeight());
 
          //set the FOV Modifier - uses the value from DetermineCurrentWaveSet()
          osg::Uniform* fovModifier = ss->getOrCreateUniform("modForFOV", osg::Uniform::FLOAT);
@@ -961,8 +992,10 @@ namespace SimCore
 
          // FOV calculation
          // ideal FoV is estimated to be 60 Hor & 90 Vert so ... 75 avgFoV.
-         float avgFoV = 0.5f * (camera->GetHorizontalFov() + camera->GetVerticalFov());
-         mCameraFoVScalar = (75.0f / avgFoV);
+         //float avgFoV = 0.5f * (camera->GetHorizontalFov() + camera->GetVerticalFov());
+         //mCameraFoVScalar = (avgFoV / 75.0f);
+
+         mCameraFoVScalar = camera->GetHorizontalFov() / 90.0f;
 
          int count = 0;
          float numWaves = float(mWaves.size());
@@ -973,7 +1006,7 @@ namespace SimCore
          // Camera Cut Point is an estimated value for the cut point - scaled by all the FoV modifiers.
          bool quitLooking = false;
          int numIgnored = 0;
-         float cameraCutPoint = 0.5 + cameraHeight / (12.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
+         float cameraCutPoint = 0.5 + cameraHeight / (8.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
          while(iter != endIter && !quitLooking)
          {
             Wave &nextWave = (*iter);
@@ -1025,7 +1058,8 @@ namespace SimCore
                   mProcessedWaveData[count/2][4] = steepness;
                   mProcessedWaveData[count/2][5] = 1.0f;
                   mProcessedWaveData[count/2][6] = dirX;
-                  mProcessedWaveData[count/2][7] = dirY;
+                  mProcessedWaveData[count/2][7] = dirY; 
+
                   count += 2;
                }
 
@@ -1080,12 +1114,12 @@ namespace SimCore
          dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
 
          float a0 = 0.01f;
-         float a1 = 2.0f; // 5.0f;
-         float outerMostRingDistance = 150.0; // the furthest rings get an extra reach.
-         float middleRingDistance = 4.0; // Middle rings get a minor boost too.
-         int numOuterRings = 16;
-         int numMiddleRings = 16;
-         float innerExpBase = 1.03f;
+         float a1 = 1.0f; // 5.0f;
+         float outerMostRingDistance = 5000.0; // the furthest rings get an extra reach.
+         float middleRingDistance = 20.0; // Middle rings get a minor boost too.
+         int numOuterRings = 15;
+         int numMiddleRings = 20;
+         float innerExpBase = 1.02f;
          float middleExpBase = 1.2;
          float outerExpBase = 1.19f;
          //float exponent = 3;
@@ -1127,7 +1161,8 @@ namespace SimCore
             }
          }
          mComputedRadialDistance = r;
-         std::cout << "WaterGridActor - Max Radial Distance = " << mComputedRadialDistance << std::endl;
+         for(int p = 0; p < 10; ++p)
+            std::cout << "WaterGridActor - Max Radial Distance = " << mComputedRadialDistance << std::endl;
 
 
          int counter = 0;
@@ -1163,7 +1198,7 @@ namespace SimCore
       void WaterGridActor::CreateNoiseTexture()
       {
          LOG_INFO("Creating noise texture.");
-         dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 16, 16, 16);
+         dtUtil::NoiseTexture noise3d(6, 2, 0.7, 0.5, 128, 128, 32);
          dtCore::RefPtr<osg::Image> img = noise3d.MakeNoiseTexture(GL_ALPHA);
          LOG_INFO("Finished creating noise texture.");
 
@@ -1177,9 +1212,9 @@ namespace SimCore
          mNoiseTexture->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::REPEAT );
 
          osg::Uniform* tex = new osg::Uniform(osg::Uniform::SAMPLER_3D, UNIFORM_NOISE_TEXTURE);
-         tex->set(1);
+         tex->set(3);
          mGeometry->getOrCreateStateSet()->addUniform(tex);
-         mGeometry->getOrCreateStateSet()->setTextureAttributeAndModes(1, mNoiseTexture.get(), osg::StateAttribute::ON);
+         mGeometry->getOrCreateStateSet()->setTextureAttributeAndModes(3, mNoiseTexture.get(), osg::StateAttribute::ON);
 
       }
 
@@ -1194,14 +1229,14 @@ namespace SimCore
             if(!mWaveTexture.valid())
             {
                //TODO: GET DIMENSIONS OF SCREEN
-               int width = 512;
-               int height = 512;
+               int width = 256;
+               int height = 256;
 
                mWaveCamera = new osg::Camera();
                mWaveCamera->setRenderOrder(osg::Camera::PRE_RENDER, 1);
                mWaveCamera->setClearMask(GL_NONE);
 
-               mWaveTexture = CreateTexture(width, height);
+               mWaveTexture = CreateTexture(width, height, false);
                InitAndBindToTarget(mWaveCamera.get(), mWaveTexture.get(), width, height);
                //mWaveCamera->setNodeMask(SimCore::Components::RenderingSupportComponent::MAIN_CAMERA_ONLY_FEATURE_NODE_MASK);
                AddOrthoQuad(mWaveCamera.get(), NULL, "TextureWave", "");
@@ -1209,22 +1244,22 @@ namespace SimCore
                comp->AddCamera(mWaveCamera.get());
 
 
-//               mWaveCameraScreen = new osg::Camera();
-//               mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
-//               mWaveCameraScreen->setClearMask(GL_NONE);
-//               mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-//               mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
-//               mWaveCameraScreen->setViewport(0, 0, width, height);
-//               mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
-//               AddOrthoQuad(mWaveCameraScreen.get(), mWaveTexture.get(), "WaveTest", "waveTexture");
-//               mWaveCameraScreen->setNodeMask(0x0);
-//               comp->AddCamera(mWaveCameraScreen.get());
+               mWaveCameraScreen = new osg::Camera();
+               mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
+               mWaveCameraScreen->setClearMask(GL_NONE);
+               mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+               mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
+               mWaveCameraScreen->setViewport(0, 0, width, height);
+               mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
+               AddOrthoQuad(mWaveCameraScreen.get(), mWaveTexture.get(), "WaveTest", "waveTexture");
+               mWaveCameraScreen->setNodeMask(0x0);
+               comp->AddCamera(mWaveCameraScreen.get());
             }
 
             osg::Uniform* tex = new osg::Uniform(osg::Uniform::SAMPLER_2D, UNIFORM_WAVE_TEXTURE);
-            tex->set(2);
+            tex->set(0);
             mGeometry->getOrCreateStateSet()->addUniform(tex);
-            mGeometry->getOrCreateStateSet()->setTextureAttributeAndModes(2, mWaveTexture.get(), osg::StateAttribute::ON);
+            mGeometry->getOrCreateStateSet()->setTextureAttributeAndModes(0, mWaveTexture.get(), osg::StateAttribute::ON);
 
          }
       }
@@ -1322,7 +1357,7 @@ namespace SimCore
             int height = 512;//sceneCam->getViewport()->height();
 
 
-            mReflectionTexture = CreateTexture(width, height);
+            mReflectionTexture = CreateTexture(width, height, false);
             InitAndBindToTarget(mReflectionCamera.get(), mReflectionTexture.get(), width, height);
 
             mReflectionCamera->setRenderOrder(osg::Camera::PRE_RENDER);
@@ -1341,16 +1376,16 @@ namespace SimCore
             ss->setTextureAttributeAndModes(1, mReflectionTexture.get(), osg::StateAttribute::ON);
 
 //            this is commented out because we are switching between using it for visualizing the reflection and visualizing the texture waves
-            mWaveCameraScreen = new osg::Camera();
-            mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
-            mWaveCameraScreen->setClearMask(GL_NONE);
-            mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-            mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
-            mWaveCameraScreen->setViewport(0, 0, width, height);
-            mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
-            AddOrthoQuad(mWaveCameraScreen.get(), mReflectionTexture.get(), "WaveTest", "waveTexture");
-            mWaveCameraScreen->setNodeMask(0x0);
-            comp->AddCamera(mWaveCameraScreen.get());
+            //mWaveCameraScreen = new osg::Camera();
+            //mWaveCameraScreen->setRenderOrder(osg::Camera::POST_RENDER, 1);
+            //mWaveCameraScreen->setClearMask(GL_NONE);
+            //mWaveCameraScreen->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+            //mWaveCameraScreen->setProjectionMatrixAsOrtho2D(-10.0, 10.0, -10.0, 10.0);
+            //mWaveCameraScreen->setViewport(0, 0, width, height);
+            //mWaveCameraScreen->setGraphicsContext(new osgViewer::GraphicsWindowEmbedded());
+            //AddOrthoQuad(mWaveCameraScreen.get(), mReflectionTexture.get(), "WaveTest", "waveTexture");
+            //mWaveCameraScreen->setNodeMask(0x0);
+            //comp->AddCamera(mWaveCameraScreen.get());
          }
 
       }
@@ -1450,32 +1485,35 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void WaterGridActor::OceanDataUpdate(double lat, double llong, int seaState, float waveDir, float waveHeight)
       {
-         mModForDirectionInDegrees = waveDir;
+         //mModForDirectionInDegrees = waveDir;
 
-         //std::cout << "Ocean Update- Sea state: " << seaState << ", Wave Dir: " << waveDir << ", WaveHeight: " << waveHeight << ", Lat: " << lat << ", Long: " << llong << std::endl;
+         std::cout << "Ocean Update- Sea state: " << seaState << ", Wave Dir: " << waveDir << ", WaveHeight: " << waveHeight << ", Lat: " << lat << ", Long: " << llong << std::endl;
 
-         mModForAmplitude = waveHeight;
-         dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
+         //mModForAmplitude = waveHeight;
+         //dtUtil::Clamp(mModForAmplitude, 0.5f, 10.0f);
 
          //mModForWaveLength = 1.0 + ((waveHeight - 1.0f) * 0.2f);
-         //dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);
+         //dtUtil::Clamp(mModForWaveLength, 0.2f, 5.0f);         
 
-         if(seaState <= 5)
+         //waveHieght is in meters but our sea states are calculated in feet, they go from 1-5 at 0.5 feet, 2 feet, 3.5 feet, 6 feet, and 8 feet
+         if(waveHeight <= 0.1524 || seaState == 1)
          {
             SetChoppiness(ChoppinessSettings::CHOP_FLAT);
          }
-         else if(seaState <= 6)
+         else if(waveHeight <= 0.6096 || seaState == 2)
          {
             SetChoppiness(ChoppinessSettings::CHOP_MILD);
          }
-         else if(seaState <= 7)
+         else if(seaState <= 1.0668 || seaState == 3)
          {
             SetChoppiness(ChoppinessSettings::CHOP_MED);
          }
-         else
+         else //if(seaState <= 1.0668 || seaState == 4)
          {
             SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
          }
+
+         SetPrimaryWaveDirection(180.0f + waveDir);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
