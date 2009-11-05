@@ -18,17 +18,23 @@ uniform float ScreenHeight;
 uniform float ScreenWidth;
 uniform float waveDirection;
 uniform float elapsedTime;
+uniform float maxComputedDistance;
 uniform mat4 inverseViewMatrix;
 uniform vec4 WaterColor;
-	
+
+uniform float modForFOV;	
+uniform float foamMaxHeight;	
 uniform sampler2D waveTexture;
 uniform sampler2D reflectionMap;
+uniform sampler2D foamTexture;
+uniform sampler3D noiseTexture;
 
 varying vec4 pos;
 varying vec3 lightVector;
 varying float distanceScale;
 varying float distBetweenVertsScalar;
 varying vec2 vFog;
+varying vec2 vertexWaveDir;
 varying vec3 shaderVertexNormal;
 
 vec4 deepWaterColor = 0.74 * WaterColor;  
@@ -83,9 +89,10 @@ void main (void)
    ////This samples the wave texture in a way that will remove tiling artifacts
    float fadeTransition = 0.05;
    float distToFragment = length(pos.xy);
-   float textureScale = 15.0 + clamp((15.0 * floor(distToFragment / 15.0)), 0.0, 20.0);
+   float textureScale = 25.0 + clamp((35.0 * floor(distToFragment / 35.0)), 0.0, 2000.0);
    vec3 waveNormal = vec3(0.0, 0.0, 0.0); 
    vec2 waveCoords = 0.025 * shaderVertexNormal.xy + vec2(combinedPos.xy / textureScale);   
+   waveCoords /= (0.5 + (modForFOV * 0.5) );
    waveCoords = rotateTexCoords(waveCoords, waveDirection);
 
    float fadeAmt = edgeFade(fadeTransition, waveCoords);
@@ -100,11 +107,14 @@ void main (void)
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
 
+   //float distantTurbulence = max(-1.0 * dot(waveNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
+   //distantTurbulence = clamp(2000.0 * pow(distantTurbulence, 4.0), 0.0, 1.0);
+
+   float waveNormalFadeOut = clamp(distToFragment / 200.0, 0.0, 1.0);
+   waveNormal = mix(waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
    waveNormal = normalize(waveNormal);
-   vec3 normal = 0.5 * (normalize(shaderVertexNormal) + waveNormal);
-   
-   normal = mix(shaderVertexNormal, normal, distanceScale);
-   normal = normalize(normal);
+   vec3 normal = (1.0 * normalize(shaderVertexNormal)) + waveNormal;
+   normal = normalize(normal);   
 
    //this inverts the normal if we are underwater
    normal.z *= -1.0 * (float(gl_FrontFacing) * -1.0);
@@ -117,7 +127,7 @@ void main (void)
       vec3 refTexCoords = vec3(gl_FragCoord.x / ScreenWidth, gl_FragCoord.y / ScreenHeight, gl_FragCoord.z);
       refTexCoords.xy = clamp(refTexCoords.xy + 0.4 * normal.xy, 0.0, 1.0);
       vec3 reflectColor = texture2D(reflectionMap, refTexCoords.xy).rgb;
-      reflectColor = (WaterColor.xyz + fresnel * (reflectColor - WaterColor.xyz));
+      reflectColor = (deepWaterColor.xyz + fresnel * (reflectColor - deepWaterColor.xyz));
       
       vec3 lightVect = normalize(lightVector);
       
@@ -127,7 +137,32 @@ void main (void)
 
       lightContribFinal = sqrt(lightContribFinal);
 
-      vec3 waterColorContrib = lightContribFinal * mix(reflectColor.xyz, 0.2 * WaterColor.xyz, waveNDotL);
+      vec3 noiseTexCoords = vec3(combinedPos.x / 25.0, combinedPos.y / 25.0, 0.05 * elapsedTime);
+      float noisevalue = abs(texture3D(noiseTexture, noiseTexCoords).a);
+
+      //this is the nearby foam effect contribution
+      float foamAmt = max(-1.0 * dot(normal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
+      float foamNoise = clamp(20.0 * pow(noisevalue, 10.0), 0.0, 1.0);         
+      foamAmt = clamp(1000.0 * pow(foamAmt, 6.0), 0.0, 1.0);
+      foamAmt *= foamNoise;
+
+      //this is the distant foam effect contribution
+      float distfoamAmt = max(-1.0 * dot(shaderVertexNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
+      float distFoamExp = (1.0 / (1.0 + (modForFOV * modForFOV))) * (10.0 + (camPos.z / 100.0));
+      distfoamAmt = clamp(1000.0 * pow(distfoamAmt, distFoamExp), 0.0, 1.0);
+      float foamDistScale = pow(55.0 * (1.0 - distanceScale), 6.0);
+      float foamDistScaleFar = pow(distanceScale, 10.0);
+      float distFoamNoise = clamp(10.0 * pow(noisevalue, 16.0), 0.0, 1.0);         
+      distfoamAmt = clamp(distfoamAmt * foamDistScale * foamDistScaleFar * distFoamNoise, 0.0, 1.0);
+
+      vec2 foamTexCoords = 0.1 * vec2(combinedPos.x, (0.66 * elapsedTime) - combinedPos.y);
+      foamTexCoords = rotateTexCoords(foamTexCoords, waveDirection);
+      vec4 foamColor = texture2D(foamTexture, foamTexCoords);
+
+      //this is the cumulative foam effect contribution
+      foamColor = (foamColor * foamAmt) + (foamColor * distfoamAmt);
+      
+      vec3 waterColorContrib = lightContribFinal * (mix(reflectColor.xyz, 0.2 * deepWaterColor.xyz, waveNDotL));
       
       //calculates a specular contribution
       vec3 normRefLightVec = reflect(lightVect, normal);
@@ -136,9 +171,10 @@ void main (void)
       vec3 resultSpecular = vec3(gl_LightSource[0].specular.xyz * specularContrib);     
       
       //adds in the fog contribution
-      vec3 finalColor = mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x);
-
-      gl_FragColor = vec4(finalColor, WaterColor.a);
+      vec4 finalColor = vec4(mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x), WaterColor.a);
+      gl_FragColor = finalColor + foamColor;
+      //gl_FragColor = vec4(vec3(distantTurbulenceDistanceScale), 1.0);//finalColor + foamColor;
+      //gl_FragColor = vec4(vertexWaveDir.x, vertexWaveDir.y, 0.0, WaterColor.a);
       // gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
       // vec3 waveColor = 1.0 + waveNormal.xyz;
       // gl_FragColor = vec4(waveColor / 2.0, WaterColor.a);
