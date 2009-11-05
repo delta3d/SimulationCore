@@ -304,6 +304,9 @@ namespace StealthQt
          /// Called when the coordinate system has been changed
          void OnToolsCoordinateSystemChanged(const QString &text);
 
+         /// Called when 360 compass being shown is changed
+         void OnShowCompass360Changed(int state);
+
          /// Called when binocular image being shown is changed
          void OnShowBinocularImageChanged(int state);
 
