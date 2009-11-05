@@ -76,6 +76,8 @@ namespace SimCore
    // Game state-related messages
    const MessageType MessageType::GAME_STATE_CHANGED("GAME_STATE_CHANGED", "INFO", "Sent when the game state changes.", USER_DEFINED_MESSAGE_TYPE + 25);
 
+   // Tool message continued...
+   MessageType MessageType::COMPASS_360("Compass360", "Tools", "Compass360", USER_DEFINED_MESSAGE_TYPE + 26);
 
    ///////////////////////////////////////////////////////////////////////
    MessageType::MessageType(
@@ -107,6 +109,7 @@ namespace SimCore
       factory.RegisterMessageType<ToolMessage>(BINOCULARS);
       factory.RegisterMessageType<ToolMessage>(LASER_RANGE_FINDER);
       factory.RegisterMessageType<ToolMessage>(COMPASS);
+      factory.RegisterMessageType<ToolMessage>(COMPASS_360);
       factory.RegisterMessageType<ToolMessage>(GPS);
       factory.RegisterMessageType<ToolMessage>(MAP);
       factory.RegisterMessageType<ToolMessage>(NIGHT_VISION);

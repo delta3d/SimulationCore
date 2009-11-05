@@ -129,10 +129,6 @@ namespace StealthGM
          bool mHasNightVis;
          bool mHasMap;
 
-         // Hold onto the compass 360 toll since it does not connect directly with the
-         // CEGUI-based HUD.
-         dtCore::RefPtr<SimCore::Tools::Compass360> mCompass360;
-
    };
 
 }
