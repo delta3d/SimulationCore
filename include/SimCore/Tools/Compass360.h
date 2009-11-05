@@ -37,11 +37,17 @@ namespace osg
    class Projection;
 }
 
+namespace dtCore
+{
+   class Camera;
+}
+
 namespace SimCore
 {
    namespace Tools 
    {	
       //////////////////////////////////////////////////////////////////////////
+      // CODE
       //////////////////////////////////////////////////////////////////////////
       class SIMCORE_EXPORT Compass360 : public Tool
       {
@@ -50,14 +56,16 @@ namespace SimCore
 
             Compass360();
 
-            void Init(osg::Group& sceneNode);
+            void Init(osg::Group& sceneNode, const std::string& imageFileName);
 
             void Enable(bool enable);
+
+            void UpdateFOV(dtCore::Camera& camera);
 
          protected:
             virtual ~Compass360();
 
-            void CreateDrawable();
+            void CreateDrawable(const std::string& imageFileName);
 
             void DetachFromScene();
 

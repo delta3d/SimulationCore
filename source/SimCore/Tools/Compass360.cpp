@@ -32,8 +32,14 @@
 #include <osg/StateSet>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
+#include <dtUtil/functor.h>
+#include <dtCore/camera.h>
+#include <dtCore/shadermanager.h>
+#include <dtCore/shaderprogram.h>
+#include <dtCore/transform.h>
 #include <dtDAL/project.h>
 #include <SimCore/Tools/Compass360.h>
+#include <sstream>
 
 
 
@@ -57,10 +63,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Compass360::Init(osg::Group& sceneNode)
+      void Compass360::Init(osg::Group& sceneNode, const std::string& imageFileName)
       {
-         CreateDrawable();
+         CreateDrawable(imageFileName);
 
+         // Bind camera callback.
+         dtCore::Camera::AddCameraSyncCallback(*this,
+            dtCore::Camera::CameraSyncCallback(this, &Compass360::UpdateFOV));
+
+         // Attach the drawable to the scene.
          sceneNode.addChild(mRoot.get());
       }
 
@@ -76,12 +87,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Compass360::CreateDrawable()
+      void Compass360::CreateDrawable(const std::string& imageFileName)
       {
          mRoot = new osg::Projection;
-         mRoot->setMatrix(osg::Matrix::ortho2D(0.0f ,1.0f, 0.0f, 0.75f));//WIN_HEIGHT_RATIO));
+         mRoot->setMatrix(osg::Matrix::ortho2D(0.0f ,1.0f, 0.0f, 1.0f));//WIN_HEIGHT_RATIO));
 
          mDrawable = new osg::MatrixTransform;
+         mDrawable->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
          mRoot->addChild(mDrawable.get());
 
          osg::Geode* geode = new osg::Geode;
@@ -92,23 +104,19 @@ namespace SimCore
          geode->addDrawable(geometry);
 
          // VERTICES
-         float zDepth = -10.0f;
+         float zDepth = 0.0f;
          dtCore::RefPtr<osg::Vec3Array> verts = new osg::Vec3Array;
          verts->push_back(osg::Vec3(0.0, 0.0, zDepth)); // LEFT-BOTTOM
          verts->push_back(osg::Vec3(1.0, 0.0, zDepth)); // RIGHT-BOTTOM
          verts->push_back(osg::Vec3(1.0, 1.0, zDepth)); // RIGHT-TOP
          verts->push_back(osg::Vec3(0.0, 1.0, zDepth)); // LEFT-TOP
-         //*/
-
-         /*verts->push_back(osg::Vec3(0.0, zDepth, 0.0)); // LEFT-BOTTOM
-         verts->push_back(osg::Vec3(1.0, zDepth, 0.0)); // RIGHT-BOTTOM
-         verts->push_back(osg::Vec3(1.0, zDepth, 1.0)); // RIGHT-TOP
-         verts->push_back(osg::Vec3(0.0, zDepth, 1.0)); // LEFT-TOP
-         //*/
 
          // COLOR
          dtCore::RefPtr<osg::Vec4Array> color = new osg::Vec4Array;
-         color->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+         color->push_back(osg::Vec4(1.0f,0.0f,0.0f,1.0f));
+         color->push_back(osg::Vec4(1.0f,1.0f,0.0f,1.0f));
+         color->push_back(osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+         color->push_back(osg::Vec4(0.0f,0.0f,1.0f,1.0f));
 
          // UVS
          dtCore::RefPtr<osg::Vec2Array> uvs = new osg::Vec2Array(4);
@@ -120,7 +128,7 @@ namespace SimCore
 
          // NORMALS
          dtCore::RefPtr<osg::Vec3Array> norms = new osg::Vec3Array;
-         norms->push_back(osg::Vec3(0.0f,1.0f,0.0f));
+         norms->push_back(osg::Vec3(0.0f,0.0f,1.0f));
 
          // STATES
          osg::StateSet* states = geometry->getOrCreateStateSet();
@@ -128,32 +136,33 @@ namespace SimCore
          states->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
          states->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
          states->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-//         states->setRenderBinDetails(BIN_NUMBER, BIN_NAME);
+         states->setRenderBinDetails(1000, "RenderBin");
 
          // Get the current texture directory
-         /*if( ! imageFileName.empty())
+         if( ! imageFileName.empty())
          {
             // Set the texture
             dtCore::RefPtr<osg::Texture2D> texture = new osg::Texture2D;
             texture->setDataVariance(osg::Object::DYNAMIC);
-            osg::Image* image;
-            std::string filePath("Textures:");
-            filePath += imageFileName;
+            osg::Image* image = NULL;
+            std::string filePath(imageFileName);
             try
             {
                filePath = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(filePath));
                image = osgDB::readImageFile(filePath);
                texture->setImage(image);
+               texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+               texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
                states->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON);
             }
             catch(dtUtil::Exception& e)
             {
                std::stringstream ss;
-               ss << "HUDQuadElement could not load texture \"" << filePath << "\" because:\n"
+               ss << "Compass 360 tool could not load texture \"" << filePath << "\" because:\n"
                   << e.ToString() << std::endl;
                LOG_ERROR(ss.str());
             }
-         }*/
+         }
 
          // Setup the geometry
          geometry->setNormalArray(norms.get());
@@ -162,7 +171,16 @@ namespace SimCore
          geometry->setTexCoordArray(0,uvs.get());
          geometry->setVertexArray(verts.get());
          geometry->setColorArray(color.get());
-         geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
+         geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+         //         geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+         // Bind the shader to the geometry.
+         dtCore::ShaderManager& sm = dtCore::ShaderManager::GetInstance();
+         dtCore::ShaderProgram* shaderPrototype = sm.FindShaderPrototype("Compass360Shader","ToolsShaderGroup");
+         if(shaderPrototype != NULL)
+         {
+            sm.AssignShaderFromPrototype(*shaderPrototype, *mRoot);
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -182,6 +200,29 @@ namespace SimCore
                }
             }
          }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void Compass360::UpdateFOV(dtCore::Camera& camera)
+      {
+         // Get the orientation of the camera.
+         dtCore::Transform xform;
+         osg::Vec3 hpr;
+         camera.GetTransform(xform);
+         xform.GetRotation(hpr);
+         hpr.x() += 360.0f;
+
+         // Get the horizontal FOV angles of the camera frustum.
+         float halfAngle = camera.GetHorizontalFov() * 0.5f;
+         //std::cout << "\n\nAngle: " << halfAngle << "\n";
+         osg::Vec2 frustumAngles;
+         frustumAngles.x() = hpr.x() - halfAngle;
+         frustumAngles.y() = hpr.x() + halfAngle;
+
+         // Set the angles to be available to any shaders.
+         osg::StateSet* ss = camera.GetOSGCamera()->getOrCreateStateSet();
+         osg::Uniform* camUniform = ss->getOrCreateUniform("cameraFOVAngleMinMax", osg::Uniform::FLOAT_VEC2);
+         camUniform->set(frustumAngles);
       }
 
    }
