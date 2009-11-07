@@ -93,6 +93,26 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void Screen::OnEnter()
+      {
+         SetEnabled(true);
+         SetVisible(true);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnExit()
+      {
+         SetEnabled(false);
+         SetVisible(false);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnUpdate(float timeDelta)
+      {
+         Update(timeDelta);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       bool Screen::CreateAnimationControl( const std::string& animType,
          SimCore::Components::HUDElement& widget,
          dtCore::RefPtr<AnimControl>& outControl )

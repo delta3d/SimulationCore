@@ -81,7 +81,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void SimpleScreen::Setup( SimCore::Components::HUDGroup* root )
       {
-         CEGUI::WindowManager *wm = CEGUI::WindowManager::getSingletonPtr();
+         CEGUI::WindowManager* wm = CEGUI::WindowManager::getSingletonPtr();
 
          CEGUI::Window* ceguiWindow = wm->loadWindowLayout( mLayoutFile );
          mRoot = new SimCore::Components::HUDElement( *ceguiWindow );
