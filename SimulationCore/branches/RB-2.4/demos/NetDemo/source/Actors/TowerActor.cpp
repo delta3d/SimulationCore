@@ -29,6 +29,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
+#include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 //#include <dtUtil/nodeprintout.h>
@@ -40,6 +41,7 @@
 #include <Actors/FortActor.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
+#include <Components/WeaponComponent.h>
 
 
 
@@ -121,6 +123,9 @@ namespace NetDemo
 
          //calling spawn will start the AI
          mAIHelper->Spawn();
+
+         // Setup the tower's weapon.
+         InitWeapon();
       }
 
       BaseClass::OnEnteredWorld();
@@ -141,6 +146,41 @@ namespace NetDemo
          sl->mTarget = this;
          sl->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(sl);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::InitWeapon()
+   {
+      // Get the weapon component that is used to create weapons.
+      WeaponComponent* weaponComp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+
+      if(weaponComp != NULL)
+      {
+         SimCore::Actors::WeaponActor* weapon = NULL;
+
+         // Create the primary weapon.
+         // --- This method will automatically add the created weapon to the world.
+         weaponComp->CreateWeapon("Weapon_MachineGun",
+            "Particle_System_Weapon_GunWithTracer",
+            "weapon_gun_flash.osg", weapon);
+
+         // Customize the new weapon.
+         if(weapon != NULL)
+         {
+            // Attach the weapon to this object.
+            weapon->SetOwner(&GetGameActorProxy());
+            AddChild(weapon, "dof_gun_01");
+
+            // Maintain references to the weapon and its proxy.
+            mWeapon = weapon;
+            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not find Weapon Component to create weapon.");
       }
    }
 
@@ -217,6 +257,11 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::Shoot(float)
    {
+      if(mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
+      }
 
       //dtCore::Transform xform;
       //osg::Vec3 enemyPos;

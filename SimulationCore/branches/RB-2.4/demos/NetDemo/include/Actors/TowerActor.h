@@ -43,6 +43,15 @@ namespace dtGame
    class Message;
 }
 
+namespace SimCore
+{
+   namespace Actors
+   {
+      class WeaponActor;
+      class WeaponActorProxy;
+   }
+}
+
 namespace NetDemo
 {
 
@@ -70,11 +79,15 @@ namespace NetDemo
          void Shoot(float);
          float GetDistance(const dtCore::Transformable& t) const;
 
+         void InitWeapon();
+
       private:
 
          dtCore::RefPtr<dtCore::Transformable> mTarget;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
+         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
