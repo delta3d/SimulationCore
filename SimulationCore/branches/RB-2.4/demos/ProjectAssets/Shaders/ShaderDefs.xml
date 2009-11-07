@@ -261,6 +261,12 @@
          <parameter name="Intensity">
             <float defaultValue="1000.0"/>
          </parameter>
+         <parameter name="lineGlowColor">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+         <parameter name="lineCenterColor">
+            <vec4 defaultValue="1.0 1.0 1.0 1.0"/>
+         </parameter>
       </shader>
    </shadergroup>
 
