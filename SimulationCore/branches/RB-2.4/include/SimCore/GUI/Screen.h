@@ -112,6 +112,23 @@ namespace SimCore
             void SetEnabled( bool enabled );
             bool IsEnabled() const;
 
+            /**
+             * To be called when the screen is entered, usually when an associated
+             * game state is entered. Override this to handle screen setup
+             */
+            virtual void OnEnter();
+
+            /**
+             * To be called when the screen is entered, usually when an associated
+             * game state is entered. Override this to handle screen shutdown.
+             */
+            virtual void OnExit();
+
+            /**
+             * To be called when the screen is being updated by a game state.
+             */
+            void OnUpdate(float timeDelta);
+
          protected:
             virtual ~Screen();
 

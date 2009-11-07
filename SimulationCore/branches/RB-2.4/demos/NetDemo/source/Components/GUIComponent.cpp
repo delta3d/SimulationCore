@@ -88,32 +88,40 @@ namespace NetDemo
       // MAIN MENU
       mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
       mScreenMainMenu->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenMainMenu, NetDemoState::STATE_MENU);
+      mScreenMainMenu->SetVisible(true);
 
       // LOBBY
       mScreenLobby = new SimCore::GUI::SimpleScreen("Lobby", "CEGUI/layouts/NetDemo/Lobby.layout");
       mScreenLobby->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenLobby, NetDemoState::STATE_LOBBY);
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
 
       // CONNECTION FAIL PROMPT
       mScreenConnectFailPrompt = new SimCore::GUI::SimpleScreen("Connection Fail Prompt", "CEGUI/layouts/NetDemo/ConnectionFailPrompt.layout");
       mScreenConnectFailPrompt->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenConnectFailPrompt, NetDemoState::STATE_LOBBY_CONNECT_FAIL);
 
       // LOADING
       mScreenLoading = new SimCore::GUI::SimpleScreen("Loading", "CEGUI/layouts/NetDemo/Loading.layout");
       mScreenLoading->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenLoading, NetDemoState::STATE_LOADING);
 
       // READY ROOM
       mScreenReadyRoom = new NetDemo::GUI::ReadyRoomScreen();
       mScreenReadyRoom->Setup(gm, mMainWindow.get());
+      RegisterScreenWithState(*mScreenReadyRoom, NetDemoState::STATE_GAME_READYROOM);
 
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
       mScreenOptions->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenOptions, NetDemoState::STATE_GAME_OPTIONS);
 
       // QUIT PROMPT
       mScreenQuitPrompt = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/QuitPrompt.layout");
       mScreenQuitPrompt->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenQuitPrompt, NetDemoState::STATE_GAME_QUIT);
 
       // Bind all buttons added to the menu system.
       BindButtons( *mMainWindow->GetCEGUIWindow() );
@@ -211,13 +219,13 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange)
    {
-      const SimCore::Components::StateType& state = stateChange.GetNewState();
+      const GameStateType& state = stateChange.GetNewState();
 
       bool isRunningState = state == NetDemoState::STATE_GAME_RUNNING;
 
       ShowMouseCursor( ! isRunningState );
 
-      mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
+      /*mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
       mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
 
       mScreenLobby->SetVisible( state == NetDemoState::STATE_LOBBY );
@@ -236,7 +244,7 @@ namespace NetDemo
       mScreenOptions->SetEnabled( state == NetDemoState::STATE_GAME_OPTIONS );
 
       mScreenQuitPrompt->SetVisible( state == NetDemoState::STATE_GAME_QUIT );
-      mScreenQuitPrompt->SetEnabled( state == NetDemoState::STATE_GAME_QUIT );
+      mScreenQuitPrompt->SetEnabled( state == NetDemoState::STATE_GAME_QUIT );*/
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -385,10 +393,56 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   bool GUIComponent::IsInState(const SimCore::Components::StateType& state) const
+   bool GUIComponent::IsInState(const GUIComponent::GameStateType& state) const
    {
-      const SimCore::Components::StateType* currentState = mAppComp->GetCurrentState();
+      const GUIComponent::GameStateType* currentState = mAppComp->GetCurrentState();
       return currentState != NULL && state == *currentState;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::RegisterScreenWithState(GUIComponent::Screen& screen, GUIComponent::GameStateType& state)
+   {
+      bool success = mStateScreenMap.insert(std::make_pair(&state, &screen)).second;
+
+      if(success)
+      {
+         using namespace SimCore::Components;
+         GameState* gameState = GetAppComponent()->GetState(&state);
+         if(gameState != NULL)
+         {
+            // Bind the screen update functor.
+            GameState::UpdateFunctor updateFunc(&screen, &Screen::OnUpdate);
+            gameState->SetUpdate(updateFunc);
+
+            typedef dtUtil::Functor<void,TYPELIST_0()> VoidFunc;
+
+            // Bind Entry method.
+            VoidFunc enterFunc(&screen, &Screen::OnEnter);
+            dtCore::RefPtr<dtUtil::Command0<void> > comEnter = new dtUtil::Command0<void>(enterFunc);
+            gameState->AddEntryCommand(comEnter.get());
+
+            // Bind Exit method.
+            VoidFunc exitFunc(&screen, &Screen::OnExit);
+            dtCore::RefPtr<dtUtil::Command0<void> > comExit = new dtUtil::Command0<void>(exitFunc);
+            gameState->AddExitCommand(comExit);
+         }
+         else
+         {
+            LOG_WARNING("Could not find the game state for state type \""
+               +state.GetName()+"\" to assign to screen \""+screen.GetName()+"\"");
+         }
+
+         screen.SetVisible(false);
+      }
+
+      return success;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   GUIComponent::Screen* GUIComponent::GetScreenForState(GUIComponent::GameStateType& state)
+   {
+      StateScreenMap::const_iterator foundIter = mStateScreenMap.find(&state);
+      return foundIter != mStateScreenMap.end() ? foundIter->second : NULL;
    }
 
 }

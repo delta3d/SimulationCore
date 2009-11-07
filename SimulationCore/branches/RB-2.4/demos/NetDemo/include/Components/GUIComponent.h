@@ -62,6 +62,7 @@ namespace SimCore
 
    namespace GUI
    {
+      class Screen;
       class SimpleScreen;
    }
 }
@@ -123,13 +124,22 @@ namespace NetDemo
 
          bool IsButtonType( const std::string& buttonType ) const;
 
-         bool IsInState(const SimCore::Components::StateType& state) const;
+         typedef SimCore::Components::StateType GameStateType;
+         bool IsInState(const GameStateType& state) const;
+
+         typedef SimCore::GUI::Screen Screen;
+         bool RegisterScreenWithState(Screen& screen, GameStateType& state);
+         Screen* GetScreenForState(GameStateType& state);
 
       private:
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
+
+         //
+         typedef std::map<GameStateType*, Screen*> StateScreenMap;
+         StateScreenMap mStateScreenMap;
 
          // Screens
          dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
