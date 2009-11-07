@@ -653,7 +653,8 @@ namespace SimCore
          osg::Vec3 vRandVec(linearVelocities);
 
          newActor->SetLinearVelocity(vRandVec);
-         std::cout << vRandVec << std::endl;
+
+         // DEBUG: std::cout << vRandVec << std::endl;
 
          vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
                   GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
