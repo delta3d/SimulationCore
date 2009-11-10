@@ -23,6 +23,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/CollisionGroupEnum.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 #include <dtDAL/project.h>
@@ -132,6 +133,7 @@ namespace SimCore
          dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
          pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
          pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
          mHelper->AddPhysicsObject(*pobj);
 #endif
       }
@@ -250,6 +252,8 @@ namespace SimCore
                LOG_ERROR("No PhysX World Component exists in the Game Manager.");
             }
 
+            //Set the helper name to match the actor name.
+            mHelper->SetName(GetName());
             comp->RegisterHelper(*mHelper);
          }
       }
