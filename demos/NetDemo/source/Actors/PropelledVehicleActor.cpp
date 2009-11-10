@@ -108,7 +108,7 @@ namespace NetDemo
       mHelper->GetMainPhysicsObject()->SetTransformAsVisual(xform);
       osg::Vec3 oldInertia = mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->GetInertia();
       //std::cout<< oldInertia << std::endl;
-      mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->SetInertia(osg::Vec3(20000, 10000, 20000));
+      mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->SetInertia(osg::Vec3(10000, 8000, 10000));
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -247,21 +247,21 @@ namespace NetDemo
       po->AddForce(dragVec);
 
 
-      osg::Vec3 up;
-      xform.GetRow(2, up);
-
-      osg::Vec3 zup(0.0, 0.0, 1.0);
-
-      float mag = (up * zup);
-
-      // If you are not upside down, that is, we apply a stranger downward force as you get
-      // more and more rotated.
-      if (mag > 0.0)
-      {
-         float force = -(po->GetMass() * (1.0 - mag) * 3.3);
-         osg::Vec3 forceVec = up * force;
-         po->AddForce(forceVec);
-      }
+//      osg::Vec3 up;
+//      xform.GetRow(2, up);
+//
+//      osg::Vec3 zup(0.0, 0.0, 1.0);
+//
+//      float mag = (up * zup);
+//
+//      // If you are not upside down, that is, we apply a stranger downward force as you get
+//      // more and more rotated.
+//      if (mag > 0.0)
+//      {
+//         float force = -(po->GetMass() * (1.0 - mag) * 3.3);
+//         osg::Vec3 forceVec = up * force;
+//         po->AddForce(forceVec);
+//      }
 
       //std::cout << "Angular Velocity: " << angVel << std::endl;
 //      std::cout << "Linear Velocity: " << po->GetLinearVelocity() << std::endl;
