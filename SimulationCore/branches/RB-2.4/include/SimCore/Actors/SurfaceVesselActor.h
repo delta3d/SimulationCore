@@ -70,11 +70,8 @@ namespace SimCore
          void LoadWaterSpraySideFile(const std::string &fileName);
          void LoadWaterSprayBackFile(const std::string &fileName);
        
-         void SetWaterSprayFrontOffsetStarboard(const osg::Vec3& vec);
-         osg::Vec3 GetWaterSprayFrontOffsetStarboard() const;
-
-         void SetWaterSprayFrontOffsetPort(const osg::Vec3& vec);
-         osg::Vec3 GetWaterSprayFrontOffsetPort() const;
+         void SetWaterSprayFrontOffset(const osg::Vec3& vec);
+         osg::Vec3 GetWaterSprayFrontOffset() const;
 
          void SetWaterSpraySideOffsetStarboard(const osg::Vec3& vec);
          osg::Vec3 GetWaterSpraySideOffsetStarboard() const;
@@ -119,8 +116,7 @@ namespace SimCore
          float mSprayVelocityMax;
          float mSprayUpdateTimer;
 
-         osg::Vec3 mWaterSprayFrontOffsetStarboard;
-         osg::Vec3 mWaterSprayFrontOffsetPort;
+         osg::Vec3 mWaterSprayFrontOffset;
 
          osg::Vec3 mWaterSpraySideOffsetStarboard;
          osg::Vec3 mWaterSpraySideOffsetPort;
@@ -129,14 +125,12 @@ namespace SimCore
 
          osg::Vec3 mLastPos;
 
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontStarboardProxy;
-         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontPortProxy;
+         dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayFrontProxy;
          dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySideStarboardProxy;
          dtCore::RefPtr<DynamicParticlesProxy> mWaterSpraySidePortProxy;
          dtCore::RefPtr<DynamicParticlesProxy> mWaterSprayBackProxy;
 
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayFrontStarboard;
-         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayFrontPort;
+         dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayFront;
          dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySideStarboard;
          dtCore::ObserverPtr<DynamicParticlesActor> mWaterSpraySidePort;
          dtCore::ObserverPtr<DynamicParticlesActor> mWaterSprayBack;

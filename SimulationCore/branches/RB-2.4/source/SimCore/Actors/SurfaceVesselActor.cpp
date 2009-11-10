@@ -99,15 +99,10 @@ namespace SimCore
             "Loads the particle system for the water spray effect on the back of the ship", group));
 
          
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSprayFrontOffsetStarboard", "Water Spray Front Offset Starboard", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffsetStarboard),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffsetStarboard),
+         AddProperty(new dtDAL::Vec3ActorProperty("WaterSprayFrontOffset", "Water Spray Front Offset", 
+            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffset),
+            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffset),
             "The local offset on the starboard side to apply the water spray particle effect on the front of the ship.", group));
-
-         AddProperty(new dtDAL::Vec3ActorProperty("WaterSprayFrontOffsetPort", "Water Spray Front Offset Port", 
-            dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayFrontOffsetPort),
-            dtDAL::Vec3ActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayFrontOffsetPort),
-            "The local offset on the port side to apply the water spray particle effect on the front of the ship.", group));
 
          AddProperty(new dtDAL::Vec3ActorProperty("WaterSpraySideOffsetStarboard", "Water Spray Side Offset Starboard", 
             dtDAL::Vec3ActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSpraySideOffsetStarboard),
@@ -184,23 +179,18 @@ namespace SimCore
       {
          Platform::OnEnteredWorld();
 
-         if(mWaterSprayFrontStarboard.valid() && mWaterSprayFrontPort.valid())
+         if(mWaterSprayFront.valid())
          {
-            BindShaderToParticleSystem(mWaterSprayFrontStarboard->GetParticleSystem(), "WaterSprayParticle");
-            BindShaderToParticleSystem(mWaterSprayFrontPort->GetParticleSystem(), "WaterSprayParticle");
+            BindShaderToParticleSystem(mWaterSprayFront->GetParticleSystem(), "WaterSprayParticle");
 
             // Attach the particles to the parent
-            GetOSGNode()->asGroup()->addChild(mWaterSprayFrontStarboard->GetOSGNode());
-            GetOSGNode()->asGroup()->addChild(mWaterSprayFrontPort->GetOSGNode());
+            GetOSGNode()->asGroup()->addChild(mWaterSprayFront->GetOSGNode());
 
             // Offset the particles 
             dtCore::Transform transform;
 
-            transform.SetTranslation(mWaterSprayFrontOffsetStarboard);
-            mWaterSprayFrontStarboard->SetTransform(transform, dtCore::Transformable::REL_CS);
-
-            transform.SetTranslation(mWaterSprayFrontOffsetPort);
-            mWaterSprayFrontPort->SetTransform(transform, dtCore::Transformable::REL_CS);            
+            transform.SetTranslation(mWaterSprayFrontOffset);
+            mWaterSprayFront->SetTransform(transform, dtCore::Transformable::REL_CS);          
          }
     
          if(mWaterSpraySideStarboard.valid() && mWaterSpraySidePort.valid())
@@ -286,27 +276,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::SetWaterSprayFrontOffsetPort( const osg::Vec3& vec )
+      osg::Vec3 SurfaceVesselActor::GetWaterSprayFrontOffset() const
       {
-         mWaterSprayFrontOffsetPort = vec;
+         return mWaterSprayFrontOffset;
       }
 
       //////////////////////////////////////////////////////////
-      osg::Vec3 SurfaceVesselActor::GetWaterSprayFrontOffsetPort() const
+      void SurfaceVesselActor::SetWaterSprayFrontOffset( const osg::Vec3& vec )
       {
-         return mWaterSprayFrontOffsetPort;
-      }
-
-      //////////////////////////////////////////////////////////
-      osg::Vec3 SurfaceVesselActor::GetWaterSprayFrontOffsetStarboard() const
-      {
-         return mWaterSprayFrontOffsetStarboard;
-      }
-
-      //////////////////////////////////////////////////////////
-      void SurfaceVesselActor::SetWaterSprayFrontOffsetStarboard( const osg::Vec3& vec )
-      {
-         mWaterSprayFrontOffsetStarboard = vec;
+         mWaterSprayFrontOffset = vec;
       }
 
       //////////////////////////////////////////////////////////
@@ -393,16 +371,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void SurfaceVesselActor::LoadWaterSprayFrontFile(const std::string& fileName)
       {
-         if(!mWaterSprayFrontStarboard.valid())
+         if(!mWaterSprayFront.valid())
          {
-            mWaterSprayFrontStarboardProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontStarboard");
-            mWaterSprayFrontStarboard = GetParticlesActor(mWaterSprayFrontStarboardProxy.get());
-         }
-
-         if(!mWaterSprayFrontPort.valid())
-         {
-            mWaterSprayFrontPortProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontPort");
-            mWaterSprayFrontPort = GetParticlesActor(mWaterSprayFrontPortProxy.get());
+            mWaterSprayFrontProxy = CreatDynamicParticleSystemProxy(fileName, "WaterSprayFrontStarboard");
+            mWaterSprayFront = GetParticlesActor(mWaterSprayFrontProxy.get());
          }
       }
 
@@ -436,10 +408,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void SurfaceVesselActor::SetWaterSprayEnabled( bool enable )
       {
-         if(mWaterSprayFrontStarboard.valid() && mWaterSprayFrontPort.valid())
+         if(mWaterSprayFront.valid())
          {
-            mWaterSprayFrontStarboard->SetEnabled(enable);
-            mWaterSprayFrontPort->SetEnabled(enable);
+            mWaterSprayFront->SetEnabled(enable);
          }
 
          if(mWaterSpraySideStarboard.valid() && mWaterSpraySidePort.valid())
@@ -457,9 +428,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       bool SurfaceVesselActor::GetWaterSprayEnabled()
       {
-         if(mWaterSprayFrontStarboard.valid())
+         if(mWaterSprayFront.valid())
          {
-            return mWaterSprayFrontStarboard->IsEnabled();
+            return mWaterSprayFront->IsEnabled();
          }
          return false;
       }
@@ -541,15 +512,13 @@ namespace SimCore
          }
 
          // Update the particle systems.
-         if(mWaterSprayFrontStarboard.valid() && mWaterSprayFrontPort.valid())
+         if(mWaterSprayFront.valid())
          {
-            mWaterSprayFrontStarboard->Update(simTimeDelta);
-            mWaterSprayFrontPort->Update(simTimeDelta);
+            mWaterSprayFront->Update(simTimeDelta);
 
             if(allowInterpolation)
             {
-               mWaterSprayFrontStarboard->InterpolateAllLayers(interpTime, ratio);
-               mWaterSprayFrontPort->InterpolateAllLayers(interpTime, ratio);
+               mWaterSprayFront->InterpolateAllLayers(interpTime, ratio);
             }
          }
 
