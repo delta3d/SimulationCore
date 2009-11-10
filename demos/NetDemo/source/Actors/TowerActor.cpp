@@ -257,11 +257,11 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::Shoot(float)
    {
-      if(mWeapon.valid())
-      {
-         mWeapon->SetTriggerHeld(true);
-         mWeapon->Fire();
-      }
+      //if(mWeapon.valid())
+      //{
+      //   mWeapon->SetTriggerHeld(true);
+      //   mWeapon->Fire();
+      //}
 
       //dtCore::Transform xform;
       //osg::Vec3 enemyPos;
