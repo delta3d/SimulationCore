@@ -99,19 +99,19 @@ namespace SimCore
              * Loads in the non damaged model for an entity
              * @param fileName The name of the file to load
              */
-            void LoadNonDamagedFile(const std::string &fileName);
+            void LoadNonDamagedFile(const std::string& fileName);
 
             /**
              * Loads in the damaged model for an entity
              * @param fileName The name of the file to load
              */
-            void LoadDamagedFile(const std::string &fileName);
+            void LoadDamagedFile(const std::string& fileName);
 
             /**
              * Loads in the destroyed model for an entity
              * @param fileName The name of the file to load
              */
-            void LoadDestroyedFile(const std::string &fileName);
+            void LoadDestroyedFile(const std::string& fileName);
 
             /**
              * Initializes the actual actor the derived proxy will represent

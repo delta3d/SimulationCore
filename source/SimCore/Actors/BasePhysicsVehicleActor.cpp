@@ -139,7 +139,7 @@ namespace SimCore
 
             // Disable gravity until the map has loaded terrain under our feet...
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
-            //GetPhysicsHelper()->TurnObjectsGravityOff("Default");
+            GetPhysicsHelper()->GetMainPhysicsObject()->SetGravityEnabled(false);
          }
 #endif
       }
@@ -202,6 +202,7 @@ namespace SimCore
 #else
             xform.SetTranslation(terrainPoint);
             physicsObject->SetTransform(xform);
+            physicsObject->SetGravityEnabled(true);
 #endif
          }
          // DEBUG:

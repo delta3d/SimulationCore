@@ -52,6 +52,8 @@
 #ifndef AGEIA_PHYSICS
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
 #endif
 
 using dtCore::RefPtr;
@@ -93,6 +95,12 @@ namespace SimCore
                PlatformWithPhysics* temp;
                mPlatformWithPhysicsActorProxy->GetActor(temp);
                mPlatformWithPhysics = temp;
+               dtDAL::ResourceActorProperty* res = NULL;
+               mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR, res);
+               dtDAL::ResourceDescriptor truck("StaticMeshes:NetDemo:Vehicles:Truck.ive");
+               res->SetValue(&truck);
+               mPlatformWithPhysicsActorProxy->GetProperty(PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR, res);
+               res->SetValue(&truck);
                CPPUNIT_ASSERT(mPlatformWithPhysics.valid());
             }
 
@@ -118,9 +126,22 @@ namespace SimCore
 
             void TestInit()
             {
+#ifndef AGEIA_PHYSICS
                CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsHelper() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsHelper()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT(po->GetBodyWrapper() == NULL);
                mGM->AddActor(*mPlatformWithPhysicsActorProxy, false, false);
 
+               dtPhysics::BodyWrapper* bw = po->GetBodyWrapper();
+               dtCore::ObserverPtr<dtPhysics::BodyWrapper> bwOb = bw;
+               CPPUNIT_ASSERT(bw != NULL);
+               mPlatformWithPhysics->SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::MODERATE_DAMAGE);
+
+               CPPUNIT_ASSERT_MESSAGE("the physics object should be initialized", po->GetBodyWrapper() != NULL);
+               CPPUNIT_ASSERT_MESSAGE("the physics object body should not be same as before because it should have be reloaded",
+                        po->GetBodyWrapper() != bw);
+               CPPUNIT_ASSERT_MESSAGE("The original body should be deleted", !bwOb.valid());
+#endif
             }
 
          private:
