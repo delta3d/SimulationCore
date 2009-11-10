@@ -1229,8 +1229,8 @@ namespace SimCore
             if(!mWaveTexture.valid())
             {
                //TODO: GET DIMENSIONS OF SCREEN
-               int width = 256;
-               int height = 256;
+               int width = 512;
+               int height = 512;
 
                mWaveCamera = new osg::Camera();
                mWaveCamera->setRenderOrder(osg::Camera::PRE_RENDER, 1);

@@ -93,7 +93,7 @@ void main (void)
    vec3 waveNormal = vec3(0.0, 0.0, 0.0); 
    vec2 waveCoords = 0.025 * shaderVertexNormal.xy + vec2(combinedPos.xy / textureScale);   
    waveCoords /= (0.5 + (modForFOV * 0.5) );
-   waveCoords = rotateTexCoords(waveCoords, waveDirection);
+   //waveCoords = rotateTexCoords(waveCoords, waveDirection);
 
    float fadeAmt = edgeFade(fadeTransition, waveCoords);
    waveNormal += fadeAmt * SampleNormalMap(waveTexture, waveCoords);
@@ -107,13 +107,15 @@ void main (void)
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
 
-   //float distantTurbulence = max(-1.0 * dot(waveNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
-   //distantTurbulence = clamp(2000.0 * pow(distantTurbulence, 4.0), 0.0, 1.0);
+   float distantTurbulence = max(-1.0 * dot(waveNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
+   distantTurbulence = clamp(100.0 * pow(distantTurbulence, 2.0), 0.0, 1.0);
+   float distantTurbDistScale = pow(1.0 * (1.0 - distanceScale), 2.0);
+   distantTurbulence *= distantTurbDistScale;
 
    float waveNormalFadeOut = clamp(distToFragment / 200.0, 0.0, 1.0);
    waveNormal = mix(waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
    waveNormal = normalize(waveNormal);
-   vec3 normal = (1.0 * normalize(shaderVertexNormal)) + waveNormal;
+   vec3 normal = (2.0 * normalize(shaderVertexNormal)) + waveNormal;
    normal = normalize(normal);   
 
    //this inverts the normal if we are underwater
@@ -158,9 +160,9 @@ void main (void)
       vec2 foamTexCoords = 0.1 * vec2(combinedPos.x, (0.66 * elapsedTime) - combinedPos.y);
       foamTexCoords = rotateTexCoords(foamTexCoords, waveDirection);
       vec4 foamColor = texture2D(foamTexture, foamTexCoords);
-
+   
       //this is the cumulative foam effect contribution
-      foamColor = (foamColor * foamAmt) + (foamColor * distfoamAmt);
+      foamColor.xyz = lightContribFinal * foamColor * (foamAmt + distfoamAmt);
       
       vec3 waterColorContrib = lightContribFinal * (mix(reflectColor.xyz, 0.2 * deepWaterColor.xyz, waveNDotL));
       
@@ -173,7 +175,7 @@ void main (void)
       //adds in the fog contribution
       vec4 finalColor = vec4(mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x), WaterColor.a);
       gl_FragColor = finalColor + foamColor;
-      //gl_FragColor = vec4(vec3(distantTurbulenceDistanceScale), 1.0);//finalColor + foamColor;
+      //gl_FragColor = vec4(vec3(distantTurbDistScale), 1.0);//finalColor + foamColor;
       //gl_FragColor = vec4(vertexWaveDir.x, vertexWaveDir.y, 0.0, WaterColor.a);
       // gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
       // vec3 waveColor = 1.0 + waveNormal.xyz;
