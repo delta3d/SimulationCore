@@ -7,7 +7,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-11-03T22:22:20-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-11-09T22:48:25-05:00</lastUpdateTimestamp>
         <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -440,7 +440,7 @@
             <property>
                 <name>Translation</name>
                 <vec3>
-                    <value1>-57.365677</value1>
+                    <value1>-57.000000</value1>
                     <value2>0.000000</value2>
                     <value3>0.000000</value3>
                 </vec3>
@@ -2086,7 +2086,7 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>0.000000</value2>
-                    <value3>1.000000</value3>
+                    <value3>0.870000</value3>
                 </vec3>
             </property>
             <property>
@@ -2111,7 +2111,7 @@
             </property>
             <property>
                 <name>Engine Torque</name>
-                <float>5000</float>
+                <float>5100</float>
             </property>
             <property>
                 <name>Max Break Torque</name>
@@ -2135,7 +2135,7 @@
             </property>
             <property>
                 <name>Wheel Width</name>
-                <float>0.80000007</float>
+                <float>0.80000002</float>
             </property>
             <property>
                 <name>Suspension Travel</name>
@@ -2147,11 +2147,11 @@
             </property>
             <property>
                 <name>Suspension Damping Coefficient</name>
-                <float>30.299999</float>
+                <float>70</float>
             </property>
             <property>
                 <name>Suspension Spring Target</name>
-                <float>0.079999998</float>
+                <float>0.1350001</float>
             </property>
             <property>
                 <name>Max Steer Angle</name>
@@ -2175,11 +2175,11 @@
             </property>
             <property>
                 <name>Tire Stiffness</name>
-                <float>30</float>
+                <float>40</float>
             </property>
             <property>
                 <name>Tire Restitution</name>
-                <float>80</float>
+                <float>90</float>
             </property>
             <property>
                 <name>AeroDynDragCoefficient</name>
@@ -3142,7 +3142,7 @@
                 <vec3>
                     <value1>0.864559</value1>
                     <value2>0.027809</value2>
-                    <value3>-1.788407</value3>
+                    <value3>-1.788434</value3>
                 </vec3>
             </property>
             <property>
