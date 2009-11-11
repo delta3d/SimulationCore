@@ -263,6 +263,9 @@ namespace StealthGM
       float mTextYSeparation;
       float mTextHeight;
 
+      bool mZoomToolEnabled;
+      bool mCompass360WasEnabled;
+
       bool mUsePhysicsDemoMode;
 
       const dtGame::LogStateEnumeration* mLastLogState;
