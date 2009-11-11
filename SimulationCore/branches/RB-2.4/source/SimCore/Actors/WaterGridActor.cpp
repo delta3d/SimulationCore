@@ -1006,7 +1006,7 @@ namespace SimCore
          // Camera Cut Point is an estimated value for the cut point - scaled by all the FoV modifiers.
          bool quitLooking = false;
          int numIgnored = 0;
-         float cameraCutPoint = 0.5 + cameraHeight / (8.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
+         float cameraCutPoint = 0.5 + cameraHeight / (12.0 * mModForWaveLength * mCameraFoVScalar * mModForFOV); // Used to pick waves
          while(iter != endIter && !quitLooking)
          {
             Wave &nextWave = (*iter);
@@ -1113,15 +1113,26 @@ namespace SimCore
          dtCore::RefPtr<osg::Vec3Array> pVerts = new osg::Vec3Array(numVerts);
          dtCore::RefPtr<osg::IntArray> pIndices = new osg::IntArray(numIndices);
 
-         float a0 = 0.01f;
-         float a1 = 1.0f; // 5.0f;
-         float outerMostRingDistance = 5000.0; // the furthest rings get an extra reach.
-         float middleRingDistance = 20.0; // Middle rings get a minor boost too.
-         int numOuterRings = 15;
-         int numMiddleRings = 20;
-         float innerExpBase = 1.02f;
-         float middleExpBase = 1.2;
-         float outerExpBase = 1.19f;
+         //float a0 = 0.01f;
+         //float a1 = 1.0f; // 5.0f;
+         //float outerMostRingDistance = 5000.0; // the furthest rings get an extra reach.
+         //float middleRingDistance = 20.0; // Middle rings get a minor boost too.
+         //int numOuterRings = 15;
+         //int numMiddleRings = 20;
+         //float innerExpBase = 1.02f;
+         //float middleExpBase = 1.2;
+         //float outerExpBase = 1.19f;
+         ////float exponent = 3;
+
+         float a0 = 0.05f;
+         float a1 = 1.25f; // 5.0f;
+         float outerMostRingDistance = 1000.0; // the furthest rings get an extra reach.
+         float middleRingDistance = 10.0; // Middle rings get a minor boost too.
+         int numOuterRings = 5;
+         int numMiddleRings = 15;
+         float innerExpBase = 1.025f;
+         float middleExpBase = 1.05;
+         float outerExpBase = 1.5f;
          //float exponent = 3;
 
          float r = a0;
@@ -1229,8 +1240,8 @@ namespace SimCore
             if(!mWaveTexture.valid())
             {
                //TODO: GET DIMENSIONS OF SCREEN
-               int width = 512;
-               int height = 512;
+               int width = 256;
+               int height = 256;
 
                mWaveCamera = new osg::Camera();
                mWaveCamera->setRenderOrder(osg::Camera::PRE_RENDER, 1);
