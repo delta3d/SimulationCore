@@ -67,7 +67,7 @@ namespace SimCore
 
             void SetInitialState(const StateType* stateType);
 
-            const StateType* GetCurrentState();
+            const StateType* GetCurrentState() const;
             GameState* GetState(const StateType* stateType);
 
             /** Forces the given State to now be the 'current' State.*/
@@ -83,6 +83,9 @@ namespace SimCore
             GameState* AddState(const StateType* stateType);
             void AddTransition(const EventType* transitionEvent, const StateType* fromState, const StateType* toState);
             bool RemoveTransition(const EventType* eventType, const StateType* from, const StateType* to);
+
+            typedef SimCore::Components::StateType GameStateType;
+            bool IsInState(const GameStateType& state) const;
 
          protected:
             virtual ~GameStateComponent();
