@@ -103,6 +103,9 @@ namespace NetDemo
 
          void CreateServerSideActors();
 
+         typedef SimCore::Components::StateType GameStateType;
+         bool IsRunningState(const GameStateType& state) const;
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);

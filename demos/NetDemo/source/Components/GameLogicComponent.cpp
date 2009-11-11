@@ -70,6 +70,16 @@ namespace NetDemo
       AddState(&NetDemoState::STATE_SCORE_SCREEN);
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   bool GameLogicComponent::IsRunningState(const GameLogicComponent::GameStateType& state) const
+   {
+      return &state == &NetDemoState::STATE_GAME_RUNNING
+         || &state == &NetDemoState::STATE_GAME_READYROOM
+         || &state == &NetDemoState::STATE_GAME_DEAD
+         || &state == &NetDemoState::STATE_GAME_OPTIONS
+         || &state == &NetDemoState::STATE_GAME_QUIT
+         || &state == &NetDemoState::STATE_GAME_UNKNOWN;
+   }
 
    //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::OnAddedToGM()
