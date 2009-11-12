@@ -1357,7 +1357,8 @@
     ***************************************************
     -->
     <WidgetLook name="WindowsLook/ItemListbox">
-        <NamedArea name="ItemRenderArea">
+       <PropertyDefinition name="BackgroundColours" initialValue="tl:FFDFDFDF tr:FFDFDFDF bl:FFDFDFDF br:FFDFDFDF" redrawOnWrite="true" />
+       <NamedArea name="ItemRenderArea">
             <Area>
                 <Dim type="LeftEdge" ><ImageDim imageset="NetDemo" image="StaticFrameLeft" dimension="Width" /></Dim>
                 <Dim type="TopEdge" ><ImageDim imageset="NetDemo" image="StaticFrameTop" dimension="Height" /></Dim>
@@ -1460,12 +1461,16 @@
         </ImagerySection>
         <StateImagery name="Enabled">
             <Layer>
-                <Section section="main" />
+                <Section section="main">
+                   <ColourRectProperty name="BackgroundColours" />
+                </Section>
             </Layer>
         </StateImagery>
         <StateImagery name="Disabled">
             <Layer>
-                <Section section="main" />
+                <Section section="main">
+                   <ColourRectProperty name="BackgroundColours" />
+                </Section>
             </Layer>
         </StateImagery>
     </WidgetLook>
