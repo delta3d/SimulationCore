@@ -464,8 +464,9 @@ namespace SimCore
          osg::Vec3 inOutPoints[3] )
       {
          using namespace SimCore::Actors;
-         BaseEntityActorProxy::DomainEnum& domain = GetDomain( data );
+         BaseEntityActorProxy::DomainEnum& domain = GetDomain(data);
 
+         // Do the clamping...
          if (mSurfaceWater.valid() && IsWaterOnlyDomain( domain ))
          {
             bool isSub = domain == BaseEntityActorProxy::DomainEnum::SUBMARINE;
@@ -474,13 +475,13 @@ namespace SimCore
             osg::Vec3 pos;
             xform.GetTranslation( pos );
 
-            GetWaterSurfaceHit( pos.z(), inOutPoints[0], normal, ! isSub, isSub );
-            GetWaterSurfaceHit( pos.z(), inOutPoints[1], normal, ! isSub, isSub );
-            GetWaterSurfaceHit( pos.z(), inOutPoints[2], normal, ! isSub, isSub );
+            GetWaterSurfaceHit(pos.z(), inOutPoints[0], normal, ! isSub, isSub);
+            GetWaterSurfaceHit(pos.z(), inOutPoints[1], normal, ! isSub, isSub);
+            GetWaterSurfaceHit(pos.z(), inOutPoints[2], normal, ! isSub, isSub);
          }
          else
          {
-            BaseClass::GetSurfacePoints( proxy, data, xform, inOutPoints );
+            BaseClass::GetSurfacePoints(proxy, data, xform, inOutPoints);
          }
       }
 
@@ -630,14 +631,32 @@ namespace SimCore
       void MultiSurfaceClamper::UpdatePointBuoyancy_Simple(
          MultiSurfaceRuntimeData& inOutData, osg::Vec3 inOutPoints[3] )
       {
-         float timeStep = GetCurrentSimTime() - inOutData.GetLastClampedTime();
-         dtUtil::Clamp(timeStep, 0.0f, inOutData.GetMaxTimeStep());
+         // Get the simulation time delta.
+         float simTimeDelta = GetCurrentSimTime() - inOutData.GetLastClampedTime();
+         if(simTimeDelta >= MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP)
+         {
+            simTimeDelta = MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP;
+         }
+
+         // Calculate the size of the vessel.
+         {
+            osg::Vec3 rearCenter(inOutPoints[1] + inOutPoints[2]);
+            rearCenter *= 0.5;
+            osg::Vec3 lengthVec(inOutPoints[0] - rearCenter);
+            osg::Vec3 widthVec(inOutPoints[1] - inOutPoints[2]);
+
+            float sizeFactor = (widthVec.length() * lengthVec.length())/500.0f;
+            dtUtil::Clamp(sizeFactor, MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, 1.0f);
+            simTimeDelta /= sizeFactor;
+            dtUtil::Clamp(simTimeDelta, MultiSurfaceClamper::MultiSurfaceRuntimeData::DEFAULT_MAX_TIME_STEP, 1.0f);
+         }
+
 
          // Get the surface points and their data.
          SurfacePointDataArray& pointData = inOutData.GetSurfacePointData();
-         inOutPoints[0].z() = pointData[0].GetLastClampPoint().z() + ((inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * timeStep) * 4.0f;
-         inOutPoints[1].z() = pointData[1].GetLastClampPoint().z() + ((inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * timeStep) * 4.0f;
-         inOutPoints[2].z() = pointData[2].GetLastClampPoint().z() + ((inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * timeStep) * 4.0f;
+         inOutPoints[0].z() = pointData[0].GetLastClampPoint().z() + ((inOutPoints[0].z() - pointData[0].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
+         inOutPoints[1].z() = pointData[1].GetLastClampPoint().z() + ((inOutPoints[1].z() - pointData[1].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
+         inOutPoints[2].z() = pointData[2].GetLastClampPoint().z() + ((inOutPoints[2].z() - pointData[2].GetLastClampPoint().z()) * simTimeDelta) * simTimeDelta;
 
          pointData[0].SetLastClampPoint( inOutPoints[0] );
          pointData[1].SetLastClampPoint( inOutPoints[1] );
