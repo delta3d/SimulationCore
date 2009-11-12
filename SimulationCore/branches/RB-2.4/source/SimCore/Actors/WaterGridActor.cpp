@@ -1515,11 +1515,11 @@ namespace SimCore
          {
             SetChoppiness(ChoppinessSettings::CHOP_MILD);
          }
-         else if(seaState <= 1.0668 || seaState == 3)
+         else if(waveHeight <= 1.0668 || seaState == 3)
          {
             SetChoppiness(ChoppinessSettings::CHOP_MED);
          }
-         else //if(seaState <= 1.0668 || seaState == 4)
+         else //if(waveHeight <= 1.0668 || seaState == 4)
          {
             SetChoppiness(ChoppinessSettings::CHOP_ROUGH);
          }
