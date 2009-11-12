@@ -4647,14 +4647,6 @@
    
    <!-- LIST BOX ITEM -->
    <WidgetLook name="NetDemo/ListBoxItem">
-      <PropertyLinkDefinition name="Action" widget=".Button" targetProperty="Action" initialValue="" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextFont" widget=".Button" targetProperty="Font" initialValue="Arial-Bold-16" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonText" widget=".Button" targetProperty="Text" initialValue="" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Normal" widget=".Button" targetProperty="NormalTextColour" initialValue="FFFFFFFF" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Hover" widget=".Button" targetProperty="HoverTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Pushed" widget=".Button" targetProperty="PushedTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Disabled" widget=".Button" targetProperty="DisabledTextColour" initialValue="FF888888" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonVisible" widget=".Button" targetProperty="Visible" initialValue="False" redrawOnWrite="true"/>
       <PropertyDefinition name="ButtonWidth" initialValue="1.0" redrawOnWrite="true" />
       <PropertyDefinition name="TextColour" initialValue="FF5555CC" redrawOnWrite="true" />
       <PropertyDefinition name="DisabledTextColour" initialValue="FFCCCCCC" redrawOnWrite="true" />
@@ -4666,27 +4658,15 @@
       <PropertyDefinition name="MarginTop" initialValue="0" layoutOnWrite="true"/>
       <PropertyDefinition name="TextFormatHorizontal" initialValue="WordWrapLeftAligned" redrawOnWrite="true" layoutOnWrite="true" />
       <PropertyDefinition name="TextFormatVertical" initialValue="CentreAligned" redrawOnWrite="true" layoutOnWrite="true" />
+      <PropertyLinkDefinition name="Action" widget=".Button" targetProperty="Action" initialValue="" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextFont" widget=".Button" targetProperty="Font" initialValue="Arial-Bold-16" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonText" widget=".Button" targetProperty="Text" initialValue="" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Normal" widget=".Button" targetProperty="NormalTextColour" initialValue="FFFFFFFF" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Hover" widget=".Button" targetProperty="HoverTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Pushed" widget=".Button" targetProperty="PushedTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonTextColour_Disabled" widget=".Button" targetProperty="DisabledTextColour" initialValue="FF888888" redrawOnWrite="true"/>
+      <PropertyLinkDefinition name="ButtonVisible" widget=".Button" targetProperty="Visible" initialValue="False" redrawOnWrite="true"/>
       <Property name="Selectable" value="True" />
-      <ImagerySection name="label">
-         <TextComponent>
-            <Area>
-               <Dim type="LeftEdge">
-                  <AbsoluteDim value="0" />
-               </Dim>
-               <Dim type="TopEdge">
-                  <AbsoluteDim value="0" />
-               </Dim>
-               <Dim type="RightEdge">
-                  <UnifiedDim scale="1" type="RightEdge" />
-               </Dim>
-               <Dim type="BottomEdge">
-                  <UnifiedDim scale="1" type="BottomEdge" />
-               </Dim>
-            </Area>
-            <VertFormatProperty name="TextFormatVertical" />
-            <HorzFormatProperty name="TextFormatHorizontal" />
-         </TextComponent>
-      </ImagerySection>
       <NamedArea name="ContentSize">
          <Area>
             <Dim type="LeftEdge" >
@@ -4757,6 +4737,26 @@
             </Dim>
          </Area>
       </Child>
+      <ImagerySection name="label">
+         <TextComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <VertFormatProperty name="TextFormatVertical" />
+            <HorzFormatProperty name="TextFormatHorizontal" />
+         </TextComponent>
+      </ImagerySection>
       <StateImagery name="Enabled">
          <Layer>
             <Section section="label">
