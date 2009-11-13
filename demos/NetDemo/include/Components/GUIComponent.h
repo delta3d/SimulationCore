@@ -72,6 +72,11 @@ namespace NetDemo
    namespace GUI
    {
       class ReadyRoomScreen;
+
+      namespace Effects
+      {
+         class ButtonHighlight;
+      }
    }
 }
 
@@ -79,6 +84,16 @@ namespace NetDemo
 
 namespace NetDemo
 {
+   /////////////////////////////////////////////////////////////////////////////
+   // TYPE DEFINITIONS (Use to switch an external class to this namespace)
+   /////////////////////////////////////////////////////////////////////////////
+   typedef SimCore::GUI::SimpleScreen SimpleScreen;
+   typedef SimCore::GUI::Screen Screen;
+   typedef SimCore::Components::StateType GameStateType;
+   typedef NetDemo::GUI::Effects::ButtonHighlight ButtonHighlight;
+
+
+
    /////////////////////////////////////////////////////////////////////////////
    // CLASS CODE
    /////////////////////////////////////////////////////////////////////////////
@@ -101,6 +116,7 @@ namespace NetDemo
          virtual ~GUIComponent();
 
          void InitializeCEGUI(const std::string& schemeFile);
+         void InitializeEffectsOverlays();
 
          void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);
 
@@ -115,7 +131,9 @@ namespace NetDemo
           */
          const CEGUI::Window* GetWidgetFromEventArgs( const CEGUI::EventArgs& args ) const;
 
-         bool OnButtonClicked( const CEGUI::EventArgs& args );
+         bool OnButtonClicked(const CEGUI::EventArgs& args);
+         bool OnButtonFocusGain(const CEGUI::EventArgs& args);
+         bool OnButtonFocusLost(const CEGUI::EventArgs& args);
 
          void HandleButton(const std::string& buttonType, std::string& inOutAction);
 
@@ -124,12 +142,11 @@ namespace NetDemo
 
          bool IsButtonType( const std::string& buttonType ) const;
 
-         typedef SimCore::Components::StateType GameStateType;
-         bool IsInState(const GameStateType& state) const;
-
-         typedef SimCore::GUI::Screen Screen;
          bool RegisterScreenWithState(Screen& screen, GameStateType& state);
          Screen* GetScreenForState(GameStateType& state);
+
+         void SetHoverEffectOnElement(const CEGUI::Window& window);
+         void SetHoverEffectEnabled(bool enabled);
 
       private:
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
@@ -142,15 +159,23 @@ namespace NetDemo
          StateScreenMap mStateScreenMap;
 
          // Screens
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLobby;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenConnectFailPrompt;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLoading;
+         dtCore::RefPtr<SimpleScreen> mScreenMainMenu;
+         dtCore::RefPtr<SimpleScreen> mScreenLobby;
+         dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
+         dtCore::RefPtr<SimpleScreen> mScreenLoading;
          dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenQuitPrompt;
+         dtCore::RefPtr<SimpleScreen> mScreenOptions;
+         dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
+         dtCore::RefPtr<SimpleScreen> mScreenHUD;
+
+         // Special Effects Overlays
+         dtCore::RefPtr<osg::MatrixTransform> mEffectsOverlay;
+
+         // Special Effects Elements
+         dtCore::RefPtr<ButtonHighlight> mButtonHighlight;
 
          // Special Widgets
+         const CEGUI::Window* mCurrentHoveredWidget;
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
    };
