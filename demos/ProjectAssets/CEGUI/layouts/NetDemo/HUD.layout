@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   
+   <!-- MAIN CONTAINER WINDOW (ROOT & BACKGROUND IMAGE) -->
+   <Window Name="HUD_Root" Type="WindowsLook/StaticImage">
+      <Property Name="UnifiedSize" Value="{{1.0,0},{1.0,0}}"/>
+      <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+      <Property Name="BackgroundColours" Value="00000000"/>
+      <Property Name="FrameEnabled" Value="False"/>
+
+      <!-- DAMAGE METER -->
+      <!--Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
+         <Property Name="UnifiedSize" Value="{{1.0,0},{0.026667,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+      </Window-->
+        
+	</Window>
+   
+</GUILayout>
