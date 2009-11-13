@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+   <shadergroup name="GUIShaderGroup">
+      <shader name="ButtonHighlightShader" default="yes">
+         <source type="Fragment">Shaders/GUI/ButtonHighlight.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+               <wrap axis="S" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorOffset">
+            <oscillator oscillation="UpAndDown" cycletimemin="0.75" cycletimemax="0.75" rangemin="0.6" rangemax="0.6" offset="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+   
    <shadergroup name="ToolsShaderGroup">
       <shader name="Compass360Shader" default="yes">
          <source type="Vertex">Shaders/Tools/Compass360.vert</source>
@@ -13,6 +28,26 @@
          </parameter>
          <parameter name="screenRect">
             <vec4 defaultValue="0.0 0.125 1.0 0.125"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="TrailEffectShaderGroup">
+      <shader name="TrailEffectShader">
+         <source type="Vertex">Shaders/Base/trail_effect.vert</source>
+         <source type="Fragment">Shaders/Base/trail_effect.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/ShadersBase/TrailEffect.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="trailWidth">
+            <float defaultValue="1.0"/>
+         </parameter>
+         <parameter name="trailTextureOffset">
+            <float defaultValue="0.0"/>
          </parameter>
       </shader>
    </shadergroup>
