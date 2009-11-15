@@ -47,6 +47,7 @@
 #include <iostream>
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
+#include <MessageType.h>
 
 
 namespace NetDemo
@@ -353,6 +354,27 @@ namespace NetDemo
             }
             break;
 
+         case osgGA::GUIEventAdapter::KEY_Up:
+         case osgGA::GUIEventAdapter::KEY_Left:
+            {
+               SendSimpleMessage(NetDemo::MessageType::OPTION_PREV);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_Down:
+         case osgGA::GUIEventAdapter::KEY_Right:
+            {
+               SendSimpleMessage(NetDemo::MessageType::OPTION_NEXT);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_Space:
+         case osgGA::GUIEventAdapter::KEY_Return:
+            {
+               SendSimpleMessage(NetDemo::MessageType::OPTION_SELECT);
+            }
+            break;
+
          default:
             keyUsed = false;
       }
@@ -535,6 +557,14 @@ namespace NetDemo
       msg->SetAttachToActor(vehicleId);
       msg->SetAttachPointNodeName(dofName);
       GetGameManager()->SendMessage(*msg.get());
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::SendSimpleMessage(const NetDemo::MessageType& messageType)
+   {
+      dtCore::RefPtr<dtGame::Message> message;
+      GetGameManager()->GetMessageFactory().CreateMessage(messageType, message);
+      GetGameManager()->SendMessage(*message);
    }
 
    ////////////////////////////////////////////////////////////////////////////////

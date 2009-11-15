@@ -21,6 +21,9 @@
 #ifndef RES_GAME_INPUT_COMPONENT
 #define RES_GAME_INPUT_COMPONENT
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <DemoExport.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
@@ -33,6 +36,11 @@
 //#include <SimCore/PlayerMotionModel.h>
 //#include <SimCore/Actors/WeaponActor.h>
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FORWARD DECLARATIONS
+////////////////////////////////////////////////////////////////////////////////
 namespace dtGame
 {
    class ActorUpdateMessage;
@@ -54,8 +62,11 @@ namespace SimCore
 namespace NetDemo
 {
    class GameLogicComponent;
+   class MessageType;
 
-   ////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////
+   // CODE
+   /////////////////////////////////////////////////////////////////////////////
    class NETDEMO_EXPORT InputComponent : public SimCore::Components::BaseInputComponent
    {
       public:
@@ -112,6 +123,9 @@ namespace NetDemo
 
          /// Sending in a vehicle will cause an attach, sending NULL will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
+
+         /// Send a simple message to trigger other parts of the game system.
+         void SendSimpleMessage(const NetDemo::MessageType& messageType);
 
          /// Clean up method for the dead reckoning ghost actor
          void CleanUpDRGhost();

@@ -12,6 +12,7 @@
 */
 
 #include <GameEntryPoint.h>
+#include <MessageType.h>
 #include <Components/InputComponent.h>
 #include <Components/GameLogicComponent.h>
 #include <Components/WeaponComponent.h>
@@ -93,6 +94,9 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////
    void GameEntryPoint::InitializeComponents(dtGame::GameManager& gm)
    {
+      // Register the application's custom message types.
+      NetDemo::MessageType::RegisterMessageTypes(gm.GetMessageFactory());
+
       // This processes remote actors and such on the network
       dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor =
          new SimCore::Components::ViewerMessageProcessor();
