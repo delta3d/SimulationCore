@@ -41,7 +41,11 @@
 #include "GUI/CustomCeguiWidgets.h"
 #include "GUI/ReadyRoomScreen.h"
 #include "GUI/ButtonHighlight.h"
+#include "MessageType.h"
 #include "States.h"
+
+// DEBUG:
+#include <iostream>
 
 
 
@@ -70,6 +74,7 @@ namespace NetDemo
       , mCurrentHoveredWidget(NULL)
       , mInputServerPort(NULL)
       , mInputServerIP(NULL)
+      , mCurrentButtonIndex(0)
    {
    }
 
@@ -151,6 +156,18 @@ namespace NetDemo
       if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
          ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
+      }
+      else if(messageType == NetDemo::MessageType::OPTION_NEXT)
+      {
+         OnOptionNext(false);
+      }
+      else if(messageType == NetDemo::MessageType::OPTION_PREV)
+      {
+         OnOptionNext(true);
+      }
+      else if(messageType == NetDemo::MessageType::OPTION_SELECT)
+      {
+         OnOptionSelect();
       }
       else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
          || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
@@ -275,6 +292,9 @@ namespace NetDemo
 
       mScreenQuitPrompt->SetVisible( state == NetDemoState::STATE_GAME_QUIT );
       mScreenQuitPrompt->SetEnabled( state == NetDemoState::STATE_GAME_QUIT );*/
+
+      // Update the list of buttons for the current screen.
+      UpdateButtonArray();
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -305,6 +325,35 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::OnOptionNext(bool reverse)
+   {
+      int numButtons = int(mCurrentScreenButtons.size());
+      if(numButtons != 0)
+      {
+         if(reverse)
+         {
+            mCurrentButtonIndex = (--mCurrentButtonIndex + numButtons) % numButtons;
+         }
+         else
+         {
+            mCurrentButtonIndex = (++mCurrentButtonIndex) % numButtons;
+         }
+
+         SetButtonFocused(mCurrentScreenButtons[mCurrentButtonIndex]);
+      }
+   }
+   
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::OnOptionSelect()
+   {
+      if(mCurrentHoveredWidget != NULL)
+      {
+         // Simulate the button being pressed by the mouse cursor.
+         HandleButton(*mCurrentHoveredWidget);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    const CEGUI::Window* GUIComponent::GetWidgetFromEventArgs( const CEGUI::EventArgs& args ) const
    {
       // Cast to WindowEventArgs in order to access the associated CEGUI window.
@@ -321,32 +370,7 @@ namespace NetDemo
 
       if(button != NULL)
       {
-         // Prepare to capture the button action name.
-         std::string action;
-         std::string buttonType;
-
-         // Attempt to access the button's action property.
-         try
-         {
-            CEGUI::String actionValue = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
-            CEGUI::String buttonTypeValue = button->getProperty(BUTTON_PROPERTY_TYPE.Get());
-            action = std::string(actionValue.c_str());
-            buttonType = std::string(buttonTypeValue.c_str());
-         }
-         catch(CEGUI::Exception& ceguiEx)
-         {
-            std::ostringstream oss;
-            oss << "Button \"" << button->getName().c_str()
-               << "\" does not have the \"Action\" property.\n"
-               << ceguiEx.getMessage().c_str() << std::endl;
-            LOG_ERROR(oss.str());
-         }
-
-         // Determine if this is a special button.
-         HandleButton(buttonType, action);
-
-         // Execute the transition specified by the button.
-         GetAppComponent()->DoStateTransition(action);
+         HandleButton(*button);
       }
 
       // Let CEGUI know the button has been handled.
@@ -359,12 +383,7 @@ namespace NetDemo
       const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
       // Enable special hover effects.
-      if(button != NULL)
-      {
-         mCurrentHoveredWidget = button;
-         SetHoverEffectOnElement(*button);
-         SetHoverEffectEnabled(true);
-      }
+      SetButtonFocused(button);
 
       // Let CEGUI know the button has been handled.
       return true;
@@ -376,18 +395,60 @@ namespace NetDemo
       const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
       // Disable special hover effects.
-      if(button != NULL && mCurrentHoveredWidget != NULL)
+      /*if(button != NULL && mCurrentHoveredWidget != NULL)
       {
          SetHoverEffectEnabled(false);
          mCurrentHoveredWidget = NULL;
-      }
+      }*/
 
       // Let CEGUI know the button has been handled.
       return true;
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::HandleButton(const std::string& buttonType, std::string& inOutAction)
+   void GUIComponent::SetButtonFocused(const CEGUI::Window* button)
+   {
+      if(button != NULL)
+      {
+         mCurrentHoveredWidget = button;
+         SetHoverEffectOnElement(*button);
+         SetHoverEffectEnabled(true);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::HandleButton(const CEGUI::Window& button)
+   {
+      // Prepare to capture the button action name.
+      std::string action;
+      std::string buttonType;
+
+      // Attempt to access the button's action property.
+      try
+      {
+         CEGUI::String actionValue = button.getProperty(BUTTON_PROPERTY_ACTION.Get());
+         CEGUI::String buttonTypeValue = button.getProperty(BUTTON_PROPERTY_TYPE.Get());
+         action = std::string(actionValue.c_str());
+         buttonType = std::string(buttonTypeValue.c_str());
+      }
+      catch(CEGUI::Exception& ceguiEx)
+      {
+         std::ostringstream oss;
+         oss << "Button \"" << button.getName().c_str()
+            << "\" does not have the \"Action\" property.\n"
+            << ceguiEx.getMessage().c_str() << std::endl;
+         LOG_ERROR(oss.str());
+      }
+
+      // Determine if this is a special button.
+      HandleSpecialButton(buttonType, action);
+
+      // Execute the transition specified by the button.
+      GetAppComponent()->DoStateTransition(action);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::HandleSpecialButton(const std::string& buttonType, std::string& inOutAction)
    {
       // Determine if this is a special button.
       if(buttonType == BUTTON_TYPE_CONNECT.Get())
@@ -467,6 +528,41 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::UpdateButtonArray()
+   {
+      mCurrentScreenButtons.clear();
+
+      const GameStateType* currentState = mAppComp->GetCurrentState();
+      if(currentState != NULL)
+      {
+         // Obtain the current screen.
+         SimpleScreen* currentScreen = dynamic_cast<SimpleScreen*>(GetScreenForState(*currentState));
+         if(currentScreen != NULL)
+         {
+            // Get all the buttons for the current screen.
+            CEGUI::Window* screenRoot = currentScreen->GetRoot()->GetCEGUIWindow();
+            SimCore::GUI::CeguiUtils::GetChildWindowsByType(screenRoot, mCurrentScreenButtons);
+
+            // Set focus on the first button.
+            mCurrentButtonIndex = 0;
+            if(mCurrentScreenButtons.empty())
+            {
+               // Disable the button highlight effect.
+               SetHoverEffectEnabled(false);
+            }
+            else // Highlight the first button.
+            {
+               SetButtonFocused(mCurrentScreenButtons[0]);
+            }
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not access the current game state.");
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::RegisterScreenWithState(Screen& screen, GameStateType& state)
    {
       bool success = mStateScreenMap.insert(std::make_pair(&state, &screen)).second;
@@ -506,7 +602,7 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   Screen* GUIComponent::GetScreenForState(GameStateType& state)
+   Screen* GUIComponent::GetScreenForState(const GameStateType& state)
    {
       StateScreenMap::const_iterator foundIter = mStateScreenMap.find(&state);
       return foundIter != mStateScreenMap.end() ? foundIter->second : NULL;
