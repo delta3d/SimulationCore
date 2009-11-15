@@ -25,8 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtGame/gmcomponent.h>
-#include <Components/GameLogicComponent.h>
+#include "DemoExport.h"
+#include "Components/GameLogicComponent.h"
 
 
 
@@ -97,7 +97,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    // CLASS CODE
    /////////////////////////////////////////////////////////////////////////////
-   class GUIComponent : public dtGame::GMComponent
+   class NETDEMO_EXPORT GUIComponent : public dtGame::GMComponent
    {
       public:
          typedef dtGame::GMComponent BaseClass;
@@ -124,6 +124,9 @@ namespace NetDemo
 
          GameLogicComponent* GetAppComponent();
 
+         void OnOptionNext(bool reverse = false);
+         void OnOptionSelect();
+
          /**
           * Helper method for obtaining a CEGUI window from its associated Event Args.
           * @param args Event Args object that should have a reference to the window that triggered the event.
@@ -135,15 +138,20 @@ namespace NetDemo
          bool OnButtonFocusGain(const CEGUI::EventArgs& args);
          bool OnButtonFocusLost(const CEGUI::EventArgs& args);
 
-         void HandleButton(const std::string& buttonType, std::string& inOutAction);
+         void SetButtonFocused(const CEGUI::Window* button);
+
+         void HandleButton(const CEGUI::Window& button);
+         void HandleSpecialButton(const std::string& buttonType, std::string& inOutAction);
 
          void BindButtons( CEGUI::Window& rootWindow );
          void BindButton( CEGUI::PushButton& button );
 
          bool IsButtonType( const std::string& buttonType ) const;
 
+         void UpdateButtonArray();
+
          bool RegisterScreenWithState(Screen& screen, GameStateType& state);
-         Screen* GetScreenForState(GameStateType& state);
+         Screen* GetScreenForState(const GameStateType& state);
 
          void SetHoverEffectOnElement(const CEGUI::Window& window);
          void SetHoverEffectEnabled(bool enabled);
@@ -155,7 +163,7 @@ namespace NetDemo
          dtGUI::ScriptModule* mScriptModule;
 
          //
-         typedef std::map<GameStateType*, Screen*> StateScreenMap;
+         typedef std::map<const GameStateType*, Screen*> StateScreenMap;
          StateScreenMap mStateScreenMap;
 
          // Screens
@@ -178,6 +186,11 @@ namespace NetDemo
          const CEGUI::Window* mCurrentHoveredWidget;
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
+
+         // Button array - for current screen.
+         int mCurrentButtonIndex;
+         typedef std::vector<CEGUI::PushButton*> ButtonArray;
+         ButtonArray mCurrentScreenButtons;
    };
 
 }
