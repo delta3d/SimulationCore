@@ -8,10 +8,14 @@
     <WidgetLook name="WindowsLook/Button">
         <PropertyDefinition name="Action" initialValue="" /><!-- ADDED -->
        <PropertyDefinition name="ButtonType" initialValue="" /><!-- ADDED -->
-       <PropertyDefinition name="TabIndex" initialValue="0" /> <!-- ADDED -->
-        <PropertyDefinition name="NormalTextColour" initialValue="FF000000" redrawOnWrite="true" />
-        <PropertyDefinition name="HoverTextColour" initialValue="FF000000" redrawOnWrite="true" />
-        <PropertyDefinition name="PushedTextColour" initialValue="FF000000" redrawOnWrite="true" />
+       <PropertyDefinition name="TabIndex" initialValue="0" /><!-- ADDED -->
+        <PropertyDefinition name="NormalButtonColour" initialValue="FFFFFFFF" redrawOnWrite="true" /><!-- ADDED -->
+        <PropertyDefinition name="HoverButtonColour" initialValue="FFFFFFFF" redrawOnWrite="true" /><!-- ADDED -->
+        <PropertyDefinition name="PushedButtonColour" initialValue="FF000000" redrawOnWrite="true" /><!-- ADDED -->
+        <PropertyDefinition name="DisabledButtonColour" initialValue="FF888888" redrawOnWrite="true" /><!-- ADDED -->
+        <PropertyDefinition name="NormalTextColour" initialValue="FF00FF00" redrawOnWrite="true" />
+        <PropertyDefinition name="HoverTextColour" initialValue="FF00FF00" redrawOnWrite="true" />
+        <PropertyDefinition name="PushedTextColour" initialValue="FFFF0000" redrawOnWrite="true" />
         <PropertyDefinition name="DisabledTextColour" initialValue="FF888888" redrawOnWrite="true" />
         <ImagerySection name="label">
             <TextComponent>
@@ -34,223 +38,31 @@
             </TextComponent>
         </ImagerySection>
         <ImagerySection name="normal">
-            <FrameComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge" />
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge" />
-                    </Dim>
-                </Area>
-                <Image type="TopLeftCorner" imageset="NetDemo" image="ButtonNormalTopLeft" />
-                <Image type="TopRightCorner" imageset="NetDemo" image="ButtonNormalTopRight" />
-                <Image type="BottomLeftCorner" imageset="NetDemo" image="ButtonNormalBottomLeft" />
-                <Image type="BottomRightCorner" imageset="NetDemo" image="ButtonNormalBottomRight" />
-                <Image type="LeftEdge" imageset="NetDemo" image="ButtonNormalLeft" />
-                <Image type="TopEdge" imageset="NetDemo" image="ButtonNormalTop" />
-                <Image type="RightEdge" imageset="NetDemo" image="ButtonNormalRight" />
-                <Image type="BottomEdge" imageset="NetDemo" image="ButtonNormalBottom" />
-            </FrameComponent>
             <ImageryComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonNormalLeft" dimension="Width" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonNormalTop" dimension="Height" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonNormalRight" dimension="Width" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonNormalBottom" dimension="Height" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                </Area>
-                <Image imageset="NetDemo" image="Background" />
-                <Colours topLeft="FFAFAFAF" topRight="FFFFFFFF" bottomLeft="FFFFFFFF" bottomRight="FFAFAFAF" />
-                <VertFormat type="Stretched" />
-                <HorzFormat type="Stretched" />
+               <Area>
+                  <Dim type="LeftEdge">
+                     <AbsoluteDim value="0" />
+                  </Dim>
+                  <Dim type="TopEdge">
+                     <AbsoluteDim value="0" />
+                  </Dim>
+                  <Dim type="RightEdge">
+                     <UnifiedDim scale="1" type="RightEdge" />
+                  </Dim>
+                  <Dim type="BottomEdge">
+                     <UnifiedDim scale="1" type="BottomEdge" />
+                  </Dim>
+               </Area>
+               <Image imageset="UFOButton" image="UFOButton" />
+               <VertFormat type="Stretched" />
+               <HorzFormat type="Stretched" />
             </ImageryComponent>
-        </ImagerySection>
-        <ImagerySection name="hover">
-            <FrameComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge" />
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge" />
-                    </Dim>
-                </Area>
-                <Image type="TopLeftCorner" imageset="NetDemo" image="ButtonHoverTopLeft" />
-                <Image type="TopRightCorner" imageset="NetDemo" image="ButtonHoverTopRight" />
-                <Image type="BottomLeftCorner" imageset="NetDemo" image="ButtonHoverBottomLeft" />
-                <Image type="BottomRightCorner" imageset="NetDemo" image="ButtonHoverBottomRight" />
-                <Image type="LeftEdge" imageset="NetDemo" image="ButtonHoverLeft" />
-                <Image type="TopEdge" imageset="NetDemo" image="ButtonHoverTop" />
-                <Image type="RightEdge" imageset="NetDemo" image="ButtonHoverRight" />
-                <Image type="BottomEdge" imageset="NetDemo" image="ButtonHoverBottom" />
-            </FrameComponent>
-            <ImageryComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonHoverLeft" dimension="Width" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonHoverTop" dimension="Height" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonHoverRight" dimension="Width" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonHoverBottom" dimension="Height" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                </Area>
-                <Image imageset="NetDemo" image="Background" />
-                <Colours topLeft="FFCFD9CF" topRight="FFF2FFF2" bottomLeft="FFF2FFF2" bottomRight="FFCFD9CF" />
-                <VertFormat type="Stretched" />
-                <HorzFormat type="Stretched" />
-            </ImageryComponent>
-        </ImagerySection>
-        <ImagerySection name="pushed">
-            <FrameComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge" />
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge" />
-                    </Dim>
-                </Area>
-                <Image type="TopLeftCorner" imageset="NetDemo" image="ButtonPushedTopLeft" />
-                <Image type="TopRightCorner" imageset="NetDemo" image="ButtonPushedTopRight" />
-                <Image type="BottomLeftCorner" imageset="NetDemo" image="ButtonPushedBottomLeft" />
-                <Image type="BottomRightCorner" imageset="NetDemo" image="ButtonPushedBottomRight" />
-                <Image type="LeftEdge" imageset="NetDemo" image="ButtonPushedLeft" />
-                <Image type="TopEdge" imageset="NetDemo" image="ButtonPushedTop" />
-                <Image type="RightEdge" imageset="NetDemo" image="ButtonPushedRight" />
-                <Image type="BottomEdge" imageset="NetDemo" image="ButtonPushedBottom" />
-            </FrameComponent>
-            <ImageryComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonPushedLeft" dimension="Width" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonPushedTop" dimension="Height" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonPushedRight" dimension="Width" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonPushedBottom" dimension="Height" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                </Area>
-                <Image imageset="NetDemo" image="Background" />
-                <Colours topLeft="FFAFAFAF" topRight="FFFFFFFF" bottomLeft="FFFFFFFF" bottomRight="FFAFAFAF" />
-                <VertFormat type="Stretched" />
-                <HorzFormat type="Stretched" />
-            </ImageryComponent>
-        </ImagerySection>
-        <ImagerySection name="disabled">
-            <FrameComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <AbsoluteDim value="0" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge" />
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge" />
-                    </Dim>
-                </Area>
-                <Image type="TopLeftCorner" imageset="NetDemo" image="ButtonNormalTopLeft" />
-                <Image type="TopRightCorner" imageset="NetDemo" image="ButtonNormalTopRight" />
-                <Image type="BottomLeftCorner" imageset="NetDemo" image="ButtonNormalBottomLeft" />
-                <Image type="BottomRightCorner" imageset="NetDemo" image="ButtonNormalBottomRight" />
-                <Image type="LeftEdge" imageset="NetDemo" image="ButtonNormalLeft" />
-                <Image type="TopEdge" imageset="NetDemo" image="ButtonNormalTop" />
-                <Image type="RightEdge" imageset="NetDemo" image="ButtonNormalRight" />
-                <Image type="BottomEdge" imageset="NetDemo" image="ButtonNormalBottom" />
-            </FrameComponent>
-            <ImageryComponent>
-                <Area>
-                    <Dim type="LeftEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonNormalLeft" dimension="Width" />
-                    </Dim>
-                    <Dim type="TopEdge">
-                        <ImageDim imageset="NetDemo" image="ButtonNormalTop" dimension="Height" />
-                    </Dim>
-                    <Dim type="RightEdge">
-                        <UnifiedDim scale="1" type="RightEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonNormalRight" dimension="Width" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                    <Dim type="BottomEdge">
-                        <UnifiedDim scale="1" type="BottomEdge">
-                            <DimOperator op="Subtract">
-                                <ImageDim imageset="NetDemo" image="ButtonNormalBottom" dimension="Height" />
-                            </DimOperator>
-                        </UnifiedDim>
-                    </Dim>
-                </Area>
-                <Image imageset="NetDemo" image="Background" />
-                <VertFormat type="Stretched" />
-                <HorzFormat type="Stretched" />
-            </ImageryComponent>
-        </ImagerySection>
-        <StateImagery name="Normal">
+         </ImagerySection>
+         <StateImagery name="Normal">
             <Layer>
-                <Section section="normal" />
+               <Section section="normal">
+                  <ColourProperty name="NormalButtonColour" />
+               </Section>
                 <Section section="label">
                     <ColourProperty name="NormalTextColour" />
                 </Section>
@@ -258,7 +70,9 @@
         </StateImagery>
         <StateImagery name="Hover">
             <Layer>
-                <Section section="hover" />
+                <Section section="normal">
+                   <ColourProperty name="HoverButtonColour" />
+                </Section>
                 <Section section="label">
                     <ColourProperty name="HoverTextColour" />
                 </Section>
@@ -266,7 +80,9 @@
         </StateImagery>
         <StateImagery name="Pushed">
             <Layer>
-                <Section section="pushed" />
+                <Section section="normal">
+                   <ColourProperty name="PushedButtonColour" />
+                </Section>
                 <Section section="label">
                     <ColourProperty name="PushedTextColour" />
                 </Section>
@@ -274,7 +90,9 @@
         </StateImagery>
         <StateImagery name="PushedOff">
             <Layer>
-                <Section section="hover" />
+                <Section section="normal">
+                   <ColourProperty name="HoverButtonColour" />
+                </Section>
                 <Section section="label">
                     <ColourProperty name="HoverTextColour" />
                 </Section>
@@ -282,8 +100,8 @@
         </StateImagery>
         <StateImagery name="Disabled">
             <Layer>
-                <Section section="disabled">
-                    <Colours topLeft="FFDFDFDF" topRight="FFDFDFDF" bottomLeft="FFDFDFDF" bottomRight="FFDFDFDF" />
+                <Section section="normal">
+                   <ColourProperty name="DisabledButtonColour" />
                 </Section>
                 <Section section="label">
                     <ColourProperty name="DisabledTextColour" />
