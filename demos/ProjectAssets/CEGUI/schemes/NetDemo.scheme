@@ -4,6 +4,7 @@
    <!-- IMAGE SET - WINDOWS LOOK -->
    <Imageset Name="NetDemo" Filename="CEGUI/imagesets/NetDemo.imageset" />
    <Imageset Name="Meter" Filename="CEGUI/imagesets/Meter.imageset" />
+   <Imageset Name="UFOButton" Filename="CEGUI/imagesets/UFOButton.imageset" />
    
    <!-- FONTS -->
    <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
