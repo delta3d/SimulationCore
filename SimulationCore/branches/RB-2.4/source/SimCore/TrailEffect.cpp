@@ -79,15 +79,7 @@ namespace SimCore
    void TrailEffect::SetWidth(float width)
    {
       mWidth = width;
-      if(mShader.valid())
-      {
-         dtCore::ShaderParamFloat* param = dynamic_cast<dtCore::ShaderParamFloat*>
-            (mShader->FindParameter("trailWidth"));
-         if(param != NULL)
-         {
-            param->SetValue(mWidth);
-         }
-      }
+      SetFloatParameter("trailWidth", width);
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -293,4 +285,17 @@ namespace SimCore
       mShader = NULL;
    }
 
+   /////////////////////////////////////////////////////////////////////////////
+   void TrailEffect::SetFloatParameter(const std::string& paramName, float value)
+   {
+      if(mShader.valid())
+      {
+         dtCore::ShaderParamFloat* param = dynamic_cast<dtCore::ShaderParamFloat*>
+            (mShader->FindParameter(paramName));
+         if(param != NULL)
+         {
+            param->SetValue(mWidth);
+         }
+      }
+   }
 }
