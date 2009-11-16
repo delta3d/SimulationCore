@@ -83,6 +83,8 @@ namespace SimCore
 
          void ClearDrawable();
 
+         void SetFloatParameter(const std::string& paramName, float value);
+
       private:
          int mCurrentIndex;
          int mSegmentCount;
