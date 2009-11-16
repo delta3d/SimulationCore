@@ -7,7 +7,8 @@
     -->
     <WidgetLook name="WindowsLook/Button">
         <PropertyDefinition name="Action" initialValue="" /><!-- ADDED -->
-        <PropertyDefinition name="ButtonType" initialValue="" /> <!-- ADDED -->
+       <PropertyDefinition name="ButtonType" initialValue="" /><!-- ADDED -->
+       <PropertyDefinition name="TabIndex" initialValue="0" /> <!-- ADDED -->
         <PropertyDefinition name="NormalTextColour" initialValue="FF000000" redrawOnWrite="true" />
         <PropertyDefinition name="HoverTextColour" initialValue="FF000000" redrawOnWrite="true" />
         <PropertyDefinition name="PushedTextColour" initialValue="FF000000" redrawOnWrite="true" />
@@ -4652,7 +4653,6 @@
    
    <!-- LIST BOX ITEM -->
    <WidgetLook name="NetDemo/ListBoxItem">
-      <PropertyDefinition name="ButtonWidth" initialValue="1.0" redrawOnWrite="true" />
       <PropertyDefinition name="TextColour" initialValue="FF5555CC" redrawOnWrite="true" />
       <PropertyDefinition name="DisabledTextColour" initialValue="FFCCCCCC" redrawOnWrite="true" />
       <PropertyDefinition name="SelectedTextColour" initialValue="FFCCCC00" redrawOnWrite="true" />
@@ -4663,15 +4663,7 @@
       <PropertyDefinition name="MarginTop" initialValue="0" layoutOnWrite="true"/>
       <PropertyDefinition name="TextFormatHorizontal" initialValue="WordWrapLeftAligned" redrawOnWrite="true" layoutOnWrite="true" />
       <PropertyDefinition name="TextFormatVertical" initialValue="CentreAligned" redrawOnWrite="true" layoutOnWrite="true" />
-      <PropertyLinkDefinition name="Action" widget=".Button" targetProperty="Action" initialValue="" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextFont" widget=".Button" targetProperty="Font" initialValue="Arial-Bold-16" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonText" widget=".Button" targetProperty="Text" initialValue="" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Normal" widget=".Button" targetProperty="NormalTextColour" initialValue="FFFFFFFF" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Hover" widget=".Button" targetProperty="HoverTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Pushed" widget=".Button" targetProperty="PushedTextColour" initialValue="FFF6FF3F" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonTextColour_Disabled" widget=".Button" targetProperty="DisabledTextColour" initialValue="FF888888" redrawOnWrite="true"/>
-      <PropertyLinkDefinition name="ButtonVisible" widget=".Button" targetProperty="Visible" initialValue="False" redrawOnWrite="true"/>
-      <Property name="Selectable" value="True" />
+      <Property name="Selectable" value="false" />
       <NamedArea name="ContentSize">
          <Area>
             <Dim type="LeftEdge" >
@@ -4692,56 +4684,6 @@
             </Dim>
          </Area>
       </NamedArea>
-      <!-- Button inside item (the clickable area) -->
-      <Child type ="WindowsLook/Button" nameSuffix=".Button">
-         <Area>
-            <Dim type="LeftEdge">
-               <UnifiedDim scale="0" type="LeftEdge" />
-            </Dim>
-            <Dim type="TopEdge">
-               <UnifiedDim scale="0" type="TopEdge" />
-            </Dim>
-            <Dim type="Width">
-               <UnifiedDim scale="1" type="Width">
-                  <DimOperator op="Multiply">
-                     <PropertyDim name="ButtonWidth"/>
-                  </DimOperator>
-               </UnifiedDim>
-            </Dim>
-            <Dim type="Height">
-               <UnifiedDim scale="1" type="Height"/>
-            </Dim>
-         </Area>
-      </Child>
-      <!-- Detail area that is off to the right of the main item content. -->
-      <Child type ="DefaultWindow" nameSuffix=".DetailsArea">
-         <Area>
-            <Dim type="LeftEdge">
-               <UnifiedDim scale="1" type="LeftEdge">
-                  <DimOperator op="Multiply">
-                     <PropertyDim name="ButtonWidth"/>
-                  </DimOperator>
-               </UnifiedDim>
-            </Dim>
-            <Dim type="TopEdge">
-               <UnifiedDim scale="0" type="TopEdge" />
-            </Dim>
-            <Dim type="Width">
-               <UnifiedDim scale="1" type="Width">
-                  <DimOperator op="Subtract">
-                     <UnifiedDim scale="1" type="Width">
-                        <DimOperator op="Multiply">
-                           <PropertyDim name="ButtonWidth"/>
-                        </DimOperator>
-                     </UnifiedDim>
-                  </DimOperator>
-               </UnifiedDim>
-            </Dim>
-            <Dim type="Height">
-               <UnifiedDim scale="1" type="Height"/>
-            </Dim>
-         </Area>
-      </Child>
       <ImagerySection name="label">
          <TextComponent>
             <Area>
@@ -4792,4 +4734,58 @@
       </StateImagery>
    </WidgetLook>
    
+   <!-- METER -->
+   <WidgetLook name="NetDemo/Meter">
+      <PropertyDefinition name="MeterLevel" initialValue="1.0" redrawOnWrite="true" layoutOnWrite="true"/>
+      <PropertyDefinition name="MeterColor" initialValue="FFFFFFFF" redrawOnWrite="true" />
+      <ImagerySection name="normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <AbsoluteDim value="0" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" type="RightEdge" >
+                     <DimOperator op="Multiply">
+                        <PropertyDim name="MeterLevel" />
+                     </DimOperator>
+                  </UnifiedDim>
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image type="LeftEdge" imageset="Meter" image="MeterLeft" />
+            <Image type="RightEdge" imageset="Meter" image="MeterRight" />
+            <Image type="Background" imageset="Meter" image="MeterCenter"/>
+            <ColourProperty name="MeterColor"/>
+            <VertFormat type="Stretched"/>
+            <HorzFormat type="Stretched"/>
+         </FrameComponent>
+      </ImagerySection>
+      <StateImagery name="Normal">
+         <Layer>
+            <Section section="normal" />
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Hover">
+         <Layer>
+            <Section section="normal" />
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Pushed">
+         <Layer>
+            <Section section="normal" />
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Disabled">
+         <Layer>
+            <Section section="normal"/>
+         </Layer>
+      </StateImagery>
+   </WidgetLook>
+
 </Falagard>

@@ -63,6 +63,25 @@ namespace NetDemo
 
 
    /////////////////////////////////////////////////////////////////////////////
+   // UTILITY CLASS CODE
+   /////////////////////////////////////////////////////////////////////////////
+   class ActionButtonFilter : public SimCore::GUI::CeguiUtils::CeguiWindowFilter<CEGUI::PushButton>
+   {
+      public:
+         static const CEGUI::String PROPERTY_ACTION;
+
+         virtual bool Accept(const CEGUI::PushButton& button)
+         {
+            return button.isPropertyPresent(PROPERTY_ACTION);
+         }
+   };
+
+   /////////////////////////////////////////////////////////////////////////////
+   const CEGUI::String ActionButtonFilter::PROPERTY_ACTION(NetDemo::BUTTON_PROPERTY_ACTION.Get());
+
+
+
+   /////////////////////////////////////////////////////////////////////////////
    // CLASS CODE
    /////////////////////////////////////////////////////////////////////////////
    const dtUtil::RefString GUIComponent::DEFAULT_NAME("GUIComponent");
@@ -339,6 +358,9 @@ namespace NetDemo
             mCurrentButtonIndex = (++mCurrentButtonIndex) % numButtons;
          }
 
+         // DEBUG:
+         // std::cout << "\n\nItem: " << mCurrentButtonIndex << " / " << numButtons << "\n\n";
+
          SetButtonFocused(mCurrentScreenButtons[mCurrentButtonIndex]);
       }
    }
@@ -530,7 +552,11 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::UpdateButtonArray()
    {
+      // Clear old button references.
       mCurrentScreenButtons.clear();
+
+      // Disable the button highlight effect.
+      SetHoverEffectEnabled(false);
 
       const GameStateType* currentState = mAppComp->GetCurrentState();
       if(currentState != NULL)
@@ -540,17 +566,13 @@ namespace NetDemo
          if(currentScreen != NULL)
          {
             // Get all the buttons for the current screen.
+            ActionButtonFilter filter;
             CEGUI::Window* screenRoot = currentScreen->GetRoot()->GetCEGUIWindow();
-            SimCore::GUI::CeguiUtils::GetChildWindowsByType(screenRoot, mCurrentScreenButtons);
+            SimCore::GUI::CeguiUtils::GetChildWindowsByType(mCurrentScreenButtons, screenRoot, &filter);
 
             // Set focus on the first button.
             mCurrentButtonIndex = 0;
-            if(mCurrentScreenButtons.empty())
-            {
-               // Disable the button highlight effect.
-               SetHoverEffectEnabled(false);
-            }
-            else // Highlight the first button.
+            if( ! mCurrentScreenButtons.empty())
             {
                SetButtonFocused(mCurrentScreenButtons[0]);
             }
