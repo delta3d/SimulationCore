@@ -3,6 +3,7 @@
 
    <!-- IMAGE SET - WINDOWS LOOK -->
    <Imageset Name="NetDemo" Filename="CEGUI/imagesets/NetDemo.imageset" />
+   <Imageset Name="Meter" Filename="CEGUI/imagesets/Meter.imageset" />
    
    <!-- FONTS -->
    <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />
@@ -53,6 +54,7 @@
 	<FalagardMapping WindowType="WindowsLook/ListboxItem" TargetType="CEGUI/ItemEntry"   Renderer="Falagard/ItemEntry"   LookNFeel="WindowsLook/ListboxItem" />
 
 	<!-- ADD CUSTOM MAPPINGS HERE -->
+   <FalagardMapping WindowType="NetDemo/Meter" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="NetDemo/Meter" />
    <FalagardMapping WindowType="NetDemo/Frame" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="NetDemo/Frame" />
    <FalagardMapping WindowType="NetDemo/ListBoxItem" TargetType="CEGUI/ItemEntry" Renderer="Falagard/ItemEntry" LookNFeel="NetDemo/ListBoxItem" />
 
