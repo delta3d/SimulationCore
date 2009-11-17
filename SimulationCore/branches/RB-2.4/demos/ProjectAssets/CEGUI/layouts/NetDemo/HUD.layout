@@ -9,13 +9,13 @@
       <Property Name="FrameEnabled" Value="False"/>
 
       <!-- DAMAGE METER -->
-      <!--Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
+      <Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
          <Property Name="UnifiedSize" Value="{{1.0,0},{0.026667,0}}"/>
          <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
-         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
-      </Window-->
+      </Window>
         
 	</Window>
    

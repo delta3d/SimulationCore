@@ -43,6 +43,7 @@ namespace CEGUI
 
 namespace dtGame
 {
+   class ActorUpdateMessage;
    class Message;
 }
 
@@ -71,6 +72,7 @@ namespace NetDemo
 {
    namespace GUI
    {
+      class HUDScreen;
       class ReadyRoomScreen;
 
       namespace Effects
@@ -117,6 +119,8 @@ namespace NetDemo
 
          void InitializeCEGUI(const std::string& schemeFile);
          void InitializeEffectsOverlays();
+
+         void ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage);
 
          void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);
 
@@ -174,7 +178,7 @@ namespace NetDemo
          dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
          dtCore::RefPtr<SimpleScreen> mScreenOptions;
          dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
-         dtCore::RefPtr<SimpleScreen> mScreenHUD;
+         dtCore::RefPtr<NetDemo::GUI::HUDScreen> mScreenHUD;
 
          // Special Effects Overlays
          dtCore::RefPtr<osg::MatrixTransform> mEffectsOverlay;
