@@ -72,7 +72,6 @@ namespace NetDemo
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
 
-
       // PUBLIC METHODS
       public:
 
@@ -89,6 +88,7 @@ namespace NetDemo
          /// Does nothing by default.
          virtual void UpdateSoundEffects(float deltaTime);
 
+         void RegisterForDamageTracking();
 
       // Private vars
       private:
