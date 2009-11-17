@@ -1740,7 +1740,7 @@
                 <vec3>
                     <value1>-654.973938</value1>
                     <value2>-293.893799</value2>
-                    <value3>0.000000</value3>
+                    <value3>-6.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -1931,7 +1931,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string></string>
+                <string>VehicleDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -2813,7 +2813,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>StandardDamageType</string>
+                <string>VehicleDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -3341,7 +3341,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>StandardDamageType</string>
+                <string>FortDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -4166,7 +4166,7 @@
                 <vec3>
                     <value1>-643.359619</value1>
                     <value2>-295.263397</value2>
-                    <value3>0.000000</value3>
+                    <value3>-16.000000</value3>
                 </vec3>
             </property>
             <property>
@@ -4357,7 +4357,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string></string>
+                <string>VehicleDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -4653,7 +4653,7 @@
                 <vec3>
                     <value1>-647.789551</value1>
                     <value2>-318.629822</value2>
-                    <value3>-12.040813</value3>
+                    <value3>-28.040813</value3>
                 </vec3>
             </property>
             <property>

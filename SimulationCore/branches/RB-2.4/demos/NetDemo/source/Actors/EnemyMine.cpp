@@ -111,6 +111,7 @@ namespace NetDemo
       }
    }
 
+   //////////////////////////////////////////////////////////////////////
    void EnemyMineActor::FindTarget(float)
    {
       //temporarily lets just look for a fort to destroy
@@ -127,6 +128,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMineActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
+      BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
    }
 
    //////////////////////////////////////////////////////////////////////

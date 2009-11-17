@@ -49,7 +49,7 @@ namespace NetDemo
    BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mTimeSinceBorn(0.0f)
-      , mTimeToExistAfterDead(20.0f)
+      , mTimeToExistAfterDead(2.0f)
       , mTimeSinceKilled(0.0f)
    {
       /////////////////////////////////////////////////////////////////
@@ -92,15 +92,6 @@ namespace NetDemo
    {
    }
 
-   ///////////////////////////////////////////////////////////////////////////////////
-   float BaseEnemyActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, const SimCore::Actors::MunitionTypeActor& munition)
-   {
-      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
-
-      //if is enemy true it will multiply incoming damage by a 0
-      return incomingDamage * float(!IsEnemyActor(gap));
-   }
-
 
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()
@@ -140,7 +131,8 @@ namespace NetDemo
       msg->SetDetonationLocation(trans);
       // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
       msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
-      msg->SetMunitionType("Generic Explosive");
+      //msg->SetMunitionType("Generic Explosive");
+      msg->SetMunitionType("Grenade");  // Other example options are "Bullet" and "High Explosive"
       msg->SetFuseType(0);
       msg->SetWarheadType(0);
       msg->SetQuantityFired(1);
@@ -155,29 +147,57 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   float BaseEnemyActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+
+      //if is enemy true it will multiply incoming damage by a 0
+      // We used to not take damage from our friends. Now we do.
+      return incomingDamage; //* float(!IsEnemyActor(gap));
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::RespondToHit(const SimCore::DetonationMessage& message,
       const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
       const osg::Vec3& location)
    {
+      // This is called after we got hit by something.
+
       dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
 
-      // the base class applies an impulse
-      if(!IsEnemyActor(gap))
+      if(true) // !IsEnemyActor(gap)) -- we used to not take damage from other bad guys. 
       {
+         // the base class applies an impulse
          BaseClass::RespondToHit(message, munition, force, location);
 
+         // Do nothing for now ... but you could become more aggressive or show a particle effect or 
+         // start a count down explosion timer or something.
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum &damageState)
+   {
+      // This method is called when property is set or when the DamageHelper thinks we took
+      // some damage. We can change our AI here. The fire and such are turned on by the Damage Helper
+      // Note, we could do this same logic in RespondToHit() but that would make it difficult to do our
+      // little hack in InputComponent to kill enemies by pressing Delete.
+
+      if (damageState != GetDamageState())
+      {
+         BaseClass::SetDamageState(damageState);
+
+         // Mark the AI as 'dead' so we stop 'steering'
          if(IsMobilityDisabled())
          {
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
          }
 
-         if(GetDamageState() == SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED)
-         {       
-            //this lets the AI respond to being hit
-            mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
-         }
+         // Randomly decide how long to last before exploding. 
+         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 1.0f);
       }
-   } 
+   }
 
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -185,9 +205,9 @@ namespace NetDemo
    {
       mTimeSinceBorn += deltaTime;
 
-      if( ! IsMobilityDisabled())
+      if(!IsMobilityDisabled())
       {
-         // Do physics/pathing/AI of vehicle
+         // Steering, etc is done by the AI.          
       }
       else
       {
@@ -195,7 +215,10 @@ namespace NetDemo
          mTimeSinceKilled += deltaTime;
          if (mTimeSinceKilled > mTimeToExistAfterDead)
          {
-            GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+            // Tell the AI to 'explode'.
+            mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+
+            //GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
          }
       }
 

@@ -100,6 +100,7 @@ namespace NetDemo
       }
    }
 
+   //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::FindTarget(float)
    {
       //temporarily lets just look for a fort to destroy
@@ -122,6 +123,8 @@ namespace NetDemo
 
       //mAIHelper->PostSync(trans);
       //SetTransform(trans);
+
+      BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
