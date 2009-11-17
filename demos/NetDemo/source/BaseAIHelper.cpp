@@ -104,6 +104,9 @@ namespace NetDemo
 
    void BaseAIHelper::Update(float dt)
    {
+      const float MAX_TICK = 0.1;
+      if(dt > MAX_TICK) dt = MAX_TICK;
+
       mStateMachine.Update(dt);
       mSteeringModel->Update(mPhysicsModel->GetKinematicState(), dt);
       mPhysicsModel->Update(mSteeringModel->GetOutput(), dt);
