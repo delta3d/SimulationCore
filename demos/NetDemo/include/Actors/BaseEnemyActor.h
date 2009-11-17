@@ -80,13 +80,17 @@ namespace NetDemo
          virtual void InitAI(const EnemyDescriptionActor* desc);
 
          //overriden so we can not take damage from other enemy vehicles
-         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, const SimCore::Actors::MunitionTypeActor& munition);
+         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+            const SimCore::Actors::MunitionTypeActor& munition);
 
          EnemyAIHelper* GetAIHelper();
          const EnemyAIHelper* GetAIHelper() const;
 
          //can take NULL Ptr, returns false if NULL true if ActorType = enemy actor type
          bool IsEnemyActor(dtGame::GameActorProxy* proxy) const;
+
+         /// Overrriden to kill our AI when we die.
+         virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
@@ -99,9 +103,13 @@ namespace NetDemo
 
          void DoExplosion(float dt);
 
+         /**
+          * Called after getting hit, after damage is already calc'ed and applied. Not much to do here really
+          */
          void RespondToHit(const SimCore::DetonationMessage& message,
             const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
             const osg::Vec3& location);
+
 
 
          dtCore::RefPtr<EnemyAIHelper> mAIHelper;

@@ -30,6 +30,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 
@@ -293,6 +294,15 @@ namespace NetDemo
 
                break;
             }
+
+         case osgGA::GUIEventAdapter::KEY_Delete:
+            {
+               // Delete all if shift held, otherwise, just one.
+               bool deleteAll = keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_L) ||
+                  keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_R);
+               KillEnemy(deleteAll);
+            }
+            break;
 
          case '\\':
          case osgGA::GUIEventAdapter::KEY_Insert:
@@ -652,5 +662,40 @@ namespace NetDemo
       }
    }
 
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::KillEnemy(bool killAllEnemies)
+   {
+      // We use the Munitions Component to do the damage to the object
+      SimCore::Components::MunitionsComponent* munitionsComp = NULL;
+      GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+      if (munitionsComp == NULL)
+      {
+         LOG_ERROR("No Munitions Component. ERROR!");
+         return;
+      }
+
+      // Look for a enemy actor.
+      std::vector<dtGame::GameActorProxy*> allGameActors;
+      GetGameManager()->GetAllGameActors(allGameActors);
+      // Iterate through all the game actors to find one of our enemies.
+      unsigned int numActors = allGameActors.size();
+      for(unsigned i = 0; i < numActors; i++)
+      {
+         // Find an entity that is not already destroyed and is also a mine, helix, etc...
+         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetActor());
+         if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
+            (allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
+            allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE))
+         {
+            munitionsComp->SetDamage(*entity, SimCore::Components::DamageType::DAMAGE_KILL);
+               //SimCore::Components::DamageStateEnum::DESTROYED);
+
+            // Stop after one or keep going for all
+            if (!killAllEnemies)
+               break;
+         }
+      }
+
+   }
 }
 

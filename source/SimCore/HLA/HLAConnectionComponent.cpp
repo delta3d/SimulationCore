@@ -109,7 +109,7 @@ namespace SimCore
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
          {
-            LOG_ERROR("Failed to find a coordinate config actor in the map. Using default values.");
+            LOG_ERROR("!!!! ERROR !!!! -- Failed to find a coordinate config actor in the map. This will likely cause major runtime problems or even a crash!!!");
          }
          dtActors::CoordinateConfigActor* ccActor;
          proxies[0]->GetActor(ccActor);

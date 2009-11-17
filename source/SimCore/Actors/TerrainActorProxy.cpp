@@ -45,6 +45,7 @@
 #include <osgDB/ReadFile>
 #include <osgDB/Registry>
 
+#include <osgUtil/GLObjectsVisitor>
 
 #include <iostream>
 
@@ -57,7 +58,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       TerrainActorProxy::TerrainActorProxy()
       {
-
       }
 
       ///////////////////////////////////////////////////////////////////////////////
@@ -374,6 +374,11 @@ namespace SimCore
                {
                   osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
                   ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "RenderBin");
+
+                  // Run a visitor to switch to VBO's instead of DrawArrays (the OSG default)
+                  // Turning this on had a catastrophic impact on performance. OFF is better for now.  
+                  //osgUtil::GLObjectsVisitor nodeVisitor(osgUtil::GLObjectsVisitor::SWITCH_ON_VERTEX_BUFFER_OBJECTS);
+                  //mTerrainNode->accept(nodeVisitor);
                }
             }
 

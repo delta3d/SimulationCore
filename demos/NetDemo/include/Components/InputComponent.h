@@ -138,6 +138,9 @@ namespace NetDemo
          /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
          void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
 
+         /// Kills one or more enemies instantly.
+         void KillEnemy(bool killAllEnemies);
+
 
       private:
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
