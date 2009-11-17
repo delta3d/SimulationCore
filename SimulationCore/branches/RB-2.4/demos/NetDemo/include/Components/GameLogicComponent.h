@@ -106,6 +106,15 @@ namespace NetDemo
          typedef SimCore::Components::StateType GameStateType;
          bool IsRunningState(const GameStateType& state) const;
 
+         /**
+          * Convenience method for finding an actor and casting it to a specific actor type.
+          * @param actorId Id of the actor to be found.
+          * @param outActor Pointer to capture the actor that may be found.
+          * @return TRUE if the actor was found.
+          */
+         template<typename T_Actor>
+         bool FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor);
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
@@ -154,6 +163,26 @@ namespace NetDemo
          bool mStartTheGameOnNextGameRunning;
 
    };
+
+
+
+   /////////////////////////////////////////////////////////////////////////////
+   // TEMPLATE METHOD DEFINITIONS
+   /////////////////////////////////////////////////////////////////////////////
+   template<typename T_Actor>
+   bool GameLogicComponent::FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor)
+   {
+      // Get the actor to which the message refers.
+      dtDAL::ActorProxy* proxy = NULL;
+      GetGameManager()->FindActorById(actorId, proxy);
+
+      if(proxy != NULL)
+      {
+         proxy->GetActor(outActor);
+      }
+
+      return outActor != NULL;
+   }
 
 }
 #endif /* RES_GAMEAPPCOMPONENT_H_ */
