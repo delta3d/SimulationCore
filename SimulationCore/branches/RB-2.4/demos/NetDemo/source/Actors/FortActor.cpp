@@ -27,7 +27,7 @@
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
-//#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -95,6 +95,9 @@ namespace NetDemo
          articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
+
+         // Setup for damage tracking.
+         RegisterForDamageTracking();
       }
 
       BaseClass::OnEnteredWorld();
@@ -115,6 +118,22 @@ namespace NetDemo
          sl->mTarget = this;
          sl->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(sl);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void FortActor::RegisterForDamageTracking()
+   {
+      if( ! IsRemote())
+      {
+         SimCore::Components::MunitionsComponent* comp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(
+            SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
+
+         if(comp != NULL)
+         {
+            comp->Register(*this, true);
+         }
       }
    }
 
