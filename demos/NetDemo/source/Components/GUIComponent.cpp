@@ -37,8 +37,10 @@
 
 // Local include directives
 #include "ActorRegistry.h"
+#include "Actors/FortActor.h"
 #include "Actors/PlayerStatusActor.h"
 #include "GUI/CustomCeguiWidgets.h"
+#include "GUI/HUDScreen.h"
 #include "GUI/ReadyRoomScreen.h"
 #include "GUI/ButtonHighlight.h"
 #include "MessageType.h"
@@ -146,8 +148,8 @@ namespace NetDemo
       RegisterScreenWithState(*mScreenOptions, NetDemoState::STATE_GAME_OPTIONS);
 
       // HUD
-      mScreenHUD = new SimCore::GUI::SimpleScreen("HUD", "CEGUI/layouts/NetDemo/HUD.layout");
-      mScreenHUD->Setup( mMainWindow.get() );
+      mScreenHUD = new NetDemo::GUI::HUDScreen();
+      mScreenHUD->Setup(*mAppComp, mMainWindow.get());
 
       // QUIT PROMPT
       mScreenQuitPrompt = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/QuitPrompt.layout");
@@ -191,27 +193,7 @@ namespace NetDemo
       else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
          || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
       {
-         const dtGame::ActorUpdateMessage& updateMessage = static_cast<const dtGame::ActorUpdateMessage&>(message);
-         const dtDAL::ActorType& actorType = *updateMessage.GetActorType();
-
-         if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
-         {
-            // Get the actor to which the message refers.
-            dtDAL::ActorProxy* proxy = NULL;
-            GetGameManager()->FindActorById(updateMessage.GetAboutActorId(), proxy);
-            
-            if(proxy != NULL)
-            {
-               NetDemo::PlayerStatusActor* playerStats = NULL;
-               proxy->GetActor(playerStats);
-
-               if(playerStats != NULL)
-               {
-                  // Process the actor.
-                  ProcessPlayerStatusUpdate(*playerStats);
-               }
-            }
-         }
+         ProcessActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
    }
 
@@ -280,16 +262,42 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage)
+   {
+      const dtDAL::ActorType& actorType = *updateMessage.GetActorType();
+      const dtCore::UniqueId& actorId = updateMessage.GetAboutActorId();
+
+      if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
+      {
+         // Get the actor to which the message refers.
+         dtDAL::ActorProxy* proxy = NULL;
+         NetDemo::PlayerStatusActor* playerStats = NULL;
+         if(mAppComp->FindActor(actorId, playerStats))
+         {
+            // Process the actor.
+            ProcessPlayerStatusUpdate(*playerStats);
+         }
+      }
+      else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
+      {
+         FortActor* fort = NULL;
+         if(mAppComp->FindActor(actorId, fort))
+         {
+            mScreenHUD->SetFortDamageRatio(1.0 - fort->GetCurDamageRatio());
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    void GUIComponent::ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange)
    {
       const GameStateType& state = stateChange.GetNewState();
 
-      bool isRunningState = state == NetDemoState::STATE_GAME_RUNNING;
+      ShowMouseCursor(state != NetDemoState::STATE_GAME_RUNNING);
 
-      ShowMouseCursor( ! isRunningState );
-
-      mScreenHUD->SetVisible( state == NetDemoState::STATE_GAME_RUNNING );
-      mScreenHUD->SetEnabled( state == NetDemoState::STATE_GAME_RUNNING );
+      bool runningState = mAppComp->IsRunningState(state);
+      mScreenHUD->SetVisible(runningState);
+      mScreenHUD->SetEnabled(runningState);
 
       /*mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
       mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
