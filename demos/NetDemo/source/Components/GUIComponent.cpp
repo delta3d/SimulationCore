@@ -142,6 +142,11 @@ namespace NetDemo
       mScreenReadyRoom->Setup(gm, mMainWindow.get());
       RegisterScreenWithState(*mScreenReadyRoom, NetDemoState::STATE_GAME_READYROOM);
 
+      // GARGE
+      mScreenGarage = new SimCore::GUI::SimpleScreen("Garage", "CEGUI/layouts/NetDemo/Garage.layout");
+      mScreenGarage->Setup(mMainWindow.get());
+      RegisterScreenWithState(*mScreenGarage, NetDemoState::STATE_GAME_GARAGE);
+
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
       mScreenOptions->Setup( mMainWindow.get() );

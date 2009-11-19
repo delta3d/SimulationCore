@@ -53,6 +53,7 @@ namespace NetDemo
          static NetDemoState STATE_LOBBY;
          static NetDemoState STATE_LOBBY_CONNECT_FAIL;
          static NetDemoState STATE_UNLOAD;
+         static NetDemoState STATE_GAME_GARAGE;
          static NetDemoState STATE_GAME_RUNNING;
          static NetDemoState STATE_GAME_READYROOM;
          static NetDemoState STATE_GAME_DEAD;
