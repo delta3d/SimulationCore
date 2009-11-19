@@ -32,7 +32,7 @@
 #include <osg/Vec3>
 #include <osg/Matrix>
 
-#include <Export.h>
+#include <DemoExport.h>
 
 #include <dtAI/steeringutility.h>
 #include <dtAI/steeringbehavior.h>
