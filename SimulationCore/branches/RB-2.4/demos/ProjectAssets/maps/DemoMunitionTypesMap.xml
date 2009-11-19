@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
   <header>
-    <name>MunitionTypesMap</name>
+    <name>DemoMunitionTypesMap</name>
     <description></description>
     <author>David Guthrie and Chris Rodgers</author>
     <comment></comment>
@@ -451,8 +451,8 @@
       <property>
         <name>Ground Impact Effect</name>
         <resourceType>Particles</resourceType>
-        <resourceDisplayName>Particles:explosionSmall.osg</resourceDisplayName>
-        <resource>Particles:explosionSmall.osg</resource>
+        <resourceDisplayName>Particles:nd_Explosion1.osg</resourceDisplayName>
+        <resource>Particles:nd_Explosion1.osg</resource>
       </property>
       <property>
         <name>Ground Impact Sound</name>
@@ -475,8 +475,8 @@
       <property>
         <name>Entity Impact Effect</name>
         <resourceType>Particles</resourceType>
-        <resourceDisplayName></resourceDisplayName>
-        <resource></resource>
+        <resourceDisplayName>Particles:nd_Explosion2.osg</resourceDisplayName>
+        <resource>Particles:nd_Explosion1.osg</resource>
       </property>
       <property>
         <name>Entity Impact Sound</name>

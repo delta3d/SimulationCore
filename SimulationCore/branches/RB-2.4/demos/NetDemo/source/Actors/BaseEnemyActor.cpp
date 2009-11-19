@@ -194,7 +194,7 @@ namespace NetDemo
          }
 
          // Randomly decide how long to last before exploding. 
-         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 1.0f);
+         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 1.5f);
       }
    }
 
