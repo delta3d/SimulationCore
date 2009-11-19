@@ -176,6 +176,7 @@ namespace NetDemo
          dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
          dtCore::RefPtr<SimpleScreen> mScreenLoading;
          dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
+         dtCore::RefPtr<SimpleScreen> mScreenGarage;
          dtCore::RefPtr<SimpleScreen> mScreenOptions;
          dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
          dtCore::RefPtr<NetDemo::GUI::HUDScreen> mScreenHUD;

@@ -45,6 +45,7 @@ namespace NetDemo
    NetDemoState NetDemoState::STATE_LOBBY("STATE_LOBBY");
    NetDemoState NetDemoState::STATE_LOBBY_CONNECT_FAIL("STATE_LOBBY_CONNECT_FAIL");
    NetDemoState NetDemoState::STATE_UNLOAD("STATE_UNLOAD");
+   NetDemoState NetDemoState::STATE_GAME_GARAGE("STATE_GAME_GARAGE");
    NetDemoState NetDemoState::STATE_GAME_RUNNING("STATE_GAME_RUNNING");
    NetDemoState NetDemoState::STATE_GAME_READYROOM("STATE_GAME_READYROOM");
    NetDemoState NetDemoState::STATE_GAME_DEAD("STATE_GAME_DEAD");
