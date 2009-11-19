@@ -27,6 +27,7 @@
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>
 #include <dtGame/actorupdatemessage.h>
+#include <dtGame/basemessages.h>
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/scriptmodule.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -118,7 +119,7 @@ namespace NetDemo
       mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
       mScreenMainMenu->Setup( mMainWindow.get() );
       RegisterScreenWithState(*mScreenMainMenu, NetDemoState::STATE_MENU);
-      mScreenMainMenu->SetVisible(true);
+      mScreenMainMenu->OnEnter();//->SetVisible(true);
 
       // LOBBY
       mScreenLobby = new SimCore::GUI::SimpleScreen("Lobby", "CEGUI/layouts/NetDemo/Lobby.layout");
@@ -155,6 +156,7 @@ namespace NetDemo
       // HUD
       mScreenHUD = new NetDemo::GUI::HUDScreen();
       mScreenHUD->Setup(*mAppComp, mMainWindow.get());
+      // Do not register with a state for now since the HUD spans several sub-states.
 
       // QUIT PROMPT
       mScreenQuitPrompt = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/QuitPrompt.layout");
@@ -179,7 +181,11 @@ namespace NetDemo
    {
       const dtGame::MessageType& messageType = message.GetMessageType();
 
-      if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
+      if(messageType == dtGame::MessageType::TICK_LOCAL)
+      {
+         Update(static_cast<const dtGame::TickMessage&>(message).GetDeltaRealTime());
+      }
+      else if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
       {
          ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
       }
@@ -199,6 +205,20 @@ namespace NetDemo
          || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
       {
          ProcessActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::Update(float timeDelta)
+   {
+      if(mPreviousScreen.get() != mCurrentScreen.get() && mPreviousScreen.valid())
+      {
+         mPreviousScreen->Update(timeDelta);
+      }
+
+      if(mCurrentScreen.valid())
+      {
+         mCurrentScreen->Update(timeDelta);
       }
    }
 
@@ -304,26 +324,13 @@ namespace NetDemo
       mScreenHUD->SetVisible(runningState);
       mScreenHUD->SetEnabled(runningState);
 
-      /*mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
-      mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
+      // Reference the previous and current screens so that they both can be updated.
+      mPreviousScreen = GetScreenForState(stateChange.GetOldState());
+      mCurrentScreen = GetScreenForState(state); // New State
 
-      mScreenLobby->SetVisible( state == NetDemoState::STATE_LOBBY );
-      mScreenLobby->SetEnabled( state == NetDemoState::STATE_LOBBY );
-
-      mScreenConnectFailPrompt->SetVisible( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
-      mScreenConnectFailPrompt->SetEnabled( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
-
-      mScreenLoading->SetVisible( state == NetDemoState::STATE_LOADING );
-      mScreenLoading->SetEnabled( state == NetDemoState::STATE_LOADING );
-
-      mScreenReadyRoom->SetVisible( state == NetDemoState::STATE_GAME_READYROOM );
-      mScreenReadyRoom->SetEnabled( state == NetDemoState::STATE_GAME_READYROOM );
-
-      mScreenOptions->SetVisible( state == NetDemoState::STATE_GAME_OPTIONS );
-      mScreenOptions->SetEnabled( state == NetDemoState::STATE_GAME_OPTIONS );
-
-      mScreenQuitPrompt->SetVisible( state == NetDemoState::STATE_GAME_QUIT );
-      mScreenQuitPrompt->SetEnabled( state == NetDemoState::STATE_GAME_QUIT );*/
+      // DEBUG:
+      //std::cout << "\n\tNew: " << stateChange.GetNewState().GetName()
+      //   << "\n\tOld: " << stateChange.GetOldState().GetName() << "\n\n";
 
       // Update the list of buttons for the current screen.
       UpdateButtonArray();
@@ -608,10 +615,6 @@ namespace NetDemo
          GameState* gameState = GetAppComponent()->GetState(&state);
          if(gameState != NULL)
          {
-            // Bind the screen update functor.
-            GameState::UpdateFunctor updateFunc(&screen, &Screen::OnUpdate);
-            gameState->SetUpdate(updateFunc);
-
             typedef dtUtil::Functor<void,TYPELIST_0()> VoidFunc;
 
             // Bind Entry method.

@@ -40,8 +40,12 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       Screen::Screen( const std::string& name )
-         : dtCore::Base(name),
-         mEnabled(false)
+         : dtCore::Base(name)
+         , mEnabled(false)
+         , mFadeState(FADE_NONE) // -1 (fade out), 0 (no fade), 1 (fade in)
+         , mFadeTimer(0.0f)
+         , mTimeFadeIn(0.0f)
+         , mTimeFadeOut(0.0f)
       {
       }
 
@@ -70,6 +74,26 @@ namespace SimCore
             return false;
          }
 
+         if(mFadeState != FADE_NONE)
+         {
+            mFadeTimer -= timeDelta;
+            if(mFadeTimer <= 0.0f)
+            {
+               mFadeTimer = 0.0f;
+
+               if(mFadeState == FADE_IN)
+               {
+                  OnFadeInEnd();
+               }
+               else if(mFadeState == FADE_OUT)
+               {
+                  OnFadeOutEnd();
+               }
+
+               mFadeState = FADE_NONE;
+            }
+         }
+
          AnimControlMap::iterator curControl = mAnimControls.begin();
          AnimControlMap::iterator endControlList = mAnimControls.end();
          for( ; curControl != endControlList; ++curControl )
@@ -93,17 +117,80 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void Screen::SetTimeFadeIn(float seconds)
+      {
+         mTimeFadeIn = seconds;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float Screen::GetTimeFadeIn() const
+      {
+         return mTimeFadeIn;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::SetTimeFadeOut(float seconds)
+      {
+         mTimeFadeOut = seconds;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      float Screen::GetTimeFadeOut() const
+      {
+         return mTimeFadeOut;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      Screen::FadeStateE Screen::GetFadeState() const
+      {
+         return mFadeState;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void Screen::OnEnter()
       {
-         SetEnabled(true);
-         SetVisible(true);
+         mFadeState = FADE_IN;
+         mFadeTimer = mTimeFadeIn;
+         OnFadeInStart();
       }
 
       //////////////////////////////////////////////////////////////////////////
       void Screen::OnExit()
       {
+         mFadeState = FADE_OUT;
+         mFadeTimer = mTimeFadeOut;
+         OnFadeOutStart();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnFadeInStart()
+      {
+         SetEnabled(true);
+         SetVisible(true);
+
+         // OVERRIDE: to change this functionality or to start fade-in
+         // animations for any child widgets.
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnFadeInEnd()
+      {
+         // OVERRIDE: to enabled any input widgets.
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnFadeOutStart()
+      {
+         // OVERRIDE: to start fade-out animations for any child widgets.
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void Screen::OnFadeOutEnd()
+      {
          SetEnabled(false);
          SetVisible(false);
+
+         // OVERRIDE: to change this functionality or to do additional work.
       }
 
       //////////////////////////////////////////////////////////////////////////
