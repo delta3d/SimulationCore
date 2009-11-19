@@ -24,46 +24,86 @@
 */
 
 #include <AISteeringModel.h>
+#include <AIState.h>
+#include <AIEvent.h>
 
+#include <dtCore/transform.h>
+#include <dtUtil/matrixutil.h>
+#include <dtUtil/mathdefines.h>
+
+#include <dtDAL/functor.h>
+#include <dtDAL/enginepropertytypes.h>
+
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/bodywrapper.h>
+
+#include <dtGame/gameactor.h>
+#include <osg/Vec2>
+#include <osg/Vec3>
 
 namespace NetDemo
 {
 
+   //////////////////////////////////////////////////////////////////////////
+   //AISteeringModel
+   //////////////////////////////////////////////////////////////////////////
    AISteeringModel::AISteeringModel()
-      : mSteeringBehavior(new DoNothing()) //the default behavior
+      : BaseClass()
+      , mCurrentBehavior(0)
+      , mSteeringBehaviors()
    {
-      mOutput.Reset();
+    
    }
 
    AISteeringModel::~AISteeringModel()
    {
-
+      mSteeringBehaviors.clear();
    }
 
-   void AISteeringModel::SetKinematicGoal(const dtAI::KinematicGoal& kg)
+   unsigned AISteeringModel::AddSteeringBehavior(BaseAISteeringBehavior* steeringbehavior)
    {
-      mGoal = kg;
+      unsigned id = mSteeringBehaviors.size();
+      mSteeringBehaviors.push_back(steeringbehavior);
+      return id;
    }
 
-   const dtAI::KinematicGoal& AISteeringModel::GetKinematicGoal() const
+   const AISteeringModel::SteeringBehaviorArray& AISteeringModel::GetSteeringBehaviors() const
    {
-      return mGoal;
+      return mSteeringBehaviors;
    }
 
-   dtAI::KinematicGoal& AISteeringModel::GetKinematicGoal()
-   {  
-      return mGoal;
-   }
-
-   void AISteeringModel::Update(const Kinematic& currentState, float dt)
+   bool AISteeringModel::SetCurrentSteeringBehavior(unsigned id)
    {
-      mOutput.Reset();
-
-     //apply controls to achieve kinematic goal
-     if(mSteeringBehavior.valid())
+     if(id < mSteeringBehaviors.size())
      {
-        mSteeringBehavior->Think(dt, mGoal, currentState, mOutput);
+        mCurrentBehavior = id;
+        return true;
      }
+
+     return false;
    }
+
+   void AISteeringModel::Init()
+   {
+   }
+
+   void AISteeringModel::OutputControl(const BaseAIControllable::PathType& pathToFollow, const BaseAIControllable::StateType& current_state, BaseAIControllable::ControlType& result) const
+   {
+      if (!pathToFollow.empty())
+      {
+         //GetSteeringModel()->Update(current_state.mTimeStep);
+         if(mCurrentBehavior < mSteeringBehaviors.size())
+         {
+            BaseAIControllable::SteeringBehaviorType* behavior = mSteeringBehaviors[mCurrentBehavior];
+            behavior->Think(current_state.GetTimeStep(), pathToFollow.front(), current_state, result);
+         }
+      }
+      //else
+      //{
+      //   result = mDefaultControls;
+      //}
+   }
+
 
 }//namespace NetDemo

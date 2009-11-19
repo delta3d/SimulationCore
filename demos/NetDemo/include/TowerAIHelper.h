@@ -48,11 +48,11 @@ namespace NetDemo
 
          TowerAIHelper();
 
-         /*virtual*/ void OnInit();
+         /*virtual*/ void OnInit(const EnemyDescriptionActor* desc);
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 
-         void SetCurrentTarget(dtCore::Transformable& target);
+         void SetCurrentTarget(const dtCore::Transformable& target);
 
       protected:
          TowerAIHelper(const TowerAIHelper&);  //not implemented by design
@@ -67,6 +67,7 @@ namespace NetDemo
          void SelectState(float dt);
 
          virtual void Attack(float dt);
+         float GetAngle(const osg::Vec3& pos);
 
 
       private:

@@ -40,7 +40,9 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/log.h>
 
-#include <iostream>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
 
 namespace NetDemo
 {
@@ -58,10 +60,14 @@ namespace NetDemo
 
    void EnemyMineAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
+      BaseClass::OnInit(desc);
+      
       if(desc != NULL)
       {
          mMaxVelocity = desc->GetSpawnInfo().GetMaxVelocity();
       }
+
+      GetSteeringModel()->AddSteeringBehavior(new BombDive(mMaxVelocity));
    }
 
    void EnemyMineAIHelper::Spawn()
@@ -71,7 +77,33 @@ namespace NetDemo
 
    void EnemyMineAIHelper::Update(float dt)
    {
-      BaseClass::Update(dt);
+      const float MAX_TICK = 0.1f;
+      if(dt > MAX_TICK) dt = MAX_TICK;
+
+      mStateMachine.Update(dt);
+      mSteeringModel->Step(dt, *this);
+      
+      if(GetPhysicsModel()->GetPhysicsHelper() != NULL)
+      {
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
+
+         if(physicsObject != NULL)
+         {
+            osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
+            at.normalize();
+
+            float maxThrustForce = 10.0f;
+
+            osg::Vec3 force;
+            float mass = physicsObject->GetBodyWrapper()->GetMass();
+
+            force += at * (mCurrentControls.GetThrust() * maxThrustForce);
+
+            mCurrentState.SetVel(physicsObject->GetLinearVelocity());
+
+            physicsObject->GetBodyWrapper()->ApplyImpulse(force);
+         }
+      }
    }
 
    void EnemyMineAIHelper::RegisterStates()
@@ -94,17 +126,20 @@ namespace NetDemo
       BaseClass::SetupFunctors();
 
       dtAI::NPCState* state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineAIHelper::Attack));
+      if(state != NULL)
+      {
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyMineAIHelper::Attack));
+      }
 
-      //this can be used to change steering behaviors when transitioning into a new state
-      typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
-      typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
-          
-      SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
-      ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
+      ////this can be used to change steering behaviors when transitioning into a new state
+      //typedef dtUtil::Command1<void, dtCore::RefPtr<SteeringBehaviorType> > ChangeSteeringBehaviorCommand;
+      //typedef dtUtil::Functor<void, TYPELIST_1(dtCore::RefPtr<SteeringBehaviorType>)> ChangeSteeringBehaviorFunctor;
+      //    
+      //SteeringBehaviorType* behavior = new BombDive(mMaxVelocity);
+      //ChangeSteeringBehaviorCommand* ctbc = new ChangeSteeringBehaviorCommand(ChangeSteeringBehaviorFunctor(this, &EnemyAIHelper::ChangeSteeringBehavior), behavior);
       
-      state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
-      state->AddEntryCommand(ctbc);   
+      //state = GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
+      //state->AddEntryCommand(ctbc);   
    }
 
 
@@ -126,10 +161,9 @@ namespace NetDemo
             BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DETONATE);
             return;
          }
-
-         dtAI::KinematicGoal kg;
-         kg.SetPosition(pos);
-         BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
+         
+         mGoalState.SetPos(pos);
+         mDefaultTargeter->Push(pos);
       }
       else
       {

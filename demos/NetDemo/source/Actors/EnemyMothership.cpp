@@ -53,6 +53,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
+      , mFirstUpdate(true)
    {
       mAIHelper = new EnemyMothershipAIHelper();
    }
@@ -121,6 +122,14 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::PostPhysicsUpdate()
    {
+      //this is a temporary workaround because we get PostPhysicsUpdate() called before TickLocal()
+      if(mFirstUpdate)
+      {
+         mFirstUpdate = false;
+         BaseEnemyActor::PostPhysicsUpdate();
+         return;
+      }
+
       // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
       // take the position and throw away the rotation.
 

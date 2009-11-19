@@ -26,12 +26,18 @@
 #ifndef NETDEMO_AIUTILITY_H
 #define NETDEMO_AIUTILITY_H
 
+#include <stack>
+
 #include <osg/Referenced>
 #include <osg/Vec3>
 #include <osg/Matrix>
 
+#include <Export.h>
+
 #include <dtAI/steeringutility.h>
 #include <dtAI/steeringbehavior.h>
+#include <dtAI/controllable.h>
+#include <dtAI/steeringpipeline.h>
 
 //for the steering pipeline
 #include <dtUtil/objectfactory.h>
@@ -49,74 +55,215 @@
 
 #include <dtUtil/log.h>
 
-#include <dtAI/steeringpipeline.h>
 
 namespace NetDemo
 {
-
-   struct Kinematic
+   struct BaseAIGameState
    {
-      osg::Matrix mTransform;
-      osg::Vec3 mLinearVelocity;
-      osg::Vec3 mAngularVelocity;
+      BaseAIGameState();
+      ~BaseAIGameState();
+
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Pos);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Forward);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Up);
+
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Vel);
+      DECLARE_PROPERTY_INLINE(osg::Vec3, Accel);
+
+      DECLARE_PROPERTY_INLINE(float, AngularVel);
+      DECLARE_PROPERTY_INLINE(float, AngularAccel);
+
+      DECLARE_PROPERTY_INLINE(float, VerticalVel);
+      DECLARE_PROPERTY_INLINE(float, VerticalAccel);
+
+      DECLARE_PROPERTY_INLINE(float, Pitch);
+      DECLARE_PROPERTY_INLINE(float, Roll);
+
+      DECLARE_PROPERTY_INLINE(float, TimeStep);
+
+      DECLARE_PROPERTY_INLINE(float, Thrusters);
+      DECLARE_PROPERTY_INLINE(float, Weapon01);
+      DECLARE_PROPERTY_INLINE(float, Weapon02);
+
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   struct SteeringOutput
+   struct BaseAIGoalState: public BaseAIGameState
    {
+      BaseAIGoalState();
+      ~BaseAIGoalState();
+
+      DECLARE_PROPERTY_INLINE(float, DragCoef);
+      DECLARE_PROPERTY_INLINE(float, AngularDragCoef);
+      DECLARE_PROPERTY_INLINE(float, VerticalDragCoef);
+
+      DECLARE_PROPERTY_INLINE(float, MaxVel);
+      DECLARE_PROPERTY_INLINE(float, MaxAccel);
+
+      DECLARE_PROPERTY_INLINE(float, MaxAngularVel);
+      DECLARE_PROPERTY_INLINE(float, MaxAngularAccel);
+
+      DECLARE_PROPERTY_INLINE(float, MaxVerticalVel);
+      DECLARE_PROPERTY_INLINE(float, MaxVerticalAccel);
+
+      DECLARE_PROPERTY_INLINE(float, MaxPitch);
+      DECLARE_PROPERTY_INLINE(float, MaxRoll);
+
+      DECLARE_PROPERTY_INLINE(float, MaxTiltPerSecond);
+      DECLARE_PROPERTY_INLINE(float, MaxRollPerSecond);
+
+      DECLARE_PROPERTY_INLINE(float, MinElevation);
+      DECLARE_PROPERTY_INLINE(float, MaxElevation);
+
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+   };
+
+   struct BaseAIControls
+   {
+      BaseAIControls();
+      ~BaseAIControls();
+
       //these are the control inputs
-      //all are floats from 1 to -1
+      //all are floats from 1 to -1 
       //which represents percentage of maximum
-      float mThrust, mLift, mYaw;
+      DECLARE_PROPERTY_INLINE(float, Thrust);
+      DECLARE_PROPERTY_INLINE(float, Lift);
+      DECLARE_PROPERTY_INLINE(float, Yaw);
+      DECLARE_PROPERTY_INLINE(float, WeaponTrigger01);
+      DECLARE_PROPERTY_INLINE(float, WeaponTrigger02);
 
-      osg::Vec3 mLinearVelocity;
-
-      SteeringOutput()
-      {
-         Reset();
-      }
-
-      void Reset()
-      {
-         mThrust = 0.0f;
-         mLift = 0.0f;
-         mYaw = 0.0f;
-         mLinearVelocity.set(0.0f, 0.0f, 0.0f);
-      }
+      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
 
-   typedef std::vector<dtABC::BezierController::PathData>  BezierPath;
-   typedef dtAI::AIPluginInterface::WaypointArray WaypointPath;
-   typedef dtAI::SteeringBehavior<dtAI::KinematicGoal, Kinematic, SteeringOutput> SteeringBehaviorType;
+   //////////////////////////////////////////////////////////////////////////
+   //BaseAIControllable
+   //////////////////////////////////////////////////////////////////////////
+   typedef dtAI::Controllable<BaseAIGameState, BaseAIGoalState, BaseAIControls> BaseAIControllable;
 
-   //class ErrorCondition: public dtUtil::Enumeration
-   //{
-   //   DECLARE_ENUM(ErrorCondition);
-   //public:
-   //   ErrorCondition(const std::string&);
-   //};
+   //////////////////////////////////////////////////////////////////////////
+   //BaseAISteeringBehavior
+   //////////////////////////////////////////////////////////////////////////
+   typedef dtAI::SteeringBehavior<BaseAIGoalState, BaseAIGameState, BaseAIControls> BaseAISteeringBehavior;
 
-   //this allows for a default behavior that doesn't do anything... idle?
-   class DoNothing: public SteeringBehaviorType
+
+   //////////////////////////////////////////////////////////////////////////
+   //BaseSteeringTargeter
+   //////////////////////////////////////////////////////////////////////////
+   class BaseSteeringTargeter: public dtAI::Targeter<BaseAIGameState, BaseAIGoalState>
    {
    public:
-      typedef SteeringBehaviorType BaseClass;
-      DoNothing(){}
+      typedef dtAI::Targeter<BaseAIGameState, BaseAIGoalState> BaseClass;
+
+      BaseSteeringTargeter();
+      virtual ~BaseSteeringTargeter();
+
+      void Pop();
+      const osg::Vec3& Top() const;
+      void Push(const osg::Vec3& pos);
+
+      /*virtual*/ bool GetGoal(const BaseAIGameState& current_state, BaseAIGoalState& result);
+
+   private:
+
+      std::stack<osg::Vec3> mPointOfInterest;
+
+   };
+
+   class BaseSteeringDecomposer: public dtAI::Decomposer<BaseAIGameState, BaseAIGoalState>
+   {
+   public:
+      typedef dtAI::Decomposer<BaseAIGameState, BaseAIGoalState> BaseClass;
+
+      BaseSteeringDecomposer();
+      ~BaseSteeringDecomposer();
+
+      /*virtual*/ void Decompose(const BaseAIGameState& current_state, BaseAIGoalState& result) const;
+   };
+
+   class BaseSteeringConstraint: public dtAI::Constraint<BaseAIGameState, BaseAIGoalState>
+   {
+   public:
+      typedef dtAI::Constraint<BaseAIGameState, BaseAIGoalState> BaseClass;
+
+      BaseSteeringConstraint();
+      ~BaseSteeringConstraint();
+
+      /*virtual*/ bool WillViolate(const BaseClass::PathType& pathToFollow) const;
+      /*virtual*/ void Suggest(const BaseClass::PathType& pathToFollow, const BaseAIGameState& current_state, BaseAIGoalState& result) const;
+   };
+
+
+   //our default behavior
+   class DoNothing: public BaseAISteeringBehavior
+   {
+   public:
+
+      typedef BaseAISteeringBehavior BaseClass;
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
+      {
+      }
+
+   };
+
+   /**
+   * Align is used to align our orientation with the current dtAI::KinematicGoal's orientation (rotation)
+   */
+   class Align: public BaseAISteeringBehavior
+   {
+   public:
+      typedef BaseAISteeringBehavior BaseClass;
+
+      Align(float lookAhead, float timeToTarget)
+         : mLookAhead(lookAhead)
+         , mTimeToTarget(timeToTarget)
+      {}
 
       /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
 
-   private:
+   protected:
+      float Sgn(float x);
+      osg::Vec3 GetTargetPosition(float dt, const BaseAIGoalState& goal);
+      float GetTargetForward(float dt, const osg::Vec3& targetPos, const BaseAIGoalState& current_goal, const BaseAIGameState& current_state, osg::Vec3& vec_in);
+
+      float mLookAhead, mTimeToTarget;
    };
 
-   class BombDive: public SteeringBehaviorType
+   //this is currently used by the enemy mine
+   class BombDive: public BaseAISteeringBehavior
    {
    public:
-      typedef SteeringBehaviorType BaseClass;
-      BombDive(float speed): mSpeed(speed){}
+      typedef BaseAISteeringBehavior BaseClass;
+
+      BombDive(float maxVel): mSpeed(maxVel){}
 
       /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
 
    private:
       float mSpeed;
+   };
+
+   /**
+   * Follow path can be used to follow waypoints
+   */
+   class FollowPath: public Align
+   {
+   public:
+      typedef Align BaseClass;
+
+      FollowPath(float minSpeed, float maxSpeed, float lookAhead, float timeToTarget, float lookAheadRot, float timeToTargetRot)
+         : BaseClass(lookAheadRot, timeToTargetRot)
+         , mMinSpeed(minSpeed)
+         , mMaxSpeed(maxSpeed)
+         , mLookAhead(lookAhead)
+         , mTimeToTarget(timeToTarget)
+      {}
+
+      /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result);
+
+   private:
+
+      float mMinSpeed, mMaxSpeed, mLookAhead, mTimeToTarget;
    };
 
 
