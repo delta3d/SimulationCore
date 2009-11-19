@@ -45,6 +45,7 @@ namespace dtGame
 {
    class ActorUpdateMessage;
    class Message;
+   class TickMessage;
 }
 
 namespace dtGUI
@@ -114,6 +115,8 @@ namespace NetDemo
 
          virtual void ProcessMessage( const dtGame::Message& message );
 
+         void Update(float timeDelta);
+
       protected:
          virtual ~GUIComponent();
 
@@ -180,6 +183,9 @@ namespace NetDemo
          dtCore::RefPtr<SimpleScreen> mScreenOptions;
          dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
          dtCore::RefPtr<NetDemo::GUI::HUDScreen> mScreenHUD;
+
+         dtCore::RefPtr<Screen> mCurrentScreen;
+         dtCore::RefPtr<Screen> mPreviousScreen;
 
          // Special Effects Overlays
          dtCore::RefPtr<osg::MatrixTransform> mEffectsOverlay;
