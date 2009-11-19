@@ -30,13 +30,16 @@
 #include <dtPhysics/physicshelper.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
-
+#include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 
 namespace NetDemo
 {
 
    AIPhysicsModel::AIPhysicsModel()
+      : mTimeStep(0.0f)
+      , mCurrentState(NULL)
+      , mGoalState(NULL)
    {
 
    }
@@ -44,12 +47,6 @@ namespace NetDemo
    AIPhysicsModel::~AIPhysicsModel()
    {
 
-   }
-
-
-   void AIPhysicsModel::SetKinematicState(const Kinematic& ko)
-   {
-     mKinematicState = ko;
    }
 
    void AIPhysicsModel::SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper)
@@ -67,32 +64,235 @@ namespace NetDemo
 
    }
 
-   void AIPhysicsModel::Update(const SteeringOutput& steeringOut, float dt)
+   void AIPhysicsModel::Update(float dt, BaseAIControllable& aiAgent)
    {
+      mTimeStep = dt;
+
+      osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
+
+      mCurrentState = &aiAgent.mCurrentState;
+      mGoalState = &aiAgent.mGoalState;
+
+      const BaseAIControls& steeringOut = aiAgent.mCurrentControls;
+
+      UpdateTilt(steeringOut, tempUpVector);
+      UpdateVelocity(steeringOut);
+
+      UpdateRoll(steeringOut, tempUpVector);
+      UpdateAngularVelocity(steeringOut);
+
+      UpdateVerticalVelocity(steeringOut);
+
+      UpdateHeading(steeringOut);
+      UpdatePosition(steeringOut);
+
+      OrthoNormalize(*mCurrentState);
+
       if(mPhysicsHelper.valid())
       {
-         //todo: all this should be a derivative of an interface
-         //       it is currently specific to the EnemyMine
-         //       also we need a generic way to set physical constraints
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
 
-         //TODO: this doesnt seem to work!
-         //osg::Vec3 right = dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 0);
-         //osg::Vec3 up(0.0f, 0.0f, 1.0f); //= dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 2);
-         //osg::Vec3 at = dtUtil::MatrixUtil::GetRow3(mKinematicState.mTransform, 1);
+         if(physicsObject != NULL)
+         {
+            osg::Vec3 up = mCurrentState->GetUp();
+            osg::Vec3 at = mCurrentState->GetForward();
+            
+            float maxLiftForce = 20.0f;
+            float maxThrustForce = 10.0f;
 
-         //float maxLiftForce = 100.0f;
-         //float maxThrustForce = 100.0f;
-         //float maxYawForce = 100.0f;
+            osg::Vec3 force;
+            float mass = physicsObject->GetBodyWrapper()->GetMass();
 
-         //osg::Vec3 force;
+            float liftForce =(steeringOut.GetLift() * mass * maxLiftForce);
+            dtUtil::ClampMin(liftForce, 0.0f);
 
-         //force += osg::Vec3(0.0f, 0.0f, 100.0f) + (up * (steeringOut.mLift * maxLiftForce));
-         //force += at * (steeringOut.mThrust * maxThrustForce);
-         //force += right * (steeringOut.mYaw * maxYawForce);
-         //
-         //GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(force);
-         GetPhysicsHelper()->GetMainPhysicsObject()->GetBodyWrapper()->AddForce(steeringOut.mLinearVelocity);
+            force += up * liftForce;
+            force += at * (steeringOut.GetThrust() * mass * maxThrustForce);
 
+            mCurrentState->SetVel(physicsObject->GetLinearVelocity());
+
+            physicsObject->GetBodyWrapper()->AddForce(force);
+         }
+      }
+   }
+
+
+   void AIPhysicsModel::SetDefaultState(const osg::Matrix& matIn, BaseAIGameState& BaseAIGameState)
+   {
+      BaseAIGameState.SetVel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      BaseAIGameState.SetAccel(osg::Vec3(0.0f, 0.0f, 0.0f));
+      BaseAIGameState.SetPitch(0.0f);
+      BaseAIGameState.SetRoll(0.0f);
+      BaseAIGameState.SetAngularAccel(0.0f);
+      BaseAIGameState.SetAngularVel(0.0f);
+      BaseAIGameState.SetVerticalVel(0.0f);
+      BaseAIGameState.SetVerticalAccel(0.0f);
+
+      osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
+      fwd.normalize();
+      BaseAIGameState.SetForward(fwd);
+
+      osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
+      up.normalize();
+      BaseAIGameState.SetUp(up);
+
+      BaseAIGameState.SetPos(osg::Vec3(matIn(3,0), matIn(3,1), matIn(3,2)));
+
+      BaseAIGameState.SetTimeStep(0.0f);
+      BaseAIGameState.SetVel(osg::Vec3());
+   }
+
+   void AIPhysicsModel::SetState(BaseAIGameState& state, const osg::Matrix& matIn)
+   {
+      osg::Vec3 fwd = dtUtil::MatrixUtil::GetRow3(matIn, 1);
+      fwd.normalize();
+      state.SetForward(fwd);
+
+      osg::Vec3 up = dtUtil::MatrixUtil::GetRow3(matIn, 2);
+      up.normalize();
+      state.SetUp(up);
+
+      state.SetPos(osg::Vec3(matIn(3,0), matIn(3,1),  matIn(3,2)));
+   }
+
+   void AIPhysicsModel::GetState(const BaseAIGameState& currentState, osg::Matrix& result) const
+   {
+      result(3,0) = currentState.GetPos()[0];
+      result(3,1) = currentState.GetPos()[1];
+      result(3,2) = currentState.GetPos()[2];
+
+      osg::Vec3 rightVector = currentState.GetForward() ^ currentState.GetUp();
+      rightVector.normalize();
+
+      dtUtil::MatrixUtil::SetRow(result, currentState.GetForward(), 1);
+      dtUtil::MatrixUtil::SetRow(result, currentState.GetUp(), 2);
+      dtUtil::MatrixUtil::SetRow(result, rightVector, 0);
+   }
+
+
+   void AIPhysicsModel::OrthoNormalize(BaseAIGameState& currentState)
+   {
+      osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
+
+      osg::Vec3 fwd = currentState.GetForward();
+      fwd.normalize();
+      currentState.SetForward(fwd);
+
+      osg::Vec3 rightVector = currentState.GetForward() ^ tempUpVector;
+      rightVector.normalize();
+      osg::Vec3 up = rightVector ^ currentState.GetForward();
+      up.normalize();
+      currentState.SetUp(up);
+   }
+
+   void AIPhysicsModel::UpdateHeading(const BaseAIControls& controls)
+   {
+      float thetaAngle = mCurrentState->GetAngularVel() * mTimeStep;
+
+      osg::Matrix rotation = osg::Matrix::rotate(thetaAngle, osg::Vec3(0.0, 0.0, 1.0));
+
+      mCurrentState->SetForward(osg::Matrix::transform3x3(mCurrentState->GetForward(), rotation));
+   }
+
+   void AIPhysicsModel::UpdateAngularVelocity(const BaseAIControls& controls)
+   {
+      float newVelocity = controls.GetYaw() * mGoalState->GetMaxAngularVel();
+      mCurrentState->SetAngularVel(newVelocity);
+   }
+
+   void AIPhysicsModel::UpdateVerticalVelocity(const BaseAIControls& controls)
+   {
+      //update acceleration
+      mCurrentState->SetVerticalAccel(controls.GetLift() * mGoalState->GetMaxVerticalAccel());
+
+      //update velocity
+      mCurrentState->SetVerticalVel(mCurrentState->GetVerticalVel() + (mCurrentState->GetVerticalAccel() * mCurrentState->GetTimeStep()));
+      mCurrentState->SetVerticalVel(mCurrentState->GetVerticalVel() - (mCurrentState->GetVerticalVel() * mGoalState->GetVerticalDragCoef()));
+      mCurrentState->SetVerticalVel(Clamp(mCurrentState->GetVerticalVel(), -mGoalState->GetMaxVerticalVel(), mGoalState->GetMaxVerticalVel()));
+   }
+
+   void AIPhysicsModel::UpdatePosition(const BaseAIControls& controls)
+   {
+      osg::Vec3 newPos = mCurrentState->GetPos() + (mCurrentState->GetVel() * mCurrentState->GetTimeStep());
+      newPos[2] += mCurrentState->GetVerticalVel() * mCurrentState->GetTimeStep();
+      mCurrentState->SetPos(newPos);
+   }
+
+   void AIPhysicsModel::UpdateVelocity(const BaseAIControls& controls)
+   {
+      float newVelocity = (controls.GetThrust() * mGoalState->GetMaxVel());
+      float maxAccel = mGoalState->GetMaxAccel() * mCurrentState->GetTimeStep();
+
+      osg::Vec3 newVel = mCurrentState->GetVel();
+      newVel += mCurrentState->GetForward() * Clamp(newVelocity - mCurrentState->GetVel().length(), -maxAccel, maxAccel);
+      newVel -= (mCurrentState->GetVel() * mGoalState->GetDragCoef());
+
+
+      //we don't clamp the controls so this is necessary
+      if (newVel.length() > mGoalState->GetMaxVel())
+      {
+         newVel.normalize();
+         newVel *= mGoalState->GetMaxVel();
+      }
+      mCurrentState->SetVel(newVel);
+   }
+
+   void AIPhysicsModel::UpdateTilt(const BaseAIControls& controls, osg::Vec3& tilt)
+   {
+      mCurrentState->SetPitch(Dampen(mCurrentState->GetPitch(), (controls.GetThrust() * mGoalState->GetMaxPitch()), mGoalState->GetMaxTiltPerSecond() * mCurrentState->GetTimeStep(), (mCurrentState->GetPitch() / mGoalState->GetMaxPitch())));
+
+      mCurrentState->SetPitch(Clamp(mCurrentState->GetPitch(), -mGoalState->GetMaxPitch(), mGoalState->GetMaxPitch()));
+
+      osg::Vec3 rightVec = (mCurrentState->GetForward() ^ mCurrentState->GetUp());
+      rightVec.normalize();
+
+      osg::Matrix rotation = osg::Matrix::rotate( -mCurrentState->GetPitch(), rightVec);
+
+      tilt = osg::Matrix::transform3x3(tilt, rotation); 
+
+   }
+
+
+   void AIPhysicsModel::UpdateRoll(const BaseAIControls& controls, osg::Vec3& roll)
+   {
+      mCurrentState->SetRoll(Dampen(mCurrentState->GetRoll(), controls.GetYaw() * mGoalState->GetMaxRoll(), mGoalState->GetMaxRollPerSecond() * mCurrentState->GetTimeStep(), (mCurrentState->GetRoll() / mGoalState->GetMaxRoll())));
+
+      //mCurrentState->mRoll *= ((0.1 + mCurrentState->GetVel().length()) / mGoalState->mMaxVel);
+
+      if (mCurrentState->GetRoll() > mGoalState->GetMaxRoll()) mCurrentState->SetRoll(mGoalState->GetMaxRoll());
+      else if (mCurrentState->GetRoll() < -mGoalState->GetMaxRoll()) mCurrentState->SetRoll(-mGoalState->GetMaxRoll());
+
+      osg::Matrix rotation = osg::Matrix::rotate(-mCurrentState->GetRoll(), mCurrentState->GetForward());
+
+      roll = osg::Matrix::transform3x3(roll, rotation); 
+
+   }
+
+   float AIPhysicsModel::Clamp(float x, float from, float to)
+   {
+      if(x < from)
+         return from;
+      else if(x > to)
+         return to;
+      else return x;
+   }
+
+   float AIPhysicsModel::Dampen(float last, float current, float pmax, float falloff)
+   {
+      if(current > last)
+      {
+         float adjust = pmax * (1.0f - falloff);
+
+         if(current - last >= adjust)
+            return last + adjust;
+         else return current;
+      }
+      else
+      {
+         float adjust = pmax * falloff;
+         if(last - current >= pmax)
+            return last - pmax;
+         else return current;
       }
    }
 

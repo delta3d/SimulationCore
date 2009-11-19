@@ -38,6 +38,7 @@
 
 #include <ActorRegistry.h>
 #include <AIState.h>
+#include <AIEvent.h>
 #include <Actors/FortActor.h>
 #include <Actors/EnemyHelix.h>
 #include <Actors/EnemyMine.h>
@@ -237,8 +238,15 @@ namespace NetDemo
          mAIHelper->SetCurrentTarget(*enemy);
       }
 
+      //mAIHelper->SetCurrentTarget(*GetGameActorProxy().GetGameManager()->GetApplication().GetCamera());
+
    }
 
+   //////////////////////////////////////////////////////////////////////
+   void TowerActor::SetTarget(const BaseEnemyActor* enemy)
+   {
+      mAIHelper->SetCurrentTarget(*enemy);
+   }
    //////////////////////////////////////////////////////////////////////
    float TowerActor::GetDistance( const dtCore::Transformable& t ) const
    {
@@ -257,35 +265,13 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::Shoot(float)
    {
-      //if(mWeapon.valid())
-      //{
-      //   mWeapon->SetTriggerHeld(true);
-      //   mWeapon->Fire();
-      //}
+      if(mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
+      }
 
-      //dtCore::Transform xform;
-      //osg::Vec3 enemyPos;
-
-      //mTarget.GetTransform(xform);
-      //xform.GetTranslation(enemyPos);
-
-      //dtUtil::NodeCollector *nodes = GetNodeCollector();
-      //osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
-      //if (dof != NULL)
-      //{
-      //   // Spin the turret in a circle every few seconds
-      //   osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
-      //   osg::Vec3 hprChange;
-      //   hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
-      //   hpr[0] += hprChange[0];
-      //   dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
-      //   // Let the artics decide if the actor is dirty or not
-      //   if(GetArticulationHelper() != NULL)
-      //   {
-      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
-      //   }
-      //}
-
+      mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -293,31 +279,38 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      //Tick the AI
-      //update the AI's position and orientation
-      dtCore::Transform trans;
-      GetTransform(trans);
-      mAIHelper->PreSync(trans);
+      dtUtil::NodeCollector* nodes = GetNodeCollector();
+      osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
+      if (dof != NULL)
+      {
+         osg::Vec3 hpr;
+         osg::Matrix mat;
+         osg::Vec3 hprLast = dof->getCurrentHPR();
 
-      ////////let the AI do its thing
-      mAIHelper->Update(tickMessage.GetDeltaSimTime());
+         //Tick the AI
+         //update the AI DOF orientation
+         dtCore::Transform trans;
+         GetTransform(trans);
+         dtUtil::MatrixUtil::HprToMatrix(mat, hprLast);
+         trans.SetRotation(mat);
+         mAIHelper->PreSync(trans);
 
-      //dtUtil::NodeCollector *nodes = GetNodeCollector();
-      //osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
-      //if (dof != NULL)
-      //{
-      //   // Spin the turret in a circle every few seconds
-      //   osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
-      //   osg::Vec3 hprChange;
-      //   hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
-      //   hpr[0] += hprChange[0];
-      //   dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
-      //   // Let the artics decide if the actor is dirty or not
-      //   if(GetArticulationHelper() != NULL)
-      //   {
-      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
-      //   }
-      //}
+         ////////let the AI do its thing
+         mAIHelper->Update(tickMessage.GetDeltaSimTime());
+
+         dtCore::Transform currentXForm;
+         mAIHelper->PostSync(currentXForm);
+         currentXForm.Get(mat);
+         dtUtil::MatrixUtil::MatrixToHpr(hpr, mat);
+
+         dof->setCurrentHPR(hpr);
+         
+         if(GetArticulationHelper() != NULL)
+         {
+            GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprLast - hpr, hpr);
+         }
+      }
+
    }
 
    //////////////////////////////////////////////////////////////////////

@@ -40,7 +40,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/log.h>
 
-#include <iostream>
+#include <dtUtil/stringutils.h>
 
 #include <AIEvent.h>
 
@@ -58,8 +58,16 @@ namespace NetDemo
 
    }
 
-   void TowerAIHelper::OnInit()
+   void TowerAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
+      BaseClass::OnInit(desc);
+
+      mGoalState.SetMaxAngularVel(0.05f);
+
+      float lookAheadRot = 0.25f;
+      float timeToTargetRot = 5.0f;
+
+      GetSteeringModel()->AddSteeringBehavior(new Align(lookAheadRot, timeToTargetRot));
    }
 
    void TowerAIHelper::Spawn()
@@ -70,6 +78,11 @@ namespace NetDemo
    void TowerAIHelper::Update(float dt)
    {
       BaseClass::Update(dt);
+
+      //mStateMachine.Update(dt);
+      ////mSteeringModel->Step(dt, *this);
+      //LOG_ALWAYS(dtUtil::ToString(mCurrentControls.GetYaw()));
+      //mPhysicsModel->Update(dt, *this);
    }
 
    void TowerAIHelper::RegisterStates()
@@ -115,22 +128,37 @@ namespace NetDemo
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetCurrentState();
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
-      if(attackState != NULL && attackState->mStateData.mTarget.valid())
+      if(attackState != NULL)
       {
-         dtCore::Transform xform;
-         attackState->mStateData.mTarget->GetTransform(xform);
-         osg::Vec3 pos = xform.GetTranslation();
+         if(attackState->mStateData.mTarget.valid())
+         {
+            dtCore::Transform xform;
+            attackState->mStateData.mTarget->GetTransform(xform);
+            osg::Vec3 pos = xform.GetTranslation();
 
-         BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
+            //osg::Vec3 pos(1000.0, 0.0f, 0.0f);
+            mGoalState.SetPos(pos);
+            mDefaultTargeter->Push(pos);
+
+            if(GetAngle(pos) < 0.1f)
+            {
+               BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
+            }
+         }
+         else
+         {
+            BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_FIND_TARGET);
+         }
       }
    }
 
-   void TowerAIHelper::SetCurrentTarget(dtCore::Transformable& target)
+   void TowerAIHelper::SetCurrentTarget(const dtCore::Transformable& target)
    {
       dtAI::NPCState* npcState = BaseClass::GetStateMachine().GetState(&AIStateType::AI_STATE_ATTACK);
       AttackState* attackState = dynamic_cast<AttackState*>(npcState);
       if(attackState != NULL)
       {
+         LOG_ALWAYS("FOUND TARGET: " + target.GetName());
          attackState->mStateData.mTarget = &target;
          //let the system know we have targeted a new entity
          BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_ENEMY_TARGETED);
@@ -141,4 +169,17 @@ namespace NetDemo
       }
    }
 
+   float TowerAIHelper::GetAngle( const osg::Vec3& pos )
+   {
+      osg::Vec3 dir = pos;
+      dir.normalize();
+
+      osg::Vec3 forward = mCurrentState.GetForward();
+      forward.normalize();
+
+      float dot = forward * dir;
+      float angle = fabs(acos(dot));
+      //LOG_ALWAYS(dtUtil::ToString(angle));
+      return angle;
+   }
 } //namespace NetDemo

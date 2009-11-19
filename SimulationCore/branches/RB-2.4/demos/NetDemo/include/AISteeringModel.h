@@ -28,6 +28,14 @@
 #include <DemoExport.h>
 #include <AIUtility.h>
 
+#include <dtDAL/propertymacros.h>
+#include <dtAI/controllable.h>
+#include <dtAI/steeringbehavior.h>
+#include <dtAI/steeringpipeline.h>
+#include <osg/Matrix>
+#include <osg/Vec3>
+
+#include <stack>
 #include <osg/Referenced>
 #include <dtCore/refptr.h>
 
@@ -35,32 +43,37 @@
 namespace NetDemo
 {
 
-   class NETDEMO_EXPORT AISteeringModel: public osg::Referenced
+   class NETDEMO_EXPORT AISteeringModel:  public dtAI::SteeringPipeline<typename BaseAIControllable>,
+                                          public osg::Referenced
    {
    public:
+      typedef dtAI::SteeringPipeline<BaseAIControllable> BaseClass;
+      typedef std::vector<BaseAISteeringBehavior*> SteeringBehaviorArray; 
+
      AISteeringModel();
 
-     virtual void Update(const Kinematic& currentState, float dt);
+     virtual void Init();
 
-     void SetKinematicGoal(const dtAI::KinematicGoal& kg);
-     const dtAI::KinematicGoal& GetKinematicGoal() const;
-     dtAI::KinematicGoal& GetKinematicGoal();
+     void OutputControl(const BaseAIControllable::PathType& pathToFollow, const BaseAIControllable::StateType& current_state, BaseAIControllable::ControlType& result) const;
 
-     const SteeringOutput& GetOutput() const { return mOutput; }
+     const SteeringBehaviorArray& GetSteeringBehaviors() const;
+     bool SetCurrentSteeringBehavior(unsigned id);
 
-     SteeringBehaviorType* GetSteeringBehavior(){ return mSteeringBehavior.get();}
-     const SteeringBehaviorType* GetSteeringBehavior() const{ return mSteeringBehavior.get();}
-     void SetSteeringBehavior(SteeringBehaviorType* sb){mSteeringBehavior = sb;}
+     unsigned AddSteeringBehavior(BaseAISteeringBehavior* steeringbehavior);
 
    protected:
      AISteeringModel(const AISteeringModel&);  //not implemented by design
      AISteeringModel& operator=(const AISteeringModel&);  //not implemented by design
      ~AISteeringModel();
 
-     dtAI::KinematicGoal mGoal;
-     SteeringOutput mOutput;
 
-     dtCore::RefPtr<SteeringBehaviorType> mSteeringBehavior;
+     DECLARE_PROPERTY_INLINE(float, TimeStep)
+
+     unsigned mCurrentBehavior;
+     SteeringBehaviorArray mSteeringBehaviors;
+
+     //BaseSteeringTargeter* mTargeter;
+
    };
 
 } //namespace NetDemo

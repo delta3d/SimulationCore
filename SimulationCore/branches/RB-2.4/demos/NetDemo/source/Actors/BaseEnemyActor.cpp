@@ -152,8 +152,7 @@ namespace NetDemo
       dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
 
       //if is enemy true it will multiply incoming damage by a 0
-      // We used to not take damage from our friends. Now we do.
-      return incomingDamage; //* float(!IsEnemyActor(gap));
+      return incomingDamage * float(!IsEnemyActor(gap));
    }
 
 
@@ -166,7 +165,7 @@ namespace NetDemo
 
       dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
 
-      if(true) // !IsEnemyActor(gap)) -- we used to not take damage from other bad guys. 
+      if(!IsEnemyActor(gap)) 
       {
          // the base class applies an impulse
          BaseClass::RespondToHit(message, munition, force, location);

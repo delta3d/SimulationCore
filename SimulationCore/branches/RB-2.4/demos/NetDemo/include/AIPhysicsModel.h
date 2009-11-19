@@ -45,21 +45,36 @@ namespace NetDemo
 
      virtual void Init();
 
-     virtual void Update(const SteeringOutput& steeringOut, float dt);
+     virtual void Update(float dt, BaseAIControllable& aiAgent);
 
      void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
      dtPhysics::PhysicsHelper* GetPhysicsHelper();
 
-     void SetKinematicState(const Kinematic& ko);
-     const Kinematic& GetKinematicState() const {return mKinematicState;}
+     void SetState(BaseAIGameState& BaseAIGameState, const osg::Matrix& matIn);
+     void GetState(const BaseAIGameState& stateIn, osg::Matrix& result) const;
+     void SetDefaultState(const osg::Matrix& matIn, BaseAIGameState& BaseAIGameState);
 
    protected:
      AIPhysicsModel(const AIPhysicsModel&);  //not implemented by design
      AIPhysicsModel& operator=(const AIPhysicsModel&);  //not implemented by design
      ~AIPhysicsModel();
 
+     void UpdateHeading(const BaseAIControls& controls);
+     void UpdatePosition(const BaseAIControls& controls);
+     void UpdateVelocity(const BaseAIControls& controls);
+     void UpdateAngularVelocity(const BaseAIControls& controls);
+     void UpdateVerticalVelocity(const BaseAIControls& controls);
+     void UpdateTilt(const BaseAIControls& controls, osg::Vec3& tilt);
+     void UpdateRoll(const BaseAIControls& controls, osg::Vec3& roll);
+     void OrthoNormalize(BaseAIGameState& stateIn);
+     float Clamp(float x, float from, float to);
+     float Dampen(float last, float current, float max, float falloff);
+
+     float mTimeStep;
+
+     BaseAIGameState* mCurrentState;
+     BaseAIGoalState* mGoalState;
      dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
-     Kinematic mKinematicState;
 
    };
 

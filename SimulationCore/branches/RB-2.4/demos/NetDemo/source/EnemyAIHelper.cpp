@@ -57,6 +57,26 @@ namespace NetDemo
 
    void EnemyAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
+      mGoalState.SetMaxAngularVel(osg::DegreesToRadians(1000.0f));
+      //mGoalState.mMaxAngularVel = osg::DegreesToRadians(10.0f);
+      //mGoalState.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
+      mGoalState.SetMaxAngularAccel(50.0f);
+      mGoalState.SetMaxVel(77.1667f); //150 knots
+      //mGoalState.mMaxAccel = 200.0f * 8.77f;
+      mGoalState.SetMaxAccel(1000.0f);
+      mGoalState.SetMaxPitch(osg::DegreesToRadians(15.0f));
+      mGoalState.SetMaxRoll(osg::DegreesToRadians(30.0f));
+      mGoalState.SetMaxTiltPerSecond(osg::DegreesToRadians(5.0f));
+      mGoalState.SetMaxRollPerSecond(osg::DegreesToRadians(5.0f));
+      //mGoalState.mMaxVerticalVel(15.0f;//7.62f; //1500 feet/min
+      mGoalState.SetMaxVerticalVel(50.0f);//7.62f; //1500 feet/min
+      mGoalState.SetMaxVerticalAccel(50.0f);
+
+      mGoalState.SetMinElevation(25.0f);
+      mGoalState.SetMaxElevation(200.0f);
+      mGoalState.SetDragCoef(0.005f);
+      mGoalState.SetAngularDragCoef(0.005f);
+      mGoalState.SetVerticalDragCoef(0.005f);
    }
 
    void EnemyAIHelper::Spawn()
@@ -188,13 +208,16 @@ namespace NetDemo
 
    void EnemyAIHelper::ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior)
    {
-      GetSteeringModel()->SetSteeringBehavior(newBehavior.get());
+      unsigned num = GetSteeringModel()->AddSteeringBehavior(newBehavior.get());
+      GetSteeringModel()->SetCurrentSteeringBehavior(num);
    }
 
    void EnemyAIHelper::CalculateNextWaypoint()
    {
-      //just go straight until we can work with a bezier node
-      osg::Matrix mat = GetPhysicsModel()->GetKinematicState().mTransform;
+      //just do a bee line until we can work with a bezier node
+      osg::Matrix mat;
+      GetPhysicsModel()->GetState(mCurrentState, mat);
+
       osg::Vec3 forward = dtUtil::MatrixUtil::GetRow3(mat, 1);
 
       osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(mat, 3) + (forward * 50.0f);
@@ -214,9 +237,7 @@ namespace NetDemo
       {
          osg::Vec3 pos = waypointState->mStateData.mCurrentWaypoint;
 
-         dtAI::KinematicGoal kg; 
-         kg.SetPosition(pos);
-         BaseClass::GetSteeringModel()->SetKinematicGoal(kg);
+         mGoalState.SetPos(pos);
       }
       else
       {
@@ -242,9 +263,8 @@ namespace NetDemo
    }
 
    float EnemyAIHelper::GetDistance(const osg::Vec3& vec)
-   {
-      osg::Vec3 pos = dtUtil::MatrixUtil::GetRow3(BaseClass::GetPhysicsModel()->GetKinematicState().mTransform, 3);
-      return (vec - pos).length();
+   {      
+      return (vec - mCurrentState.GetPos()).length();
    }
 
 

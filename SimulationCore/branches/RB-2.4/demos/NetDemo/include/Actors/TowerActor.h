@@ -32,6 +32,8 @@
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
 #include <TowerAIHelper.h>
+#include <Actors/BaseEnemyActor.h>
+
 
 namespace dtAudio
 {
@@ -78,12 +80,12 @@ namespace NetDemo
          void FindTarget(float);
          void Shoot(float);
          float GetDistance(const dtCore::Transformable& t) const;
+         void SetTarget(const BaseEnemyActor* t);
 
          void InitWeapon();
 
       private:
 
-         dtCore::RefPtr<dtCore::Transformable> mTarget;
          dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
          dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
