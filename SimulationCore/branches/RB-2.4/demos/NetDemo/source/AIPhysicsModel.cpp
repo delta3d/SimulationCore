@@ -67,6 +67,7 @@ namespace NetDemo
    void AIPhysicsModel::Update(float dt, BaseAIControllable& aiAgent)
    {
       mTimeStep = dt;
+      ClampTimeStep();
 
       osg::Vec3 tempUpVector(0.0f, 0.0f, 1.0f);
 
@@ -109,8 +110,6 @@ namespace NetDemo
             force += up * liftForce;
             force += at * (steeringOut.GetThrust() * mass * maxThrustForce);
 
-            mCurrentState->SetVel(physicsObject->GetLinearVelocity());
-
             physicsObject->GetBodyWrapper()->AddForce(force);
          }
       }
@@ -140,6 +139,30 @@ namespace NetDemo
 
       BaseAIGameState.SetTimeStep(0.0f);
       BaseAIGameState.SetVel(osg::Vec3());
+   }
+
+   void AIPhysicsModel::SetDefaultConstraints(BaseAIGoalState& goalStateIn) const
+   {
+      goalStateIn.SetMaxAngularVel(osg::DegreesToRadians(1000.0f));
+      //goalStateIn.mMaxAngularVel = osg::DegreesToRadians(10.0f);
+      //goalStateIn.mMaxAngularAccel = 200.0f * osg::DegreesToRadians(6.0f);
+      goalStateIn.SetMaxAngularAccel(50.0f);
+      goalStateIn.SetMaxVel(1000.0f);
+      //goalStateIn.mMaxAccel = 200.0f * 8.77f;
+      goalStateIn.SetMaxAccel(1000.0f);
+      goalStateIn.SetMaxPitch(osg::DegreesToRadians(15.0f));
+      goalStateIn.SetMaxRoll(osg::DegreesToRadians(30.0f));
+      goalStateIn.SetMaxTiltPerSecond(osg::DegreesToRadians(5.0f));
+      goalStateIn.SetMaxRollPerSecond(osg::DegreesToRadians(5.0f));
+      //goalStateIn.mMaxVerticalVel(15.0f;//7.62f; //1500 feet/min
+      goalStateIn.SetMaxVerticalVel(50.0f);//7.62f; //1500 feet/min
+      goalStateIn.SetMaxVerticalAccel(50.0f);
+
+      goalStateIn.SetMinElevation(25.0f);
+      goalStateIn.SetMaxElevation(200.0f);
+      goalStateIn.SetDragCoef(0.005f);
+      goalStateIn.SetAngularDragCoef(0.005f);
+      goalStateIn.SetVerticalDragCoef(0.005f);
    }
 
    void AIPhysicsModel::SetState(BaseAIGameState& state, const osg::Matrix& matIn)
@@ -295,5 +318,24 @@ namespace NetDemo
          else return current;
       }
    }
+
+   float AIPhysicsModel::GetCurrentTimeStep()
+   {
+      ClampTimeStep();
+      return mTimeStep;
+   }
+
+   void AIPhysicsModel::ClampTimeStep()
+   {
+      //we will allow ticking from 10fps to 100fps
+      const float MAX_TICK = 0.1f;
+      const float MIN_TICK = 0.01f;
+
+      if(mTimeStep > MAX_TICK) mTimeStep = MAX_TICK;
+
+      if(mTimeStep > MAX_TICK) mTimeStep = MAX_TICK;
+      else if(mTimeStep < MIN_TICK) mTimeStep = MIN_TICK;
+   }
+
 
 }//namespace NetDemo

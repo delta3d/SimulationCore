@@ -73,6 +73,8 @@ namespace NetDemo
    void BaseAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
       osg::Matrix mat;
+      mat.makeIdentity();
+
       if(desc != NULL)
       {
          dtCore::Transform xform;
@@ -81,12 +83,18 @@ namespace NetDemo
 
          mPhysicsModel->SetState(mCurrentState, mat);
          mPhysicsModel->SetState(mGoalState, mat);
+         
+         //our goal state actually derives the game state so we call both
+         mPhysicsModel->SetDefaultState(mat, mGoalState);
+         mPhysicsModel->SetDefaultConstraints(mGoalState);
       }
       else
       {
-         mat.makeIdentity();
          mPhysicsModel->SetDefaultState(mat, mCurrentState);
+         
+         //our goal state actually derives the game state so we call both
          mPhysicsModel->SetDefaultState(mat, mGoalState);
+         mPhysicsModel->SetDefaultConstraints(mGoalState);
       }
    }
 
@@ -116,6 +124,29 @@ namespace NetDemo
          
          //we are currently only updating the rotation
          trans.SetRotation(mat);
+
+         //check to make sure we haven't exceeded our max speed
+         osg::Vec3 suggestedPos;
+         trans.GetTranslation(suggestedPos);
+
+         float dist = (mCurrentState.GetPos() - suggestedPos).length();
+         if(dist > (mGoalState.GetMaxVel() * mPhysicsModel->GetCurrentTimeStep()))
+         {
+            //we could try to move you as far as you can go but we may cause a collision
+            //instead we will have to just stay put, investigate a collision query or second ai try (tick)
+            trans.SetTranslation(mCurrentState.GetPos());
+            
+            LOG_ALWAYS("Clamping entity range");
+            //we changed the actual position, we had better notify physics
+            if(mPhysicsModel->GetPhysicsHelper() != NULL && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+            {
+               dtPhysics::PhysicsObject* physicsObject = mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject();
+               physicsObject->SetTransform(trans);
+
+               physicsObject->GetBodyWrapper()->ResetForces();
+            }
+            
+         }
       }
    }
 
@@ -201,6 +232,11 @@ namespace NetDemo
       trans.Get(mat);
 
       mPhysicsModel->SetState(mCurrentState, mat);
+      //if(mPhysicsModel->GetPhysicsHelper() != NULL
+      //   && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+      //{
+      //   mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject()->SetTransform(trans);
+      //}
    }
 
 } //namespace NetDemo
