@@ -44,6 +44,8 @@
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
 
+#include <SimCore/Components/RenderingSupportComponent.h>
+
 namespace NetDemo
 {
 
@@ -95,6 +97,9 @@ namespace NetDemo
 
          //calling spawn will start the AI
          mAIHelper->Spawn();
+
+         //adding a blue light to us
+         AddDynamicLight();
       }
    }
 
@@ -174,6 +179,31 @@ namespace NetDemo
       BaseClass::OnTickLocal(tickMessage);
    }
 
+   void EnemyMothershipActor::AddDynamicLight()
+   {
+      SimCore::Components::RenderingSupportComponent* rsc = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsc);
+
+      if(rsc != NULL)
+      {
+         SimCore::Components::RenderingSupportComponent::SpotLight* light = new SimCore::Components::RenderingSupportComponent::SpotLight();
+         light->mTarget = this;
+         light->mAutoDeleteLightOnTargetNull = true;
+         light->mIntensity = 1.0f;        
+         light->mAttenuation.set(0.000025f, 0.00005f, 0.00005f);
+         light->mColor.set(0.25f, 0.35f, 0.65f);
+         light->mRadius = 150.0f;
+         light->mFlicker = true;
+         light->mFlickerScale = 0.25f;
+         light->mUseAbsoluteDirection = true;
+         light->mDirection.set(0.0f, 0.0f, -1.0f);
+         light->mSpotExponent = 3.5f;
+         light->mSpotCosCutoff = 0.85f;
+         
+         rsc->AddDynamicLight(light);
+      }
+
+   }
   
    //////////////////////////////////////////////////////////////////////
    // PROXY

@@ -32,6 +32,11 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
+//#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
+#include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/CollisionGroupEnum.h>
+
 #include <dtPhysics/physicshelper.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
@@ -46,6 +51,11 @@
 
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
+
+#include <Components/WeaponComponent.h>
+
+
+#include <osgSim/DOFTransform>
 
 namespace NetDemo
 {
@@ -97,6 +107,48 @@ namespace NetDemo
          
          //calling spawn will start the AI
          mAIHelper->Spawn();
+
+         //creates the weapon actor
+         InitWeapon();
+
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::InitWeapon()
+   {
+      // Get the weapon component that is used to create weapons.
+      WeaponComponent* weaponComp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+
+      if(weaponComp != NULL)
+      {
+         SimCore::Actors::WeaponActor* weapon = NULL;
+
+         // Create the primary weapon.
+         // --- This method will automatically add the created weapon to the world.
+         weaponComp->CreateWeapon("Weapon_MachineGun",
+            "Particle_System_Weapon_GunWithTracer",
+            "weapon_gun_flash.osg", weapon);
+
+         // Customize the new weapon.
+         if(weapon != NULL)
+         {
+            // Attach the weapon to this object.
+            weapon->SetOwner(&GetGameActorProxy());
+            AddChild(weapon, "dof_hotspot_01");
+
+            // Maintain references to the weapon and its proxy.
+            mWeapon = weapon;
+            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+
+            //slow down the rate of fire
+            mWeapon->SetFireRate(3.0f);
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not find Weapon Component to create weapon.");
       }
    }
 
@@ -161,7 +213,15 @@ namespace NetDemo
          }
       }
    }
-
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::Shoot(float)
+   {
+      if(mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
+      }
+   }
 
    //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
@@ -174,7 +234,22 @@ namespace NetDemo
 
       ////////let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
-   
+
+      //this is a temporary workaround to get the helix to shoot
+      //this should be called from the ai fire laser state
+      float distToTarget = mAIHelper->GetDistance(mAIHelper->mGoalState.GetPos());
+      osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
+      angleToTarget.normalize();
+      float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
+      if(distToTarget < 150.0f && angle > 0.9f)
+      {
+         //just add some randomness.. again temporary... :|
+         if(dtUtil::RandFloat(0.0f, 100.0f) < 50.0f)
+         {
+            Shoot(0.0f);
+         }
+      }
+
 
       BaseClass::OnTickLocal(tickMessage);
    }

@@ -111,7 +111,9 @@ namespace NetDemo
          //Add a spot light
          SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
             new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         sl->mRadius = 30.0f;
+         
+         //we should always see the light from our base... more user friendly in finding it
+         sl->mRadius = 3000.0f;
          sl->mIntensity = 1.0f;
          sl->mColor.set(1.0f, 1.0f, 1.0f);
          sl->mAttenuation.set(0.001, 0.004, 0.0002);

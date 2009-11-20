@@ -130,24 +130,6 @@ namespace NetDemo
       }
 
       BaseClass::OnEnteredWorld();
-
-      // Add a dynamic light to our fort
-      SimCore::Components::RenderingSupportComponent* renderComp;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(
-         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
-      {
-         //Add a spot light
-         SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
-            new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         sl->mRadius = 30.0f;
-         sl->mIntensity = 1.0f;
-         sl->mColor.set(1.0f, 1.0f, 1.0f);
-         sl->mAttenuation.set(0.001, 0.004, 0.0002);
-         sl->mTarget = this;
-         sl->mAutoDeleteLightOnTargetNull = true;
-         renderComp->AddDynamicLight(sl);
-      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +159,8 @@ namespace NetDemo
             // Maintain references to the weapon and its proxy.
             mWeapon = weapon;
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+
+            mWeapon->SetFireRate(2.0f);
          }
       }
       else
@@ -279,37 +263,66 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      dtUtil::NodeCollector* nodes = GetNodeCollector();
-      osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      if (dof != NULL)
-      {
-         osg::Vec3 hpr;
-         osg::Matrix mat;
-         osg::Vec3 hprLast = dof->getCurrentHPR();
+      //NOTE: this below is busted so I commented it out
+      //dtUtil::NodeCollector* nodes = GetNodeCollector();
+      //osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
+      //if (dof != NULL)
+      //{
+      //   osg::Vec3 hpr, hprLast;
+      //   osg::Matrix mat, matLast;
+      //   dtCore::Transform trans;
+      //   //
+      //   ////compute local to world matrix for gun turret
+      //   //osg::NodePathList nodePathList = GetMatrixNode()->getParentalNodePaths();
 
-         //Tick the AI
-         //update the AI DOF orientation
-         dtCore::Transform trans;
-         GetTransform(trans);
-         dtUtil::MatrixUtil::HprToMatrix(mat, hprLast);
-         trans.SetRotation(mat);
-         mAIHelper->PreSync(trans);
+      //   //if (!nodePathList.empty())
+      //   //{
+      //   //   matLast.set(osg::computeLocalToWorld(nodePathList[0]));
+      //   //}
 
-         ////////let the AI do its thing
-         mAIHelper->Update(tickMessage.GetDeltaSimTime());
+      //   hprLast = dof->getCurrentHPR();
+      //   dtUtil::MatrixUtil::MatrixToHpr(hprLast, matLast);
 
-         dtCore::Transform currentXForm;
-         mAIHelper->PostSync(currentXForm);
-         currentXForm.Get(mat);
-         dtUtil::MatrixUtil::MatrixToHpr(hpr, mat);
+      //   //Tick the AI
+      //   //update the AI DOF orientation
+      //   
+      //   trans.Set(matLast);
+      //   mAIHelper->PreSync(trans);
 
-         dof->setCurrentHPR(hpr);
-         
-         if(GetArticulationHelper() != NULL)
-         {
-            GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprLast - hpr, hpr);
-         }
-      }
+      //   ////////let the AI do its thing
+      //   mAIHelper->Update(tickMessage.GetDeltaSimTime());
+
+      //   mAIHelper->PostSync(trans);
+      //   trans.Get(mat);
+      //   dtUtil::MatrixUtil::MatrixToHpr(hpr, mat);
+
+      //   //COMMENTED OUT DEBUGGING CODE
+      //   //if(dtUtil::RandFloat(0.0, 100.0f) < 5.0f)
+      //   //{
+      //   //   LOG_ALWAYS("HPR LAST:");
+      //   //   dtUtil::MatrixUtil::Print(hprLast);
+
+
+      //   //   LOG_ALWAYS("HPR:");
+      //   //   dtUtil::MatrixUtil::Print(hpr);
+      //   //}
+
+      //   //LOG_ALWAYS("angle: " + dtUtil::ToString(heading));
+
+      //   /*hpr[0] = osg::DegreesToRadians(hpr[0]);
+      //   hpr[1] = osg::DegreesToRadians(hpr[1]);
+      //   hpr[2] = osg::DegreesToRadians(hpr[2]);*/
+      //   
+      //   if(GetArticulationHelper() != NULL)
+      //   {
+      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+      //   }
+
+      //   //currently only using the heading
+      //   hpr[1] = hprLast[1];
+      //   hpr[2] = hprLast[2];
+      //   dof->setCurrentHPR(hpr);
+      //}
 
    }
 
