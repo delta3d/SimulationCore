@@ -64,8 +64,6 @@ namespace NetDemo
 
       // Private vars
    private:
-
-      bool mFirstUpdate;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.

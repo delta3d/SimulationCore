@@ -38,9 +38,6 @@
 #include <dtPhysics/palphysicsworld.h>
 
 #include <EnemyMothershipAIHelper.h> 
-//all below are included from the above- #include <AISpaceShip.h> 
-//#include <EnemyAIHelper.h>
-//#include <AIUtility.h>
 #include <AIEvent.h>
 #include <AIState.h>
 
@@ -53,7 +50,6 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    EnemyMothershipActor::EnemyMothershipActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
-      , mFirstUpdate(true)
    {
       mAIHelper = new EnemyMothershipAIHelper();
    }
@@ -85,6 +81,13 @@ namespace NetDemo
 
          //this will allow the AI to actually move us
          mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+
+         //we set our transform for the first time so the AI knows what it is
+         //the other enemy helpers get created with an enemy description actor
+         //so there position doesnt come from the actor prototype.
+         dtCore::Transform trans;
+         GetTransform(trans);
+         mAIHelper->SetTransform(trans);
 
          //redirecting the find target function
          dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
@@ -122,14 +125,6 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMothershipActor::PostPhysicsUpdate()
    {
-      //this is a temporary workaround because we get PostPhysicsUpdate() called before TickLocal()
-      if(mFirstUpdate)
-      {
-         mFirstUpdate = false;
-         BaseEnemyActor::PostPhysicsUpdate();
-         return;
-      }
-
       // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
       // take the position and throw away the rotation.
 
@@ -152,7 +147,8 @@ namespace NetDemo
                physicsObject->GetTransform(physicsXForm);
                currentXForm.SetTranslation(physicsXForm.GetTranslation());
 
-               //apply our own rotation
+               //apply our own rotation, and verify the position is ok for us
+               //... or allow us to apply our own physical constraints
                mAIHelper->PostSync(currentXForm);
 
                SetTransform(currentXForm);

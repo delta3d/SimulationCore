@@ -54,11 +54,17 @@ namespace NetDemo
      void GetState(const BaseAIGameState& stateIn, osg::Matrix& result) const;
      void SetDefaultState(const osg::Matrix& matIn, BaseAIGameState& BaseAIGameState);
 
+     void SetDefaultConstraints(BaseAIGoalState& goalStateIn) const;
+
+     //not const because it may clamp timestep
+     float GetCurrentTimeStep();
+
    protected:
      AIPhysicsModel(const AIPhysicsModel&);  //not implemented by design
      AIPhysicsModel& operator=(const AIPhysicsModel&);  //not implemented by design
      ~AIPhysicsModel();
 
+     void ClampTimeStep();
      void UpdateHeading(const BaseAIControls& controls);
      void UpdatePosition(const BaseAIControls& controls);
      void UpdateVelocity(const BaseAIControls& controls);

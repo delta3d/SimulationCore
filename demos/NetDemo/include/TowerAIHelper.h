@@ -72,8 +72,6 @@ namespace NetDemo
 
       private:
 
-         float mMaxVelocity;
-
    };
 
 } //namespace NetDemo
