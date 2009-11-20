@@ -282,6 +282,11 @@ namespace NetDemo
                break;
             }
 
+         case '0':
+            {
+               ToggleGroundClamping();
+               break;
+            }
          case 't':
             {
                /////////////////////////////////////////////////////////
@@ -660,6 +665,27 @@ namespace NetDemo
 
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
       }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleGroundClamping()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (mPhysVehicle != NULL)
+      {
+         if (mPhysVehicle->IsFlying())
+         {
+            LOG_ALWAYS("TEST -- Toggling - ENABLE ground clamping for DR. ");
+         }
+         else
+         {
+            LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
+         }
+         mPhysVehicle->SetFlying(!mPhysVehicle->IsFlying());
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////

@@ -628,7 +628,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string></string>
+                <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -738,7 +738,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>Velocity Only</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -1117,7 +1117,7 @@
             </property>
             <property>
                 <name>Flying</name>
-                <boolean>true</boolean>
+                <boolean>false</boolean>
             </property>
             <property>
                 <name>DrawingModel</name>
@@ -3497,7 +3497,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string></string>
+                <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -4505,7 +4505,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string></string>
+                <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -4615,7 +4615,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>Velocity Only</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -4900,7 +4900,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string></string>
+                <string>SimpleVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -5010,7 +5010,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>Velocity Only</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -5187,7 +5187,7 @@
             <property>
                 <name>VehicleBody: Dimensions</name>
                 <vec3>
-                    <value1>2.500000</value1>
+                    <value1>4.00000</value1>
                     <value2>1.000000</value2>
                     <value3>1.000000</value3>
                 </vec3>

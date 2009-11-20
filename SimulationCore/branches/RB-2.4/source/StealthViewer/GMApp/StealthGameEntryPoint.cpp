@@ -67,6 +67,7 @@
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/WeaponTypeEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 
@@ -369,8 +370,9 @@ namespace StealthGM
       dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
       //dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
-      gameManager.AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
-               dtGame::GameManager::ComponentPriority::NORMAL);
+      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*physicsWorld, false);
+      gameManager.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+      SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 #endif
       //mStealth->SetName("Stealth");
       //mStealth->SetTransform(stealthStart);
