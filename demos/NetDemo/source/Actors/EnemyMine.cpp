@@ -134,8 +134,6 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////
    void EnemyMineActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
-      BaseClass::OnTickLocal( tickMessage );
-
       //Tick the AI
       //update the AI's position and orientation
       dtCore::Transform trans;
@@ -149,6 +147,8 @@ namespace NetDemo
       //note: this is commented out because it is updated by the physics
       //mAIHelper->PostSync(trans);
       //SetTransform(trans);
+
+      BaseClass::OnTickLocal(tickMessage);
    }
 
 
