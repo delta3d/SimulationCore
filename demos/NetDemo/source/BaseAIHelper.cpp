@@ -136,7 +136,7 @@ namespace NetDemo
             //instead we will have to just stay put, investigate a collision query or second ai try (tick)
             trans.SetTranslation(mCurrentState.GetPos());
             
-            LOG_ALWAYS("Clamping entity range");
+            //LOG_ALWAYS("Clamping entity range");
             //we changed the actual position, we had better notify physics
             if(mPhysicsModel->GetPhysicsHelper() != NULL && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
             {

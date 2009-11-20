@@ -28,6 +28,19 @@
 #include <EnemyHelixAIHelper.h>
 #include <Actors/BaseEnemyActor.h>
 
+namespace dtGame
+{
+   class Message;
+}
+
+namespace SimCore
+{
+   namespace Actors
+   {
+      class WeaponActor;
+      class WeaponActorProxy;
+   }
+}
 
 namespace NetDemo
 {
@@ -59,9 +72,16 @@ namespace NetDemo
          /*virtual*/ void UpdateVehicleTorquesAndAngles(float deltaTime);
 
          void FindTarget(float);
+         void Shoot(float);
+
+         void InitWeapon();
 
       // Private vars
       private:
+
+
+         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
+         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
 
    };
 

@@ -93,11 +93,18 @@ namespace NetDemo
       BaseAIGoalState();
       ~BaseAIGoalState();
 
+      //todo- make properties for using each constraint and apply constraints 
+      //       in BaseAIHelper::PostSync()
+
+      //DECLARE_PROPERTY_INLINE(bool, UseDrag);
       DECLARE_PROPERTY_INLINE(float, DragCoef);
       DECLARE_PROPERTY_INLINE(float, AngularDragCoef);
       DECLARE_PROPERTY_INLINE(float, VerticalDragCoef);
 
+      //DECLARE_PROPERTY_INLINE(bool, UseMaxVel);
       DECLARE_PROPERTY_INLINE(float, MaxVel);
+      
+      //DECLARE_PROPERTY_INLINE(bool, UseMaxAccel);
       DECLARE_PROPERTY_INLINE(float, MaxAccel);
 
       DECLARE_PROPERTY_INLINE(float, MaxAngularVel);

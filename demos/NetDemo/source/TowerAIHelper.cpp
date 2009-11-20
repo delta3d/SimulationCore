@@ -59,7 +59,7 @@ namespace NetDemo
 
       /*virtual*/ void Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
       {
-         dtUtil::Clamp(dt, 0.0167f, 0.1f);
+         dtUtil::Clamp(dt, 0.01f, 0.1f);
 
          float lookAhead = mTimeToTarget * dt;
          osg::Vec3 targetPos = GetTargetPosition(lookAhead, current_goal);        
@@ -76,8 +76,8 @@ namespace NetDemo
          float sign = (currForward[0] * goalForward[1]) - (currForward[1] * goalForward[0]);
 
          float angle = acos(dot);
-         LOG_ALWAYS("angle: " + dtUtil::ToString(angle));
-         if(angle > 0.05f)
+         //LOG_ALWAYS("angle: " + dtUtil::ToString(angle));
+         if(angle > 0.00001f)
          {     
             float yaw = angle / fabs(current_state.GetAngularVel());
             dtUtil::Clamp(yaw, 0.0001f, mTimeToTarget);
@@ -111,7 +111,7 @@ namespace NetDemo
       mGoalState.SetMaxAngularVel(1.0f);
 
       float lookAheadRot = 1.0f;
-      float timeToTargetRot = 150.0f;
+      float timeToTargetRot = 2.5f;
 
       GetSteeringModel()->AddSteeringBehavior(new TowerAlign(lookAheadRot, timeToTargetRot));
    }
@@ -186,7 +186,7 @@ namespace NetDemo
             mGoalState.SetPos(pos);
             mDefaultTargeter->Push(pos);
 
-            if(GetAngle(pos) < 0.1f)
+            if(GetAngle(pos) > 0.875f)
             {
                BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_FIRE_LASER);
             }
@@ -217,15 +217,14 @@ namespace NetDemo
 
    float TowerAIHelper::GetAngle( const osg::Vec3& pos )
    {
-      osg::Vec3 dir = pos;
+      osg::Vec3 dir = pos - mCurrentState.GetPos();
       dir.normalize();
 
       osg::Vec3 forward = mCurrentState.GetForward();
       forward.normalize();
 
       float dot = forward * dir;
-      float angle = fabs(acos(dot));
-      //LOG_ALWAYS(dtUtil::ToString(angle));
-      return angle;
+      //LOG_ALWAYS(dtUtil::ToString(dot));
+      return dot;
    }
 } //namespace NetDemo

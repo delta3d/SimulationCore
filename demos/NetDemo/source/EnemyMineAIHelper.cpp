@@ -65,6 +65,9 @@ namespace NetDemo
       if(desc != NULL)
       {
          mMaxVelocity = desc->GetSpawnInfo().GetMaxVelocity();
+         
+         //this sets our physical constraint
+         mGoalState.SetMaxVel(mMaxVelocity);
       }
 
       GetSteeringModel()->AddSteeringBehavior(new BombDive(mMaxVelocity));

@@ -61,6 +61,7 @@ namespace NetDemo
       /*virtual*/ void UpdateVehicleTorquesAndAngles(float deltaTime);
 
       void FindTarget(float dt);
+      void AddDynamicLight();
 
       // Private vars
    private:

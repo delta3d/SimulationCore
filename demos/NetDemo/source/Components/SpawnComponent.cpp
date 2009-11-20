@@ -174,7 +174,7 @@ namespace NetDemo
                   point = mSpawnVolumes[index]->GetSpawnPoint();
 
                   //TEMP HACK SINCE WAVE MESSAGES DONT WORK
-                  if(point[2] > 300.0f) return;             
+                  if(point[2] > 200.0f) return;             
                }
             }
 

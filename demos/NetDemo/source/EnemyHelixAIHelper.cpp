@@ -84,8 +84,8 @@ namespace NetDemo
    {
       mTargetOffset = osg::Vec3(
          dtUtil::RandFloat(-35.0f, 35.0f),
-         dtUtil::RandFloat(-15.0f, 75.0f),
-         dtUtil::RandFloat(10.0f, 40.0f) );
+         dtUtil::RandFloat(-15.0f, 35.0f),
+         dtUtil::RandFloat(10.0f, 30.0f) );
    }
 
 
@@ -157,8 +157,9 @@ namespace NetDemo
 
          pos += mTargetOffset;
          mDefaultTargeter->Push(pos);
+         mGoalState.SetPos(pos);
 
-         if(GetDistance(pos) < 17.5f)
+         if(GetDistance(pos) < 20.0f)
          {
             ComputeTargetOffset();
          }
