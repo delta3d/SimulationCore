@@ -115,6 +115,15 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::OnRemovedFromWorld()
+   {
+      if(mWeaponProxy.valid())
+      {
+         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::InitWeapon()
    {
       // Get the weapon component that is used to create weapons.
@@ -287,8 +296,12 @@ namespace NetDemo
       BaseClass::OnEnteredWorld();
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActorProxy::OnRemovedFromWorld()
    {
+      BaseClass::OnRemovedFromWorld();
+
       EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());      
+      actor.OnRemovedFromWorld();
    }
 } // namespace

@@ -133,6 +133,15 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::OnRemovedFromWorld()
+   {
+      if(mWeaponProxy.valid())
+      {
+         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::InitWeapon()
    {
       // Get the weapon component that is used to create weapons.
@@ -361,6 +370,16 @@ namespace NetDemo
    void TowerActorProxy::OnEnteredWorld()
    {
       BaseClass::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActorProxy::OnRemovedFromWorld()
+   {
+      BaseClass::OnRemovedFromWorld();
+
+      TowerActor* actor = NULL;
+      GetActor(actor);      
+      actor->OnRemovedFromWorld();
    }
 
 } // namespace
