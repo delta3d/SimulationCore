@@ -65,6 +65,7 @@ namespace NetDemo
          /// Constructor
          TowerActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
          virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
 
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
@@ -105,6 +106,7 @@ namespace NetDemo
          virtual ~TowerActorProxy();
          void CreateActor();
          virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
    };
 
 }

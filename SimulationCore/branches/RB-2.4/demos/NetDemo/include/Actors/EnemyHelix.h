@@ -60,6 +60,8 @@ namespace NetDemo
 
          /*virtual*/ void OnEnteredWorld();
 
+         /*virtual*/ void OnRemovedFromWorld();
+
          /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
          void PostPhysicsUpdate();
