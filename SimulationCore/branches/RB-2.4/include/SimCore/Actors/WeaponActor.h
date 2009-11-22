@@ -81,6 +81,8 @@ namespace SimCore
             // Inherited Functions:
             virtual void OnEnteredWorld();
 
+            virtual void OnRemovedFromWorld();
+
             // This override function updates time variables in the weapon that
             // cause it to re-fire or go into sleep mode (unregistering from TickMessages)
             virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );

@@ -420,6 +420,17 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::OnRemovedFromWorld()
+      {
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+
+         if(mShooter.valid())
+         {
+            gm->DeleteActor(*mShooter);
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       bool WeaponActor::LoadMunitionType( const std::string& munitionTypeName )
       {
          dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
