@@ -92,6 +92,9 @@ namespace NetDemo
          /// Overrriden to kill our AI when we die.
          virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
+         float GetTimeToExistAfterDead() {return mTimeToExistAfterDead; }
+         void SetTimeToExistAfterDead(float newTime) { mTimeToExistAfterDead = newTime; }
+
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
          /// By default, this does nothing.

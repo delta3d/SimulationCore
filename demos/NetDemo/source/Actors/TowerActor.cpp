@@ -260,8 +260,8 @@ namespace NetDemo
    {
       if(mWeapon.valid())
       {
-         mWeapon->SetTriggerHeld(true);
-         mWeapon->Fire();
+         //mWeapon->SetTriggerHeld(true);
+         //mWeapon->Fire();
       }
 
       mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
