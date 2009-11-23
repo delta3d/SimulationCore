@@ -337,6 +337,25 @@ namespace SimCore
 #endif
          SetCurrentVelocity(physLinearVelocity);
 
+         // Alternate way to compute velocity - use last frame's pos and subtract it.
+         if (false)
+         {
+            dtCore::Transform xform;
+            GetTransform(xform);
+            osg::Vec3 pos;
+            xform.GetTranslation(pos);
+            if (deltaTime > 0.0f && mLastPos != osg::Vec3(0.0f, 0.0f, 0.0f)) // ignore first time.
+            {
+               osg::Vec3 distanceMoved = pos - mLastPos;
+               osg::Vec3 instantVelocity = distanceMoved / deltaTime;
+               // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
+               mAccumulatedLinearVelocity = instantVelocity * 0.2f + mAccumulatedLinearVelocity * 0.8f;
+               SetCurrentVelocity(mAccumulatedLinearVelocity);
+            }
+            mLastPos = pos;
+         }
+
+
          osg::Vec3 physAngularVelocity;
 #ifdef AGEIA_PHYSICS
          NxVec3 angVelVec3 = physObj->getAngularVelocity();
