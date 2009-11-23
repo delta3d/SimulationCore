@@ -74,6 +74,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
+         , mVelocityAverageFrameCount(3U)
          , mSecsSinceLastUpdateSent(0.0f)
          , mMaxUpdateSendRate(3.0f)
          , mVelocityMagThreshold(1.0f)
@@ -328,33 +329,7 @@ namespace SimCore
             return;
          }
 
-         osg::Vec3 physLinearVelocity;
-#ifdef AGEIA_PHYSICS
-         NxVec3 linearVelVec3 = physObj->getLinearVelocity();
-         physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
-#else
-         physLinearVelocity = physObj->GetLinearVelocity();
-#endif
-         SetCurrentVelocity(physLinearVelocity);
-
-         // Alternate way to compute velocity - use last frame's pos and subtract it.
-         if (false)
-         {
-            dtCore::Transform xform;
-            GetTransform(xform);
-            osg::Vec3 pos;
-            xform.GetTranslation(pos);
-            if (deltaTime > 0.0f && mLastPos != osg::Vec3(0.0f, 0.0f, 0.0f)) // ignore first time.
-            {
-               osg::Vec3 distanceMoved = pos - mLastPos;
-               osg::Vec3 instantVelocity = distanceMoved / deltaTime;
-               // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
-               mAccumulatedLinearVelocity = instantVelocity * 0.2f + mAccumulatedLinearVelocity * 0.8f;
-               SetCurrentVelocity(mAccumulatedLinearVelocity);
-            }
-            mLastPos = pos;
-         }
-
+         ComputeCurrentVelocity(deltaTime);
 
          osg::Vec3 physAngularVelocity;
 #ifdef AGEIA_PHYSICS
@@ -366,6 +341,24 @@ namespace SimCore
          SetCurrentAngularVelocity(physAngularVelocity);
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ComputeCurrentVelocity(float deltaTime)
+      {
+         float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
+         dtCore::Transform xform;
+         GetTransform(xform);
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
+         if (deltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
+         {
+            osg::Vec3 distanceMoved = pos - mLastPos;
+            osg::Vec3 instantVelocity = distanceMoved / deltaTime;
+            // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
+            mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
+            SetCurrentVelocity(mAccumulatedLinearVelocity);
+         }
+         mLastPos = pos;
+      }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
@@ -859,7 +852,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold()
+      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold() const
       {
          return mVelocityMagThreshold;
       }
@@ -871,7 +864,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold()
+      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold() const
       {
          return mVelocityMagThreshold;
       }
@@ -886,6 +879,18 @@ namespace SimCore
       bool BasePhysicsVehicleActor::GetUseVelocityInDRUpdateDecision() const
       {
          return mUseVelocityInDRUpdateDecision;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetVelocityAverageFrameCount(int count)
+      {
+         mVelocityAverageFrameCount = count;
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      int BasePhysicsVehicleActor::GetVelocityAverageFrameCount() const
+      {
+         return mVelocityAverageFrameCount;
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -909,13 +914,22 @@ namespace SimCore
          std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
          actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+         {
             AddProperty(toFillIn[i].get());
+         }
 
          AddProperty(new dtDAL::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
-            dtDAL::MakeFunctor(actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
-            dtDAL::MakeFunctorRet(actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
+            dtDAL::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
+            dtDAL::BooleanActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
+            VEH_GROUP));
+
+         AddProperty(new dtDAL::IntActorProperty("VelocityAverageFrameCount",
+            "Current Velocity Averaging Frame Count",
+            dtDAL::IntActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetVelocityAverageFrameCount),
+            dtDAL::IntActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetVelocityAverageFrameCount),
+            "This actor computes it's current velocity by averaging the change in position over the given number of frames.",
             VEH_GROUP));
       }
 

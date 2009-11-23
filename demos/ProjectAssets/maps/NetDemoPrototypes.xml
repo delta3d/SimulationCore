@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="delta3dMap" xsi:schemaLocation="delta3dMap map.xsd">
     <header>
         <name>NetDemoPrototypes</name>
@@ -7,7 +8,7 @@
         <comment>Place for prototype actors</comment>
         <copyright>2009</copyright>
         <createTimestamp>2009-05-19T17:43:27.0-05:00</createTimestamp>
-        <lastUpdateTimestamp>2009-11-18T23:36:44-05:00</lastUpdateTimestamp>
+        <lastUpdateTimestamp>2009-11-23T18:10:02-05:00</lastUpdateTimestamp>
         <editorVersion>2.4.0</editorVersion>
         <schemaVersion>1.0</schemaVersion>
     </header>
@@ -541,6 +542,417 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMineActor</type>
+            <id>3ad3f7d8-c4d4-4b91-a39f-cd837054d1e3</id>
+            <name>Enemy Mine Prototype1</name>
+            <property>
+                <name>Description</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Last Known Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Last Known Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Acceleration Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Angular Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Frozen</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>EngineSmokePosition</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>EngineSmokeOn</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>FlamesPresent</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>SmokePlumePresent</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Smoke plume particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:fire.osg</resource>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
+            </property>
+            <property>
+                <name>Flying</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>DrawingModel</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Damage State</name>
+                <enumerated>No Damage</enumerated>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Domain</name>
+                <enumerated>GROUND</enumerated>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity Only</enumerated>
+            </property>
+            <property>
+                <name>Force Affiliation</name>
+                <enumerated>OPPOSING</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0.090000004</float>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>MARINES</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>StandardDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Scale Magnification Factor</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Rotation</name>
+                <vec3>
+                    <value1>-0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Firepower Disabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mobility Disabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Entity Type Id</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Object Mapping Name</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
+            </property>
+            <property>
+                <name>Muzzle Flash Position</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Articulated Parameters Array</name>
+                <group></group>
+            </property>
+            <property>
+                <name>Head Lights Enabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string></string>
+            </property>
+            <property>
+                <name>EntityType</name>
+                <string>Enemy</string>
+            </property>
+            <property>
+                <name>MinDistanceIdleSound</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>MaxDistanceIdleSound</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>mSFXSoundIdleEffect</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId></actorId>
+            </property>
+            <property>
+                <name>Physics Name</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>500</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>2.500000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Collision Group</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>100</float>
+            </property>
+            <property>
+                <name>VehicleBody: Skin Thickness</name>
+                <float>0.02</float>
+            </property>
+            <property>
+                <name>VehicleBody: Notify Collisions</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VehicleBody: Moment Of Inertia</name>
+                <vec3>
+                    <value1>-1.000000</value1>
+                    <value2>-1.000000</value2>
+                    <value3>-1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Perform_Above_Ground_Safety_Check</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
         </actor>
         <actor>
             <type>NetDemo.Tower Actor</type>
@@ -943,6 +1355,417 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
+        </actor>
+        <actor>
+            <type>NetDemo.EnemyMineActor</type>
+            <id>462f65e6-2935-4d88-8940-19b7683fbf5c</id>
+            <name>Enemy Mine Prototype2</name>
+            <property>
+                <name>Description</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Translation</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>2.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Normal Rescaling</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Show Collision Geometry</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Collision Type</name>
+                <enumerated>NONE</enumerated>
+            </property>
+            <property>
+                <name>Collision Radius</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Length</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Collision Box</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Enable Collision</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Render Proxy Node</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Enable Dynamics</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mass</name>
+                <float>4.1887903</float>
+            </property>
+            <property>
+                <name>Center of Gravity</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Initial Ownership</name>
+                <enumerated>PROTOTYPE</enumerated>
+            </property>
+            <property>
+                <name>Local Actor Update Policy</name>
+                <enumerated>ACCEPT_ALL</enumerated>
+            </property>
+            <property>
+                <name>ShaderGroup</name>
+                <string>SimpleVehicleShaderGroup</string>
+            </property>
+            <property>
+                <name>Last Known Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Last Known Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Acceleration Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Angular Velocity Vector</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Frozen</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>EngineSmokePosition</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>EngineSmokeOn</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>FlamesPresent</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>SmokePlumePresent</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Smoke plume particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
+            </property>
+            <property>
+                <name>Fire particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
+                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
+            </property>
+            <property>
+                <name>Engine smoke particles</name>
+                <resourceType>Particles</resourceType>
+                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
+                <resource>Particles:smoke.osg</resource>
+            </property>
+            <property>
+                <name>Flying</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>DrawingModel</name>
+                <boolean>true</boolean>
+            </property>
+            <property>
+                <name>Damage State</name>
+                <enumerated>No Damage</enumerated>
+            </property>
+            <property>
+                <name>Max Damage Amount</name>
+                <float>1</float>
+            </property>
+            <property>
+                <name>Cur Damage Ratio</name>
+                <float>0</float>
+            </property>
+            <property>
+                <name>Domain</name>
+                <enumerated>GROUND</enumerated>
+            </property>
+            <property>
+                <name>Dead Reckoning Algorithm</name>
+                <enumerated>Velocity Only</enumerated>
+            </property>
+            <property>
+                <name>Force Affiliation</name>
+                <enumerated>OPPOSING</enumerated>
+            </property>
+            <property>
+                <name>Ground Offset</name>
+                <float>0.090000004</float>
+            </property>
+            <property>
+                <name>Service</name>
+                <enumerated>MARINES</enumerated>
+            </property>
+            <property>
+                <name>Munition Damage Table</name>
+                <string>StandardDamageType</string>
+            </property>
+            <property>
+                <name>Default Scale</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Scale Magnification Factor</name>
+                <vec3>
+                    <value1>1.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Model Rotation</name>
+                <vec3>
+                    <value1>-0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>-0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Firepower Disabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Mobility Disabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Entity Type Id</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Object Mapping Name</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Non-damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Damaged actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Destroyed actor</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
+            </property>
+            <property>
+                <name>Muzzle Flash Position</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Articulated Parameters Array</name>
+                <group></group>
+            </property>
+            <property>
+                <name>Head Lights Enabled</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VehiclesSeatConfigActorNameTable</name>
+                <string></string>
+            </property>
+            <property>
+                <name>EntityType</name>
+                <string>Enemy</string>
+            </property>
+            <property>
+                <name>MinDistanceIdleSound</name>
+                <float>5</float>
+            </property>
+            <property>
+                <name>MaxDistanceIdleSound</name>
+                <float>30</float>
+            </property>
+            <property>
+                <name>mSFXSoundIdleEffect</name>
+                <resourceType>Sounds</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>Material Actor</name>
+                <actorId></actorId>
+            </property>
+            <property>
+                <name>Physics Name</name>
+                <string></string>
+            </property>
+            <property>
+                <name>Physics Mass</name>
+                <float>500</float>
+            </property>
+            <property>
+                <name>Physics Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Default Collision Group</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Collision Group</name>
+                <integer>0</integer>
+            </property>
+            <property>
+                <name>VehicleBody: Mechanics Type</name>
+                <enumerated>Dynamic</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Primitive Type</name>
+                <enumerated>Sphere</enumerated>
+            </property>
+            <property>
+                <name>VehicleBody: Translation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Rotation</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Origin Offset</name>
+                <vec3>
+                    <value1>0.000000</value1>
+                    <value2>0.000000</value2>
+                    <value3>0.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Dimensions</name>
+                <vec3>
+                    <value1>4.000000</value1>
+                    <value2>1.000000</value2>
+                    <value3>1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>VehicleBody: Mass</name>
+                <float>100</float>
+            </property>
+            <property>
+                <name>VehicleBody: Skin Thickness</name>
+                <float>0.02</float>
+            </property>
+            <property>
+                <name>VehicleBody: Notify Collisions</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VehicleBody: Moment Of Inertia</name>
+                <vec3>
+                    <value1>-1.000000</value1>
+                    <value2>-1.000000</value2>
+                    <value3>-1.000000</value3>
+                </vec3>
+            </property>
+            <property>
+                <name>Perform_Above_Ground_Safety_Check</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
             </property>
         </actor>
         <actor>
@@ -1439,6 +2262,10 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
         </actor>
         <actor>
             <type>NetDemo.EnemyHelixActor</type>
@@ -1841,6 +2668,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
             </property>
         </actor>
         <actor>
@@ -2262,6 +3093,10 @@
                 <boolean>false</boolean>
             </property>
             <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
+            <property>
                 <name>VehicleIsTheTurret</name>
                 <boolean>true</boolean>
             </property>
@@ -2392,7 +3227,7 @@
                 <vec3>
                     <value1>0.864559</value1>
                     <value2>0.027809</value2>
-                    <value3>-1.788407</value3>
+                    <value3>-1.788434</value3>
                 </vec3>
             </property>
             <property>
@@ -2780,6 +3615,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
             </property>
         </actor>
         <actor>
@@ -3296,6 +4135,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
             </property>
         </actor>
         <actor>
@@ -3905,6 +4748,10 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
         </actor>
         <actor>
             <type>dtcore.Player Start</type>
@@ -4369,6 +5216,10 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>VelocityAverageFrameCount</name>
+                <integer>3</integer>
+            </property>
         </actor>
         <actor>
             <type>Physics Actors.Physics Material</type>
@@ -4419,798 +5270,7 @@
                 <boolean>false</boolean>
             </property>
         </actor>
-        <actor>
-            <type>NetDemo.EnemyMineActor</type>
-            <id>3ad3f7d8-c4d4-4b91-a39f-cd837054d1e3</id>
-            <name>Enemy Mine Prototype1</name>
-            <property>
-                <name>Description</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>2.000000</value2>
-                    <value3>-0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Normal Rescaling</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Show Collision Geometry</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Collision Type</name>
-                <enumerated>NONE</enumerated>
-            </property>
-            <property>
-                <name>Collision Radius</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Length</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Box</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Enable Collision</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Render Proxy Node</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Enable Dynamics</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Mass</name>
-                <float>4.1887903</float>
-            </property>
-            <property>
-                <name>Center of Gravity</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Initial Ownership</name>
-                <enumerated>PROTOTYPE</enumerated>
-            </property>
-            <property>
-                <name>Local Actor Update Policy</name>
-                <enumerated>ACCEPT_ALL</enumerated>
-            </property>
-            <property>
-                <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
-            </property>
-            <property>
-                <name>Last Known Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Last Known Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Acceleration Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Angular Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Frozen</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>EngineSmokePosition</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>EngineSmokeOn</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>FlamesPresent</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>SmokePlumePresent</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Smoke plume particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>Fire particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
-                <resource>Particles:fire.osg</resource>
-            </property>
-            <property>
-                <name>Engine smoke particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>DrawingModel</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Damage State</name>
-                <enumerated>No Damage</enumerated>
-            </property>
-            <property>
-                <name>Max Damage Amount</name>
-                <float>1</float>
-            </property>
-            <property>
-                <name>Cur Damage Ratio</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Domain</name>
-                <enumerated>GROUND</enumerated>
-            </property>
-            <property>
-                <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
-            </property>
-            <property>
-                <name>Force Affiliation</name>
-                <enumerated>OPPOSING</enumerated>
-            </property>
-            <property>
-                <name>Ground Offset</name>
-                <float>0.090000004</float>
-            </property>
-            <property>
-                <name>Service</name>
-                <enumerated>MARINES</enumerated>
-            </property>
-            <property>
-                <name>Munition Damage Table</name>
-                <string>StandardDamageType</string>
-            </property>
-            <property>
-                <name>Default Scale</name>
-                <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Scale Magnification Factor</name>
-                <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Model Rotation</name>
-                <vec3>
-                    <value1>-0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>-0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Firepower Disabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Mobility Disabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Entity Type Id</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Object Mapping Name</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Non-damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
-            </property>
-            <property>
-                <name>Damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
-            </property>
-            <property>
-                <name>Destroyed actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine.ive</resource>
-            </property>
-            <property>
-                <name>Muzzle Flash Position</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Articulated Parameters Array</name>
-                <group></group>
-            </property>
-            <property>
-                <name>Head Lights Enabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>VehiclesSeatConfigActorNameTable</name>
-                <string></string>
-            </property>
-            <property>
-                <name>EntityType</name>
-                <string>Enemy</string>
-            </property>
-            <property>
-                <name>MinDistanceIdleSound</name>
-                <float>5</float>
-            </property>
-            <property>
-                <name>MaxDistanceIdleSound</name>
-                <float>30</float>
-            </property>
-            <property>
-                <name>mSFXSoundIdleEffect</name>
-                <resourceType>Sounds</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
-            </property>
-            <property>
-                <name>Material Actor</name>
-                <actorId></actorId>
-            </property>
-            <property>
-                <name>Physics Name</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Physics Mass</name>
-                <float>500</float>
-            </property>
-            <property>
-                <name>Physics Dimensions</name>
-                <vec3>
-                    <value1>2.500000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Default Collision Group</name>
-                <integer>0</integer>
-            </property>
-            <property>
-                <name>VehicleBody: Collision Group</name>
-                <integer>0</integer>
-            </property>
-            <property>
-                <name>VehicleBody: Mechanics Type</name>
-                <enumerated>Dynamic</enumerated>
-            </property>
-            <property>
-                <name>VehicleBody: Primitive Type</name>
-                <enumerated>Sphere</enumerated>
-            </property>
-            <property>
-                <name>VehicleBody: Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Origin Offset</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Dimensions</name>
-                <vec3>
-                    <value1>4.00000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Mass</name>
-                <float>100</float>
-            </property>
-            <property>
-                <name>VehicleBody: Skin Thickness</name>
-                <float>0.02</float>
-            </property>
-            <property>
-                <name>VehicleBody: Notify Collisions</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Perform_Above_Ground_Safety_Check</name>
-                <boolean>false</boolean>
-            </property>
-    </actor>
-        <actor>
-            <type>NetDemo.EnemyMineActor</type>
-            <id>462f65e6-2935-4d88-8940-19b7683fbf5c</id>
-            <name>Enemy Mine Prototype2</name>
-            <property>
-                <name>Description</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Translation</name>
-                <vec3>
-                    <value1>1.000000</value1>
-                    <value2>2.000000</value2>
-                    <value3>-0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Normal Rescaling</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Show Collision Geometry</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Collision Type</name>
-                <enumerated>NONE</enumerated>
-            </property>
-            <property>
-                <name>Collision Radius</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Length</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Collision Box</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Enable Collision</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Render Proxy Node</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Enable Dynamics</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Mass</name>
-                <float>4.1887903</float>
-            </property>
-            <property>
-                <name>Center of Gravity</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Initial Ownership</name>
-                <enumerated>PROTOTYPE</enumerated>
-            </property>
-            <property>
-                <name>Local Actor Update Policy</name>
-                <enumerated>ACCEPT_ALL</enumerated>
-            </property>
-            <property>
-                <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
-            </property>
-            <property>
-                <name>Last Known Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Last Known Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Acceleration Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Angular Velocity Vector</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Frozen</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>EngineSmokePosition</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>EngineSmokeOn</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>FlamesPresent</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>SmokePlumePresent</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Smoke plume particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>Fire particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:nd_BurningVehicleSmall.osg</resourceDisplayName>
-                <resource>Particles:nd_BurningVehicleSmall.osg</resource>
-            </property>
-            <property>
-                <name>Engine smoke particles</name>
-                <resourceType>Particles</resourceType>
-                <resourceDisplayName>Particles:smoke.osg</resourceDisplayName>
-                <resource>Particles:smoke.osg</resource>
-            </property>
-            <property>
-                <name>Flying</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>DrawingModel</name>
-                <boolean>true</boolean>
-            </property>
-            <property>
-                <name>Damage State</name>
-                <enumerated>No Damage</enumerated>
-            </property>
-            <property>
-                <name>Max Damage Amount</name>
-                <float>1</float>
-            </property>
-            <property>
-                <name>Cur Damage Ratio</name>
-                <float>0</float>
-            </property>
-            <property>
-                <name>Domain</name>
-                <enumerated>GROUND</enumerated>
-            </property>
-            <property>
-                <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
-            </property>
-            <property>
-                <name>Force Affiliation</name>
-                <enumerated>OPPOSING</enumerated>
-            </property>
-            <property>
-                <name>Ground Offset</name>
-                <float>0.090000004</float>
-            </property>
-            <property>
-                <name>Service</name>
-                <enumerated>MARINES</enumerated>
-            </property>
-            <property>
-                <name>Munition Damage Table</name>
-                <string>StandardDamageType</string>
-            </property>
-            <property>
-                <name>Default Scale</name>
-                <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Scale Magnification Factor</name>
-                <vec3>
-                    <value1>1.000000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Model Rotation</name>
-                <vec3>
-                    <value1>-0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>-0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Firepower Disabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Mobility Disabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Entity Type Id</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Object Mapping Name</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Non-damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
-            </property>
-            <property>
-                <name>Damaged actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
-            </property>
-            <property>
-                <name>Destroyed actor</name>
-                <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName>StaticMeshes:NetDemo:Enemies:Mine2.ive</resourceDisplayName>
-                <resource>StaticMeshes:NetDemo:Enemies:Mine2.ive</resource>
-            </property>
-            <property>
-                <name>Muzzle Flash Position</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Articulated Parameters Array</name>
-                <group></group>
-            </property>
-            <property>
-                <name>Head Lights Enabled</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>VehiclesSeatConfigActorNameTable</name>
-                <string></string>
-            </property>
-            <property>
-                <name>EntityType</name>
-                <string>Enemy</string>
-            </property>
-            <property>
-                <name>MinDistanceIdleSound</name>
-                <float>5</float>
-            </property>
-            <property>
-                <name>MaxDistanceIdleSound</name>
-                <float>30</float>
-            </property>
-            <property>
-                <name>mSFXSoundIdleEffect</name>
-                <resourceType>Sounds</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
-            </property>
-            <property>
-                <name>Material Actor</name>
-                <actorId></actorId>
-            </property>
-            <property>
-                <name>Physics Name</name>
-                <string></string>
-            </property>
-            <property>
-                <name>Physics Mass</name>
-                <float>500</float>
-            </property>
-            <property>
-                <name>Physics Dimensions</name>
-                <vec3>
-                    <value1>4.00000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>Default Collision Group</name>
-                <integer>0</integer>
-            </property>
-            <property>
-                <name>VehicleBody: Collision Group</name>
-                <integer>0</integer>
-            </property>
-            <property>
-                <name>VehicleBody: Mechanics Type</name>
-                <enumerated>Dynamic</enumerated>
-            </property>
-            <property>
-                <name>VehicleBody: Primitive Type</name>
-                <enumerated>Sphere</enumerated>
-            </property>
-            <property>
-                <name>VehicleBody: Translation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Rotation</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Origin Offset</name>
-                <vec3>
-                    <value1>0.000000</value1>
-                    <value2>0.000000</value2>
-                    <value3>0.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Dimensions</name>
-                <vec3>
-                    <value1>4.00000</value1>
-                    <value2>1.000000</value2>
-                    <value3>1.000000</value3>
-                </vec3>
-            </property>
-            <property>
-                <name>VehicleBody: Mass</name>
-                <float>100</float>
-            </property>
-            <property>
-                <name>VehicleBody: Skin Thickness</name>
-                <float>0.02</float>
-            </property>
-            <property>
-                <name>VehicleBody: Notify Collisions</name>
-                <boolean>false</boolean>
-            </property>
-            <property>
-                <name>Perform_Above_Ground_Safety_Check</name>
-                <boolean>false</boolean>
-            </property>
-        </actor>
-       </actors>
- 
+    </actors>
     <groups></groups>
     <presetCameras></presetCameras>
 </map>

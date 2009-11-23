@@ -162,12 +162,30 @@ namespace SimCore
             float GetMaxUpdateSendRate() const;
 
             void SetVelocityMagnitudeUpdateThreshold(float);
-            float GetVelocityMagnitudeUpdateThreshold();
+            float GetVelocityMagnitudeUpdateThreshold() const;
             void SetVelocityDotProductUpdateThreshold(float);
-            float GetVelocityDotProductUpdateThreshold();
+            float GetVelocityDotProductUpdateThreshold() const;
 
             void SetUseVelocityInDRUpdateDecision(bool);
             bool GetUseVelocityInDRUpdateDecision() const;
+
+            /**
+             * Computes and assigns the current velocity using a moving average.
+             * @see SetVelocityAverageFrameCount
+             */
+            void ComputeCurrentVelocity(float deltaTime);
+
+            /**
+             * The current velocity is computed using a moving average of the
+             * change in position over time.  The frame count passed in is used to
+             * to decide about how many frames the velocity will be average across.
+             */
+            void SetVelocityAverageFrameCount(int frames);
+
+            /**
+             * @see SetVelocityAverageFrameCount
+             */
+            int GetVelocityAverageFrameCount() const;
 
          protected:
             /**
@@ -238,6 +256,7 @@ namespace SimCore
 
             osg::Vec3 mLastPos;
             osg::Vec3 mAccumulatedLinearVelocity;
+            int mVelocityAverageFrameCount;
 
             ///////////////////////////////////////////////////
             // sending out dead reckoning
@@ -245,6 +264,7 @@ namespace SimCore
             float mMaxUpdateSendRate;
             float mVelocityMagThreshold;
             float mVelocityDotThreshold;
+            float mInstantaneousVelocityWeight;
 
             float mTerrainPresentDropHeight;
 
