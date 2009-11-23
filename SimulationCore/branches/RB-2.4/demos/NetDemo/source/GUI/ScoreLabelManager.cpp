@@ -177,12 +177,14 @@ namespace NetDemo
          {
             label = mLabelRecycleBin.front();
             mLabelRecycleBin.pop_front();
+            mLabelLayer->addChild(label->GetOSGNode());
          }
          // No labels are free but the label
          // limits permits one to be created.
          else
          {
             label = new ScoreLabel;
+            mLabelLayer->addChild(label->GetOSGNode());
          }
 
          // Setup and add the label.
@@ -190,7 +192,6 @@ namespace NetDemo
          label->SetLifeTime(lifeTime);
          label->SetWorldPoint(objectWorldPoint);
          mLabelList.push_back(label);
-         mLabelLayer->addChild(label->GetOSGNode());
       }
 
       //////////////////////////////////////////////////////////////////////////
