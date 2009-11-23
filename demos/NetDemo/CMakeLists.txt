@@ -19,17 +19,56 @@ file(GLOB LIB_PUBLIC_HEADERS_4
    )
 SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4})
 
-file(GLOB LIB_SOURCES_1
-   "${SOURCE_PATH}/*.cpp"
+set(LIB_SOURCES_1
+   "${SOURCE_PATH}/ActorRegistry.cpp"
+   "${SOURCE_PATH}/AIComponent.cpp"
+   "${SOURCE_PATH}/AIEvent.cpp"
+   "${SOURCE_PATH}/AIPhysicsModel.cpp"
+   "${SOURCE_PATH}/AIState.cpp"
+   "${SOURCE_PATH}/AISteeringModel.cpp"
+   "${SOURCE_PATH}/AIUtility.cpp"
+   "${SOURCE_PATH}/BaseAIHelper.cpp"
+   "${SOURCE_PATH}/Booster.cpp"
+   "${SOURCE_PATH}/ConfigParameters.cpp"
+   "${SOURCE_PATH}/EnemyAIHelper.cpp"
+   "${SOURCE_PATH}/EnemyHelixAIHelper.cpp"
+   "${SOURCE_PATH}/EnemyMineAIHelper.cpp"
+   "${SOURCE_PATH}/EnemyMothershipAIHelper.cpp"
+   "${SOURCE_PATH}/GameEntryPoint.cpp"
+   "${SOURCE_PATH}/MessageType.cpp"
+   "${SOURCE_PATH}/States.cpp"
+   "${SOURCE_PATH}/TowerAIHelper.cpp"
    )
-file(GLOB LIB_SOURCES_2 
-   "${SOURCE_PATH}/Actors/*.cpp"
+set(LIB_SOURCES_2 
+   "${SOURCE_PATH}/Actors/BaseEnemyActor.cpp"
+   "${SOURCE_PATH}/Actors/EnemyDescriptionActor.cpp"
+   "${SOURCE_PATH}/Actors/EnemyHelix.cpp"
+   "${SOURCE_PATH}/Actors/EnemyMine.cpp"
+   "${SOURCE_PATH}/Actors/EnemyMothership.cpp"
+   "${SOURCE_PATH}/Actors/FortActor.cpp"
+   "${SOURCE_PATH}/Actors/HoverVehicleActor.cpp"
+   "${SOURCE_PATH}/Actors/HoverVehiclePhysicsHelper.cpp"
+   "${SOURCE_PATH}/Actors/PlayerStatusActor.cpp"
+   "${SOURCE_PATH}/Actors/PropelledVehicleActor.cpp"
+   "${SOURCE_PATH}/Actors/ServerGameStatusActor.cpp"
+   "${SOURCE_PATH}/Actors/SpawnVolumeActor.cpp"
+   "${SOURCE_PATH}/Actors/TowerActor.cpp"
    )
-file(GLOB LIB_SOURCES_3 
-   "${SOURCE_PATH}/Components/*.cpp"
+   
+set(LIB_SOURCES_3 
+   "${SOURCE_PATH}/Components/GameLogicComponent.cpp"
+   "${SOURCE_PATH}/Components/GUIComponent.cpp"
+   "${SOURCE_PATH}/Components/InputComponent.cpp"
+   "${SOURCE_PATH}/Components/SpawnComponent.cpp"
+   "${SOURCE_PATH}/Components/WeaponComponent.cpp"
    )
-file(GLOB LIB_SOURCES_4 
-   "${SOURCE_PATH}/GUI/*.cpp"
+   
+set(LIB_SOURCES_4 
+   "${SOURCE_PATH}/GUI/ButtonHighlight.cpp"
+   "${SOURCE_PATH}/GUI/CustomCeguiWidgets.cpp"
+   "${SOURCE_PATH}/GUI/HUDScreen.cpp"
+   "${SOURCE_PATH}/GUI/ReadyRoomScreen.cpp"
+   "${SOURCE_PATH}/GUI/ScoreLabelManager.cpp"
    )
 SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4})
 
