@@ -60,8 +60,10 @@ namespace SimCore
          if (mSlavedEntity.valid())
          {
             // See Baseentity::OnEnteredWorld for more info on why we do this
-            mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
-            mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
+            //mSlavedEntity->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime
+            //   (dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+            //mSlavedEntity->GetDeadReckoningHelper().SetMaxRotationSmoothingTime
+            //   (dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
          }
       }
 

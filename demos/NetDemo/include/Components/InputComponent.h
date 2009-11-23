@@ -132,14 +132,20 @@ namespace NetDemo
          /// Create or destroy the dead reckoning ghost actor
          void ToggleDRGhost();
 
-         /// Turns on/off using the velocity as a factor in when to publish
-         void ToggleVelocityDRCompare();
+         /// Turns on/off using velocity settings for DR testing. 
+         void ToggleVelocityDR();
 
          /// Turns on/off the use of ground clamping (aka flying) related to Dead reckoning
          void ToggleGroundClamping();
 
          /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
          void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
+
+         /// Increase or decrease the DR smoothing rate (1.10 increases time, 0.90 decreases time
+         void ModifyVehicleSmoothingRate(float scaleFactor = 1.0f);
+         
+         /// Resets the DR values as best as we can
+         void ResetTestingValues();
 
          /// Kills one or more enemies instantly.
          void KillEnemy(bool killAllEnemies);

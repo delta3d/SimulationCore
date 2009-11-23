@@ -32,6 +32,7 @@
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 
 
@@ -257,10 +258,20 @@ namespace NetDemo
 
          case 'V':
             {
-               ToggleVelocityDRCompare();
+               ToggleVelocityDR();
                break;
             }
 
+         case '5':
+            {
+               ModifyVehicleSmoothingRate(0.90);
+               break;
+            }
+         case '6':
+            {
+               ModifyVehicleSmoothingRate(1.10);
+               break;
+            }
          case '7':
             {
                ModifyVehiclePublishRate(1.10);
@@ -268,17 +279,12 @@ namespace NetDemo
             }
          case '8':
             {
-               ModifyVehiclePublishRate(0.9090909);
+               ModifyVehiclePublishRate(0.901);
                break;
             }
          case '9':
             {
-               if (mVehicle.valid())
-               {
-                  std::cout << "Setting smoothing time to 0.0" << std::endl;
-                  mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
-                  mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
-               }
+               ResetTestingValues();
                break;
             }
 
@@ -383,7 +389,7 @@ namespace NetDemo
             }
             break;
 
-         case osgGA::GUIEventAdapter::KEY_Space:
+         //case osgGA::GUIEventAdapter::KEY_Space:
          case osgGA::GUIEventAdapter::KEY_Return:
             {
                SendSimpleMessage(NetDemo::MessageType::OPTION_SELECT);
@@ -612,22 +618,29 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void InputComponent::ToggleVelocityDRCompare()
+   void InputComponent::ToggleVelocityDR()
    {
+      dtABC::Application& app = GetGameManager()->GetApplication();
+      bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
+         app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
+
       SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
       if (mPhysVehicle != NULL)
       {
-         if (mPhysVehicle->GetUseVelocityInDRUpdateDecision())
+         if (!ctrlIsPressed)
          {
-            LOG_ALWAYS("Toggling - disabling using velocity for DR update decision.");
+            mPhysVehicle->SetPublishLinearVelocity(!mPhysVehicle->IsPublishLinearVelocity());
+            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->IsPublishLinearVelocity() << 
+               "]. Ctrl to change VelDRDecision." << std::endl;
          }
          else
          {
-            LOG_ALWAYS("Toggling - enabling using velocity for DR update decision.");
+            mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
+            std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" << 
+               mPhysVehicle->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
          }
-         mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
       }
    }
 
@@ -651,19 +664,49 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
    {
-      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (mPhysVehicle != NULL)
+      if (physVehicle != NULL)
       {
-         float timesPerSecondRate = mPhysVehicle->GetMaxUpdateSendRate();
+         float timesPerSecondRate = physVehicle->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
-         mPhysVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
-
+         physVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
          float rateInSeconds = 1.0f / timesPerSecondRate;
-         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
-         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
+
+         //mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
+         //mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
 
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ModifyVehicleSmoothingRate(float scaleFactor)
+   {
+      // Like the publish method, only works on the smoothing rate.
+      dtABC::Application& app = GetGameManager()->GetApplication();
+      bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
+         app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
+
+      if (mVehicle.valid())
+      {
+         if (!ctrlIsPressed)
+         {
+            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxTranslationSmoothingTime();
+            float newRate = oldRate * scaleFactor;
+            mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(newRate);
+
+            std::cout << "-- Changed TRANS Smoothing Time to [" << newRate <<  "]. Hold CTRL to change Rot." << std::endl;
+         }
+         else
+         {
+            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxRotationSmoothingTime();
+            float newRate = oldRate * scaleFactor;
+            mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(newRate);
+            
+            std::cout << "-- Changed ROT Smoothing Time to [" << newRate <<  "]." << std::endl;
+         }
+
       }
    }
 
@@ -684,6 +727,30 @@ namespace NetDemo
             LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
          }
          mPhysVehicle->SetFlying(!mPhysVehicle->IsFlying());
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ResetTestingValues()
+   {
+      std::cout << "Resetting DR values such as publish and smoothing." << std::endl;
+      if (mVehicle.valid())
+      {
+         SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+            dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+         if (mPhysVehicle != NULL)
+         {
+            mPhysVehicle->SetMaxUpdateSendRate(3.0f);
+         }
+
+         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
+         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
+
+         mPhysVehicle->SetUseVelocityInDRUpdateDecision(true);
+
+
+         mPhysVehicle->SetPublishLinearVelocity(true);
       }
 
    }
