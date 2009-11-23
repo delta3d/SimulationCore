@@ -71,8 +71,6 @@ namespace NetDemo
          // Help Prompt
          CEGUI::Window* helpLayout = wm.loadWindowLayout("CEGUI/layouts/NetDemo/Help.layout");
          GetRoot()->GetCEGUIWindow()->addChildWindow(helpLayout);
-         osg::Vec4 color(1.0,0.0,0.0,1.0);
-         SetHelpTextLine(3,"Red Text",color);
       }
 
       //////////////////////////////////////////////////////////////////////////
