@@ -43,7 +43,7 @@
 namespace NetDemo
 {
 
-   class NETDEMO_EXPORT AISteeringModel:  public dtAI::SteeringPipeline<typename BaseAIControllable>,
+   class NETDEMO_EXPORT AISteeringModel:  public dtAI::SteeringPipeline<BaseAIControllable>,
                                           public osg::Referenced
    {
    public:

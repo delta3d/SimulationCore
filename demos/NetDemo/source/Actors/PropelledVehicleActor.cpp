@@ -106,9 +106,6 @@ namespace NetDemo
 
       mHelper->CreateVehicle(xform, *body, wheels);
       mHelper->GetMainPhysicsObject()->SetTransformAsVisual(xform);
-      osg::Vec3 oldInertia = mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->GetInertia();
-      //std::cout<< oldInertia << std::endl;
-      mHelper->GetMainPhysicsObject()->GetGenericBodyWrapper()->SetInertia(osg::Vec3(10000, 8000, 10000));
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -185,41 +182,14 @@ namespace NetDemo
 
          if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
          {
-//            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
-//            //po->AddTorque(osg::Vec3(0.0, 8000.0, 0.0));
-//            osg::Vec3 boostDirection(0.0f, 1.0f, 0.0f);
-//            float boostForce = 0.0f;
-//
-//            if(mStartBoost)
-//            {
-//               mCurrentBoostTime += deltaTime;
-//
-//               //note: we are ramping down the boost since it
-//               //       is being held down and we dont want to fly into space :)
-//               boostForce = (mMaximumBoostPerSecond / mCurrentBoostTime);
-//            }
-//            else
-//            {
-//               mStartBoost = true;
-//
-//               //note: we just started boosting so lets boost with a large force
-//               boostForce = mStartBoostForce;
-//            }
-//
-//            po->AddLocalForce(boostDirection * boostForce);
+            //dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+
+
+
+            //po->AddLocalForce(boostDirection * boostForce);
          }
          else
          {
-//            if(mStartBoost)
-//            {
-//               mBoostResetTimer += deltaTime;
-//               if(mBoostResetTimer >= mTimeToResetBoost)
-//               {
-//                  mStartBoost = false;
-//                  mCurrentBoostTime = 0.0f;
-//                  mBoostResetTimer = 0.0f;
-//               }
-//            }
          }
 
          if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))

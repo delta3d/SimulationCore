@@ -1338,9 +1338,9 @@
             <property>
                 <name>chassis: Moment Of Inertia</name>
                 <vec3>
-                    <value1>-1.000000</value1>
-                    <value2>-1.000000</value2>
-                    <value3>-1.000000</value3>
+                    <value1>10000.000000</value1>
+                    <value2>8000.000000</value2>
+                    <value3>10000.000000</value3>
                 </vec3>
             </property>
             <property>

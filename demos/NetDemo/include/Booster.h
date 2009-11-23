@@ -37,11 +37,19 @@ namespace NetDemo
       virtual ~Booster();
 
       DECLARE_PROPERTY(bool, StartBoost);
-      DECLARE_PROPERTY(float, StartBoostForce);
-      DECLARE_PROPERTY(float, MaximumBoostPerSecond);
+      DECLARE_PROPERTY(float, StartBoostAccel);
+      DECLARE_PROPERTY(float, MaxBoostTime);
       DECLARE_PROPERTY(float, CurrentBoostTime);
       DECLARE_PROPERTY(float, TimeToResetBoost);
       DECLARE_PROPERTY(float, BoostResetTimer);
+
+      void Start();
+
+      void Stop();
+
+      void Update(float dt);
+
+      float GetCurrentBoostForce();
    };
 
 }

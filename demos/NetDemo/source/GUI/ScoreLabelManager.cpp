@@ -101,7 +101,7 @@ namespace NetDemo
       void ScoreLabel::Update(float timeDelta)
       {
          mRemainingLifeTime -= timeDelta;
-         mLifeTime ;
+         //mLifeTime ;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -284,7 +284,7 @@ namespace NetDemo
       void ScoreLabelManager::RemoveNodeFromParents(osg::Node& node)
       {
          typedef osg::Node::ParentList ParentList;
-         ParentList& parentList = node.getParents();
+         ParentList parentList = node.getParents();
 
          ParentList::iterator curIter = parentList.begin();
          ParentList::iterator endList = parentList.end();
