@@ -41,6 +41,16 @@ namespace dtGame
    class Message;
 }
 
+namespace SimCore
+{
+   class DetonationMessage;
+
+   namespace Actors
+   {
+      class MunitionTypeActor;
+   }
+}
+
 namespace NetDemo
 {
 
@@ -71,6 +81,10 @@ namespace NetDemo
 
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
+
+         /// Overridden from BaseEntity - can reduce, increase, or ignore incoming damage.
+         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message,
+            const SimCore::Actors::MunitionTypeActor& munition);
 
       // PUBLIC METHODS
       public:

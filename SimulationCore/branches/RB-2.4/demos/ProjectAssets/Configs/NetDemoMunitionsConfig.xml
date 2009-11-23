@@ -243,20 +243,20 @@
 	
 		<munition name="Bullet">
 			<force>10</force> <!-- in Newtons -->
-			<accumulationFactor>0.1</accumulationFactor>
+			<accumulationFactor>1.0</accumulationFactor>
 			<damageProbability>
-				<N>0.85</N>
-				<M>0.10</M>
-				<K>0.05</K>
+				<N>0.985</N>
+				<M>0.01</M>
+				<K>0.005</K>
 			</damageProbability>
 		</munition>
 	
 		<munition name="Grenade">
 			<force>60</force> <!-- in Newtons -->
-			<accumulationFactor>0.1</accumulationFactor>
+			<accumulationFactor>1.0</accumulationFactor>
 			<damageProbability>
-				<M>0.25</M>
-				<K>0.05</K>
+				<M>0.05</M>
+				<K>0.02</K>
 			</damageProbability>
 			<lethalRanges>
 				<rangeCutoff>50.0</rangeCutoff>
@@ -276,10 +276,10 @@
 	
 		<munition name="High Explosive">
 			<force>200</force> <!-- in Newtons -->
-			<accumulationFactor>0.0</accumulationFactor>
+			<accumulationFactor>1.0</accumulationFactor>
 			<damageProbability>
-				<M>0.5</M>
-				<K>0.15</K>
+				<M>0.2</M>
+				<K>0.1</K>
 			</damageProbability>
 			<lethalRanges>
 				<rangeCutoff>100.0</rangeCutoff>

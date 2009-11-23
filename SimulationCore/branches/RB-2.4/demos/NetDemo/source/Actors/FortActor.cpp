@@ -30,6 +30,9 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
@@ -137,6 +140,18 @@ namespace NetDemo
             comp->Register(*this, true);
          }
       }
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   float FortActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+      const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+      //return incomingDamage * float(!IsEnemyActor(gap));
+
+      // Do some logic here if you like, but for now, we just reduce the damage we take cause we're BIG.
+      return incomingDamage * 0.10f;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

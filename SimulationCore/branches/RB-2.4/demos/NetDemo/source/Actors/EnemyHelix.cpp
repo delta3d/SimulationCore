@@ -65,6 +65,8 @@ namespace NetDemo
       : BaseEnemyActor(proxy)
    {
       mAIHelper = new EnemyHelixAIHelper();
+      
+      SetTimeToExistAfterDead(4.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -227,8 +229,8 @@ namespace NetDemo
    {
       if(mWeapon.valid())
       {
-         mWeapon->SetTriggerHeld(true);
-         mWeapon->Fire();
+         //mWeapon->SetTriggerHeld(true);
+         //mWeapon->Fire();
       }
    }
 
