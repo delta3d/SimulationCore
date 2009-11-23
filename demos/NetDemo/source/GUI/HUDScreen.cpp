@@ -25,6 +25,9 @@
 #endif
 #include <CEGUI.h>
 
+// DEBUG:
+#include <sstream>
+
 
 
 namespace NetDemo
@@ -64,6 +67,12 @@ namespace NetDemo
          CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 
          mDamageMeter_Fort = static_cast<CEGUI::Window*>(wm.getWindow("HUD_DamageMeter_Fort"));
+
+         // Help Prompt
+         CEGUI::Window* helpLayout = wm.loadWindowLayout("CEGUI/layouts/NetDemo/Help.layout");
+         GetRoot()->GetCEGUIWindow()->addChildWindow(helpLayout);
+         osg::Vec4 color(1.0,0.0,0.0,1.0);
+         SetHelpTextLine(3,"Red Text",color);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -80,6 +89,42 @@ namespace NetDemo
          return BaseClass::Update(simTimeDelta);
 
          // TODO:
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // DEBUG:
+      void HUDScreen::SetHelpTextLine(int index, const std::string& text, const osg::Vec4 color)
+      {
+         if(index >= 0 && index < 10)
+         {
+            CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
+
+            try
+            {
+               std::stringstream ss;
+               ss << "Help_" << (index+1);
+               CEGUI::Window* textLine = wm.getWindow(ss.str());
+
+               if(textLine != NULL)
+               {
+                  textLine->setText(text.c_str());
+
+                  CEGUI::ColourRect colorRect;
+                  CEGUI::colour cornerColor(color.x(),color.y(),color.z(),color.w());
+                  colorRect.d_bottom_left = cornerColor;
+                  colorRect.d_bottom_right = cornerColor;
+                  colorRect.d_top_left = cornerColor;
+                  colorRect.d_top_right = cornerColor;
+                  textLine->setProperty("TextColours", CEGUI::PropertyHelper::colourRectToString(colorRect));
+               }
+            }
+            catch(...)
+            {
+               std::stringstream ss;
+               ss << "\n\tHUDScreen could not find help text line \"Help_" << (index+1) << "\"\n\n";
+               printf(ss.str().c_str());
+            }
+         }
       }
 
    }

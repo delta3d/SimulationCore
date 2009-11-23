@@ -64,6 +64,10 @@ namespace NetDemo
 
             virtual bool Update(float simTimeDelta);
 
+            // DEBUG:
+            void SetHelpTextLine(int index, const std::string& text,
+               const osg::Vec4 color = osg::Vec4(1.0,1.0,1.0,1.0));
+
          protected:
             virtual ~HUDScreen();
 
