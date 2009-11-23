@@ -75,6 +75,7 @@ namespace NetDemo
    {
       class HUDScreen;
       class ReadyRoomScreen;
+      class ScoreLabelManager;
 
       namespace Effects
       {
@@ -164,10 +165,12 @@ namespace NetDemo
          void SetHoverEffectEnabled(bool enabled);
 
       private:
+         // High Order Objects
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
+         dtCore::RefPtr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;
 
          //
          typedef std::map<const GameStateType*, Screen*> StateScreenMap;
