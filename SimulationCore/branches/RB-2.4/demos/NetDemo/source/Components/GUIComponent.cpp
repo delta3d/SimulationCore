@@ -40,15 +40,17 @@
 #include "ActorRegistry.h"
 #include "Actors/FortActor.h"
 #include "Actors/PlayerStatusActor.h"
+#include "GUI/ButtonHighlight.h"
 #include "GUI/CustomCeguiWidgets.h"
 #include "GUI/HUDScreen.h"
 #include "GUI/ReadyRoomScreen.h"
-#include "GUI/ButtonHighlight.h"
+#include "GUI/ScoreLabelManager.h"
 #include "MessageType.h"
 #include "States.h"
 
 // DEBUG:
 #include <iostream>
+#include <SimCore/Messages.h>
 
 
 
@@ -168,6 +170,11 @@ namespace NetDemo
 
       // Initialize the special effects layers.
       InitializeEffectsOverlays();
+
+      // Setup the Score Label Manager.
+      mScoreLabelManager = new NetDemo::GUI::ScoreLabelManager;
+      mScoreLabelManager->SetGuiLayer(*mEffectsOverlay);
+      mScoreLabelManager->SetCamera(*gm.GetApplication().GetCamera());
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -206,6 +213,14 @@ namespace NetDemo
       {
          ProcessActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
+      // DEBUG:
+      else if(messageType == SimCore::MessageType::DETONATION)
+      {
+         const SimCore::DetonationMessage& det
+            = static_cast<const SimCore::DetonationMessage&>(message);
+
+         mScoreLabelManager->AddScoreLabel(det.GetDetonationLocation(), 100, 2.0f);
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -219,6 +234,11 @@ namespace NetDemo
       if(mCurrentScreen.valid())
       {
          mCurrentScreen->Update(timeDelta);
+      }
+
+      if(mScoreLabelManager->IsEnabled())
+      {
+         mScoreLabelManager->Update(timeDelta);
       }
    }
 
@@ -327,6 +347,20 @@ namespace NetDemo
       // Reference the previous and current screens so that they both can be updated.
       mPreviousScreen = GetScreenForState(stateChange.GetOldState());
       mCurrentScreen = GetScreenForState(state); // New State
+
+      // Set the state for the Score Label Manager.
+      if( ! runningState)
+      {
+         if(mScoreLabelManager->IsEnabled())
+         {
+            mScoreLabelManager->SetEnabled(false);
+            mScoreLabelManager->Clear();
+         }
+      }
+      else
+      {
+         mScoreLabelManager->SetEnabled(true);
+      }
 
       // DEBUG:
       //std::cout << "\n\tNew: " << stateChange.GetNewState().GetName()
