@@ -21,7 +21,7 @@ find it.  It shows an example set of values one may set
     <Log Name="BaseEntity.cpp" Level="Warn" />
 
     <Properties>
-      <Property Name="ProjectPath">./ProjectAssets</Property>
+      <Property Name="ProjectPath">./demos/ProjectAssets</Property>
       <Property Name="AdditionalMap1">DriverPrototypes</Property> 
       <Property Name="AdditionalMap2">DriverMaterials</Property> 
       <Property Name="AdditionalMap3">DriverActors</Property> 
@@ -38,7 +38,6 @@ find it.  It shows an example set of values one may set
       <Property Name="System.MaxTimeBetweenDraws">0.1</Property>
       <Property Name="System.UseFixedTimeStep">false</Property>
       
-      <Property Name="dtAudio.NumSources">16</Property>
       <!-- 
            These are left commented out, so the defaults for the terrain
            data base pager are preserved.  The values shown here are not

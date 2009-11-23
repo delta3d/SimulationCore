@@ -33,8 +33,8 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/MessageType.h>
-#include <SimCore/gui/SimpleScreen.h>
-#include <SimCore/gui/CeguiUtils.h>
+#include <SimCore/GUI/SimpleScreen.h>
+#include <SimCore/GUI/CeguiUtils.h>
 
 // Local include directives
 #include "ActorRegistry.h"

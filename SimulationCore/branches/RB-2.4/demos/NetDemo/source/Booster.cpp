@@ -27,21 +27,74 @@ namespace NetDemo
 {
 
    Booster::Booster()
+   : mStartBoost(false)
+   , mStartBoostAccel(7.8f)
+   , mMaxBoostTime(3.0f)
+   , mCurrentBoostTime(0.0f)
+   , mTimeToResetBoost(7.0f)
+   , mBoostResetTimer(0.0f)
    {
-      // TODO Auto-generated constructor stub
-
    }
 
    Booster::~Booster()
    {
-      // TODO Auto-generated destructor stub
    }
 
    IMPLEMENT_PROPERTY(Booster, bool, StartBoost);
-   IMPLEMENT_PROPERTY(Booster, float, StartBoostForce);
-   IMPLEMENT_PROPERTY(Booster, float, MaximumBoostPerSecond);
+   IMPLEMENT_PROPERTY(Booster, float, StartBoostAccel);
+   IMPLEMENT_PROPERTY(Booster, float, MaxBoostTime);
    IMPLEMENT_PROPERTY(Booster, float, CurrentBoostTime);
    IMPLEMENT_PROPERTY(Booster, float, TimeToResetBoost);
    IMPLEMENT_PROPERTY(Booster, float, BoostResetTimer);
+
+   void Booster::Start()
+   {
+
+   }
+
+   void Booster::Stop()
+   {
+
+   }
+
+   void Booster::Update(float dt)
+   {
+      //            osg::Vec3 boostDirection(0.0f, 1.0f, 0.0f);
+      //            float boostForce = 0.0f;
+      //
+      //            if(mStartBoost)
+      //            {
+      //               mCurrentBoostTime += deltaTime;
+      //
+      //               //note: we are ramping down the boost since it
+      //               //       is being held down and we dont want to fly into space :)
+      //               boostForce = (mMaximumBoostPerSecond / mCurrentBoostTime);
+      //            }
+      //            else
+      //            {
+      //               mStartBoost = true;
+      //
+      //               //note: we just started boosting so lets boost with a large force
+      //               boostForce = mStartBoostForce;
+      //            }
+
+
+
+      //            if(mStartBoost)
+      //            {
+      //               mBoostResetTimer += deltaTime;
+      //               if(mBoostResetTimer >= mTimeToResetBoost)
+      //               {
+      //                  mStartBoost = false;
+      //                  mCurrentBoostTime = 0.0f;
+      //                  mBoostResetTimer = 0.0f;
+      //               }
+      //            }
+}
+
+   float Booster::GetCurrentBoostForce()
+   {
+
+   }
 
 }
