@@ -165,7 +165,7 @@ namespace NetDemo
       double simTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
       SetLastPublishTime(simTime);
 
-      std::vector<std::string> propNames;
+      std::vector<dtUtil::RefString> propNames;
       propNames.push_back(ServerGameStatusActorProxy::PROP_GAME_STATUS);
       propNames.push_back(ServerGameStatusActorProxy::PROP_WAVE_NUMBER);
       propNames.push_back(ServerGameStatusActorProxy::PROP_NUM_ENEMIES_KILLED);

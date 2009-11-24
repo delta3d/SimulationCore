@@ -35,7 +35,8 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/EnemyMineAIHelper.cpp"
    "${SOURCE_PATH}/EnemyMothershipAIHelper.cpp"
    "${SOURCE_PATH}/GameEntryPoint.cpp"
-   "${SOURCE_PATH}/MessageType.cpp"
+   "${SOURCE_PATH}/NetDemoMessages.cpp"
+   "${SOURCE_PATH}/NetDemoMessageTypes.cpp"
    "${SOURCE_PATH}/States.cpp"
    "${SOURCE_PATH}/TowerAIHelper.cpp"
    )
