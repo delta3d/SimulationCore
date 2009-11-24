@@ -26,7 +26,7 @@ file(GLOB LIB_PUBLIC_HEADERS_7
    )
 SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5} ${LIB_PUBLIC_HEADERS_6} ${LIB_PUBLIC_HEADERS_7})
 
-file(GLOB LIB_SOURCES_1 
+set(LIB_SOURCES_1 
    "${SOURCE_PATH}/AttachedMotionModel.cpp"
    "${SOURCE_PATH}/BaseGameEntryPoint.cpp"
    "${SOURCE_PATH}/BaseWheeledVehiclePhysicsHelper.cpp"
@@ -107,7 +107,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/WeaponFlashActor.cpp"
    )
 
-file(GLOB LIB_SOURCES_3 
+set( LIB_SOURCES_3 
    "${SOURCE_PATH}/Tools/Binoculars.cpp"
    "${SOURCE_PATH}/Tools/Compass.cpp"
    "${SOURCE_PATH}/Tools/Compass360.cpp"
@@ -117,8 +117,7 @@ file(GLOB LIB_SOURCES_3
    "${SOURCE_PATH}/Tools/Tool.cpp"
    )
 
-file(GLOB LIB_SOURCES_4 
-   "${SOURCE_PATH}/Components/*.cpp"
+set( LIB_SOURCES_4 
    "${SOURCE_PATH}/Components/ArticulationHelper.cpp"
    "${SOURCE_PATH}/Components/BaseGameAppComponent.cpp"
    "${SOURCE_PATH}/Components/BaseHUD.cpp"
@@ -147,7 +146,7 @@ file(GLOB LIB_SOURCES_4
    "${SOURCE_PATH}/Components/WeaponEffectsManager.cpp"
    "${SOURCE_PATH}/Components/WeatherComponent.cpp"
    )
-file(GLOB LIB_SOURCES_5 
+set( LIB_SOURCES_5 
    "${SOURCE_PATH}/GUI/AnimationController.cpp"
    "${SOURCE_PATH}/GUI/CeguiUtils.cpp"
    "${SOURCE_PATH}/GUI/DefaultAnimationControllers.cpp"
@@ -155,15 +154,14 @@ file(GLOB LIB_SOURCES_5
    "${SOURCE_PATH}/GUI/Screen.cpp"
    "${SOURCE_PATH}/GUI/SimpleScreen.cpp"
    )
-file(GLOB LIB_SOURCES_6 
-   "${SOURCE_PATH}/Components/Conversations/*.cpp"
+set( LIB_SOURCES_6 
    "${SOURCE_PATH}/Components/Conversations/Conversation.cpp"
    "${SOURCE_PATH}/Components/Conversations/ConversationComponent.cpp"
    "${SOURCE_PATH}/Components/Conversations/ConversationMessages.cpp"
    "${SOURCE_PATH}/Components/Conversations/Interaction.cpp"
    "${SOURCE_PATH}/Components/Conversations/Response.cpp"
    )
-file(GLOB LIB_SOURCES_7 
+set( LIB_SOURCES_7 
    "${SOURCE_PATH}/Components/GameState/GameState.cpp"
    "${SOURCE_PATH}/Components/GameState/GameStateChangeMessage.cpp"
    "${SOURCE_PATH}/Components/GameState/GameStateComponent.cpp"
