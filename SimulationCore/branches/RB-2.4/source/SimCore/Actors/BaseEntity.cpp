@@ -46,6 +46,8 @@
 #include <SimCore/VisibilityOptions.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 
+#include <iostream>
+
 namespace SimCore
 {
 
@@ -610,8 +612,8 @@ namespace SimCore
             // In practice, the smoothing time is usually reduced down to the avg time between
             // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway.
             // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
 
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
@@ -632,11 +634,11 @@ namespace SimCore
             // Note - this is usually set by the DR helper, but in case it's not, or in the case
             // that an actor was changed from local to remote, we want a value... yes, it's obscure
             if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(
-                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
+                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
             if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(
-                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
+               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
          }
       }
 
@@ -1045,10 +1047,29 @@ namespace SimCore
          // properties that we need to publish
          forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
 
+         // Curt Hack
+         /*
+         static float countDownTimer = 10.0f;
+         countDownTimer -= tickMessage.GetDeltaSimTime();
+         if (forceUpdate && countDownTimer < 0 && 
+            (GetGameActorProxy().GetName() == "Hover Vehicle" || 
+            GetGameActorProxy().GetName() == "Dune Buggy" || 
+            GetGameActorProxy().GetName() == "Propelled Vehicle"))
+         {
+            osg::Vec3 actualVel = GetCurrentVelocity();
+            std::ostringstream oss;
+            oss.precision(4);
+            oss.width(6);
+            oss << "Pub Vel [" << actualVel[0] << ",  " << actualVel[1] << ",  " << actualVel[2] << "].";
+            std::cout << oss.str() << std::endl;
+            //printf("Pub Vel(%4.2f, %4.2f, %4.2f).\n", velocity[0], velocity[1], velocity[2]);
+         }
+         */
 
          if (forceUpdate)
          {
             SetLastKnownValuesBeforePublish(pos, rot);
+
 
             if (fullUpdate)
             {
@@ -1087,6 +1108,7 @@ namespace SimCore
 
             // Acceleration is paired with velocity
             SetLastKnownAcceleration(GetCurrentAcceleration());
+
          }
 
          // Angular Velocity - push the current value to the Last Known
