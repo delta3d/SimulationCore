@@ -884,7 +884,10 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::SetVelocityAverageFrameCount(int count)
       {
-         mVelocityAverageFrameCount = count;
+         if (count < 1)
+            mVelocityAverageFrameCount = 1; // a zero is bad division and < 0 has no meaning.
+         else
+            mVelocityAverageFrameCount = count;
       }
 
       //////////////////////////////////////////////////////////////////////

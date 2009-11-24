@@ -92,7 +92,7 @@ namespace NetDemo
          {
             // Find the actor in the GM
             dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(updateMessage.GetAboutActorId());
-            if(gap == NULL)
+            if(gap != NULL)
             {
                ServerGameStatusActor* serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
                UpdateGameState(&serverStatus->GetGameStatus(), serverStatus->GetWaveNumber(), serverStatus->GetTimeLeftInCurState());
@@ -174,7 +174,7 @@ namespace NetDemo
                   point = mSpawnVolumes[index]->GetSpawnPoint();
 
                   //TEMP HACK SINCE WAVE MESSAGES DONT WORK
-                  if(point[2] > 200.0f) return;             
+                  //if(point[2] > 200.0f) return;             
                }
             }
 
@@ -209,7 +209,7 @@ namespace NetDemo
 
    void SpawnComponent::Tick(float dt)
    {
-      if(1)//GetGameStatus() == &ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
+      if(GetGameStatus() == &ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
       {
          //LOG_ALWAYS("Wave in progress");
          EnemyDescriptionActor* desc = NULL;

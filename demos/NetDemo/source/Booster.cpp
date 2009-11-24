@@ -94,6 +94,7 @@ namespace NetDemo
 
    float Booster::GetCurrentBoostForce()
    {
+      return 1.0f;
 
    }
 
