@@ -45,7 +45,7 @@
 #include "GUI/HUDScreen.h"
 #include "GUI/ReadyRoomScreen.h"
 #include "GUI/ScoreLabelManager.h"
-#include "MessageType.h"
+#include "NetDemoMessageTypes.h"
 #include "States.h"
 
 // DEBUG:

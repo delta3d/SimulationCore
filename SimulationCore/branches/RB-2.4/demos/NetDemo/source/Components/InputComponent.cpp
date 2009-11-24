@@ -49,7 +49,7 @@
 #include <iostream>
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
-#include <MessageType.h>
+#include <NetDemoMessageTypes.h>
 
 
 namespace NetDemo
