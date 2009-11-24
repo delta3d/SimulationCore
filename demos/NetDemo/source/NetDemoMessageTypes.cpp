@@ -25,7 +25,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtGame/messagefactory.h>
-#include "MessageType.h"
+#include "NetDemoMessageTypes.h"
+#include "NetDemoMessages.h"
 
 
 
@@ -47,6 +48,10 @@ namespace NetDemo
    const MessageType MessageType::OPTION_SELECT("Option Select", "NetDemo",
       "Generic way to commit to the currently selected option whether it be in the context of UI or in-game weapon switching or etc.",
       NETDEMO_MESSAGE_TYPE_ID + 2);
+
+   const MessageType MessageType::ENTITY_ACTION("Entity Action", "NetDemo",
+      "Generic message type for communicating most types of interactions of the network.",
+      NETDEMO_MESSAGE_TYPE_ID + 3);
   
 
 
@@ -69,6 +74,8 @@ namespace NetDemo
       factory.RegisterMessageType<dtGame::Message>(OPTION_NEXT);
       factory.RegisterMessageType<dtGame::Message>(OPTION_PREV);
       factory.RegisterMessageType<dtGame::Message>(OPTION_SELECT);
+
+      factory.RegisterMessageType<NetDemo::EntityActionMessage>(ENTITY_ACTION);
    }
 
 }

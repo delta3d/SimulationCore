@@ -58,6 +58,7 @@ namespace NetDemo
          static const MessageType OPTION_NEXT;
          static const MessageType OPTION_PREV;
          static const MessageType OPTION_SELECT;
+         static const MessageType ENTITY_ACTION;
 
          static void RegisterMessageTypes(dtGame::MessageFactory& factory);
 

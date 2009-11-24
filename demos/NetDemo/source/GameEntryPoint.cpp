@@ -12,7 +12,7 @@
 */
 
 #include <GameEntryPoint.h>
-#include <MessageType.h>
+#include <NetDemoMessageTypes.h>
 #include <Components/InputComponent.h>
 #include <Components/GameLogicComponent.h>
 #include <Components/WeaponComponent.h>
