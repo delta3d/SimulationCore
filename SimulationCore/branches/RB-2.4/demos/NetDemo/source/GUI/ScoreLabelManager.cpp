@@ -101,7 +101,6 @@ namespace NetDemo
       void ScoreLabel::Update(float timeDelta)
       {
          mRemainingLifeTime -= timeDelta;
-         //mLifeTime ;
       }
 
       //////////////////////////////////////////////////////////////////////////
