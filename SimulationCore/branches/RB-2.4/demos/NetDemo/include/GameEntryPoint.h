@@ -55,8 +55,7 @@ namespace NetDemo
          virtual void OnStartup(dtGame::GameApplication& app);
 
          virtual void InitializeComponents(dtGame::GameManager& gm);
-      protected:
-         void SetupClientServerNetworking(dtGame::GameManager& gm);
+
       private:
          char **mArgv;
          int mArgc;
