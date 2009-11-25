@@ -149,7 +149,15 @@ namespace NetDemo
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
 
-      gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+      dtUtil::ConfigProperties& configParams = gm.GetConfiguration();
+      const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+      if (role == "Server" || role == "server" || role == "SERVER")
+      {
+         gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+      }
+      else if (role == "Client" || role == "client" || role == "CLIENT")
+      {
+      }
 
    }
 

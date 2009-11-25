@@ -29,6 +29,7 @@
 
 #include <dtActors/gamemeshactor.h>
 #include <dtCore/observerptr.h>
+#include <dtCore/particlesystem.h>
 
 namespace dtGame
 {
@@ -75,6 +76,8 @@ namespace SimCore
 
          private:
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mSlavedEntity;
+
+            dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
 
       };
 

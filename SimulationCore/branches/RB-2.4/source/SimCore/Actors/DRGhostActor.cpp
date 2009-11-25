@@ -102,6 +102,12 @@ namespace SimCore
             ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 
             UpdateOurPosition();
+
+            // Add a particle system to the Ghost to see where it's been.
+            mTrailParticles = new dtCore::ParticleSystem;
+            mTrailParticles->LoadFile("Particles/SimpleSpotTrail.osg", true);
+            mTrailParticles->SetEnabled(true);
+            AddChild(mTrailParticles.get());
          }
 
          BaseClass::OnEnteredWorld();
