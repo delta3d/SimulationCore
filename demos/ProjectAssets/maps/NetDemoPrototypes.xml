@@ -3410,7 +3410,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>None</enumerated>
+                <enumerated>STATIC</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
