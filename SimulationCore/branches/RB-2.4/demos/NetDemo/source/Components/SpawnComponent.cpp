@@ -179,13 +179,14 @@ namespace NetDemo
             }
 
             enemyActor.InitAI(desc);
-            GetGameManager()->AddActor(*enemyProxy, false, true);
 
             //this doesn't appear to work
             dtCore::Transform trans;
             enemyActor.GetTransform(trans);
             trans.SetTranslation(point);
             enemyActor.SetTransform(trans);
+
+            GetGameManager()->AddActor(*enemyProxy, false, true);
          }
       }
    }
