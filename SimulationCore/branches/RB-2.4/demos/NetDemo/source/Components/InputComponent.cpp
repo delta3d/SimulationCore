@@ -360,6 +360,25 @@ namespace NetDemo
                }
             }
             break;
+
+         case 'r':
+            {
+               if (mVehicle.valid())
+               {
+                  // Repair our damage state - done by the munitions component
+                  SimCore::Components::MunitionsComponent *munitionsComp =
+                     static_cast<SimCore::Components::MunitionsComponent*>
+                     (GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
+                  munitionsComp->SetDamage( *mVehicle, SimCore::Components::DamageType::DAMAGE_NONE );
+
+                  // Turn off flames. Doesn't necessarily go out when damage is reset.
+                  mVehicle->SetFlamesPresent(false);
+
+                  EnableMotionModels();
+               }
+            }
+            break;
+
          case osgGA::GUIEventAdapter::KEY_Escape:
             {
                // Escapce key should act as one would expect, to escape from the
@@ -574,7 +593,7 @@ namespace NetDemo
    {
       dtCore::RefPtr<SimCore::AttachToActorMessage> msg;
       GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, msg);
-      msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
+      msg->SetAboutActorId((GetStealthActor() == NULL) ? (dtCore::UniqueId("")) : GetStealthActor()->GetUniqueId());
       msg->SetAttachToActor(vehicleId);
       msg->SetAttachPointNodeName(dofName);
       GetGameManager()->SendMessage(*msg.get());
