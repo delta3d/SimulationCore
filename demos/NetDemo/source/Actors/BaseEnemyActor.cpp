@@ -57,7 +57,7 @@ namespace NetDemo
       // changed if the actor is loaded from a map or when received as a remote actor
       /////////////////////////////////////////////////////////////////
 
-      SetMaxUpdateSendRate(2.0f);
+      SetMaxUpdateSendRate(4.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);

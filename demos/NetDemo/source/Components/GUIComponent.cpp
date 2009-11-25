@@ -129,6 +129,10 @@ namespace NetDemo
       RegisterScreenWithState(*mScreenLobby, NetDemoState::STATE_LOBBY);
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
+      // Default the server IP to what's in the config file.
+      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      const std::string serverIP = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+      mInputServerIP->setText(serverIP);
 
       // CONNECTION FAIL PROMPT
       mScreenConnectFailPrompt = new SimCore::GUI::SimpleScreen("Connection Fail Prompt", "CEGUI/layouts/NetDemo/ConnectionFailPrompt.layout");

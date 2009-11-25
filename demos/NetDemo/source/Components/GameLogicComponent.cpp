@@ -128,6 +128,10 @@ namespace NetDemo
       {
          mCurrentTerrainDrawActor = NULL;
          mServerGameStatusProxy = NULL;
+
+         // We do this after the map is unloaded so that we delete our objects on the network.
+         DisconnectFromNetwork();
+
          DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
       else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
@@ -434,16 +438,17 @@ namespace NetDemo
    void GameLogicComponent::HandleUnloadingState()
    {
       // Have to disconnect first, else we will get network messages about stuff we don't understand.
-      DisconnectFromNetwork();
+      //DisconnectFromNetwork();
 
       // Probably not necessary (since close map deletes all), but clear out stuff we already created
       //ClearPreviousGameStuff();
       mPlayerStatus = NULL;
       mCurrentTerrainDrawActor = NULL;
 
+      GetGameManager()->DeleteAllActors();
+
       GetGameManager()->CloseCurrentMap();
       // When the map is unloaded, we get the UNLOADED msg and change our states back to lobby.
-
    }
 
    //////////////////////////////////////////////////////////////////////////

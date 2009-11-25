@@ -2031,14 +2031,14 @@
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:Truck.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:Truck.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>
@@ -4517,14 +4517,14 @@
             <property>
                 <name>Damaged actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:DuneBuggy.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:DuneBuggy.ive</resource>
             </property>
             <property>
                 <name>Destroyed actor</name>
                 <resourceType>StaticMeshes</resourceType>
-                <resourceDisplayName></resourceDisplayName>
-                <resource></resource>
+                <resourceDisplayName>StaticMeshes:NetDemo:Vehicles:DuneBuggy.ive</resourceDisplayName>
+                <resource>StaticMeshes:NetDemo:Vehicles:DuneBuggy.ive</resource>
             </property>
             <property>
                 <name>Muzzle Flash Position</name>

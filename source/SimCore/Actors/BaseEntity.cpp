@@ -663,7 +663,16 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
       {
+         if (mDamageState == &damageState)
+            return;
+
          mDamageState = &damageState;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -776,6 +785,12 @@ namespace SimCore
 //            mNode->asGroup()->removeChild(mPointsGeode.get());
 //         else
 //            mNode->asGroup()->addChild(mPointsGeode.get());
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -863,6 +878,12 @@ namespace SimCore
             }
          }
          mFlamesPresent = enable;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -893,6 +914,12 @@ namespace SimCore
             }
          }
          mEngineSmokeOn = enable;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
