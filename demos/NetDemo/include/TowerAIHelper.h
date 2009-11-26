@@ -29,6 +29,8 @@
 #include <DemoExport.h>
 #include <BaseAIHelper.h>
 
+#include <AIWeaponUtility.h>
+
 namespace dtCore
 {
    class Transformable;
@@ -50,9 +52,15 @@ namespace NetDemo
 
          /*virtual*/ void OnInit(const EnemyDescriptionActor* desc);
          /*virtual*/ void Spawn();
+
+         /*virtual*/ void PreSync(const dtCore::Transform& trans);
          /*virtual*/ void Update(float dt);
 
          void SetCurrentTarget(const dtCore::Transformable& target);
+
+         bool GetTriggerState() const;
+         const osg::Vec2& GetWeaponAngle() const;
+         void SetWeaponAngle(const osg::Vec2& angle);
 
       protected:
          TowerAIHelper(const TowerAIHelper&);  //not implemented by design
@@ -72,6 +80,7 @@ namespace NetDemo
 
       private:
 
+         AITurret mTurretAI;
    };
 
 } //namespace NetDemo

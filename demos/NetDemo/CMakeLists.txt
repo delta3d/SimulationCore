@@ -39,6 +39,7 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/NetDemoMessageTypes.cpp"
    "${SOURCE_PATH}/States.cpp"
    "${SOURCE_PATH}/TowerAIHelper.cpp"
+   "${SOURCE_PATH}/AIWeaponUtility.cpp"
    )
 set(LIB_SOURCES_2 
    "${SOURCE_PATH}/Actors/BaseEnemyActor.cpp"

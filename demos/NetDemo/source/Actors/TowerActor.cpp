@@ -44,7 +44,8 @@
 #include <Actors/EnemyMine.h>
 #include <Components/WeaponComponent.h>
 
-
+//for debug printouts
+#include <iostream>
 
 
 namespace NetDemo
@@ -169,7 +170,7 @@ namespace NetDemo
             mWeapon = weapon;
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
-            mWeapon->SetFireRate(2.0f);
+            mWeapon->SetFireRate(1.0f);
          }
       }
       else
@@ -192,7 +193,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::FindTarget(float)
    {
-      float minDist = 200.0;
+      float minDist = 2000.0;
       BaseEnemyActor* enemy = NULL;
 
       EnemyMineActorProxy* mineProxy = NULL;
@@ -260,8 +261,8 @@ namespace NetDemo
    {
       if(mWeapon.valid())
       {
-         //mWeapon->SetTriggerHeld(true);
-         //mWeapon->Fire();
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
       }
 
       mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
@@ -272,66 +273,58 @@ namespace NetDemo
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      //NOTE: this below is busted so I commented it out
-      //dtUtil::NodeCollector* nodes = GetNodeCollector();
-      //osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
-      //if (dof != NULL)
-      //{
-      //   osg::Vec3 hpr, hprLast;
-      //   osg::Matrix mat, matLast;
-      //   dtCore::Transform trans;
-      //   //
-      //   ////compute local to world matrix for gun turret
-      //   //osg::NodePathList nodePathList = GetMatrixNode()->getParentalNodePaths();
+      dtUtil::NodeCollector* nodes = GetNodeCollector();
+      osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
+      if (dof != NULL)
+      {
+         osg::Vec3 hpr, hprLast;
+         dtCore::Transform trans;
 
-      //   //if (!nodePathList.empty())
-      //   //{
-      //   //   matLast.set(osg::computeLocalToWorld(nodePathList[0]));
-      //   //}
+         GetTransform(trans);
+         hprLast = dof->getCurrentHPR();
 
-      //   hprLast = dof->getCurrentHPR();
-      //   dtUtil::MatrixUtil::MatrixToHpr(hprLast, matLast);
+         //std::cout << "HPRLast: ";
+         //dtUtil::MatrixUtil::Print(hprLast);
+         //std::cout << std::endl;
+         
+         mAIHelper->PreSync(trans);
 
-      //   //Tick the AI
-      //   //update the AI DOF orientation
-      //   
-      //   trans.Set(matLast);
-      //   mAIHelper->PreSync(trans);
+         ////////let the AI do its thing
+         mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
-      //   ////////let the AI do its thing
-      //   mAIHelper->Update(tickMessage.GetDeltaSimTime());
+         //mAIHelper->PostSync(trans);
 
-      //   mAIHelper->PostSync(trans);
-      //   trans.Get(mat);
-      //   dtUtil::MatrixUtil::MatrixToHpr(hpr, mat);
-
-      //   //COMMENTED OUT DEBUGGING CODE
-      //   //if(dtUtil::RandFloat(0.0, 100.0f) < 5.0f)
-      //   //{
-      //   //   LOG_ALWAYS("HPR LAST:");
-      //   //   dtUtil::MatrixUtil::Print(hprLast);
+         //COMMENTED OUT DEBUGGING CODE
+         //if(dtUtil::RandFloat(0.0, 100.0f) < 5.0f)
+         //{
+         //   LOG_ALWAYS("HPR LAST:");
+         //   dtUtil::MatrixUtil::Print(hprLast);
 
 
-      //   //   LOG_ALWAYS("HPR:");
-      //   //   dtUtil::MatrixUtil::Print(hpr);
-      //   //}
+         //   LOG_ALWAYS("HPR:");
+         //   dtUtil::MatrixUtil::Print(hpr);
+         //}
 
-      //   //LOG_ALWAYS("angle: " + dtUtil::ToString(heading));
+         //float heading = mAIHelper->mCurrentState.GetWeaponHPRVel()[0];
+         //LOG_ALWAYS("angle: " + dtUtil::ToString(heading));
 
-      //   /*hpr[0] = osg::DegreesToRadians(hpr[0]);
-      //   hpr[1] = osg::DegreesToRadians(hpr[1]);
-      //   hpr[2] = osg::DegreesToRadians(hpr[2]);*/
-      //   
-      //   if(GetArticulationHelper() != NULL)
-      //   {
-      //      GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
-      //   }
+         //we are currently only using the heading
+         hpr = hprLast;
+         osg::Vec2 angle = mAIHelper->GetWeaponAngle();
+         hpr[0] = angle[0];
+         hpr[1] = angle[1];
 
-      //   //currently only using the heading
-      //   hpr[1] = hprLast[1];
-      //   hpr[2] = hprLast[2];
-      //   dof->setCurrentHPR(hpr);
-      //}
+
+         if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
+         {
+            dof->setCurrentHPR(hpr);
+
+            if(GetArticulationHelper() != NULL)
+            {
+               GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+            }
+         }
+      }
 
    }
 
@@ -384,3 +377,4 @@ namespace NetDemo
 
 } // namespace
 //#endif
+
