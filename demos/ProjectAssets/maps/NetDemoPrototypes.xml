@@ -1854,7 +1854,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
+                <string>CustomizableVehicleShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
