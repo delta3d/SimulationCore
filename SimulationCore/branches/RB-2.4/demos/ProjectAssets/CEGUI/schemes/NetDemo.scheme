@@ -3,6 +3,7 @@
 
    <!-- IMAGE SET - WINDOWS LOOK -->
    <Imageset Name="NetDemo" Filename="CEGUI/imagesets/NetDemo.imageset" />
+   <Imageset Name="GlowFrame" Filename="CEGUI/imagesets/GlowFrame.imageset" />
    <Imageset Name="Meter" Filename="CEGUI/imagesets/Meter.imageset" />
    <Imageset Name="UFOButton" Filename="CEGUI/imagesets/UFOButton.imageset" />
    
@@ -57,6 +58,7 @@
 	<!-- ADD CUSTOM MAPPINGS HERE -->
    <FalagardMapping WindowType="NetDemo/Meter" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="NetDemo/Meter" />
    <FalagardMapping WindowType="NetDemo/Frame" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="NetDemo/Frame" />
+   <FalagardMapping WindowType="NetDemo/GlowFrame" TargetType="CEGUI/PushButton" Renderer="Falagard/Button" LookNFeel="NetDemo/GlowFrame" />
    <FalagardMapping WindowType="NetDemo/ListBoxItem" TargetType="CEGUI/ItemEntry" Renderer="Falagard/ItemEntry" LookNFeel="NetDemo/ListBoxItem" />
 
 </GUIScheme>

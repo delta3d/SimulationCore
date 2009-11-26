@@ -4606,4 +4606,154 @@
       </StateImagery>
    </WidgetLook>
 
+   <!-- GLOW FRAME -->
+   <WidgetLook name="NetDemo/GlowFrame">
+      <PropertyDefinition name="BackColour" initialValue="CC000000" redrawOnWrite="true" />
+      <PropertyDefinition name="FrameColour" initialValue="FFFFFFFF" redrawOnWrite="true" />
+      <PropertyDefinition name="GlowColour" initialValue="FF00FFFF" redrawOnWrite="true" />
+      <Property name="ZOrderChangeEnabled" value="false"/>
+      <ImagerySection name="Back_Normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <UnifiedDim scale="0" offset="0" type="LeftEdge" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <UnifiedDim scale="0" offset="0" type="TopEdge" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" offset="0" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" offset="0" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image image="Back_LeftTop" imageset="GlowFrame" type="TopLeftCorner"/>
+            <Image image="Back_RightTop" imageset="GlowFrame" type="TopRightCorner"/>
+            <Image image="Back_LeftBottom" imageset="GlowFrame" type="BottomLeftCorner"/>
+            <Image image="Back_RightBottom" imageset="GlowFrame" type="BottomRightCorner"/>
+            <Image image="Back_Left" imageset="GlowFrame" type="LeftEdge"/>
+            <Image image="Back_Top" imageset="GlowFrame" type="TopEdge"/>
+            <Image image="Back_Right" imageset="GlowFrame" type="RightEdge"/>
+            <Image image="Back_Bottom" imageset="GlowFrame" type="BottomEdge"/>
+            <Image image="Back_Center" imageset="GlowFrame" type="Background"/>
+            <ColourProperty name="BackColour" />
+            <VertFormat type="Stretched" />
+            <HorzFormat type="Stretched" />
+         </FrameComponent>
+      </ImagerySection>
+      <ImagerySection name="Frame_Normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <UnifiedDim scale="0" offset="0" type="LeftEdge" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <UnifiedDim scale="0" offset="0" type="TopEdge" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" offset="0" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" offset="0" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image image="Frame_LeftTop" imageset="GlowFrame" type="TopLeftCorner"/>
+            <Image image="Frame_RightTop" imageset="GlowFrame" type="TopRightCorner"/>
+            <Image image="Frame_LeftBottom" imageset="GlowFrame" type="BottomLeftCorner"/>
+            <Image image="Frame_RightBottom" imageset="GlowFrame" type="BottomRightCorner"/>
+            <Image image="Frame_Left" imageset="GlowFrame" type="LeftEdge"/>
+            <Image image="Frame_Top" imageset="GlowFrame" type="TopEdge"/>
+            <Image image="Frame_Right" imageset="GlowFrame" type="RightEdge"/>
+            <Image image="Frame_Bottom" imageset="GlowFrame" type="BottomEdge"/>
+            <Image image="Frame_Center" imageset="GlowFrame" type="Background"/>
+            <ColourProperty name="FrameColour"/>
+            <VertFormat type="Stretched"/>
+            <HorzFormat type="Stretched"/>
+         </FrameComponent>
+      </ImagerySection>
+      <ImagerySection name="Glow_Normal">
+         <FrameComponent>
+            <Area>
+               <Dim type="LeftEdge">
+                  <UnifiedDim scale="0" offset="0" type="LeftEdge" />
+               </Dim>
+               <Dim type="TopEdge">
+                  <UnifiedDim scale="0" offset="0" type="TopEdge" />
+               </Dim>
+               <Dim type="RightEdge">
+                  <UnifiedDim scale="1" offset="0" type="RightEdge" />
+               </Dim>
+               <Dim type="BottomEdge">
+                  <UnifiedDim scale="1" offset="0" type="BottomEdge" />
+               </Dim>
+            </Area>
+            <Image image="Glow_LeftTop" imageset="GlowFrame" type="TopLeftCorner"/>
+            <Image image="Glow_RightTop" imageset="GlowFrame" type="TopRightCorner"/>
+            <Image image="Glow_LeftBottom" imageset="GlowFrame" type="BottomLeftCorner"/>
+            <Image image="Glow_RightBottom" imageset="GlowFrame" type="BottomRightCorner"/>
+            <Image image="Glow_Left" imageset="GlowFrame" type="LeftEdge"/>
+            <Image image="Glow_Top" imageset="GlowFrame" type="TopEdge"/>
+            <Image image="Glow_Right" imageset="GlowFrame" type="RightEdge"/>
+            <Image image="Glow_Bottom" imageset="GlowFrame" type="BottomEdge"/>
+            <Image image="Glow_Center" imageset="GlowFrame" type="Background"/>
+            <ColourProperty name="GlowColour"/>
+            <VertFormat type="Stretched"/>
+            <HorzFormat type="Stretched"/>
+         </FrameComponent>
+      </ImagerySection>
+      <StateImagery name="Normal">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+            <Section section="Glow_Normal">
+               <ColourProperty name="GlowColour" />
+            </Section>
+            <Section section="Frame_Normal">
+               <ColourProperty name="FrameColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Hover">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+            <Section section="Glow_Normal">
+               <ColourProperty name="GlowColour" />
+            </Section>
+            <Section section="Frame_Normal">
+               <ColourProperty name="FrameColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Pushed">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+            <Section section="Glow_Normal">
+               <ColourProperty name="GlowColour" />
+            </Section>
+            <Section section="Frame_Normal">
+               <ColourProperty name="FrameColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+      <StateImagery name="Disabled">
+         <Layer>
+            <Section section="Back_Normal">
+               <ColourProperty name="BackColour" />
+            </Section>
+            <Section section="Glow_Normal">
+               <ColourProperty name="GlowColour" />
+            </Section>
+            <Section section="Frame_Normal">
+               <ColourProperty name="FrameColour" />
+            </Section>
+         </Layer>
+      </StateImagery>
+   </WidgetLook>
+
 </Falagard>
