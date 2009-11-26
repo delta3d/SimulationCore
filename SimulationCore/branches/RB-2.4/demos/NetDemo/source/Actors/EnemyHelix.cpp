@@ -229,8 +229,8 @@ namespace NetDemo
    {
       if(mWeapon.valid())
       {
-         //mWeapon->SetTriggerHeld(true);
-         //mWeapon->Fire();
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
       }
    }
 

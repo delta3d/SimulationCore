@@ -82,8 +82,7 @@ namespace NetDemo
       DECLARE_PROPERTY_INLINE(float, TimeStep);
 
       DECLARE_PROPERTY_INLINE(float, Thrusters);
-      DECLARE_PROPERTY_INLINE(float, Weapon01);
-      DECLARE_PROPERTY_INLINE(float, Weapon02);
+      
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
@@ -136,8 +135,6 @@ namespace NetDemo
       DECLARE_PROPERTY_INLINE(float, Thrust);
       DECLARE_PROPERTY_INLINE(float, Lift);
       DECLARE_PROPERTY_INLINE(float, Yaw);
-      DECLARE_PROPERTY_INLINE(float, WeaponTrigger01);
-      DECLARE_PROPERTY_INLINE(float, WeaponTrigger02);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };

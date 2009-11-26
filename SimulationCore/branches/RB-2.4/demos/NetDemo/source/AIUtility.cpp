@@ -49,8 +49,6 @@ namespace NetDemo
    , mRoll(0.0f)
    , mTimeStep(0.0f)
    , mThrusters(0.0f)
-   , mWeapon01(0.0f)
-   , mWeapon02(0.0f)
    {
    }
 
@@ -82,8 +80,7 @@ namespace NetDemo
       REGISTER_PROPERTY(TimeStep, "The per frame time step.", RegHelperType, propReg);
 
       REGISTER_PROPERTY(Thrusters, "Boosters", RegHelperType, propReg);
-      REGISTER_PROPERTY(Weapon01, "Primary Weapon", RegHelperType, propReg);
-      REGISTER_PROPERTY(Weapon02, "Secondary Weapon", RegHelperType, propReg);
+
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -105,7 +102,6 @@ namespace NetDemo
    , mMaxRollPerSecond(0.0f)
    , mMinElevation(0.0f)
    , mMaxElevation(0.0f)
-
    {
    }
 
@@ -140,7 +136,7 @@ namespace NetDemo
       REGISTER_PROPERTY(MinElevation, "The minimum elevation we can fly.", RegHelperType, propReg);
       REGISTER_PROPERTY(MaxElevation, "The maximum elevation we can fly.", RegHelperType, propReg);
 
-   }
+ }
 
    //////////////////////////////////////////////////////////////////////////
    //BaseAIControls
@@ -149,8 +145,6 @@ namespace NetDemo
       : mThrust(0.0f)
       , mLift(0.0f)
       , mYaw(0.0f)
-      , mWeaponTrigger01(0.0f)
-      , mWeaponTrigger02(0.0f)
    {
    }
 
@@ -166,9 +160,8 @@ namespace NetDemo
       REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
       REGISTER_PROPERTY(Lift, "Our current scalar lift.", RegHelperType, propReg);
       REGISTER_PROPERTY(Yaw, "Our current scalar yaw.", RegHelperType, propReg);
-      REGISTER_PROPERTY(WeaponTrigger01, "The trigger for our primary weapon 0-1.", RegHelperType, propReg);
-      REGISTER_PROPERTY(WeaponTrigger02, "The trigger for our secondary weapon 0-1.", RegHelperType, propReg);
-   }
+      
+    }
 
    //////////////////////////////////////////////////////////////////////////
    //BaseSteeringTargeter
@@ -323,7 +316,14 @@ namespace NetDemo
          float yaw = angle / fabs(current_state.GetAngularVel());
          dtUtil::Clamp(yaw, 0.0001f, mTimeToTarget);
          yaw /= mTimeToTarget;
-         result.SetYaw(Sgn(sign) * yaw);
+         yaw = Sgn(sign) * yaw;
+
+         if(!dtUtil::IsFinite(yaw)) 
+         {
+            yaw = 0.0f;
+         }
+
+         result.SetYaw(yaw);
       }  
       else
       {
@@ -363,9 +363,23 @@ namespace NetDemo
       velNorm.normalize();
 
       float thrustSign = velNorm * goalForward;
-      if(thrustSign < -0.75f && dot < -0.75f) result.SetThrust(-1.0f);
+      float thrust = 0.0f;
+
+      if(thrustSign < -0.75f && dot < -0.75f) 
+      {
+         thrust = -1.0f;
+      }
       else 
-         result.SetThrust(timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed));
+      {
+         thrust = timeRemaining * dtUtil::MapRangeValue(angle, 0.0f, float(osg::PI), mMaxSpeed, mMinSpeed);
+      }
+
+      if(!dtUtil::IsFinite(thrust)) 
+      {
+         thrust = 0.0f;
+      }
+
+      result.SetThrust(thrust);
 
       //compute height
       float zVel = current_state.GetVel()[2];
@@ -379,7 +393,12 @@ namespace NetDemo
       remainingFallTime /= mTimeToTarget;
 
       float sgnHeightDiff = BaseClass::Sgn(heightDiff);
-      result.SetLift(remainingFallTime * sgnHeightDiff);
+      float lift = remainingFallTime * sgnHeightDiff;
+      if(!dtUtil::IsFinite(lift)) 
+      {
+         lift = 0.0f;
+      }
+      result.SetLift(lift);
    }
 
 

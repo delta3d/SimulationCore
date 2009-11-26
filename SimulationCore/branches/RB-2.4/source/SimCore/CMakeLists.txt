@@ -52,6 +52,7 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/Utilities.cpp"
    "${SOURCE_PATH}/VisibilityOptions.cpp"
    "${SOURCE_PATH}/WeaponTypeEnum.cpp"
+   "${SOURCE_PATH}/ApplyShaderVisitor.cpp"
    )
 
 set(LIB_SOURCES_2 
