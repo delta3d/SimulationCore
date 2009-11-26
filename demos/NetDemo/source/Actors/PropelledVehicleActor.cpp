@@ -36,6 +36,11 @@
 //For debug only.
 #include <iostream>
 
+// TEMP:
+// For appling shaders to different parts of th vehicle.
+#include <SimCore/ApplyShaderVisitor.h>
+#include <dtCore/shaderprogram.h>
+
 namespace NetDemo
 {
 
@@ -106,6 +111,14 @@ namespace NetDemo
 
       mHelper->CreateVehicle(xform, *body, wheels);
       mHelper->GetMainPhysicsObject()->SetTransformAsVisual(xform);
+
+      // TEMP:
+      // Find the fuel line geometry and apply the pulse effect to it.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("FuelLines-GEODE");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      GetOSGNode()->accept(*visitor);
    }
 
    ////////////////////////////////////////////////////////////////////////
