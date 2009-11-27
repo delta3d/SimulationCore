@@ -37,6 +37,7 @@ set(LIB_SOURCES_1
    "${SOURCE_PATH}/GameEntryPoint.cpp"
    "${SOURCE_PATH}/NetDemoMessages.cpp"
    "${SOURCE_PATH}/NetDemoMessageTypes.cpp"
+   "${SOURCE_PATH}/NetDemoUtils.cpp"
    "${SOURCE_PATH}/States.cpp"
    "${SOURCE_PATH}/TowerAIHelper.cpp"
    "${SOURCE_PATH}/AIWeaponUtility.cpp"
