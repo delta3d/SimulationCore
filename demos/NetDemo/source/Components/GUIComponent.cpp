@@ -223,7 +223,8 @@ namespace NetDemo
          const SimCore::DetonationMessage& det
             = static_cast<const SimCore::DetonationMessage&>(message);
 
-         mScoreLabelManager->AddScoreLabel(det.GetDetonationLocation(), 100, 2.0f);
+         //NOTE: temporarily commenting out until it shows up at the proper time
+         //mScoreLabelManager->AddScoreLabel(det.GetDetonationLocation(), 100, 2.0f);
       }
    }
 

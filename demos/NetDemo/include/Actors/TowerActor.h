@@ -71,6 +71,8 @@ namespace NetDemo
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
 
 
+         virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
+
 
       protected:
       virtual ~TowerActor();

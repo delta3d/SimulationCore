@@ -154,7 +154,7 @@ namespace NetDemo
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
             //slow down the rate of fire
-            mWeapon->SetFireRate(3.0f);
+            mWeapon->SetFireRate(1.0f);
          }
       }
       else
@@ -254,15 +254,14 @@ namespace NetDemo
       float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
       if(distToTarget < 150.0f && angle > 0.9f)
       {
-         //just add some randomness.. again temporary... :|
-         if(dtUtil::RandFloat(0.0f, 100.0f) < 50.0f)
-         {
-            Shoot(0.0f);
-         }
+         Shoot(0.0f);
       }
 
 
       BaseClass::OnTickLocal(tickMessage);
+
+
+      mWeapon->SetTriggerHeld(false);
    }
   
    //////////////////////////////////////////////////////////////////////
