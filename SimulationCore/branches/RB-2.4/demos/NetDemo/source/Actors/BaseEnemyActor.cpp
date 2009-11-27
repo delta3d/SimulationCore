@@ -40,6 +40,7 @@
 #include <dtGame/gameactor.h>
 #include <ActorRegistry.h>
 #include <dtGame/gamemanager.h>
+#include <NetDemoUtils.h>
 
 
 namespace NetDemo
@@ -48,6 +49,7 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mSendScoreMessage(false)
       , mTimeSinceBorn(0.0f)
       , mTimeToExistAfterDead(2.0f)
       , mTimeSinceKilled(0.0f)
@@ -173,6 +175,13 @@ namespace NetDemo
          // Do nothing for now ... but you could become more aggressive or show a particle effect or 
          // start a count down explosion timer or something.
       }
+
+      // Was a score action triggered?
+      if(mSendScoreMessage)
+      {
+         mSendScoreMessage = false;
+         MessageUtils::SendScoreMessage(*this, message.GetSendingActorId(), 1);
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +200,10 @@ namespace NetDemo
          if(IsMobilityDisabled())
          {
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+
+            // WORKAROUND:
+            // Set the flag to send a score message when RespondToHit is called.
+            mSendScoreMessage = true;
          }
 
          // Randomly decide how long to last before exploding. 
