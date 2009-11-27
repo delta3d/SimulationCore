@@ -127,4 +127,20 @@ namespace NetDemo
       return mParamResourcePoints->GetValue();
    }
 
+   ////////////////////////////////////////////////////////////////////////////////
+   void EntityActionMessage::Set(const EntityActionMessageParams& paramStruct)
+   {
+      if(paramStruct.mActionType != NULL)
+      {
+         SetAction(*paramStruct.mActionType);
+      }
+
+      SetPoints(paramStruct.mPoints);
+      SetResourcePoints(paramStruct.mResourcePoints);
+      SetLocation(paramStruct.mLocation);
+      SetAboutActorId(paramStruct.mAboutActorId);
+      SetSendingActorId(paramStruct.mSendingActorId);
+      SetOwnerID(paramStruct.mOwnerId.ToString());
+   }
+
 }

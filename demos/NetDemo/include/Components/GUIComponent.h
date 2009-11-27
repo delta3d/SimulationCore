@@ -124,6 +124,8 @@ namespace NetDemo
          void InitializeCEGUI(const std::string& schemeFile);
          void InitializeEffectsOverlays();
 
+         void ProcessEntityActionMessage(const dtGame::Message& message);
+
          void ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage);
 
          void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);

@@ -45,6 +45,7 @@
 #include "GUI/HUDScreen.h"
 #include "GUI/ReadyRoomScreen.h"
 #include "GUI/ScoreLabelManager.h"
+#include "NetDemoMessages.h"
 #include "NetDemoMessageTypes.h"
 #include "States.h"
 
@@ -217,14 +218,9 @@ namespace NetDemo
       {
          ProcessActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
       }
-      // DEBUG:
-      else if(messageType == SimCore::MessageType::DETONATION)
+      else if(messageType == NetDemo::MessageType::ENTITY_ACTION)
       {
-         const SimCore::DetonationMessage& det
-            = static_cast<const SimCore::DetonationMessage&>(message);
-
-         //NOTE: temporarily commenting out until it shows up at the proper time
-         //mScoreLabelManager->AddScoreLabel(det.GetDetonationLocation(), 100, 2.0f);
+         ProcessEntityActionMessage(message);
       }
    }
 
@@ -309,6 +305,22 @@ namespace NetDemo
 
       mButtonHighlight = new ButtonHighlight();
       mButtonHighlight->Init(*mEffectsOverlay);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessEntityActionMessage(const dtGame::Message& message)
+   {
+      const NetDemo::EntityActionMessage& actionMessage
+         = static_cast<const NetDemo::EntityActionMessage&>(message);
+
+      const EntityAction& action = actionMessage.GetAction();
+
+      // Show the score label.
+      if(action == EntityAction::SCORE)
+      {
+         mScoreLabelManager->AddScoreLabel(actionMessage.GetLocation(),
+            actionMessage.GetPoints(), 2.0f);
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////

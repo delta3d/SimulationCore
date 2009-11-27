@@ -47,6 +47,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    // ENTITY ACTION MESSAGE CODE
    /////////////////////////////////////////////////////////////////////////////
+   struct EntityActionMessageParams;
    class NETDEMO_EXPORT EntityActionMessage : public dtGame::Message
    {
       public:
@@ -75,6 +76,8 @@ namespace NetDemo
          void SetResourcePoints(int points);
          int SetResourcePoints() const;
 
+         void Set(const EntityActionMessageParams& paramStruct);
+
       protected:
          virtual ~EntityActionMessage();
 
@@ -85,6 +88,29 @@ namespace NetDemo
          dtCore::RefPtr<dtGame::IntMessageParameter> mParamPoints;
          dtCore::RefPtr<dtGame::IntMessageParameter> mParamResourcePoints;
    };
+
+   /////////////////////////////////////////////////////////////////////////////
+   // Simple parameter struct for simplifying message sending, when used
+   // with the message utility methods. This struct mirrors the same parameters
+   // as found in the associated message.
+   struct EntityActionMessageParams
+   {
+      EntityActionMessageParams()
+         : mActionType(&EntityAction::UNKNOWN)
+         , mPoints(0)
+         , mResourcePoints(0)
+      {
+      }
+
+      const EntityAction* mActionType;
+      int mPoints;
+      int mResourcePoints;
+      osg::Vec3 mLocation;
+      dtCore::UniqueId mAboutActorId;
+      dtCore::UniqueId mSendingActorId;
+      dtCore::UniqueId mOwnerId;
+   };
+
 }
 
 #endif
