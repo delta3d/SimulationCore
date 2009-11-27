@@ -163,9 +163,9 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyMineActorProxy::BuildPropertyMap()
    {
+      BaseClass::BuildPropertyMap();
+      
       const std::string GROUP = "Enemy Props";
-
-      SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
       EnemyMineActor& actor = static_cast<EnemyMineActor &>(GetGameActor());
 

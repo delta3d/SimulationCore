@@ -92,8 +92,11 @@ namespace NetDemo
          /// Overrriden to kill our AI when we die.
          virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
-         float GetTimeToExistAfterDead() {return mTimeToExistAfterDead; }
-         void SetTimeToExistAfterDead(float newTime) { mTimeToExistAfterDead = newTime; }
+         float GetTimeToExistAfterDead();
+         void SetTimeToExistAfterDead(float newTime);
+
+         void SetPointValue(int points);
+         int GetPointValue() const;
 
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
@@ -122,6 +125,7 @@ namespace NetDemo
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
 
          bool mSendScoreMessage; // Flag to trigger sending a score message when RespondToHit is called after a damage state change to DIE.
+         int mPointValue;
          float mTimeSinceBorn; // how long I've been in the world - used for some enemies that self-terminate after X seconds
          float mTimeToExistAfterDead; // Once we are dead, we stay alive for this long, and then self-delete. 
          float mTimeSinceKilled; // used to self-delete dead entities after they explode, flame, fall, etc...
@@ -133,6 +137,8 @@ namespace NetDemo
    {
       public:
          typedef SimCore::Actors::BasePhysicsVehicleActorProxy BaseClass;
+
+         static const dtUtil::RefString PROPERTY_POINT_VALUE;
 
          BaseEnemyActorProxy();
          virtual void BuildPropertyMap();
