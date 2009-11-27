@@ -541,6 +541,10 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
+            </property>
         </actor>
         <actor>
             <type>NetDemo.EnemyMineActor</type>
@@ -943,6 +947,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>10</integer>
             </property>
         </actor>
         <actor>
@@ -1749,6 +1757,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>15</integer>
             </property>
         </actor>
         <actor>
@@ -2647,6 +2659,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>20</integer>
             </property>
         </actor>
         <actor>
@@ -4102,6 +4118,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
             </property>
         </actor>
         <actor>
@@ -5577,6 +5597,10 @@
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
+            </property>
+            <property>
+                <name>Point Value</name>
+                <integer>40</integer>
             </property>
         </actor>
         <actor>

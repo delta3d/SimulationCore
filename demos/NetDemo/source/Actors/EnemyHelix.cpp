@@ -270,14 +270,14 @@ namespace NetDemo
    EnemyHelixActorProxy::EnemyHelixActorProxy()
    {
       SetClassName("EnemyHelixActor");
-  }
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActorProxy::BuildPropertyMap()
    {
-      const std::string GROUP = "Enemy Props";
+      BaseClass::BuildPropertyMap();
 
-      SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
+      const std::string GROUP = "Enemy Props";
 
       EnemyHelixActor& actor = static_cast<EnemyHelixActor &>(GetGameActor());
 

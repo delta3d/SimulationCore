@@ -50,6 +50,7 @@ namespace NetDemo
    BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mSendScoreMessage(false)
+      , mPointValue(1)
       , mTimeSinceBorn(0.0f)
       , mTimeToExistAfterDead(2.0f)
       , mTimeSinceKilled(0.0f)
@@ -180,7 +181,7 @@ namespace NetDemo
       if(mSendScoreMessage)
       {
          mSendScoreMessage = false;
-         MessageUtils::SendScoreMessage(*this, message.GetSendingActorId(), 1);
+         MessageUtils::SendScoreMessage(*this, message.GetSendingActorId(), GetPointValue());
       }
    }
 
@@ -211,6 +212,29 @@ namespace NetDemo
       }
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   float BaseEnemyActor::GetTimeToExistAfterDead()
+   {
+      return mTimeToExistAfterDead;
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetTimeToExistAfterDead(float newTime)
+   {
+      mTimeToExistAfterDead = newTime;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetPointValue(int points)
+   {
+      mPointValue = points;
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////
+   int BaseEnemyActor::GetPointValue() const
+   {
+      return mPointValue;
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::UpdateVehicleTorquesAndAngles(float deltaTime)
@@ -292,9 +316,15 @@ namespace NetDemo
       }
       return false;
    }
-   //////////////////////////////////////////////////////////////////////
+
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    // PROXY
-   //////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////
+   const dtUtil::RefString BaseEnemyActorProxy::PROPERTY_POINT_VALUE("Point Value");
+
+   ///////////////////////////////////////////////////////////////////////////////////
    BaseEnemyActorProxy::BaseEnemyActorProxy()
    {
       SetClassName("BaseEnemyActor");
@@ -303,12 +333,22 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActorProxy::BuildPropertyMap()
    {
-      const std::string GROUP = "Enemy Props";
       BaseClass::BuildPropertyMap();
 
-      //BaseEnemyActor& actor = *static_cast<BaseEnemyActor*>(GetActor());
+      BaseEnemyActor* actor = NULL;
+      GetActor(actor);
 
-      // Add properties
+      using namespace dtDAL;
+      const std::string GROUP = "Enemy Props";
+
+      // INTEGER PROPERTIES
+      AddProperty(new IntActorProperty(
+         PROPERTY_POINT_VALUE,
+         PROPERTY_POINT_VALUE,
+         IntActorProperty::SetFuncType(actor, &BaseEnemyActor::SetPointValue),
+         IntActorProperty::GetFuncType(actor, &BaseEnemyActor::GetPointValue),
+         "Number of point to be awarded to a player or entity who destroys this actor.",
+         GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
