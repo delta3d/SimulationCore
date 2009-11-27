@@ -85,7 +85,7 @@ namespace NetDemo
       mTargetOffset = osg::Vec3(
          dtUtil::RandFloat(-35.0f, 35.0f),
          dtUtil::RandFloat(-15.0f, 35.0f),
-         dtUtil::RandFloat(10.0f, 30.0f) );
+         dtUtil::RandFloat(5.0f, 15.0f) );
    }
 
 

@@ -92,19 +92,26 @@ namespace NetDemo
 
          if(physicsObject != NULL)
          {
-            osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
-            at.normalize();
+            if(mCurrentControls.GetThrust() != 0.0f)
+            {
+               osg::Vec3 at = mGoalState.GetPos() - mCurrentState.GetPos();
+               at.normalize();
 
-            float maxThrustForce = 10.0f;
+               float maxThrustForce = 2500.0f;
 
-            osg::Vec3 force;
-            float mass = physicsObject->GetBodyWrapper()->GetMass();
+               float mass = physicsObject->GetBodyWrapper()->GetMass();
 
-            force += at * (mCurrentControls.GetThrust() * maxThrustForce);
+               osg::Vec3 force = at * (mCurrentControls.GetThrust() * maxThrustForce);
 
-            mCurrentState.SetVel(physicsObject->GetLinearVelocity());
+               physicsObject->GetBodyWrapper()->AddForce(force);
+            }
+            else
+            {
+               osg::Vec3 force = physicsObject->GetLinearVelocity();
+               physicsObject->GetBodyWrapper()->ApplyImpulse(force * -2.5f);
 
-            physicsObject->GetBodyWrapper()->ApplyImpulse(force);
+            }
+
          }
       }
    }

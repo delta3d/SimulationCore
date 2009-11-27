@@ -102,6 +102,7 @@ namespace NetDemo
          mTarget = &v;
       }
 
+      osg::Vec3 mLastPos;
       dtCore::ObserverPtr<const dtCore::Transformable> mTarget;
    };
 

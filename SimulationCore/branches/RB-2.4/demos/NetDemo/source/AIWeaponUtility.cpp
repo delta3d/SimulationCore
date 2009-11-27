@@ -53,7 +53,7 @@ namespace NetDemo
    TurretWeaponState::TurretWeaponState()
       : mTrigger(false)
       , mTimeStep(0.0f)
-      , mCurrentAngle()
+      , mCurrentAngle(osg::PI_2, osg::PI_2)
       , mCurrentVel()
       , mOrigin()
    {
@@ -70,7 +70,7 @@ namespace NetDemo
    TurretGoalState::TurretGoalState()
    : mMinAngle(-180.0f, -60.0f)
    , mMaxAngle(180.0f, 60.0f)
-   , mMaxVel(1.0f, 1.0f)
+   , mMaxVel(1.5f, 1.5f)
    , mAngleToTarget()
    {
    }
@@ -179,29 +179,29 @@ namespace NetDemo
       const float maxVelPhi = current_goal.GetMaxVel()[1];
 
       float theta = ComputeDOF(dt, 
-                               osg::PI_2 + current_state.GetCurrentAngle()[0],
+                               current_state.GetCurrentAngle()[0],
                                current_goal.GetAngleToTarget()[0],
                                  -1.0f * maxVelTheta, maxVelTheta);
 
-      //float phi = ComputeDOF(dt, 
-      //                          current_state.GetCurrentAngle()[1],
-      //                          current_goal.GetAngleToTarget()[1],
-      //                          -1.0f * maxVelPhi, maxVelPhi);
+      float phi = ComputeDOF(dt, 
+                                current_state.GetCurrentAngle()[1],
+                                current_goal.GetAngleToTarget()[1],
+                                -1.0f * maxVelPhi, maxVelPhi);
 
 
       osg::Vec2 angle(current_state.GetCurrentAngle());
-      angle[0] = theta - osg::PI_2;
-      //angle[1] = phi;
+      angle[0] = theta;
+      angle[1] = phi;
 
       result.SetCurrentAngle(angle);
 
       //todo- move to firing behavior
-      float from = current_goal.GetAngleToTarget()[0];
-      float to = current_state.GetCurrentAngle()[0];
-      to = osg::PI_2 + to;
-      float diff = fabs(to - from);
+      osg::Vec2 from = current_goal.GetAngleToTarget();
+      osg::Vec2 to = current_state.GetCurrentAngle();
+     
+      float diff = (to - from).length();
       //LOG_ALWAYS("Angle: " + dtUtil::ToString(diff));
-      if(diff < 0.01f)
+      if(diff < 0.05f)
       {
          result.SetTrigger(true);
       }
@@ -248,7 +248,7 @@ namespace NetDemo
       //mGoalState.SetMaxVel(osg::Vec2(1.0f, 1.5f));
 
       float lookAhead = 1.0f;
-      float timeToTarget = 0.5f;
+      float timeToTarget = 0.15f;
       TurretAlign* t_align = new TurretAlign(lookAhead, timeToTarget);
       mBehaviors.push_back(t_align);
    }

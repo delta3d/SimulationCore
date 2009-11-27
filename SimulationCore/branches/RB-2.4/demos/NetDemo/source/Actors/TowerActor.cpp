@@ -170,7 +170,7 @@ namespace NetDemo
             mWeapon = weapon;
             mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
 
-            mWeapon->SetFireRate(1.0f);
+            mWeapon->SetFireRate(0.333f);
          }
       }
       else
@@ -191,41 +191,62 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum &damageState)
+   {
+      if (damageState != GetDamageState())
+      {
+         BaseClass::SetDamageState(damageState);
+
+         // Mark the AI as 'dead' so we stop 'steering'
+         if(IsMobilityDisabled())
+         {
+            mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+
+            mWeapon->SetTriggerHeld(false);
+         }
+      }
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void TowerActor::FindTarget(float)
    {
-      float minDist = 2000.0;
-      BaseEnemyActor* enemy = NULL;
+      float minDist = 250.0;
+      dtCore::Transformable* enemy = NULL;
 
       EnemyMineActorProxy* mineProxy = NULL;
-      GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, mineProxy);
-      if (mineProxy != NULL)
-      {
-         EnemyMineActor& mine = *static_cast<EnemyMineActor*>(mineProxy->GetActor());
+      std::vector<dtDAL::ActorProxy*> actorArray;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
+      //GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
 
-         float dist = GetDistance(mine);
+      while(!actorArray.empty())
+      {
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         float dist = GetDistance(*curr);
 
          if(dist < minDist)
          {
-            enemy = &mine;
+            enemy = curr;
+            minDist = dist;
          }
-      }
 
-      if(enemy == NULL)
+         actorArray.pop_back();
+      }   
+
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
+      while(!actorArray.empty())
       {
-         EnemyHelixActorProxy* helixProxy = NULL;
-         GetGameActorProxy().GetGameManager()->FindActorByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, helixProxy);
-         if (helixProxy != NULL)
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         float dist = GetDistance(*curr);
+
+         if(dist < minDist)
          {
-            EnemyHelixActor& helix = *static_cast<EnemyHelixActor*>(helixProxy->GetActor());
-
-            float dist = GetDistance(helix);
-
-            if(dist < minDist)
-            {
-               enemy = &helix;
-            }
+            enemy = curr;
+            minDist = dist;
          }
-      }
+
+         actorArray.pop_back();
+      }   
 
       if(enemy != NULL)
       {
@@ -265,7 +286,12 @@ namespace NetDemo
          mWeapon->Fire();
       }
 
-      mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
+      //randomly search for better targets
+      //temporary hack
+      if(dtUtil::RandPercent() < 0.1)
+      {
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
+      }
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -283,37 +309,19 @@ namespace NetDemo
          GetTransform(trans);
          hprLast = dof->getCurrentHPR();
 
-         //std::cout << "HPRLast: ";
-         //dtUtil::MatrixUtil::Print(hprLast);
-         //std::cout << std::endl;
-         
          mAIHelper->PreSync(trans);
 
          ////////let the AI do its thing
          mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
+         //we are static, no need to obtain an update
          //mAIHelper->PostSync(trans);
-
-         //COMMENTED OUT DEBUGGING CODE
-         //if(dtUtil::RandFloat(0.0, 100.0f) < 5.0f)
-         //{
-         //   LOG_ALWAYS("HPR LAST:");
-         //   dtUtil::MatrixUtil::Print(hprLast);
-
-
-         //   LOG_ALWAYS("HPR:");
-         //   dtUtil::MatrixUtil::Print(hpr);
-         //}
-
-         //float heading = mAIHelper->mCurrentState.GetWeaponHPRVel()[0];
-         //LOG_ALWAYS("angle: " + dtUtil::ToString(heading));
 
          //we are currently only using the heading
          hpr = hprLast;
          osg::Vec2 angle = mAIHelper->GetWeaponAngle();
-         hpr[0] = angle[0];
-         hpr[1] = angle[1];
-
+         hpr[0] = angle[0]  - osg::PI_2;
+         hpr[1] = -angle[1] + (0.95 * osg::PI_2);
 
          if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
          {
@@ -326,6 +334,8 @@ namespace NetDemo
          }
       }
 
+
+      mWeapon->SetTriggerHeld(false);
    }
 
    //////////////////////////////////////////////////////////////////////

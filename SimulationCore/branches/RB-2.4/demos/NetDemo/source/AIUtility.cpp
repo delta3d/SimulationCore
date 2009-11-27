@@ -242,14 +242,22 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////////////////
    void BombDive::Think(float dt, BaseClass::ConstKinematicGoalParam current_goal, BaseClass::ConstKinematicParam current_state, BaseClass::SteeringOutByRefParam result)
    { 
-     /* if(current_state.GetVel().length() < mSpeed)
-      {*/
-         result.SetThrust(1.0f);
-      /*}
+
+      osg::Vec3 vel = current_state.GetVel();
+      vel.normalize();
+      osg::Vec3 dirToTarget = current_goal.GetPos() - current_state.GetPos();
+      dirToTarget.normalize();
+      float dot = dirToTarget * vel;
+      dtUtil::Clamp(dot, 0.0f, 1.0f);
+
+      if(current_state.GetVel().length() < mSpeed)
+      {
+         result.SetThrust(dot);
+      }
       else
       {
-         result.SetThrust(-0.25f);
-      }*/
+         result.SetThrust(0.0f);
+      }
    }
 
 

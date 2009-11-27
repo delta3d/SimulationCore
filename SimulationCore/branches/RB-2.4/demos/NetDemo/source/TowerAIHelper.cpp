@@ -124,6 +124,8 @@ namespace NetDemo
       //float timeToTargetRot = 1.25f;
 
       //GetSteeringModel()->AddSteeringBehavior(new TowerAlign(lookAheadRot, timeToTargetRot));
+
+      //mTurretAI.mCurrentState.SetCurrentAngle(osg::Vec2(osg::PI_2, osg::PI_2));
    }
 
    void TowerAIHelper::Spawn()
@@ -141,7 +143,6 @@ namespace NetDemo
    void TowerAIHelper::Update(float dt)
    {
       BaseClass::Update(dt);
-      mTurretAI.StepTurret(dt);
    }
 
    void TowerAIHelper::RegisterStates()
@@ -166,6 +167,7 @@ namespace NetDemo
       BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_ATTACK);
       BaseClass::AddTransition(&AIEvent::AI_EVENT_ENEMY_TARGETED, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_ATTACK);
       BaseClass::AddTransition(&AIEvent::AI_EVENT_FIRE_LASER, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIRE_LASER);
+      BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_FIND_TARGET);
       BaseClass::AddTransition(&AIEvent::AI_EVENT_TARGET_KILLED, &AIStateType::AI_STATE_FIRE_LASER, &AIStateType::AI_STATE_FIND_TARGET);
 
     }
@@ -194,12 +196,19 @@ namespace NetDemo
             dtCore::Transform xform;
             attackState->mStateData.mTarget->GetTransform(xform);
             osg::Vec3 pos = xform.GetTranslation();
-
             
             //mGoalState.SetPos(pos);
             //mDefaultTargeter->Push(pos);
 
-            mTurretAI.GetTargeter().Push(pos);
+            osg::Vec3 vel = pos - attackState->mStateData.mLastPos;
+            
+            osg::Vec3 predictedPos = pos + (vel * 2.5);
+
+            mTurretAI.GetTargeter().Push(predictedPos);
+
+            mTurretAI.StepTurret(dt);
+
+            attackState->mStateData.mLastPos = pos;
 
             if(mTurretAI.mCurrentState.GetTrigger())
             {
@@ -208,7 +217,8 @@ namespace NetDemo
          }
          else
          {
-            BaseClass::GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_FIND_TARGET);
+            BaseClass::GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
+            //LOG_ALWAYS("Target Killed");
          }
       }
    }
