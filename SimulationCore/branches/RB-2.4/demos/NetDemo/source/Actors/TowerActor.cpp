@@ -202,7 +202,10 @@ namespace NetDemo
          {
             mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
 
-            mWeapon->SetTriggerHeld(false);
+            if (mWeapon.valid())
+            {
+               mWeapon->SetTriggerHeld(false);
+            }
          }
       }
    }
@@ -335,7 +338,10 @@ namespace NetDemo
       }
 
 
-      mWeapon->SetTriggerHeld(false);
+      if (mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(false);
+      }
    }
 
    //////////////////////////////////////////////////////////////////////
