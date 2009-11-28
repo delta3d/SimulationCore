@@ -43,6 +43,7 @@
 #include "GUI/ButtonHighlight.h"
 #include "GUI/CustomCeguiWidgets.h"
 #include "GUI/HUDScreen.h"
+#include "GUI/MainMenuScreen.h"
 #include "GUI/ReadyRoomScreen.h"
 #include "GUI/ScoreLabelManager.h"
 #include "NetDemoMessages.h"
@@ -115,12 +116,15 @@ namespace NetDemo
       InitializeCEGUI("CEGUI/schemes/NetDemo.scheme");
       CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
 
+      // Initialize the special effects layers.
+      InitializeEffectsOverlays();
+
       // Get the Game Manager since some screens may need it.
       dtGame::GameManager& gm = *GetGameManager();
 
       // MAIN MENU
-      mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
-      mScreenMainMenu->Setup( mMainWindow.get() );
+      mScreenMainMenu = new NetDemo::GUI::MainMenuScreen();
+      mScreenMainMenu->Setup(*mMainWindow, *mEffectsOverlay);
       RegisterScreenWithState(*mScreenMainMenu, NetDemoState::STATE_MENU);
       mScreenMainMenu->OnEnter();//->SetVisible(true);
 
@@ -173,9 +177,6 @@ namespace NetDemo
       // Bind all buttons added to the menu system.
       BindButtons( *mMainWindow->GetCEGUIWindow() );
 
-      // Initialize the special effects layers.
-      InitializeEffectsOverlays();
-
       // Setup the Score Label Manager.
       mScoreLabelManager = new NetDemo::GUI::ScoreLabelManager;
       mScoreLabelManager->SetGuiLayer(*mEffectsOverlay);
@@ -221,6 +222,18 @@ namespace NetDemo
       else if(messageType == NetDemo::MessageType::ENTITY_ACTION)
       {
          ProcessEntityActionMessage(message);
+      }
+      else if(messageType == dtGame::MessageType::INFO_MAP_LOADED)
+      {
+         // Get the reference to the player.
+         dtGame::GameActorProxy* proxy = NULL;
+         GetGameManager()->FindActorByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxy);
+         if(proxy != NULL)
+         {
+            PlayerStatusActor* player = NULL;
+            proxy->GetActor(player);
+            mPlayer = player;
+         }
       }
    }
 
@@ -320,6 +333,11 @@ namespace NetDemo
       {
          mScoreLabelManager->AddScoreLabel(actionMessage.GetLocation(),
             actionMessage.GetPoints(), 2.0f);
+
+         if(mPlayer.valid())
+         {
+            mScreenHUD->UpdatePlayerInfo(*mPlayer);
+         }
       }
    }
 
