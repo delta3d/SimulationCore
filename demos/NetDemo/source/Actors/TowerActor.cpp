@@ -22,6 +22,7 @@
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
+#include <dtCore/shaderprogram.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 #include <dtCore/keyboard.h>
@@ -30,6 +31,7 @@
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 //#include <dtUtil/nodeprintout.h>
@@ -129,6 +131,13 @@ namespace NetDemo
          // Setup the tower's weapon.
          InitWeapon();
       }
+
+      // Attach a special shader.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("Eye360");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      GetOSGNode()->accept(*visitor);
 
       BaseClass::OnEnteredWorld();
    }
