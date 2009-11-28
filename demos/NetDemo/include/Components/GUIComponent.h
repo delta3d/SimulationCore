@@ -182,6 +182,7 @@ namespace NetDemo
          StateScreenMap mStateScreenMap;
 
          // Screens
+         dtCore::RefPtr<osg::Node> mBackground;
          dtCore::RefPtr<NetDemo::GUI::MainMenuScreen> mScreenMainMenu;
          dtCore::RefPtr<SimpleScreen> mScreenLobby;
          dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
