@@ -20,6 +20,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtCore/base.h>
+#include <dtCore/refptr.h>
 #include <SimCore/Export.h>
 #include <SimCore/GUI/AnimationController.h>
 
@@ -33,6 +34,7 @@ namespace SimCore
    namespace Components
    {
       class HUDElement;
+      class HUDGroup;
    }
 }
 
@@ -180,6 +182,18 @@ namespace SimCore
              * To be called when the screen is being updated by a game state.
              */
             void OnUpdate(float timeDelta);
+
+            /**
+             * Convenience method for setting all animation controls to their
+             * start targets.
+             */
+            void SetAnimControlsToStart();
+            
+            /**
+             * Convenience method for setting all animation controls to their
+             * end targets.
+             */
+            void SetAnimControlsToEnd();
 
          protected:
             virtual ~Screen();

@@ -28,6 +28,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <osg/NodeVisitor>
+#include <dtCore/refptr.h>
 #include <SimCore/Export.h>
 
 

@@ -26,10 +26,12 @@
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>
+#include <dtCore/shaderprogram.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/scriptmodule.h>
+#include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/MessageType.h>
@@ -48,6 +50,7 @@
 #include "GUI/ScoreLabelManager.h"
 #include "NetDemoMessages.h"
 #include "NetDemoMessageTypes.h"
+#include "NetDemoUtils.h"
 #include "States.h"
 
 // DEBUG:
@@ -181,6 +184,17 @@ namespace NetDemo
       mScoreLabelManager = new NetDemo::GUI::ScoreLabelManager;
       mScoreLabelManager->SetGuiLayer(*mEffectsOverlay);
       mScoreLabelManager->SetCamera(*gm.GetApplication().GetCamera());
+
+      // Setup the main background for most menus.
+      mBackground = LoadNodeFile("StaticMeshes/NetDemo/UI/MainBackground.ive");
+      mEffectsOverlay->addChild(mBackground.get());
+
+      // Attach a special shader.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("UFOBeam");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      mBackground->accept(*visitor);
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -396,6 +410,9 @@ namespace NetDemo
       {
          mScoreLabelManager->SetEnabled(true);
       }
+
+      // Enable or disble the background based on the current state.
+      mBackground->setNodeMask(runningState ? 0x0 : 0xFFFFFFFF);
 
       // DEBUG:
       //std::cout << "\n\tNew: " << stateChange.GetNewState().GetName()
