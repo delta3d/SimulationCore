@@ -17,6 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Components/BaseHUDElements.h>
 
+#include "Actors/PlayerStatusActor.h"
 #include "Components/GameLogicComponent.h"
 #include "GUI/HUDScreen.h"
 
@@ -40,6 +41,7 @@ namespace NetDemo
       HUDScreen::HUDScreen()
          : BaseClass("HUDScreen","CEGUI/layouts/NetDemo/HUD.layout")
          , mDamageMeter_Fort(NULL)
+         , mScore(NULL)
       {
       }
 
@@ -66,7 +68,8 @@ namespace NetDemo
 
          CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 
-         mDamageMeter_Fort = static_cast<CEGUI::Window*>(wm.getWindow("HUD_DamageMeter_Fort"));
+         mDamageMeter_Fort = wm.getWindow("HUD_DamageMeter_Fort");
+         mScore = wm.getWindow("HUD_Score");
 
          // Help Prompt
          CEGUI::Window* helpLayout = wm.loadWindowLayout("CEGUI/layouts/NetDemo/Help.layout");
@@ -79,6 +82,12 @@ namespace NetDemo
          // Update fort damage meter.
          mDamageMeter_Fort->setProperty("MeterLevel",
             CEGUI::PropertyHelper::floatToString(damageRatio));
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::UpdatePlayerInfo(PlayerStatusActor& player)
+      {
+         mScore->setText(CEGUI::PropertyHelper::intToString(player.GetScore()));
       }
 
       //////////////////////////////////////////////////////////////////////////

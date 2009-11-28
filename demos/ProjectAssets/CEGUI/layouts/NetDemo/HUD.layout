@@ -16,6 +16,20 @@
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
       </Window>
+
+      <!-- SCORE -->
+      <Window Name="HUD_Score" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.05,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="HorizontalTextFormat" Value="RightAligned"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+         <Property Name="Text" Value="0"/>
+      </Window>
         
 	</Window>
    
