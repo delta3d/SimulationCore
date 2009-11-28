@@ -39,6 +39,8 @@
 #include <States.h>
 #include <Actors/ServerGameStatusActor.h>
 #include <Actors/FortActor.h>
+#include <NetDemoMessages.h>
+#include <NetDemoMessageTypes.h>
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
@@ -120,11 +122,11 @@ namespace NetDemo
       {
          HandleStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(msg));
       }
-      else if (dtGame::MessageType::INFO_MAP_LOADED == msg.GetMessageType())
+      else if (dtGame::MessageType::INFO_MAP_LOADED == messageType)
       {
          HandleMapLoaded();
       }
-      else if (dtGame::MessageType::INFO_MAP_UNLOADED == msg.GetMessageType())
+      else if (dtGame::MessageType::INFO_MAP_UNLOADED == messageType)
       {
          mCurrentTerrainDrawActor = NULL;
          mServerGameStatusProxy = NULL;
@@ -134,13 +136,17 @@ namespace NetDemo
 
          DoStateTransition(&Transition::TRANSITION_FORWARD);
       }
-      else if (dtGame::MessageType::INFO_ACTOR_UPDATED == msg.GetMessageType())
+      else if (dtGame::MessageType::INFO_ACTOR_UPDATED == messageType)
       {
          HandleActorUpdateMessage(msg);
       }
-      else if (dtGame::MessageType::INFO_TIMER_ELAPSED == msg.GetMessageType())
+      else if (dtGame::MessageType::INFO_TIMER_ELAPSED == messageType)
       {
          HandleTimerElapsedMessage(msg);
+      }
+      else if (NetDemo::MessageType::ENTITY_ACTION == messageType)
+      {
+         HandleEntityActionMessage(msg);
       }
 
       // Something about Game State changing here
@@ -280,6 +286,20 @@ namespace NetDemo
          mCurrentTerrainDrawActor->GetGameActorProxy().NotifyFullActorUpdate();
       }
 
+   }
+
+   ////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::HandleEntityActionMessage(const dtGame::Message& msg)
+   {
+      const NetDemo::EntityActionMessage& actionMessage = static_cast<const NetDemo::EntityActionMessage&>(msg);
+
+      if(actionMessage.GetAction() == EntityAction::SCORE)
+      {
+         if(actionMessage.GetSource() == GetGameManager()->GetMachineInfo())
+         {
+            mPlayerStatus->UpdateScore(actionMessage.GetPoints());
+         }
+      }
    }
 
    ////////////////////////////////////////////////////////////////////

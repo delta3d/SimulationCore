@@ -118,6 +118,7 @@ namespace NetDemo
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
+         void HandleEntityActionMessage(const dtGame::Message& msg);
 
          void HandleUnloadingState();
          void HandleGameRunningState();
