@@ -232,8 +232,8 @@
          <parameter name="pulsePathTexture">
             <texture2D textureUnit="1">
                <source type="Image">Textures/NetDemo/Gradient.tga</source>
-               <wrap axis="S" mode="Clamp"/>
-               <wrap axis="T" mode="Clamp"/>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
             </texture2D>
          </parameter>
          <parameter name="pulseColor">
