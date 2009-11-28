@@ -42,6 +42,7 @@ namespace SimCore
 namespace NetDemo
 {
    class GameLogicComponent;
+   class PlayerStatusActor;
 
    namespace GUI
    {
@@ -62,6 +63,8 @@ namespace NetDemo
 
             void SetFortDamageRatio(float damageRatio);
 
+            void UpdatePlayerInfo(PlayerStatusActor& player);
+
             virtual bool Update(float simTimeDelta);
 
             // DEBUG:
@@ -78,6 +81,7 @@ namespace NetDemo
 
             // Special Widgets
             CEGUI::Window* mDamageMeter_Fort;
+            CEGUI::Window* mScore;
       };
    }
 }
