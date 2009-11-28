@@ -139,6 +139,10 @@ namespace NetDemo
          void SetIPAddress(const std::string& newValue);
          const std::string& GetIPAddress() const { return mIPAddress; }
 
+         void SetScore(int score);
+         int GetScore() const;
+         void UpdateScore(int scoreModifier);
+
       protected:
 
 
@@ -147,6 +151,7 @@ namespace NetDemo
 
          PlayerStatusEnum* mPlayerStatus;
          int mTeamNumber;
+         int mScore;
          bool mIsServer;
          bool mIsReady;
          std::string mTerrainPreference;
@@ -176,6 +181,7 @@ namespace NetDemo
          static const dtUtil::RefString PROP_VEHICLE_PREFERENCE;
          static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID;
          static const dtUtil::RefString PROP_IP_ADDRESS;
+         static const dtUtil::RefString PROP_SCORE;
 
          PlayerStatusActorProxy();
          virtual void BuildPropertyMap();
