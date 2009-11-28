@@ -33,6 +33,7 @@ namespace dtCore
 namespace dtGame
 {
    class GameActor;
+   class GameManager;
 }
 
 namespace NetDemo
@@ -78,6 +79,12 @@ namespace NetDemo
 
    /////////////////////////////////////////////////////////////////////////////
    // GENERAL USE FUNCTIONS
+   /////////////////////////////////////////////////////////////////////////////
+   osg::Node* LoadNodeFile(const std::string& projectRelativePath);
+
+   /////////////////////////////////////////////////////////////////////////////
+   dtGame::GameActor* FindOwnerForActor(dtGame::GameActor& actor);
+
    /////////////////////////////////////////////////////////////////////////////
    template<typename T_Actor >
    void GetActorFromGM(dtGame::GameManager& gm, const dtCore::UniqueId& actorId, T_Actor*& outActor)

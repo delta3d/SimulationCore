@@ -15,11 +15,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+#include <osgDB/ReadFile>
 #include <dtCore/transform.h>
+#include <dtDAL/project.h>
 #include <dtGame/gamemanager.h>
+#include <dtUtil/fileutils.h>
+#include <SimCore/Actors/WeaponActor.h>
 #include "NetDemoUtils.h"
 #include "NetDemoMessages.h"
 #include "NetDemoMessageTypes.h"
+#include "Actors/TowerActor.h"
 
 
 
@@ -62,8 +67,66 @@ namespace NetDemo
       sendingActor.GetTransform(xform);
       xform.GetTranslation(params.mLocation);
 
+      // Find the Player ID.
+      dtGame::GameActor* scoringActor = NULL;
+      GetActorFromGM(*sendingActor.GetGameActorProxy().GetGameManager(),
+         aboutActorId, scoringActor);
+      if(scoringActor != NULL)
+      {
+         scoringActor = FindOwnerForActor(*scoringActor);
+         params.mOwnerId = scoringActor->GetUniqueId();
+      }
+
       // Create, set and send the message with the specified parameters.
       SendActionMessage(sendingActor, params);
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   osg::Node* LoadNodeFile(const std::string& projectRelativePath)
+   {
+      dtDAL::ResourceDescriptor descriptor(projectRelativePath);
+
+      std::string resPath = dtDAL::Project::GetInstance().GetContext() + "/";
+      try
+      {
+         resPath += dtDAL::Project::GetInstance().GetResourcePath(descriptor);
+      }
+      catch (...)
+      {
+         LOG_ERROR("Could not locate file \"" + projectRelativePath + "\"");
+      }
+      
+      osg::Node* node = NULL;
+      if(dtUtil::FileUtils::GetInstance().FileExists(resPath))
+      {
+         node = osgDB::readNodeFile(resPath);
+      }
+
+      return node;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   dtGame::GameActor* FindOwnerForActor(dtGame::GameActor& actor)
+   {
+      dtGame::GameActor* owner = &actor;
+
+      SimCore::Actors::WeaponActor* weapon = dynamic_cast<SimCore::Actors::WeaponActor*>(&actor);
+      NetDemo::TowerActor* tower = dynamic_cast<NetDemo::TowerActor*>(&actor);
+      
+      if(weapon != NULL)
+      {
+         owner = dynamic_cast<dtGame::GameActor*>(weapon->GetOwner());
+
+         tower = dynamic_cast<NetDemo::TowerActor*>(owner);
+      }
+
+      if(tower != NULL)
+      {
+         // TODO:
+         // Get owner from the tower
+      }
+
+      return owner;
    }
 
 }
