@@ -1039,7 +1039,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
+                <string>CustomizableTowerShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -4879,7 +4879,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
+                <string>CustomizableTowerShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -5738,7 +5738,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
+                <string>CustomizableTowerShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>
@@ -6141,7 +6141,7 @@
             </property>
             <property>
                 <name>ShaderGroup</name>
-                <string>SimpleVehicleShaderGroup</string>
+                <string>CustomizableTowerShaderGroup</string>
             </property>
             <property>
                 <name>Last Known Translation</name>

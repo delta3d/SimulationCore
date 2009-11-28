@@ -45,9 +45,11 @@ void main(void)
    lightContrib += colorMask.www;
    lightContrib = clamp(lightContrib, 0.0, 1.0 + (10000.0 * NVG_Enable));
    
-   vec3 color = lightContrib * (colorMask.xxx * color1.xyz
-		+ colorMask.yyy * color2.xyz
-		+ (vec3(1.0,1.0,1.0) - colorMask.xxx - colorMask.yyy) * diffuseColor.xyz);
+   vec3 fadeFactor = max(diffuseColor.xyz, colorMask.www);
+   vec3 color = lightContrib * (colorMask.xxx * color1.xyz * fadeFactor
+		+ colorMask.yyy * color2.xyz * fadeFactor
+		+ (vec3(1.0,1.0,1.0) - colorMask.xxx - colorMask.yyy) * fadeFactor);
+//   lightContrib += colorMask.www;
    color = clamp(color, vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
    
 //   color = clamp(lightContrib * color, 0.0, 1.0);
