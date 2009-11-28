@@ -50,6 +50,7 @@ namespace NetDemo
       : BaseClass(proxy)
       , mPlayerStatus(&PlayerStatusEnum::UNKNOWN)
       , mTeamNumber(0)
+      , mScore(0)
       , mIsServer(false)
       , mIsReady(false)
       , mTerrainPreference("")
@@ -197,6 +198,24 @@ namespace NetDemo
       return mIsReady;
    }
 
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::SetScore(int score)
+   {
+      mScore = score;
+   }
+   
+   //////////////////////////////////////////////////////////////////////
+   int PlayerStatusActor::GetScore() const
+   {
+      return mScore;
+   }
+   
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::UpdateScore(int scoreModifier)
+   {
+      mScore += scoreModifier;
+   }
+
 
 
    //////////////////////////////////////////////////////////////////////
@@ -216,6 +235,7 @@ namespace NetDemo
    const dtUtil::RefString PlayerStatusActorProxy::PROP_VEHICLE_PREFERENCE("Vehicle Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_ATTACHED_VEHICLE_ID("Attached Vehicle ID");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IP_ADDRESS("IP Address");
+   const dtUtil::RefString PlayerStatusActorProxy::PROP_SCORE("Score");
 
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -231,8 +251,6 @@ namespace NetDemo
       // OTHER POSSIBLE PROPERTIES
 
       // COLOR
-      // SCORE
-
 
       static const dtUtil::RefString PROP_PLAYER_STATUS_DESC("Indicates the current status of this network player.");
       AddProperty(new dtDAL::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>(PROP_PLAYER_STATUS, PROP_PLAYER_STATUS,
@@ -282,6 +300,11 @@ namespace NetDemo
          dtDAL::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIPAddress),
          PROP_IP_ADDRESS_DESC, GROUP));
 
+      static const dtUtil::RefString PROP_SCORE_DESC("Total points accumulated from destroying enemies.");
+      AddProperty(new dtDAL::IntActorProperty(PROP_SCORE, PROP_SCORE,
+         dtDAL::IntActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetScore),
+         dtDAL::IntActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetScore),
+         PROP_SCORE_DESC, GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
