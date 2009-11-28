@@ -26,6 +26,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include "DemoExport.h"
+#include "Actors/PlayerStatusActor.h"
 #include "Components/GameLogicComponent.h"
 
 
@@ -74,6 +75,7 @@ namespace NetDemo
    namespace GUI
    {
       class HUDScreen;
+      class MainMenuScreen;
       class ReadyRoomScreen;
       class ScoreLabelManager;
 
@@ -168,6 +170,7 @@ namespace NetDemo
 
       private:
          // High Order Objects
+         dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
@@ -179,7 +182,7 @@ namespace NetDemo
          StateScreenMap mStateScreenMap;
 
          // Screens
-         dtCore::RefPtr<SimpleScreen> mScreenMainMenu;
+         dtCore::RefPtr<NetDemo::GUI::MainMenuScreen> mScreenMainMenu;
          dtCore::RefPtr<SimpleScreen> mScreenLobby;
          dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
          dtCore::RefPtr<SimpleScreen> mScreenLoading;
