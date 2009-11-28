@@ -70,6 +70,7 @@ set(LIB_SOURCES_4
    "${SOURCE_PATH}/GUI/ButtonHighlight.cpp"
    "${SOURCE_PATH}/GUI/CustomCeguiWidgets.cpp"
    "${SOURCE_PATH}/GUI/HUDScreen.cpp"
+   "${SOURCE_PATH}/GUI/MainMenuScreen.cpp"
    "${SOURCE_PATH}/GUI/ReadyRoomScreen.cpp"
    "${SOURCE_PATH}/GUI/ScoreLabelManager.cpp"
    )
