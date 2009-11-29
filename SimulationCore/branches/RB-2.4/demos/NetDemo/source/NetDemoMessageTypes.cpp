@@ -37,21 +37,25 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(MessageType);
 
-   const MessageType MessageType::OPTION_NEXT("Option Next", "NetDemo",
+   const MessageType MessageType::UI_OPTION_NEXT("UI Option Next", "NetDemo",
       "Generic way to select a next option whether it be in the context of UI or in-game weapon switching or etc.",
       NETDEMO_MESSAGE_TYPE_ID);
 
-   const MessageType MessageType::OPTION_PREV("Option Previous", "NetDemo",
+   const MessageType MessageType::UI_OPTION_PREV("UI Option Previous", "NetDemo",
       "Generic way to select a previous option whether it be in the context of UI or in-game weapon switching or etc.",
       NETDEMO_MESSAGE_TYPE_ID + 1);
 
-   const MessageType MessageType::OPTION_SELECT("Option Select", "NetDemo",
+   const MessageType MessageType::UI_OPTION_SELECT("UI Option Select", "NetDemo",
       "Generic way to commit to the currently selected option whether it be in the context of UI or in-game weapon switching or etc.",
       NETDEMO_MESSAGE_TYPE_ID + 2);
 
+   const MessageType MessageType::UI_HELP("UI Help", "NetDemo",
+      "Used to toggle the UI help window",
+      NETDEMO_MESSAGE_TYPE_ID + 3);
+
    const MessageType MessageType::ENTITY_ACTION("Entity Action", "NetDemo",
       "Generic message type for communicating most types of interactions of the network.",
-      NETDEMO_MESSAGE_TYPE_ID + 3);
+      NETDEMO_MESSAGE_TYPE_ID + 4);
   
 
 
@@ -71,9 +75,10 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
    {
-      factory.RegisterMessageType<dtGame::Message>(OPTION_NEXT);
-      factory.RegisterMessageType<dtGame::Message>(OPTION_PREV);
-      factory.RegisterMessageType<dtGame::Message>(OPTION_SELECT);
+      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_NEXT);
+      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_PREV);
+      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_SELECT);
+      factory.RegisterMessageType<dtGame::Message>(UI_HELP);
 
       factory.RegisterMessageType<NetDemo::EntityActionMessage>(ENTITY_ACTION);
    }
