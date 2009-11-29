@@ -41,8 +41,8 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       static const float FLASH_CYCLE_TIME_MAX = 0.75f;
       static const float FLASH_CYCLE_TIME_MIN = 0.25f;
-      static const osg::Vec4 FLASH_COLOR_DEFAULT(1.0f, 0.0f, 0.0f, 1.0f);
-      static const osg::Vec4 FLASH_COLOR_CRITICAL(1.0f, 1.0f, 0.0f, 1.0f);
+      static const osg::Vec4 FLASH_COLOR_DEFAULT(0.5f, 0.5f, 1.0f, 1.0f);
+      static const osg::Vec4 FLASH_COLOR_CRITICAL(1.0f, 0.0f, 0.0f, 1.0f);
 
       //////////////////////////////////////////////////////////////////////////
       HUDScreen::HUDScreen()
@@ -50,6 +50,7 @@ namespace NetDemo
          , mHelpEnabled(false)
          , mDamageMeterTimer(0.0f)
          , mDamageMeterLevel(0.0f)
+         , mFortPoints(NULL)
          , mDamageMeter_Fort(NULL)
          , mScore(NULL)
       {
@@ -80,6 +81,7 @@ namespace NetDemo
 
          CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 
+         mFortPoints = wm.getWindow("HUD_FortPoints");
          mDamageMeter_Fort = wm.getWindow("HUD_DamageMeter_Fort");
          mScore = wm.getWindow("HUD_Score");
 
@@ -101,6 +103,8 @@ namespace NetDemo
       void HUDScreen::SetFortDamageRatio(float damageRatio)
       {
          mDamageMeterLevel = damageRatio;
+
+         mFortPoints->setText(CEGUI::PropertyHelper::intToString(int(1000.0f * damageRatio)));
 
          // Update fort damage meter.
          mDamageMeter_Fort->setProperty("MeterLevel",

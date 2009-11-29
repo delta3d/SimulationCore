@@ -8,13 +8,43 @@
       <Property Name="BackgroundColours" Value="00000000"/>
       <Property Name="FrameEnabled" Value="False"/>
 
+      <!-- FORT IMAGE -->
+      <Window Name="HUD_Fort" Type="WindowsLook/StaticImage">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
+         <Property Name="Image" Value="set:Fort image:Fort"/>
+      </Window>
+
+      <!-- FORT POINTS -->
+      <Window Name="HUD_FortPoints" Type="WindowsLook/StaticText">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.13333,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.03,0},{0.02,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Bottom"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TextColours" Value="FFFFFF00"/>
+      </Window>
+
       <!-- DAMAGE METER -->
       <Window Name="HUD_DamageMeter_Fort" Type="NetDemo/Meter">
-         <Property Name="UnifiedSize" Value="{{1.0,0},{0.026667,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
-         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="UnifiedSize" Value="{{0.9,0},{0.026667,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.1,0},{-0.025,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
       </Window>
       
       <!-- SCORE BOX -->

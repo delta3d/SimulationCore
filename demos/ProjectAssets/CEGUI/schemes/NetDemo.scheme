@@ -4,6 +4,7 @@
    <!-- IMAGE SET - WINDOWS LOOK -->
    <Imageset Name="NetDemo" Filename="CEGUI/imagesets/NetDemo.imageset" />
    <Imageset Name="NetDemoTitles" Filename="CEGUI/imagesets/NetDemoTitles.imageset" />
+   <Imageset Name="Fort" Filename="CEGUI/imagesets/Fort.imageset" />
    <Imageset Name="GlowFrame" Filename="CEGUI/imagesets/GlowFrame.imageset" />
    <Imageset Name="Meter" Filename="CEGUI/imagesets/Meter.imageset" />
    <Imageset Name="UFOButton" Filename="CEGUI/imagesets/UFOButton.imageset" />
