@@ -38,8 +38,16 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       // CODE
       //////////////////////////////////////////////////////////////////////////
+      static const float FLASH_CYCLE_TIME_MAX = 0.75f;
+      static const float FLASH_CYCLE_TIME_MIN = 0.25f;
+      static const osg::Vec4 FLASH_COLOR_DEFAULT(1.0f, 0.0f, 0.0f, 1.0f);
+      static const osg::Vec4 FLASH_COLOR_CRITICAL(1.0f, 1.0f, 0.0f, 1.0f);
+
+      //////////////////////////////////////////////////////////////////////////
       HUDScreen::HUDScreen()
          : BaseClass("HUDScreen","CEGUI/layouts/NetDemo/HUD.layout")
+         , mDamageMeterTimer(0.0f)
+         , mDamageMeterLevel(0.0f)
          , mDamageMeter_Fort(NULL)
          , mScore(NULL)
       {
@@ -79,6 +87,8 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       void HUDScreen::SetFortDamageRatio(float damageRatio)
       {
+         mDamageMeterLevel = damageRatio;
+
          // Update fort damage meter.
          mDamageMeter_Fort->setProperty("MeterLevel",
             CEGUI::PropertyHelper::floatToString(damageRatio));
@@ -87,22 +97,50 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       void HUDScreen::UpdatePlayerInfo(PlayerStatusActor& player)
       {
-         mScore->setText(CEGUI::PropertyHelper::intToString(player.GetScore()));
+         CEGUI::String scoreText("Score: ");
+         scoreText += CEGUI::PropertyHelper::intToString(player.GetScore());
+         mScore->setText(scoreText);
       }
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDScreen::Update(float simTimeDelta)
       {
-         return BaseClass::Update(simTimeDelta);
+         if(BaseClass::Update(simTimeDelta))
+         {
+            if(mDamageMeterLevel <= 0.5f)
+            {
+               mDamageMeterTimer -= simTimeDelta;
+            }
 
-         // TODO:
+            if(mDamageMeterTimer <= 0.0f)
+            {
+               if(mDamageMeterColor == FLASH_COLOR_DEFAULT)
+               {
+                  mDamageMeterColor = FLASH_COLOR_CRITICAL;
+               }
+               else
+               {
+                  mDamageMeterColor = FLASH_COLOR_DEFAULT;
+               }
+
+               CEGUI::colour ceguiColor(mDamageMeterColor.x(), mDamageMeterColor.y(), mDamageMeterColor.z());
+               mDamageMeter_Fort->setProperty("MeterColor", CEGUI::PropertyHelper::colourToString(ceguiColor));
+               mDamageMeterTimer = FLASH_CYCLE_TIME_MAX * (mDamageMeterLevel * 2.0f);
+               if(mDamageMeterTimer < FLASH_CYCLE_TIME_MIN)
+               {
+                  mDamageMeterTimer = FLASH_CYCLE_TIME_MIN;
+               }
+            }
+         }
+
+         return true;
       }
 
       //////////////////////////////////////////////////////////////////////////
       // DEBUG:
       void HUDScreen::SetHelpTextLine(int index, const std::string& text, const osg::Vec4 color)
       {
-         if(index >= 0 && index < 10)
+         if(index >= 0 && index < 9)
          {
             CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 

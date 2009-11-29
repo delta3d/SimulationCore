@@ -266,6 +266,11 @@ namespace NetDemo
          mCurrentScreen->Update(timeDelta);
       }
 
+      if(mScreenHUD->IsEnabled())
+      {
+         mScreenHUD->Update(timeDelta);
+      }
+
       if(mScoreLabelManager->IsEnabled())
       {
          mScoreLabelManager->Update(timeDelta);
@@ -392,8 +397,8 @@ namespace NetDemo
       ShowMouseCursor(state != NetDemoState::STATE_GAME_RUNNING);
 
       bool runningState = mAppComp->IsRunningState(state);
-      mScreenHUD->SetVisible(runningState);
-      mScreenHUD->SetEnabled(runningState);
+      mScreenHUD->SetVisible(runningState && state != NetDemoState::STATE_GAME_READYROOM);
+      mScreenHUD->SetEnabled(runningState && state != NetDemoState::STATE_GAME_READYROOM);
 
       // Reference the previous and current screens so that they both can be updated.
       mPreviousScreen = GetScreenForState(stateChange.GetOldState());
