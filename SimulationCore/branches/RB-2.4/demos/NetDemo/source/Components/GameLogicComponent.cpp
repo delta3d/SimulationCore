@@ -33,14 +33,14 @@
 #include <SimCore/Messages.h>
 #include <SimCore/Utilities.h>
 
-#include <Components/GameLogicComponent.h>
-#include <ActorRegistry.h>
-#include <Actors/PlayerStatusActor.h>
-#include <States.h>
-#include <Actors/ServerGameStatusActor.h>
-#include <Actors/FortActor.h>
-#include <NetDemoMessages.h>
-#include <NetDemoMessageTypes.h>
+#include "ActorRegistry.h"
+#include "Actors/FortActor.h"
+#include "Actors/PlayerStatusActor.h"
+#include "Actors/ServerGameStatusActor.h"
+#include "Components/GameLogicComponent.h"
+#include "NetDemoMessages.h"
+#include "NetDemoMessageTypes.h"
+#include "States.h"
 
 // Temp - delete this unless you are using COuts.
 //#include <iostream>
@@ -58,6 +58,7 @@ namespace NetDemo
       , mIsServer(false)
       , mIsConnectedToNetwork(false)
       , mStartTheGameOnNextGameRunning(false)
+      , mVehicleType(&PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL)
    {
       // Register application-specific states.
       AddState(&NetDemoState::STATE_CONNECTING);
@@ -84,9 +85,20 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::SetVehicleType(PlayerStatusActor::VehicleTypeEnum& vehicleType)
+   {
+      mVehicleType = &vehicleType;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   const PlayerStatusActor::VehicleTypeEnum& GameLogicComponent::GetVehicleType() const
+   {
+      return *mVehicleType;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::OnAddedToGM()
    {
-
       //dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
       //const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
       //int serverPort = dtUtil::ToType<int>(configParams.GetConfigPropertyValue("dtNetGM.ServerPort", "7329"));
@@ -104,6 +116,13 @@ namespace NetDemo
          new dtNetGM::ClientNetworkComponent(gameName, gameVersion);
       GetGameManager()->AddComponent(*clientComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
+      // Get the vehicle type set in the config file.
+      std::string vehicleTypeValue = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","FOUR_WHEEL");
+      PlayerStatusActor::VehicleTypeEnum* vehicleType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleTypeValue);
+      if(vehicleType != NULL)
+      {
+         mVehicleType = vehicleType;
+      }
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -173,10 +192,7 @@ namespace NetDemo
       //mPlayerStatus->SetTerrainPreference("Terrains:Level_DriverDemo.ive");
       mPlayerStatus->SetTeamNumber(1);
       mPlayerStatus->SetPlayerStatus(PlayerStatusActor::PlayerStatusEnum::IN_LOBBY);
-      std::string vehicleType = GetGameManager()->GetConfiguration().GetConfigPropertyValue("NetDemo.DefaultPlayMode","HOVER");
-      PlayerStatusActor::VehicleTypeEnum *enumType = PlayerStatusActor::VehicleTypeEnum::GetValueForName(vehicleType);
-      if (enumType != NULL)
-         mPlayerStatus->SetVehiclePreference(*enumType);
+      mPlayerStatus->SetVehiclePreference(*mVehicleType);
 
       GetGameManager()->AddActor(mPlayerStatus->GetGameActorProxy(), false, true);
 

@@ -103,6 +103,7 @@ namespace NetDemo
       , mCurrentHoveredWidget(NULL)
       , mInputServerPort(NULL)
       , mInputServerIP(NULL)
+      , mListVehicleType(NULL)
       , mCurrentButtonIndex(0)
    {
    }
@@ -137,6 +138,10 @@ namespace NetDemo
       RegisterScreenWithState(*mScreenLobby, NetDemoState::STATE_LOBBY);
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
+      mListVehicleType = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_VehicleType"));
+      mListVehicleType->subscribeEvent(CEGUI::Window::EventMouseLeaves,
+         CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));
+
       // Default the server IP to what's in the config file.
       dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
       const std::string serverIP = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
@@ -539,6 +544,36 @@ namespace NetDemo
          SetHoverEffectEnabled(false);
          mCurrentHoveredWidget = NULL;
       }*/
+
+      // Let CEGUI know the button has been handled.
+      return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnVehicleTypeSelected(const CEGUI::EventArgs& args)
+   {
+      if(mListVehicleType->getSelectedCount() > 0)
+      {
+         CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
+         if(listItem != NULL)
+         {
+            std::string selectedValue(listItem->getText().c_str());
+            PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+            if(selectedValue == "Truck")
+            {
+               vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
+            }
+            else if(selectedValue == "Hover Tank")
+            {
+               vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
+            }
+
+            if(vehicleType != NULL)
+            {
+               mAppComp->SetVehicleType(*vehicleType);
+            }
+         }
+      }
 
       // Let CEGUI know the button has been handled.
       return true;
