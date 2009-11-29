@@ -29,6 +29,8 @@
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/networkbridge.h>
 #include <dtNetGM/machineinfomessage.h>
+#include <dtNetGM/serverconnectionlistener.h>
+#include <dtUtil/macros.h>
 
 namespace NetDemo
 {
@@ -70,6 +72,17 @@ namespace NetDemo
             ServerNetworkComponent::ProcessNetClientRequestConnection(msg);
          }
       }
+
+      // This disconnect won't work on windows because it accesses a static method in GNE, but GNE is
+      // static on windows.
+#ifndef DELTA_WIN32
+      ////////////////////////////////////////////////////////////////////////////////
+      void Disconnect()
+      {
+         NetworkComponent::Disconnect();
+         dtNetGM::ServerConnectionListener::closeAllListeners();
+      }
+#endif
 
    };
 }
