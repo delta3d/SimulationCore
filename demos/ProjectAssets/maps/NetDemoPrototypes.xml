@@ -5652,7 +5652,7 @@
                 <boolean>false</boolean>
             </property>
         </actor>
-        <actor>
+        <!--actor>
             <type>NetDemo.Tower Actor</type>
             <id>c9a596e6-1242-4a28-b1b3-edc862132777</id>
             <name>Tower _03</name>
@@ -6054,8 +6054,8 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
-        </actor>
-        <actor>
+        </actor-->
+        <!--actor>
             <type>NetDemo.Tower Actor</type>
             <id>df159da2-eb81-485c-8eef-a1865d03124c</id>
             <name>Tower _04</name>
@@ -6457,7 +6457,7 @@
                 <name>Perform_Above_Ground_Safety_Check</name>
                 <boolean>false</boolean>
             </property>
-        </actor>
+        </actor-->
     </actors>
     <groups></groups>
     <presetCameras></presetCameras>
