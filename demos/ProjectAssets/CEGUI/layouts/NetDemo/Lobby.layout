@@ -7,6 +7,29 @@
       <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
       <!--Property Name="Image" Value="set:BackgroundImage image:BackgroundImage"/-->
 
+      <!-- TITLE -->
+      <Window Name="Lobby_Title" Type="WindowsLook/StaticImage">
+         <Property Name="UnifiedSize" Value="{{0.5,0},{0.1,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.05,0},{0.1,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackgroundEnabled" Value="False"/>
+         <Property Name="FrameEnabled" Value="False"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="Image" Value="set:NetDemoTitles image:CONNECT"/>
+      </Window>
+
+      <!-- FRAME -->
+      <Window Name="Lobby_Frame" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.4,0},{0.4,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrederChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Centre"/>
+         <Property Name="VerticalAlignment" Value="Centre"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
+
       <!-- INPUT - SERVER PORT -->
       <Window Name="Lobby_Input_ServerPort" Type="WindowsLook/Editbox">
          <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
@@ -31,11 +54,13 @@
 
       <!-- BUTTON - CONNECT -->
       <Window Name="Lobby_Button_Connect" Type="WindowsLook/Button">
-         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.15,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.08,0},{-0.4,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
          <Property Name="VerticalAlignment" Value="Bottom"/>
-         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TabIndex" Value="0"/>
          <Property Name="Text" Value="Connect"/>
          <Property Name="ButtonType" Value="CONNECT"/>
          <Property Name="Action" Value="TRANSITION_FORWARD"/>
@@ -43,11 +68,13 @@
 
       <!-- BUTTON - BACK -->
       <Window Name="Lobby_Button_Back" Type="WindowsLook/Button">
-         <Property Name="UnifiedSize" Value="{{0.10416667,0},{0.053333,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.0625,0},{-0.096667,0}}"/>
+         <Property Name="UnifiedSize" Value="{{0.15,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{-0.1,0},{-0.25,0}}"/>
          <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Right"/>
          <Property Name="VerticalAlignment" Value="Bottom"/>
-         <Property Name="Font" Value="Arial-Bold-16"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
+         <Property Name="TabIndex" Value="1"/>
          <Property Name="Text" Value="Back"/>
          <Property Name="Action" Value="TRANSITION_BACK"/>
       </Window>
