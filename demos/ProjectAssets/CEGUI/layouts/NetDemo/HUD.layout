@@ -7,6 +7,7 @@
       <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
       <Property Name="BackgroundColours" Value="00000000"/>
       <Property Name="FrameEnabled" Value="False"/>
+      <Property Name="MousePassThroughEnabled" Value="True"/>
 
       <!-- FORT IMAGE -->
       <Window Name="HUD_Fort" Type="WindowsLook/StaticImage">

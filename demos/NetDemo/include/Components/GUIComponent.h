@@ -38,6 +38,7 @@ namespace CEGUI
 {
    class Editbox;
    class EventArgs;
+   class ItemListbox;
    class PushButton;
    class Window;
 }
@@ -149,6 +150,7 @@ namespace NetDemo
          bool OnButtonClicked(const CEGUI::EventArgs& args);
          bool OnButtonFocusGain(const CEGUI::EventArgs& args);
          bool OnButtonFocusLost(const CEGUI::EventArgs& args);
+         bool OnVehicleTypeSelected(const CEGUI::EventArgs& args);
 
          void SetButtonFocused(const CEGUI::Window* button);
 
@@ -206,6 +208,7 @@ namespace NetDemo
          const CEGUI::Window* mCurrentHoveredWidget;
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
+         CEGUI::ItemListbox* mListVehicleType;
 
          // Button array - for current screen.
          int mCurrentButtonIndex;

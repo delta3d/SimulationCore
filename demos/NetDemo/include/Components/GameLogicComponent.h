@@ -31,6 +31,8 @@
 
 #include <dtNetGM/networkcomponent.h>
 
+#include <Actors/PlayerStatusActor.h>
+
 namespace dtUtil
 {
    class Log;
@@ -54,7 +56,6 @@ namespace SimCore
 
 namespace NetDemo
 {
-   class PlayerStatusActor;
    class ServerGameStatusActorProxy;
    class FortActorProxy;
 
@@ -115,6 +116,9 @@ namespace NetDemo
          template<typename T_Actor>
          bool FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor);
 
+         void SetVehicleType(PlayerStatusActor::VehicleTypeEnum& vehicleType);
+         const PlayerStatusActor::VehicleTypeEnum& GetVehicleType() const;
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
@@ -163,6 +167,7 @@ namespace NetDemo
 
          bool mStartTheGameOnNextGameRunning;
 
+         PlayerStatusActor::VehicleTypeEnum* mVehicleType;
    };
 
 
