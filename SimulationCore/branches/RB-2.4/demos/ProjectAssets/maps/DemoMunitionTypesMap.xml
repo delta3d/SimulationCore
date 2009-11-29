@@ -84,8 +84,8 @@
       <property>
         <name>Fire Effect</name>
         <resourceType>Particles</resourceType>
-        <resourceDisplayName>Particles::tank_flash.osg</resourceDisplayName>
-        <resource>Particles::tank_flash.osg</resource>
+        <resourceDisplayName></resourceDisplayName>
+        <resource></resource>
       </property>
       <property>
         <name>Fire Sound</name>
@@ -248,8 +248,8 @@
       <property>
         <name>Fire Effect</name>
         <resourceType>Particles</resourceType>
-        <resourceDisplayName>Particles::weapon_flash.osg</resourceDisplayName>
-        <resource>Particles::weapon_flash.osg</resource>
+        <resourceDisplayName></resourceDisplayName>
+        <resource></resource>
       </property>
       <property>
         <name>Fire Sound</name>
@@ -418,8 +418,8 @@
       <property>
         <name>Fire Effect</name>
         <resourceType>Particles</resourceType>
-        <resourceDisplayName>Particles:weapon_gun_flash.osg</resourceDisplayName>
-        <resource>Particles:weapon_gun_flash.osg</resource>
+        <resourceDisplayName></resourceDisplayName>
+        <resource></resource>
       </property>
       <property>
         <name>Fire Sound</name>
