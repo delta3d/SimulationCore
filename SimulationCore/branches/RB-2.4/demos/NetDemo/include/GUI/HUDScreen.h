@@ -75,6 +75,9 @@ namespace NetDemo
             virtual ~HUDScreen();
 
          private:
+            float mDamageMeterTimer;
+            float mDamageMeterLevel;
+            osg::Vec4 mDamageMeterColor;
             dtCore::RefPtr<GameLogicComponent> mLogicComp;
 
             // Animation Controllers
