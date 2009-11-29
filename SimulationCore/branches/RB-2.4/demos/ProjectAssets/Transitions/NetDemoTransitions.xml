@@ -96,7 +96,7 @@
    <Transition>
       <Event Type="TRANSITION_BACK"/>
       <FromState Type="STATE_GAME_RUNNING"/>
-      <ToState Type="STATE_GAME_OPTIONS"/>
+      <ToState Type="STATE_GAME_QUIT"/>
    </Transition>
    
    <!-- [STATE_GAME_OPTIONS] - OPTIONS (IN-GAME) -->

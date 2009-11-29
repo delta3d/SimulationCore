@@ -16,19 +16,34 @@
          <Property Name="VerticalAlignment" Value="Bottom"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
       </Window>
+      
+      <!-- SCORE BOX -->
+      <Window Name="HUD_ScoreBox" Type="NetDemo/GlowFrame">
+         <Property Name="UnifiedSize" Value="{{0.2,0},{0.08,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
+         <Property Name="ZOrderChangeEnabled" Value="False"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
+         <Property Name="VerticalAlignment" Value="Top"/>
+         <Property Name="BackColour" Value="CC000000"/>
+         <Property Name="FrameColour" Value="00000000"/>
+         <Property Name="GlowColour" Value="00000000"/>
+      </Window>
 
       <!-- SCORE -->
       <Window Name="HUD_Score" Type="WindowsLook/StaticText">
-         <Property Name="UnifiedSize" Value="{{0.2,0},{0.05,0}}"/>
-         <Property Name="UnifiedPosition" Value="{{0.0,0},{0.0,0}}"/>
-         <Property Name="HorizontalAlignment" Value="Right"/>
+         <Property Name="UnifiedSize" Value="{{0.5,0},{0.075,0}}"/>
+         <Property Name="UnifiedPosition" Value="{{0.03,0},{0.0,0}}"/>
+         <Property Name="HorizontalAlignment" Value="Left"/>
          <Property Name="VerticalAlignment" Value="Top"/>
          <Property Name="BackgroundEnabled" Value="False"/>
          <Property Name="FrameEnabled" Value="False"/>
          <Property Name="ZOrderChangeEnabled" Value="False"/>
-         <Property Name="HorizontalTextFormat" Value="RightAligned"/>
+         <Property Name="AlwaysOnTop" Value="True"/>
+         <Property Name="HorizontalTextFormat" Value="LeftAligned"/>
+         <Property Name="Font" Value="Arial-Bold-24"/>
          <Property Name="TextColours" Value="FFFFFF00"/>
-         <Property Name="Text" Value="0"/>
+         <Property Name="Text" Value="Score: 0"/>
       </Window>
         
 	</Window>
