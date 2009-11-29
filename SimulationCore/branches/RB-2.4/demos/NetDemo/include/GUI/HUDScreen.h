@@ -92,6 +92,7 @@ namespace NetDemo
             dtCore::RefPtr<SimCore::GUI::PositionController> mControlHelpPos;
 
             // Special Widgets
+            CEGUI::Window* mFortPoints;
             CEGUI::Window* mDamageMeter_Fort;
             CEGUI::Window* mScore;
             dtCore::RefPtr<SimCore::Components::HUDElement> mHelp;
