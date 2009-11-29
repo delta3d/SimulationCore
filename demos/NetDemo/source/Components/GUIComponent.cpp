@@ -186,7 +186,9 @@ namespace NetDemo
       mScoreLabelManager->SetCamera(*gm.GetApplication().GetCamera());
 
       // Setup the main background for most menus.
-      mBackground = LoadNodeFile("StaticMeshes/NetDemo/UI/MainBackground.ive");
+      mBackground = new osg::MatrixTransform;
+      mBackground->addChild(LoadNodeFile("StaticMeshes/NetDemo/UI/MainBackground.ive"));
+      mBackground->addChild(LoadNodeFile("Particles/stars.osg"));
       mEffectsOverlay->addChild(mBackground.get());
 
       // Attach a special shader.
