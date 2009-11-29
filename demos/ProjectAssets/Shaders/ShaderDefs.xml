@@ -216,10 +216,10 @@
             </texture2D>
          </parameter>
          <parameter name="color1">
-            <vec4 defaultValue="0.85 0.8 0.0 1.0"/>
+            <vec4 defaultValue="0.25 0.0 0.5 1.0"/>
          </parameter>
          <parameter name="color2">
-            <vec4 defaultValue="0.0 0.0 1.0 1.0"/>
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
          </parameter>
       </shader>
       <shader name="ColorPulseShader">
