@@ -218,17 +218,21 @@ namespace NetDemo
       {
          ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
       }
-      else if(messageType == NetDemo::MessageType::OPTION_NEXT)
+      else if(messageType == NetDemo::MessageType::UI_OPTION_NEXT)
       {
          OnOptionNext(false);
       }
-      else if(messageType == NetDemo::MessageType::OPTION_PREV)
+      else if(messageType == NetDemo::MessageType::UI_OPTION_PREV)
       {
          OnOptionNext(true);
       }
-      else if(messageType == NetDemo::MessageType::OPTION_SELECT)
+      else if(messageType == NetDemo::MessageType::UI_OPTION_SELECT)
       {
          OnOptionSelect();
+      }
+      else if(messageType == NetDemo::MessageType::UI_HELP)
+      {
+         mScreenHUD->ToggleHelp();
       }
       else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
          || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)

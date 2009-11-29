@@ -16,6 +16,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Components/BaseHUDElements.h>
+#include <SimCore/GUI/CeguiUtils.h>
 
 #include "Actors/PlayerStatusActor.h"
 #include "Components/GameLogicComponent.h"
@@ -46,6 +47,7 @@ namespace NetDemo
       //////////////////////////////////////////////////////////////////////////
       HUDScreen::HUDScreen()
          : BaseClass("HUDScreen","CEGUI/layouts/NetDemo/HUD.layout")
+         , mHelpEnabled(false)
          , mDamageMeterTimer(0.0f)
          , mDamageMeterLevel(0.0f)
          , mDamageMeter_Fort(NULL)
@@ -65,6 +67,8 @@ namespace NetDemo
 
          // TODO:
          // Reset other variables.
+         mHelpEnabled = false;
+         mControlHelpPos->SetToStart();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -80,8 +84,17 @@ namespace NetDemo
          mScore = wm.getWindow("HUD_Score");
 
          // Help Prompt
-         CEGUI::Window* helpLayout = wm.loadWindowLayout("CEGUI/layouts/NetDemo/Help.layout");
-         GetRoot()->GetCEGUIWindow()->addChildWindow(helpLayout);
+         CEGUI::Window* window = wm.loadWindowLayout("CEGUI/layouts/NetDemo/Help.layout");
+         mHelp = new SimCore::Components::HUDElement(*window);
+         GetRoot()->GetCEGUIWindow()->addChildWindow(window);
+         
+         mControlHelpPos = static_cast<SimCore::GUI::PositionController*>
+            (AddAnimationControl(SimCore::GUI::Screen::ANIM_TYPE_MOTION, *mHelp));
+         osg::Vec4 bounds = SimCore::GUI::CeguiUtils::GetNormalizedScreenBounds(*window);
+         bounds.y() = window->getPosition().d_y.d_scale;
+         osg::Vec2 startPos(-(bounds.x() + bounds.z()), bounds.y());
+         mControlHelpPos->SetStartTarget(startPos);
+         mControlHelpPos->SetToStart();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -134,6 +147,36 @@ namespace NetDemo
          }
 
          return true;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::SetHelpEnabled(bool enabled)
+      {
+         if(mHelpEnabled != enabled)
+         {
+            mHelpEnabled = enabled;
+
+            if(enabled)
+            {
+               mControlHelpPos->Execute(0.4f, 0.0f, false); // Slide In
+            }
+            else
+            {
+               mControlHelpPos->Execute(0.4f, 0.0f, true); // Slide Out
+            }
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDScreen::IsHelpEnabled() const
+      {
+         return mHelpEnabled;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDScreen::ToggleHelp()
+      {
+         SetHelpEnabled( ! mHelpEnabled);
       }
 
       //////////////////////////////////////////////////////////////////////////

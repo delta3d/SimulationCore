@@ -18,6 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+#include <SimCore/GUI/DefaultAnimationControllers.h>
 #include <SimCore/GUI/SimpleScreen.h>
 #include "DemoExport.h"
 
@@ -35,6 +36,7 @@ namespace SimCore
 {
    namespace Components
    {
+      class HUDElement;
       class HUDGroup;
    }
 }
@@ -67,6 +69,11 @@ namespace NetDemo
 
             virtual bool Update(float simTimeDelta);
 
+            void SetHelpEnabled(bool enabled);
+            bool IsHelpEnabled() const;
+
+            void ToggleHelp();
+
             // DEBUG:
             void SetHelpTextLine(int index, const std::string& text,
                const osg::Vec4 color = osg::Vec4(1.0,1.0,1.0,1.0));
@@ -75,16 +82,19 @@ namespace NetDemo
             virtual ~HUDScreen();
 
          private:
+            bool mHelpEnabled;
             float mDamageMeterTimer;
             float mDamageMeterLevel;
             osg::Vec4 mDamageMeterColor;
             dtCore::RefPtr<GameLogicComponent> mLogicComp;
 
             // Animation Controllers
+            dtCore::RefPtr<SimCore::GUI::PositionController> mControlHelpPos;
 
             // Special Widgets
             CEGUI::Window* mDamageMeter_Fort;
             CEGUI::Window* mScore;
+            dtCore::RefPtr<SimCore::Components::HUDElement> mHelp;
       };
    }
 }

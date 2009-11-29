@@ -397,21 +397,27 @@ namespace NetDemo
          case osgGA::GUIEventAdapter::KEY_Up:
          case osgGA::GUIEventAdapter::KEY_Left:
             {
-               SendSimpleMessage(NetDemo::MessageType::OPTION_PREV);
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_PREV);
             }
             break;
 
          case osgGA::GUIEventAdapter::KEY_Down:
          case osgGA::GUIEventAdapter::KEY_Right:
             {
-               SendSimpleMessage(NetDemo::MessageType::OPTION_NEXT);
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_NEXT);
             }
             break;
 
          //case osgGA::GUIEventAdapter::KEY_Space:
          case osgGA::GUIEventAdapter::KEY_Return:
             {
-               SendSimpleMessage(NetDemo::MessageType::OPTION_SELECT);
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_SELECT);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_F1:
+            {
+               SendSimpleMessage(NetDemo::MessageType::UI_HELP);
             }
             break;
 
