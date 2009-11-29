@@ -2974,11 +2974,11 @@
             </property>
             <property>
                 <name>Ammo Count</name>
-                <integer>432</integer>
+                <integer>-1</integer>
             </property>
             <property>
                 <name>Ammo Max</name>
-                <integer>432</integer>
+                <integer>-1</integer>
             </property>
             <property>
                 <name>Munition Type Name</name>
@@ -3367,11 +3367,11 @@
             </property>
             <property>
                 <name>Ammo Count</name>
-                <integer>1000</integer>
+                <integer>-1</integer>
             </property>
             <property>
                 <name>Ammo Max</name>
-                <integer>1000</integer>
+                <integer>-1</integer>
             </property>
             <property>
                 <name>Munition Type Name</name>

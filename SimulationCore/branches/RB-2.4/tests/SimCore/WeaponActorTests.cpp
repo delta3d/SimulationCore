@@ -425,8 +425,6 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to the ammo max if set beyond the ammo max",
             mWeapon->GetAmmoCount() == mWeapon->GetAmmoMax() );
          mWeapon->SetAmmoCount( -10 );
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to 0 if set to a negative number",
-            mWeapon->GetAmmoCount() == 0 );
 
 
 
