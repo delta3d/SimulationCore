@@ -124,6 +124,8 @@ namespace NetDemo
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
          void HandleEntityActionMessage(const dtGame::Message& msg);
 
+         void CreatePrototypes(const dtDAL::ActorType& type);
+
          void HandleUnloadingState();
          void HandleGameRunningState();
          void HandleMapLoaded();

@@ -183,7 +183,9 @@ namespace NetDemo
       //mPlayerStatus = static_cast<SimCore::Actors::PlayerActor*>(ap->GetActor());
       mPlayerStatus = static_cast<NetDemo::PlayerStatusActor*>(ap->GetActor());
       // make the camera a child
-      mPlayerStatus->AddChild(GetGameManager()->GetApplication().GetCamera());
+      dtCore::Camera* cam = GetGameManager()->GetApplication().GetCamera();
+      cam->Emancipate();
+      mPlayerStatus->AddChild(cam);
       mPlayerStatus->SetName("Player (Unknown)");
 
       // Hack stuff - move this to UI - user selected and all that.
@@ -480,6 +482,9 @@ namespace NetDemo
       //ClearPreviousGameStuff();
       mPlayerStatus = NULL;
       mCurrentTerrainDrawActor = NULL;
+      mServerGameStatusProxy = NULL;
+      mPlayerOwnedVehicle = NULL;
+      mServerCreatedFortActor = NULL;
 
       GetGameManager()->DeleteAllActors();
 
@@ -501,6 +506,27 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
+   void GameLogicComponent::CreatePrototypes(const dtDAL::ActorType& type)
+   {
+      std::vector<dtDAL::ActorProxy*> actors;
+      GetGameManager()->FindPrototypesByActorType(type, actors);
+      for (unsigned i = 0; i < actors.size(); ++i)
+      {
+         dtDAL::ActorProxy* curProto  = actors[i];
+         dtCore::RefPtr<dtGame::GameActorProxy> newActor;
+         GetGameManager()->CreateActorFromPrototype(curProto->GetId(), newActor);
+         if (newActor == NULL)
+         {
+            LOG_ERROR("Creating prototype \"" + curProto->GetName() + "\" with type \"" + type.GetFullName() + "\" failed for an unknown reason.");
+         }
+         else
+         {
+            GetGameManager()->AddActor(*newActor, false, true);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void GameLogicComponent::LoadNewTerrain()
    {
       if (mCurrentTerrainPrototypeName.empty())
@@ -513,6 +539,13 @@ namespace NetDemo
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());
 
+      // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
+      SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
+         "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
+      GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
+
+      CreatePrototypes(*NetDemo::NetDemoActorRegistry::TOWER_ACTOR_TYPE);
+      CreatePrototypes(*NetDemo::NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -582,11 +615,6 @@ namespace NetDemo
          ////// Server stuff
          if (mIsServer)
          {
-            // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
-            SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
-               "FortPrototype", mServerCreatedFortActor, "Check your additional maps in config.xml (compare to config_example.xml).");
-            GetGameManager()->AddActor(*mServerCreatedFortActor, false, true);
-
             // Start our waves up
             mServerGameStatusProxy->GetActorAsGameStatus().StartTheGame();
          }
