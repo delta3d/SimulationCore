@@ -54,6 +54,8 @@ namespace NetDemo
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(false);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
 
       // Create physics helper - almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.

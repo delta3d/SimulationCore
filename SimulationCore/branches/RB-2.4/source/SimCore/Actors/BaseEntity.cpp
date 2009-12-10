@@ -524,10 +524,10 @@ namespace SimCore
          , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
-         , mMaxRotationError(6.0f)
-         , mMaxRotationError2(36.0f)
-         , mMaxTranslationError(0.5f)
-         , mMaxTranslationError2(0.25f)
+         , mMaxRotationError(2.0f)
+         , mMaxRotationError2(4.0f)
+         , mMaxTranslationError(0.15f)
+         , mMaxTranslationError2(0.0225f)
          , mFireLightID(0)
          , mEngineSmokeOn(false)
          , mSmokePlumePresent(false)
@@ -1114,10 +1114,6 @@ namespace SimCore
       {
          SetLastKnownTranslation(pos);
          SetLastKnownRotation(rot);
-
-         //SetLastKnownVelocityVector(GetCurrentVelocity());
-         //SetLastKnownAngularVelocity(GetCurrentAngularVelocity());
-         //SetLastKnownAcceleration(GetCurrentAcceleration());
 
          // Linear Velocity & acceleration - push the current value to the Last Known
          if (mPublishLinearVelocity)

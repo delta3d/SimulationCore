@@ -152,6 +152,9 @@ namespace NetDemo
 
 
       private:
+         enum DR_GHOST_MODE { NONE = 1, GHOST_ON, ATTACH_TO_GHOST, HIDE_REAL, DETACH_FROM_VEHICLE };
+         DR_GHOST_MODE mDRGhostMode;
+
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;

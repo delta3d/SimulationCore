@@ -173,7 +173,11 @@ namespace SimCore
              * Computes and assigns the current velocity using a moving average.
              * @see SetVelocityAverageFrameCount
              */
-            void ComputeCurrentVelocity(float deltaTime);
+            virtual void ComputeCurrentVelocity(float deltaTime);
+
+            /// Accum Acceleration is computed each frame inside ComputeCurrentVel. Override that if you want to set this.
+            void SetAccumulatedAcceleration(const osg::Vec3 &newValue) { mAccumulatedAcceleration = newValue; }
+            osg::Vec3 GetAccumulatedAcceleration() const { return mAccumulatedAcceleration; }
 
             /**
              * The current velocity is computed using a moving average of the
@@ -256,6 +260,7 @@ namespace SimCore
 
             osg::Vec3 mLastPos;
             osg::Vec3 mAccumulatedLinearVelocity;
+            osg::Vec3 mAccumulatedAcceleration; 
             int mVelocityAverageFrameCount;
 
             ///////////////////////////////////////////////////
