@@ -63,6 +63,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////
    InputComponent::InputComponent(const std::string& name)
       : SimCore::Components::BaseInputComponent(name)
+      , mDRGhostMode(NONE)
       , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
       , mOriginalPublishTimesPerSecond(3.0f)
@@ -619,16 +620,18 @@ namespace NetDemo
       SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
-      // If it already exists, then kill it.
-      if (mDRGhostActorProxy.valid())
+      // basic error check.
+      if (!mVehicle.valid() || mPhysVehicle == NULL)
       {
          CleanUpDRGhost();
+         return;
       }
 
-      // Else, create it and put it in the world
-      else if (mVehicle.valid() && mPhysVehicle != NULL)
+      // state - NONE, go to GHOST_ON
+      if (mDRGhostMode == NONE)
       {
-         LOG_ALWAYS("TEST - Enabling Ghost Dead Reckoning behavior.");
+         // create ghost and add to world
+         LOG_ALWAYS("Enabling Ghost Dead Reckoning behavior.");
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
@@ -639,7 +642,50 @@ namespace NetDemo
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
 
+         mDRGhostMode = GHOST_ON;
       }
+
+      // state - GHOST_ON, go to ATTACH_TO_GHOST
+      else if (mDRGhostMode == GHOST_ON)
+      {
+         LOG_ALWAYS(" --- Attaching Camera to DR Ghost.");
+         if (mDRGhostActorProxy.valid())
+         {
+            SendAttachOrDetachMessage(mDRGhostActorProxy->GetGameActor().GetUniqueId(), "");
+         }
+
+         mDRGhostMode = ATTACH_TO_GHOST;
+      }
+
+      // state - ATTACH_TO_GHOST, go to HIDE_REAL
+      else if (mDRGhostMode == ATTACH_TO_GHOST)
+      {
+         LOG_ALWAYS(" --- Hiding Real Vehicle.");
+         if (mDRGhostActorProxy.valid())
+         {
+            mPhysVehicle->SetVisible(false);
+         }
+
+         mDRGhostMode = HIDE_REAL;
+      }
+
+      // state - HIDE_REAL go to DETACH_FROM_VEHICLE
+      else if (mDRGhostMode == HIDE_REAL)
+      {
+         LOG_ALWAYS(" --- Bye bye Ghost AND No attach to Real. Just sit still");
+         mPhysVehicle->SetVisible(true);
+         CleanUpDRGhost();
+         mDRGhostMode = DETACH_FROM_VEHICLE;
+      }
+
+      // state - DETACH_FROM_VEHICLE, go to NONE
+      else if (mDRGhostMode == DETACH_FROM_VEHICLE)
+      {
+         LOG_ALWAYS(" --- Removing DR and re-attaching to Real Vehicle.");
+         SendAttachOrDetachMessage(mPhysVehicle->GetUniqueId(), mViewPointList[mCurrentViewPointIndex]);
+         mDRGhostMode = NONE;
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -682,6 +728,7 @@ namespace NetDemo
          {
             mPhysVehicle->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
          }
+         mDRGhostMode = NONE;
       }
 
    }

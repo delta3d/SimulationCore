@@ -335,7 +335,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -742,7 +742,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -1149,7 +1149,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -1552,7 +1552,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -1959,7 +1959,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -2454,7 +2454,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -2861,7 +2861,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -3913,7 +3913,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -4433,7 +4433,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -4989,7 +4989,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>
@@ -5392,7 +5392,7 @@
             </property>
             <property>
                 <name>Dead Reckoning Algorithm</name>
-                <enumerated>Velocity Only</enumerated>
+                <enumerated>Velocity and Acceleration</enumerated>
             </property>
             <property>
                 <name>Force Affiliation</name>

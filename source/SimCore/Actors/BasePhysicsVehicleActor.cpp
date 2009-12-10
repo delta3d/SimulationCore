@@ -344,6 +344,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ComputeCurrentVelocity(float deltaTime)
       {
+         // Note - we used to grab the velocity from the physics engines, but there were sometimes 
+         // discontinuities reported by the various engines, so that was removed in favor of a simple
+         // differential of position. 
          float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
          dtCore::Transform xform;
          GetTransform(xform);
@@ -355,6 +358,21 @@ namespace SimCore
             osg::Vec3 instantVelocity = distanceMoved / deltaTime;
             // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
             mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
+
+            // Compute our acceleration as the instantaneous differential of the velocity
+            // Note, we don't 'blend' the acceleration because we are already blending the velocity above.
+            // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
+            // and make your own call to SetCurrentAcceleration().
+            osg::Vec3 changeInVelocity = mAccumulatedLinearVelocity - GetCurrentVelocity();
+            mAccumulatedAcceleration = changeInVelocity / deltaTime;
+            // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
+            // be published, the vehicle will go all over the place nutty. So, we zero it out. 
+            // This is not a good solution, but is workable because vehicles that really do have a lot of
+            // z acceleration are probably flying and by definition are not as close to other objects so the z accel
+            // is less visually apparent.
+            mAccumulatedAcceleration.z() = 0.0f; 
+            SetCurrentAcceleration(mAccumulatedAcceleration);
+
             SetCurrentVelocity(mAccumulatedLinearVelocity);
          }
          mLastPos = pos;
@@ -426,6 +444,28 @@ namespace SimCore
 
          }
 
+         // Curt - hack test - remove me - tests not using Acceleration as part of the publish.
+/*         if (forceUpdateResult && GetName() == "Propelled Vehicle")
+         {
+            //std::cout << "Vehicle [" << GetName().c_str() << "] has acceleration [" << GetCurrentAcceleration() << "]." << std::endl;
+
+            static bool testPublishAcceleration = true;
+            dtCore::Keyboard* keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
+            if(keyboard != NULL)
+            {
+               if (keyboard->GetKeyState('-'))
+               {
+                  testPublishAcceleration = !testPublishAcceleration;
+                  std::cout << "  HACK -- Test Publish Acceleration set to ["<< testPublishAcceleration << "]." << std::endl;
+               }
+               if (!testPublishAcceleration)
+               {
+                  mAccumulatedAcceleration = osg::Vec3(0.0f, 0.0f, 0.0f);
+                  SetCurrentAcceleration(mAccumulatedAcceleration);
+               }
+            }
+         }
+*/
          return forceUpdateResult;
       }
 

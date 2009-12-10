@@ -181,8 +181,8 @@ namespace SimCore
          }
 
          bool foundNode = false;
-         IGActor* igActor = dynamic_cast<IGActor*>(ga.GetActor());
-         if (igActor != NULL)
+         GameActor* gameActor = dynamic_cast<GameActor*>(ga.GetActor());
+         if (gameActor != NULL)
          {
             //we don't support named parts at his level.
             if (GetSceneParent() != NULL)
@@ -194,7 +194,15 @@ namespace SimCore
               Emancipate();
             }
 
-            foundNode = igActor->AddChild(this, attachPointNode);
+            IGActor* igActor = dynamic_cast<IGActor*>(ga.GetActor());
+            if (igActor != NULL)
+            {
+               foundNode = igActor->AddChild(this, attachPointNode);
+            }
+            else
+            {
+               gameActor->AddChild(this);
+            }
          }
 
          // Only set an offset if there is no attach node.
