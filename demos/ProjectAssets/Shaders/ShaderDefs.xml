@@ -67,7 +67,7 @@
             <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
          </parameter>
       </shader>
-      <shader name="BlueShader" default="yes">
+      <shader name="BlueShader" default="no">
          <source type="Vertex">Shaders/vertex_simple.vert</source>
 	 <source type="Fragment">Shaders/onecolor.frag</source>
          <parameter name="color">
@@ -280,6 +280,15 @@
          <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
          <source type="Fragment">Shaders/Base/shader_ghost.frag</source>
          <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+      <shader name="GhostParticleShader" default="no">
+         <source type="Vertex">Shaders/Base/particle_emissive.vert</source>
+	 <source type="Fragment">Shaders/Base/particle_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
