@@ -32,7 +32,7 @@ Group {
         textureUnit 0 {
           GL_TEXTURE_2D ON
           Texture2D {
-            file "../Textures/sun_glare_hard_glow.bmp"
+            file "../Textures/hard_dot.tga"
             wrap_s MIRROR
             wrap_t MIRROR
             wrap_r CLAMP
@@ -65,9 +65,9 @@ Group {
       particleTemplate {
         shape QUAD
         lifeTime 6
-        sizeRange 0.09 0.1
-        alphaRange 1 0.48
-        colorRange 0.22 0.4 1 1 0.25 0.47 1 1
+        sizeRange 0.12 0.1
+        alphaRange 1 0.66
+        colorRange 1 0 0 1 1 0 0 1
         position 0 0 0
         velocity 0 0 0
         angle 0 0 0
@@ -127,10 +127,10 @@ Group {
       resetTime 0
       useDefaultTemplate TRUE
       osgParticle::RandomRateCounter {
-        rateRange 60 60
+        rateRange 120 120
       }
       osgParticle::PointPlacer {
-        center 0 0 0
+        center 0 0 0.1
       }
       osgParticle::RadialShooter {
         thetaRange 0 0

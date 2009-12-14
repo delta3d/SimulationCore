@@ -159,7 +159,7 @@
                 <name>Translation</name>
                 <vec3>
                     <value1>0.000000</value1>
-                    <value2>2.000000</value2>
+                    <value2>0.000000</value2>
                     <value3>-0.000000</value3>
                 </vec3>
             </property>
