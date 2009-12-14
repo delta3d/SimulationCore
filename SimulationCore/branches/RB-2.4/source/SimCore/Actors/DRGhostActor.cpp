@@ -128,7 +128,9 @@ namespace SimCore
          dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
          if (mVelocityParentNode.valid() && envProxy != NULL)
          {
-            envProxy->GetGameActor().GetMatrixNode()->removeChild(mVelocityParentNode);
+            dtGame::IEnvGameActor *envActor;
+            envProxy->GetActor(envActor);
+            envActor->RemoveActor(*mVelocityParentNode);//GetMatrixNode()->removeChild(mVelocityParentNode);
          }
       }
 
@@ -138,6 +140,18 @@ namespace SimCore
          mSlavedEntity = newEntity;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void DRGhostActor::SetVelocityArrowMaxNumVelTrails(unsigned int newValue)
+      {
+         if (mVelocityParentNode.valid())
+         {
+            LOG_ERROR("You cannot set the number of velocity trails AFTER the ghost has been added with GM.AddActor().");
+         }
+         else
+         {
+            mVelocityArrowMaxNumVelTrails = newValue;
+         }
+      }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void DRGhostActor::OnEnteredWorld()
@@ -207,7 +221,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
       void DRGhostActor::SetupVelocityLine()
       {
-         mVelocityParentNode = new osg::Group();
+         mVelocityParentNode = new dtCore::Transformable();//osg::Group();
 
          // Create a velocity pointer.
          mVelocityArrowGeode = new osg::Geode();
@@ -236,11 +250,21 @@ namespace SimCore
 
          // We put all of our velocity arrows under a special node that is NOT a child 
          // of the slave OR the ghost. The parent is world relative and doesn't move.
-         mVelocityParentNode->addChild(mVelocityArrowGeode.get()); // GetMatrixNode()->addChild()
+         mVelocityParentNode->GetMatrixNode()->addChild(mVelocityArrowGeode.get()); // GetMatrixNode()->addChild()
          dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
          if (envProxy != NULL)
          {
-            envProxy->GetGameActor().GetMatrixNode()->addChild(mVelocityParentNode);
+            dtGame::IEnvGameActor *envActor;
+            envProxy->GetActor(envActor);
+            envActor->AddActor(*mVelocityParentNode);
+
+            dtCore::Transform xform(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+            mVelocityParentNode->SetTransform(xform);
+             
+         }
+         else 
+         {
+            LOG_ERROR("There is no environment actor - The DRGhost will not function correctly.");
          }
       }
 

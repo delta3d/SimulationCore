@@ -30,6 +30,7 @@
 #include <dtActors/gamemeshactor.h>
 #include <dtCore/observerptr.h>
 #include <dtCore/particlesystem.h>
+#include <dtCore/transformable.h>
 
 #include <osg/Geometry>
 #include <osg/Geode>
@@ -74,6 +75,14 @@ namespace SimCore
             void SetSlavedEntity(SimCore::Actors::BaseEntity *newEntity);
             SimCore::Actors::BaseEntity *GetSlavedEntity() { return mSlavedEntity.get(); }
 
+            /// The velocity scalar is used to magnify the velocity that is rendered to make it more or less visible. Default is 1.0f
+            void SetVelocityArrowDrawScalar(float newValue) { mVelocityArrowDrawScalar = newValue; }
+            float GetVelocityArrowDrawScalar() { return mVelocityArrowDrawScalar; }
+
+            /// The number of velocity trails that we are showing. You MUST set this before adding it to the GM.
+            void SetVelocityArrowMaxNumVelTrails(unsigned int newValue);
+            unsigned int GetVelocityArrowMaxNumVelTrails() { return mVelocityArrowMaxNumVelTrails; }
+
             void UpdateOurPosition();
 
             /// Default invokable. Used for messages about our slave.
@@ -95,7 +104,7 @@ namespace SimCore
             dtCore::RefPtr<osg::Geometry> mVelocityArrowGeom;
             dtCore::RefPtr<osg::Vec3Array> mVelocityArrowVerts;
             osg::Vec3 mVelocityArrowColor;
-            dtCore::RefPtr<osg::Group> mVelocityParentNode;
+            dtCore::RefPtr<dtCore::Transformable> mVelocityParentNode;
             unsigned int mVelocityArrowMaxNumVelTrails;
             int mVelocityArrowCurrentVelIndex;
             bool mVelocityArrowDrawOnNextFrame;
