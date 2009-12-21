@@ -543,6 +543,7 @@ namespace SimCore
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();
          g->addChild(mScaleMatrixNode.get());
+         mScaleMatrixNode->setName("mScaleMatrixNode");
 
          // temp turned off to test performance.
          SetCollisionDetection(false);
@@ -593,6 +594,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::OnEnteredWorld()
       {
+         GetOSGNode()->setName(GetName());
+
          if (!IsRemote())
          {
             //for now. Set the time for update sending to 10 seconds.
