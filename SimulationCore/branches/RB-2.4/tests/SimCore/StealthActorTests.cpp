@@ -124,18 +124,6 @@ class StealthActorTests : public CPPUNIT_NS::TestFixture
          CPPUNIT_ASSERT_MESSAGE("Attaching as third person should be false.",
             !mStealthActor->GetAttachAsThirdPerson());
 
-         CPPUNIT_ASSERT_MESSAGE("Default value should be 1.",
-            osg::equivalent(mStealthActor->GetMaxTranslationError(), 0.5f, 0.001f));
-
-         float newValue = 25.03;
-         mStealthActor->SetMaxTranslationError(newValue);
-
-         CPPUNIT_ASSERT(osg::equivalent(mStealthActor->GetMaxTranslationError(), newValue, 0.001f));
-
-         mStealthActor->SetMaxRotationError(newValue);
-
-         CPPUNIT_ASSERT(osg::equivalent(mStealthActor->GetMaxRotationError(), newValue, 0.001f));
-
          dtGame::Invokable *invoke = mStealthActor->GetGameActorProxy().GetInvokable("AttachToActor");
          CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
 

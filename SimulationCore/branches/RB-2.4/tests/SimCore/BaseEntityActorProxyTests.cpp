@@ -645,6 +645,18 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 
+   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The default is incorrect", entity->GetMaxTranslationError(), 0.15, 0.001f);
+
+   float newValue = 25.03;
+   entity->SetMaxTranslationError(newValue);
+
+   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The Default is wrong", entity->GetMaxRotationError(), 2.0f, 0.01f);
+
+   entity->SetMaxRotationError(newValue);
+
+   CPPUNIT_ASSERT_DOUBLES_EQUAL(entity->GetMaxRotationError(), newValue, 0.01f);
+
+
    mGM->DeleteActor(eap);
    dtCore::System::GetInstance().Step();
 
@@ -762,7 +774,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());
 
-   osg::Vec3 smallMovement(0.1f, 0.1f, 0.1f);
+   osg::Vec3 smallMovement(0.02f, 0.02f, 0.02f);
 
    dtCore::Transform xform;
    osg::Vec3 pos;
