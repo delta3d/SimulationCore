@@ -626,7 +626,8 @@ namespace SimCore
                   (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
                if (munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
                {
-                  munitionsComp->Register(*this, true, GetMaxDamageAmount());
+                  // Changed to the second parameter to false because the entity does the update itself now.
+                  munitionsComp->Register(*this, false, GetMaxDamageAmount());
                }
             }
 

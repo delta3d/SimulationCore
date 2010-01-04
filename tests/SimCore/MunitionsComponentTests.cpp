@@ -100,7 +100,6 @@ namespace SimCore
             virtual ~TestMunitionsComponent();
 
          private:
-
             // Total actor update messages processed
             typedef std::map<dtCore::UniqueId, unsigned> MessageCountMap;
             MessageCountMap mMessageCounts;
@@ -153,6 +152,7 @@ namespace SimCore
          CPPUNIT_TEST(TestDamageHelperProperties);
          CPPUNIT_TEST(TestMunitionsComponentProperties);
          CPPUNIT_TEST(TestDefaultMunition);
+         CPPUNIT_TEST(TestMessagingDisabled);
          CPPUNIT_TEST(TestMessageProcessing);
          CPPUNIT_TEST(TestMunitionConfigLoading);
          CPPUNIT_TEST(TestMunitionEffectsInfoActorProperties);
@@ -192,6 +192,7 @@ namespace SimCore
             void TestDamageHelperProperties();
             void TestMunitionsComponentProperties();
             void TestDefaultMunition();
+            void TestMessagingDisabled();
             void TestMessageProcessing();
             void TestMunitionConfigLoading();
             void TestMunitionEffectsInfoActorProperties();
@@ -205,6 +206,8 @@ namespace SimCore
 
          protected:
          private:
+            static const std::string VEHICLE_MUNITION_TABLE_NAME;
+            dtCore::RefPtr<SimCore::Actors::BaseEntity> SetupTestEntityAndDamageHelper(bool autoSendMessages);
 
             dtCore::RefPtr<dtGame::GameManager> mGM;
             dtCore::RefPtr<TestMunitionsComponent> mDamageComp;
@@ -212,6 +215,8 @@ namespace SimCore
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(MunitionsComponentTests);
+
+      const std::string MunitionsComponentTests::VEHICLE_MUNITION_TABLE_NAME("UnitTestsVehicle");
 
 
 
@@ -1463,8 +1468,7 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetMunitionEffectsInfo( *emptyMunition, fakeMunitionName ) == NULL );
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponentTests::TestMessageProcessing()
+      dtCore::RefPtr<SimCore::Actors::BaseEntity> MunitionsComponentTests::SetupTestEntityAndDamageHelper(bool autoSendMessages)
       {
          // Chew up any messages that could cause problems.
          // In this case, an INFO_RESTART message was causing trouble.
@@ -1484,11 +1488,12 @@ namespace SimCore
          mDamageComp->LoadMunitionDamageTables("Configs:UnitTestsConfig.xml");
 
          // -- Register the entity
-         std::string munitionTableName("UnitTestsVehicle");
-         entity->SetMunitionDamageTableName(munitionTableName);
+         entity->SetMunitionDamageTableName(VEHICLE_MUNITION_TABLE_NAME);
+         // unregister for tick local on this entity because it will auto send updates on damage state changes, which will confuse the test.
+         entity->GetGameActorProxy().UnregisterForMessages(dtGame::MessageType::TICK_LOCAL, dtGame::GameActorProxy::TICK_LOCAL_INVOKABLE);
          // NOTE: The component will try to load the munition table upon registration
          // and also link it to the helper created for the registered entity.
-         mDamageComp->Register( *entity );
+         mDamageComp->Register( *entity, autoSendMessages );
          dtCore::RefPtr<TestDamageHelper> helper = dynamic_cast<TestDamageHelper*>
             ( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) );
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have created a valid DamageHelper",
@@ -1496,10 +1501,41 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have linked a valid MunitionDamageTable to the new helper",
             helper->GetMunitionDamageTable() != NULL );
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have linked a valid MunitionDamageTable to the new helper",
-            helper->GetMunitionDamageTable()->GetName() == munitionTableName );
+            helper->GetMunitionDamageTable()->GetName() == VEHICLE_MUNITION_TABLE_NAME );
          CPPUNIT_ASSERT_MESSAGE( "Damage helper should have 1.0 damage by default.",
             helper->GetMaxDamageAmount() == 1.0f );
 
+         return entity;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponentTests::TestMessagingDisabled()
+      {
+         dtCore::RefPtr<SimCore::Actors::BaseEntity> entity = SetupTestEntityAndDamageHelper(false);
+         dtCore::RefPtr<TestDamageHelper> helper = dynamic_cast<TestDamageHelper*>
+            ( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) );
+
+         mDamageComp->ResetTotalProcessedMessages();
+
+         // Test the convenience method for setting the entities damage directly
+         dtCore::System::GetInstance().Step();
+         mDamageComp->ResetTotalProcessedMessages();
+         mDamageComp->SetDamage( *entity, DamageType::DAMAGE_KILL );
+         CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have set entity damage to NONE.",
+            helper->GetDamageState() == DamageType::DAMAGE_KILL );
+         dtCore::System::GetInstance().Step();
+         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should NOT have sent a network message when changing damage with its own SetDamage function.",
+            int(mDamageComp->GetTotalProcessedMessages()), int(0) );
+         CPPUNIT_ASSERT( entity->IsMobilityDisabled() );
+         CPPUNIT_ASSERT( entity->IsFirepowerDisabled() );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponentTests::TestMessageProcessing()
+      {
+         dtCore::RefPtr<SimCore::Actors::BaseEntity> entity = SetupTestEntityAndDamageHelper(true);
+         dtCore::RefPtr<TestDamageHelper> helper = dynamic_cast<TestDamageHelper*>
+            ( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) );
 
          // --- Capture the loaded tables
          dtCore::RefPtr<MunitionDamageTable> table = helper->GetMunitionDamageTable();
@@ -1700,8 +1736,8 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have set entity damage to NONE.",
             helper->GetDamageState() == DamageType::DAMAGE_NONE );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should have sent a network message when changing damage with its own SetDamage function.",
-            (int) mDamageComp->GetTotalProcessedMessages(), (int) 1 );
+         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should have sent exactly one network message when changing damage with its own SetDamage function.",
+            int(mDamageComp->GetTotalProcessedMessages()), int(1) );
          CPPUNIT_ASSERT( ! entity->IsMobilityDisabled() );
          CPPUNIT_ASSERT( ! entity->IsFirepowerDisabled() );
 
@@ -1733,8 +1769,9 @@ namespace SimCore
 
          // Test Restart message
          // --- Ensure that the munition table still exists
-         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( munitionTableName ) != NULL );
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( VEHICLE_MUNITION_TABLE_NAME ) != NULL );
 
+         std::vector<dtCore::RefPtr<SimCore::Actors::BaseEntity> > entities;
          // --- Re-register the entity
          CreateTestEntities( entities, 1, true );
          entity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(entities[0]->GetGameActorProxy().GetGameActor()));
@@ -1756,7 +1793,7 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetHelperByEntityId( entity->GetUniqueId() ) == NULL );
 
          // --- Ensure that the munition table has NOT been removed; it will be reloaded on RESTART
-         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( munitionTableName ) != NULL );
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( VEHICLE_MUNITION_TABLE_NAME ) != NULL );
 
          // --- Send the MAP_UNLOADED message
          mGM->GetMessageFactory().CreateMessage( dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN, msg );
@@ -1764,7 +1801,7 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
 
          // --- Ensure that the munition table has been removed
-         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( munitionTableName ) == NULL );
+         CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( VEHICLE_MUNITION_TABLE_NAME ) == NULL );
 
       }
 
