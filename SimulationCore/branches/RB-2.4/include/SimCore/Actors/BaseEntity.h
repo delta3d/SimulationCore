@@ -187,6 +187,10 @@ namespace SimCore
       {
          public:
 
+            /**
+             * TODO This should be a default and the code should allow changing this value for runtime, and possibly
+             *      allow setting the global default in the config xml.
+             */
             static const float TIME_BETWEEN_UPDATES;
 
             BaseEntity(dtGame::GameActorProxy& proxy);
@@ -728,6 +732,7 @@ namespace SimCore
             virtual ~BaseEntity();
 
             dtUtil::Log* mLogger;
+            /// TODO this needs to private, and subclasses should call a method to set this to 0 so it forces an update.
             float mTimeUntilNextUpdate;
 
             /**

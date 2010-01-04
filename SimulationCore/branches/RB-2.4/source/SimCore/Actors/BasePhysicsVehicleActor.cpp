@@ -484,7 +484,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
       {
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float ElapsedTime = tickMessage.GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);
       }
 
