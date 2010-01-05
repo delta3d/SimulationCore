@@ -50,6 +50,7 @@
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
+#include <dtGame/deadreckoninghelper.h>
 #include <dtGame/basemessages.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
@@ -76,7 +77,7 @@ namespace SimCore
          : Platform(proxy)
          , mVelocityAverageFrameCount(3U)
          , mSecsSinceLastUpdateSent(0.0f)
-         , mMaxUpdateSendRate(3.0f)
+         , mMaxUpdateSendRate(5.0f)
          , mVelocityMagThreshold(1.0f)
          , mVelocityDotThreshold(0.9f)
          , mTerrainPresentDropHeight(5.0f)
@@ -109,6 +110,9 @@ namespace SimCore
          dtPhysics::PhysicsComponent* physicsComp = NULL;
          GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
          physicsComp->RegisterHelper(*mPhysicsHelper.get());
+
+         // The base class may have overwritten our update rate values - or they may not have been set yet due to Init order
+         SetMaxUpdateSendRate(GetMaxUpdateSendRate());
 
 
 #ifdef AGEIA_PHYSICS
@@ -390,7 +394,7 @@ namespace SimCore
       {
          bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
          bool enoughTimeHasPassed = (mMaxUpdateSendRate > 0.0f &&
-            (mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate));
+            (mSecsSinceLastUpdateSent >= 1.0f / mMaxUpdateSendRate));
 
          if (fullUpdate || enoughTimeHasPassed)
          {
@@ -444,28 +448,6 @@ namespace SimCore
 
          }
 
-         // Curt - hack test - remove me - tests not using Acceleration as part of the publish.
-/*         if (forceUpdateResult && GetName() == "Propelled Vehicle")
-         {
-            //std::cout << "Vehicle [" << GetName().c_str() << "] has acceleration [" << GetCurrentAcceleration() << "]." << std::endl;
-
-            static bool testPublishAcceleration = true;
-            dtCore::Keyboard* keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
-            if(keyboard != NULL)
-            {
-               if (keyboard->GetKeyState('-'))
-               {
-                  testPublishAcceleration = !testPublishAcceleration;
-                  std::cout << "  HACK -- Test Publish Acceleration set to ["<< testPublishAcceleration << "]." << std::endl;
-               }
-               if (!testPublishAcceleration)
-               {
-                  mAccumulatedAcceleration = osg::Vec3(0.0f, 0.0f, 0.0f);
-                  SetCurrentAcceleration(mAccumulatedAcceleration);
-               }
-            }
-         }
-*/
          return forceUpdateResult;
       }
 
@@ -877,6 +859,21 @@ namespace SimCore
       void BasePhysicsVehicleActor::SetMaxUpdateSendRate(float maxUpdateSendRate)
       {
          mMaxUpdateSendRate = maxUpdateSendRate;
+
+         // The DR helper should be kept in the loop about the max send rate. 
+         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f)
+         {
+            // If we are setting our smoothing time, then we need to force the DR helper
+            // to ALWAYS use that, instead of using the avg update rate.
+            // TODO - Put this back in, once the DRHelper is updated to have this method.
+            //GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+
+            float transUpdateRate = dtUtil::Max(0.1f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
+            float rotUpdateRate = dtUtil::Max(0.2f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
+         }
+
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -970,6 +967,13 @@ namespace SimCore
             dtDAL::IntActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetVelocityAverageFrameCount),
             dtDAL::IntActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetVelocityAverageFrameCount),
             "This actor computes it's current velocity by averaging the change in position over the given number of frames.",
+            VEH_GROUP));
+
+         AddProperty(new dtDAL::FloatActorProperty("DesiredNumUpdatesPerSec",
+            "Desired Number of Updates Per Second",
+            dtDAL::FloatActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetMaxUpdateSendRate),
+            dtDAL::FloatActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetMaxUpdateSendRate),
+            "This desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.",
             VEH_GROUP));
       }
 

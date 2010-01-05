@@ -55,6 +55,7 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Switch>
+#include <osg/Stateset>
 
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/Platform.h>
@@ -238,6 +239,9 @@ namespace SimCore
          mVelocityArrowGeom->setUseDisplayList(false);
          mVelocityArrowGeom->setVertexArray(mVelocityArrowVerts.get());
          mVelocityArrowGeode->addDrawable(mVelocityArrowGeom.get());
+         osg::StateSet* ss(NULL);
+         ss = mVelocityArrowGeode->getOrCreateStateSet();
+         ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
          mVelocityArrowGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
          // Note - for future - if the color changes on the actor, need to reset this.
@@ -258,7 +262,8 @@ namespace SimCore
             envProxy->GetActor(envActor);
             envActor->AddActor(*mVelocityParentNode);
 
-            dtCore::Transform xform(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+            // Make this a settable value.
+            dtCore::Transform xform(0.0f, 0.0f, 1.5f, 0.0f, 0.0f, 0.0f);
             mVelocityParentNode->SetTransform(xform);
              
          }
