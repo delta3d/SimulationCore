@@ -868,9 +868,9 @@ namespace SimCore
             // TODO - Put this back in, once the DRHelper is updated to have this method.
             //GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
 
-            float transUpdateRate = dtUtil::Max(0.1f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            float transUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
-            float rotUpdateRate = dtUtil::Max(0.2f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            float rotUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
          }
 
