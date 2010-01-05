@@ -163,6 +163,7 @@ namespace SimCore
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR);
       }
 
 
@@ -615,6 +616,7 @@ namespace SimCore
             // In practice, the smoothing time is usually reduced down to the avg time between
             // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway.
             // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
+            // These values will typically be overridden by custom behaviors.
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
 
@@ -1069,7 +1071,7 @@ namespace SimCore
 
          if (mTimeUntilNextUpdate <= 0.0f)
          {
-            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
+            mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
             fullUpdate = true;
             forceUpdate = true;
          }
@@ -1078,29 +1080,19 @@ namespace SimCore
          // properties that we need to publish
          forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
 
-         // Curt Hack
-         /*
-         static float countDownTimer = 10.0f;
-         countDownTimer -= tickMessage.GetDeltaSimTime();
-         if (forceUpdate && countDownTimer < 0 && 
-            (GetGameActorProxy().GetName() == "Hover Vehicle" || 
-            GetGameActorProxy().GetName() == "Dune Buggy" || 
-            GetGameActorProxy().GetName() == "Propelled Vehicle"))
-         {
-            osg::Vec3 actualVel = GetCurrentVelocity();
-            std::ostringstream oss;
-            oss.precision(4);
-            oss.width(6);
-            oss << "Pub Vel [" << actualVel[0] << ",  " << actualVel[1] << ",  " << actualVel[2] << "].";
-            std::cout << oss.str() << std::endl;
-            //printf("Pub Vel(%4.2f, %4.2f, %4.2f).\n", velocity[0], velocity[1], velocity[2]);
-         }
-         */
-
          if (forceUpdate)
          {
             SetLastKnownValuesBeforePublish(pos, rot);
 
+            // If it is almost time to do a full update and our entity wants to do a partial update anyway, 
+            // then go ahead and do a full update now. This prevents the heart beat from causing 
+            // discontinuities in the update rate - mainly for vehicles that publish quickly and regularly
+            // The logic should cause an update at between 9.5 - 10.5 seconds assuming a 10s heart beat
+            if (mTimeUntilNextUpdate < TIME_BETWEEN_UPDATES * 0.1f)
+            {
+               mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
+               fullUpdate = true;
+            }
 
             if (fullUpdate)
             {

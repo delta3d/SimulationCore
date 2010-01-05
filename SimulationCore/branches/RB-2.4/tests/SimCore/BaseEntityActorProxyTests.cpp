@@ -49,6 +49,7 @@
 #include <dtCore/observerptr.h>
 
 #include <dtUtil/macros.h>
+#include <dtUtil/mathdefines.h>
 
 #include <dtAudio/audiomanager.h>
 
@@ -97,6 +98,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       CPPUNIT_TEST(TestHumanScaleMagnification);
       CPPUNIT_TEST(TestPlatformActorUpdates);
       CPPUNIT_TEST(TestHumanActorUpdates);
+      CPPUNIT_TEST(TestEntityUpdateToFromStream);
       CPPUNIT_TEST(TestPlatformDRRegistration);
       CPPUNIT_TEST(TestHumanDRRegistration);
       CPPUNIT_TEST(TestPlayerActorProxy);
@@ -116,6 +118,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       void TestHumanScaleMagnification();
       void TestPlatformActorUpdates();
       void TestHumanActorUpdates();
+      void TestEntityUpdateToFromStream();
       void TestPlatformDRRegistration();
       void TestHumanDRRegistration();
       void TestPlayerActorProxy();
@@ -645,18 +648,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
 
-   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The default is incorrect", entity->GetMaxTranslationError(), 0.15, 0.001f);
-
-   float newValue = 25.03;
-   entity->SetMaxTranslationError(newValue);
-
-   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("The Default is wrong", entity->GetMaxRotationError(), 2.0f, 0.01f);
-
-   entity->SetMaxRotationError(newValue);
-
-   CPPUNIT_ASSERT_DOUBLES_EQUAL(entity->GetMaxRotationError(), newValue, 0.01f);
-
-
    mGM->DeleteActor(eap);
    dtCore::System::GetInstance().Step();
 
@@ -774,7 +765,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());
 
-   osg::Vec3 smallMovement(0.02f, 0.02f, 0.02f);
+   tc->reset();
+   osg::Vec3 smallMovement(0.01f, 0.01f, 0.01f);
 
    dtCore::Transform xform;
    osg::Vec3 pos;
@@ -847,6 +839,75 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    tc->reset();
 }
 
+
+////////////////////////////////////////////////////////////////
+void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
+{
+   /// Test the ability to generate an actor update message (with pos/trans)
+   /// and convert to & from a stream. Testing an issue where items across a network
+   /// or from playback seem to 'blip' with the wrong X or Y pos.
+
+   // create an actor - any entity will do
+   RefPtr<SimCore::Actors::PlatformActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+   SimCore::Actors::Platform& entity = static_cast<SimCore::Actors::Platform&>(eap->GetGameActor());
+
+   // Set pos/trans
+   //osg::Vec3 basePos(201.0358f, 41.591f, 1.02f);
+   osg::Vec3 basePos(196.0123f, 37.2345f, 1.02f);
+   osg::Vec3 baseRot(140.01f, -0.84f, -0.13f);
+   entity.SetLastKnownTranslation(basePos);
+   entity.SetLastKnownRotation(baseRot);
+
+   // do a loop - 1000 times is better, but if everyone runs this, it will find it eventually.
+   for (unsigned int counter = 0; counter < 250; counter ++)
+   {
+      // multiply pos/trans by some number 1.037
+      float randMult = dtUtil::RandFloat(0.001f, 2.003f);
+      osg::Vec3 newPos = basePos * randMult;
+      osg::Vec3 newRot = baseRot * randMult;
+      entity.SetLastKnownTranslation(newPos);
+      entity.SetLastKnownRotation(newRot);
+
+      // generate an update message 
+      dtCore::RefPtr<dtGame::Message> updateMsg =
+         mGM->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_UPDATED);
+      dtGame::ActorUpdateMessage *message = static_cast<dtGame::ActorUpdateMessage *>(updateMsg.get());
+      eap->PopulateActorUpdate(*message);
+
+      // to stream
+      dtUtil::DataStream dataStream;
+      message->ToDataStream(dataStream);
+
+      // from stream. 
+      dtCore::RefPtr<dtGame::ActorUpdateMessage> messageFromStream = new dtGame::ActorUpdateMessage;
+      messageFromStream->FromDataStream(dataStream);
+
+      // Get pos & rot from the message
+      eap->ApplyActorUpdate(*messageFromStream, false);
+      osg::Vec3 posFromMessage, rotFromMessage;
+      posFromMessage = entity.GetLastKnownTranslation();
+      rotFromMessage = entity.GetLastKnownRotation();
+
+      // compare values.
+      std::ostringstream ss1;
+      ss1 << "Test #[" << counter << "] - Pos from the data stream should be [" << newPos << "] but it is [" << posFromMessage << "].";
+      CPPUNIT_ASSERT_MESSAGE(ss1.str(), 
+         osg::equivalent(posFromMessage.x(), newPos.x(), 1e-2f) &&
+         osg::equivalent(posFromMessage.y(), newPos.y(), 1e-2f) &&
+         osg::equivalent(posFromMessage.z(), newPos.z(), 1e-2f));
+
+      std::ostringstream ss2;
+      ss2 << "Test #[" << counter << "] - Rotation from the data stream should be [" << newRot << "] but it is [" << rotFromMessage << "].";
+      CPPUNIT_ASSERT_MESSAGE(ss2.str(), 
+         osg::equivalent(rotFromMessage.x(), newRot.x(), 1e-2f) &&
+         osg::equivalent(rotFromMessage.y(), newRot.y(), 1e-2f) &&
+         osg::equivalent(rotFromMessage.z(), newRot.z(), 1e-2f));
+
+   }
+
+}
 
 void BaseEntityActorProxyTests::TestPlatformDRRegistration()
 {

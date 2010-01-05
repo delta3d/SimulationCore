@@ -672,6 +672,7 @@ namespace SimCore
             //this was made public so the proxy could call it.. -bga
             dtGame::DeadReckoningHelper& GetDeadReckoningHelper() { return *mDeadReckoningHelper; }
             const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const { return *mDeadReckoningHelper; }
+            bool IsDeadReckoningHelperValid() const { return (mDeadReckoningHelper.valid()); }
 
             //this is used to create the dead reckoning helper and initialize the default options
             //made virtual  for supporting custom dr helpers
