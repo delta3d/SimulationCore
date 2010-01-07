@@ -55,7 +55,7 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Switch>
-#include <osg/Stateset>
+#include <osg/StateSet>
 
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/Platform.h>
