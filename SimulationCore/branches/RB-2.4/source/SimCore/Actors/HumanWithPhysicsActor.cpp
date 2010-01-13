@@ -73,6 +73,17 @@ namespace SimCore
          mPhysicsHelper->SetBaseInterfaceClass(this);
          mPhysicsHelper->SetCharacterInterfaceClass(this);
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_CHARACTER | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+#else
+         mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
+         mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &HumanWithPhysicsActor::PrePhysicsUpdate));
+
+         dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
+         physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
+         physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+         physicsObject->SetMass(100.0f);         
+         physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 1.0f));
+         mPhysicsHelper->AddPhysicsObject(*physicsObject);
+         
 #endif
       }
 
@@ -185,6 +196,10 @@ namespace SimCore
             }
          }
 #endif
+
+         //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
+
+
          Human::OnTickLocal(tickMessage);
       }
 
@@ -292,23 +307,29 @@ namespace SimCore
          // Note time needs to be send in here correctly.
          mPhysicsHelper->UpdatePhysicsCharacterController(displacementVector, 1.0f/60.0f, 0);
 #endif
+
+         //TODO: CURRENTLY NO LOCAL BEHAVIOR WITH dtPhysics in local mode
+
       }
 
       ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
          Human::OnTickRemote(tickMessage);
-#ifdef AGEIA_PHYSICS
+
          dtCore::Transform transform;
          GetTransform(transform);
 
          transform.GetTranslation(mPreviousTransform);
-
-         osg::Vec3 offset = mPhysicsHelper->GetDimensions();
+         
          osg::Vec3 xyz;
          transform.GetTranslation(xyz);
 
+#ifdef AGEIA_PHYSICS
+         osg::Vec3 offset = mPhysicsHelper->GetDimensions();
          mPhysicsHelper->ForcefullyMoveCharacterPos(NxVec3(xyz[0], xyz[1], xyz[2] + ( offset[2] / 2 ) ) );
+#else
+         
 #endif
       }
 
@@ -318,7 +339,7 @@ namespace SimCore
          dtCore::Transform xform;
          xform.SetTranslation( position );
          SetTransform(xform);
-
+         
 #ifdef AGEIA_PHYSICS
          if( ! mPhysicsHelper.valid() )
          {
@@ -366,7 +387,15 @@ namespace SimCore
 
          SetPosition(xyz);
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
+#else
+         dtPhysics::PhysicsComponent* comp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
+         if(comp != NULL)
+         {
+            comp->RegisterHelper(*mPhysicsHelper);
+         }
 
+         mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties();
 #endif
 
          if(!IsRemote())
@@ -426,6 +455,25 @@ namespace SimCore
       {
          return NX_ACTION_NONE;
       }
+#else
+      ////////////////////////////////////////////////////////////////////
+      dtPhysics::PhysicsHelper* HumanWithPhysicsActor::GetPhysicsHelper()
+      {
+         return mPhysicsHelper.get();
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      void HumanWithPhysicsActor::PrePhysicsUpdate()
+      {
+         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+         if (physObj != NULL)
+         {
+            dtCore::Transform xform;
+            GetTransform(xform);
+            physObj->SetTransformAsVisual(xform);
+         }
+      }
+
 #endif
 
       //////////////////////////////////////////////////////////
@@ -453,13 +501,16 @@ namespace SimCore
       void HumanWithPhysicsActorProxy::BuildPropertyMap()
       {
          HumanActorProxy::BuildPropertyMap();
-#ifdef AGEIA_PHYSICS
+
          HumanWithPhysicsActor* actor = dynamic_cast<HumanWithPhysicsActor*>(GetActor());
          std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
+#ifdef AGEIA_PHYSICS
          actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+#else
+         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
+#endif
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());
-#endif
       }
 
       //////////////////////////////////////////////////////////////////////////
