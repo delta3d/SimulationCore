@@ -42,6 +42,8 @@
 
 #include <SimCore/Actors/PagedTerrainPhysicsActor.h>
 
+#include <SimCore/CollisionGroupEnum.h>
+
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaWorldComponent.h>
 //#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -376,7 +378,7 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
          // We don't want remote players to kick the HMMWV around, so we put them in a different group.
          if (IsRemote())
-            mPhysicsHelper->SetCollisionGroup(31);
+            mPhysicsHelper->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
 
          mPhysicsHelper->SetDimensions(osg::Vec3(0.5, 0.5, 1.0));
          mPhysicsHelper->InitializeCharacter();
@@ -388,6 +390,8 @@ namespace SimCore
          SetPosition(xyz);
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 #else
+         mPhysicsHelper->GetMainPhysicsObject()->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
+
          dtPhysics::PhysicsComponent* comp = NULL;
          GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
          if(comp != NULL)
