@@ -24,6 +24,8 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 #include <dtDAL/project.h>
@@ -130,11 +132,11 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
          mHelper->SetBaseInterfaceClass(this);
 #else
-         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
-         pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-         pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-         mHelper->AddPhysicsObject(*pobj);
+         //dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
+         //pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+         //pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         //pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+         //mHelper->AddPhysicsObject(*pobj);
 #endif
       }
 
@@ -237,8 +239,16 @@ namespace SimCore
                {
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
                   //then just bake a static collision mesh with that and spit out a warning
-                  mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                  mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  //mHelper->GetMainPhysicsObject()->SetTransform(xform);
+                  //mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  
+                  dtCore::RefPtr<PagedTerrainPhysicsActorProxy> ap;
+                  GetGameActorProxy().GetGameManager()->CreateActor(*EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, ap);
+                  GetGameActorProxy().GetGameManager()->AddActor(*ap, false, false);
+                  PagedTerrainPhysicsActor& terrActor = static_cast<PagedTerrainPhysicsActor&>(ap->GetGameActor());
+                  terrActor.BuildTerrainAsStaticMesh(mTerrainNode, GetName(), true);
+
+                  
                   loadSuccess = true;
                }
    #endif
