@@ -132,11 +132,11 @@ namespace SimCore
 #ifdef AGEIA_PHYSICS
          mHelper->SetBaseInterfaceClass(this);
 #else
-         //dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
-         //pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-         //pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-         //pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-         //mHelper->AddPhysicsObject(*pobj);
+         dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
+         pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+         pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+         mHelper->AddPhysicsObject(*pobj);
 #endif
       }
 
@@ -237,18 +237,24 @@ namespace SimCore
    #else
                if(mTerrainNode.valid())
                {
-                  //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                  //then just bake a static collision mesh with that and spit out a warning
-                  //mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                  //mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
-                  
-                  dtCore::RefPtr<PagedTerrainPhysicsActorProxy> ap;
-                  GetGameActorProxy().GetGameManager()->CreateActor(*EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, ap);
-                  GetGameActorProxy().GetGameManager()->AddActor(*ap, false, false);
-                  PagedTerrainPhysicsActor& terrActor = static_cast<PagedTerrainPhysicsActor&>(ap->GetGameActor());
-                  terrActor.BuildTerrainAsStaticMesh(mTerrainNode, GetName(), true);
+                  // Hack alert!  We don't support this physics directory stuff in dtPhysics yet, so we assume
+                  // you have a giant mesh that is prebaked, and we load it piece-meal using this other actor thingy. - Brad
+                  if(!mPhysicsDirectory.empty())
+                  {
+                     dtCore::RefPtr<PagedTerrainPhysicsActorProxy> ap;
+                     GetGameActorProxy().GetGameManager()->CreateActor(*EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, ap);
+                     GetGameActorProxy().GetGameManager()->AddActor(*ap, false, false);
+                     PagedTerrainPhysicsActor& terrActor = static_cast<PagedTerrainPhysicsActor&>(ap->GetGameActor());
+                     terrActor.BuildTerrainAsStaticMesh(mTerrainNode, GetName(), true);
+                  }
+                  else
+                  {
+                     //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
+                     //then just bake a static collision mesh with that and spit out a warning
+                     mHelper->GetMainPhysicsObject()->SetTransform(xform);
+                     mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  }
 
-                  
                   loadSuccess = true;
                }
    #endif
