@@ -293,5 +293,17 @@ namespace SimCore
          PlatformActorProxy::OnEnteredWorld();
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::RefPtr<dtDAL::ActorProperty> PlatformWithPhysicsActorProxy::GetDeprecatedProperty(const std::string& name)
+      {
+#ifndef AGEIA_PHYSICS
+         PlatformWithPhysics* actor = NULL;
+         GetActor(actor);
+         return actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+#else
+         return NULL;
+#endif
+      }
+
    } // namespace
 } // namespace

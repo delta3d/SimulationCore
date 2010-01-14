@@ -133,6 +133,7 @@ namespace SimCore
          public:
             PlatformWithPhysicsActorProxy();
             virtual void BuildPropertyMap();
+            virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          protected:
             virtual ~PlatformWithPhysicsActorProxy();
