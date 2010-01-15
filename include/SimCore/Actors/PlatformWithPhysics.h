@@ -89,7 +89,7 @@ namespace SimCore
 
 
 #else
-            void PrePhysicsUpdate();
+            virtual void PrePhysicsUpdate();
             // returns the physics helper for use
             dtPhysics::PhysicsHelper* GetPhysicsHelper();
 
