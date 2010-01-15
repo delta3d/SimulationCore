@@ -251,6 +251,20 @@ namespace NetDemo
             break;
          }
 
+         case 'P':
+         {
+            if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
+            {
+               dtPhysics::PhysicsComponent* physicsComponent = NULL;
+               GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
+               if (physicsComponent != NULL)
+               {
+                  physicsComponent->SetNextDebugDrawMode();
+               }
+            }
+         }
+         break;
+
          case 'g':
             {
                ToggleDRGhost();
