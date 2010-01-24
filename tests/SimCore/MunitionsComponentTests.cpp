@@ -1855,33 +1855,17 @@ namespace SimCore
          effectsInfo->SetFireFlashTime( value );
          CPPUNIT_ASSERT( effectsInfo->GetFireFlashTime() == value );
 
-         CPPUNIT_ASSERT( effectsInfo->GetFlySoundMinDistance() != value );
-         effectsInfo->SetFlySoundMinDistance( value );
-         CPPUNIT_ASSERT( effectsInfo->GetFlySoundMinDistance() == value );
-
          CPPUNIT_ASSERT( effectsInfo->GetFlySoundMaxDistance() != value );
          effectsInfo->SetFlySoundMaxDistance( value );
          CPPUNIT_ASSERT( effectsInfo->GetFlySoundMaxDistance() == value );
-
-         CPPUNIT_ASSERT( effectsInfo->GetFireSoundMinDistance() != value );
-         effectsInfo->SetFireSoundMinDistance( value );
-         CPPUNIT_ASSERT( effectsInfo->GetFireSoundMinDistance() == value );
 
          CPPUNIT_ASSERT( effectsInfo->GetFireSoundMaxDistance() != value );
          effectsInfo->SetFireSoundMaxDistance( value );
          CPPUNIT_ASSERT( effectsInfo->GetFireSoundMaxDistance() == value );
 
-         CPPUNIT_ASSERT( effectsInfo->GetGroundImpactSoundMinDistance() != value );
-         effectsInfo->SetGroundImpactSoundMinDistance( value );
-         CPPUNIT_ASSERT( effectsInfo->GetGroundImpactSoundMinDistance() == value );
-
          CPPUNIT_ASSERT( effectsInfo->GetGroundImpactSoundMaxDistance() != value );
          effectsInfo->SetGroundImpactSoundMaxDistance( value );
          CPPUNIT_ASSERT( effectsInfo->GetGroundImpactSoundMaxDistance() == value );
-
-         CPPUNIT_ASSERT( effectsInfo->GetEntityImpactSoundMinDistance() != value );
-         effectsInfo->SetEntityImpactSoundMinDistance( value );
-         CPPUNIT_ASSERT( effectsInfo->GetEntityImpactSoundMinDistance() == value );
 
          CPPUNIT_ASSERT( effectsInfo->GetEntityImpactSoundMaxDistance() != value );
          effectsInfo->SetEntityImpactSoundMaxDistance( value );

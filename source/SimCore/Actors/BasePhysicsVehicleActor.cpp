@@ -945,7 +945,7 @@ namespace SimCore
 
          PlatformActorProxy::BuildPropertyMap();
 
-         BasePhysicsVehicleActor  &actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
+         BasePhysicsVehicleActor& actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
 
          // Add all the properties from the physics helper class
          std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
