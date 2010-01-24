@@ -283,10 +283,8 @@ namespace SimCore
 
             // for the engine idle sound effect
             void SetSFXEngineIdleLoop(const std::string& soundFX);
-            void SetMinDistanceIdleSound(float value) {mMinIdleSoundDistance = value;}
             void SetMaxDistanceIdleSound(float value) {mMaxIdleSoundDistance = value;}
 
-            float GetMinDistanceIdleSound() const {return mMinIdleSoundDistance;}
             float GetMaxDistanceIdleSound() const {return mMaxIdleSoundDistance;}
 
             void TickTimerMessage(const dtGame::Message& tickMessage);
