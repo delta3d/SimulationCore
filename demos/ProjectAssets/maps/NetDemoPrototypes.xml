@@ -2191,19 +2191,19 @@
             </property>
             <property>
                 <name>Suspension Travel</name>
-                <float>0.13</float>
+                <float>0.18</float>
             </property>
             <property>
                 <name>Spring Coefficient</name>
-                <float>4800</float>
+                <float>480000</float>
             </property>
             <property>
                 <name>Suspension Damping Coefficient</name>
-                <float>70</float>
+                <float>1500</float>
             </property>
             <property>
                 <name>Suspension Spring Target</name>
-                <float>0.13500009</float>
+                <float>0.18500009</float>
             </property>
             <property>
                 <name>Max Steer Angle</name>
@@ -2211,7 +2211,7 @@
             </property>
             <property>
                 <name>Tire Extreme Slip</name>
-                <float>10</float>
+                <float>7</float>
             </property>
             <property>
                 <name>Tire Extreme Value</name>
