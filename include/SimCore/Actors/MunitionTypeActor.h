@@ -172,9 +172,6 @@ namespace SimCore
             void SetFlySound( const std::string& fileName );
             const std::string& GetFlySound() const;
 
-            void SetFlySoundMinDistance( float distance );
-            float GetFlySoundMinDistance() const;
-
             void SetFlySoundMaxDistance( float distance );
             float GetFlySoundMaxDistance() const;
 
@@ -184,9 +181,6 @@ namespace SimCore
 
             void SetFireSound( const std::string& fileName );
             const std::string& GetFireSound() const;
-
-            void SetFireSoundMinDistance( float distance );
-            float GetFireSoundMinDistance() const;
 
             void SetFireSoundMaxDistance( float distance );
             float GetFireSoundMaxDistance() const;
@@ -204,9 +198,6 @@ namespace SimCore
             void SetGroundImpactSound( const std::string& fileName );
             const std::string& GetGroundImpactSound() const;
 
-            void SetGroundImpactSoundMinDistance( float distance );
-            float GetGroundImpactSoundMinDistance() const;
-
             void SetGroundImpactSoundMaxDistance( float distance );
             float GetGroundImpactSoundMaxDistance() const;
 
@@ -218,9 +209,6 @@ namespace SimCore
             void SetEntityImpactSound( const std::string& fileName );
             const std::string& GetEntityImpactSound() const;
             bool HasEntityImpactSound() const;
-
-            void SetEntityImpactSoundMinDistance( float distance );
-            float GetEntityImpactSoundMinDistance() const;
 
             void SetEntityImpactSoundMaxDistance( float distance );
             float GetEntityImpactSoundMaxDistance() const;

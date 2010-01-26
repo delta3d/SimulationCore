@@ -57,36 +57,16 @@ namespace NetDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         virtual void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-            const osg::Vec3& location);
-
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
-
-         //////////////// PROPERTIES
-
-         // PUBLIC METHODS
-      public:
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
-            const osg::Vec3 &direction, float &distanceToHit);
-
-
-         virtual void DoExplosion(float);
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
-         void ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation);
-
          void FindTarget(float);
 
       // Private vars
       private:
-
-         osg::Vec3 mGoalLocation;       /// The general location we want to be.
-
-         float mGroundClearance;        /// Height to hover above the ground
 
    };
 

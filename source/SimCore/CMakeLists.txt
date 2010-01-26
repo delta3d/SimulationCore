@@ -26,26 +26,147 @@ file(GLOB LIB_PUBLIC_HEADERS_7
    )
 SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5} ${LIB_PUBLIC_HEADERS_6} ${LIB_PUBLIC_HEADERS_7})
 
-file(GLOB LIB_SOURCES_1 
-   "${SOURCE_PATH}/*.cpp"
+set(LIB_SOURCES_1 
+   "${SOURCE_PATH}/AttachedMotionModel.cpp"
+   "${SOURCE_PATH}/BaseGameEntryPoint.cpp"
+   "${SOURCE_PATH}/BaseWheeledVehiclePhysicsHelper.cpp"
+   "${SOURCE_PATH}/ClampedMotionModel.cpp"
+   "${SOURCE_PATH}/CollisionGroupEnum.cpp"
+   "${SOURCE_PATH}/CommandLineObject.cpp"
+   "${SOURCE_PATH}/CustomCullVisitor.cpp"
+   "${SOURCE_PATH}/FourWheelVehiclePhysicsHelper.cpp"
+   "${SOURCE_PATH}/IGExceptionEnum.cpp"
+   "${SOURCE_PATH}/MatrixManipulations.cpp"
+   "${SOURCE_PATH}/Messages.cpp"
+   "${SOURCE_PATH}/MessageType.cpp"
+   "${SOURCE_PATH}/ModifiedStream.cpp"
+   "${SOURCE_PATH}/ParticleUtil.cpp"
+   "${SOURCE_PATH}/PlayerMotionModel.cpp"
+   "${SOURCE_PATH}/precomp.cpp"
+   "${SOURCE_PATH}/Projector.cpp"
+   "${SOURCE_PATH}/SimCoreCullVisitor.cpp"
+   "${SOURCE_PATH}/StealthMotionModel.cpp"
+   "${SOURCE_PATH}/TerrainPhysicsMode.cpp"
+   "${SOURCE_PATH}/TrailEffect.cpp"
+   "${SOURCE_PATH}/UnitEnums.cpp"
+   "${SOURCE_PATH}/Utilities.cpp"
+   "${SOURCE_PATH}/VisibilityOptions.cpp"
+   "${SOURCE_PATH}/WeaponTypeEnum.cpp"
+   "${SOURCE_PATH}/ApplyShaderVisitor.cpp"
    )
-file(GLOB LIB_SOURCES_2 
-   "${SOURCE_PATH}/Actors/*.cpp"
+
+set(LIB_SOURCES_2 
+   "${SOURCE_PATH}/Actors/AtmosphereActor.cpp"
+   "${SOURCE_PATH}/Actors/BaseEntity.cpp"
+   "${SOURCE_PATH}/Actors/BasePhysicsVehicleActor.cpp"
+   "${SOURCE_PATH}/Actors/BaseTerrainActor.cpp"
+   "${SOURCE_PATH}/Actors/BaseWaterActor.cpp"
+   "${SOURCE_PATH}/Actors/ControlStateActor.cpp"
+   "${SOURCE_PATH}/Actors/DayTimeActor.cpp"
+   "${SOURCE_PATH}/Actors/DetonationActor.cpp"
+   "${SOURCE_PATH}/Actors/DRGhostActor.cpp"
+   "${SOURCE_PATH}/Actors/DynamicLightPrototypeActor.cpp"
+   "${SOURCE_PATH}/Actors/DynamicParticleSystem.cpp"
+   "${SOURCE_PATH}/Actors/EntityActorRegistry.cpp"
+   "${SOURCE_PATH}/Actors/EphemerisEnvironmentActor.cpp"
+   "${SOURCE_PATH}/Actors/FireActor.cpp"
+   "${SOURCE_PATH}/Actors/FlareActor.cpp"
+   "${SOURCE_PATH}/Actors/Human.cpp"
+   "${SOURCE_PATH}/Actors/HumanWithPhysicsActor.cpp"
+   "${SOURCE_PATH}/Actors/IGActor.cpp"
+   "${SOURCE_PATH}/Actors/IGEnvironmentActor.cpp"
+   "${SOURCE_PATH}/Actors/InteriorActor.cpp"
+   "${SOURCE_PATH}/Actors/LatLongDataActor.cpp"
+   "${SOURCE_PATH}/Actors/LensFlareDrawable.cpp"
+   "${SOURCE_PATH}/Actors/LocalEffectActor.cpp"
+   "${SOURCE_PATH}/Actors/MissileActor.cpp"
+   "${SOURCE_PATH}/Actors/MunitionParticlesActor.cpp"
+   "${SOURCE_PATH}/Actors/MunitionTypeActor.cpp"
+   "${SOURCE_PATH}/Actors/NECCBoatActor.cpp"
+   "${SOURCE_PATH}/Actors/NxAgeiaFourWheelVehicleActor.cpp"
+   "${SOURCE_PATH}/Actors/OceanDataActor.cpp"
+   "${SOURCE_PATH}/Actors/OpenFlightToIVETerrain.cpp"
+   "${SOURCE_PATH}/Actors/PagedTerrainPhysicsActor.cpp"
+   "${SOURCE_PATH}/Actors/PhysicsParticleSystemActor.cpp"
+   "${SOURCE_PATH}/Actors/Platform.cpp"
+   "${SOURCE_PATH}/Actors/PlatformWithPhysics.cpp"
+   "${SOURCE_PATH}/Actors/PlayerActor.cpp"
+   "${SOURCE_PATH}/Actors/PortalActor.cpp"
+   "${SOURCE_PATH}/Actors/PositionMarker.cpp"
+   "${SOURCE_PATH}/Actors/SoundActorProxy.cpp"
+   "${SOURCE_PATH}/Actors/StealthActor.cpp"
+   "${SOURCE_PATH}/Actors/SurfaceHazeDataActor.cpp"
+   "${SOURCE_PATH}/Actors/SurfaceVesselActor.cpp"
+   "${SOURCE_PATH}/Actors/TerrainActorProxy.cpp"
+   "${SOURCE_PATH}/Actors/TextureProjectorActor.cpp"
+   "${SOURCE_PATH}/Actors/UniformAtmosphereActor.cpp"
+   "${SOURCE_PATH}/Actors/VehicleAttachingConfigActor.cpp"
+   "${SOURCE_PATH}/Actors/ViewerMaterialActor.cpp"
+   "${SOURCE_PATH}/Actors/VolumetricLine.cpp"
+   "${SOURCE_PATH}/Actors/WaterGridActor.cpp"
+   "${SOURCE_PATH}/Actors/WeaponActor.cpp"
+   "${SOURCE_PATH}/Actors/WeaponFlashActor.cpp"
    )
-file(GLOB LIB_SOURCES_3 
-   "${SOURCE_PATH}/Tools/*.cpp"
+
+set( LIB_SOURCES_3 
+   "${SOURCE_PATH}/Tools/Binoculars.cpp"
+   "${SOURCE_PATH}/Tools/Compass.cpp"
+   "${SOURCE_PATH}/Tools/Compass360.cpp"
+   "${SOURCE_PATH}/Tools/GPS.cpp"
+   "${SOURCE_PATH}/Tools/HelpWindow.cpp"
+   "${SOURCE_PATH}/Tools/LaserRangeFinder.cpp"
+   "${SOURCE_PATH}/Tools/Tool.cpp"
    )
-file(GLOB LIB_SOURCES_4 
-   "${SOURCE_PATH}/Components/*.cpp"
+
+set( LIB_SOURCES_4 
+   "${SOURCE_PATH}/Components/ArticulationHelper.cpp"
+   "${SOURCE_PATH}/Components/BaseGameAppComponent.cpp"
+   "${SOURCE_PATH}/Components/BaseHUD.cpp"
+   "${SOURCE_PATH}/Components/BaseHUDElements.cpp"
+   "${SOURCE_PATH}/Components/BaseInputComponent.cpp"
+   "${SOURCE_PATH}/Components/ControlStateComponent.cpp"
+   "${SOURCE_PATH}/Components/DamageHelper.cpp"
+   "${SOURCE_PATH}/Components/DefaultArticulationHelper.cpp"
+   "${SOURCE_PATH}/Components/DefaultFlexibleArticulationHelper.cpp"
+   "${SOURCE_PATH}/Components/LabelManager.cpp"
+   "${SOURCE_PATH}/Components/MultiSurfaceClamper.cpp"
+   "${SOURCE_PATH}/Components/MunitionDamage.cpp"
+   "${SOURCE_PATH}/Components/MunitionDamageTable.cpp"
+   "${SOURCE_PATH}/Components/MunitionsComponent.cpp"
+   "${SOURCE_PATH}/Components/MunitionsConfig.cpp"
+   "${SOURCE_PATH}/Components/MunitionTypeTable.cpp"
+   "${SOURCE_PATH}/Components/ParticleManagerComponent.cpp"
+   "${SOURCE_PATH}/Components/PortalComponent.cpp"
+   "${SOURCE_PATH}/Components/RenderingSupportComponent.cpp"
+   "${SOURCE_PATH}/Components/StealthHUDElements.cpp"
+   "${SOURCE_PATH}/Components/TextureProjectorComponent.cpp"
+   "${SOURCE_PATH}/Components/TimedDeleterComponent.cpp"
+   "${SOURCE_PATH}/Components/ViewerMaterialComponent.cpp"
+   "${SOURCE_PATH}/Components/ViewerMessageProcessor.cpp"
+   "${SOURCE_PATH}/Components/ViewerNetworkPublishingComponent.cpp"
+   "${SOURCE_PATH}/Components/WeaponEffectsManager.cpp"
+   "${SOURCE_PATH}/Components/WeatherComponent.cpp"
    )
-file(GLOB LIB_SOURCES_5 
-   "${SOURCE_PATH}/GUI/*.cpp"
+set( LIB_SOURCES_5 
+   "${SOURCE_PATH}/GUI/AnimationController.cpp"
+   "${SOURCE_PATH}/GUI/CeguiUtils.cpp"
+   "${SOURCE_PATH}/GUI/DefaultAnimationControllers.cpp"
+   "${SOURCE_PATH}/GUI/SceneWindow.cpp"
+   "${SOURCE_PATH}/GUI/Screen.cpp"
+   "${SOURCE_PATH}/GUI/SimpleScreen.cpp"
    )
-file(GLOB LIB_SOURCES_6 
-   "${SOURCE_PATH}/Components/Conversations/*.cpp"
+set( LIB_SOURCES_6 
+   "${SOURCE_PATH}/Components/Conversations/Conversation.cpp"
+   "${SOURCE_PATH}/Components/Conversations/ConversationComponent.cpp"
+   "${SOURCE_PATH}/Components/Conversations/ConversationMessages.cpp"
+   "${SOURCE_PATH}/Components/Conversations/Interaction.cpp"
+   "${SOURCE_PATH}/Components/Conversations/Response.cpp"
    )
-file(GLOB LIB_SOURCES_7 
-   "${SOURCE_PATH}/Components/GameState/*.cpp"
+set( LIB_SOURCES_7 
+   "${SOURCE_PATH}/Components/GameState/GameState.cpp"
+   "${SOURCE_PATH}/Components/GameState/GameStateChangeMessage.cpp"
+   "${SOURCE_PATH}/Components/GameState/GameStateComponent.cpp"
+   "${SOURCE_PATH}/Components/GameState/TransitionXMLHandler.cpp"
    )
 SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6} ${LIB_SOURCES_7})
 
@@ -111,6 +232,7 @@ TARGET_LINK_LIBRARIES(${LIB_NAME}
    ${OPENGL_LIBRARY}
    ${AGL_LIBRARY}
    ${PHYSX_LIBRARIES}
+   ${OPENAL_LIBRARY}
 )
 
 

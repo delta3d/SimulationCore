@@ -527,7 +527,7 @@ namespace SimCore
 
          // We just want 0 - range in the end for the image, so if min isn't 0, we correct for it now.
          // rather than making the modf code more complex.
-         GetMeterElement().SetValue(value,
+         GetMeterElement().SetValue(value - min,
                   max - min, min - min);
       }
 

@@ -162,12 +162,34 @@ namespace SimCore
             float GetMaxUpdateSendRate() const;
 
             void SetVelocityMagnitudeUpdateThreshold(float);
-            float GetVelocityMagnitudeUpdateThreshold();
+            float GetVelocityMagnitudeUpdateThreshold() const;
             void SetVelocityDotProductUpdateThreshold(float);
-            float GetVelocityDotProductUpdateThreshold();
+            float GetVelocityDotProductUpdateThreshold() const;
 
             void SetUseVelocityInDRUpdateDecision(bool);
             bool GetUseVelocityInDRUpdateDecision() const;
+
+            /**
+             * Computes and assigns the current velocity using a moving average.
+             * @see SetVelocityAverageFrameCount
+             */
+            virtual void ComputeCurrentVelocity(float deltaTime);
+
+            /// Accum Acceleration is computed each frame inside ComputeCurrentVel. Override that if you want to set this.
+            void SetAccumulatedAcceleration(const osg::Vec3 &newValue) { mAccumulatedAcceleration = newValue; }
+            osg::Vec3 GetAccumulatedAcceleration() const { return mAccumulatedAcceleration; }
+
+            /**
+             * The current velocity is computed using a moving average of the
+             * change in position over time.  The frame count passed in is used to
+             * to decide about how many frames the velocity will be average across.
+             */
+            void SetVelocityAverageFrameCount(int frames);
+
+            /**
+             * @see SetVelocityAverageFrameCount
+             */
+            int GetVelocityAverageFrameCount() const;
 
          protected:
             /**
@@ -238,6 +260,8 @@ namespace SimCore
 
             osg::Vec3 mLastPos;
             osg::Vec3 mAccumulatedLinearVelocity;
+            osg::Vec3 mAccumulatedAcceleration; 
+            int mVelocityAverageFrameCount;
 
             ///////////////////////////////////////////////////
             // sending out dead reckoning
@@ -245,6 +269,7 @@ namespace SimCore
             float mMaxUpdateSendRate;
             float mVelocityMagThreshold;
             float mVelocityDotThreshold;
+            float mInstantaneousVelocityWeight;
 
             float mTerrainPresentDropHeight;
 
@@ -279,6 +304,8 @@ namespace SimCore
          public:
             BasePhysicsVehicleActorProxy();
             virtual void BuildPropertyMap();
+
+            virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          protected:
             virtual ~BasePhysicsVehicleActorProxy();

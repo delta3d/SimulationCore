@@ -12,6 +12,7 @@
 */
 
 #include <GameEntryPoint.h>
+#include <NetDemoMessageTypes.h>
 #include <Components/InputComponent.h>
 #include <Components/GameLogicComponent.h>
 #include <Components/WeaponComponent.h>
@@ -28,10 +29,6 @@
 #include <dtGame/gameapplication.h>
 
 #include <dtPhysics/physicscomponent.h>
-
-#include <dtNetGM/servernetworkcomponent.h>
-#include <dtNetGM/clientnetworkcomponent.h>
-#include <dtNetGM/machineinfomessage.h>
 
 #include <dtUtil/fileutils.h>
 
@@ -58,7 +55,6 @@ namespace NetDemo
    GameEntryPoint::GameEntryPoint()
       : mIsServer(true)
    {
-
    }
 
    ///////////////////////////////////////////////////////////////////////////
@@ -98,6 +94,9 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////
    void GameEntryPoint::InitializeComponents(dtGame::GameManager& gm)
    {
+      // Register the application's custom message types.
+      NetDemo::MessageType::RegisterMessageTypes(gm.GetMessageFactory());
+
       // This processes remote actors and such on the network
       dtCore::RefPtr<SimCore::Components::ViewerMessageProcessor> defaultProcessor =
          new SimCore::Components::ViewerMessageProcessor();
@@ -150,12 +149,16 @@ namespace NetDemo
       gm.AddComponent(*guiComp, dtGame::GameManager::ComponentPriority::NORMAL);
       guiComp->Initialize();
 
-      gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+      dtUtil::ConfigProperties& configParams = gm.GetConfiguration();
+      const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+      if (role == "Server" || role == "server" || role == "SERVER")
+      {
+         gm.AddComponent(*new SpawnComponent(), dtGame::GameManager::ComponentPriority::NORMAL);
+      }
+      else if (role == "Client" || role == "client" || role == "CLIENT")
+      {
+      }
 
-      // Networking
-      //SetupClientServerNetworking(gm);
-      // true if we are the server or if NO networking is involved
-      //gameAppComp->SetIsServer(mIsServer);
    }
 
 

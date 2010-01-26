@@ -105,7 +105,7 @@ namespace Utils
       std::string developerMode;
       developerMode = gm.GetConfiguration().GetConfigPropertyValue
          (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
-      result = (developerMode == "true" || developerMode == "1");
+      result = dtUtil::ToType<bool>(developerMode);
       return result;
    }
 

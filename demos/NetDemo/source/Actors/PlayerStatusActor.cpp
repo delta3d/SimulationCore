@@ -50,7 +50,9 @@ namespace NetDemo
       : BaseClass(proxy)
       , mPlayerStatus(&PlayerStatusEnum::UNKNOWN)
       , mTeamNumber(0)
+      , mScore(0)
       , mIsServer(false)
+      , mIsReady(false)
       , mTerrainPreference("")
       , mVehiclePreference(&VehicleTypeEnum::FOUR_WHEEL)
       //, mVehiclePreference(&VehicleTypeEnum::HOVER)
@@ -184,6 +186,37 @@ namespace NetDemo
       mIPAddress = newValue;
    }
 
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::SetReady(bool ready)
+   {
+      mIsReady = ready;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   bool PlayerStatusActor::IsReady() const
+   {
+      return mIsReady;
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::SetScore(int score)
+   {
+      mScore = score;
+   }
+   
+   //////////////////////////////////////////////////////////////////////
+   int PlayerStatusActor::GetScore() const
+   {
+      return mScore;
+   }
+   
+   //////////////////////////////////////////////////////////////////////
+   void PlayerStatusActor::UpdateScore(int scoreModifier)
+   {
+      mScore += scoreModifier;
+   }
+
+
 
    //////////////////////////////////////////////////////////////////////
    // PROXY
@@ -197,10 +230,12 @@ namespace NetDemo
    const dtUtil::RefString PlayerStatusActorProxy::PROP_PLAYER_STATUS("Player Status");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_TEAM_NUM("Team Number");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IS_SERVER("Is Server");
+   const dtUtil::RefString PlayerStatusActorProxy::PROP_IS_READY("Is Ready");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_TERRAIN_PREFERENCE("Terrain Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_VEHICLE_PREFERENCE("Vehicle Preference");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_ATTACHED_VEHICLE_ID("Attached Vehicle ID");
    const dtUtil::RefString PlayerStatusActorProxy::PROP_IP_ADDRESS("IP Address");
+   const dtUtil::RefString PlayerStatusActorProxy::PROP_SCORE("Score");
 
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -216,8 +251,6 @@ namespace NetDemo
       // OTHER POSSIBLE PROPERTIES
 
       // COLOR
-      // SCORE
-
 
       static const dtUtil::RefString PROP_PLAYER_STATUS_DESC("Indicates the current status of this network player.");
       AddProperty(new dtDAL::EnumActorProperty<PlayerStatusActor::PlayerStatusEnum>(PROP_PLAYER_STATUS, PROP_PLAYER_STATUS,
@@ -236,6 +269,12 @@ namespace NetDemo
          dtDAL::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetIsServer),
          dtDAL::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIsServer),
          PROP_IS_SERVER_DESC, GROUP));
+
+      static const dtUtil::RefString PROP_IS_READY_DESC("Simple communication flag to allow clients to know if other clients are ready to start a game.");
+      AddProperty(new dtDAL::BooleanActorProperty(PROP_IS_READY, PROP_IS_READY,
+         dtDAL::BooleanActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetReady),
+         dtDAL::BooleanActorProperty::GetFuncType(&actor, &PlayerStatusActor::IsReady),
+         PROP_IS_READY_DESC, GROUP));
 
       static const dtUtil::RefString PROP_TERRAIN_PREFERENCE_DESC("The desired terrain to load. The server's value will be the actual terrain people load.");
       AddProperty(new dtDAL::StringActorProperty(PROP_TERRAIN_PREFERENCE, PROP_TERRAIN_PREFERENCE,
@@ -261,6 +300,11 @@ namespace NetDemo
          dtDAL::StringActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetIPAddress),
          PROP_IP_ADDRESS_DESC, GROUP));
 
+      static const dtUtil::RefString PROP_SCORE_DESC("Total points accumulated from destroying enemies.");
+      AddProperty(new dtDAL::IntActorProperty(PROP_SCORE, PROP_SCORE,
+         dtDAL::IntActorProperty::SetFuncType(&actor, &PlayerStatusActor::SetScore),
+         dtDAL::IntActorProperty::GetFuncType(&actor, &PlayerStatusActor::GetScore),
+         PROP_SCORE_DESC, GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

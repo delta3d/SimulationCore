@@ -29,6 +29,10 @@
 #include <SimCore/Actors/StealthActor.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
+#include <dtNetGM/networkcomponent.h>
+
+#include <Actors/PlayerStatusActor.h>
+
 namespace dtUtil
 {
    class Log;
@@ -52,7 +56,6 @@ namespace SimCore
 
 namespace NetDemo
 {
-   class PlayerStatusActor;
    class ServerGameStatusActorProxy;
    class FortActorProxy;
 
@@ -101,9 +104,27 @@ namespace NetDemo
 
          void CreateServerSideActors();
 
+         typedef SimCore::Components::StateType GameStateType;
+         bool IsRunningState(const GameStateType& state) const;
+
+         /**
+          * Convenience method for finding an actor and casting it to a specific actor type.
+          * @param actorId Id of the actor to be found.
+          * @param outActor Pointer to capture the actor that may be found.
+          * @return TRUE if the actor was found.
+          */
+         template<typename T_Actor>
+         bool FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor);
+
+         void SetVehicleType(PlayerStatusActor::VehicleTypeEnum& vehicleType);
+         const PlayerStatusActor::VehicleTypeEnum& GetVehicleType() const;
+
       protected:
          void HandleActorUpdateMessage(const dtGame::Message& msg);
          void HandleTimerElapsedMessage(const dtGame::Message& msg);
+         void HandleEntityActionMessage(const dtGame::Message& msg);
+
+         void CreatePrototypes(const dtDAL::ActorType& type);
 
          void HandleUnloadingState();
          void HandleGameRunningState();
@@ -142,13 +163,34 @@ namespace NetDemo
          std::string mMapName;
 
          /// May be either a Network or Client component. We create it when we connect
-         dtCore::RefPtr<dtGame::GMComponent> mNetworkComp;
+         dtCore::RefPtr<dtNetGM::NetworkComponent> mNetworkComp;
 
          dtCore::RefPtr<ServerGameStatusActorProxy> mServerGameStatusProxy;
 
          bool mStartTheGameOnNextGameRunning;
 
+         PlayerStatusActor::VehicleTypeEnum* mVehicleType;
    };
+
+
+
+   /////////////////////////////////////////////////////////////////////////////
+   // TEMPLATE METHOD DEFINITIONS
+   /////////////////////////////////////////////////////////////////////////////
+   template<typename T_Actor>
+   bool GameLogicComponent::FindActor(const dtCore::UniqueId& actorId, T_Actor*& outActor)
+   {
+      // Get the actor to which the message refers.
+      dtDAL::ActorProxy* proxy = NULL;
+      GetGameManager()->FindActorById(actorId, proxy);
+
+      if(proxy != NULL)
+      {
+         proxy->GetActor(outActor);
+      }
+
+      return outActor != NULL;
+   }
 
 }
 #endif /* RES_GAMEAPPCOMPONENT_H_ */

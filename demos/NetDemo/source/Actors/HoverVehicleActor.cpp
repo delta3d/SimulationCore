@@ -48,17 +48,18 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverVehicleActor::HoverVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
-   , mTimeTillJumpReady(0.0f)
    , mVehicleIsTurret(true)
    {
       SetMaxUpdateSendRate(5.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(false);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
 
-      // create my unique physics helper.  almost all of the physics is on the helper.
+      // Create physics helper - almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      HoverVehiclePhysicsHelper *helper = new HoverVehiclePhysicsHelper(proxy);
+      HoverVehiclePhysicsHelper* helper = new HoverVehiclePhysicsHelper(proxy);
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
@@ -193,11 +194,9 @@ namespace NetDemo
       // Jump button
       if (!IsMobilityDisabled() && GetHasDriver())
       {
-         mTimeTillJumpReady -= deltaTime;
-         if (keyboard->GetKeyState(' ') && mTimeTillJumpReady < 0.0f)
+         if (keyboard->GetKeyState(' '))
          {
-            GetHoverPhysicsHelper()->DoJump(deltaTime);
-            mTimeTillJumpReady = 2.7f;
+            //GetHoverPhysicsHelper()->Boost(deltaTime);
          }
       }
    }

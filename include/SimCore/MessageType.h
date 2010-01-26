@@ -62,6 +62,7 @@ namespace SimCore
          // These are NON-CONST because they are used in an actor property
          static MessageType BINOCULARS;
          static MessageType COMPASS;
+         static MessageType COMPASS_360;
          static MessageType NIGHT_VISION;
          static MessageType LASER_RANGE_FINDER;
          static MessageType GPS;

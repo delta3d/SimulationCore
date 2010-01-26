@@ -20,6 +20,7 @@
  * circumstances in which the U. S. Government may have rights in the software.
  *
  * Bradley Anderegg
+ * David Guthrie
  */
 
 #ifndef PROPELLEDVEHICLEACTOR_H_
@@ -51,13 +52,6 @@ namespace NetDemo
       virtual ~PropelledVehicleActor();
    private:
       
-      DECLARE_PROPERTY_INLINE(bool, StartBoost);
-      DECLARE_PROPERTY_INLINE(float, StartBoostForce);
-      DECLARE_PROPERTY_INLINE(float, MaximumBoostPerSecond);
-      DECLARE_PROPERTY_INLINE(float, CurrentBoostTime);
-      DECLARE_PROPERTY_INLINE(float, TimeToResetBoost);
-      DECLARE_PROPERTY_INLINE(float, BoostResetTimer);
-
       dtCore::RefPtr<SimCore::FourWheelVehiclePhysicsHelper> mHelper;
    };
 

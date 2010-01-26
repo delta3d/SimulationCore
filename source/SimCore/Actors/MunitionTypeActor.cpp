@@ -285,11 +285,6 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFlySound ),
             "The file path of the flying sound effect", groupFly));
 
-         AddProperty(new dtDAL::FloatActorProperty("Fly Sound Min Distance", "Fly Sound Min Distance",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFlySoundMinDistance ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFlySoundMinDistance ),
-            "The minimum range in meters for munition flight sounds", groupFly));
-
          AddProperty(new dtDAL::FloatActorProperty("Fly Sound Max Distance", "Fly Sound Max Distance",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFlySoundMaxDistance ),
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFlySoundMaxDistance ),
@@ -305,11 +300,6 @@ namespace SimCore
             "Fire Sound", "Fire Sound",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFireSound ),
             "The file path of the firing sound effect", groupFire));
-
-         AddProperty(new dtDAL::FloatActorProperty("Fire Sound Min Distance", "Fire Sound Min Distance",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFireSoundMinDistance ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetFireSoundMinDistance ),
-            "The minimum range in meters for shot fired sounds", groupFire));
 
          AddProperty(new dtDAL::FloatActorProperty("Fire Sound Max Distance", "Fire Sound Max Distance",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetFireSoundMaxDistance ),
@@ -342,11 +332,6 @@ namespace SimCore
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetGroundImpactSound ),
             "The file path of the ground impact sound effect", groupGroundImpact));
 
-         AddProperty(new dtDAL::FloatActorProperty("Ground Impact Sound Min Distance", "Ground Impact Sound Min Distance",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetGroundImpactSoundMinDistance ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetGroundImpactSoundMinDistance ),
-            "The minimum range in meters for ground impact sounds", groupGroundImpact));
-
          AddProperty(new dtDAL::FloatActorProperty("Ground Impact Sound Max Distance", "Ground Impact Sound Max Distance",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetGroundImpactSoundMaxDistance ),
             dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance),
@@ -367,11 +352,6 @@ namespace SimCore
             "Entity Impact Sound", "Entity Impact Sound",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactSound ),
             "The file path of the entity impact sound effect", groupEntityImpact));
-
-         AddProperty(new dtDAL::FloatActorProperty("Entity Impact Sound Min Distance", "Entity Impact Sound Min Distance",
-            dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactSoundMinDistance ),
-            dtDAL::MakeFunctorRet( actor, &MunitionEffectsInfoActor::GetEntityImpactSoundMinDistance ),
-            "The minimum range in meters for entity impact sounds", groupEntityImpact));
 
          AddProperty(new dtDAL::FloatActorProperty("Entity Impact Sound Max Distance", "Entity Impact Sound Max Distance",
             dtDAL::MakeFunctor( actor, &MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance ),
@@ -473,10 +453,6 @@ namespace SimCore
       const std::string& MunitionEffectsInfoActor::GetFlySound() const { return mSoundFly; }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActor::SetFlySoundMinDistance( float distance ) { mSoundFly_Min = distance; }
-      float MunitionEffectsInfoActor::GetFlySoundMinDistance() const { return mSoundFly_Min; }
-
-      //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActor::SetFlySoundMaxDistance( float distance ) { mSoundFly_Max = distance; }
       float MunitionEffectsInfoActor::GetFlySoundMaxDistance() const { return mSoundFly_Max; }
 
@@ -487,10 +463,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActor::SetFireSound( const std::string& fileName ) { mSoundFire = fileName; }
       const std::string& MunitionEffectsInfoActor::GetFireSound() const { return mSoundFire; }
-
-      //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActor::SetFireSoundMinDistance( float distance ) { mSoundFire_Min = distance; }
-      float MunitionEffectsInfoActor::GetFireSoundMinDistance() const { return mSoundFire_Min; }
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActor::SetFireSoundMaxDistance( float distance ) { mSoundFire_Max = distance; }
@@ -516,10 +488,6 @@ namespace SimCore
       const std::string& MunitionEffectsInfoActor::GetGroundImpactSound() const { return mSoundImpactGround; }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActor::SetGroundImpactSoundMinDistance( float distance ) { mSoundImpactGround_Min = distance; }
-      float MunitionEffectsInfoActor::GetGroundImpactSoundMinDistance() const { return mSoundImpactGround_Min; }
-
-      //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActor::SetGroundImpactSoundMaxDistance( float distance ) { mSoundImpactGround_Max = distance; }
       float MunitionEffectsInfoActor::GetGroundImpactSoundMaxDistance() const { return mSoundImpactGround_Max; }
 
@@ -532,10 +500,6 @@ namespace SimCore
       void MunitionEffectsInfoActor::SetEntityImpactSound( const std::string& fileName ) { mSoundImpactEntity = fileName; }
       const std::string& MunitionEffectsInfoActor::GetEntityImpactSound() const { return mSoundImpactEntity; }
       bool MunitionEffectsInfoActor::HasEntityImpactSound() const { return ! mSoundImpactEntity.empty(); }
-
-      //////////////////////////////////////////////////////////////////////////
-      void MunitionEffectsInfoActor::SetEntityImpactSoundMinDistance( float distance ) { mSoundImpactEntity_Min = distance; }
-      float MunitionEffectsInfoActor::GetEntityImpactSoundMinDistance() const { return mSoundImpactEntity_Min; }
 
       //////////////////////////////////////////////////////////////////////////
       void MunitionEffectsInfoActor::SetEntityImpactSoundMaxDistance( float distance ) { mSoundImpactEntity_Max = distance; }

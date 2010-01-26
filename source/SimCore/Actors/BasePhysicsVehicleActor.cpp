@@ -50,6 +50,7 @@
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
+#include <dtGame/deadreckoninghelper.h>
 #include <dtGame/basemessages.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
@@ -74,8 +75,9 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
+         , mVelocityAverageFrameCount(3U)
          , mSecsSinceLastUpdateSent(0.0f)
-         , mMaxUpdateSendRate(3.0f)
+         , mMaxUpdateSendRate(5.0f)
          , mVelocityMagThreshold(1.0f)
          , mVelocityDotThreshold(0.9f)
          , mTerrainPresentDropHeight(5.0f)
@@ -109,6 +111,9 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
          physicsComp->RegisterHelper(*mPhysicsHelper.get());
 
+         // The base class may have overwritten our update rate values - or they may not have been set yet due to Init order
+         SetMaxUpdateSendRate(GetMaxUpdateSendRate());
+
 
 #ifdef AGEIA_PHYSICS
          if(IsRemote())
@@ -139,7 +144,7 @@ namespace SimCore
 
             // Disable gravity until the map has loaded terrain under our feet...
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
-            //GetPhysicsHelper()->TurnObjectsGravityOff("Default");
+            GetPhysicsHelper()->GetMainPhysicsObject()->SetGravityEnabled(false);
          }
 #endif
       }
@@ -202,6 +207,7 @@ namespace SimCore
 #else
             xform.SetTranslation(terrainPoint);
             physicsObject->SetTransform(xform);
+            physicsObject->SetGravityEnabled(true);
 #endif
          }
          // DEBUG:
@@ -264,25 +270,33 @@ namespace SimCore
             LOG_ERROR("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
          }
+         bool isDynamic = true;
 #ifdef AGEIA_PHYSICS
-         if(physicsObject->isSleeping())
+         if (physicsObject->isSleeping())
          {
             physicsObject->wakeUp();
          }
 #else
-         if (!physicsObject->IsActive())
+         if (physicsObject->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
+         {
+            isDynamic = false;
+            //No need to look for terrain on static objects.
+            mHasFoundTerrain = true;
+         }
+
+         if (isDynamic && !physicsObject->IsActive())
          {
             physicsObject->SetActive(true);
          }
 #endif
          // Check if terrain is available. (For startup)
-         if( ! mHasFoundTerrain )
+         if (!mHasFoundTerrain)
          {
             // Terrain has not been found. Check for it again.
             mHasFoundTerrain = IsTerrainPresent();
          }
          // Check to see if we are currently up under the earth, if so, snap them back up.
-         else if( GetPerformAboveGroundSafetyCheck() == true)
+         else if (GetPerformAboveGroundSafetyCheck())
          {
             KeepAboveGround();
          }
@@ -319,14 +333,7 @@ namespace SimCore
             return;
          }
 
-         osg::Vec3 physLinearVelocity;
-#ifdef AGEIA_PHYSICS
-         NxVec3 linearVelVec3 = physObj->getLinearVelocity();
-         physLinearVelocity.set(linearVelVec3.x, linearVelVec3.y, linearVelVec3.z);
-#else
-         physLinearVelocity = physObj->GetLinearVelocity();
-#endif
-         SetCurrentVelocity(physLinearVelocity);
+         ComputeCurrentVelocity(deltaTime);
 
          osg::Vec3 physAngularVelocity;
 #ifdef AGEIA_PHYSICS
@@ -338,6 +345,42 @@ namespace SimCore
          SetCurrentAngularVelocity(physAngularVelocity);
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::ComputeCurrentVelocity(float deltaTime)
+      {
+         // Note - we used to grab the velocity from the physics engines, but there were sometimes 
+         // discontinuities reported by the various engines, so that was removed in favor of a simple
+         // differential of position. 
+         float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
+         dtCore::Transform xform;
+         GetTransform(xform);
+         osg::Vec3 pos;
+         xform.GetTranslation(pos);
+         if (deltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
+         {
+            osg::Vec3 distanceMoved = pos - mLastPos;
+            osg::Vec3 instantVelocity = distanceMoved / deltaTime;
+            // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
+            mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
+
+            // Compute our acceleration as the instantaneous differential of the velocity
+            // Note, we don't 'blend' the acceleration because we are already blending the velocity above.
+            // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
+            // and make your own call to SetCurrentAcceleration().
+            osg::Vec3 changeInVelocity = mAccumulatedLinearVelocity - GetCurrentVelocity();
+            mAccumulatedAcceleration = changeInVelocity / deltaTime;
+            // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
+            // be published, the vehicle will go all over the place nutty. So, we zero it out. 
+            // This is not a good solution, but is workable because vehicles that really do have a lot of
+            // z acceleration are probably flying and by definition are not as close to other objects so the z accel
+            // is less visually apparent.
+            mAccumulatedAcceleration.z() = 0.0f; 
+            SetCurrentAcceleration(mAccumulatedAcceleration);
+
+            SetCurrentVelocity(mAccumulatedLinearVelocity);
+         }
+         mLastPos = pos;
+      }
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
@@ -351,7 +394,7 @@ namespace SimCore
       {
          bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
          bool enoughTimeHasPassed = (mMaxUpdateSendRate > 0.0f &&
-            (mSecsSinceLastUpdateSent > 1.0f / mMaxUpdateSendRate));
+            (mSecsSinceLastUpdateSent >= 1.0f / mMaxUpdateSendRate));
 
          if (fullUpdate || enoughTimeHasPassed)
          {
@@ -423,7 +466,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
       {
-         float ElapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
+         float ElapsedTime = tickMessage.GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);
       }
 
@@ -816,6 +859,21 @@ namespace SimCore
       void BasePhysicsVehicleActor::SetMaxUpdateSendRate(float maxUpdateSendRate)
       {
          mMaxUpdateSendRate = maxUpdateSendRate;
+
+         // The DR helper should be kept in the loop about the max send rate. 
+         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f)
+         {
+            // If we are setting our smoothing time, then we need to force the DR helper
+            // to ALWAYS use that, instead of using the avg update rate.
+            // TODO - Put this back in, once the DRHelper is updated to have this method.
+            //GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+
+            float transUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
+            float rotUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
+         }
+
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -831,7 +889,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold()
+      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold() const
       {
          return mVelocityMagThreshold;
       }
@@ -843,7 +901,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold()
+      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold() const
       {
          return mVelocityMagThreshold;
       }
@@ -861,6 +919,18 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetVelocityAverageFrameCount(int count)
+      {
+         mVelocityAverageFrameCount = dtUtil::Max(1, count);
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      int BasePhysicsVehicleActor::GetVelocityAverageFrameCount() const
+      {
+         return mVelocityAverageFrameCount;
+      }
+
+      //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActorProxy::BasePhysicsVehicleActorProxy()
@@ -875,19 +945,35 @@ namespace SimCore
 
          PlatformActorProxy::BuildPropertyMap();
 
-         BasePhysicsVehicleActor  &actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
+         BasePhysicsVehicleActor& actor = static_cast<BasePhysicsVehicleActor &>(GetGameActor());
 
          // Add all the properties from the physics helper class
          std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
          actor.GetPhysicsHelper()->BuildPropertyMap(toFillIn);
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
+         {
             AddProperty(toFillIn[i].get());
+         }
 
          AddProperty(new dtDAL::BooleanActorProperty("Perform_Above_Ground_Safety_Check",
             "Perform above ground safety check",
-            dtDAL::MakeFunctor(actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
-            dtDAL::MakeFunctorRet(actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
+            dtDAL::BooleanActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetPerformAboveGroundSafetyCheck),
+            dtDAL::BooleanActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetPerformAboveGroundSafetyCheck),
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
+            VEH_GROUP));
+
+         AddProperty(new dtDAL::IntActorProperty("VelocityAverageFrameCount",
+            "Current Velocity Averaging Frame Count",
+            dtDAL::IntActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetVelocityAverageFrameCount),
+            dtDAL::IntActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetVelocityAverageFrameCount),
+            "This actor computes it's current velocity by averaging the change in position over the given number of frames.",
+            VEH_GROUP));
+
+         AddProperty(new dtDAL::FloatActorProperty("DesiredNumUpdatesPerSec",
+            "Desired Number of Updates Per Second",
+            dtDAL::FloatActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetMaxUpdateSendRate),
+            dtDAL::FloatActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetMaxUpdateSendRate),
+            "This desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.",
             VEH_GROUP));
       }
 
@@ -904,6 +990,18 @@ namespace SimCore
                dtGame::GameActorProxy::TICK_REMOTE_INVOKABLE);
 
          PlatformActorProxy::OnEnteredWorld();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::RefPtr<dtDAL::ActorProperty> BasePhysicsVehicleActorProxy::GetDeprecatedProperty(const std::string& name)
+      {
+#ifndef AGEIA_PHYSICS
+         BasePhysicsVehicleActor* actor = NULL;
+         GetActor(actor);
+         return actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+#else
+         return NULL;
+#endif
       }
 
    } // namespace

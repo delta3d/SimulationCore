@@ -109,7 +109,7 @@ namespace SimCore
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
          {
-            LOG_ERROR("Failed to find a coordinate config actor in the map. Using default values.");
+            LOG_ERROR("!!!! ERROR !!!! -- Failed to find a coordinate config actor in the map. This will likely cause major runtime problems or even a crash!!!");
          }
          dtActors::CoordinateConfigActor* ccActor;
          proxies[0]->GetActor(ccActor);
@@ -250,9 +250,15 @@ namespace SimCore
          if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
          {
             //LOG_WARNING("Creating new client networking component during connection.");
-            dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientNetworkComponent = 
-               new dtNetGM::ClientNetworkComponent(mServerGameName, mServerGameVersion);
-            GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+            dtNetGM::ClientNetworkComponent* clientNetworkComponent;
+            GetGameManager()->GetComponentByName(dtNetGM::ClientNetworkComponent::DEFAULT_NAME, clientNetworkComponent);
+            if(clientNetworkComponent == NULL) // if not already created, create one. Remove this eventually, see two lines down.
+            {
+               dtCore::RefPtr<dtNetGM::ClientNetworkComponent> clientNetworkComponent = 
+                  new dtNetGM::ClientNetworkComponent(mServerGameName, mServerGameVersion);
+               // NOTE - The GM needs to be modified to support adding a component during a message - 12/21/09 CMM
+               GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+            }
          }
 
       }
@@ -299,10 +305,13 @@ namespace SimCore
             {
                if (clientNetworkComponent->IsConnectedClient())
                {
-                  clientNetworkComponent->ShutdownNetwork();
+                  //clientNetworkComponent->ShutdownNetwork();
+                  clientNetworkComponent->Disconnect();
                }
+               // NOTE - Removing components is not valid on the GM. Once the GM is modified to handle this, 
+               // This should be put back. CMM 12/21/09
                // We always delete the network component, because we have to re-construct one each time (see above)
-               GetGameManager()->RemoveComponent(*clientNetworkComponent);
+               //GetGameManager()->RemoveComponent(*clientNetworkComponent);
             }
 
             mState = &ConnectionState::STATE_NOT_CONNECTED;

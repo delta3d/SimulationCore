@@ -28,6 +28,8 @@
 
 #include <DemoExport.h>
 
+#include <SimCore/Actors/MunitionTypeActor.h>
+#include <SimCore/Messages.h>
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
@@ -75,11 +77,26 @@ namespace NetDemo
          virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
 
 
-         virtual void InitAI(const EnemyDescriptionActor& desc);
+         virtual void InitAI(const EnemyDescriptionActor* desc);
+
+         //overriden so we can not take damage from other enemy vehicles
+         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+            const SimCore::Actors::MunitionTypeActor& munition);
 
          EnemyAIHelper* GetAIHelper();
          const EnemyAIHelper* GetAIHelper() const;
 
+         //can take NULL Ptr, returns false if NULL true if ActorType = enemy actor type
+         bool IsEnemyActor(dtGame::GameActorProxy* proxy) const;
+
+         /// Overrriden to kill our AI when we die.
+         virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
+
+         float GetTimeToExistAfterDead();
+         void SetTimeToExistAfterDead(float newTime);
+
+         void SetPointValue(int points);
+         int GetPointValue() const;
 
       protected:
          /// Called update the dofs for your vehicle. Wheels or whatever. Of the updates, this is called second
@@ -90,6 +107,16 @@ namespace NetDemo
          /// Does nothing by default.
          virtual void UpdateSoundEffects(float deltaTime);
 
+         void DoExplosion(float dt);
+
+         /**
+          * Called after getting hit, after damage is already calc'ed and applied. Not much to do here really
+          */
+         void RespondToHit(const SimCore::DetonationMessage& message,
+            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+            const osg::Vec3& location);
+
+
 
          dtCore::RefPtr<EnemyAIHelper> mAIHelper;
 
@@ -97,6 +124,8 @@ namespace NetDemo
       private:
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
 
+         bool mSendScoreMessage; // Flag to trigger sending a score message when RespondToHit is called after a damage state change to DIE.
+         int mPointValue;
          float mTimeSinceBorn; // how long I've been in the world - used for some enemies that self-terminate after X seconds
          float mTimeToExistAfterDead; // Once we are dead, we stay alive for this long, and then self-delete. 
          float mTimeSinceKilled; // used to self-delete dead entities after they explode, flame, fall, etc...
@@ -108,6 +137,8 @@ namespace NetDemo
    {
       public:
          typedef SimCore::Actors::BasePhysicsVehicleActorProxy BaseClass;
+
+         static const dtUtil::RefString PROPERTY_POINT_VALUE;
 
          BaseEnemyActorProxy();
          virtual void BuildPropertyMap();

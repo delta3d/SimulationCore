@@ -48,8 +48,14 @@
 
 namespace SimCore
 {
+   class ToolMessage;
    class UnitOfAngle;
    class UnitOfLength;
+
+   namespace Tools
+   {
+      class Compass360;
+   }
 }
 
 namespace StealthGM
@@ -168,6 +174,12 @@ namespace StealthGM
       /// Get the unit to use for the angle display.
       SimCore::UnitOfAngle& GetUnitOfAngle() const;
 
+      void SetupCompass360();
+      bool HasCompass360() const;
+
+      void SetCompass360Enabled(bool enable);
+      bool IsCompass360Enabled() const;
+
    protected:
 
       void InitHelpOverlay( SimCore::Components::HUDGroup& hudOverlay );
@@ -185,6 +197,8 @@ namespace StealthGM
       void UpdateStaticText(SimCore::Components::HUDText *textControl, char *newText,
          float red = -1.0, float blue = -1.0, float green = -1.0,
          float x = -1, float y = -1);
+
+      void ProcessToolMessage(const SimCore::ToolMessage& toolMessage);
 
    private:
 
@@ -233,6 +247,9 @@ namespace StealthGM
       dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
       dtCore::RefPtr<SimCore::Components::HUDElement> mLabelLayer;
 
+      // Tools
+      dtCore::RefPtr<SimCore::Tools::Compass360> mCompass360;
+
       // The HUD will need a reference to the motion model
       // in order to get all data that needs to be displayed.
       dtCore::ObserverPtr<dtCore::MotionModel> mMotionModel;
@@ -245,6 +262,9 @@ namespace StealthGM
       float mTextYTopOffset;
       float mTextYSeparation;
       float mTextHeight;
+
+      bool mZoomToolEnabled;
+      bool mCompass360WasEnabled;
 
       bool mUsePhysicsDemoMode;
 

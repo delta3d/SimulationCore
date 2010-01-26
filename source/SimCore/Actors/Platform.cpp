@@ -173,11 +173,6 @@ namespace SimCore
 
          static const dtUtil::RefString SOUND_PROPERTY_TYPE("Sounds");
 
-         AddProperty(new dtDAL::FloatActorProperty("MinDistanceIdleSound", "MinDistanceIdleSound",
-            dtDAL::MakeFunctor(plat, &Platform::SetMinDistanceIdleSound),
-            dtDAL::MakeFunctorRet(plat, &Platform::GetMinDistanceIdleSound),
-            "Distance for the sound", SOUND_PROPERTY_TYPE));
-
          AddProperty(new dtDAL::FloatActorProperty("MaxDistanceIdleSound", "MaxDistanceIdleSound",
             dtDAL::MakeFunctor(plat, &Platform::SetMaxDistanceIdleSound),
             dtDAL::MakeFunctorRet(plat, &Platform::GetMaxDistanceIdleSound),

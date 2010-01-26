@@ -179,7 +179,14 @@ namespace SimCore
              * @param delay Time to wait before starting the transition animation.
              * @param reversed Determine if the animation should start from the end target to the start target.
              */
-            virtual void Execute( float timeLimit = 0.0f, float delay = 0.0f, bool reversed = false );
+            virtual void Execute( float timeLimit, float delay = 0.0f, bool reversed = false );
+
+            /**
+             * Start the transition animation by setting or resetting states necessary for animation.
+             * This version of the method uses the times previously set on this controller.
+             * @param reversed Determine if the animation should start from the end target to the start target.
+             */
+            virtual void Execute(bool reversed = false);
 
          protected:
             virtual ~AnimationControllerBase();

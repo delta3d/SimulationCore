@@ -89,7 +89,7 @@ namespace SimCore
 
 
 #else
-            void PrePhysicsUpdate();
+            virtual void PrePhysicsUpdate();
             // returns the physics helper for use
             dtPhysics::PhysicsHelper* GetPhysicsHelper();
 
@@ -133,6 +133,7 @@ namespace SimCore
          public:
             PlatformWithPhysicsActorProxy();
             virtual void BuildPropertyMap();
+            virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
 
          protected:
             virtual ~PlatformWithPhysicsActorProxy();
