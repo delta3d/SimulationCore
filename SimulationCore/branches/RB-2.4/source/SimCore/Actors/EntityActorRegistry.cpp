@@ -71,6 +71,9 @@
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
 #include <SimCore/Actors/DRGhostActor.h>
 
+#include <SimCore/Actors/LogicConditionalActor.h>
+#include <SimCore/Actors/LogicOnEventActor.h>
+
 #include <dtActors/engineactorregistry.h>
 
 #include <dtCore/shadermanager.h>
@@ -182,6 +185,12 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE(
          new dtDAL::ActorType("DynamicParticleSystemActor", "SimCore", "A particle system actor that can dynamically adjust various attributes of a particle system over time.."));
 
+      // Game Event Logic pieces
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::LOGIC_CONDITIONAL_ACTOR_TYPE(
+         new dtDAL::ActorType("LogicConditionalActor", "SimCore.Logic", "A true & false data class that is used by one of the Logic behavior classes such as LogicOnEventActor."));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::LOGIC_ON_EVENT_ACTOR_TYPE(
+         new dtDAL::ActorType("LogicOnEventActor", "SimCore.Logic", "A logic actor that can fire events when some set of conditions for its children have been met."));
+
 
       ///////////////////////////////////////////////////////////////////////////
       extern "C" SIMCORE_EXPORT dtDAL::ActorPluginRegistry* CreatePluginRegistry()
@@ -282,6 +291,11 @@ namespace SimCore
          mActorFactory->RegisterType<SoundActorProxy>(SOUND_ACTOR_TYPE.get());
 
          mActorFactory->RegisterType<DynamicParticleSystemActorProxy>(DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE.get());
+
+         // Game Event Logic pieces
+         mActorFactory->RegisterType<LogicConditionalActorProxy>(LOGIC_CONDITIONAL_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<LogicOnEventActorProxy>(LOGIC_ON_EVENT_ACTOR_TYPE.get());
+
       }
    }
 }

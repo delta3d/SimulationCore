@@ -79,6 +79,8 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/LatLongDataActor.cpp"
    "${SOURCE_PATH}/Actors/LensFlareDrawable.cpp"
    "${SOURCE_PATH}/Actors/LocalEffectActor.cpp"
+   "${SOURCE_PATH}/Actors/LogicConditionalActor.cpp"
+   "${SOURCE_PATH}/Actors/LogicOnEventActor.cpp"
    "${SOURCE_PATH}/Actors/MissileActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionParticlesActor.cpp"
    "${SOURCE_PATH}/Actors/MunitionTypeActor.cpp"
