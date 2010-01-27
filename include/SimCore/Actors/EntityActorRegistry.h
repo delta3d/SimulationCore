@@ -94,6 +94,9 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> LOGIC_CONDITIONAL_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> LOGIC_ON_EVENT_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 
