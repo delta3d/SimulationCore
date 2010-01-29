@@ -51,6 +51,11 @@
 
 #include <iostream>
 
+#ifndef AGEIA_PHYSICS
+#include <dtPhysics/physicsreaderwriter.h>
+#include <dtPhysics/geometry.h>
+#endif
+
 namespace SimCore
 {
    namespace Actors
@@ -162,20 +167,28 @@ namespace SimCore
             {
                bool loadSuccess = false;
 
-   #ifdef AGEIA_PHYSICS
                osg::Vec3 pos;
                xform.GetTranslation(pos);
-               NxVec3 vec(pos.x(), pos.y(), pos.z());
 
+#ifdef AGEIA_PHYSICS
+               NxVec3 vec(pos.x(), pos.y(), pos.z());
+#else
+               osg::Vec3 vec = pos;
+#endif
                mCollisionResourceString = dtCore::FindFileInPathList( mCollisionResourceString.c_str() );
                if(!mCollisionResourceString.empty())
                {
+
+#ifdef AGEIA_PHYSICS
                   mHelper->SetCollisionMeshFromFile(mCollisionResourceString, vec);
 
                   mHelper->SetAgeiaUserData(mHelper.get());
 
                   mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
+#else  
+                  LoadMeshFromFile(mCollisionResourceString, std::string());
 
+#endif
                   loadSuccess = true;
                }
 
@@ -189,7 +202,11 @@ namespace SimCore
                      if(dtUtil::FileUtils::GetInstance().DirExists(fullDirPath))
                      {
                         dtUtil::FileExtensionList extensionList;
+#ifdef AGEIA_PHYSICS
                         extensionList.push_back(".physx");
+#else
+                        extensionList.push_back(".dtphys");
+#endif
 
                         const dtUtil::DirectoryContents& filesInDir = dtUtil::FileUtils::GetInstance().DirGetFiles(fullDirPath, extensionList);
                         dtUtil::DirectoryContents::const_iterator iter = filesInDir.begin();
@@ -225,39 +242,22 @@ namespace SimCore
                      e.LogException(dtUtil::Log::LOG_ERROR);
                   }
                }
-
                if(!loadSuccess && mTerrainNode.valid())
                {
+#ifdef AGEIA_PHYSICS               
                   //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
                   //then just bake a static collision mesh with that and spit out a warning
                   mHelper->SetCollisionStaticMesh(mTerrainNode.get(), vec);
-                  LOG_WARNING("No pre-baked collision mesh found, creating collision geometry from terrain mesh.");
+                  LOG_WARNING("No pre-baked collision mesh found, creating collision geometry from terrain mesh.");           
+#else                             
+                  //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
+                  //then just bake a static collision mesh with that and spit out a warning
+                  mHelper->GetMainPhysicsObject()->SetTransform(xform);
+                  mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+#endif
                   loadSuccess = true;
                }
-   #else
-               if(mTerrainNode.valid())
-               {
-                  // Hack alert!  We don't support this physics directory stuff in dtPhysics yet, so we assume
-                  // you have a giant mesh that is prebaked, and we load it piece-meal using this other actor thingy. - Brad
-                  if(!mPhysicsDirectory.empty())
-                  {
-                     dtCore::RefPtr<PagedTerrainPhysicsActorProxy> ap;
-                     GetGameActorProxy().GetGameManager()->CreateActor(*EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, ap);
-                     GetGameActorProxy().GetGameManager()->AddActor(*ap, false, false);
-                     PagedTerrainPhysicsActor& terrActor = static_cast<PagedTerrainPhysicsActor&>(ap->GetGameActor());
-                     terrActor.BuildTerrainAsStaticMesh(mTerrainNode, GetName(), true);
-                  }
-                  else
-                  {
-                     //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                     //then just bake a static collision mesh with that and spit out a warning
-                     mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                     mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
-                  }
 
-                  loadSuccess = true;
-               }
-   #endif
                if(!loadSuccess)
                {
                   LOG_ERROR("Could not find valid terrain mesh or pre-baked collision mesh to create collision data for terrain.");
@@ -267,6 +267,12 @@ namespace SimCore
             {
                LOG_ERROR("No PhysX World Component exists in the Game Manager.");
             }
+
+
+            //todo delete these 2 lines below before check in 
+            //mHelper->GetMainPhysicsObject()->SetTransform(xform);
+            //mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+
 
             //Set the helper name to match the actor name.
             mHelper->SetName(GetName());
@@ -338,10 +344,40 @@ namespace SimCore
             mHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
 #else
-            std::string filename = dtCore::FindFileInPathList(filename);
+            std::string filename = dtCore::FindFileInPathList(fileToLoad);
             if(!filename.empty())
             {
-               //todo, implement for dtPhysics
+               dtPhysics::PhysicsReaderWriter::PhysicsTriangleData data;
+               data.mFaces = new osg::UIntArray();
+               data.mMaterialFlags = new osg::UIntArray();
+               data.mVertices = new osg::Vec3Array();
+               
+               if(dtPhysics::PhysicsReaderWriter::LoadTriangleDataFile(data, fileToLoad))
+               {
+                  dtCore::Transform geometryWorld;
+                  GetTransform(geometryWorld);
+
+                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(fileToLoad);
+                  newTile->SetTransform(geometryWorld);
+                  newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+                  newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);                  
+                  
+                  dtPhysics::VertexData vertData;
+                  vertData.mIndices = &(data.mFaces->at(0));
+                  vertData.mNumIndices = data.mFaces->size();                  
+                  vertData.mVertices = &(data.mVertices->at(0)[0]);
+                  vertData.mNumVertices = data.mVertices->size();
+
+                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(geometryWorld, vertData, 0);
+                  newTile->CreateFromGeometry(*geom);
+
+                  newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+                  mHelper->AddPhysicsObject(*newTile);
+               }
+               else
+               {
+                  LOG_ERROR("Unable to load physics mesh file '" + fileToLoad + "'.");
+               }
             }
 #endif
          }
