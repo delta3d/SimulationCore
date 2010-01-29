@@ -48,10 +48,10 @@
 
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/UniformAtmosphereActor.h>
+#include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/UnitEnums.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 
 #include <dtGame/gamemanager.h>
@@ -449,18 +449,6 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
    CPPUNIT_ASSERT_EQUAL(0, envConfig->GetCustomMinute());
    CPPUNIT_ASSERT_EQUAL(0, envConfig->GetCustomSecond());
 
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR,
-      envConfig->GetCloudCover());
-
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED,
-      envConfig->GetVisibility());
-
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM,
-      envConfig->GetWeatherTheme());
-
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY,
-      envConfig->GetTimeTheme());
-
    // Sets and gets
    envConfig->SetUseThemedSettings();
    CPPUNIT_ASSERT_EQUAL(true, envConfig->GetUseThemedSettings());
@@ -501,22 +489,6 @@ void ConfigObjectTests::TestPreferencesEnvironmentConfigObject()
    CPPUNIT_ASSERT_EQUAL(10, envConfig->GetCustomSecond());
    envConfig->SetCustomSecond(67);
    CPPUNIT_ASSERT_EQUAL_MESSAGE("The value should clamp", 59, envConfig->GetCustomSecond());
-
-   envConfig->SetCloudCover(dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::CloudCoverEnum::SCATTERED,
-      envConfig->GetCloudCover());
-
-   envConfig->SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED,
-      envConfig->GetVisibility());
-
-   envConfig->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY,
-      envConfig->GetWeatherTheme());
-
-   envConfig->SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK);
-   CPPUNIT_ASSERT_EQUAL(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK,
-      envConfig->GetTimeTheme());
 
    envConfig = NULL;
 }
@@ -686,6 +658,7 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
       new StealthGM::PreferencesEnvironmentConfigObject;
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*new dtCore::Scene);
+   gm->SetApplication(GetGlobalApplication());
    dtCore::RefPtr<SimCore::Components::WeatherComponent> weatherComponent =
       new SimCore::Components::WeatherComponent;
 
@@ -694,15 +667,23 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    dtCore::RefPtr<SimCore::Actors::DayTimeActorProxy> dayTimeProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::DAYTIME_ACTOR_TYPE, dayTimeProxy);
 
-   dtCore::RefPtr<dtActors::BasicEnvironmentActorProxy> envProxy;
-   gm->CreateActor(*dtActors::EngineActorRegistry::WEATHER_ENVIRONMENT_ACTOR_TYPE, envProxy);
-
    dtCore::RefPtr<SimCore::Actors::UniformAtmosphereActorProxy> atmosphereProxy;
    gm->CreateActor(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, atmosphereProxy);
 
+   dtCore::RefPtr<SimCore::Actors::EphemerisEnvironmentActorProxy> envProxy;
+   gm->CreateActor(*SimCore::Actors::EntityActorRegistry::ENVIRONMENT_ACTOR_TYPE, envProxy);
+
    gm->AddActor(*dayTimeProxy, false, false);
    gm->AddActor(*atmosphereProxy, false, false);
-   gm->SetEnvironmentActor(envProxy.get());
+
+   try
+   {
+      gm->SetEnvironmentActor(envProxy.get());
+   }
+   catch (const dtUtil::Exception& ex)
+   {
+      CPPUNIT_FAIL(ex.ToString());
+   }
 
    dtCore::AppSleep(10U);
    dtCore::System::GetInstance().Step();
@@ -710,9 +691,7 @@ void ConfigObjectTests::TestPreferencesEnvironmentApplyChanges()
    CPPUNIT_ASSERT(weatherComponent->GetDayTimeActor() != NULL);
    CPPUNIT_ASSERT(weatherComponent->GetAtmosphereActor() != NULL);
 
-   CPPUNIT_ASSERT_MESSAGE("Setting a normal environment on the game manager should NOT \
-                          register on the WeatherComponent because it is no longer supported",
-                          weatherComponent->GetEphemerisEnvironment() == NULL);
+   CPPUNIT_ASSERT(weatherComponent->GetEphemerisEnvironment() != NULL);
 
    gm = NULL;
 }

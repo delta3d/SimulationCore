@@ -58,6 +58,11 @@ namespace SimCore
    {
       class StealthActor;
    }
+
+   namespace Tools
+   {
+      class Compass360;
+   }
 }
 
 namespace StealthGM
@@ -69,6 +74,7 @@ namespace StealthGM
       public:
          static const std::string CONFIG_HAS_BINOCS;
          static const std::string CONFIG_HAS_COMPASS;
+         static const std::string CONFIG_HAS_COMPASS_360;
          static const std::string CONFIG_HAS_GPS;
          static const std::string CONFIG_HAS_NIGHT_VISION;
          static const std::string CONFIG_HAS_MAP_TOOL;
@@ -117,10 +123,12 @@ namespace StealthGM
          bool mEnablePlayback;
          bool mHasBinoculars;
          bool mHasCompass;
+         bool mHasCompass360;
          bool mHasLRF;
          bool mHasGPS;
          bool mHasNightVis;
          bool mHasMap;
+
    };
 
 }

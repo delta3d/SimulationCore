@@ -27,9 +27,12 @@
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
-//#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
@@ -43,6 +46,7 @@ namespace NetDemo
    FortActor::FortActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
+      SetTerrainPresentDropHeight(0.0);
       SetMaxUpdateSendRate(2.0f);
 
       SetPublishLinearVelocity(false);
@@ -81,7 +85,6 @@ namespace NetDemo
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
       physObj->CreateFromProperties(GetNonDamagedFileNode());
-      physObj->SetActive(true);
 
       if(!IsRemote())
       {
@@ -95,6 +98,9 @@ namespace NetDemo
          articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
+
+         // Setup for damage tracking.
+         RegisterForDamageTracking();
       }
 
       BaseClass::OnEnteredWorld();
@@ -108,7 +114,9 @@ namespace NetDemo
          //Add a spot light
          SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
             new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         sl->mRadius = 30.0f;
+         
+         //we should always see the light from our base... more user friendly in finding it
+         sl->mRadius = 3000.0f;
          sl->mIntensity = 1.0f;
          sl->mColor.set(1.0f, 1.0f, 1.0f);
          sl->mAttenuation.set(0.001, 0.004, 0.0002);
@@ -116,6 +124,34 @@ namespace NetDemo
          sl->mAutoDeleteLightOnTargetNull = true;
          renderComp->AddDynamicLight(sl);
       }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void FortActor::RegisterForDamageTracking()
+   {
+      if( ! IsRemote())
+      {
+         SimCore::Components::MunitionsComponent* comp = NULL;
+         GetGameActorProxy().GetGameManager()->GetComponentByName(
+            SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
+
+         if(comp != NULL)
+         {
+            comp->Register(*this, true);
+         }
+      }
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   float FortActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 
+      const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      //dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+      //return incomingDamage * float(!IsEnemyActor(gap));
+
+      // Do some logic here if you like, but for now, we just reduce the damage we take cause we're BIG.
+      return incomingDamage * 0.10f;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -98,6 +98,7 @@ namespace StealthQt
 
          static const QString PREFERENCES_TOOLS_GROUP;
             static const QString COORDINATE_SYSTEM;
+            static const QString SHOW_COMPASS_360;
             static const QString SHOW_BINOCULAR_IMAGE;
             static const QString SHOW_DISTANCE_TO_OBJECT;
             static const QString SHOW_ELEVATION_OF_OBJECT;

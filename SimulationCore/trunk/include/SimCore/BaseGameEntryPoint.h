@@ -125,8 +125,6 @@ namespace SimCore
          /// Destructor
          virtual ~BaseGameEntryPoint();
 
-         virtual void CreateEnvironment(dtGame::GameManager &gameManager);
-
          osg::ArgumentParser* parser;
 
          dtCore::RefPtr<dtDAL::ActorProxy> terrainActor;

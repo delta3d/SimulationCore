@@ -21,8 +21,6 @@ endif(COMMAND cmake_policy)
 
 PROJECT(SimulationCore)
 
-#variable_watch(DTQT_LIBRARY)
-
 ################################################################################
 # User Options
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
@@ -50,7 +48,7 @@ SET(DELTA32_SONAMES TRUE)
 
 # We have some custom .cmake scripts not in the official distribution.
 # Maybe this can be used override existing behavior if needed?
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;/usr/local/share/cmake/Modules;${CMAKE_MODULE_PATH}")
 
 # Find OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
@@ -60,6 +58,7 @@ INCLUDE(UtilityMacros)
 
 IF(APPLE)
     FIND_LIBRARY(CARBON_LIBRARY Carbon)
+    FIND_LIBRARY(APPSERVICES_LIBRARY ApplicationServices)
     FIND_LIBRARY(IOKIT_LIBRARY IOKit)
     FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
     FIND_LIBRARY(AGL_LIBRARY AGL)

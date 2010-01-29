@@ -1,6 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <shaderlist>
+   <shadergroup name="GUIShaderGroup">
+      <shader name="ButtonHighlightShader" default="yes">
+         <source type="Fragment">Shaders/GUI/ButtonHighlight.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/NetDemo/Button.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorOffset">
+            <oscillator oscillation="Up" cycletimemin="2.0" cycletimemax="2.0" rangemin="1.0" rangemax="1.0" offset="0.0"/>
+         </parameter>
+         <parameter name="buttonInnerHighlightColor">
+            <vec4 defaultValue="1.0 0.0 0.3 1.0"/>
+         </parameter>
+         <parameter name="buttonOuterHighlightColor">
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+   
+   <shadergroup name="ToolsShaderGroup">
+      <shader name="Compass360Shader" default="yes">
+         <source type="Vertex">Shaders/Tools/Compass360.vert</source>
+         <source type="Fragment">Shaders/Tools/Compass360.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+               <wrap axis="S" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="screenRect">
+            <vec4 defaultValue="0.0 0.125 1.0 0.125"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="TrailEffectShaderGroup">
+      <shader name="TrailEffectShader">
+         <source type="Vertex">Shaders/Base/trail_effect.vert</source>
+         <source type="Fragment">Shaders/Base/trail_effect.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Image">Textures/ShadersBase/TrailEffect.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="trailWidth">
+            <float defaultValue="1.0"/>
+         </parameter>
+         <parameter name="trailTextureOffset">
+            <float defaultValue="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+   
    <shadergroup name="OneColorShader">
       <shader name="RedShader" default="yes">
          <source type="Vertex">Shaders/vertex_simple.vert</source>
@@ -9,7 +67,7 @@
             <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
          </parameter>
       </shader>
-      <shader name="BlueShader" default="yes">
+      <shader name="BlueShader" default="no">
          <source type="Vertex">Shaders/vertex_simple.vert</source>
 	 <source type="Fragment">Shaders/onecolor.frag</source>
          <parameter name="color">
@@ -137,12 +195,100 @@
       </shader>
    </shadergroup>
 
+   <shadergroup name="CustomizableVehicleShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorMaskTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/BodyColorMask.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="color1">
+            <vec4 defaultValue="0.25 0.0 0.5 1.0"/>
+         </parameter>
+         <parameter name="color2">
+            <vec4 defaultValue="0.0 1.0 0.0 1.0"/>
+         </parameter>
+      </shader>
+      <shader name="ColorPulseShader">
+         <source type="Fragment">Shaders/Base/color_pulse.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="pulsePathTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/Gradient.tga</source>
+               <wrap axis="S" mode="Repeat"/>
+               <wrap axis="T" mode="Repeat"/>
+            </texture2D>
+         </parameter>
+         <parameter name="pulseColor">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+         <parameter name="pulseOffset">
+            <oscillator oscillation="Down" cycletimemin="1.0" cycletimemax="1.0" rangemin="1.0" rangemax="1.0" offset="0.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
+   <shadergroup name="CustomizableTowerShaderGroup">
+      <shader name="NoDamage" default="yes">
+         <source type="Vertex">Shaders/Base/custom_paint.vert</source>
+         <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
+         <source type="Fragment">Shaders/Base/custom_paint.frag</source>
+         <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <source type="Fragment">Shaders/Base/dynamic_light.frag</source>
+         <source type="Fragment">Shaders/Base/spot_light.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+         <parameter name="colorMaskTexture">
+            <texture2D textureUnit="1">
+               <source type="Image">Textures/NetDemo/TowerColorMask.tga</source>
+               <wrap axis="S" mode="Clamp"/>
+               <wrap axis="T" mode="Clamp"/>
+            </texture2D>
+         </parameter>
+         <parameter name="color1">
+            <vec4 defaultValue="0.85 0.8 0.0 1.0"/>
+         </parameter>
+         <parameter name="color2">
+            <vec4 defaultValue="0.0 0.0 1.0 1.0"/>
+         </parameter>
+      </shader>
+   </shadergroup>
+
    <shadergroup name="GhostVehicleShaderGroup">
       <shader name="NoDamage" default="yes">
          <source type="Vertex">Shaders/Base/shader_nogloss.vert</source>
          <source type="Vertex">Shaders/Base/vertex_functions.vert</source>
          <source type="Fragment">Shaders/Base/shader_ghost.frag</source>
          <source type="Fragment">Shaders/Base/fragment_functions.frag</source>
+         <parameter name="diffuseTexture">
+            <texture2D textureUnit="0">
+               <source type="Auto"/>
+            </texture2D>
+         </parameter>
+      </shader>
+      <shader name="GhostParticleShader" default="no">
+         <source type="Vertex">Shaders/Base/particle_emissive.vert</source>
+	 <source type="Fragment">Shaders/Base/particle_emissive.frag</source>
          <parameter name="diffuseTexture">
             <texture2D textureUnit="0">
                <source type="Auto"/>
@@ -244,6 +390,12 @@
          </parameter>
          <parameter name="Intensity">
             <float defaultValue="1000.0"/>
+         </parameter>
+         <parameter name="lineGlowColor">
+            <vec4 defaultValue="1.0 0.0 0.0 1.0"/>
+         </parameter>
+         <parameter name="lineCenterColor">
+            <vec4 defaultValue="1.0 1.0 1.0 1.0"/>
          </parameter>
       </shader>
    </shadergroup>

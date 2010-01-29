@@ -20,6 +20,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtCore/base.h>
+#include <dtCore/refptr.h>
 #include <SimCore/Export.h>
 #include <SimCore/GUI/AnimationController.h>
 
@@ -33,6 +34,7 @@ namespace SimCore
    namespace Components
    {
       class HUDElement;
+      class HUDGroup;
    }
 }
 
@@ -76,6 +78,13 @@ namespace SimCore
             static const std::string ANIM_TYPE_MOTION;
             static const std::string ANIM_TYPE_SIZE;
 
+            enum FadeStateE
+            {
+               FADE_OUT = -1,
+               FADE_NONE = 0,
+               FADE_IN = 1
+            };
+
             Screen( const std::string& name );
 
             /**
@@ -84,7 +93,7 @@ namespace SimCore
              *        for the screen drawables. It is up to the implementation
              *        to cast the root and handle attaching elements to it.
              */
-            virtual void Setup( SimCore::Components::HUDGroup* root = NULL ) = 0;
+            virtual void Setup(SimCore::Components::HUDGroup* root = NULL) = 0;
 
             /**
              * Reset all animations and members to the original default values.
@@ -112,6 +121,80 @@ namespace SimCore
             void SetEnabled( bool enabled );
             bool IsEnabled() const;
 
+            /**
+             * Set the amount of time that it takes for the screen to completely
+             * transition in.
+             */
+            void SetTimeFadeIn(float seconds);
+            float GetTimeFadeIn() const;
+
+            /**
+             * Set the amount of time that it takes for the screen to completely
+             * transition out.
+             */
+            void SetTimeFadeOut(float seconds);
+            float GetTimeFadeOut() const;
+
+            /**
+             * Get the current fade state of this screen.
+             */
+            FadeStateE GetFadeState() const;
+
+            /**
+             * To be called when the screen is entered, usually when an associated
+             * game state is entered. Override this to handle screen setup
+             * This method should signal the start of transitioning in of elements.
+             */
+            virtual void OnEnter();
+
+            /**
+             * To be called when the screen is entered, usually when an associated
+             * game state is entered. Override this to handle screen shutdown.
+             * This method should signal the start of transitioning out of elements.
+             */
+            virtual void OnExit();
+
+            /**
+             * To be called when the screen begins transitioning in.
+             * This method should signal widgets to begin fade-in animations.
+             */
+            virtual void OnFadeInStart();
+
+            /**
+             * To be called when the screen elements finish transitioning in.
+             * This method should signal the implemented screen to enable widgets for input.
+             */
+            virtual void OnFadeInEnd();
+
+            /**
+             * To be called when the screen begins transitioning out.
+             * This method should signal widgets to begin fade-out animations.
+             */
+            virtual void OnFadeOutStart();
+
+            /**
+             * To be called when the screen elements finish transitioning out.
+             * This method should signal the implemented screen to hide itself.
+             */
+            virtual void OnFadeOutEnd();
+
+            /**
+             * To be called when the screen is being updated by a game state.
+             */
+            void OnUpdate(float timeDelta);
+
+            /**
+             * Convenience method for setting all animation controls to their
+             * start targets.
+             */
+            void SetAnimControlsToStart();
+            
+            /**
+             * Convenience method for setting all animation controls to their
+             * end targets.
+             */
+            void SetAnimControlsToEnd();
+
          protected:
             virtual ~Screen();
 
@@ -129,6 +212,10 @@ namespace SimCore
 
          private:
             bool mEnabled;
+            FadeStateE mFadeState;
+            float mFadeTimer;
+            float mTimeFadeIn;
+            float mTimeFadeOut;
             AnimControlMap mAnimControls;
       };
    }

@@ -88,6 +88,15 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> DR_GHOST_ACTOR_TYPE;
 
+            static dtCore::RefPtr<dtDAL::ActorType> SURFACE_VESSEL_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> SOUND_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_PARTICLE_SYSTEM_ACTOR_TYPE;
+
+            static dtCore::RefPtr<dtDAL::ActorType> LOGIC_CONDITIONAL_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> LOGIC_ON_EVENT_ACTOR_TYPE;
+
             /// Constructor
             EntityActorRegistry();
 

@@ -36,8 +36,6 @@
 #include <dtCore/camera.h>
 #include <dtUtil/mathdefines.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
-
 using dtCore::RefPtr;
 using SimCore::MessageType;
 
@@ -94,34 +92,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////
-      void BaseInputComponent::ChangeWeatherType()
-      {
-         dtActors::BasicEnvironmentActor *envActor = dynamic_cast<dtActors::BasicEnvironmentActor*>(GetGameManager()->GetEnvironmentActor());
-         if(envActor == NULL)
-         {
-            LOG_ERROR("The dynamic cast to an EnvironmentActor failed. Can't change weather.");
-            return;
-         }
-
-         if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR)
-         {
-            envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR);
-         }
-         else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR)
-         {
-            envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY);
-         }
-         else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY)
-         {
-            envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
-         }
-         else if (envActor->GetWeatherTheme() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY)
-         {
-            envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR);
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::ChangeLODScale(bool down)
       {
          float originalLODScale = GetGameManager()->GetApplication().GetCamera()->GetOSGCamera()->getLODScale();
@@ -172,12 +142,6 @@ namespace SimCore
          case osgGA::GUIEventAdapter::KEY_Page_Down:
             {
                SetEntityMagnification(mEntityMagnification / 2.0f);
-               break;
-            }
-
-         case osgGA::GUIEventAdapter::KEY_F12:
-            {
-               ChangeWeatherType();
                break;
             }
 

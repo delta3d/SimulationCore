@@ -625,7 +625,7 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////////
          // Set up emitter values on the particle...
 
-         osg::Vec4 linearVelocities;
+         osg::Vec3 linearVelocities;
          linearVelocities[0] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[0], mStartingLinearVelocityScaleMin[0]);
          linearVelocities[1] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[1], mStartingLinearVelocityScaleMin[1]);
          linearVelocities[2] = GetRandBetweenTwoFloats(mStartingLinearVelocityScaleMax[2], mStartingLinearVelocityScaleMin[2]);
@@ -650,10 +650,11 @@ namespace SimCore
 
          if(!mGravityEnabled) newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
    #else
-         osg::Vec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
+         osg::Vec3 vRandVec(linearVelocities);
 
          newActor->SetLinearVelocity(vRandVec);
-         std::cout << vRandVec << std::endl;
+
+         // DEBUG: std::cout << vRandVec << std::endl;
 
          vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
                   GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),

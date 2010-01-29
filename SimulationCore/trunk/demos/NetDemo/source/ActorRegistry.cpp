@@ -21,6 +21,7 @@
 #include <Actors/FortActor.h>
 #include <Actors/EnemyMine.h>
 #include <Actors/EnemyHelix.h>
+#include <Actors/EnemyMothership.h>
 #include <Actors/SpawnVolumeActor.h>
 #include <Actors/EnemyDescriptionActor.h>
 #include <Actors/PropelledVehicleActor.h>
@@ -64,8 +65,9 @@ namespace NetDemo
       new dtDAL::ActorType("EnemyHelixActor", "NetDemo", "A more sophisticated enemy then the enemy mine.",
       SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
-   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::SPAWN_VOLUME_ACTOR_TYPE(
-      new dtDAL::ActorType("SpawnVolumeActor", "NetDemo", "Spawns enemies randomly within a bounding volume."));
+   RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE(
+      new dtDAL::ActorType("EnemyMothershipActor", "NetDemo", "The motherhship spawns the other enemies.",
+      SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
    RefPtr<dtDAL::ActorType> NetDemoActorRegistry::ENEMY_DESCRIPTION_TYPE(
       new dtDAL::ActorType("EnemyDecriptionActor", "NetDemo", "Describes the attributes of an enemy prototype."));
@@ -100,8 +102,8 @@ namespace NetDemo
       mActorFactory->RegisterType<TowerActorProxy>(TOWER_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyMineActorProxy>(ENEMY_MINE_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyHelixActorProxy>(ENEMY_HELIX_ACTOR_TYPE.get());
-      mActorFactory->RegisterType<SpawnVolumeActorProxy>(SPAWN_VOLUME_ACTOR_TYPE.get());
       mActorFactory->RegisterType<EnemyDescriptionActorProxy>(ENEMY_DESCRIPTION_TYPE.get());
+      mActorFactory->RegisterType<EnemyMothershipActorProxy>(ENEMY_MOTHERSHIP_ACTOR_TYPE.get());
 
    }
 }

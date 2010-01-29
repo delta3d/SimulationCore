@@ -46,6 +46,8 @@
 #include <SimCore/VisibilityOptions.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
 
+#include <iostream>
+
 namespace SimCore
 {
 
@@ -161,6 +163,7 @@ namespace SimCore
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
          propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
+         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR);
       }
 
 
@@ -522,10 +525,10 @@ namespace SimCore
          , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
-         , mMaxRotationError(6.0f)
-         , mMaxRotationError2(36.0f)
-         , mMaxTranslationError(0.5f)
-         , mMaxTranslationError2(0.25f)
+         , mMaxRotationError(2.0f)
+         , mMaxRotationError2(4.0f)
+         , mMaxTranslationError(0.15f)
+         , mMaxTranslationError2(0.0225f)
          , mFireLightID(0)
          , mEngineSmokeOn(false)
          , mSmokePlumePresent(false)
@@ -541,6 +544,7 @@ namespace SimCore
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();
          g->addChild(mScaleMatrixNode.get());
+         mScaleMatrixNode->setName("mScaleMatrixNode");
 
          // temp turned off to test performance.
          SetCollisionDetection(false);
@@ -591,6 +595,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::OnEnteredWorld()
       {
+         GetOSGNode()->setName(GetName());
+
          if (!IsRemote())
          {
             //for now. Set the time for update sending to 10 seconds.
@@ -610,8 +616,9 @@ namespace SimCore
             // In practice, the smoothing time is usually reduced down to the avg time between
             // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway.
             // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
+            // These values will typically be overridden by custom behaviors.
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
 
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
@@ -621,7 +628,8 @@ namespace SimCore
                   (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
                if (munitionsComp != NULL && !munitionsComp->HasRegistered(GetUniqueId()))
                {
-                  munitionsComp->Register(*this, true, GetMaxDamageAmount());
+                  // Changed to the second parameter to false because the entity does the update itself now.
+                  munitionsComp->Register(*this, false, GetMaxDamageAmount());
                }
             }
 
@@ -632,11 +640,11 @@ namespace SimCore
             // Note - this is usually set by the DR helper, but in case it's not, or in the case
             // that an actor was changed from local to remote, we want a value... yes, it's obscure
             if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(
-                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
+               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
+                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
             if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(
-                  dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
+               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
+                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
          }
       }
 
@@ -661,7 +669,16 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
       {
+         if (mDamageState == &damageState)
+            return;
+
          mDamageState = &damageState;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -774,6 +791,12 @@ namespace SimCore
 //            mNode->asGroup()->removeChild(mPointsGeode.get());
 //         else
 //            mNode->asGroup()->addChild(mPointsGeode.get());
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -861,6 +884,12 @@ namespace SimCore
             }
          }
          mFlamesPresent = enable;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -891,6 +920,12 @@ namespace SimCore
             }
          }
          mEngineSmokeOn = enable;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -1036,7 +1071,7 @@ namespace SimCore
 
          if (mTimeUntilNextUpdate <= 0.0f)
          {
-            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
+            mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
             fullUpdate = true;
             forceUpdate = true;
          }
@@ -1045,10 +1080,19 @@ namespace SimCore
          // properties that we need to publish
          forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
 
-
          if (forceUpdate)
          {
             SetLastKnownValuesBeforePublish(pos, rot);
+
+            // If it is almost time to do a full update and our entity wants to do a partial update anyway, 
+            // then go ahead and do a full update now. This prevents the heart beat from causing 
+            // discontinuities in the update rate - mainly for vehicles that publish quickly and regularly
+            // The logic should cause an update at between 9.5 - 10.5 seconds assuming a 10s heart beat
+            if (mTimeUntilNextUpdate < TIME_BETWEEN_UPDATES * 0.1f)
+            {
+               mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
+               fullUpdate = true;
+            }
 
             if (fullUpdate)
             {
@@ -1067,10 +1111,6 @@ namespace SimCore
          SetLastKnownTranslation(pos);
          SetLastKnownRotation(rot);
 
-         //SetLastKnownVelocityVector(GetCurrentVelocity());
-         //SetLastKnownAngularVelocity(GetCurrentAngularVelocity());
-         //SetLastKnownAcceleration(GetCurrentAcceleration());
-
          // Linear Velocity & acceleration - push the current value to the Last Known
          if (mPublishLinearVelocity)
          {
@@ -1087,6 +1127,7 @@ namespace SimCore
 
             // Acceleration is paired with velocity
             SetLastKnownAcceleration(GetCurrentAcceleration());
+
          }
 
          // Angular Velocity - push the current value to the Last Known

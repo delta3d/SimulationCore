@@ -37,6 +37,7 @@ namespace NetDemo
    const AIStateType AIStateType::AI_STATE_FIND_TARGET("AI_STATE_FIND_TARGET");
    const AIStateType AIStateType::AI_STATE_GO_TO_WAYPOINT("AI_STATE_GO_TO_WAYPOINT");
    const AIStateType AIStateType::AI_STATE_ATTACK("AI_STATE_ATTACK");
+   const AIStateType AIStateType::AI_STATE_FIRE_LASER("AI_STATE_FIRE_LASER");
    const AIStateType AIStateType::AI_STATE_EVADE("AI_STATE_EVADE");
    const AIStateType AIStateType::AI_STATE_FOLLOW("AI_STATE_FOLLOW");
    const AIStateType AIStateType::AI_STATE_FLOCK("AI_STATE_FLOCK");

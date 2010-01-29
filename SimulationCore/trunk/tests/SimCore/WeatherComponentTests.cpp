@@ -30,7 +30,6 @@
 
 #include <dtABC/application.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 
 #include <dtCore/system.h>

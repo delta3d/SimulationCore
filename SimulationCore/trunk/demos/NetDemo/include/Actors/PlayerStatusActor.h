@@ -101,8 +101,6 @@ namespace NetDemo
          virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
          virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
-      public:
-
          // Publishes an actor update message for player settings props to let other players know.
          void PublishPlayerSettings();
 
@@ -122,6 +120,9 @@ namespace NetDemo
          void SetIsServer(bool newValue);
          bool GetIsServer() const { return mIsServer; }
 
+         void SetReady(bool ready);
+         bool IsReady() const;
+
          // Terrain Preference - Property - The server's value here defines what terrain is loaded for all.
          void SetTerrainPreference(const std::string& newValue);
          const std::string& GetTerrainPreference() const { return mTerrainPreference; }
@@ -138,6 +139,10 @@ namespace NetDemo
          void SetIPAddress(const std::string& newValue);
          const std::string& GetIPAddress() const { return mIPAddress; }
 
+         void SetScore(int score);
+         int GetScore() const;
+         void UpdateScore(int scoreModifier);
+
       protected:
 
 
@@ -146,7 +151,9 @@ namespace NetDemo
 
          PlayerStatusEnum* mPlayerStatus;
          int mTeamNumber;
+         int mScore;
          bool mIsServer;
+         bool mIsReady;
          std::string mTerrainPreference;
          VehicleTypeEnum* mVehiclePreference;
          dtCore::UniqueId mAttachedVehicleID;
@@ -169,10 +176,12 @@ namespace NetDemo
          static const dtUtil::RefString PROP_PLAYER_STATUS;
          static const dtUtil::RefString PROP_TEAM_NUM;
          static const dtUtil::RefString PROP_IS_SERVER;
+         static const dtUtil::RefString PROP_IS_READY;
          static const dtUtil::RefString PROP_TERRAIN_PREFERENCE;
          static const dtUtil::RefString PROP_VEHICLE_PREFERENCE;
          static const dtUtil::RefString PROP_ATTACHED_VEHICLE_ID;
          static const dtUtil::RefString PROP_IP_ADDRESS;
+         static const dtUtil::RefString PROP_SCORE;
 
          PlayerStatusActorProxy();
          virtual void BuildPropertyMap();

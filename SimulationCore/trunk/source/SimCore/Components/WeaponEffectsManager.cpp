@@ -1101,7 +1101,6 @@ namespace SimCore
                if( newEffect->LoadSound( effectsInfo.GetFireSound() ) )
                {
                   dtAudio::Sound* sound = newEffect->GetSound();
-                  sound->SetMinDistance( effectsInfo.GetFireSoundMinDistance() );
                   sound->SetMaxDistance( effectsInfo.GetFireSoundMaxDistance() );
                }
             }

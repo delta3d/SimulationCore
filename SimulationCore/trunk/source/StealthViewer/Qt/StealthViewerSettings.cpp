@@ -104,6 +104,7 @@ namespace StealthQt
 
    const QString StealthViewerSettings::PREFERENCES_TOOLS_GROUP("PREFERENCES_TOOLS_GROUP");
       const QString StealthViewerSettings::COORDINATE_SYSTEM("COORDINATE_SYSTEM");
+      const QString StealthViewerSettings::SHOW_COMPASS_360("SHOW_COMPASS_360");
       const QString StealthViewerSettings::SHOW_BINOCULAR_IMAGE("SHOW_BINOCULAR_IMAGE");
       const QString StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT("SHOW_DISTANCE_TO_OBJECT");
       const QString StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT("SHOW_ELEVATION_OF_OBJECT");
@@ -489,15 +490,15 @@ namespace StealthQt
          setValue(StealthViewerSettings::USE_NETWORK_SETTINGS, envConfig.GetUseNetworkSettings());
 
          setValue(StealthViewerSettings::USE_THEMED_SETTINGS, envConfig.GetUseThemedSettings());
-         setValue(StealthViewerSettings::WEATHER_THEME, envConfig.GetWeatherTheme().GetName().c_str());
-         setValue(StealthViewerSettings::TIME_THEME, envConfig.GetTimeTheme().GetName().c_str());
+         //setValue(StealthViewerSettings::WEATHER_THEME, envConfig.GetWeatherTheme().GetName().c_str());
+         //setValue(StealthViewerSettings::TIME_THEME, envConfig.GetTimeTheme().GetName().c_str());
 
          setValue(StealthViewerSettings::USE_CUSTOM_SETTINGS, envConfig.GetUseCustomSettings());
          setValue(StealthViewerSettings::CUSTOM_HOUR, envConfig.GetCustomHour());
          setValue(StealthViewerSettings::CUSTOM_MINUTE, envConfig.GetCustomMinute());
          setValue(StealthViewerSettings::CUSTOM_SECOND, envConfig.GetCustomSecond());
-         setValue(StealthViewerSettings::CUSTOM_VISIBILITY, envConfig.GetVisibility().GetName().c_str());
-         setValue(StealthViewerSettings::CUSTOM_CLOUD_COVER, envConfig.GetCloudCover().GetName().c_str());
+         //setValue(StealthViewerSettings::CUSTOM_VISIBILITY, envConfig.GetVisibility().GetName().c_str());
+         //setValue(StealthViewerSettings::CUSTOM_CLOUD_COVER, envConfig.GetCloudCover().GetName().c_str());
 
       endGroup();
    }
@@ -511,6 +512,7 @@ namespace StealthQt
       beginGroup(StealthViewerSettings::PREFERENCES_TOOLS_GROUP);
 
          setValue(StealthViewerSettings::COORDINATE_SYSTEM, toolsObject.GetCoordinateSystem().GetName().c_str());
+         setValue(StealthViewerSettings::SHOW_COMPASS_360, toolsObject.GetShowCompass360());
          setValue(StealthViewerSettings::SHOW_BINOCULAR_IMAGE, toolsObject.GetShowBinocularImage());
          setValue(StealthViewerSettings::SHOW_DISTANCE_TO_OBJECT, toolsObject.GetShowDistanceToObject());
          setValue(StealthViewerSettings::SHOW_ELEVATION_OF_OBJECT, toolsObject.GetShowElevationOfObject());
@@ -827,13 +829,13 @@ namespace StealthQt
          if (contains(StealthViewerSettings::WEATHER_THEME))
          {
             QString savedValue = value(StealthViewerSettings::WEATHER_THEME).toString();
-            envConfig.SetWeatherTheme(savedValue.toStdString());
+            //envConfig.SetWeatherTheme(savedValue.toStdString());
          }
 
          if (contains(StealthViewerSettings::TIME_THEME))
          {
             QString savedValue = value(StealthViewerSettings::TIME_THEME).toString();
-            envConfig.SetTimeTheme(savedValue.toStdString());
+            //envConfig.SetTimeTheme(savedValue.toStdString());
          }
 
          if (contains(StealthViewerSettings::USE_CUSTOM_SETTINGS))
@@ -864,13 +866,13 @@ namespace StealthQt
          if (contains(StealthViewerSettings::CUSTOM_VISIBILITY))
          {
             QString savedValue = value(StealthViewerSettings::CUSTOM_VISIBILITY).toString();
-            envConfig.SetVisibility(savedValue.toStdString());
+            //envConfig.SetVisibility(savedValue.toStdString());
          }
 
          if (contains(StealthViewerSettings::CUSTOM_CLOUD_COVER))
          {
             QString savedValue = value(StealthViewerSettings::CUSTOM_CLOUD_COVER).toString();
-            envConfig.SetCloudCover(savedValue.toStdString());
+            //envConfig.SetCloudCover(savedValue.toStdString());
          }
 
       endGroup();
@@ -892,6 +894,12 @@ namespace StealthQt
 
             if (coordSystem != NULL)
                toolsConfig.SetCoordinateSystem(*coordSystem);
+         }
+
+         if (contains(StealthViewerSettings::SHOW_COMPASS_360))
+         {
+            bool savedValue = value(StealthViewerSettings::SHOW_COMPASS_360).toBool();
+            toolsConfig.SetShowCompass360(savedValue);
          }
 
          if (contains(StealthViewerSettings::SHOW_BINOCULAR_IMAGE))

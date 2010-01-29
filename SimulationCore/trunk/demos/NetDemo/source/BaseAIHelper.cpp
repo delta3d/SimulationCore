@@ -47,8 +47,9 @@ namespace NetDemo
       , mStateMachine(mFactory.get())
       , mSteeringModel(new AISteeringModel())
       , mPhysicsModel(new AIPhysicsModel())
+      , mDefaultTargeter(new BaseSteeringTargeter())
    {
-
+      mTargeters.push_back(mDefaultTargeter);
    }
 
    BaseAIHelper::~BaseAIHelper()
@@ -56,18 +57,45 @@ namespace NetDemo
 
    }
 
-   void BaseAIHelper::Init(const EnemyDescriptionActor& desc)
+   void BaseAIHelper::Init(const EnemyDescriptionActor* desc)
    {
       RegisterStates();
       CreateStates();
       SetupTransitions();
       SetupFunctors();
 
+      mSteeringModel->Init();
+      mPhysicsModel->Init();
+
       OnInit(desc);
    }
 
-   void BaseAIHelper::OnInit(const EnemyDescriptionActor& desc)
+   void BaseAIHelper::OnInit(const EnemyDescriptionActor* desc)
    {
+      osg::Matrix mat;
+      mat.makeIdentity();
+
+      if(desc != NULL)
+      {
+         dtCore::Transform xform;
+         desc->GetTransform(xform);
+         xform.Get(mat);
+
+         mPhysicsModel->SetState(mCurrentState, mat);
+         mPhysicsModel->SetState(mGoalState, mat);
+         
+         //our goal state actually derives the game state so we call both
+         mPhysicsModel->SetDefaultState(mat, mGoalState);
+         mPhysicsModel->SetDefaultConstraints(mGoalState);
+      }
+      else
+      {
+         mPhysicsModel->SetDefaultState(mat, mCurrentState);
+         
+         //our goal state actually derives the game state so we call both
+         mPhysicsModel->SetDefaultState(mat, mGoalState);
+         mPhysicsModel->SetDefaultConstraints(mGoalState);
+      }
    }
 
 
@@ -76,15 +104,14 @@ namespace NetDemo
       if(mPhysicsModel.valid())
       {
          //update the position and orientation
-         Kinematic k = mPhysicsModel->GetKinematicState();
-         trans.Get(k.mTransform);
+         osg::Matrix mat;
+         trans.Get(mat);
+         mPhysicsModel->SetState(mCurrentState, mat);
 
          //update the linear and angular velocities
          dtPhysics::PhysicsObject* physicsObject = GetPhysicsModel()->GetPhysicsHelper()->GetMainPhysicsObject();
-         k.mLinearVelocity = physicsObject->GetLinearVelocity();
-         k.mAngularVelocity = physicsObject->GetAngularVelocity();
-
-         mPhysicsModel->SetKinematicState(k);
+         mCurrentState.SetVel(physicsObject->GetLinearVelocity());
+         //mCurrentState.SetAngularVel(physicsObject->GetAngularVelocity());
       }
    }
 
@@ -92,8 +119,34 @@ namespace NetDemo
    {
       if(mPhysicsModel.valid())
       {
-         const Kinematic& k = mPhysicsModel->GetKinematicState();
-         trans.Set(k.mTransform);
+         osg::Matrix mat;
+         mPhysicsModel->GetState(mCurrentState, mat);
+         
+         //we are currently only updating the rotation
+         trans.SetRotation(mat);
+
+         //check to make sure we haven't exceeded our max speed
+         osg::Vec3 suggestedPos;
+         trans.GetTranslation(suggestedPos);
+
+         float dist = (mCurrentState.GetPos() - suggestedPos).length();
+         if(dist > (mGoalState.GetMaxVel() * mPhysicsModel->GetCurrentTimeStep()))
+         {
+            //we could try to move you as far as you can go but we may cause a collision
+            //instead we will have to just stay put, investigate a collision query or second ai try (tick)
+            trans.SetTranslation(mCurrentState.GetPos());
+            
+            //LOG_ALWAYS("Clamping entity range");
+            //we changed the actual position, we had better notify physics
+            if(mPhysicsModel->GetPhysicsHelper() != NULL && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+            {
+               dtPhysics::PhysicsObject* physicsObject = mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject();
+               physicsObject->SetTransform(trans);
+
+               physicsObject->GetBodyWrapper()->ResetForces();
+            }
+            
+         }
       }
    }
 
@@ -104,9 +157,12 @@ namespace NetDemo
 
    void BaseAIHelper::Update(float dt)
    {
+      const float MAX_TICK = 0.1f;
+      if(dt > MAX_TICK) dt = MAX_TICK;
+
       mStateMachine.Update(dt);
-      mSteeringModel->Update(mPhysicsModel->GetKinematicState(), dt);
-      mPhysicsModel->Update(mSteeringModel->GetOutput(), dt);
+      mSteeringModel->Step(dt, *this);
+      mPhysicsModel->Update(dt, *this);
    }
 
    void BaseAIHelper::RegisterStates()
@@ -140,6 +196,47 @@ namespace NetDemo
    void BaseAIHelper::AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState)
    {
       mStateMachine.AddTransition(eventToTriggerTransition, fromState, toState);
+   }
+
+   bool BaseAIHelper::FindPath(const BaseClass::AIState& fromState, const BaseClass::AIGoal& goal, BaseClass::AIPath& resultingPath) const
+   {
+      resultingPath.push_back(goal);
+      return true;
+   }
+   
+   void BaseAIHelper::OutputControl(const BaseClass::AIPath& pathToFollow, const BaseClass::AIState& current_state, BaseClass::AIControlState& result) const
+   {
+      mSteeringModel->OutputControl(pathToFollow, current_state, result);
+   }
+
+   void BaseAIHelper::UpdateState(float dt, const BaseClass::AIControlState& steerData)
+   {
+   }
+
+   void BaseAIHelper::RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
+   {
+      BaseClass::RegisterProperties(pc, group);
+   }
+
+   void BaseAIHelper::GetTransform( dtCore::Transform& transIn ) const
+   {
+      osg::Matrix mat;
+      mPhysicsModel->GetState(mCurrentState, mat);
+
+      transIn.Set(mat);
+   }
+
+   void BaseAIHelper::SetTransform( const dtCore::Transform& trans )
+   {
+      osg::Matrix mat;
+      trans.Get(mat);
+
+      mPhysicsModel->SetState(mCurrentState, mat);
+      //if(mPhysicsModel->GetPhysicsHelper() != NULL
+      //   && mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject() != NULL)
+      //{
+      //   mPhysicsModel->GetPhysicsHelper()->GetMainPhysicsObject()->SetTransform(trans);
+      //}
    }
 
 } //namespace NetDemo

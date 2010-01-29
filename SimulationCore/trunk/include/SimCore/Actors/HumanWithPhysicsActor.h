@@ -27,6 +27,8 @@
 
 #ifdef AGEIA_PHYSICS
 #include <NxAgeiaCharacterHelper.h>
+#else
+#include <dtPhysics/charactercontroller.h>
 #endif
 
 #include <SimCore/PhysicsTypes.h>
@@ -114,6 +116,14 @@ namespace SimCore
          private:
             /// our helper
             dtCore::RefPtr<dtAgeiaPhysX::NxAgeiaCharacterHelper> mPhysicsHelper;
+#else
+            void PrePhysicsUpdate();
+            // returns the physics helper for use
+            dtPhysics::PhysicsHelper* GetPhysicsHelper();
+
+         private:
+            dtCore::RefPtr<dtPhysics::PhysicsHelper> mPhysicsHelper;
+            dtCore::RefPtr<dtPhysics::CharacterController> mCharacterController;
 #endif
 
          public:

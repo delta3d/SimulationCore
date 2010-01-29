@@ -33,6 +33,8 @@
 
 #include <dtAI/fsm.h>
 #include <dtAI/npcstate.h>
+#include <dtAI/controllable.h>
+
 
 #include <dtCore/transform.h>
 
@@ -43,20 +45,27 @@ namespace NetDemo
    class AIStateType;
    class EnemyDescriptionActor;
 
-   class NETDEMO_EXPORT BaseAIHelper: public osg::Referenced
+   class NETDEMO_EXPORT BaseAIHelper: public BaseAIControllable,
+                                      public osg::Referenced
    {
    public:
+      typedef BaseAIControllable BaseClass;
+      
+   public:
       BaseAIHelper();
-      BaseAIHelper(const EnemyDescriptionActor& desc);
+      BaseAIHelper(const EnemyDescriptionActor* desc);
 
-      void Init(const EnemyDescriptionActor& desc);
-      virtual void OnInit(const EnemyDescriptionActor& desc);
+      void Init(const EnemyDescriptionActor* desc);
+      virtual void OnInit(const EnemyDescriptionActor* desc);
 
       virtual void Spawn();
       virtual void Update(float dt);
 
       virtual void PreSync(const dtCore::Transform& trans);
       virtual void PostSync(dtCore::Transform& trans) const;
+
+      virtual void GetTransform(dtCore::Transform& transIn) const;
+      virtual void SetTransform(const dtCore::Transform& trans);
 
       const dtUtil::RefString& GetPrototypeName() const;
       void GetPrototypeName(const dtUtil::RefString& name);
@@ -73,11 +82,19 @@ namespace NetDemo
       AIPhysicsModel* GetPhysicsModel() { return mPhysicsModel.get(); }
       const AIPhysicsModel* GetPhysicsModel() const { return mPhysicsModel.get(); }
 
+      //derived from Controllable and allows the steering pipeline to operate on us
+      /*virtual*/ bool FindPath(const BaseClass::AIState& fromState, const BaseClass::AIGoal& goal, BaseClass::AIPath& resultingPath) const;
+      /*virtual*/ void UpdateState(float dt, const BaseClass::AIControlState& steerData);
+      /*virtual*/ void OutputControl(const BaseClass::AIPath& pathToFollow, const BaseClass::AIState& current_state, BaseClass::AIControlState& result) const;
+
+      /*virtual*/ void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
+
       /**
       * A function to add transitions to the finite state machine using the AIStateType
       * which avoids redundant calls to FSM::GetState.
       */
       void AddTransition(const AIEvent* eventToTriggerTransition, const AIStateType* fromState, const AIStateType* toState);
+
 
    protected:
       BaseAIHelper(const BaseAIHelper&);  //not implemented by design
@@ -91,12 +108,14 @@ namespace NetDemo
 
       virtual void SelectState(float dt);
 
-   private:
+   //private:
 
       dtCore::RefPtr<dtAI::FSM::FactoryType> mFactory;
       dtAI::FSM mStateMachine;
       dtCore::RefPtr<AISteeringModel> mSteeringModel;
       dtCore::RefPtr<AIPhysicsModel> mPhysicsModel;
+      
+      BaseSteeringTargeter* mDefaultTargeter;
 
       dtUtil::RefString mPrototypeName;
    };

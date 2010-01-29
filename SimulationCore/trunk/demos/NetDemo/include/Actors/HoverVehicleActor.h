@@ -116,7 +116,6 @@ namespace NetDemo
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
-         float mTimeTillJumpReady;
          bool mVehicleIsTurret;
 
    };

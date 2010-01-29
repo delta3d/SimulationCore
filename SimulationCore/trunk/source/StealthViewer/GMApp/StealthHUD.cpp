@@ -28,6 +28,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/UnitEnums.h>
+#include <SimCore/Tools/Compass360.h>
 
 #include <dtUtil/macros.h>
 #include <dtUtil/exception.h>
@@ -82,16 +83,18 @@ namespace StealthGM
                           dtGame::LogController* logController,
                           const std::string &name,
                           bool hasUI)
-   :  SimCore::Components::BaseHUD(win, name),
-      mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL),
-      mLogController(logController),
-      mRightTextXOffset(225.0f),
-      mTextYTopOffset(10.0f),
-      mTextYSeparation(2.0f),
-      mTextHeight(40.0f),
-      mLastLogState(NULL),
-      mCoordSystem(&CoordSystem::MGRS),
-      mHasUI(hasUI)
+      : SimCore::Components::BaseHUD(win, name)
+      , mLastHUDStateBeforeHelp(&SimCore::Components::HUDState::MINIMAL)
+      , mLogController(logController)
+      , mRightTextXOffset(225.0f)
+      , mTextYTopOffset(10.0f)
+      , mTextYSeparation(2.0f)
+      , mTextHeight(40.0f)
+      , mZoomToolEnabled(false)
+      , mCompass360WasEnabled(false)
+      , mLastLogState(NULL)
+      , mCoordSystem(&CoordSystem::MGRS)
+      , mHasUI(hasUI)
    {
    }
 
@@ -121,48 +124,6 @@ namespace StealthGM
          // Update Label Manager since all entities are at their
          // final positions in the world.
 //         mLabelManager->Update( tick.GetDeltaRealTime() );
-      }
-      else if( type == SimCore::MessageType::BINOCULARS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&> (message);
-         mToolbar->SetButtonActive("Binoculars",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::NIGHT_VISION )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("NightVision",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::LASER_RANGE_FINDER )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("LRF",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::GPS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("GPS",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::MAP )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("Map",toolMsg.IsEnabled());
-         UpdateHelpButton();
-      }
-      else if( type == SimCore::MessageType::COMPASS )
-      {
-         mToolbar->SetButtonsActive(false);
-         const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
-         mToolbar->SetButtonActive("Compass",toolMsg.IsEnabled());
-         UpdateHelpButton();
       }
       else if( type == dtGame::MessageType::INFO_MAP_LOADED )
       {
@@ -199,6 +160,96 @@ namespace StealthGM
             static_cast<dtActors::CoordinateConfigActor&>(*proxies[0]->GetActor());
 
          SetCoordinateConverter(ccActor.GetCoordinateConverter());
+      }
+      else // Is this a tool message?
+      {
+         const SimCore::ToolMessage* toolMessage = dynamic_cast<const SimCore::ToolMessage*>(&message);
+         if(toolMessage != NULL)
+         {
+            ProcessToolMessage(*toolMessage);
+         }
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void StealthHUD::ProcessToolMessage(const SimCore::ToolMessage& toolMessage)
+   {
+      const dtGame::MessageType& type = toolMessage.GetMessageType();
+      bool toolEnabled = toolMessage.IsEnabled();
+
+      if(type == SimCore::MessageType::BINOCULARS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Binoculars",toolEnabled);
+         UpdateHelpButton();
+
+         mZoomToolEnabled = toolEnabled;
+      }
+      else if(type == SimCore::MessageType::NIGHT_VISION)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("NightVision",toolEnabled);
+         UpdateHelpButton();
+
+         mZoomToolEnabled = toolEnabled;
+      }
+      else if(type == SimCore::MessageType::LASER_RANGE_FINDER)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("LRF",toolEnabled);
+         UpdateHelpButton();
+
+         mZoomToolEnabled = toolEnabled;
+      }
+      else if(type == SimCore::MessageType::GPS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("GPS",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::MAP)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Map",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::COMPASS)
+      {
+         mToolbar->SetButtonsActive(false);
+         mToolbar->SetButtonActive("Compass",toolEnabled);
+         UpdateHelpButton();
+      }
+      else if(type == SimCore::MessageType::COMPASS_360)
+      {
+         mCompass360WasEnabled = toolEnabled;
+         SetCompass360Enabled(toolEnabled);
+      }
+      else if(type == SimCore::MessageType::NO_TOOL)
+      {
+         mZoomToolEnabled = false;
+         mCompass360WasEnabled = false;
+      }
+
+      // Handle the 360 compass special case; it should not
+      // be on when using one of the other tools that affect
+      // the camera zoom.
+      //
+      // Should it be forced off?
+      if(mZoomToolEnabled)
+      {
+         // Maintain the old state of mCompass360WasEnabled.
+         bool wasEnabled = mCompass360WasEnabled;
+
+         // This method affects the value of mCompass360WasEnabled.
+         SetCompass360Enabled(false);
+
+         // Set the state back.
+         mCompass360WasEnabled = wasEnabled;
+      }
+      else
+      {
+          // ...otherwise return the tool back to its normal state.
+         SetCompass360Enabled(mCompass360WasEnabled);
       }
    }
 
@@ -668,4 +719,42 @@ namespace StealthGM
    {
       return *mLabelManager;
    }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetupCompass360()
+   {
+      if( ! mCompass360.valid())
+      {
+         // 360 Compass
+         osg::Group* sceneNode = GetGameManager()->GetApplication().GetScene()->GetSceneNode();
+         mCompass360 = new SimCore::Tools::Compass360();
+         mCompass360->Init(*sceneNode, "Textures/Tools/Compass360.tga");
+         mCompass360->Enable(false);
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool StealthHUD::HasCompass360() const
+   {
+      return mCompass360.valid();
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void StealthHUD::SetCompass360Enabled(bool enable)
+   {
+      // The HUD may or may not have a compass 360.
+      if(mCompass360.valid())
+      {
+         mCompass360WasEnabled = enable;
+
+         mCompass360->Enable(enable && ( ! mZoomToolEnabled));
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   bool StealthHUD::IsCompass360Enabled() const
+   {
+      return mCompass360.valid() && mCompass360WasEnabled;
+   }
+
 }

@@ -68,8 +68,26 @@ namespace SimCore
       // Build the property list for the actor
       virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-      bool        GetIsVehicleFourWheelDrive() const     {return mFourWheelDrive;}
+      bool GetIsVehicleFourWheelDrive() const     {return mFourWheelDrive;}
       void SetIsVehicleFourWheelDrive(bool value)     {mFourWheelDrive = value;}
+
+      float GetFrontTrackAdjustment() const;
+
+      /**
+       * Track is the distance along the axle of a wheel from the centerline of the vehicle.
+       * Setting this to a positive number moves the wheel farther away than defined in the model.
+       * Setting it negative moves it closer.
+       */
+      void SetFrontTrackAdjustment(float adjustment);
+
+      float GetRearTrackAdjustment() const;
+
+      /**
+       * Track is the distance along the axle of a wheel from the centerline of the vehicle.
+       * Setting this to a positive number moves the wheel farther away than defined in the model.
+       * Setting it negative moves it closer.
+       */
+      void SetRearTrackAdjustment(float adjustment);
 
    protected:
       virtual ~FourWheelVehiclePhysicsHelper();
@@ -79,6 +97,10 @@ namespace SimCore
    private:
 
       WheelType        mWheels[4];                //!< All of the vehicle's wheels
+
+      float            mFrontTrackAdjustment;
+      float            mRearTrackAdjustment;
+
       float            mCurrentNormalizedSteering;     //!< Current steering from -1.0 to 1.0
       float            mCurrentEngineTorque;      //!< Current torque from engine: depends on mAccelerator and mEngineTorque
       float            mCurrentNormalizedBrakes;  //!< Current brakes from 0-1

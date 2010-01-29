@@ -20,6 +20,7 @@ varying vec4 pos;
 varying vec3 lightVector;
 varying float distanceScale;
 varying vec2 vFog;
+varying vec2 vertexWaveDir;
 varying vec3 shaderVertexNormal;
 
 uniform float elapsedTime;
@@ -63,7 +64,7 @@ void main(void)
    distanceScale = (1.0 - clamp(distance / (maxDistance * modForFOV), 0.0, 1.0));   
    float distFromCamera = distance;
    float distBetweenVerts = gl_Vertex.z;
-   distBetweenVertsScalar = gl_Vertex.z * scalar * 3.5 / modForFOV;
+   distBetweenVertsScalar = gl_Vertex.z * scalar * 3.5;// / modForFOV;
  
    pos = camPos + localVert;   
    pos.z = WaterHeight;
@@ -87,7 +88,7 @@ void main(void)
 
       float mPlusPhi =  (freq * (speed * elapsedTime + offsetPos.x * waveDir.x + waveDir.y * offsetPos.y)); 
       
-      float k = max(waveArray[i+1].x, 1.00001);
+      float k = max(waveArray[i+1].x, 4.00001);
 
       float sinPhi = sin(mPlusPhi);
       //cos/sin of the sum of the previous two variables
@@ -98,8 +99,10 @@ void main(void)
       float vertexDerivativeScalar = freq * amp * pow((sinPhi + 1.0) * 0.5, k - 1.0) * cos(mPlusPhi);
       shaderVertexNormal.x += k * waveDir.x * vertexDerivativeScalar;
       shaderVertexNormal.y += k * waveDir.y * vertexDerivativeScalar;      
-
+      vertexWaveDir += waveDir; 
    }
+
+   vertexWaveDir = normalize(vertexWaveDir);
 
    shaderVertexNormal.x = -shaderVertexNormal.x;
    shaderVertexNormal.y = -shaderVertexNormal.y;
@@ -110,7 +113,9 @@ void main(void)
    pos.z = WaterHeight + (zModifier * heightScalar);
 
    //transform our vector into screen space
-   gl_Position = gl_ModelViewProjectionMatrix * pos;
+   mat4 mvp = gl_ModelViewProjectionMatrix;
+   //mvp[3] = vec4(0.0, 0.0, 0.0, 1.0);
+   gl_Position = mvp * pos;
    
    float fog_distance = length(pos - inverseViewMatrix[3]);
    pos.xy = localVert.xy; // used to allow more precision in the frag shader.

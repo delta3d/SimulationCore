@@ -29,7 +29,6 @@
 #include <dtABC/application.h>
 #include <dtABC/weather.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
 

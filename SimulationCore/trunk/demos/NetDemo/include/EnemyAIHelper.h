@@ -48,11 +48,13 @@ namespace NetDemo
 
          EnemyAIHelper();
 
-         /*virtual*/ void OnInit(const EnemyDescriptionActor& desc);
+         /*virtual*/ void OnInit(const EnemyDescriptionActor* desc);
          /*virtual*/ void Spawn();
          /*virtual*/ void Update(float dt);
 
+         float GetDistance(const osg::Vec3& pos);
          void SetCurrentTarget(dtCore::Transformable& target);
+         void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
 
       protected:
          EnemyAIHelper(const EnemyAIHelper&);  //not implemented by design
@@ -66,18 +68,12 @@ namespace NetDemo
 
          /*virtual*/ void SelectState(float dt);
 
-         virtual void Attack(float dt);
          virtual void CalculateNextWaypoint();
          virtual void GoToWaypoint(float dt);
          virtual void DefaultStateUpdate(float dt);
 
-         void ChangeSteeringBehavior(dtCore::RefPtr<SteeringBehaviorType> newBehavior);
 
       private:
-
-         //temporary- used by mine until refactor
-         float mMaxVelocity;
-         float GetDistance(const osg::Vec3& pos);
 
    };
 

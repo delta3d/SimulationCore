@@ -54,6 +54,8 @@ namespace NetDemo
          //float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
          float  mGroundClearance;       /// How far above the ground we should be.
          float  mForceBoostFactor;      /// Force boost factor is multiplied time max speeds to determine impulse force
+         float  mMaximumBoostPerSecond;
+         float  mCurrentBoostTime;
 
       public:
 

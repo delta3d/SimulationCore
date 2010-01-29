@@ -63,9 +63,11 @@
 #include <SimCore/Components/ControlStateComponent.h>
 #include <SimCore/Tools/GPS.h>
 #include <SimCore/Tools/Compass.h>
+#include <SimCore/Tools/Compass360.h>
 #include <SimCore/Tools/Binoculars.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/WeaponTypeEnum.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <SimCore/HLA/HLAConnectionComponent.h>
 
@@ -97,21 +99,23 @@ namespace StealthGM
 
    const std::string StealthGameEntryPoint::CONFIG_HAS_BINOCS("HasBinocs");
    const std::string StealthGameEntryPoint::CONFIG_HAS_COMPASS("HasCompass");
+   const std::string StealthGameEntryPoint::CONFIG_HAS_COMPASS_360("HasCompass360");
    const std::string StealthGameEntryPoint::CONFIG_HAS_GPS("HasGPS");
    const std::string StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION("HasNightVision");
    const std::string StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL("HasMapTool");
    static const std::string CONFIG_BINOCS_IMAGE_OVERRIDE("Binoculars.ImageOverride");
 
    ///////////////////////////////////////////////////////////////////////////
-   StealthGameEntryPoint::StealthGameEntryPoint() :
-      mEnableLogging(false),
-      mEnablePlayback(false),
-      mHasBinoculars(false),
-      mHasCompass(false),
-      mHasLRF(false),
-      mHasGPS(false),
-      mHasNightVis(false),
-      mHasMap(false)
+   StealthGameEntryPoint::StealthGameEntryPoint()
+      : mEnableLogging(false)
+      , mEnablePlayback(false)
+      , mHasBinoculars(false)
+      , mHasCompass(false)
+      , mHasCompass360(false)
+      , mHasLRF(false)
+      , mHasGPS(false)
+      , mHasNightVis(false)
+      , mHasMap(false)
    {
    }
 
@@ -158,6 +162,10 @@ namespace StealthGM
       {
          mHasCompass = true;
       }
+      if( parser->read("--hasCompass360") )
+      {
+         mHasCompass360 = true;
+      }
       if( parser->read("--hasGPS") )
       {
          mHasGPS = true;
@@ -192,6 +200,7 @@ namespace StealthGM
       dtABC::Application& app = gm.GetApplication();
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_BINOCS, mHasBinoculars, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_COMPASS, mHasCompass, app);
+      ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_COMPASS_360, mHasCompass360, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_GPS, mHasGPS, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_MAP_TOOL, mHasMap, app);
       ReadBoolConfigProperty(StealthGameEntryPoint::CONFIG_HAS_NIGHT_VISION, mHasNightVis, app);
@@ -227,6 +236,11 @@ namespace StealthGM
             SimCore::MessageType::COMPASS
             );
          mHudGUI->AddToolButton("Compass","F8");
+      }
+
+      if(mHasCompass360)
+      {
+         mHudGUI->SetupCompass360();
       }
 
       if( mHasBinoculars )
@@ -356,8 +370,9 @@ namespace StealthGM
       dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(gameManager.GetConfiguration());
       //dtCore::RefPtr<dtPhysics::PhysicsWorld> physicsWorld = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::ODE_ENGINE);
       physicsWorld->Init();
-      gameManager.AddComponent(*new dtPhysics::PhysicsComponent(*physicsWorld, false),
-               dtGame::GameManager::ComponentPriority::NORMAL);
+      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*physicsWorld, false);
+      gameManager.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+      SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
 #endif
       //mStealth->SetName("Stealth");
       //mStealth->SetTransform(stealthStart);

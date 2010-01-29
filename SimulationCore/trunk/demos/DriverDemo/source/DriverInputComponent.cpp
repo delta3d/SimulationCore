@@ -981,7 +981,6 @@ namespace DriverDemo
       //mSoundTurretTurnStart->LoadFile(SOUND_TURRET_TURN_START.c_str());
       //mSoundTurretTurnStart->ListenerRelative(true);
       //mSoundTurretTurnStart->SetLooping(false);
-      //mSoundTurretTurnStart->SetMinDistance(1.0f);
       //mSoundTurretTurnStart->SetMaxDistance(1.0f);
       //player.AddChild(mSoundTurretTurnStart.get());
 
@@ -990,7 +989,6 @@ namespace DriverDemo
       //mSoundTurretTurn->LoadFile(SOUND_TURRET_TURN.c_str());
       //mSoundTurretTurn->ListenerRelative(true);
       //mSoundTurretTurn->SetLooping(true);
-      //mSoundTurretTurn->SetMinDistance(1.0f);
       //mSoundTurretTurn->SetMaxDistance(1.0f);
       //player.AddChild(mSoundTurretTurn.get());
 
@@ -999,7 +997,6 @@ namespace DriverDemo
       //mSoundTurretTurnEnd->LoadFile(SOUND_TURRET_TURN_END.c_str());
       //mSoundTurretTurnEnd->ListenerRelative(true);
       //mSoundTurretTurnEnd->SetLooping(false);
-      //mSoundTurretTurnEnd->SetMinDistance(1.0f);
       //mSoundTurretTurnEnd->SetMaxDistance(1.0f);
       //player.AddChild(mSoundTurretTurnEnd.get());
 
@@ -1008,7 +1005,6 @@ namespace DriverDemo
       //mSoundAmbient->LoadFile(SOUND_AMBIENT.c_str());
       //mSoundAmbient->ListenerRelative(false);
       //mSoundAmbient->SetLooping(true);
-      //mSoundAmbient->SetMinDistance(1.0f);
       //mSoundAmbient->SetMaxDistance(1.0f);
       //player.AddChild(mSoundAmbient.get());
    }

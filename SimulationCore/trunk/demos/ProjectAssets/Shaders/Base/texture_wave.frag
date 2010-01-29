@@ -12,6 +12,7 @@ uniform float elapsedTime;
 uniform mat4 inverseViewMatrix;
 uniform float textureWaveChopModifier;
 uniform float WaterHeight;
+uniform float waveDirection;
 
 const int CURWAVE=0;
 const int numWaves = 32;//16;
@@ -21,6 +22,7 @@ const float twoPI = 6.283185;
 float kArray[32];
 float waveLengthArray[32];
 float waveSpeedArray[32];
+
 
 void main (void)
 {  
@@ -126,7 +128,7 @@ void main (void)
    vec3 camPos = inverseViewMatrix[3].xyz;
                                     
    
-   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 5.0), 0.0, 8.0); 
+   float resolutionScalar = 1.0 + clamp(floor(sqrt(camPos.z - WaterHeight) / 2.75), 0.0, 3.0); 
    float ampOverLength = 1.0 / (512.0 * resolutionScalar);
 
    vec3 textureNormal = vec3(0.0, 0.0, 0.0);  
@@ -137,19 +139,21 @@ void main (void)
       float dir = pow(-1.0, float(i)) * float(i) * (textureWaveChopModifier / float(numWaves));
       float dirAsRad = radians(dir);//radians(waveDirArray[i]);
       //float dirAsRad = radians(waveDirArray[i]);
-      float dirCos = cos(dirAsRad);
-      float dirSin = sin(dirAsRad);
+      float dirCos = cos(radians(waveDirection) + dirAsRad);
+      float dirSin = sin(radians(waveDirection) + dirAsRad);
       vec2 waveDir = vec2(dirSin, dirCos);
       
       float freq = twoPI / waveLength;
       float amp = waveLength * ampOverLength;
-      float steepness = 1.0;
+      float steepness = 4.0;
       float speed = waveSpeedArray[i];      
    
       //speed * freq * time   
       float phi = 0.5 * speed * freq * elapsedTime;
       
-      vec2 resolution = gl_FragCoord.xy / (64.0 * resolutionScalar);
+      vec2 fragCoord = gl_FragCoord.xy;
+
+      vec2 resolution = fragCoord / (128.0 * resolutionScalar);
       //float twoLSqrd = pow(2.0 * waveLength, 2.0);
       //vec2 tilingSize = sqrt(twoLSqrd / dot(waveDir, waveDir));
       //tilingSize *= (1.0 + int(1.0 / waveLength));

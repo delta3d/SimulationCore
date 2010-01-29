@@ -26,8 +26,6 @@
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>
 #include <StealthViewer/GMApp/Export.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
-
 #include <dtUtil/enumeration.h>
 
 namespace StealthGM
@@ -114,78 +112,6 @@ namespace StealthGM
          int GetNetworkSecond() const { return mNetworkSeconds; }
 
          /**
-          * Sets the cloud cover
-          * @param cover The new cloud cover
-          */
-         void SetCloudCover(dtActors::BasicEnvironmentActor::CloudCoverEnum &cover)
-         { mCloudCover = &cover; SetIsUpdated(true); }
-
-         /**
-          * Set overload
-          */
-         void SetCloudCover(const std::string &cover);
-
-         /**
-          * Gets the cloud cover
-          * @return mCloudCover
-          */
-         const dtActors::BasicEnvironmentActor::CloudCoverEnum& GetCloudCover() const { return *mCloudCover; }
-
-         /**
-          * Sets the visibility
-          * @param vis The new visibility
-          */
-         void SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum &vis)
-         { mVisibility = &vis; SetIsUpdated(true); }
-
-         /**
-          * Set overload
-          */
-         void SetVisibility(const std::string &vis);
-
-         /**
-          * Returns the visibility
-          * @return mVisibility
-          */
-         const dtActors::BasicEnvironmentActor::VisibilityTypeEnum& GetVisibility() const { return *mVisibility; }
-
-         /**
-          * Sets the weather theme
-          * @param theme The new weather theme
-          */
-         void SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum &theme) 
-         { mWeatherTheme = &theme; SetIsUpdated(true); }
-
-         /**
-          * Set overload 
-          */
-         void SetWeatherTheme(const std::string &theme);
-
-         /**
-          * Returns the weather theme
-          * @return mWeatherTheme
-          */
-         const dtActors::BasicEnvironmentActor::WeatherThemeEnum& GetWeatherTheme() const { return *mWeatherTheme; }
-
-         /**
-          * Sets the time theme
-          * @param theme The new time theme
-          */
-         void SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum &theme) 
-         { mTimeTheme = &theme; SetIsUpdated(true); }
-
-         /**
-          * Set overload
-          */
-         void SetTimeTheme(const std::string &theme);
-
-         /**
-          * Returns the visibility
-          * @return mVisibility
-          */
-         const dtActors::BasicEnvironmentActor::TimePeriodEnum& GetTimeTheme() const { return *mTimeTheme; }
-
-         /**
           * Sets the Custom hour
           * @param hour The hour in military time
           */
@@ -248,10 +174,6 @@ namespace StealthGM
          int mNetworkHour;
          int mNetworkMinute;
          int mNetworkSeconds;
-         dtActors::BasicEnvironmentActor::CloudCoverEnum     *mCloudCover;
-         dtActors::BasicEnvironmentActor::VisibilityTypeEnum *mVisibility;
-         dtActors::BasicEnvironmentActor::WeatherThemeEnum   *mWeatherTheme;
-         dtActors::BasicEnvironmentActor::TimePeriodEnum     *mTimeTheme;
          int mCustomHour;
          int mCustomMinute;
          int mCustomSeconds;

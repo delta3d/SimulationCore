@@ -30,7 +30,9 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
+#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/BaseEntity.h>
 
 
 
@@ -47,6 +49,7 @@
 #include <iostream>
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
+#include <NetDemoMessageTypes.h>
 
 
 namespace NetDemo
@@ -60,6 +63,7 @@ namespace NetDemo
    //////////////////////////////////////////////////////////////
    InputComponent::InputComponent(const std::string& name)
       : SimCore::Components::BaseInputComponent(name)
+      , mDRGhostMode(NONE)
       , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
       , mOriginalPublishTimesPerSecond(3.0f)
@@ -247,6 +251,20 @@ namespace NetDemo
             break;
          }
 
+         case 'P':
+         {
+            if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
+            {
+               dtPhysics::PhysicsComponent* physicsComponent = NULL;
+               GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
+               if (physicsComponent != NULL)
+               {
+                  physicsComponent->SetNextDebugDrawMode();
+               }
+            }
+         }
+         break;
+
          case 'g':
             {
                ToggleDRGhost();
@@ -255,10 +273,20 @@ namespace NetDemo
 
          case 'V':
             {
-               ToggleVelocityDRCompare();
+               ToggleVelocityDR();
                break;
             }
 
+         case '5':
+            {
+               ModifyVehicleSmoothingRate(0.90);
+               break;
+            }
+         case '6':
+            {
+               ModifyVehicleSmoothingRate(1.10);
+               break;
+            }
          case '7':
             {
                ModifyVehiclePublishRate(1.10);
@@ -266,20 +294,20 @@ namespace NetDemo
             }
          case '8':
             {
-               ModifyVehiclePublishRate(0.9090909);
+               ModifyVehiclePublishRate(0.901);
                break;
             }
          case '9':
             {
-               if (mVehicle.valid())
-               {
-                  std::cout << "Setting smoothing time to 0.0" << std::endl;
-                  mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
-                  mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
-               }
+               ResetTestingValues();
                break;
             }
 
+         case '0':
+            {
+               ToggleGroundClamping();
+               break;
+            }
          case 't':
             {
                /////////////////////////////////////////////////////////
@@ -293,6 +321,16 @@ namespace NetDemo
                break;
             }
 
+         case osgGA::GUIEventAdapter::KEY_Delete:
+            {
+               // Delete all if shift held, otherwise, just one.
+               bool deleteAll = keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_L) ||
+                  keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_R);
+               KillEnemy(deleteAll);
+            }
+            break;
+
+         case '\\':
          case osgGA::GUIEventAdapter::KEY_Insert:
             {
                std::string developerMode;
@@ -337,6 +375,25 @@ namespace NetDemo
                }
             }
             break;
+
+         case 'r':
+            {
+               if (mVehicle.valid())
+               {
+                  // Repair our damage state - done by the munitions component
+                  SimCore::Components::MunitionsComponent *munitionsComp =
+                     static_cast<SimCore::Components::MunitionsComponent*>
+                     (GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME));
+                  munitionsComp->SetDamage( *mVehicle, SimCore::Components::DamageType::DAMAGE_NONE );
+
+                  // Turn off flames. Doesn't necessarily go out when damage is reset.
+                  mVehicle->SetFlamesPresent(false);
+
+                  EnableMotionModels();
+               }
+            }
+            break;
+
          case osgGA::GUIEventAdapter::KEY_Escape:
             {
                // Escapce key should act as one would expect, to escape from the
@@ -349,6 +406,33 @@ namespace NetDemo
             {
                dtABC::Application& app = GetGameManager()->GetApplication();
                app.GetWindow()->SetFullScreenMode(!app.GetWindow()->GetFullScreenMode());
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_Up:
+         case osgGA::GUIEventAdapter::KEY_Left:
+            {
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_PREV);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_Down:
+         case osgGA::GUIEventAdapter::KEY_Right:
+            {
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_NEXT);
+            }
+            break;
+
+         //case osgGA::GUIEventAdapter::KEY_Space:
+         case osgGA::GUIEventAdapter::KEY_Return:
+            {
+               SendSimpleMessage(NetDemo::MessageType::UI_OPTION_SELECT);
+            }
+            break;
+
+         case osgGA::GUIEventAdapter::KEY_F1:
+            {
+               SendSimpleMessage(NetDemo::MessageType::UI_HELP);
             }
             break;
 
@@ -530,10 +614,18 @@ namespace NetDemo
    {
       dtCore::RefPtr<SimCore::AttachToActorMessage> msg;
       GetGameManager()->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR, msg);
-      msg->SetAboutActorId(GetStealthActor()->GetUniqueId());
+      msg->SetAboutActorId((GetStealthActor() == NULL) ? (dtCore::UniqueId("")) : GetStealthActor()->GetUniqueId());
       msg->SetAttachToActor(vehicleId);
       msg->SetAttachPointNodeName(dofName);
       GetGameManager()->SendMessage(*msg.get());
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::SendSimpleMessage(const NetDemo::MessageType& messageType)
+   {
+      dtCore::RefPtr<dtGame::Message> message;
+      GetGameManager()->GetMessageFactory().CreateMessage(messageType, message);
+      GetGameManager()->SendMessage(*message);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -542,16 +634,18 @@ namespace NetDemo
       SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
-      // If it already exists, then kill it.
-      if (mDRGhostActorProxy.valid())
+      // basic error check.
+      if (!mVehicle.valid() || mPhysVehicle == NULL)
       {
          CleanUpDRGhost();
+         return;
       }
 
-      // Else, create it and put it in the world
-      else if (mVehicle.valid() && mPhysVehicle != NULL)
+      // state - NONE, go to GHOST_ON
+      if (mDRGhostMode == NONE)
       {
-         LOG_ALWAYS("TEST - Enabling Ghost Dead Reckoning behavior.");
+         // create ghost and add to world
+         LOG_ALWAYS("Enabling Ghost Dead Reckoning behavior.");
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
@@ -562,26 +656,76 @@ namespace NetDemo
             GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
          }
 
+         mDRGhostMode = GHOST_ON;
       }
+
+      // state - GHOST_ON, go to ATTACH_TO_GHOST
+      else if (mDRGhostMode == GHOST_ON)
+      {
+         LOG_ALWAYS(" --- Attaching Camera to DR Ghost.");
+         if (mDRGhostActorProxy.valid())
+         {
+            SendAttachOrDetachMessage(mDRGhostActorProxy->GetGameActor().GetUniqueId(), "");
+         }
+
+         mDRGhostMode = ATTACH_TO_GHOST;
+      }
+
+      // state - ATTACH_TO_GHOST, go to HIDE_REAL
+      else if (mDRGhostMode == ATTACH_TO_GHOST)
+      {
+         LOG_ALWAYS(" --- Hiding Real Vehicle.");
+         if (mDRGhostActorProxy.valid())
+         {
+            mPhysVehicle->SetVisible(false);
+         }
+
+         mDRGhostMode = HIDE_REAL;
+      }
+
+      // state - HIDE_REAL go to DETACH_FROM_VEHICLE
+      else if (mDRGhostMode == HIDE_REAL)
+      {
+         LOG_ALWAYS(" --- Bye bye Ghost AND No attach to Real. Just sit still");
+         mPhysVehicle->SetVisible(true);
+         CleanUpDRGhost();
+         mDRGhostMode = DETACH_FROM_VEHICLE;
+      }
+
+      // state - DETACH_FROM_VEHICLE, go to NONE
+      else if (mDRGhostMode == DETACH_FROM_VEHICLE)
+      {
+         LOG_ALWAYS(" --- Removing DR and re-attaching to Real Vehicle.");
+         SendAttachOrDetachMessage(mPhysVehicle->GetUniqueId(), mViewPointList[mCurrentViewPointIndex]);
+         mDRGhostMode = NONE;
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void InputComponent::ToggleVelocityDRCompare()
+   void InputComponent::ToggleVelocityDR()
    {
+      dtABC::Application& app = GetGameManager()->GetApplication();
+      bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
+         app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
+
       SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
       if (mPhysVehicle != NULL)
       {
-         if (mPhysVehicle->GetUseVelocityInDRUpdateDecision())
+         if (!ctrlIsPressed)
          {
-            LOG_ALWAYS("Toggling - disabling using velocity for DR update decision.");
+            mPhysVehicle->SetPublishLinearVelocity(!mPhysVehicle->IsPublishLinearVelocity());
+            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->IsPublishLinearVelocity() << 
+               "]. Ctrl to change VelDRDecision." << std::endl;
          }
          else
          {
-            LOG_ALWAYS("Toggling - enabling using velocity for DR update decision.");
+            mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
+            std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" << 
+               mPhysVehicle->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
          }
-         mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
       }
    }
 
@@ -598,6 +742,7 @@ namespace NetDemo
          {
             mPhysVehicle->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
          }
+         mDRGhostMode = NONE;
       }
 
    }
@@ -605,21 +750,131 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////////////
    void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
    {
-      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
-      if (mPhysVehicle != NULL)
+      if (physVehicle != NULL)
       {
-         float timesPerSecondRate = mPhysVehicle->GetMaxUpdateSendRate();
+         float timesPerSecondRate = physVehicle->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
-         mPhysVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
-
+         physVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
          float rateInSeconds = 1.0f / timesPerSecondRate;
-         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
-         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
+
+         //mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
+         //mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
 
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
       }
    }
 
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ModifyVehicleSmoothingRate(float scaleFactor)
+   {
+      // Like the publish method, only works on the smoothing rate.
+      dtABC::Application& app = GetGameManager()->GetApplication();
+      bool ctrlIsPressed = app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_L) ||
+         app.GetKeyboard()->GetKeyState(osgGA::GUIEventAdapter::KEY_Control_R);
+
+      if (mVehicle.valid())
+      {
+         if (!ctrlIsPressed)
+         {
+            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxTranslationSmoothingTime();
+            float newRate = oldRate * scaleFactor;
+            mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(newRate);
+
+            std::cout << "-- Changed TRANS Smoothing Time to [" << newRate <<  "]. Hold CTRL to change Rot." << std::endl;
+         }
+         else
+         {
+            float oldRate = mVehicle->GetDeadReckoningHelper().GetMaxRotationSmoothingTime();
+            float newRate = oldRate * scaleFactor;
+            mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(newRate);
+            
+            std::cout << "-- Changed ROT Smoothing Time to [" << newRate <<  "]." << std::endl;
+         }
+
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleGroundClamping()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (mPhysVehicle != NULL)
+      {
+         if (mPhysVehicle->IsFlying())
+         {
+            LOG_ALWAYS("TEST -- Toggling - ENABLE ground clamping for DR. ");
+         }
+         else
+         {
+            LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
+         }
+         mPhysVehicle->SetFlying(!mPhysVehicle->IsFlying());
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ResetTestingValues()
+   {
+      std::cout << "Resetting DR values such as publish and smoothing." << std::endl;
+      if (mVehicle.valid())
+      {
+         SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+            dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+         if (mPhysVehicle != NULL)
+         {
+            mPhysVehicle->SetMaxUpdateSendRate(3.0f);
+         }
+
+         mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
+         mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
+
+         mPhysVehicle->SetUseVelocityInDRUpdateDecision(true);
+
+
+         mPhysVehicle->SetPublishLinearVelocity(true);
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::KillEnemy(bool killAllEnemies)
+   {
+      // We use the Munitions Component to do the damage to the object
+      SimCore::Components::MunitionsComponent* munitionsComp = NULL;
+      GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+      if (munitionsComp == NULL)
+      {
+         LOG_ERROR("No Munitions Component. ERROR!");
+         return;
+      }
+
+      // Look for a enemy actor.
+      std::vector<dtGame::GameActorProxy*> allGameActors;
+      GetGameManager()->GetAllGameActors(allGameActors);
+      // Iterate through all the game actors to find one of our enemies.
+      unsigned int numActors = allGameActors.size();
+      for(unsigned i = 0; i < numActors; i++)
+      {
+         // Find an entity that is not already destroyed and is also a mine, helix, etc...
+         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetActor());
+         if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
+            (allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
+            allGameActors[i]->GetActorType() == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE))
+         {
+            munitionsComp->SetDamage(*entity, SimCore::Components::DamageType::DAMAGE_KILL);
+               //SimCore::Components::DamageStateEnum::DESTROYED);
+
+            // Stop after one or keep going for all
+            if (!killAllEnemies)
+               break;
+         }
+      }
+
+   }
 }
 

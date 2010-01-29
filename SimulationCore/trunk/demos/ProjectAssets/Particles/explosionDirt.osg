@@ -35,7 +35,7 @@ Group {
         textureUnit 0 {
           GL_TEXTURE_2D ON
           Texture2D {
-            file "Textures/dirt1.tga"
+            file "../Textures/medium_smoke.tga"
             wrap_s MIRROR
             wrap_t MIRROR
             wrap_r CLAMP
@@ -58,6 +58,7 @@ Group {
       useDisplayList FALSE
       useVertexBufferObjects FALSE
       particleAlignment BILLBOARD
+      particleScaleReferenceFrame WORLD_COORDINATES
       alignVectorX 1 0 0
       alignVectorY 0 1 0
       doublePassRendering FALSE
@@ -102,16 +103,13 @@ Group {
       DataVariance DYNAMIC
       StateSet {
         UniqueID StateSet_6
-        DataVariance STATIC
         rendering_hint TRANSPARENT_BIN
         renderBinMode USE
-        binNumber 13
+        binNumber 10
         binName DepthSortedBin
         GL_LIGHTING OFF
-        GL_COLOR_MATERIAL ON
         GL_BLEND ON
         Material {
-          DataVariance STATIC
           ColorMode OFF
           ambientColor 0.2 0.2 0.2 1
           diffuseColor 0.8 0.8 0.8 1
@@ -122,17 +120,15 @@ Group {
           shininess 0
         }
         BlendFunc {
-          DataVariance STATIC
           source SRC_ALPHA
           destination ONE
         }
         textureUnit 0 {
           GL_TEXTURE_2D ON
           Texture2D {
-            DataVariance STATIC
-            file "Textures/flash1.BMP"
-            wrap_s CLAMP
-            wrap_t CLAMP
+            file "../Textures/medium_smoke.tga"
+            wrap_s MIRROR
+            wrap_t MIRROR
             wrap_r CLAMP
             min_filter LINEAR
             mag_filter LINEAR
@@ -142,10 +138,9 @@ Group {
             useHardwareMipMapGeneration TRUE
             unRefImageDataAfterApply FALSE
             internalFormatMode USE_IMAGE_DATA_FORMAT
-            resizeNonPowerOfTwo FALSE
+            resizeNonPowerOfTwo TRUE
           }
           TexEnv {
-            DataVariance STATIC
             mode MODULATE
           }
         }
@@ -154,6 +149,7 @@ Group {
       useDisplayList FALSE
       useVertexBufferObjects FALSE
       particleAlignment BILLBOARD
+      particleScaleReferenceFrame WORLD_COORDINATES
       alignVectorX 1 0 0
       alignVectorY 0 1 0
       doublePassRendering FALSE
@@ -221,7 +217,7 @@ Group {
         textureUnit 0 {
           GL_TEXTURE_2D ON
           Texture2D {
-            file "Textures/medium_smoke.tga"
+            file "../Textures/medium_smoke.tga"
             wrap_s MIRROR
             wrap_t MIRROR
             wrap_r CLAMP
@@ -244,6 +240,7 @@ Group {
       useDisplayList FALSE
       useVertexBufferObjects FALSE
       particleAlignment BILLBOARD
+      particleScaleReferenceFrame WORLD_COORDINATES
       alignVectorX 1 0 0
       alignVectorY 0 1 0
       doublePassRendering FALSE
@@ -261,7 +258,7 @@ Group {
         angle 0 0 0
         angularVelocity 0 0 0
         radius 0.2
-        mass 60
+        mass 10
         textureTile 1 1 1
         sizeInterpolator {
           osgParticle::LinearInterpolator {
@@ -330,7 +327,7 @@ Group {
       }
       osgParticle::RadialShooter {
         DataVariance DYNAMIC
-        thetaRange 0 0.392699
+        thetaRange 0 0.39
         phiRange 0 6.28319
         initialSpeedRange 4.6 4.6
         initialRotationalSpeedRange 0 0 0 0 0 0
@@ -472,7 +469,7 @@ Group {
         DataVariance DYNAMIC
         thetaRange 0 0.392699
         phiRange 0 6.28319
-        initialSpeedRange 0.2 0.25
+        initialSpeedRange 0.2 0.2
         initialRotationalSpeedRange 0 0 0 0 0 0
       }
     }

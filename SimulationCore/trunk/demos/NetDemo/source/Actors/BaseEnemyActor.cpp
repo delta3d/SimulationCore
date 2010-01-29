@@ -26,6 +26,8 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/basemessages.h>
+#include <SimCore/Messages.h>
+#include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
@@ -33,14 +35,24 @@
 
 //#include <dtUtil/nodeprintout.h>
 
+#include <AIState.h>
+#include <AIEvent.h>
+#include <dtGame/gameactor.h>
+#include <ActorRegistry.h>
+#include <dtGame/gamemanager.h>
+#include <NetDemoUtils.h>
+
+
 namespace NetDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
    BaseEnemyActor::BaseEnemyActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
+      , mSendScoreMessage(false)
+      , mPointValue(1)
       , mTimeSinceBorn(0.0f)
-      , mTimeToExistAfterDead(20.0f)
+      , mTimeToExistAfterDead(2.0f)
       , mTimeSinceKilled(0.0f)
    {
       /////////////////////////////////////////////////////////////////
@@ -48,7 +60,7 @@ namespace NetDemo
       // changed if the actor is loaded from a map or when received as a remote actor
       /////////////////////////////////////////////////////////////////
 
-      SetMaxUpdateSendRate(2.0f);
+      SetMaxUpdateSendRate(4.0f);
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
@@ -83,6 +95,7 @@ namespace NetDemo
    {
    }
 
+
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()
    {
@@ -96,22 +109,131 @@ namespace NetDemo
       physObj->SetTransform(ourTransform);
       physObj->SetActive(true);
 
-      if(!IsRemote())
-      {
-
-         // Setup our articulation helper for the vehicle
-         //dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
-         //   new SimCore::Components::DefaultFlexibleArticulationHelper();
-         //articHelper->SetEntity(this);
-         //articHelper->AddArticulation("dof_turret_01",
-         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
-         //articHelper->AddArticulation("dof_gun_01",
-         //   SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
-         //SetArticulationHelper(articHelper.get());
-      }
-
       BaseClass::OnEnteredWorld();
 
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::DoExplosion(float)
+   {
+      //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
+      //printf("Sending DETONATION\r\n");
+
+      dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+      dtCore::Transform ourTransform;
+      GetTransform(ourTransform);
+      osg::Vec3 trans = ourTransform.GetTranslation();
+
+      // Prepare a detonation message
+      dtCore::RefPtr<SimCore::DetonationMessage> msg;
+      gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
+
+      // Required Parameters:
+      msg->SetEventIdentifier( 1 );
+      msg->SetDetonationLocation(trans);
+      // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
+      msg->SetDetonationResultCode( 5 ); // TO BE DYNAMIC
+      //msg->SetMunitionType("Generic Explosive");
+      msg->SetMunitionType("Grenade");  // Other example options are "Bullet" and "High Explosive"
+      msg->SetFuseType(0);
+      msg->SetWarheadType(0);
+      msg->SetQuantityFired(1);
+      msg->SetSendingActorId(GetGameActorProxy().GetId());
+      //msg->SetFinalVelocityVector( finalVelocity );
+      msg->SetRateOfFire(1);
+
+      gm->SendMessage( *msg );
+      gm->SendNetworkMessage( *msg );
+
+      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   float BaseEnemyActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+
+      //if is enemy true it will multiply incoming damage by a 0
+      return incomingDamage * float(!IsEnemyActor(gap));
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::RespondToHit(const SimCore::DetonationMessage& message,
+      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
+      const osg::Vec3& location)
+   {
+      // This is called after we got hit by something.
+
+      dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(message.GetSendingActorId());
+
+      if(!IsEnemyActor(gap)) 
+      {
+         // the base class applies an impulse
+         BaseClass::RespondToHit(message, munition, force, location);
+
+         // Do nothing for now ... but you could become more aggressive or show a particle effect or 
+         // start a count down explosion timer or something.
+      }
+
+      // Was a score action triggered?
+      if(mSendScoreMessage)
+      {
+         mSendScoreMessage = false;
+         MessageUtils::SendScoreMessage(*this, message.GetSendingActorId(), GetPointValue());
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum &damageState)
+   {
+      // This method is called when property is set or when the DamageHelper thinks we took
+      // some damage. We can change our AI here. The fire and such are turned on by the Damage Helper
+      // Note, we could do this same logic in RespondToHit() but that would make it difficult to do our
+      // little hack in InputComponent to kill enemies by pressing Delete.
+
+      if (damageState != GetDamageState())
+      {
+         BaseClass::SetDamageState(damageState);
+
+         // Mark the AI as 'dead' so we stop 'steering'
+         if(IsMobilityDisabled())
+         {
+            mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+
+            // WORKAROUND:
+            // Set the flag to send a score message when RespondToHit is called.
+            mSendScoreMessage = true;
+         }
+
+         // Randomly decide how long to last before exploding. 
+         mTimeToExistAfterDead *= dtUtil::RandFloat(0.3f, 1.5f);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   float BaseEnemyActor::GetTimeToExistAfterDead()
+   {
+      return mTimeToExistAfterDead;
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetTimeToExistAfterDead(float newTime)
+   {
+      mTimeToExistAfterDead = newTime;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::SetPointValue(int points)
+   {
+      mPointValue = points;
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////
+   int BaseEnemyActor::GetPointValue() const
+   {
+      return mPointValue;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -119,9 +241,9 @@ namespace NetDemo
    {
       mTimeSinceBorn += deltaTime;
 
-      if( ! IsMobilityDisabled())
+      if(!IsMobilityDisabled())
       {
-         // Do physics/pathing/AI of vehicle
+         // Steering, etc is done by the AI.          
       }
       else
       {
@@ -129,7 +251,10 @@ namespace NetDemo
          mTimeSinceKilled += deltaTime;
          if (mTimeSinceKilled > mTimeToExistAfterDead)
          {
-            GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
+            // Tell the AI to 'explode'.
+            mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
+
+            //GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
          }
       }
 
@@ -171,14 +296,35 @@ namespace NetDemo
    }
 
    //////////////////////////////////////////////////////////////////////
-   void BaseEnemyActor::InitAI( const EnemyDescriptionActor& desc )
+   void BaseEnemyActor::InitAI( const EnemyDescriptionActor* desc )
    {
       mAIHelper->Init(desc);
    }
 
    //////////////////////////////////////////////////////////////////////
+   bool BaseEnemyActor::IsEnemyActor( dtGame::GameActorProxy* gap ) const
+   {
+      if(gap != NULL)
+      {
+         const dtDAL::ActorType& atype = gap->GetActorType();
+         if( atype == *NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE || 
+            atype == * NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE ||
+            atype == * NetDemoActorRegistry::ENEMY_MOTHERSHIP_ACTOR_TYPE )
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
    // PROXY
-   //////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////////////////////////////////
+   const dtUtil::RefString BaseEnemyActorProxy::PROPERTY_POINT_VALUE("Point Value");
+
+   ///////////////////////////////////////////////////////////////////////////////////
    BaseEnemyActorProxy::BaseEnemyActorProxy()
    {
       SetClassName("BaseEnemyActor");
@@ -187,12 +333,22 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActorProxy::BuildPropertyMap()
    {
-      const std::string GROUP = "Enemy Props";
       BaseClass::BuildPropertyMap();
 
-      BaseEnemyActor& actor = *static_cast<BaseEnemyActor*>(GetActor());
+      BaseEnemyActor* actor = NULL;
+      GetActor(actor);
 
-      // Add properties
+      using namespace dtDAL;
+      const std::string GROUP = "Enemy Props";
+
+      // INTEGER PROPERTIES
+      AddProperty(new IntActorProperty(
+         PROPERTY_POINT_VALUE,
+         PROPERTY_POINT_VALUE,
+         IntActorProperty::SetFuncType(actor, &BaseEnemyActor::SetPointValue),
+         IntActorProperty::GetFuncType(actor, &BaseEnemyActor::GetPointValue),
+         "Number of point to be awarded to a player or entity who destroys this actor.",
+         GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

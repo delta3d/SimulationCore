@@ -41,10 +41,6 @@ namespace StealthGM
       mNetworkHour(0),
       mNetworkMinute(0),
       mNetworkSeconds(0),
-      mCloudCover(&dtActors::BasicEnvironmentActor::CloudCoverEnum::CLEAR),
-      mVisibility(&dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED),
-      mWeatherTheme(&dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM),
-      mTimeTheme(&dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY),
       mCustomHour(0),
       mCustomMinute(0),
       mCustomSeconds(0),
@@ -209,66 +205,6 @@ namespace StealthGM
       mCustomSeconds = sec;
 
       SetIsUpdated(true);
-   }
-
-   void PreferencesEnvironmentConfigObject::SetCloudCover(const std::string &cover)
-   {
-      for(unsigned int i = 0; i < dtActors::BasicEnvironmentActor::CloudCoverEnum::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current = dtActors::BasicEnvironmentActor::CloudCoverEnum::Enumerate()[i];
-
-         if(current->GetName() == cover)
-         {
-            SetCloudCover(static_cast<dtActors::BasicEnvironmentActor::CloudCoverEnum&>(*current));
-            SetIsUpdated(true);
-            break;
-         }
-      }
-   }
-
-   void PreferencesEnvironmentConfigObject::SetVisibility(const std::string &vis)
-   {
-      for(unsigned int i = 0; i < dtActors::BasicEnvironmentActor::VisibilityTypeEnum::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current = dtActors::BasicEnvironmentActor::VisibilityTypeEnum::Enumerate()[i];
-
-         if(current->GetName() == vis)
-         {
-            SetVisibility(static_cast<dtActors::BasicEnvironmentActor::VisibilityTypeEnum&>(*current));
-            SetIsUpdated(true);
-            break;
-         }
-      }
-   }
-
-   void PreferencesEnvironmentConfigObject::SetWeatherTheme(const std::string &theme)
-   {
-      for(unsigned int i = 0; i < dtActors::BasicEnvironmentActor::WeatherThemeEnum::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current = dtActors::BasicEnvironmentActor::WeatherThemeEnum::Enumerate()[i];
-
-         if(current->GetName() == theme)
-         {
-            SetWeatherTheme(static_cast<dtActors::BasicEnvironmentActor::WeatherThemeEnum&>(*current));
-            SetIsUpdated(true);
-            break;
-         }
-      }
-   }
-
-   void PreferencesEnvironmentConfigObject::SetTimeTheme(const std::string &theme)
-   {
-      for(unsigned int i = 0; i < dtActors::BasicEnvironmentActor::TimePeriodEnum::Enumerate().size(); i++)
-      {
-         dtUtil::Enumeration *current = dtActors::BasicEnvironmentActor::TimePeriodEnum::Enumerate()[i];
-
-         if(current->GetName() == theme)
-         {
-            SetTimeTheme(static_cast<dtActors::BasicEnvironmentActor::TimePeriodEnum&>(*current));
-            SetIsUpdated(true);
-            break;
-         }
-      }
    }
 
    std::string PreferencesEnvironmentConfigObject::GetTimeOfDayAsString() const

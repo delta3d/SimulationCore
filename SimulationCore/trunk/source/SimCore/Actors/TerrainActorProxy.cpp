@@ -23,6 +23,9 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/CollisionGroupEnum.h>
+#include <SimCore/Actors/PagedTerrainPhysicsActor.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
 #include <dtDAL/project.h>
@@ -44,6 +47,7 @@
 #include <osgDB/ReadFile>
 #include <osgDB/Registry>
 
+#include <osgUtil/GLObjectsVisitor>
 
 #include <iostream>
 
@@ -56,7 +60,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       TerrainActorProxy::TerrainActorProxy()
       {
-
       }
 
       ///////////////////////////////////////////////////////////////////////////////
@@ -132,6 +135,7 @@ namespace SimCore
          dtPhysics::PhysicsObject* pobj = new dtPhysics::PhysicsObject("Terrain");
          pobj->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
          pobj->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+         pobj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
          mHelper->AddPhysicsObject(*pobj);
 #endif
       }
@@ -233,10 +237,24 @@ namespace SimCore
    #else
                if(mTerrainNode.valid())
                {
-                  //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
-                  //then just bake a static collision mesh with that and spit out a warning
-                  mHelper->GetMainPhysicsObject()->SetTransform(xform);
-                  mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  // Hack alert!  We don't support this physics directory stuff in dtPhysics yet, so we assume
+                  // you have a giant mesh that is prebaked, and we load it piece-meal using this other actor thingy. - Brad
+                  if(!mPhysicsDirectory.empty())
+                  {
+                     dtCore::RefPtr<PagedTerrainPhysicsActorProxy> ap;
+                     GetGameActorProxy().GetGameManager()->CreateActor(*EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, ap);
+                     GetGameActorProxy().GetGameManager()->AddActor(*ap, false, false);
+                     PagedTerrainPhysicsActor& terrActor = static_cast<PagedTerrainPhysicsActor&>(ap->GetGameActor());
+                     terrActor.BuildTerrainAsStaticMesh(mTerrainNode, GetName(), true);
+                  }
+                  else
+                  {
+                     //if we didn't find a pre-baked static mesh but we did have a renderable terrain node
+                     //then just bake a static collision mesh with that and spit out a warning
+                     mHelper->GetMainPhysicsObject()->SetTransform(xform);
+                     mHelper->GetMainPhysicsObject()->CreateFromProperties(mTerrainNode.get());
+                  }
+
                   loadSuccess = true;
                }
    #endif
@@ -250,6 +268,8 @@ namespace SimCore
                LOG_ERROR("No PhysX World Component exists in the Game Manager.");
             }
 
+            //Set the helper name to match the actor name.
+            mHelper->SetName(GetName());
             comp->RegisterHelper(*mHelper);
          }
       }
@@ -366,10 +386,15 @@ namespace SimCore
 
                mTerrainNode = osgDB::readNodeFile(fileName, options.get());
 
-               if(mTerrainNode.valid())
+               if (mTerrainNode.valid())
                {
                   osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
                   ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "RenderBin");
+
+                  // Run a visitor to switch to VBO's instead of DrawArrays (the OSG default)
+                  // Turning this on had a catastrophic impact on performance. OFF is better for now.  
+                  //osgUtil::GLObjectsVisitor nodeVisitor(osgUtil::GLObjectsVisitor::SWITCH_ON_VERTEX_BUFFER_OBJECTS);
+                  //mTerrainNode->accept(nodeVisitor);
                }
             }
 

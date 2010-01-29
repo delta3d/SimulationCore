@@ -19,8 +19,8 @@
 * Bradley Anderegg
 */
 
-
 #include <AIComponent.h>
+#include <dtGame/messagetype.h>
 
 namespace NetDemo
 {
@@ -60,9 +60,19 @@ namespace NetDemo
 
 
    /////////////////////////////////////////////////////////////
-   void AIComponent::ProcessMessage(const dtGame::Message &message)
+   void AIComponent::ProcessMessage(const dtGame::Message& message)
    {
       BaseClass::ProcessMessage(message);
+//      if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED)
+//      {
+//         if (message.GetSource() == GetGameManager()->GetMachineInfo())
+//         {
+//            const dtGame::ActorUpdateMessage& acm =
+//                     static_cast<const dtGame::ActorUpdateMessage&>(message);
+//            const dtDAL::ActorType* at = acm.GetActorType();
+//            if (at != NULL && at->InstanceOf())
+//         }
+//      }
    }
 
 }//namespace NetDemo

@@ -98,8 +98,6 @@ namespace SimCore
 
 
          protected:
-            //Cycles the weather type based on the predefined types in the basic environment actor
-            void ChangeWeatherType();
             //Increases/decreases the Level of Detail scale by 10%
             void ChangeLODScale(bool down);
 
