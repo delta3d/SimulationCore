@@ -189,6 +189,30 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetAmmoCount( int count )
+      {
+         mAmmoCount = count > mAmmoMax ? mAmmoMax : count;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      int WeaponActor::GetAmmoCount() const
+      {
+         return mAmmoCount;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::SetAmmoMax( int ammoMax )
+      {
+         mAmmoMax = ammoMax;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      int WeaponActor::GetAmmoMax() const
+      {
+         return mAmmoMax;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SetFireRate( float rate )
       {
          // Determine if this is a transition from automatic mode
@@ -342,7 +366,10 @@ namespace SimCore
                particleSystem->Fire();
             }
 
-            mAmmoCount--;
+            if(mAmmoCount > 0)
+            {
+               mAmmoCount--;
+            }
             mShotsFired++;
          }
 
@@ -416,6 +443,17 @@ namespace SimCore
          {
             // Attempt a reload
             LoadMunitionType( mMunitionTypeName );
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActor::OnRemovedFromWorld()
+      {
+         dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+
+         if(mShooter.valid())
+         {
+            gm->DeleteActor(*mShooter);
          }
       }
 

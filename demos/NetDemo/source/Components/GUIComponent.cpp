@@ -26,13 +26,37 @@
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/scene.h>
+#include <dtCore/shaderprogram.h>
+#include <dtGame/actorupdatemessage.h>
+#include <dtGame/basemessages.h>
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/scriptmodule.h>
+#include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/GUI/SimpleScreen.h>
-#include <States.h>
+#include <SimCore/GUI/CeguiUtils.h>
+
+// Local include directives
+#include "ActorRegistry.h"
+#include "Actors/FortActor.h"
+#include "Actors/PlayerStatusActor.h"
+#include "GUI/ButtonHighlight.h"
+#include "GUI/CustomCeguiWidgets.h"
+#include "GUI/HUDScreen.h"
+#include "GUI/MainMenuScreen.h"
+#include "GUI/ReadyRoomScreen.h"
+#include "GUI/ScoreLabelManager.h"
+#include "NetDemoMessages.h"
+#include "NetDemoMessageTypes.h"
+#include "NetDemoUtils.h"
+#include "States.h"
+
+// DEBUG:
+#include <iostream>
+#include <SimCore/Messages.h>
+
 
 
 namespace NetDemo
@@ -49,6 +73,25 @@ namespace NetDemo
 
 
    /////////////////////////////////////////////////////////////////////////////
+   // UTILITY CLASS CODE
+   /////////////////////////////////////////////////////////////////////////////
+   class ActionButtonFilter : public SimCore::GUI::CeguiUtils::CeguiWindowFilter<CEGUI::PushButton>
+   {
+      public:
+         static const CEGUI::String PROPERTY_ACTION;
+
+         virtual bool Accept(const CEGUI::PushButton& button)
+         {
+            return button.isPropertyPresent(PROPERTY_ACTION);
+         }
+   };
+
+   /////////////////////////////////////////////////////////////////////////////
+   const CEGUI::String ActionButtonFilter::PROPERTY_ACTION(NetDemo::BUTTON_PROPERTY_ACTION.Get());
+
+
+
+   /////////////////////////////////////////////////////////////////////////////
    // CLASS CODE
    /////////////////////////////////////////////////////////////////////////////
    const dtUtil::RefString GUIComponent::DEFAULT_NAME("GUIComponent");
@@ -57,7 +100,11 @@ namespace NetDemo
    GUIComponent::GUIComponent( const std::string& name )
       : BaseClass(name)
       , mScriptModule(new dtGUI::ScriptModule)
+      , mCurrentHoveredWidget(NULL)
       , mInputServerPort(NULL)
+      , mInputServerIP(NULL)
+      , mListVehicleType(NULL)
+      , mCurrentButtonIndex(0)
    {
    }
 
@@ -73,38 +120,88 @@ namespace NetDemo
       InitializeCEGUI("CEGUI/schemes/NetDemo.scheme");
       CEGUI::WindowManager& wm = CEGUI::WindowManager::getSingleton();
 
+      // Initialize the special effects layers.
+      InitializeEffectsOverlays();
+
+      // Get the Game Manager since some screens may need it.
+      dtGame::GameManager& gm = *GetGameManager();
+
       // MAIN MENU
-      mScreenMainMenu = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/MainMenu.layout");
-      mScreenMainMenu->Setup( mMainWindow.get() );
+      mScreenMainMenu = new NetDemo::GUI::MainMenuScreen();
+      mScreenMainMenu->Setup(*mMainWindow, *mEffectsOverlay);
+      RegisterScreenWithState(*mScreenMainMenu, NetDemoState::STATE_MENU);
+      mScreenMainMenu->OnEnter();//->SetVisible(true);
 
       // LOBBY
       mScreenLobby = new SimCore::GUI::SimpleScreen("Lobby", "CEGUI/layouts/NetDemo/Lobby.layout");
       mScreenLobby->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenLobby, NetDemoState::STATE_LOBBY);
       mInputServerPort = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerPort"));
       mInputServerIP = static_cast<CEGUI::Editbox*>(wm.getWindow("Lobby_Input_ServerIP"));
+      mListVehicleType = static_cast<CEGUI::ItemListbox*>(wm.getWindow("Lobby_List_VehicleType"));
+      mListVehicleType->subscribeEvent(CEGUI::Window::EventMouseLeaves,
+         CEGUI::Event::Subscriber(&GUIComponent::OnVehicleTypeSelected, this));
+
+      // Default the server IP to what's in the config file.
+      dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+      const std::string serverIP = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
+      mInputServerIP->setText(serverIP);
 
       // CONNECTION FAIL PROMPT
       mScreenConnectFailPrompt = new SimCore::GUI::SimpleScreen("Connection Fail Prompt", "CEGUI/layouts/NetDemo/ConnectionFailPrompt.layout");
       mScreenConnectFailPrompt->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenConnectFailPrompt, NetDemoState::STATE_LOBBY_CONNECT_FAIL);
 
       // LOADING
       mScreenLoading = new SimCore::GUI::SimpleScreen("Loading", "CEGUI/layouts/NetDemo/Loading.layout");
       mScreenLoading->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenLoading, NetDemoState::STATE_LOADING);
 
       // READY ROOM
-      mScreenReadyRoom = new SimCore::GUI::SimpleScreen("Ready Room", "CEGUI/layouts/NetDemo/ReadyRoom.layout");
-      mScreenReadyRoom->Setup( mMainWindow.get() );
+      mScreenReadyRoom = new NetDemo::GUI::ReadyRoomScreen();
+      mScreenReadyRoom->Setup(gm, mMainWindow.get());
+      RegisterScreenWithState(*mScreenReadyRoom, NetDemoState::STATE_GAME_READYROOM);
+
+      // GARGE
+      mScreenGarage = new SimCore::GUI::SimpleScreen("Garage", "CEGUI/layouts/NetDemo/Garage.layout");
+      mScreenGarage->Setup(mMainWindow.get());
+      RegisterScreenWithState(*mScreenGarage, NetDemoState::STATE_GAME_GARAGE);
 
       // OPTIONS
       mScreenOptions = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/Options.layout");
       mScreenOptions->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenOptions, NetDemoState::STATE_GAME_OPTIONS);
+
+      // HUD
+      mScreenHUD = new NetDemo::GUI::HUDScreen();
+      mScreenHUD->Setup(*mAppComp, mMainWindow.get());
+      // Do not register with a state for now since the HUD spans several sub-states.
 
       // QUIT PROMPT
       mScreenQuitPrompt = new SimCore::GUI::SimpleScreen("Main Menu", "CEGUI/layouts/NetDemo/QuitPrompt.layout");
       mScreenQuitPrompt->Setup( mMainWindow.get() );
+      RegisterScreenWithState(*mScreenQuitPrompt, NetDemoState::STATE_GAME_QUIT);
 
       // Bind all buttons added to the menu system.
       BindButtons( *mMainWindow->GetCEGUIWindow() );
+
+      // Setup the Score Label Manager.
+      mScoreLabelManager = new NetDemo::GUI::ScoreLabelManager;
+      mScoreLabelManager->SetGuiLayer(*mEffectsOverlay);
+      mScoreLabelManager->SetCamera(*gm.GetApplication().GetCamera());
+
+      // Setup the main background for most menus.
+      mBackground = new osg::MatrixTransform;
+      mBackground->addChild(LoadNodeFile("StaticMeshes/NetDemo/UI/MainBackground.ive"));
+      mBackground->addChild(LoadNodeFile("Particles/stars.osg"));
+      mEffectsOverlay->addChild(mBackground.get());
+
+      // Attach a special shader.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("UFOBeam");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      mBackground->accept(*visitor);
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -114,49 +211,83 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessMessage( const dtGame::Message& message )
+   void GUIComponent::ProcessMessage(const dtGame::Message& message)
    {
       const dtGame::MessageType& messageType = message.GetMessageType();
 
-      if( messageType == SimCore::MessageType::GAME_STATE_CHANGED )
+      if(messageType == dtGame::MessageType::TICK_LOCAL)
       {
-         ProcessStateChangeMessage( static_cast<const SimCore::Components::GameStateChangedMessage&>(message) );
+         Update(static_cast<const dtGame::TickMessage&>(message).GetDeltaRealTime());
+      }
+      else if(messageType == SimCore::MessageType::GAME_STATE_CHANGED)
+      {
+         ProcessStateChangeMessage(static_cast<const SimCore::Components::GameStateChangedMessage&>(message));
+      }
+      else if(messageType == NetDemo::MessageType::UI_OPTION_NEXT)
+      {
+         OnOptionNext(false);
+      }
+      else if(messageType == NetDemo::MessageType::UI_OPTION_PREV)
+      {
+         OnOptionNext(true);
+      }
+      else if(messageType == NetDemo::MessageType::UI_OPTION_SELECT)
+      {
+         OnOptionSelect();
+      }
+      else if(messageType == NetDemo::MessageType::UI_HELP)
+      {
+         mScreenHUD->ToggleHelp();
+      }
+      else if(messageType == dtGame::MessageType::INFO_ACTOR_CREATED
+         || messageType == dtGame::MessageType::INFO_ACTOR_UPDATED)
+      {
+         ProcessActorUpdate(static_cast<const dtGame::ActorUpdateMessage&>(message));
+      }
+      else if(messageType == NetDemo::MessageType::ENTITY_ACTION)
+      {
+         ProcessEntityActionMessage(message);
+      }
+      else if(messageType == dtGame::MessageType::INFO_MAP_LOADED)
+      {
+         // Get the reference to the player.
+         dtGame::GameActorProxy* proxy = NULL;
+         GetGameManager()->FindActorByType(*NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE, proxy);
+         if(proxy != NULL)
+         {
+            PlayerStatusActor* player = NULL;
+            proxy->GetActor(player);
+            mPlayer = player;
+         }
       }
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange )
+   void GUIComponent::Update(float timeDelta)
    {
-      const SimCore::Components::StateType& state = stateChange.GetNewState();
+      if(mPreviousScreen.get() != mCurrentScreen.get() && mPreviousScreen.valid())
+      {
+         mPreviousScreen->Update(timeDelta);
+      }
 
-      bool isRunningState = state == NetDemoState::STATE_GAME_RUNNING;
+      if(mCurrentScreen.valid())
+      {
+         mCurrentScreen->Update(timeDelta);
+      }
 
-      ShowMouseCursor( ! isRunningState );
+      if(mScreenHUD->IsEnabled())
+      {
+         mScreenHUD->Update(timeDelta);
+      }
 
-      mScreenMainMenu->SetVisible( state == NetDemoState::STATE_MENU );
-      mScreenMainMenu->SetEnabled( state == NetDemoState::STATE_MENU );
-
-      mScreenLobby->SetVisible( state == NetDemoState::STATE_LOBBY );
-      mScreenLobby->SetEnabled( state == NetDemoState::STATE_LOBBY );
-
-      mScreenConnectFailPrompt->SetVisible( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
-      mScreenConnectFailPrompt->SetEnabled( state == NetDemoState::STATE_LOBBY_CONNECT_FAIL );
-
-      mScreenLoading->SetVisible( state == NetDemoState::STATE_LOADING );
-      mScreenLoading->SetEnabled( state == NetDemoState::STATE_LOADING );
-
-      mScreenReadyRoom->SetVisible( state == NetDemoState::STATE_GAME_READYROOM );
-      mScreenReadyRoom->SetEnabled( state == NetDemoState::STATE_GAME_READYROOM );
-
-      mScreenOptions->SetVisible( state == NetDemoState::STATE_GAME_OPTIONS );
-      mScreenOptions->SetEnabled( state == NetDemoState::STATE_GAME_OPTIONS );
-
-      mScreenQuitPrompt->SetVisible( state == NetDemoState::STATE_GAME_QUIT );
-      mScreenQuitPrompt->SetEnabled( state == NetDemoState::STATE_GAME_QUIT );
+      if(mScoreLabelManager->IsEnabled())
+      {
+         mScoreLabelManager->Update(timeDelta);
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::InitializeCEGUI( const std::string& schemeFile )
+   void GUIComponent::InitializeCEGUI(const std::string& schemeFile)
    {
       dtABC::Application& app = GetGameManager()->GetApplication();
 
@@ -182,6 +313,9 @@ namespace NetDemo
       try
       {
          CEGUI::SchemeManager::getSingleton().loadScheme(path);
+
+         // Initialize custom widget factories.
+         CEGUI::CustomWidgets::bindCEGUIWindowFactories();
       }
       catch(CEGUI::Exception& e)
       {
@@ -197,6 +331,120 @@ namespace NetDemo
       // Prepare the main window.
       mMainWindow->SetVisible( true );
       mMainWindow->SetSize( 1.0f, 1.0f );
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::InitializeEffectsOverlays()
+   {
+      mEffectsOverlay = new osg::MatrixTransform;
+      mEffectsOverlay->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+
+      dtCore::RefPtr<osg::Projection> projection = new osg::Projection;
+      projection->setMatrix(osg::Matrix::ortho2D(0.0f ,1.0f, 0.0f, 1.0f));
+      projection->addChild(mEffectsOverlay.get());
+
+      osg::Group* sceneRoot = GetGameManager()->GetScene().GetSceneNode();
+      sceneRoot->addChild(projection);
+
+      mButtonHighlight = new ButtonHighlight();
+      mButtonHighlight->Init(*mEffectsOverlay);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessEntityActionMessage(const dtGame::Message& message)
+   {
+      const NetDemo::EntityActionMessage& actionMessage
+         = static_cast<const NetDemo::EntityActionMessage&>(message);
+
+      const EntityAction& action = actionMessage.GetAction();
+
+      // Show the score label.
+      if(action == EntityAction::SCORE)
+      {
+         mScoreLabelManager->AddScoreLabel(actionMessage.GetLocation(),
+            actionMessage.GetPoints(), 2.0f);
+
+         if(mPlayer.valid())
+         {
+            mScreenHUD->UpdatePlayerInfo(*mPlayer);
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage)
+   {
+      const dtDAL::ActorType& actorType = *updateMessage.GetActorType();
+      const dtCore::UniqueId& actorId = updateMessage.GetAboutActorId();
+
+      if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
+      {
+         // Get the actor to which the message refers.
+         dtDAL::ActorProxy* proxy = NULL;
+         NetDemo::PlayerStatusActor* playerStats = NULL;
+         if(mAppComp->FindActor(actorId, playerStats))
+         {
+            // Process the actor.
+            ProcessPlayerStatusUpdate(*playerStats);
+         }
+      }
+      else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
+      {
+         FortActor* fort = NULL;
+         if(mAppComp->FindActor(actorId, fort))
+         {
+            mScreenHUD->SetFortDamageRatio(1.0 - fort->GetCurDamageRatio());
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange)
+   {
+      const GameStateType& state = stateChange.GetNewState();
+
+      ShowMouseCursor(state != NetDemoState::STATE_GAME_RUNNING);
+
+      bool runningState = mAppComp->IsRunningState(state);
+      mScreenHUD->SetVisible(runningState && state != NetDemoState::STATE_GAME_READYROOM);
+      mScreenHUD->SetEnabled(runningState && state != NetDemoState::STATE_GAME_READYROOM);
+
+      // Reference the previous and current screens so that they both can be updated.
+      mPreviousScreen = GetScreenForState(stateChange.GetOldState());
+      mCurrentScreen = GetScreenForState(state); // New State
+
+      // Set the state for the Score Label Manager.
+      if( ! runningState)
+      {
+         if(mScoreLabelManager->IsEnabled())
+         {
+            mScoreLabelManager->SetEnabled(false);
+            mScoreLabelManager->Clear();
+         }
+      }
+      else
+      {
+         mScoreLabelManager->SetEnabled(true);
+      }
+
+      // Enable or disble the background based on the current state.
+      mBackground->setNodeMask(runningState ? 0x0 : 0xFFFFFFFF);
+
+      // DEBUG:
+      //std::cout << "\n\tNew: " << stateChange.GetNewState().GetName()
+      //   << "\n\tOld: " << stateChange.GetOldState().GetName() << "\n\n";
+
+      // Update the list of buttons for the current screen.
+      UpdateButtonArray();
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::ProcessPlayerStatusUpdate(const PlayerStatusActor& playerStats)
+   {
+      if(mAppComp->IsInState(NetDemoState::STATE_GAME_READYROOM))
+      {
+         mScreenReadyRoom->UpdatePlayerList();
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -218,6 +466,38 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::OnOptionNext(bool reverse)
+   {
+      int numButtons = int(mCurrentScreenButtons.size());
+      if(numButtons != 0)
+      {
+         if(reverse)
+         {
+            mCurrentButtonIndex = (--mCurrentButtonIndex + numButtons) % numButtons;
+         }
+         else
+         {
+            mCurrentButtonIndex = (++mCurrentButtonIndex) % numButtons;
+         }
+
+         // DEBUG:
+         // std::cout << "\n\nItem: " << mCurrentButtonIndex << " / " << numButtons << "\n\n";
+
+         SetButtonFocused(mCurrentScreenButtons[mCurrentButtonIndex]);
+      }
+   }
+   
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::OnOptionSelect()
+   {
+      if(mCurrentHoveredWidget != NULL)
+      {
+         // Simulate the button being pressed by the mouse cursor.
+         HandleButton(*mCurrentHoveredWidget);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
    const CEGUI::Window* GUIComponent::GetWidgetFromEventArgs( const CEGUI::EventArgs& args ) const
    {
       // Cast to WindowEventArgs in order to access the associated CEGUI window.
@@ -230,53 +510,135 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnButtonClicked( const CEGUI::EventArgs& args )
    {
-      const CEGUI::Window* button = GetWidgetFromEventArgs( args );
+      const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
-      if( button != NULL )
+      if(button != NULL)
       {
-         // Prepare to capture the button action name.
-         std::string action;
-         std::string buttonType;
-
-         // Attempt to access the button's action property.
-         try
-         {
-            CEGUI::String actionValue = button->getProperty(BUTTON_PROPERTY_ACTION.Get());
-            CEGUI::String buttonTypeValue = button->getProperty(BUTTON_PROPERTY_TYPE.Get());
-            action = std::string( actionValue.c_str() );
-            buttonType = std::string( buttonTypeValue.c_str() );
-         }
-         catch( CEGUI::Exception& ceguiEx )
-         {
-            std::ostringstream oss;
-            oss << "Button \"" << button->getName().c_str()
-               << "\" does not have the \"Action\" property.\n"
-               << ceguiEx.getMessage().c_str() << std::endl;
-            LOG_ERROR( oss.str() );
-         }
-
-         // Determine if this is a special button.
-         if(buttonType == BUTTON_TYPE_CONNECT.Get())
-         {
-            dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
-            const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
-            //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
-            const std::string hostIP(mInputServerIP->getText().c_str());
-            int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
-
-            if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
-            {
-               // Show connection failure prompt.
-               action = Transition::TRANSITION_CONNECTION_FAIL.GetName();
-            }
-         }
-
-         // Execute the transition specified by the button.
-         GetAppComponent()->DoStateTransition( action );
+         HandleButton(*button);
       }
 
       // Let CEGUI know the button has been handled.
       return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnButtonFocusGain(const CEGUI::EventArgs& args)
+   {
+      const CEGUI::Window* button = GetWidgetFromEventArgs(args);
+
+      // Enable special hover effects.
+      SetButtonFocused(button);
+
+      // Let CEGUI know the button has been handled.
+      return true;
+   }
+   
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnButtonFocusLost(const CEGUI::EventArgs& args)
+   {
+      const CEGUI::Window* button = GetWidgetFromEventArgs(args);
+
+      // Disable special hover effects.
+      /*if(button != NULL && mCurrentHoveredWidget != NULL)
+      {
+         SetHoverEffectEnabled(false);
+         mCurrentHoveredWidget = NULL;
+      }*/
+
+      // Let CEGUI know the button has been handled.
+      return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::OnVehicleTypeSelected(const CEGUI::EventArgs& args)
+   {
+      if(mListVehicleType->getSelectedCount() > 0)
+      {
+         CEGUI::ItemEntry* listItem = mListVehicleType->getFirstSelectedItem();
+         if(listItem != NULL)
+         {
+            std::string selectedValue(listItem->getText().c_str());
+            PlayerStatusActor::VehicleTypeEnum* vehicleType = NULL;
+            if(selectedValue == "Truck")
+            {
+               vehicleType = &PlayerStatusActor::VehicleTypeEnum::FOUR_WHEEL;
+            }
+            else if(selectedValue == "Hover Tank")
+            {
+               vehicleType = &PlayerStatusActor::VehicleTypeEnum::HOVER;
+            }
+
+            if(vehicleType != NULL)
+            {
+               mAppComp->SetVehicleType(*vehicleType);
+            }
+         }
+      }
+
+      // Let CEGUI know the button has been handled.
+      return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::SetButtonFocused(const CEGUI::Window* button)
+   {
+      if(button != NULL)
+      {
+         mCurrentHoveredWidget = button;
+         SetHoverEffectOnElement(*button);
+         SetHoverEffectEnabled(true);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::HandleButton(const CEGUI::Window& button)
+   {
+      // Prepare to capture the button action name.
+      std::string action;
+      std::string buttonType;
+
+      // Attempt to access the button's action property.
+      try
+      {
+         CEGUI::String actionValue = button.getProperty(BUTTON_PROPERTY_ACTION.Get());
+         CEGUI::String buttonTypeValue = button.getProperty(BUTTON_PROPERTY_TYPE.Get());
+         action = std::string(actionValue.c_str());
+         buttonType = std::string(buttonTypeValue.c_str());
+      }
+      catch(CEGUI::Exception& ceguiEx)
+      {
+         std::ostringstream oss;
+         oss << "Button \"" << button.getName().c_str()
+            << "\" does not have the \"Action\" property.\n"
+            << ceguiEx.getMessage().c_str() << std::endl;
+         LOG_ERROR(oss.str());
+      }
+
+      // Determine if this is a special button.
+      HandleSpecialButton(buttonType, action);
+
+      // Execute the transition specified by the button.
+      GetAppComponent()->DoStateTransition(action);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::HandleSpecialButton(const std::string& buttonType, std::string& inOutAction)
+   {
+      // Determine if this is a special button.
+      if(buttonType == BUTTON_TYPE_CONNECT.Get())
+      {
+         dtUtil::ConfigProperties& configParams = GetGameManager()->GetConfiguration();
+         const std::string role = configParams.GetConfigPropertyValue("dtNetGM.Role", "server");
+         //const std::string gameName = configParams.GetConfigPropertyValue("dtNetGM.GameName", "NetDemo");
+         const std::string hostIP(mInputServerIP->getText().c_str());
+         int serverPort = CEGUI::PropertyHelper::stringToInt(mInputServerPort->getText());
+
+         if( ! mAppComp->JoinNetwork(role, serverPort, hostIP))
+         {
+            // Show connection failure prompt.
+            inOutAction = Transition::TRANSITION_CONNECTION_FAIL.GetName();
+         }
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -315,10 +677,21 @@ namespace NetDemo
    }
 
    /////////////////////////////////////////////////////////////////////////////
-   void GUIComponent::BindButton( CEGUI::PushButton& button )
+   void GUIComponent::BindButton(CEGUI::PushButton& button)
    {
       button.subscribeEvent(CEGUI::PushButton::EventClicked,
          CEGUI::Event::Subscriber(&GUIComponent::OnButtonClicked, this));
+
+      // Special Effects Bindings
+      button.subscribeEvent(CEGUI::Window::EventMouseEnters,
+         CEGUI::Event::Subscriber(&GUIComponent::OnButtonFocusGain, this));
+      button.subscribeEvent(CEGUI::Window::EventActivated,
+         CEGUI::Event::Subscriber(&GUIComponent::OnButtonFocusGain, this));
+
+      button.subscribeEvent(CEGUI::Window::EventMouseLeaves,
+         CEGUI::Event::Subscriber(&GUIComponent::OnButtonFocusLost, this));
+      button.subscribeEvent(CEGUI::Window::EventDeactivated,
+         CEGUI::Event::Subscriber(&GUIComponent::OnButtonFocusLost, this));
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -326,6 +699,97 @@ namespace NetDemo
    {
       // Add any other button types here.
       return buttonType == BUTTON_TYPE_1;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::UpdateButtonArray()
+   {
+      // Clear old button references.
+      mCurrentScreenButtons.clear();
+
+      // Disable the button highlight effect.
+      SetHoverEffectEnabled(false);
+
+      const GameStateType* currentState = mAppComp->GetCurrentState();
+      if(currentState != NULL)
+      {
+         // Obtain the current screen.
+         SimpleScreen* currentScreen = dynamic_cast<SimpleScreen*>(GetScreenForState(*currentState));
+         if(currentScreen != NULL)
+         {
+            // Get all the buttons for the current screen.
+            ActionButtonFilter filter;
+            CEGUI::Window* screenRoot = currentScreen->GetRoot()->GetCEGUIWindow();
+            SimCore::GUI::CeguiUtils::GetChildWindowsByType(mCurrentScreenButtons, screenRoot, &filter);
+
+            // Set focus on the first button.
+            mCurrentButtonIndex = 0;
+            if( ! mCurrentScreenButtons.empty())
+            {
+               SetButtonFocused(mCurrentScreenButtons[0]);
+            }
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not access the current game state.");
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool GUIComponent::RegisterScreenWithState(Screen& screen, GameStateType& state)
+   {
+      bool success = mStateScreenMap.insert(std::make_pair(&state, &screen)).second;
+
+      if(success)
+      {
+         using namespace SimCore::Components;
+         GameState* gameState = GetAppComponent()->GetState(&state);
+         if(gameState != NULL)
+         {
+            typedef dtUtil::Functor<void,TYPELIST_0()> VoidFunc;
+
+            // Bind Entry method.
+            VoidFunc enterFunc(&screen, &Screen::OnEnter);
+            dtCore::RefPtr<dtUtil::Command0<void> > comEnter = new dtUtil::Command0<void>(enterFunc);
+            gameState->AddEntryCommand(comEnter.get());
+
+            // Bind Exit method.
+            VoidFunc exitFunc(&screen, &Screen::OnExit);
+            dtCore::RefPtr<dtUtil::Command0<void> > comExit = new dtUtil::Command0<void>(exitFunc);
+            gameState->AddExitCommand(comExit);
+         }
+         else
+         {
+            LOG_WARNING("Could not find the game state for state type \""
+               +state.GetName()+"\" to assign to screen \""+screen.GetName()+"\"");
+         }
+
+         screen.SetVisible(false);
+      }
+
+      return success;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   Screen* GUIComponent::GetScreenForState(const GameStateType& state)
+   {
+      StateScreenMap::const_iterator foundIter = mStateScreenMap.find(&state);
+      return foundIter != mStateScreenMap.end() ? foundIter->second : NULL;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::SetHoverEffectOnElement(const CEGUI::Window& window)
+   {
+      osg::Vec4 screenBounds(SimCore::GUI::CeguiUtils::GetNormalizedScreenBounds(window));
+      mButtonHighlight->SetScreenBounds(screenBounds);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void GUIComponent::SetHoverEffectEnabled(bool enabled)
+   {
+      mButtonHighlight->SetVisible(enabled);
+      mButtonHighlight->SetEnabled(enabled);
    }
 
 }

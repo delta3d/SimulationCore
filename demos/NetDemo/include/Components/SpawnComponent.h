@@ -24,7 +24,7 @@
 #include <DemoExport.h>
 #include <dtGame/gmcomponent.h>
 
-#include <Actors/SpawnVolumeActor.h>
+#include <Actors/EnemyMothership.h>
 #include <Actors/ServerGameStatusActor.h>
 
 #include <dtAI/fsm.h>
@@ -64,12 +64,12 @@ namespace NetDemo
 
       virtual void CleanUp();
 
-      virtual void SpawnEnemy(const EnemyDescriptionActor& desc);
+      virtual void SpawnEnemy(const EnemyDescriptionActor* desc);
 
    private:
 
-      typedef std::vector<dtCore::RefPtr<SpawnVolumeActor> > SpawnVolumeArray;
-      SpawnVolumeArray mSpawnVolumes;
+      typedef std::vector<dtCore::RefPtr<EnemyMothershipActor> > EnemyMothershipArray;
+      EnemyMothershipArray mSpawnVolumes;
 
       typedef std::vector<dtCore::RefPtr<EnemyDescriptionActor> > EnemyDescArray;
       EnemyDescArray mEnemies;

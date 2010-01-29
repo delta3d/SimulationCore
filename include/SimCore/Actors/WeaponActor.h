@@ -81,6 +81,8 @@ namespace SimCore
             // Inherited Functions:
             virtual void OnEnteredWorld();
 
+            virtual void OnRemovedFromWorld();
+
             // This override function updates time variables in the weapon that
             // cause it to re-fire or go into sleep mode (unregistering from TickMessages)
             virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
@@ -237,17 +239,13 @@ namespace SimCore
             // @param count The total amount of ammo to load into this shooter
             //
             // NOTE: This function caps the value to the shooter's AmmoMax
-            void SetAmmoCount( int count )
-            {
-               mAmmoCount = count <= mAmmoMax ? count < 0 ? 0 : count : mAmmoMax;
-            }
-
-            int GetAmmoCount() const { return mAmmoCount; }
+            void SetAmmoCount( int count );
+            int GetAmmoCount() const;
 
             // Set the maximum number of ammo that this shooter can hold
             // @param ammoMax The limit of ammo that the shooter can hold
-            void SetAmmoMax( int ammoMax ) { mAmmoMax = ammoMax; }
-            int GetAmmoMax() const { return mAmmoMax; }
+            void SetAmmoMax( int ammoMax );
+            int GetAmmoMax() const;
 
             // Set the probability that this shooter will jam.
             // This function will clamp the supplied value between 0.0 and 1.0.

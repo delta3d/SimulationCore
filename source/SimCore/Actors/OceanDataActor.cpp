@@ -42,6 +42,7 @@ namespace SimCore
          , mSeaState(0)
          , mWaveHeightSignificant(0.0f)
          , mWaveDirectionPrimary(0.0f)
+         , mWavePeriodPrimaryMean(0.0f)
       {
       }
 
@@ -86,6 +87,18 @@ namespace SimCore
          return mWaveDirectionPrimary;
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void OceanDataActor::SetWavePeriodPrimaryMean(float mean)
+      {
+         mWavePeriodPrimaryMean = mean;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float OceanDataActor::GetWavePeriodPrimaryMean() const
+      {
+         return mWavePeriodPrimaryMean;
+      }
+
       
 
       //////////////////////////////////////////////////////////////////////////
@@ -94,6 +107,7 @@ namespace SimCore
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_SEA_STATE("Sea State");
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY("Wave Direction Primary");
       const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT("Wave Height Significant");
+      const dtUtil::RefString OceanDataActorProxy::PROPERTY_WAVE_PERIOD_PRIMARY_MEAN("Wave Period Primary Mean");
       
       //////////////////////////////////////////////////////////////////////////
       OceanDataActorProxy::OceanDataActorProxy()
@@ -127,7 +141,7 @@ namespace SimCore
             OceanDataActorProxy::PROPERTY_SEA_STATE, 
             dtDAL::MakeFunctor( *actor, &OceanDataActor::SetSeaState ), 
             dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetSeaState ), 
-            "Sea state for cell[0] at the specified latitude and longitude; this is originally a 2D enum array property will any number of cells.",
+            "Sea state for cell[0] at the specified latitude and longitude; this was originally a 2D enum array property with any number of cells.",
             GROUP));
 
          // FLOAT PROPERTIES
@@ -136,7 +150,7 @@ namespace SimCore
             OceanDataActorProxy::PROPERTY_WAVE_HEIGHT_SIGNIFICANT, 
             dtDAL::MakeFunctor( *actor, &OceanDataActor::SetWaveHeightSignificant ), 
             dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetWaveHeightSignificant ), 
-            "Wave height significant for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
+            "Wave height significant for cell[0] at the specified latitude and longitude; this was originally a 2D array property with any number of cells.",
             GROUP));
 
          AddProperty(new dtDAL::FloatActorProperty(
@@ -144,7 +158,15 @@ namespace SimCore
             OceanDataActorProxy::PROPERTY_WAVE_DIRECTION_PRIMARY, 
             dtDAL::MakeFunctor( *actor, &OceanDataActor::SetWaveDirectionPrimary ), 
             dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetWaveDirectionPrimary ), 
-            "Wave direction (in degrees) for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
+            "Wave direction (in degrees) for cell[0] at the specified latitude and longitude; this was originally a 2D array property with any number of cells.",
+            GROUP));
+
+         AddProperty(new dtDAL::FloatActorProperty(
+            OceanDataActorProxy::PROPERTY_WAVE_PERIOD_PRIMARY_MEAN,
+            OceanDataActorProxy::PROPERTY_WAVE_PERIOD_PRIMARY_MEAN, 
+            dtDAL::MakeFunctor( *actor, &OceanDataActor::SetWavePeriodPrimaryMean ), 
+            dtDAL::MakeFunctorRet( *actor, &OceanDataActor::GetWavePeriodPrimaryMean ), 
+            "Wave frequency (in seconds) for the specified latitude and longitude.",
             GROUP));
       }
 

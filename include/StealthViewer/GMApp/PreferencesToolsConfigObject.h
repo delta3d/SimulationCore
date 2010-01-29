@@ -85,6 +85,18 @@ namespace StealthGM
          const CoordinateSystem& GetCoordinateSystem() const;
 
          /**
+          * Sets whether to render the 360 compass
+          * @param show True to show, false to hide
+          */
+         void SetShowCompass360(bool show);
+
+         /**
+          * Returns true if we are showing the 360 compass
+          * @return mShowCompass360
+          */
+         bool GetShowCompass360() const;
+
+         /**
           * Sets whether to render the binocular reticle
           * @param show True to show, false to hide
           */

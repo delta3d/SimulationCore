@@ -31,6 +31,10 @@
 #include <SimCore/PhysicsTypes.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
 
+#include <TowerAIHelper.h>
+#include <Actors/BaseEnemyActor.h>
+
+
 namespace dtAudio
 {
    class Sound;
@@ -39,6 +43,15 @@ namespace dtAudio
 namespace dtGame
 {
    class Message;
+}
+
+namespace SimCore
+{
+   namespace Actors
+   {
+      class WeaponActor;
+      class WeaponActorProxy;
+   }
 }
 
 namespace NetDemo
@@ -52,10 +65,13 @@ namespace NetDemo
          /// Constructor
          TowerActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
          virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
 
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
 
+
+         virtual void SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum& damageState);
 
 
       protected:
@@ -64,9 +80,19 @@ namespace NetDemo
          virtual void UpdateRotationDOFS(float deltaTime, bool insideVehicle);
          virtual void UpdateSoundEffects(float deltaTime);
 
+         void FindTarget(float);
+         void Shoot(float);
+         float GetDistance(const dtCore::Transformable& t) const;
+         void SetTarget(const BaseEnemyActor* t);
+
+         void InitWeapon();
+
       private:
 
+         dtCore::RefPtr<TowerAIHelper> mAIHelper;
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
+         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
+         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
    };
 
    /// This is the proxy for the object.  It needs to build the property map, create the actor, and handle entered world.
@@ -82,6 +108,7 @@ namespace NetDemo
          virtual ~TowerActorProxy();
          void CreateActor();
          virtual void OnEnteredWorld();
+         virtual void OnRemovedFromWorld();
    };
 
 }

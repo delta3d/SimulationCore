@@ -66,10 +66,23 @@
       <ToState Type="STATE_GAME_RUNNING"/>
    </Transition>
    
+   <Transition>
+      <Event Type="TRANSITION_OPTIONS"/>
+      <FromState Type="STATE_GAME_READYROOM"/>
+      <ToState Type="STATE_GAME_GARAGE"/>
+   </Transition>
+   
    <Transition> <!-- go back, disconnect, unload -->
       <Event Type="TRANSITION_BACK"/>
       <FromState Type="STATE_GAME_READYROOM"/>
       <ToState Type="STATE_UNLOAD"/>
+   </Transition>
+
+   <!-- [STATE_GAME_GARAGE] - Choose and customize vehicles -->
+   <Transition>
+      <Event Type="TRANSITION_BACK"/>
+      <FromState Type="STATE_GAME_GARAGE"/>
+      <ToState Type="STATE_GAME_READYROOM"/>
    </Transition>
    
    <!-- [STATE_UNLOAD] - Exiting back to Login. Unload stuff -->
@@ -83,7 +96,7 @@
    <Transition>
       <Event Type="TRANSITION_BACK"/>
       <FromState Type="STATE_GAME_RUNNING"/>
-      <ToState Type="STATE_GAME_OPTIONS"/>
+      <ToState Type="STATE_GAME_QUIT"/>
    </Transition>
    
    <!-- [STATE_GAME_OPTIONS] - OPTIONS (IN-GAME) -->

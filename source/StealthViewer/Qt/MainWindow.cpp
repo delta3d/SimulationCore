@@ -600,6 +600,9 @@ namespace StealthQt
       connect(mUi->mToolsAutoAttachOnSelectionCheckBox, SIGNAL(stateChanged(int)),
                this,                                    SLOT(OnAutoAttachOnSelectionChanged(int)));
 
+      connect(mUi->mToolsShowCompass360CheckBox, SIGNAL(stateChanged(int)),
+               this,                             SLOT(OnShowCompass360Changed(int)));
+
       connect(mUi->mToolsShowBinocularImageCheckBox, SIGNAL(stateChanged(int)),
                this,                                 SLOT(OnShowBinocularImageChanged(int)));
 
@@ -1499,23 +1502,14 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    // Themed Weather Settings
    ///////////////////////////////////////////////////////////////////////////////
-   void MainWindow::OnWeatherThemeChanged(const QString &text)
+   void MainWindow::OnWeatherThemeChanged(const QString& text)
    {
       StealthGM::PreferencesEnvironmentConfigObject &envConfig =
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       QString hack = tr("Theme ") + text;
 
-      if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM.GetName())
-         envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CUSTOM);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR.GetName())
-         envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_CLEAR);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR.GetName())
-         envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FAIR);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY.GetName())
-         envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_FOGGY);
-      else
-         envConfig.SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
+      // TODO reimplement
    }
 
    void MainWindow::OnTimeThemeChanged(const QString& text)
@@ -1525,14 +1519,7 @@ namespace StealthQt
 
       QString hack = tr("Time ") + text;
 
-      if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN.GetName())
-         envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAWN);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY.GetName())
-         envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DAY);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK.GetName())
-         envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_DUSK);
-      else
-         envConfig.SetTimeTheme(dtActors::BasicEnvironmentActor::TimePeriodEnum::TIME_NIGHT);
+      // TODO reimplement
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1631,16 +1618,7 @@ namespace StealthQt
       // doesn't look pretty in the UI, so we shortened it
       QString hack = "Visibility " + text;
 
-      if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED.GetName())
-         envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_UNLIMITED);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR.GetName())
-         envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_FAR);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE.GetName())
-         envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_MODERATE);
-      else if (hack.toStdString() == dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED.GetName())
-         envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_LIMITED);
-      else
-         envConfig.SetVisibility(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::VISIBILITY_CLOSE);
+      // TODO reimplement
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1650,9 +1628,7 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       const std::string cloudCoverName = text.toStdString();
-      dtActors::BasicEnvironmentActor::CloudCoverEnum* cloudCover = dtActors::BasicEnvironmentActor::CloudCoverEnum::GetValueForName(cloudCoverName);
-      if (cloudCover != NULL)
-         envConfig.SetCloudCover(*cloudCover);
+      // TODO reimplement
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1670,6 +1646,15 @@ namespace StealthQt
          SelectCorrectWarpToUI(*coordSystem);
          ShowOrHideEntityInfoPositionFields(*coordSystem);
       }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnShowCompass360Changed(int state)
+   {
+      StealthGM::PreferencesToolsConfigObject& toolsConfig =
+         StealthViewerData::GetInstance().GetToolsConfigObject();
+
+      toolsConfig.SetShowCompass360(state == Qt::Checked);
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1862,22 +1847,10 @@ namespace StealthQt
          OnWeatherCustomRadioButtonClicked();
       }
 
-      FillAndSetComboBox(dtActors::BasicEnvironmentActor::CloudCoverEnum::Enumerate(),
-               *mUi->mCustomCloudCoverComboBox, envConfig.GetCloudCover());
-
       QTime time(envConfig.GetCustomHour(),
                envConfig.GetCustomMinute(),
                envConfig.GetCustomSecond());
       mUi->mCustomTimeEdit->setTime(time);
-
-      FillAndSetComboBox(dtActors::BasicEnvironmentActor::TimePeriodEnum::Enumerate(),
-               *mUi->mTimeComboBox, envConfig.GetTimeTheme());
-
-      FillAndSetComboBox(dtActors::BasicEnvironmentActor::WeatherThemeEnum::Enumerate(),
-               *mUi->mThemeComboBox, envConfig.GetWeatherTheme());
-
-      FillAndSetComboBox(dtActors::BasicEnvironmentActor::VisibilityTypeEnum::Enumerate(),
-               *mUi->mCustomVisibilityComboBox, envConfig.GetVisibility());
 
       StealthGM::PreferencesToolsConfigObject& toolsConfig =
          StealthViewerData::GetInstance().GetToolsConfigObject();
@@ -1891,6 +1864,7 @@ namespace StealthQt
       FillAndSetComboBox(SimCore::UnitOfAngle::Enumerate(), *mUi->mAngleUnitCombo, toolsConfig.GetAngleUnit());
 
       mUi->mToolsMagnificationSpinBox->setValue(int(toolsConfig.GetMagnification()));
+      mUi->mToolsShowCompass360CheckBox->setChecked(toolsConfig.GetShowCompass360());
       mUi->mToolsShowBinocularImageCheckBox->setChecked(toolsConfig.GetShowBinocularImage());
       mUi->mToolsShowDistanceToObjectCheckBox->setChecked(toolsConfig.GetShowDistanceToObject());
       mUi->mToolsShowElevationOfObjectCheckBox->setChecked(toolsConfig.GetShowElevationOfObject());

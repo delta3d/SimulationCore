@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
 #endif
 
    dtAudio::AudioManager::Instantiate();
-   dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
    //dtCore::SetDataFilePathList(".:" + dtCore::GetDeltaDataPathList());
    int result;

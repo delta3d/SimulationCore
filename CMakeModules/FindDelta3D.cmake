@@ -10,7 +10,7 @@
 #
 # Created by David Guthrie. 
 
-FIND_PATH(DELTA_DIR inc/dtCore/dt.h
+FIND_PATH(DELTA_DIR NAMES inc/dtCore/dt.h include/dtCore/dt.h
     PATHS
     ${CMAKE_SOURCE_DIR}/../delta3d
     $ENV{DELTA_ROOT}
@@ -28,11 +28,12 @@ FIND_PATH(DELTA_DIR inc/dtCore/dt.h
 )
 
 FIND_PATH(DELTA3D_INCLUDE_DIR dtCore/dt.h
-    ${DELTA_DIR}/inc
+    SUFFIXES inc include
+    ${DELTA_DIR}
 )
 
 #find the folder that contains Delta3D library files (needs to contain at least the dtCore library)
-FIND_PATH( DELTA3D_LIB_DIR NAMES dtCore.lib dtCoreD.lib dtCore.so dtCore.dylib
+FIND_PATH( DELTA3D_LIB_DIR NAMES dtCore.lib dtCoreD.lib libdtCore.so libdtCore.dylib
     PATHS
     ${DELTA_DIR}/lib
     ${DELTA_DIR}/build/lib

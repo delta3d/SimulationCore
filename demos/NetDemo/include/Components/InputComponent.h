@@ -21,6 +21,9 @@
 #ifndef RES_GAME_INPUT_COMPONENT
 #define RES_GAME_INPUT_COMPONENT
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <DemoExport.h>
 #include <dtCore/flymotionmodel.h>
 #include <dtCore/refptr.h>
@@ -33,6 +36,11 @@
 //#include <SimCore/PlayerMotionModel.h>
 //#include <SimCore/Actors/WeaponActor.h>
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FORWARD DECLARATIONS
+////////////////////////////////////////////////////////////////////////////////
 namespace dtGame
 {
    class ActorUpdateMessage;
@@ -54,8 +62,11 @@ namespace SimCore
 namespace NetDemo
 {
    class GameLogicComponent;
+   class MessageType;
 
-   ////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////
+   // CODE
+   /////////////////////////////////////////////////////////////////////////////
    class NETDEMO_EXPORT InputComponent : public SimCore::Components::BaseInputComponent
    {
       public:
@@ -113,19 +124,37 @@ namespace NetDemo
          /// Sending in a vehicle will cause an attach, sending NULL will detach
          void SendAttachOrDetachMessage(const dtCore::UniqueId& vehicleId, const std::string& dofName);
 
+         /// Send a simple message to trigger other parts of the game system.
+         void SendSimpleMessage(const NetDemo::MessageType& messageType);
+
          /// Clean up method for the dead reckoning ghost actor
          void CleanUpDRGhost();
          /// Create or destroy the dead reckoning ghost actor
          void ToggleDRGhost();
 
-         /// Turns on/off using the velocity as a factor in when to publish
-         void ToggleVelocityDRCompare();
+         /// Turns on/off using velocity settings for DR testing. 
+         void ToggleVelocityDR();
+
+         /// Turns on/off the use of ground clamping (aka flying) related to Dead reckoning
+         void ToggleGroundClamping();
 
          /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
          void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
 
+         /// Increase or decrease the DR smoothing rate (1.10 increases time, 0.90 decreases time
+         void ModifyVehicleSmoothingRate(float scaleFactor = 1.0f);
+         
+         /// Resets the DR values as best as we can
+         void ResetTestingValues();
+
+         /// Kills one or more enemies instantly.
+         void KillEnemy(bool killAllEnemies);
+
 
       private:
+         enum DR_GHOST_MODE { NONE = 1, GHOST_ON, ATTACH_TO_GHOST, HIDE_REAL, DETACH_FROM_VEHICLE };
+         DR_GHOST_MODE mDRGhostMode;
+
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
          dtCore::RefPtr<dtCore::FlyMotionModel> mMotionModel;

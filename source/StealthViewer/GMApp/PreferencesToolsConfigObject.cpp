@@ -46,6 +46,7 @@ namespace StealthGM
    public:
       PrefToolImpl()
       : mCoordinateSystem(&PreferencesToolsConfigObject::CoordinateSystem::MGRS)
+      , mShowCompass360(false)
       , mShowBinocularImage(true)
       , mShowDistanceToObject(true)
       , mShowElevationOfObject(true)
@@ -59,6 +60,7 @@ namespace StealthGM
       }
 
       const PreferencesToolsConfigObject::CoordinateSystem* mCoordinateSystem;
+      bool mShowCompass360;
       bool mShowBinocularImage;
       bool mShowDistanceToObject;
       bool mShowElevationOfObject;
@@ -101,6 +103,19 @@ namespace StealthGM
    const PreferencesToolsConfigObject::CoordinateSystem& PreferencesToolsConfigObject::GetCoordinateSystem() const
    {
       return *mPImpl->mCoordinateSystem;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void PreferencesToolsConfigObject::SetShowCompass360(bool show)
+   {
+      mPImpl->mShowCompass360 = show;
+      SetIsUpdated(true);
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   bool PreferencesToolsConfigObject::GetShowCompass360() const
+   {
+      return mPImpl->mShowCompass360;
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -291,10 +306,13 @@ namespace StealthGM
          {
             hud->SetCoordinateSystem(CoordSystem::LAT_LON);
          }
-         else
-         {
 
+         // Compass 360
+         if( ! hud->HasCompass360())
+         {
+            hud->SetupCompass360();
          }
+         hud->SetCompass360Enabled(mPImpl->mShowCompass360);
       }
 
       if (binos != NULL)

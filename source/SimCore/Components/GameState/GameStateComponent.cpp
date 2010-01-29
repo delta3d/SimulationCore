@@ -104,7 +104,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const StateType* GameStateComponent::GetCurrentState()
+      const StateType* GameStateComponent::GetCurrentState() const
       {
          if(mCurrentState.valid())
          {
@@ -271,6 +271,13 @@ namespace SimCore
          }
 
          return false;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////
+      bool GameStateComponent::IsInState(const GameStateComponent::GameStateType& state) const
+      {
+         const GameStateType* currentState = GetCurrentState();
+         return currentState != NULL && state == *currentState;
       }
 
       //////////////////////////////////////////////////////////////////////////

@@ -46,9 +46,9 @@ namespace NetDemo
       , mNumPlayers(0)
       , mNumTeams(0)
       , mWaveStartDuration(5.0f)
-      , mWaveDuration(60.0f)
+      , mWaveDuration(300.0f)
       , mGameDifficulty(0)
-      , mMaxNumberWaves(5)
+      , mMaxNumberWaves(50)
       , mTimeTillNextUpdate(0.0f)
       , mTimeBetweenUpdates(1.0f)
       , mDirtySettings(false)
@@ -165,7 +165,7 @@ namespace NetDemo
       double simTime = GetGameActorProxy().GetGameManager()->GetSimulationTime();
       SetLastPublishTime(simTime);
 
-      std::vector<std::string> propNames;
+      std::vector<dtUtil::RefString> propNames;
       propNames.push_back(ServerGameStatusActorProxy::PROP_GAME_STATUS);
       propNames.push_back(ServerGameStatusActorProxy::PROP_WAVE_NUMBER);
       propNames.push_back(ServerGameStatusActorProxy::PROP_NUM_ENEMIES_KILLED);

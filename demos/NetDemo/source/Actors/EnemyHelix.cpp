@@ -32,12 +32,17 @@
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
+//#include <SimCore/Components/MunitionsComponent.h>
+#include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
+#include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/CollisionGroupEnum.h>
+
 #include <dtPhysics/physicshelper.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
 
-#include <AISpaceShip.h> 
+#include <EnemyHelixAIHelper.h> 
 //all below are included from the above- #include <AISpaceShip.h> 
 //#include <EnemyAIHelper.h>
 //#include <AIUtility.h>
@@ -47,6 +52,11 @@
 #include <ActorRegistry.h>
 #include <Actors/FortActor.h>
 
+#include <Components/WeaponComponent.h>
+
+
+#include <osgSim/DOFTransform>
+
 namespace NetDemo
 {
 
@@ -54,7 +64,9 @@ namespace NetDemo
    EnemyHelixActor::EnemyHelixActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : BaseEnemyActor(proxy)
    {
-      mAIHelper = new SpaceShipAIHelper();
+      mAIHelper = new EnemyHelixAIHelper();
+      
+      SetTimeToExistAfterDead(4.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +95,75 @@ namespace NetDemo
          //redirecting the detonate function
          state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_DETONATE);
          state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &EnemyHelixActor::DoExplosion));
+
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_IDLE, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_DIE, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FIND_TARGET, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_GO_TO_WAYPOINT, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_ATTACK, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_EVADE, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FOLLOW, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_FLOCK, &AIStateType::AI_STATE_DETONATE);
+         mAIHelper->AddTransition(&AIEvent::AI_EVENT_TOOK_DAMAGE, &AIStateType::AI_STATE_WANDER, &AIStateType::AI_STATE_DETONATE);
+
          
          //calling spawn will start the AI
          mAIHelper->Spawn();
+
+         //creates the weapon actor
+         InitWeapon();
+
       }
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::OnRemovedFromWorld()
+   {
+      if(mWeaponProxy.valid())
+      {
+         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::InitWeapon()
+   {
+      // Get the weapon component that is used to create weapons.
+      WeaponComponent* weaponComp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+
+      if(weaponComp != NULL)
+      {
+         SimCore::Actors::WeaponActor* weapon = NULL;
+
+         // Create the primary weapon.
+         // --- This method will automatically add the created weapon to the world.
+         weaponComp->CreateWeapon("Weapon_MachineGun",
+            "Particle_System_Weapon_GunWithTracer",
+            "weapon_gun_flash.osg", weapon);
+
+         // Customize the new weapon.
+         if(weapon != NULL)
+         {
+            // Attach the weapon to this object.
+            weapon->SetOwner(&GetGameActorProxy());
+            AddChild(weapon, "dof_hotspot_01");
+
+            // Maintain references to the weapon and its proxy.
+            mWeapon = weapon;
+            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+
+            //slow down the rate of fire
+            mWeapon->SetFireRate(1.0f);
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not find Weapon Component to create weapon.");
+      }
+   }
+
+   //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::FindTarget(float)
    {
       //temporarily lets just look for a fort to destroy
@@ -111,6 +186,8 @@ namespace NetDemo
 
       //mAIHelper->PostSync(trans);
       //SetTransform(trans);
+
+      BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +224,15 @@ namespace NetDemo
          }
       }
    }
-
+   ///////////////////////////////////////////////////////////////////////////////////
+   void EnemyHelixActor::Shoot(float)
+   {
+      if(mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
+      }
+   }
 
    //////////////////////////////////////////////////////////////////////
    void EnemyHelixActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
@@ -161,73 +246,38 @@ namespace NetDemo
       ////////let the AI do its thing
       mAIHelper->Update(tickMessage.GetDeltaSimTime());
 
+      //this is a temporary workaround to get the helix to shoot
+      //this should be called from the ai fire laser state
+      float distToTarget = mAIHelper->GetDistance(mAIHelper->mGoalState.GetPos());
+      osg::Vec3 angleToTarget = mAIHelper->mGoalState.GetPos() - mAIHelper->mCurrentState.GetPos();
+      angleToTarget.normalize();
+      float angle = angleToTarget * mAIHelper->mCurrentState.GetForward();
+      if(distToTarget < 150.0f && angle > 0.9f)
+      {
+         Shoot(0.0f);
+      }
+
+
       BaseClass::OnTickLocal(tickMessage);
+
+
+      mWeapon->SetTriggerHeld(false);
    }
-
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   //TODO- MAKE THIS A HELPER FUNCTION OR BASE, COPIED FROM ENEMYMINE.CPP
-   void EnemyHelixActor::DoExplosion(float)
-   {
-      //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
-      //printf("Sending DETONATION\r\n");
-
-      dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
-      dtCore::Transform ourTransform;
-      GetTransform(ourTransform);
-      osg::Vec3 trans = ourTransform.GetTranslation();
-
-      // Prepare a detonation message
-      dtCore::RefPtr<SimCore::DetonationMessage> msg;
-      gm->GetMessageFactory().CreateMessage( SimCore::MessageType::DETONATION, msg );
-
-      // Required Parameters:
-      msg->SetEventIdentifier( 1 );
-      msg->SetDetonationLocation(trans);
-      // --- DetonationResultCode 1 == Entity Impact, 3 == Ground Impact, 5 == Detonation
-      msg->SetDetonationResultCode( 3 ); // TO BE DYNAMIC
-      msg->SetMunitionType("Generic Explosive");
-      msg->SetFuseType(0);
-      msg->SetWarheadType(0);
-      msg->SetQuantityFired(1);
-      msg->SetSendingActorId(GetGameActorProxy().GetId());
-      //msg->SetFinalVelocityVector( finalVelocity );
-      msg->SetRateOfFire(1);
-
-      gm->SendMessage( *msg );
-      gm->SendNetworkMessage( *msg );
-
-      mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
-
-      GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void EnemyHelixActor::RespondToHit(const SimCore::DetonationMessage& message,
-      const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-      const osg::Vec3& location)
-   {
-      // the base class applies an impulse
-      BaseClass::RespondToHit(message, munition, force, location);
-
-      //this lets the AI respond to being hit
-      //mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TOOK_DAMAGE);
-   }
-
+  
    //////////////////////////////////////////////////////////////////////
    // PROXY
    //////////////////////////////////////////////////////////////////////
    EnemyHelixActorProxy::EnemyHelixActorProxy()
    {
       SetClassName("EnemyHelixActor");
-  }
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActorProxy::BuildPropertyMap()
    {
-      const std::string GROUP = "Enemy Props";
+      BaseClass::BuildPropertyMap();
 
-      SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
+      const std::string GROUP = "Enemy Props";
 
       EnemyHelixActor& actor = static_cast<EnemyHelixActor &>(GetGameActor());
 
@@ -247,9 +297,12 @@ namespace NetDemo
       BaseClass::OnEnteredWorld();
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
    void EnemyHelixActorProxy::OnRemovedFromWorld()
    {
-      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());
-      actor.DoExplosion(1.0f);
+      BaseClass::OnRemovedFromWorld();
+
+      EnemyHelixActor& actor = static_cast<EnemyHelixActor&>(GetGameActor());      
+      actor.OnRemovedFromWorld();
    }
 } // namespace

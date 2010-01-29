@@ -189,7 +189,7 @@ namespace SimCore
          dtDAL::GameEventManager& eventManager = dtDAL::GameEventManager::GetInstance();
 
          dtDAL::GameEvent* ge = eventManager.FindEvent(str);
-         if(ge == NULL)
+         if(ge == NULL && str != "")
          {
             LOG_WARNING("Error loading conversation file, did not find GameEvent of name '" + str + "' in current map.")
          }

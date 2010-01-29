@@ -31,6 +31,7 @@
 #include <dtAI/npcstate.h>
 #include <osg/Vec3>
 #include <dtCore/transformable.h>
+#include <dtCore/observerptr.h>
 
 namespace NetDemo
 {
@@ -49,6 +50,7 @@ namespace NetDemo
      static const AIStateType  AI_STATE_FIND_TARGET;
      static const AIStateType  AI_STATE_GO_TO_WAYPOINT;
      static const AIStateType  AI_STATE_ATTACK;
+     static const AIStateType  AI_STATE_FIRE_LASER;
      static const AIStateType  AI_STATE_EVADE;
      static const AIStateType  AI_STATE_FOLLOW;
      static const AIStateType  AI_STATE_FLOCK;
@@ -100,7 +102,8 @@ namespace NetDemo
          mTarget = &v;
       }
 
-      dtCore::RefPtr<dtCore::Transformable> mTarget;
+      osg::Vec3 mLastPos;
+      dtCore::ObserverPtr<const dtCore::Transformable> mTarget;
    };
 
    typedef AIState<TargetData> AttackState;

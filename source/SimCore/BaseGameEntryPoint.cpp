@@ -67,8 +67,6 @@
 #include <dtAnim/cal3ddatabase.h>
 #include <dtAnim/animnodebuilder.h>
 
-#include <dtActors/basicenvironmentactorproxy.h>
-
 #include <osg/ArgumentParser>
 #include <osg/ApplicationUsage>
 //#include <osgUtil/RenderBin>
@@ -113,32 +111,6 @@ namespace SimCore
 
       //this needs to be moved
       dtAudio::AudioManager::Destroy();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::CreateEnvironment(dtGame::GameManager& gameManager)
-   {
-      RefPtr<dtDAL::ActorProxy> envProxy = gameManager.CreateActor("dtcore.Environment", "Environment");
-      if(!envProxy.valid())
-      {
-         LOG_ERROR("Failed to create the environment actor proxy in the game manager. Aborting.");
-         gameManager.GetApplication().Quit();
-      }
-
-      RefPtr<dtActors::BasicEnvironmentActor> envActor = dynamic_cast<dtActors::BasicEnvironmentActor*>(envProxy->GetActor());
-      if(!envActor.valid())
-      {
-         LOG_ERROR("The dynamic cast to an EnvironmentActor failed. The IEnvGameActorProxy has an invalid actor. Aborting.");
-         gameManager.GetApplication().Quit();
-      }
-
-      gameManager.SetEnvironmentActor(static_cast<dtGame::IEnvGameActorProxy*>(&envActor->GetGameActorProxy()));
-
-      envActor->SetTimeAndDate(2006, 5, 6, 12, 0, 0);
-      envActor->EnableCloudPlane(true);
-      envActor->SetWeatherTheme(dtActors::BasicEnvironmentActor::WeatherThemeEnum::THEME_RAINY);
-      envActor->EnableFog(true);
-      envActor->GetWeather().GetEnvironment()->SetFogColor(osg::Vec3(1.0f, 0.95f, 0.74f));
    }
 
    //////////////////////////////////////////////////////////////////////////

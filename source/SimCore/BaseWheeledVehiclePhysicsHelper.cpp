@@ -41,6 +41,7 @@
 
 namespace SimCore
 {
+   static const float AIR_DENSITY = 1.204f;    // density of air in kg/m^3 at 20C
 
    /// Constructor
    BaseWheeledVehiclePhysicsHelper::BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
@@ -88,6 +89,9 @@ namespace SimCore
    , mTireAsymptoteValue(1.0f)
    , mTireStiffnessFactor(1000.0f)
    , mTireRestitution(1000.0f)
+   , mAeroDynDragCoefficient(0.80)
+   , mAeroDynDragArea(8.0)
+
 #endif
    {
 #ifndef AGEIA_PHYSICS
@@ -117,7 +121,15 @@ namespace SimCore
       }
    }
 
-
+   /////////////////////////////////////////////////////////////////////////////////////
+   osg::Vec3 BaseWheeledVehiclePhysicsHelper::ComputeAeroDynDrag(const osg::Vec3& linearVelocity)
+   {
+      osg::Vec3 workVec = linearVelocity;
+      float magnitude = workVec.normalize();
+      float dragMag = -mAeroDynDragCoefficient * mAeroDynDragArea * magnitude * magnitude * 0.5f * AIR_DENSITY;
+      workVec *= dragMag;
+      return workVec;
+   }
    // ///////////////////////////////////////////////////////////////////////////////////
    //                               Vehicle Initialization                             //
    // ///////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +219,7 @@ namespace SimCore
 
       wheel.mWheel->Init(position.x(), position.y(), position.z(),
                node.getBound().radius(), mWheelWidth, mSuspensionSpringTarget,
-               mSuspensionSpringCoef/100.0f, // in centimeters
+               mSuspensionSpringCoef/100.0f, // in newtons per centimeter
                mSuspensionSpringDamper,
                powered, steered, braked,
                mWheelSuspensionTravel * 100.0f,  // in centimeters
@@ -266,6 +278,7 @@ namespace SimCore
       GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
       mVehicle->Init(&GetMainPhysicsObject()->GetBodyWrapper()->GetPalBody(), GetEngineTorque(),
                 GetMaxBrakeTorque());
+
 #endif
 
       return true;
@@ -280,6 +293,29 @@ namespace SimCore
 #else
       return GetMainPhysicsObject()->GetMass();
 #endif
+   }
+
+   ////////////////////////////////////////////////////////
+   float BaseWheeledVehiclePhysicsHelper::GetAeroDynDragCoefficient() const
+   {
+      return mAeroDynDragCoefficient;
+   }
+   ////////////////////////////////////////////////////////
+   void BaseWheeledVehiclePhysicsHelper::SetAeroDynDragCoefficient(float drag)
+   {
+      mAeroDynDragCoefficient = drag;
+   }
+
+   ////////////////////////////////////////////////////////
+   float BaseWheeledVehiclePhysicsHelper::GetAeroDynDragArea() const
+   {
+      return mAeroDynDragArea;
+   }
+
+   ////////////////////////////////////////////////////////
+   void BaseWheeledVehiclePhysicsHelper::SetAeroDynDragArea(float area)
+   {
+      mAeroDynDragArea = area;
    }
 
    ////////////////////////////////////////////////////////
@@ -407,26 +443,28 @@ namespace SimCore
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeedReverse),
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeedReverse),
                "Top speed in reverse", VEHICLEGROUP));
-
+#if 0
       toFillIn.push_back(new dtDAL::IntActorProperty("Horsepower", "Horsepower",
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleHorsePower),
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleHorsePower),
                "Currently unused", VEHICLEGROUP));
-
+#endif
       toFillIn.push_back(new dtDAL::FloatActorProperty("mWheelTurnRadiusPerUpdate", "mWheelTurnRadiusPerUpdate",
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTurnRadiusPerUpdate),
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTurnRadiusPerUpdate),
                "", WHEELGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Inverse Mass of Wheel", "Inverse Mass of Wheel",
+      toFillIn.push_back(new dtDAL::FloatActorProperty("WheelMass", "Wheel Mass",
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelInverseMass),
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelInverseMass),
                "This is not used for dtPhysics.", WHEELGROUP));
 
+#if 0
       toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Radius", "Wheel Radius",
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelRadius),
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelRadius),
                "Rolling radius of wheel", WHEELGROUP));
+#endif
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Width", "Wheel Width",
                dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelWidth),
@@ -489,6 +527,18 @@ namespace SimCore
                dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireRestitution),
                "Coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.  Note that values close to or above 1 may cause stability problems and/or increasing energy.",
                WHEELGROUP));
+
+      toFillIn.push_back(new dtDAL::FloatActorProperty("AeroDynDragCoefficient", "Aero Dynamic Drag Coefficient",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetAeroDynDragCoefficient),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetAeroDynDragCoefficient),
+               "The Coefficient of friction to use for aerodynamic friction.  Anything from just over 0.0 to a  bit over 1.0 will work.",
+               VEHICLEGROUP));
+
+      toFillIn.push_back(new dtDAL::FloatActorProperty("AeroDynDragArea", "Aerodynamic Drag Area",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetAeroDynDragArea),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetAeroDynDragArea),
+               "The area in square meters to use when computing aerodynamic drag, i.e. the surface area on the front/back of the vehicle.",
+               VEHICLEGROUP));
    }
 } // end namespace
 

@@ -25,8 +25,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtGame/gmcomponent.h>
-#include <Components/GameLogicComponent.h>
+#include "DemoExport.h"
+#include "Actors/PlayerStatusActor.h"
+#include "Components/GameLogicComponent.h"
 
 
 
@@ -37,13 +38,16 @@ namespace CEGUI
 {
    class Editbox;
    class EventArgs;
+   class ItemListbox;
    class PushButton;
    class Window;
 }
 
 namespace dtGame
 {
+   class ActorUpdateMessage;
    class Message;
+   class TickMessage;
 }
 
 namespace dtGUI
@@ -62,7 +66,24 @@ namespace SimCore
 
    namespace GUI
    {
+      class Screen;
       class SimpleScreen;
+   }
+}
+
+namespace NetDemo
+{
+   namespace GUI
+   {
+      class HUDScreen;
+      class MainMenuScreen;
+      class ReadyRoomScreen;
+      class ScoreLabelManager;
+
+      namespace Effects
+      {
+         class ButtonHighlight;
+      }
    }
 }
 
@@ -71,9 +92,19 @@ namespace SimCore
 namespace NetDemo
 {
    /////////////////////////////////////////////////////////////////////////////
+   // TYPE DEFINITIONS (Use to switch an external class to this namespace)
+   /////////////////////////////////////////////////////////////////////////////
+   typedef SimCore::GUI::SimpleScreen SimpleScreen;
+   typedef SimCore::GUI::Screen Screen;
+   typedef SimCore::Components::StateType GameStateType;
+   typedef NetDemo::GUI::Effects::ButtonHighlight ButtonHighlight;
+
+
+
+   /////////////////////////////////////////////////////////////////////////////
    // CLASS CODE
    /////////////////////////////////////////////////////////////////////////////
-   class GUIComponent : public dtGame::GMComponent
+   class NETDEMO_EXPORT GUIComponent : public dtGame::GMComponent
    {
       public:
          typedef dtGame::GMComponent BaseClass;
@@ -88,14 +119,26 @@ namespace NetDemo
 
          virtual void ProcessMessage( const dtGame::Message& message );
 
-         void ProcessStateChangeMessage( const SimCore::Components::GameStateChangedMessage& stateChange );
+         void Update(float timeDelta);
 
       protected:
          virtual ~GUIComponent();
 
-         void InitializeCEGUI( const std::string& schemeFile );
+         void InitializeCEGUI(const std::string& schemeFile);
+         void InitializeEffectsOverlays();
+
+         void ProcessEntityActionMessage(const dtGame::Message& message);
+
+         void ProcessActorUpdate(const dtGame::ActorUpdateMessage& updateMessage);
+
+         void ProcessStateChangeMessage(const SimCore::Components::GameStateChangedMessage& stateChange);
+
+         void ProcessPlayerStatusUpdate(const PlayerStatusActor& playerStats);
 
          GameLogicComponent* GetAppComponent();
+
+         void OnOptionNext(bool reverse = false);
+         void OnOptionSelect();
 
          /**
           * Helper method for obtaining a CEGUI window from its associated Event Args.
@@ -104,31 +147,73 @@ namespace NetDemo
           */
          const CEGUI::Window* GetWidgetFromEventArgs( const CEGUI::EventArgs& args ) const;
 
-         bool OnButtonClicked( const CEGUI::EventArgs& args );
+         bool OnButtonClicked(const CEGUI::EventArgs& args);
+         bool OnButtonFocusGain(const CEGUI::EventArgs& args);
+         bool OnButtonFocusLost(const CEGUI::EventArgs& args);
+         bool OnVehicleTypeSelected(const CEGUI::EventArgs& args);
+
+         void SetButtonFocused(const CEGUI::Window* button);
+
+         void HandleButton(const CEGUI::Window& button);
+         void HandleSpecialButton(const std::string& buttonType, std::string& inOutAction);
 
          void BindButtons( CEGUI::Window& rootWindow );
          void BindButton( CEGUI::PushButton& button );
 
          bool IsButtonType( const std::string& buttonType ) const;
 
+         void UpdateButtonArray();
+
+         bool RegisterScreenWithState(Screen& screen, GameStateType& state);
+         Screen* GetScreenForState(const GameStateType& state);
+
+         void SetHoverEffectOnElement(const CEGUI::Window& window);
+         void SetHoverEffectEnabled(bool enabled);
+
       private:
+         // High Order Objects
+         dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
+         dtCore::RefPtr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;
+
+         //
+         typedef std::map<const GameStateType*, Screen*> StateScreenMap;
+         StateScreenMap mStateScreenMap;
 
          // Screens
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenMainMenu;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLobby;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenConnectFailPrompt;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenLoading;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenReadyRoom;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenOptions;
-         dtCore::RefPtr<SimCore::GUI::SimpleScreen> mScreenQuitPrompt;
+         dtCore::RefPtr<osg::MatrixTransform> mBackground;
+         dtCore::RefPtr<NetDemo::GUI::MainMenuScreen> mScreenMainMenu;
+         dtCore::RefPtr<SimpleScreen> mScreenLobby;
+         dtCore::RefPtr<SimpleScreen> mScreenConnectFailPrompt;
+         dtCore::RefPtr<SimpleScreen> mScreenLoading;
+         dtCore::RefPtr<NetDemo::GUI::ReadyRoomScreen> mScreenReadyRoom;
+         dtCore::RefPtr<SimpleScreen> mScreenGarage;
+         dtCore::RefPtr<SimpleScreen> mScreenOptions;
+         dtCore::RefPtr<SimpleScreen> mScreenQuitPrompt;
+         dtCore::RefPtr<NetDemo::GUI::HUDScreen> mScreenHUD;
+
+         dtCore::RefPtr<Screen> mCurrentScreen;
+         dtCore::RefPtr<Screen> mPreviousScreen;
+
+         // Special Effects Overlays
+         dtCore::RefPtr<osg::MatrixTransform> mEffectsOverlay;
+
+         // Special Effects Elements
+         dtCore::RefPtr<ButtonHighlight> mButtonHighlight;
 
          // Special Widgets
+         const CEGUI::Window* mCurrentHoveredWidget;
          CEGUI::Editbox* mInputServerPort;
          CEGUI::Editbox* mInputServerIP;
+         CEGUI::ItemListbox* mListVehicleType;
+
+         // Button array - for current screen.
+         int mCurrentButtonIndex;
+         typedef std::vector<CEGUI::PushButton*> ButtonArray;
+         ButtonArray mCurrentScreenButtons;
    };
 
 }

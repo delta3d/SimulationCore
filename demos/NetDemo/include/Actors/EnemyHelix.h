@@ -25,9 +25,22 @@
 #define NETDEMO_ENEMY_HELIX_ACTOR
 
 #include <DemoExport.h>
-#include <AISpaceShip.h>
+#include <EnemyHelixAIHelper.h>
 #include <Actors/BaseEnemyActor.h>
 
+namespace dtGame
+{
+   class Message;
+}
+
+namespace SimCore
+{
+   namespace Actors
+   {
+      class WeaponActor;
+      class WeaponActorProxy;
+   }
+}
 
 namespace NetDemo
 {
@@ -45,13 +58,9 @@ namespace NetDemo
          /// Constructor
          EnemyHelixActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
 
-         /*virtual*/ void DoExplosion(float);
-
          /*virtual*/ void OnEnteredWorld();
 
-         /*virtual*/ void RespondToHit(const SimCore::DetonationMessage& message,
-            const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
-            const osg::Vec3& location);
+         /*virtual*/ void OnRemovedFromWorld();
 
          /*virtual*/ void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
@@ -65,9 +74,16 @@ namespace NetDemo
          /*virtual*/ void UpdateVehicleTorquesAndAngles(float deltaTime);
 
          void FindTarget(float);
+         void Shoot(float);
+
+         void InitWeapon();
 
       // Private vars
       private:
+
+
+         dtCore::RefPtr<SimCore::Actors::WeaponActor> mWeapon;
+         dtCore::RefPtr<SimCore::Actors::WeaponActorProxy> mWeaponProxy;
 
    };
 

@@ -122,21 +122,12 @@ namespace SimCore
             LoadCollision();
          }
 
-#ifdef AGEIA_PHYSICS
-         dtGame::GMComponent *comp =
-            GetGameActorProxy().GetGameManager()->GetComponentByName(dtAgeiaPhysX::NxAgeiaWorldComponent::DEFAULT_NAME);
-         if(comp != NULL)
-         {
-            static_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(comp)->RegisterAgeiaHelper(*mPhysicsHelper);
-         }
-#else
          dtPhysics::PhysicsComponent *comp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME);
+         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
          if(comp != NULL)
          {
             comp->RegisterHelper(*mPhysicsHelper);
          }
-#endif
       }
 
 
@@ -145,8 +136,6 @@ namespace SimCore
       {
          std::string checkValue;
 
-         // release if something is already made for this actor
-         mPhysicsHelper->RemovePhysicsObject(DEFAULT_NAME);
          BaseEntityActorProxy::DamageStateEnum& damState = GetDamageState();
          if (damState == BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          {
@@ -172,6 +161,9 @@ namespace SimCore
          else
 #ifdef AGEIA_PHYSICS
          {
+            // release if something is already made for this actor
+            mPhysicsHelper->RemovePhysicsObject(DEFAULT_NAME);
+
             dtCore::Transform ourTransform, zeroTransform;
             GetTransform(ourTransform);
             osg::Matrix rot;
@@ -190,20 +182,21 @@ namespace SimCore
          mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 #else
          {
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = mPhysicsHelper->GetPhysicsObject("Chassis");
+            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = mPhysicsHelper->GetPhysicsObject(DEFAULT_NAME);
 
             if (physObj.valid())
             {
                mPhysicsHelper->RemovePhysicsObject(*physObj);
-               dtCore::ObserverPtr<dtPhysics::PhysicsObject> observer = physObj.get();
-               physObj = NULL;
-               if (observer.valid())
-               {
-                  LOG_ERROR("Removed the physics body from the platform, but it didn't get deleted.  Something is holding onto it.");
-               }
+            }
+            else
+            {
+               LOG_ERROR("The Physics object should already be created, attempting to create a another physics object.");
+               physObj = new dtPhysics::PhysicsObject(DEFAULT_NAME);
+               physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+               physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+               physObj->SetMass(500.0f);
             }
 
-            physObj= new dtPhysics::PhysicsObject("Chassis");
             dtCore::Transform xform;
             GetTransform(xform);
 
@@ -298,6 +291,18 @@ namespace SimCore
       void PlatformWithPhysicsActorProxy::OnEnteredWorld()
       {
          PlatformActorProxy::OnEnteredWorld();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::RefPtr<dtDAL::ActorProperty> PlatformWithPhysicsActorProxy::GetDeprecatedProperty(const std::string& name)
+      {
+#ifndef AGEIA_PHYSICS
+         PlatformWithPhysics* actor = NULL;
+         GetActor(actor);
+         return actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
+#else
+         return NULL;
+#endif
       }
 
    } // namespace

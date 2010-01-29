@@ -11,16 +11,14 @@ Group {
       UniqueID ParticleSystem_0
       DataVariance DYNAMIC
       StateSet {
-        DataVariance STATIC
+        UniqueID StateSet_1
         rendering_hint TRANSPARENT_BIN
         renderBinMode USE
         binNumber 10
         binName DepthSortedBin
         GL_LIGHTING OFF
-        GL_COLOR_MATERIAL ON
         GL_BLEND ON
         Material {
-          DataVariance STATIC
           ColorMode OFF
           ambientColor 0.2 0.2 0.2 1
           diffuseColor 0.8 0.8 0.8 1
@@ -31,15 +29,13 @@ Group {
           shininess 0
         }
         BlendFunc {
-          DataVariance STATIC
           source SRC_ALPHA
           destination ONE
         }
         textureUnit 0 {
           GL_TEXTURE_2D ON
           Texture2D {
-            DataVariance STATIC
-            file "Textures/puff.tga"
+            file "../Textures/medium_smoke.tga"
             wrap_s MIRROR
             wrap_t MIRROR
             wrap_r CLAMP
@@ -54,7 +50,6 @@ Group {
             resizeNonPowerOfTwo TRUE
           }
           TexEnv {
-            DataVariance STATIC
             mode MODULATE
           }
         }
@@ -63,6 +58,7 @@ Group {
       useDisplayList FALSE
       useVertexBufferObjects FALSE
       particleAlignment BILLBOARD
+      particleScaleReferenceFrame WORLD_COORDINATES
       alignVectorX 1 0 0
       alignVectorY 0 1 0
       doublePassRendering FALSE
@@ -84,19 +80,19 @@ Group {
         textureTile 1 1 1
         sizeInterpolator {
           osgParticle::LinearInterpolator {
-            UniqueID LinearInterpolator_1
+            UniqueID LinearInterpolator_2
             DataVariance DYNAMIC
           }
         }
         alphaInterpolator {
           osgParticle::LinearInterpolator {
-            UniqueID LinearInterpolator_2
+            UniqueID LinearInterpolator_3
             DataVariance DYNAMIC
           }
         }
         colorInterpolator {
           osgParticle::LinearInterpolator {
-            UniqueID LinearInterpolator_3
+            UniqueID LinearInterpolator_4
             DataVariance DYNAMIC
           }
         }
@@ -104,7 +100,7 @@ Group {
     }
   }
   Geode {
-    UniqueID Geode_4
+    UniqueID Geode_5
     DataVariance DYNAMIC
     name "Layer 0"
     nodeMask 0xffffffff
@@ -113,7 +109,7 @@ Group {
     Use ParticleSystem_0
   }
   MatrixTransform {
-    UniqueID MatrixTransform_5
+    UniqueID MatrixTransform_6
     DataVariance DYNAMIC
     nodeMask 0xffffffff
     cullingActive TRUE
@@ -126,7 +122,7 @@ Group {
     }
     num_children 1
     osgParticle::ModularEmitter {
-      UniqueID ModularEmitter_6
+      UniqueID ModularEmitter_7
       DataVariance DYNAMIC
       nodeMask 0xffffffff
       cullingActive FALSE
@@ -152,12 +148,12 @@ Group {
         thetaRange 0 0.03
         phiRange 0 6.2832
         initialSpeedRange 0 0
-        initialRotationalSpeedRange 0 0 -0 0 0 0
+        initialRotationalSpeedRange 0 0 0 0 0 0
       }
     }
   }
   osgParticle::ModularProgram {
-    UniqueID ModularProgram_7
+    UniqueID ModularProgram_8
     DataVariance DYNAMIC
     nodeMask 0xffffffff
     cullingActive FALSE

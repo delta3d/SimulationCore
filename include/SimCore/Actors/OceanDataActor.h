@@ -47,22 +47,43 @@ namespace SimCore
 
             OceanDataActor(OceanDataActorProxy &proxy);
 
+            /**
+             * Set a numerical representation of the sea state. The state's meaning is
+             * determined by the networked simulators.
+             * @param value An enumerated value that represents a sea state.
+             */
             void SetSeaState( int value );
             int GetSeaState() const;
 
+            /**
+             * Set the max wave height for the ocean.
+             * @param value Wave height measured in meters.
+             */
             void SetWaveHeightSignificant( float value );
             float GetWaveHeightSignificant() const;
 
+            /**
+             * Set the wave direction in degrees.
+             * @param angleDegrees Value ranging between 0 and 360 degrees.
+             */
             void SetWaveDirectionPrimary( float angleDegrees );
             float GetWaveDirectionPrimary() const;
+
+            /**
+             * Set a period primary mean.
+             * @param mean Value ranging between 0 to 60 seconds.
+             */
+            void SetWavePeriodPrimaryMean(float mean);
+            float GetWavePeriodPrimaryMean() const;
 
          protected:
             virtual ~OceanDataActor();
 
          private:
             int mSeaState;
-            float mWaveHeightSignificant;
-            float mWaveDirectionPrimary;
+            float mWaveHeightSignificant; // meters
+            float mWaveDirectionPrimary;  // degrees
+            float mWavePeriodPrimaryMean; // seconds
       };
 
 
@@ -76,6 +97,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_SEA_STATE;
             static const dtUtil::RefString PROPERTY_WAVE_DIRECTION_PRIMARY;
             static const dtUtil::RefString PROPERTY_WAVE_HEIGHT_SIGNIFICANT;
+            static const dtUtil::RefString PROPERTY_WAVE_PERIOD_PRIMARY_MEAN;
 
             typedef LatLongDataActorProxy BaseClass;
 

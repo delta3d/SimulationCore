@@ -219,5 +219,11 @@ namespace SimCore
          }
       }
 
+      //////////////////////////////////////////////////////////////////////////
+      void AnimationControllerBase::Execute(bool reversed)
+      {
+         Execute(mInterpTimeLimit, mInterpTimeStart, reversed);
+      }
+
    }
 }

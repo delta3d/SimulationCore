@@ -29,6 +29,17 @@
 #include <dtCore/keyboard.h>
 
 #include <osgSim/DOFTransform>
+#include <dtUtil/mathdefines.h>
+
+#include <dtPhysics/bodywrapper.h>
+
+//For debug only.
+#include <iostream>
+
+// TEMP:
+// For appling shaders to different parts of th vehicle.
+#include <SimCore/ApplyShaderVisitor.h>
+#include <dtCore/shaderprogram.h>
 
 namespace NetDemo
 {
@@ -36,18 +47,18 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    PropelledVehicleActor::PropelledVehicleActor(SimCore::Actors::PlatformActorProxy& proxy)
    : BaseClass(proxy)
-   , mStartBoost(false)
-   , mStartBoostForce(6500.0f)
-   , mMaximumBoostPerSecond(1000.0f)
-   , mCurrentBoostTime(0.0f)
-   , mTimeToResetBoost(5.0f)
-   , mBoostResetTimer(0.0f)
+//   , mStartBoost(false)
+//   , mStartBoostForce(6500.0f)
+//   , mMaximumBoostPerSecond(1000.0f)
+//   , mCurrentBoostTime(0.0f)
+//   , mTimeToResetBoost(5.0f)
+//   , mBoostResetTimer(0.0f)
    , mHelper(new SimCore::FourWheelVehiclePhysicsHelper(proxy))
    {
       SetPhysicsHelper(mHelper.get());
       SetMunitionDamageTableName("StandardDamageTable");
-//      SetMaxTranslationError(0.02f);
-//      SetMaxRotationError(1.0f);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
       SetMaxUpdateSendRate(5.0f);
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
@@ -100,6 +111,14 @@ namespace NetDemo
 
       mHelper->CreateVehicle(xform, *body, wheels);
       mHelper->GetMainPhysicsObject()->SetTransformAsVisual(xform);
+
+      // TEMP:
+      // Find the fuel line geometry and apply the pulse effect to it.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("FuelLines-GEODE");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      GetOSGNode()->accept(*visitor);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -123,6 +142,8 @@ namespace NetDemo
       if(keyboard == NULL)
          return;
       //float currentMPH = GetMPH(); // speed, not a velocity with direction
+
+      dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
       float accelerator = 0.0;
       float brakes = 0.0;
@@ -153,69 +174,39 @@ namespace NetDemo
          if (keyboard->GetKeyState('a') || keyboard->GetKeyState('A') ||
               keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
             steering = 1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, -1.0, 0.0);
             float torqueMagnitude = 1000;
-            po->AddLocalTorque(torqueDirection * torqueMagnitude);
-            po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
+            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
+            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
          }
          else if (keyboard->GetKeyState('d') || keyboard->GetKeyState('D') ||
                keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
             steering = -1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, 1.0, 0.0);
             float torqueMagnitude = 1000;
 
-            po->AddLocalTorque(torqueDirection * torqueMagnitude);
-            po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
+            //po->AddLocalTorque(torqueDirection * torqueMagnitude);
+            //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
          }
 
          if (keyboard->GetKeyState('f') || keyboard->GetKeyState('F'))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
-            //po->AddTorque(osg::Vec3(0.0, 8000.0, 0.0));
-            osg::Vec3 boostDirection(0.0f, 1.0f, 0.0f);
-            float boostForce = 0.0f;
+            //dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
 
-            if(mStartBoost)
-            {
-               mCurrentBoostTime += deltaTime;
 
-               //note: we are ramping down the boost since it
-               //       is being held down and we dont want to fly into space :)
-               boostForce = (mMaximumBoostPerSecond / mCurrentBoostTime);
-            }
-            else
-            {
-               mStartBoost = true;
 
-               //note: we just started boosting so lets boost with a large force
-               boostForce = mStartBoostForce;
-            }
-
-            po->AddLocalForce(boostDirection * boostForce);
+            //po->AddLocalForce(boostDirection * boostForce);
          }
          else
          {
-            if(mStartBoost)
-            {
-               mBoostResetTimer += deltaTime;
-               if(mBoostResetTimer >= mTimeToResetBoost)
-               {
-                  mStartBoost = false;
-                  mCurrentBoostTime = 0.0f;
-                  mBoostResetTimer = 0.0f;
-               }
-            }
          }
 
          if (keyboard->GetKeyState('r') || keyboard->GetKeyState('R'))
          {
-            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
             dtCore::Transform xform;
             po->GetTransform(xform);
             osg::Vec3 trans;
@@ -228,6 +219,50 @@ namespace NetDemo
 
       }
 
+      dtCore::Transform xform;
+      po->GetTransform(xform);
+      osg::Vec3 hpr;
+      xform.GetRotation(hpr);
+
+      osg::Vec3 angVel = po->GetAngularVelocity();
+
+      osg::Vec3 dragVec = mHelper->ComputeAeroDynDrag(po->GetLinearVelocity());
+      po->AddForce(dragVec);
+
+
+//      osg::Vec3 up;
+//      xform.GetRow(2, up);
+//
+//      osg::Vec3 zup(0.0, 0.0, 1.0);
+//
+//      float mag = (up * zup);
+//
+//      // If you are not upside down, that is, we apply a stranger downward force as you get
+//      // more and more rotated.
+//      if (mag > 0.0)
+//      {
+//         float force = -(po->GetMass() * (1.0 - mag) * 3.3);
+//         osg::Vec3 forceVec = up * force;
+//         po->AddForce(forceVec);
+//      }
+
+      //std::cout << "Angular Velocity: " << angVel << std::endl;
+//      std::cout << "Linear Velocity: " << po->GetLinearVelocity() << std::endl;
+//      std::cout << "Aero Drag: " << dragVec << std::endl;
+
+      float pitchTorque = -(5.0f * (hpr.y()));
+      pitchTorque -= angVel.x() * 30.0;
+      dtUtil::Clamp(pitchTorque, -1000.0f, 1000.0f);
+
+      //std::cout << "pitch Torque: " << pitchTorque << std::endl;
+
+      float rollTorque = -(5.0f * (hpr.z()));
+      rollTorque -= angVel.y() * 30.0;
+      dtUtil::Clamp(rollTorque, -1000.0f, 1000.0f);
+
+      //std::cout << "roll Torque: " << rollTorque << std::endl;
+
+      //po->AddLocalTorque(osg::Vec3(pitchTorque, rollTorque, 0.0));
       mHelper->Control(accelerator, steering, brakes);
 
    }
@@ -237,9 +272,9 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, PropelledVehicleActor> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(StartBoostForce, "The initial force of the boost in newtons.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaximumBoostPerSecond, "The maximum amount of boost to be applied over time.", RegHelperType, propReg);
-      REGISTER_PROPERTY(TimeToResetBoost, "How long it takes the booster to recharge.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(StartBoostForce, "The initial force of the boost in newtons.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(MaximumBoostPerSecond, "The maximum amount of boost to be applied over time.", RegHelperType, propReg);
+//      REGISTER_PROPERTY(TimeToResetBoost, "How long it takes the booster to recharge.", RegHelperType, propReg);
 
    }
 

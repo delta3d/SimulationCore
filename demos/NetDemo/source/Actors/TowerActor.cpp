@@ -22,6 +22,7 @@
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
 #include <dtAudio/sound.h>
+#include <dtCore/shaderprogram.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 #include <dtCore/keyboard.h>
@@ -29,11 +30,24 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
+#include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
 #include <dtUtil/nodecollector.h>
+
+#include <ActorRegistry.h>
+#include <AIState.h>
+#include <AIEvent.h>
+#include <Actors/FortActor.h>
+#include <Actors/EnemyHelix.h>
+#include <Actors/EnemyMine.h>
+#include <Components/WeaponComponent.h>
+
+//for debug printouts
+#include <iostream>
 
 
 namespace NetDemo
@@ -48,9 +62,11 @@ namespace NetDemo
       SetPublishLinearVelocity(false);
       SetPublishAngularVelocity(false);
 
+      SetTerrainPresentDropHeight(0.0);
+
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
+      dtPhysics::PhysicsHelper* helper = new dtPhysics::PhysicsHelper(proxy);
       //helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
 
@@ -64,6 +80,8 @@ namespace NetDemo
 
       SetEntityType("Fort");
       SetMunitionDamageTableName("StandardDamageType");
+
+      mAIHelper = new TowerAIHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +96,8 @@ namespace NetDemo
       GetTransform(ourTransform);
 
       dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
-      physObj->CreateFromProperties(GetNonDamagedFileNode());
       physObj->SetTransform(ourTransform);
-      physObj->SetActive(true);
+      physObj->CreateFromProperties(GetNonDamagedFileNode());
 
       if(!IsRemote())
       {
@@ -94,26 +111,80 @@ namespace NetDemo
          articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
+
+         mAIHelper->Init(NULL);
+
+         //this will allow the AI to actually move us
+         mAIHelper->GetPhysicsModel()->SetPhysicsHelper(GetPhysicsHelper());
+
+         //redirecting the find target function
+         dtAI::NPCState* state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIND_TARGET);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::FindTarget));
+
+         //redirecting the shoot 
+         state = mAIHelper->GetStateMachine().GetState(&AIStateType::AI_STATE_FIRE_LASER);
+         state->SetUpdate(dtAI::NPCState::UpdateFunctor(this, &TowerActor::Shoot));
+
+         //calling spawn will start the AI
+         mAIHelper->Spawn();
+
+         // Setup the tower's weapon.
+         InitWeapon();
       }
 
-      BaseClass::OnEnteredWorld();
+      // Attach a special shader.
+      dtCore::RefPtr<SimCore::ApplyShaderVisitor> visitor = new SimCore::ApplyShaderVisitor();
+      visitor->AddNodeName("Eye360");
+      visitor->SetShaderName("ColorPulseShader");
+      visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
+      GetOSGNode()->accept(*visitor);
 
-      // Add a dynamic light to our fort
-      SimCore::Components::RenderingSupportComponent* renderComp;
-      GetGameActorProxy().GetGameManager()->GetComponentByName(
-         SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
-      if(renderComp != NULL)
+      BaseClass::OnEnteredWorld();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::OnRemovedFromWorld()
+   {
+      if(mWeaponProxy.valid())
       {
-         //Add a spot light
-         SimCore::Components::RenderingSupportComponent::DynamicLight* sl =
-            new SimCore::Components::RenderingSupportComponent::DynamicLight();
-         sl->mRadius = 30.0f;
-         sl->mIntensity = 1.0f;
-         sl->mColor.set(1.0f, 1.0f, 1.0f);
-         sl->mAttenuation.set(0.001, 0.004, 0.0002);
-         sl->mTarget = this;
-         sl->mAutoDeleteLightOnTargetNull = true;
-         renderComp->AddDynamicLight(sl);
+         GetGameActorProxy().GetGameManager()->DeleteActor(*mWeaponProxy);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::InitWeapon()
+   {
+      // Get the weapon component that is used to create weapons.
+      WeaponComponent* weaponComp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(WeaponComponent::DEFAULT_NAME, weaponComp);
+
+      if(weaponComp != NULL)
+      {
+         SimCore::Actors::WeaponActor* weapon = NULL;
+
+         // Create the primary weapon.
+         // --- This method will automatically add the created weapon to the world.
+         weaponComp->CreateWeapon("Weapon_MachineGun",
+            "Particle_System_Weapon_GunWithTracer",
+            "weapon_gun_flash.osg", weapon);
+
+         // Customize the new weapon.
+         if(weapon != NULL)
+         {
+            // Attach the weapon to this object.
+            weapon->SetOwner(&GetGameActorProxy());
+            AddChild(weapon, "dof_gun_01");
+
+            // Maintain references to the weapon and its proxy.
+            mWeapon = weapon;
+            mWeaponProxy = static_cast<SimCore::Actors::WeaponActorProxy*>(&weapon->GetGameActorProxy());
+
+            mWeapon->SetFireRate(0.333f);
+         }
+      }
+      else
+      {
+         LOG_ERROR("Could not find Weapon Component to create weapon.");
       }
    }
 
@@ -128,26 +199,157 @@ namespace NetDemo
    {
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::SetDamageState(SimCore::Actors::BaseEntityActorProxy::DamageStateEnum &damageState)
+   {
+      if (damageState != GetDamageState())
+      {
+         BaseClass::SetDamageState(damageState);
+
+         // Mark the AI as 'dead' so we stop 'steering'
+         if(IsMobilityDisabled())
+         {
+            mAIHelper->GetStateMachine().MakeCurrent(&AIStateType::AI_STATE_DIE);
+
+            if (mWeapon.valid())
+            {
+               mWeapon->SetTriggerHeld(false);
+            }
+         }
+      }
+   }
+
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::FindTarget(float)
+   {
+      float minDist = 250.0;
+      dtCore::Transformable* enemy = NULL;
+
+      EnemyMineActorProxy* mineProxy = NULL;
+      std::vector<dtDAL::ActorProxy*> actorArray;
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
+      //GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
+
+      while(!actorArray.empty())
+      {
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         float dist = GetDistance(*curr);
+
+         if(dist < minDist)
+         {
+            enemy = curr;
+            minDist = dist;
+         }
+
+         actorArray.pop_back();
+      }   
+
+      GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
+      while(!actorArray.empty())
+      {
+         dtCore::Transformable* curr = static_cast<dtCore::Transformable*>(actorArray.back()->GetActor());
+         float dist = GetDistance(*curr);
+
+         if(dist < minDist)
+         {
+            enemy = curr;
+            minDist = dist;
+         }
+
+         actorArray.pop_back();
+      }   
+
+      if(enemy != NULL)
+      {
+         mAIHelper->SetCurrentTarget(*enemy);
+      }
+
+      //mAIHelper->SetCurrentTarget(*GetGameActorProxy().GetGameManager()->GetApplication().GetCamera());
+
+   }
+
+   //////////////////////////////////////////////////////////////////////
+   void TowerActor::SetTarget(const BaseEnemyActor* enemy)
+   {
+      mAIHelper->SetCurrentTarget(*enemy);
+   }
+   //////////////////////////////////////////////////////////////////////
+   float TowerActor::GetDistance( const dtCore::Transformable& t ) const
+   {
+
+      dtCore::Transform xform;
+      osg::Vec3 pos, enemyPos;
+      GetTransform(xform);
+      xform.GetTranslation(pos);
+
+      t.GetTransform(xform);
+      xform.GetTranslation(enemyPos);
+
+      return (enemyPos - pos).length();
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::Shoot(float)
+   {
+      if(mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(true);
+         mWeapon->Fire();
+      }
+
+      //randomly search for better targets
+      //temporary hack
+      if(dtUtil::RandPercent() < 0.1)
+      {
+         mAIHelper->GetStateMachine().HandleEvent(&AIEvent::AI_EVENT_TARGET_KILLED);
+      }
+   }
+
    //////////////////////////////////////////////////////////////////////
    void TowerActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
    {
       BaseClass::OnTickLocal( tickMessage );
 
-      dtUtil::NodeCollector *nodes = GetNodeCollector();
-      osgSim::DOFTransform *dof = nodes->GetDOFTransform("dof_turret_01");
+      dtUtil::NodeCollector* nodes = GetNodeCollector();
+      osgSim::DOFTransform* dof = nodes->GetDOFTransform("dof_turret_01");
       if (dof != NULL)
       {
-         // Spin the turret in a circle every few seconds
-         osg::Vec3 hpr = dof->getCurrentHPR() * 57.29578;
-         osg::Vec3 hprChange;
-         hprChange[0] = 60.0f * tickMessage.GetDeltaSimTime();
-         hpr[0] += hprChange[0];
-         dof->setCurrentHPR(hpr * 0.0174533); // convert degrees to radians
-         // Let the artics decide if the actor is dirty or not
-         if(GetArticulationHelper() != NULL)
+         osg::Vec3 hpr, hprLast;
+         dtCore::Transform trans;
+
+         GetTransform(trans);
+         hprLast = dof->getCurrentHPR();
+
+         mAIHelper->PreSync(trans);
+
+         ////////let the AI do its thing
+         mAIHelper->Update(tickMessage.GetDeltaSimTime());
+
+         //we are static, no need to obtain an update
+         //mAIHelper->PostSync(trans);
+
+         //we are currently only using the heading
+         hpr = hprLast;
+         osg::Vec2 angle = mAIHelper->GetWeaponAngle();
+         hpr[0] = angle[0]  - osg::PI_2;
+         hpr[1] = -angle[1] + (0.95 * osg::PI_2);
+
+         if(dtUtil::IsFinite(hpr[0]) && dtUtil::IsFinite(hpr[1]))
          {
-            GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hprChange, hpr);
+            dof->setCurrentHPR(hpr);
+
+            if(GetArticulationHelper() != NULL)
+            {
+               GetArticulationHelper()->HandleUpdatedDOFOrientation(*dof, hpr - hprLast, hpr);
+            }
          }
+      }
+
+
+      if (mWeapon.valid())
+      {
+         mWeapon->SetTriggerHeld(false);
       }
    }
 
@@ -156,6 +358,7 @@ namespace NetDemo
    {
       BaseClass::OnTickRemote( tickMessage );
    }
+
 
    //////////////////////////////////////////////////////////////////////
    // PROXY
@@ -187,5 +390,16 @@ namespace NetDemo
       BaseClass::OnEnteredWorld();
    }
 
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActorProxy::OnRemovedFromWorld()
+   {
+      BaseClass::OnRemovedFromWorld();
+
+      TowerActor* actor = NULL;
+      GetActor(actor);      
+      actor->OnRemovedFromWorld();
+   }
+
 } // namespace
 //#endif
+

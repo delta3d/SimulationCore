@@ -59,7 +59,7 @@ static int mNumActorsChanged = 0;
 static int mNumPropsChanged = 0;
 static int mNumEventsAdded = 0; 
 static int mNumEventsChanged = 0;
-
+static int mNumNamesChanged = 0;
 
 /////////////////////////////////////////////////////////////////////
 void Usage()
@@ -157,6 +157,14 @@ void SyncProperties(const dtDAL::ActorProxy& from, dtDAL::ActorProxy& to, std::s
             toProp->CopyFrom(curProp);
          }
       }
+   }
+
+   // Copy over name also.
+   if (to.GetName() != from.GetName())
+   {
+      to.SetName(from.GetName());
+      mNumNamesChanged ++;
+      actorPropChanged = true;
    }
 
    if (actorPropChanged)
@@ -319,7 +327,6 @@ int main (int argc, char* argv[])
       mapFromName << "] onto [" << mapToName << "]." << std::endl << std::endl;
 
    dtAudio::AudioManager::Instantiate();
-   dtAudio::AudioManager::GetInstance().Config(AudioConfigData(32));
 
    try
    {
@@ -355,9 +362,9 @@ int main (int argc, char* argv[])
       std::cout << std::endl;
       std::cout << "Map Merge was a success!!! Successfully merged:" << std::endl << 
          "  from map [" << mapFromName << "] onto [" << mapToName << "]." << std::endl;
-      std::cout << "  [" << mNumEventsAdded << "] Events Added; [" << 
+      std::cout << "  [" << mNumNamesChanged << "] Names Changed; [" << mNumEventsAdded << "] Events Added; [" << 
          mNumEventsChanged << "] Events Changed; [" << 
-         mNumLibrariesAdded << "] Libraries Added; " << std::endl;
+         mNumLibrariesAdded << "] Libs Added; " << std::endl;
       std::cout << "  [" << mNumActorsAdded << "] Actors Added; [" << 
          mNumActorsChanged << "] Actors Changed; [" << 
          mNumPropsChanged << "] Props Changed; " << std::endl;

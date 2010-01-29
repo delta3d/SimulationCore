@@ -75,6 +75,7 @@ namespace SimCore
          CPPUNIT_TEST_SUITE(WeaponActorTests);
 
          CPPUNIT_TEST(TestWeaponProperties);
+         CPPUNIT_TEST(TestRemoveFromWorld);
          CPPUNIT_TEST(TestMessageProcessing);
 
          CPPUNIT_TEST_SUITE_END();
@@ -86,6 +87,7 @@ namespace SimCore
 
             // Test Functions --------------------------------------------------
             void TestWeaponProperties();
+            void TestRemoveFromWorld();
             void TestMessageProcessing();
 
             // Utility Functions -----------------------------------------------
@@ -104,6 +106,8 @@ namespace SimCore
             // Creates and assigns a shooter to the tested weapon.
             // This function hides the PhysX code from the unit test code.
             void CreateShooter();
+
+            int GetActorCount(dtDAL::ActorType& actorType);
 
          protected:
          private:
@@ -301,6 +305,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      int WeaponActorTests::GetActorCount(dtDAL::ActorType& actorType)
+      {
+         std::vector<dtDAL::ActorProxy*> proxyArray;
+         mGM->FindActorsByType(actorType, proxyArray);
+         return int(proxyArray.size());
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void WeaponActorTests::TestWeaponProperties()
       {
          // Add the weapon to the world so that sleep states can be tracked in
@@ -413,8 +425,6 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to the ammo max if set beyond the ammo max",
             mWeapon->GetAmmoCount() == mWeapon->GetAmmoMax() );
          mWeapon->SetAmmoCount( -10 );
-         CPPUNIT_ASSERT_MESSAGE( "WeaponActor ammo count should clamp to 0 if set to a negative number",
-            mWeapon->GetAmmoCount() == 0 );
 
 
 
@@ -477,6 +487,27 @@ namespace SimCore
          float newValue = value * 0.5f;
          mWeapon->SetFlashTime( newValue );
          CPPUNIT_ASSERT( mWeapon->GetFlashTime() == newValue );
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void WeaponActorTests::TestRemoveFromWorld()
+      {
+         // Add the weapon to the world so that sleep states can be tracked in
+         // later property tests.
+         mGM->AddActor( *mWeaponProxy, false, false );
+         CreateShooter();
+         SimCore::Actors::MunitionParticlesActorProxy* shooterProxy = mWeapon->GetShooter();
+         CPPUNIT_ASSERT(shooterProxy != NULL);
+         mGM->AddActor(*shooterProxy, false, false);
+
+         dtDAL::ActorType& shooterType = *SimCore::Actors::EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE;
+
+         CPPUNIT_ASSERT(GetActorCount(shooterType) == 1);
+
+         mGM->DeleteActor(*mWeaponProxy);
+         dtCore::System::GetInstance().Step();
+
+         CPPUNIT_ASSERT(GetActorCount(shooterType) == 0);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -663,7 +694,6 @@ namespace SimCore
          mWeapon->SetFireRate( 0.5f );
          mWeapon->SetUsingBulletPhysics( true ); // means detonations are sent separately from fire messages
 
-         unsigned shots = 0;
          // --- Test switching targets faster than message cycle time
          mWeapon->OnTickLocal( *tickMsg ); // 0.25
          SimulateTargetHit( target );            // det 1
