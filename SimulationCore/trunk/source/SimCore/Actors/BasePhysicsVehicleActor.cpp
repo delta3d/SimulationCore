@@ -91,8 +91,7 @@ namespace SimCore
       {
          // If you subclass this actor, you MUST do something like the following in the constructor.
          // The actor can't do it's job without having a physics helper! Might even crash!!!
-         //mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaVehiclePhysicsHelper(proxy);
-         //mPhysicsHelper->SetBaseInterfaceClass(this);
+         //mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +104,8 @@ namespace SimCore
       {
          BaseClass::OnEnteredWorld();
 
+         // The makes the results smoother when sending updates at a high rate.
+         GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
 
          // Register with the Physics Component
          dtPhysics::PhysicsComponent* physicsComp = NULL;
