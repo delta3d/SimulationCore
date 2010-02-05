@@ -508,8 +508,10 @@ namespace SimCore
          dtCore::RefPtr<osg::Node> cachedOriginalNode;
          dtCore::RefPtr<osg::Node> copiedNode;
          if (!LoadFile(fileName, cachedOriginalNode, copiedNode, true))
+         {
             throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-            std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
+                     std::string("Model file could not be loaded: ") + fileName, __FILE__, __LINE__);
+         }
          copiedNode->setName(copiedNodeName);
          modelNode.addChild(copiedNode.get());
          modelNode.setUserData(cachedOriginalNode.get());
@@ -545,8 +547,10 @@ namespace SimCore
                loadedNewModel = LoadModelNodeInternal(*mDestroyedFileNode, fileName, state.GetName(), false);
             }
             else
+            {
                throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-               "Damage state is not supported", __FILE__, __LINE__);
+                        "Damage state is not supported", __FILE__, __LINE__);
+            }
 
             if (loadedNewModel)
             {
