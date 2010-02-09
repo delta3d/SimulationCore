@@ -21,6 +21,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
     <Log Level="Warn" />
     <Log Name="particlemanagercomponent.cpp" Level="Warn" />
     <Log Name="gameactor.cpp" Level="Warn" />
+    <Log Name="audiomanager.cpp" Level="Error" />
 
     <Properties>
       <Property Name="ProjectPath">C:\Curtiss\Projects\Delta3D\SimulationCore\demos\ProjectAssets</Property>
@@ -59,7 +60,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="dtNetGM.Role">Server</Property>
       <Property Name="dtNetGM.ServerPort">7329</Property>
       <!--<Property Name="dtNetGM.ServerPort">5111</Property>-->
-      <!--<Property Name="dtNetGM.ServerHost">216.54.77.50</Property>-->
+      <!--Property Name="dtNetGM.ServerHost">216.54.77.96</Property-->
       <Property Name="dtNetGM.ServerHost">127.0.0.1</Property>
 
 
