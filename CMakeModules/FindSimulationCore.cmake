@@ -27,19 +27,24 @@ FIND_PATH(SIMULATIONCORE_DIR include/SimCore/Export.h
     /opt
 )
 
-FIND_PATH(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES include inc
+find_path(SIMULATIONCORE_INCLUDE_DIR NAMES SimCore/Export.h PATH_SUFFIXES include inc
     PATHS
     ${SIMULATIONCORE_DIR}
     NO_DEFAULT_PATH
 )
 
-FIND_PATH(SIMULATIONCORE_LIB_DIR NAMES lib
+find_path(SIMULATIONCORE_LIB_DIR NAMES libSimCore.so libSimCore.dylib SimCore.dll .
     PATHS
-    ${SIMULATIONCORE_DIR}
+       ${SIMULATIONCORE_DIR}
+    PATH_SUFFIXES
+       Build/lib
+       Debug/lib
+       Release/lib
+       lib
     NO_DEFAULT_PATH
 )
 
-FIND_PATH(OSGEPHEMERIS_INCLUDE_DIR NAMES osgEphemeris
+find_path(OSGEPHEMERIS_INCLUDE_DIR NAMES osgEphemeris
     PATHS
     ${SIMULATIONCORE_DIR}/ext/source/osgEphemeris/include
     NO_DEFAULT_PATH
