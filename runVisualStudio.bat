@@ -47,6 +47,10 @@
 @echo   once Visual Studio is running.
 @echo ... 
 
+:: This variable lets you switch between NVidia dtPhysX and PAL dtPhysics
+:: set PHYSICS_BUILDDIR=\Build_PAL
+set PHYSICS_BUILDDIR=
+
 :: First, NULL out the current path to avoid any possible chance 
 :: of conflicting dlls
 set PATH=""
@@ -58,15 +62,16 @@ set PATH=""
 :: projects including Delta3D, SimViewerCore, dtAgeiaPhysX, and others. 
 ::
 :: Core repositories - Delta3D, SimCore, dtAgeiaPhysX, 
-set DELTA_ROOT=C:\Curtiss\Projects\Delta3D\Delta3D
+set DELTA_ROOT=C:\Curtiss\Projects\Delta3D\delta3d
 set SIM_CORE_ROOT=C:\Curtiss\Projects\Delta3D\SimulationCore
 set DTPHYSX_ROOT=C:\Curtiss\Projects\Delta3D\dtAgeiaPhysX
+set DTPHYSICS_ROOT=C:\Curtiss\Projects\Delta3D\dtPhysics
 set DRIVERDEMO_DIR=C:\Curtiss\Projects\Delta3D\SimulationCore\demos\DriverDemo
 :: Primary Dependencies - Qt, PhysX, HLA RTI, Phython, Windows...
 set QTDIR=C:\Qt\4.4.3
-set PHYSX_ROOT=C:\Program Files\AGEIA Technologies\AGEIA PhysX SDK\v2.7.0
+set PHYSX_ROOT=C:\Program Files\NVIDIA Corporation\NVIDIA PhysX SDK\v2.8.1
 set RTI_HOME=C:\Curtiss\Projects\Delta3D\rti
-set PYTHON_ROOT=C:\Program Files\Python25
+set PYTHON_ROOT=C:\Program Files\Python26
 set WIN_DIR=C:\WINDOWS\system32
 :: Note - DTPHYSX vars are for the Delta3D physx integration code. Whereas,
 :: PHYSX vars are for the actual PhysX libraries provided by NVidia.
@@ -83,14 +88,17 @@ set WIN_DIR=C:\WINDOWS\system32
 set DCOS_ROOT=C:\Curtiss\Projects\MTS_DCOS\trunk
 set DVTE_ROOT=C:\Curtiss\Projects\DVTE\DVTE_SimViewer
 set DCSIM_DIR=c:\Curtiss\Projects\BBN\DCSim
+set DORON_ROOT=C:\Curtiss\Projects\Doron\DoronIG
 
 :: Project Settings
 set DCOS_PATH=%DCOS_ROOT%\bin;%DCOS_ROOT%\ext\bin
 set DVTE_PATH=%DVTE_ROOT%\bin;%DVTE_ROOT%\ext\bin\win32
-set DCSIM_PATH=%DCSIM_DIR%\bin
-
+set DORON_PATH=%DORON_ROOT%\bin;%DORON_ROOT%\ext\bin
+set DCSIM_PATH=%DCSIM_DIR%;%DCSIM_DIR%\bin;C:\Curtiss\Projects\BBN\Vessel_deps\ext\jre\bin\client;
+ 
 :: Final Custom Project path - used below
-set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PATH%;
+set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PATH%;%DORON_PATH%;C:\Program Files\Java\jdk1.6.0_14\jre\bin;C:\Program Files\Java\jdk1.6.0_14\jre\bin\client;
+:::set JAVA_HOME=C:\Program Files\Java\jre6
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -99,13 +107,15 @@ set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PAT
 :: 
 :: This path is the default install path for the Delta3D Self Extracting Installer
 set DELTA_PATH=%DELTA_ROOT%\bin
+set DELTA_DATA=%DELTA_ROOT%\data
 set DELTA_EXT_PATH=%DELTA_ROOT%\ext\bin
 :: Simulation Core
-set SIM_CORE_PATH=%SIM_CORE_ROOT%\bin
+set SIM_CORE_PATH=%SIM_CORE_ROOT%%PHYSICS_BUILDDIR%\bin
 
 :: PhysX 
 :: dtAgeiaPhysX - The Delta3D library
 set DTPHYSX_PATH=%DTPHYSX_ROOT%\bin
+set DTPHYSICS_PATH=%DTPHYSICS_ROOT%\bin
 :: NVidia PhysX - assumes default install and setup path
 set PHYSX_PATH=%PHYSX_ROOT%\Bin\win32
 
@@ -119,7 +129,7 @@ set RTI_PATH=%RTI_HOME%\lib\winnt_vc++-8.0
 set PYTHON_PATH=%PYTHON_ROOT%
 
 :: PATH - The final combined path of everything.
-set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIM_CORE_PATH%;%DTPHYSX_PATH%;%PHYSX_PATH%;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%CUSTOM_PROJECTS_PATH%;%WIN_DIR%;
+set PATH=%DELTA_PATH%;%DELTA_EXT_PATH%;%SIM_CORE_PATH%;%DTPHYSICS_PATH%;%DTPHYSX_PATH%;%PHYSX_PATH%;%QT_PATH%;%RTI_PATH%;%PYTHON_PATH%;%CUSTOM_PROJECTS_PATH%;%WIN_DIR%;
 
 path
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
