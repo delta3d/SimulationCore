@@ -10,7 +10,7 @@
 #
 # Created by David Guthrie. 
 
-FIND_PATH(DELTA_DIR NAMES inc/dtCore/dt.h include/dtCore/dt.h
+FIND_PATH(DELTA_DIR inc/dtCore/dt.h
     PATHS
     ${CMAKE_SOURCE_DIR}/../delta3d
     $ENV{DELTA_ROOT}
@@ -27,17 +27,22 @@ FIND_PATH(DELTA_DIR NAMES inc/dtCore/dt.h include/dtCore/dt.h
     /usr/freeware/include
 )
 
-FIND_PATH(DELTA3D_INCLUDE_DIR dtCore/dt.h
-    SUFFIXES inc include
-    ${DELTA_DIR}
+FIND_PATH(DELTA3D_INCLUDE_DIR NAMES dtCore/dt.h
+    PATHS
+       ${DELTA_DIR}
+    PATH_SUFFIXES
+       inc
+       include
 )
 
-#find the folder that contains Delta3D library files (needs to contain at least the dtCore library)
-FIND_PATH( DELTA3D_LIB_DIR NAMES dtCore.lib dtCoreD.lib libdtCore.so libdtCore.dylib
+FIND_PATH( DELTA3D_LIB_DIR NAMES libdtCore.so libdtCore.dylib dtCore.dll .
     PATHS
-    ${DELTA_DIR}/lib
-    ${DELTA_DIR}/build/lib
-    ${DELTA_DIR}/${CMAKE_BUILD_TYPE}/lib
+       ${DELTA_DIR}
+    PATH_SUFFIXES
+       Build/lib
+       Debug/lib
+       Release/lib
+       lib
     NO_DEFAULT_PATH
 )
 
@@ -49,6 +54,8 @@ SET(DTUTIL_LIBRARY dtUtil)
 SET(DTCORE_LIBRARY dtCore)
 SET(DTABC_LIBRARY dtABC)
 SET(DTDAL_LIBRARY dtDAL)
+SET(DTDIRECTOR_LIBRARY dtDirector)
+SET(DTDIRECTORQT_LIBRARY dtDirectorQt)
 SET(DTAI_LIBRARY dtAI)
 SET(DTGAME_LIBRARY dtGame)
 SET(DTAUDIO_LIBRARY dtAudio)
@@ -75,6 +82,8 @@ IF (WIN32)
     SET(DTCORE_LIBRARY_DEBUG dtCored)
     SET(DTABC_LIBRARY_DEBUG dtABCd)
     SET(DTDAL_LIBRARY_DEBUG dtDALd)
+    SET(DTDIRECTOR_LIBRARY_DEBUG dtDirectord)
+    SET(DTDIRECTORQT_LIBRARY_DEBUG dtDirectorQtd)
     SET(DTAI_LIBRARY_DEBUG dtAId)
     SET(DTGAME_LIBRARY_DEBUG dtGamed)
     SET(DTAUDIO_LIBRARY_DEBUG dtAudiod)
@@ -83,7 +92,7 @@ IF (WIN32)
     SET(DTINSPECTORQT_LIBRARY_DEBUG dtInspectorQtd)
     SET(DTSCRIPT_LIBRARY_DEBUG dtScriptd)
     SET(DTTERRAIN_LIBRARY_DEBUG dtTerraind)
-    SET(DTNET_LIBRARY_LIBRARY_DEBUG dtNetd)
+    SET(DTNET_LIBRARY_DEBUG dtNetd)
     SET(DTNETGM_LIBRARY_DEBUG dtNetGMd)
     SET(DTHLAGM_LIBRARY_DEBUG dtHLAGMd)
     SET(DTDIS_LIBRARY_DEBUG dtDISd)

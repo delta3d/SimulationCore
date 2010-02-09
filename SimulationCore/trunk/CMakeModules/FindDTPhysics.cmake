@@ -31,9 +31,14 @@ FIND_PATH(DTPHYSICS_INCLUDE_DIR dtPhysics/physicsexport.h
     ${DTPHYSICS_DIR}/include
 )
 
-FIND_FILE( DTPHYSICS_LIB_DIR NAMES lib
+FIND_PATH( DTPHYSICS_LIB_DIR NAMES libdtPhysics.so libdtPhysics.dylib dtPhysics.dll .
     PATHS
-    ${DTPHYSICS_DIR}
+       ${DTPHYSICS_DIR}
+    PATH_SUFFIXES
+       Build/lib
+       Debug/lib
+       Release/lib
+       lib
     NO_DEFAULT_PATH
 )
 
