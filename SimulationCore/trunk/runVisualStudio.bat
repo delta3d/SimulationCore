@@ -14,7 +14,7 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::
 :: Simulation Core - runVisualStudio.bat - Using 'The MIT License'
-:: Copyright (C) 2007-2009, Alion Science and Technology Corporation.
+:: Copyright (C) 2007-2010, Alion Science and Technology Corporation.
 ::
 :: Permission is hereby granted, free of charge, to any person obtaining a copy
 :: of this software and associated documentation files (the "Software"), to deal
@@ -43,12 +43,12 @@
 
 :: Turn off command printing
 @echo off
-@echo Configuring and launching Visual Studio 2005.  You may close this window
-@echo   once Visual Studio is running.
+@echo Configuring and launching Visual Studio 2008(ver 9.0).  You may close this
+@echo   window once Visual Studio is running.
 @echo ... 
 
-:: This variable lets you switch between NVidia dtPhysX and PAL dtPhysics
-:: set PHYSICS_BUILDDIR=\Build_PAL
+:: This variable makes it easier to switch between NVidia dtPhysX and PAL dtPhysics
+::set PHYSICS_BUILDDIR=\Build_PhysX
 set PHYSICS_BUILDDIR=
 
 :: First, NULL out the current path to avoid any possible chance 
@@ -61,15 +61,15 @@ set PATH=""
 :: specific project. However, this configuration will support numerous 
 :: projects including Delta3D, SimViewerCore, dtAgeiaPhysX, and others. 
 ::
-:: Core repositories - Delta3D, SimCore, dtAgeiaPhysX, 
+:: Core repositories - Delta3D, SimCore, dtAgeiaPhysX, dtPhysics 
 set DELTA_ROOT=C:\Curtiss\Projects\Delta3D\delta3d
 set SIM_CORE_ROOT=C:\Curtiss\Projects\Delta3D\SimulationCore
 set DTPHYSX_ROOT=C:\Curtiss\Projects\Delta3D\dtAgeiaPhysX
 set DTPHYSICS_ROOT=C:\Curtiss\Projects\Delta3D\dtPhysics
 set DRIVERDEMO_DIR=C:\Curtiss\Projects\Delta3D\SimulationCore\demos\DriverDemo
 :: Primary Dependencies - Qt, PhysX, HLA RTI, Phython, Windows...
-set QTDIR=C:\Qt\4.4.3
-set PHYSX_ROOT=C:\Program Files\NVIDIA Corporation\NVIDIA PhysX SDK\v2.8.1
+set QTDIR=C:\Qt\6.4.1
+::set PHYSX_ROOT=C:\Program Files\NVIDIA Corporation\NVIDIA PhysX SDK\v2.8.1
 set RTI_HOME=C:\Curtiss\Projects\Delta3D\rti
 set PYTHON_ROOT=C:\Program Files\Python26
 set WIN_DIR=C:\WINDOWS\system32
@@ -81,8 +81,8 @@ set WIN_DIR=C:\WINDOWS\system32
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Custom project environment variables - Edit as needed
 :: Some of these entries may not make sense for your particular project but 
-:: are provided because some in the community use them. Feel free to 
-:: remove projects that are unrelated to your specific needs
+:: are provided because some in the community use them. You should remove 
+:: projects that are unrelated to your specific needs and add what you need
 
 :: Custom Project paths go here.
 set DCOS_ROOT=C:\Curtiss\Projects\MTS_DCOS\trunk
@@ -97,8 +97,9 @@ set DORON_PATH=%DORON_ROOT%\bin;%DORON_ROOT%\ext\bin
 set DCSIM_PATH=%DCSIM_DIR%;%DCSIM_DIR%\bin;C:\Curtiss\Projects\BBN\Vessel_deps\ext\jre\bin\client;
  
 :: Final Custom Project path - used below
-set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PATH%;%DORON_PATH%;C:\Program Files\Java\jdk1.6.0_14\jre\bin;C:\Program Files\Java\jdk1.6.0_14\jre\bin\client;
-:::set JAVA_HOME=C:\Program Files\Java\jre6
+:: Note - the Java SDK is used by DCSim for those that need it.
+set JAVA_SDK=C:\Program Files\Java\jdk1.6.0_14\jre\bin;C:\Program Files\Java\jdk1.6.0_14\jre\bin\client;
+set CUSTOM_PROJECTS_PATH=%DVTE_PATH%;%DCOS_PATH%;%DRIVERDEMO_DIR%\bin;%DCSIM_PATH%;%DORON_PATH%;%JAVA_SDK%;
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -140,10 +141,9 @@ path
 :: Configure and launch Visual Studio - Do not edit
 ::
 :: Call this to set up the SDK paths so we can find include files like "stdio.h"
-call C:\"Program Files"\"Microsoft Visual Studio 8"\VC\bin\vcvars32.bat
-call C:\"Program Files"\"Microsoft Visual Studio 8"\SDK\v2.0\Bin\sdkvars.bat
+call C:\"Program Files"\"Microsoft Visual Studio 9.0"\VC\bin\vcvars32.bat
 :: Launch the IDE
-call C:\"Program Files"\"Microsoft Visual Studio 8"\Common7\IDE\devenv.exe
+call C:\"Program Files"\"Microsoft Visual Studio 9.0"\Common7\IDE\devenv.exe
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
