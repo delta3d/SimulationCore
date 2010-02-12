@@ -68,7 +68,7 @@ set DTPHYSX_ROOT=C:\Curtiss\Projects\Delta3D\dtAgeiaPhysX
 set DTPHYSICS_ROOT=C:\Curtiss\Projects\Delta3D\dtPhysics
 set DRIVERDEMO_DIR=C:\Curtiss\Projects\Delta3D\SimulationCore\demos\DriverDemo
 :: Primary Dependencies - Qt, PhysX, HLA RTI, Phython, Windows...
-set QTDIR=C:\Qt\6.4.1
+set QTDIR=C:\Qt\4.6.1
 ::set PHYSX_ROOT=C:\Program Files\NVIDIA Corporation\NVIDIA PhysX SDK\v2.8.1
 set RTI_HOME=C:\Curtiss\Projects\Delta3D\rti
 set PYTHON_ROOT=C:\Program Files\Python26
