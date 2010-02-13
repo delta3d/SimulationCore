@@ -178,7 +178,7 @@ namespace SimCore
 #else
          dtPhysics::TransformType xform;
          dtPhysics::VectorType location;
-         physicsObject->GetTransform(xform);
+         physicsObject->GetTransformAsVisual(xform);
          xform.GetTranslation(location);
 #endif
          osg::Vec3 terrainPoint;
@@ -207,7 +207,7 @@ namespace SimCore
             }
 #else
             xform.SetTranslation(terrainPoint);
-            physicsObject->SetTransform(xform);
+            physicsObject->SetTransformAsVisual(xform);
             physicsObject->SetGravityEnabled(true);
 #endif
          }
@@ -798,14 +798,32 @@ namespace SimCore
             report.GetClosestHit( outPoint );
 #else
          dtPhysics::RayCast ray;
+         std::vector<dtPhysics::RayCast::Report> hits;
          ray.SetOrigin(rayStart);
          ray.SetDirection(osg::Vec3(0.0f, 0.0f, -20000.0f));
-         dtPhysics::RayCast::Report report;
-         if (dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, report))
+         static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
+         ray.SetCollisionGroupFilter(GROUPS_FLAGS);
+         GetPhysicsHelper()->TraceRay(ray, hits);
+         if (!hits.empty())
          {
-            outPoint = report.mHitPos;
+            const dtPhysics::RayCast::Report* closestReport = NULL;
+            std::vector<dtPhysics::RayCast::Report>::const_iterator i, iend;
+            i = hits.begin();
+            iend = hits.end();
+            for (; i != iend; ++i)
+            {
+               const dtPhysics::RayCast::Report& report = *i;
+               // Get the report closest to the location of the vehicle.
+               if (closestReport == NULL
+                        || (location - report.mHitPos).length2() < (location - closestReport->mHitPos).length2())
+               {
+                  closestReport = &report;
+               }
+            }
+            // closestReport can't be null here because it can't get in this branch
+            // if hits is empty.
+            outPoint = closestReport->mHitPos;
 #endif
-
             return true;
          }
          return false;
