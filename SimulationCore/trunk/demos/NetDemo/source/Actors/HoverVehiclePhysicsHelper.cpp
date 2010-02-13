@@ -196,7 +196,7 @@ namespace NetDemo
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z(); // gravity
       osg::Vec3 terrainHitLocation;
 
-      distanceToHit = FindClosestIntersectionUsingDirection(location,
+      distanceToHit = TraceRay(location,
          direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
