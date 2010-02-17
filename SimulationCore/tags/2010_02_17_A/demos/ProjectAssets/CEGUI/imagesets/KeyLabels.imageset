@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="KeyLabels" Imagefile="CEGUI/imagesets/KeyLabels.tga" NativeHorzRes="32" NativeVertRes="256" AutoScaled="true">
+   <Image Name="F1" XPos="0" YPos="0" Width="32" Height="16" />
+   <Image Name="F2" XPos="0" YPos="16" Width="32" Height="16" />
+   <Image Name="F3" XPos="0" YPos="32" Width="32" Height="16" />
+   <Image Name="F4" XPos="0" YPos="48" Width="32" Height="16" />
+   <Image Name="F5" XPos="0" YPos="64" Width="32" Height="16" />
+   <Image Name="F6" XPos="0" YPos="80" Width="32" Height="16" />
+   <Image Name="F7" XPos="0" YPos="96" Width="32" Height="16" />
+   <Image Name="F8" XPos="0" YPos="112" Width="32" Height="16" />
+   <Image Name="F9" XPos="0" YPos="128" Width="32" Height="16" />
+   <Image Name="F10" XPos="0" YPos="144" Width="32" Height="16" />
+   <Image Name="F11" XPos="0" YPos="160" Width="32" Height="16" />
+   <Image Name="F12" XPos="0" YPos="176" Width="32" Height="16" />
+</Imageset>
+
