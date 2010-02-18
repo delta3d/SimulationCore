@@ -25,6 +25,10 @@
 
 #include <dtGame/gameentrypoint.h>
 #include <SimCore/Export.h>
+#include <dtCore/refptr.h>
+#include <dtDAL/actorproxy.h>
+#include <osg/Vec3>
+#include <string>
 
 namespace osg
 {
