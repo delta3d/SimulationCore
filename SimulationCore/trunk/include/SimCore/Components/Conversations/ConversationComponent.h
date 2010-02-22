@@ -97,7 +97,7 @@ namespace SimCore
 
                // inherited pure virtual functions            
                virtual void endDocument() {}
-               virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length) {}
+               virtual void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length) {}
                virtual void processingInstruction(const XMLCh* const target, const XMLCh* const data) {}
                virtual void setDocumentLocator(const XERCES_CPP_NAMESPACE_QUALIFIER Locator* const locator) {}
                virtual void startDocument() {}
@@ -105,7 +105,7 @@ namespace SimCore
                virtual void endPrefixMapping(const XMLCh* const prefix) {}
                virtual void skippedEntity(const XMLCh* const name) {}
 
-               virtual void characters(const XMLCh* const chars, const unsigned int length){}
+               virtual void characters(const XMLCh* const chars, const XMLSize_t length){}
 
                virtual void startElement(const XMLCh* const uri,
                   const XMLCh* const localname,

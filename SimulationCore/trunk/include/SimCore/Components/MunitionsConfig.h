@@ -33,13 +33,16 @@
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/OutOfMemoryException.hpp>
-namespace xercesc_dt = XERCES_CPP_NAMESPACE;
 
 #include <SimCore/Export.h>
 
 #include <dtCore/base.h>
 #include <dtUtil/xercesutils.h>
 #include <stack>
+
+#if XERCES_VERSION_MAJOR < 3
+typedef unsigned XMLSize_t;
+#endif
 
 
 namespace dtUtil
@@ -58,8 +61,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // Munition Config Code
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT MunitionsConfig : public xercesc_dt::ContentHandler, 
-         public xercesc_dt::ErrorHandler, public xercesc_dt::EntityResolver, public dtCore::Base
+      class SIMCORE_EXPORT MunitionsConfig : public xercesc::ContentHandler,
+         public xercesc::ErrorHandler, public xercesc::EntityResolver, public dtCore::Base
       {
       public:
          MunitionsConfig();
@@ -70,9 +73,9 @@ namespace SimCore
 
 
          // Error Handler inherited interface:
-         virtual void error(const xercesc_dt::SAXParseException& exc);
-         virtual void fatalError(const xercesc_dt::SAXParseException& exc);
-         virtual void warning(const xercesc_dt::SAXParseException& exc);
+         virtual void error(const xercesc::SAXParseException& exc);
+         virtual void fatalError(const xercesc::SAXParseException& exc);
+         virtual void warning(const xercesc::SAXParseException& exc);
          virtual void resetErrors() {}
          
 
@@ -85,7 +88,7 @@ namespace SimCore
             const XMLCh*  const  uri,
             const XMLCh*  const  localname,
             const XMLCh*  const  qname,
-            const xercesc_dt::Attributes& attrs
+            const xercesc::Attributes& attrs
             );
          virtual void endElement(
             const XMLCh* const uri, 
@@ -94,22 +97,22 @@ namespace SimCore
 
          virtual void endDocument();
 
-         virtual void characters(const XMLCh* const chars, const unsigned int length);
+         virtual void characters(const XMLCh* const chars, const XMLSize_t length);
 
          virtual void resetDocument();
 
 
          // NOTE: The following group of functions override inherited pure virtual functions
          // and will thus allow instancing of this class.
-         virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length) {}
+         virtual void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length) {}
          virtual void processingInstruction(const   XMLCh* const target, const XMLCh* const   data) {}
          virtual void startPrefixMapping(const XMLCh* const prefix, const XMLCh* const uri){}
          virtual void endPrefixMapping(const XMLCh* const prefix){}
          virtual void skippedEntity(const XMLCh* const name){}
-         virtual void setDocumentLocator(const xercesc_dt::Locator* const locator){}
+         virtual void setDocumentLocator(const xercesc::Locator* const locator){}
 
          // Entity Resolver inherited interface:
-         virtual xercesc_dt::InputSource* resolveEntity(
+         virtual xercesc::InputSource* resolveEntity(
             const XMLCh* const publicId,
             const XMLCh* const systemId) { return NULL; }
 
@@ -150,7 +153,7 @@ namespace SimCore
       private:
 
          dtCore::RefPtr<dtUtil::Log> mLogger;
-         xercesc_dt::SAX2XMLReader* mXercesParser;
+         xercesc::SAX2XMLReader* mXercesParser;
          ParseLevel mLevel;
          ParseLevel mLastLevel;
 

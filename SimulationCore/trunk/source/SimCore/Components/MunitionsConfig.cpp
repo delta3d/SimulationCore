@@ -24,7 +24,9 @@
 #include <prefix/SimCorePrefix-src.h>
 
 #include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/internal/XMLGrammarPoolImpl.hpp>
+#if XERCES_VERSION_MAJOR < 3
+#   include <xercesc/internal/XMLGrammarPoolImpl.hpp>
+#endif
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 
 #include <dtUtil/exception.h>
@@ -85,31 +87,31 @@ namespace SimCore
       {
          try
          {
-            xercesc_dt::XMLPlatformUtils::Initialize();
+            xercesc::XMLPlatformUtils::Initialize();
          }
-         catch (const xercesc_dt::XMLException& toCatch)
+         catch (const xercesc::XMLException& toCatch)
          {
             //if this happens, something is very very wrong.
-            char* message = xercesc_dt::XMLString::transcode( toCatch.getMessage() );
+            char* message = xercesc::XMLString::transcode( toCatch.getMessage() );
             std::string msg(message);
             LOG_ERROR("Error during parser initialization!: "+ msg)
-               xercesc_dt::XMLString::release( &message );
+               xercesc::XMLString::release( &message );
          }
 
          mLogger = &dtUtil::Log::GetInstance(LOG_NAME);
 
-         mXercesParser = xercesc_dt::XMLReaderFactory::createXMLReader();
+         mXercesParser = xercesc::XMLReaderFactory::createXMLReader();
 
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgSAX2CoreValidation, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesDynamic, false);
+         mXercesParser->setFeature(xercesc::XMLUni::fgSAX2CoreValidation, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesDynamic, false);
 
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgSAX2CoreNameSpaces, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesSchema, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesSchemaFullChecking, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesValidationErrorAsFatal, true); 
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgSAX2CoreNameSpacePrefixes, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesUseCachedGrammarInParse, true);
-         mXercesParser->setFeature(xercesc_dt::XMLUni::fgXercesCacheGrammarFromParse, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgSAX2CoreNameSpaces, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesSchema, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesSchemaFullChecking, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesValidationErrorAsFatal, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgSAX2CoreNameSpacePrefixes, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesUseCachedGrammarInParse, true);
+         mXercesParser->setFeature(xercesc::XMLUni::fgXercesCacheGrammarFromParse, true);
 
          std::string schemaFileName = dtCore::FindFileInPathList("Configs/MunitionsConfig.xsd");
 
@@ -119,11 +121,11 @@ namespace SimCore
                "Error, unable to load required file \"Configs/MunitionsConfig.xsd\".  Aborting.");
          }
 
-         XMLCh* schemaFileNameXMLCh = xercesc_dt::XMLString::transcode(schemaFileName.c_str());
-         xercesc_dt::LocalFileInputSource inputSource(schemaFileNameXMLCh);
+         XMLCh* schemaFileNameXMLCh = xercesc::XMLString::transcode(schemaFileName.c_str());
+         xercesc::LocalFileInputSource inputSource(schemaFileNameXMLCh);
          //cache the schema
-         mXercesParser->loadGrammar(inputSource, xercesc_dt::Grammar::SchemaGrammarType, true);
-         xercesc_dt::XMLString::release(&schemaFileNameXMLCh);
+         mXercesParser->loadGrammar(inputSource, xercesc::Grammar::SchemaGrammarType, true);
+         xercesc::XMLString::release(&schemaFileNameXMLCh);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -167,18 +169,18 @@ namespace SimCore
             }
             mOutTables.clear();
          }
-         catch (const xercesc_dt::OutOfMemoryException&)
+         catch (const xercesc::OutOfMemoryException&)
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__,  __LINE__, 
                "Ran out of memory parsing!");
          }
-         catch (const xercesc_dt::XMLException& toCatch)
+         catch (const xercesc::XMLException& toCatch)
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__,  __LINE__, 
                "Error during parsing! %ls :\n",
                toCatch.getMessage());
          }
-         catch (const xercesc_dt::SAXParseException& toCatch)
+         catch (const xercesc::SAXParseException& toCatch)
          {
             mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__,  __LINE__, 
                "Error during SAX parsing! %ls :\n",
@@ -208,7 +210,7 @@ namespace SimCore
          const XMLCh*  const  uri,
          const XMLCh*  const  localname,
          const XMLCh*  const  qname,
-         const xercesc_dt::Attributes& attrs
+         const xercesc::Attributes& attrs
          )
       {
          if (mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
@@ -245,7 +247,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsConfig::characters(const XMLCh* const chars, const unsigned int length)
+      void MunitionsConfig::characters(const XMLCh* const chars, const XMLSize_t length)
       {
          dtUtil::XMLStringConverter charsConverter(chars);
          const std::string sChars(charsConverter.c_str());
@@ -534,7 +536,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsConfig::error(const xercesc_dt::SAXParseException& exc)
+      void MunitionsConfig::error(const xercesc::SAXParseException& exc)
       {
          mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__,  __LINE__,
             "ERROR %d:%d - %s:%s - %s", exc.getLineNumber(),
@@ -545,7 +547,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsConfig::fatalError(const xercesc_dt::SAXParseException& exc)
+      void MunitionsConfig::fatalError(const xercesc::SAXParseException& exc)
       {
          mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
             "FATAL-ERROR %d:%d - %s:%s - %s", exc.getLineNumber(),
@@ -556,7 +558,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsConfig::warning(const xercesc_dt::SAXParseException& exc)
+      void MunitionsConfig::warning(const xercesc::SAXParseException& exc)
       {
          mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,
             "WARNING %d:%d - %s:%s - %s", exc.getLineNumber(),

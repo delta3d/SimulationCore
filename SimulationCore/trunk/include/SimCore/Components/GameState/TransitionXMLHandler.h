@@ -32,7 +32,9 @@
 #include <xercesc/util/XMLString.hpp>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
-
+#if XERCES_VERSION_MAJOR < 3
+typedef unsigned XMLSize_t;
+#endif
 
 namespace SimCore
 {
@@ -41,16 +43,16 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // TRANSITION XML HANDLER CODE
       //////////////////////////////////////////////////////////////////////////
-      class TransitionXMLHandler : public XERCES_CPP_NAMESPACE_QUALIFIER ContentHandler
+      class TransitionXMLHandler : public xercesc::ContentHandler
       {
          public:
             TransitionXMLHandler(GameStateComponent* mgr): mManager(mgr) {}
             virtual ~TransitionXMLHandler() {}
 
             // inherited pure virtual functions
-            virtual void characters(const XMLCh* const chars, const unsigned int length) {}
+            virtual void characters(const XMLCh* const chars, const XMLSize_t length) {}
             virtual void endDocument() {}
-            virtual void ignorableWhitespace(const XMLCh* const chars, const unsigned int length) {}
+            virtual void ignorableWhitespace(const XMLCh* const chars, const XMLSize_t length) {}
             virtual void processingInstruction(const XMLCh* const target, const XMLCh* const data) {}
             virtual void setDocumentLocator(const XERCES_CPP_NAMESPACE_QUALIFIER Locator* const locator) {}
             virtual void startDocument() {}

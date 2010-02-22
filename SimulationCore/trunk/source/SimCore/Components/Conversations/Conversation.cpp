@@ -566,7 +566,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void Conversation::XMLHandler::characters(const XMLCh* const chars, const unsigned int length)
+      void Conversation::XMLHandler::characters(const XMLCh* const chars, const XMLSize_t length)
       {
          std::string& topEl = mElements.top();
 
