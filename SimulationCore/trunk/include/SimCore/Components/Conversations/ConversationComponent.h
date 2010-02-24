@@ -35,6 +35,11 @@
 #include <xercesc/sax2/ContentHandler.hpp>  // for a base class
 #include <xercesc/util/XMLString.hpp>
 
+#if XERCES_VERSION_MAJOR < 3
+#ifndef XMLSize_t
+#define XMLSize_t unsigned
+#endif
+#endif
 
 namespace SimCore
 {

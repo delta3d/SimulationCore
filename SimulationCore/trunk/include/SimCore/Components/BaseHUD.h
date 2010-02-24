@@ -131,7 +131,7 @@ namespace SimCore
          dtCore::DeltaWin* mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
-         dtGUI::BaseScriptModule* mScriptModule;
+         dtGUI::ScriptModule* mScriptModule;
 
          HUDState* mHUDState;
 

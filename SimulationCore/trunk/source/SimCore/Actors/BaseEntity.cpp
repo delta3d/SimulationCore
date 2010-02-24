@@ -256,7 +256,7 @@ namespace SimCore
             "This is the file for the smoke particles", BASE_ENTITY_GROUP);
 
          dtDAL::ResourceDescriptor rdSmoke("Particles:smoke.osg");
-         rp->SetValue(&rdSmoke);
+         rp->SetValue(rdSmoke);
          AddProperty(rp.get());
 
          rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
@@ -265,7 +265,7 @@ namespace SimCore
             "This is the file for vehicle fire particles", BASE_ENTITY_GROUP);
 
          dtDAL::ResourceDescriptor rdFire("Particles:fire.osg");
-         rp->SetValue(&rdFire);
+         rp->SetValue(rdFire);
          AddProperty(rp.get());
 
          rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
@@ -274,7 +274,7 @@ namespace SimCore
             "This is the file for engine smoke particles", BASE_ENTITY_GROUP);
 
          dtDAL::ResourceDescriptor rdEngine("Particles:smoke.osg");
-         rp->SetValue(&rdEngine);
+         rp->SetValue(rdEngine);
          AddProperty(rp.get());
 
          static const dtUtil::RefString PROPERTY_FLYING_DESC
