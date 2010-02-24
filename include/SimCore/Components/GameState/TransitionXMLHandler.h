@@ -33,7 +33,9 @@
 #include <SimCore/Components/GameState/GameStateComponent.h>
 
 #if XERCES_VERSION_MAJOR < 3
-typedef unsigned XMLSize_t;
+#ifndef XMLSize_t
+#define XMLSize_t unsigned
+#endif
 #endif
 
 namespace SimCore

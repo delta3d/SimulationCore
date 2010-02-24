@@ -27,7 +27,7 @@
 #include <SimCore/Components/BaseHUDElements.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 
-#include <dtCore/globals.h>
+#include <dtUtil/datapathutils.h>
 #include <dtCore/scene.h>
 #include <dtCore/deltawin.h>
 
@@ -125,7 +125,7 @@ namespace SimCore
 
          mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
 
-         std::string path = dtCore::FindFileInPathList(mSchemeFile);
+         std::string path = dtUtil::FindFileInPathList(mSchemeFile);
          if(path.empty())
          {
             throw dtUtil::Exception(BaseHUDException::INIT_ERROR,
