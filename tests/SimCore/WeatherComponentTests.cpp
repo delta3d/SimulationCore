@@ -46,6 +46,7 @@
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
+#include <dtGame/messagefactory.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/messageparameter.h>
