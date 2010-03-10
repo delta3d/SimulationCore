@@ -23,6 +23,8 @@
 
 #include <dtCore/refptr.h>
 #include <dtGame/gmcomponent.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/messagefactory.h>
 
 namespace dtGame
 {

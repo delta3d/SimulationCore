@@ -3,6 +3,8 @@
 
 #include <dtABC/application.h>
 #include <dtGUI/ceuidrawable.h>
+#include <dtGame/messagefactory.h>
+#include <dtGame/basemessages.h>
 
 dtABC::Application& GetGlobalApplication();
 dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable();
