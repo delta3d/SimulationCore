@@ -31,6 +31,7 @@
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>

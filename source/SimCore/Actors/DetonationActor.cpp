@@ -28,6 +28,7 @@
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 #include <dtGame/exceptionenum.h>
 #include <dtGame/invokable.h>
 

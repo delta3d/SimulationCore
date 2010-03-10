@@ -39,6 +39,8 @@
 #include <dtCore/transform.h>
 #endif
 
+#include <dtUtil/stringutils.h>
+
 namespace SimCore
 {
    namespace Actors

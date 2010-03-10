@@ -42,6 +42,7 @@
 #include <dtGame/gamemanager.inl>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/logcontroller.h>
+#include <dtGame/messagefactory.h>
 
 #include <dtAnim/animationcomponent.h>
 

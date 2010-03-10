@@ -37,6 +37,8 @@
 
 #include <dtGame/basemessages.h>
 #include <dtGame/exceptionenum.h>
+#include <dtGame/messagefactory.h>
+
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>

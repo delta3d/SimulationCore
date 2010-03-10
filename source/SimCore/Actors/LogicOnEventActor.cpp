@@ -33,6 +33,7 @@
 #include <dtDAL/groupactorproperty.h>
 #include <dtDAL/namedparameter.h>
 #include <dtGame/message.h>
+#include <dtGame/messagefactory.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/invokable.h>

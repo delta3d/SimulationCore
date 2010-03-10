@@ -223,6 +223,9 @@ namespace SimCore
          ///Added a callback to the camera this can set uniforms on each camera.
          dtCore::Camera::AddCameraSyncCallback(*this,
                   dtCore::Camera::CameraSyncCallback(this, &RenderingSupportComponent::UpdateViewMatrix));
+
+         osgUtil::RenderBin* terrainBin = new osgUtil::RenderBin(osgUtil::RenderBin::SORT_FRONT_TO_BACK);
+         osgUtil::RenderBin::addRenderBinPrototype("TerrainBin", terrainBin);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////

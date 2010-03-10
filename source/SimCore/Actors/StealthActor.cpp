@@ -25,10 +25,12 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagefactory.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
+#include <dtGame/environmentactor.h>
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
 #include <dtUtil/log.h>

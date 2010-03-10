@@ -23,6 +23,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/messagefactory.h>
 #include <dtUtil/stringutils.h>
 #include <dtUtil/fileutils.h>
 #include <dtDAL/project.h>

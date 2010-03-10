@@ -35,6 +35,7 @@
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
 #include <dtUtil/mathdefines.h>
+#include <dtGame/messagefactory.h>
 
 using dtCore::RefPtr;
 using SimCore::MessageType;

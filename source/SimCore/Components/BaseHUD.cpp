@@ -39,6 +39,7 @@
 #include <dtUtil/fileutils.h>
 
 #include <dtABC/application.h>
+#include <dtGame/messagetype.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Matrix>

@@ -24,6 +24,8 @@
 #include <SimCore/Components/ViewerNetworkPublishingComponent.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/messagefactory.h>
 
 #include <osg/Vec3>
 

@@ -27,6 +27,7 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <CEGUIcolour.h>
 #include <dtABC/application.h>
+#include <dtUtil/stringutils.h>
 #include <dtCore/camera.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/gamemanager.inl>

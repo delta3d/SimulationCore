@@ -30,6 +30,9 @@
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/deadreckoninghelper.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/environmentactor.h>
+#include <dtGame/messagefactory.h>
+#include <dtGame/messagetype.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
 
