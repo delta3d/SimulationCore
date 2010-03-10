@@ -28,6 +28,8 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
+
 
 namespace SimCore
 {

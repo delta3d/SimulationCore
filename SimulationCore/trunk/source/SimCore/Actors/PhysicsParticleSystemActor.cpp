@@ -42,6 +42,7 @@
 
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
+#include <dtGame/messagetype.h>
 
 #include <dtUtil/log.h>
 

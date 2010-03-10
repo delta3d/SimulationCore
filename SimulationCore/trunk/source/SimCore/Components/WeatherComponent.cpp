@@ -43,6 +43,7 @@
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 
 #include <dtUtil/mathdefines.h>
 

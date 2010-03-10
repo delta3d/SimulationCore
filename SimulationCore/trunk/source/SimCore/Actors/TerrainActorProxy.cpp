@@ -38,6 +38,7 @@
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
 #include <dtUtil/datapathutils.h>
+#include <dtUtil/stringutils.h>
 #include <dtCore/transform.h>
 
 #include <osg/MatrixTransform>
@@ -425,7 +426,7 @@ namespace SimCore
                if (mTerrainNode.valid())
                {
                   osg::StateSet* ss = mTerrainNode->getOrCreateStateSet();
-                  ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "RenderBin");
+                  ss->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_TERRAIN, "TerrainBin");
 
                   // Run a visitor to switch to VBO's instead of DrawArrays (the OSG default)
                   // Turning this on had a catastrophic impact on performance. OFF is better for now.  

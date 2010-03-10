@@ -28,6 +28,7 @@
 #include <dtCore/transform.h>
 
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 
 #include <osg/Image>
 #include <osg/Texture2D>

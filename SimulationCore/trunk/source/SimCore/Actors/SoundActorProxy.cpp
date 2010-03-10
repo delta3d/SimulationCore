@@ -28,6 +28,8 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
+
 
 #include <dtUtil/mathdefines.h>
 

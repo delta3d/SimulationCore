@@ -27,7 +27,8 @@
 #include <prefix/SimCorePrefix-src.h>
 #include <SimCore/Components/MunitionDamage.h>
 #include <SimCore/Components/MunitionsComponent.h>
-
+#include <dtUtil/log.h>
+#include <sstream>
 
 
 using dtCore::RefPtr;

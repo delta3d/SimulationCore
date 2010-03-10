@@ -23,6 +23,8 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/MessageType.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/messagefactory.h>
 #include <SimCore/Components/GameState/GameStateComponent.h>
 #include <SimCore/Components/GameState/TransitionXMLHandler.h>
 #include <dtABC/application.h>

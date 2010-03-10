@@ -26,6 +26,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix-src.h>
 #include <iosfwd>
+#include <sstream>
 #include <dtUtil/log.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Components/MunitionsComponent.h>

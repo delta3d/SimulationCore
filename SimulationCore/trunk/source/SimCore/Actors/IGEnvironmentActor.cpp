@@ -39,6 +39,7 @@
 #include <dtUtil/nodecollector.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/log.h>
+#include <dtUtil/stringutils.h>
 #include <dtDAL/project.h>
 
 #include <osg/Drawable>

@@ -30,6 +30,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 #include <dtUtil/mathdefines.h>
 #include <SimCore/Actors/SurfaceVesselActor.h>
 #include <SimCore/Components/TimedDeleterComponent.h>

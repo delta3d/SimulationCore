@@ -38,6 +38,8 @@
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtGame/messagetype.h>
+
 
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
@@ -49,6 +51,8 @@
 
 #include <osg/Geode>
 #include <osg/MatrixTransform>
+#include <osg/io_utils>
+#include <sstream>
 
 #ifdef DELTA_WIN32
    #pragma warning(disable : 4355)
