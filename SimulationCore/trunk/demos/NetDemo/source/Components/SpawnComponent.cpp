@@ -28,6 +28,7 @@
 #include <SimCore/Utilities.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
 #include <vector>
 

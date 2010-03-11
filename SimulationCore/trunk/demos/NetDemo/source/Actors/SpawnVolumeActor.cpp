@@ -30,6 +30,7 @@
 #include <dtDAL/arrayactorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtUtil/mathdefines.h>

@@ -26,6 +26,7 @@
 #include <Components/WeaponComponent.h>
 #include <ActorRegistry.h>
 #include <Actors/PlayerStatusActor.h>
+#include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/WeaponFlashActor.h>

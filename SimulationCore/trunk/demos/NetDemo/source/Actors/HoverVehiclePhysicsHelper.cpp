@@ -14,6 +14,7 @@
 //#include <NxAgeiaWorldComponent.h>
 //#include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>
+#include <dtGame/gameactor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
