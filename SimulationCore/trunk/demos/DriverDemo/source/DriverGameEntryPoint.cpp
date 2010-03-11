@@ -14,6 +14,7 @@
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/gameapplication.h>
+#include <dtGame/messagefactory.h>
 
 #include <dtDAL/project.h>
 

@@ -37,6 +37,7 @@
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
+#include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
 
 #include <osg/MatrixTransform>

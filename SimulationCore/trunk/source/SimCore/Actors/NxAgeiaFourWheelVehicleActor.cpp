@@ -35,6 +35,7 @@
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagetype.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
 #include <osgViewer/View>

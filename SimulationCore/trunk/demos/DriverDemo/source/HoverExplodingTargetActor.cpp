@@ -33,6 +33,7 @@
 #include <dtCore/shaderparamoscillator.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagefactory.h>
 #include <osg/Switch>
 #include <osgSim/DOFTransform>
 #include <osgViewer/View>
