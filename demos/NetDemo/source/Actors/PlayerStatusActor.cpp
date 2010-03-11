@@ -20,6 +20,7 @@
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagefactory.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gamemanager.h>
 //#include <SimCore/Actors/EntityActorRegistry.h>

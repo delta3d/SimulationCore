@@ -19,6 +19,7 @@
 #include <dtCore/transform.h>
 #include <dtDAL/project.h>
 #include <dtGame/gamemanager.h>
+#include <dtGame/messagefactory.h>
 #include <dtUtil/fileutils.h>
 #include <SimCore/Actors/WeaponActor.h>
 #include "NetDemoUtils.h"

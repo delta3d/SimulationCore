@@ -17,6 +17,7 @@
 
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/basemessages.h>
+#include <dtGame/messagefactory.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>
 

@@ -19,6 +19,7 @@
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtGame/messagefactory.h>
 #include <dtABC/application.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/deltawin.h>

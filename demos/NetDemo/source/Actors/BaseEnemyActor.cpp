@@ -33,14 +33,16 @@
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
 
+#include <dtGame/gameactor.h>
+#include <dtGame/messagefactory.h>
+#include <dtGame/gamemanager.h>
+
 //#include <dtUtil/nodeprintout.h>
 
 #include <AIState.h>
 #include <AIEvent.h>
-#include <dtGame/gameactor.h>
-#include <ActorRegistry.h>
-#include <dtGame/gamemanager.h>
 #include <NetDemoUtils.h>
+#include <ActorRegistry.h>
 
 
 namespace NetDemo
