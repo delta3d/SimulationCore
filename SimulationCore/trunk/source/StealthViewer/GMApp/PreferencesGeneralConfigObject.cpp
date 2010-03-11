@@ -28,6 +28,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 
+#include <dtGame/messagefactory.h>
 #include <dtGame/gamemanager.h>
 
 #include <dtCore/camera.h>

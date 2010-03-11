@@ -41,6 +41,8 @@
 #include <SimCore/Components/LabelManager.h>
 #include <SimCore/UnitEnums.h>
 
+#include <osg/io_utils>
+
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtGui/QMessageBox>
