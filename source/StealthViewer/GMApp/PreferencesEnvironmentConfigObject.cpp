@@ -32,6 +32,9 @@
 #include <dtGame/gamemanager.h>
 #include <dtUtil/datetime.h>
 
+#include <osg/io_utils>
+#include <sstream>
+
 namespace StealthGM
 {
    PreferencesEnvironmentConfigObject::PreferencesEnvironmentConfigObject() :
