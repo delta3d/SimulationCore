@@ -18,17 +18,20 @@ ADD_EXECUTABLE(${PROG_NAME}
 )
 
 LINK_WITH_VARIABLES(${PROG_NAME}
-                    OSG_LIBRARY
-                    OSGGA_LIBRARY
-                    OSGVIEWER_LIBRARY
-                    OSGUTIL_LIBRARY
-                    OSGFX_LIBRARY
-                    OSGSIM_LIBRARY
-                    OSGPARTICLE_LIBRARY
-                    GDAL_LIBRARY
-                    OSGDB_LIBRARY
-                    OPENTHREADS_LIBRARY
-                    )
+                                   DTUTIL_LIBRARY
+                                   DTDAL_LIBRARY
+                                   DTCORE_LIBRARY
+                                   OSG_LIBRARY
+                                   OSGGA_LIBRARY
+                                   OSGVIEWER_LIBRARY
+                                   OSGUTIL_LIBRARY
+                                   OSGFX_LIBRARY
+                                   OSGSIM_LIBRARY
+                                   OSGPARTICLE_LIBRARY
+                                   GDAL_LIBRARY 
+                                   OSGDB_LIBRARY
+                                   OPENTHREADS_LIBRARY
+                                 )
                     
 INCLUDE(ModuleInstall OPTIONAL)
 
