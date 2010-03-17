@@ -603,8 +603,9 @@ void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resul
    }
 
    char* c = new char[fi.size + 1];
+   memset(c, 0, fi.size + 1);
 
-   std::ifstream ifs(path.c_str(), std::ios_base::in);
+   std::ifstream ifs(path.c_str(), std::ifstream::in);
    ifs.read(c, fi.size);
    if (ifs.bad())
    {
@@ -614,7 +615,6 @@ void ReadIgnoreProplist(const std::string& path, std::vector<std::string>& resul
 
    }
 
-   c[fi.size] = '\0';
    std::string data(c);
 
    dtUtil::StringTokenizer<IsEOL> tokenizer;
