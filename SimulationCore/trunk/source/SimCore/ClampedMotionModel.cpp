@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtCore/scene.h>
 #include <dtCore/keyboard.h>
 #include <dtCore/mouse.h>

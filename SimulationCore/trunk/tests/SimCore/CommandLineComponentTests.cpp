@@ -24,7 +24,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
 *
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <string>
 

@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  * @author David Guthrie
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
 #include <SimCore/Components/Conversations/ConversationMessages.h>

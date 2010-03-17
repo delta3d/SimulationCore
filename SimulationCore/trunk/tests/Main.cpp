@@ -26,7 +26,7 @@
 * @author David Guthrie
 * @author Eddie Johnson
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/TestResult.h>

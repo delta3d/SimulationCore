@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <dtUtil/stringutils.h>
 #include <dtDAL/enginepropertytypes.h>

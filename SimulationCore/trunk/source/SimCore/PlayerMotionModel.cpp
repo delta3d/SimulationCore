@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.hor Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtCore/base.h>
 #include <dtCore/deltadrawable.h>
 #include <dtCore/isector.h>

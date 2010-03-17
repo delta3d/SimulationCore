@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
 * @author William E. Johnson II
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/BaseInputComponent.h>
 #include <SimCore/AttachedMotionModel.h>
 #include <SimCore/MessageType.h>

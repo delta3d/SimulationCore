@@ -25,7 +25,7 @@
 *
 * @author Eddie Johnson
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/actorupdatemessage.h>

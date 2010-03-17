@@ -21,7 +21,7 @@
 *
 * @author David Guthrie, Curtiss Murphy
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <dtUtil/mswin.h>
 

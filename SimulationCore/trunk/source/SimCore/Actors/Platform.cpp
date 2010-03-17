@@ -21,7 +21,7 @@
  * @author David Guthrie
  * @author Eddie Johnson
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <string>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>

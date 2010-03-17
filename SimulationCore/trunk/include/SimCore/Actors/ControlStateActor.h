@@ -32,6 +32,7 @@
 #include <dtCore/observerptr.h>
 #include <dtCore/refptr.h>
 #include <dtGame/gameactor.h>
+#include <dtDAL/namedparameter.h>
 #include <SimCore/Actors/Platform.h>
 
 

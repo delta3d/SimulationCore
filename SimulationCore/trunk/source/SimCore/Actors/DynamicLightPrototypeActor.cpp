@@ -21,7 +21,7 @@
  * @author Curtiss Murphy
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtGame/gameactor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>

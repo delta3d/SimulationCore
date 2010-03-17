@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <StealthViewer/GMApp/ViewerConfigComponent.h>
 #include <StealthViewer/GMApp/ConfigurationObjectInterface.h>

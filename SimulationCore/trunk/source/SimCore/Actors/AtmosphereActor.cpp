@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtGame/gameactor.h>
 #include <SimCore/Actors/AtmosphereActor.h>
 

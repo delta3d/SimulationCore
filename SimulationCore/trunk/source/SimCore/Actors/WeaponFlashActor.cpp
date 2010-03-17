@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/WeaponFlashActor.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/particlesystem.h>

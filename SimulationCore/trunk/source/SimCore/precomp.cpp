@@ -20,4 +20,4 @@
 * circumstances in which the U. S. Government may have rights in the software.
 */
 #define DELTA_PCH
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>

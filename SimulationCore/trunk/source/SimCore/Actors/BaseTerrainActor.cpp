@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Allen Danklefsen
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BaseTerrainActor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>

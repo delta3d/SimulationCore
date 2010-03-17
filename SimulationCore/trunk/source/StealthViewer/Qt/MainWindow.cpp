@@ -22,7 +22,7 @@
  * @author David Guthrie
  * @author Curtiss Murphy
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 // This has to be above the QT includes because 'emit' conflicts
 #include <SimCore/Actors/BaseEntity.h>

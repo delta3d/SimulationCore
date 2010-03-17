@@ -19,7 +19,7 @@
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <SimCore/Actors/TextureProjectorActor.h>
 #include <SimCore/Components/TextureProjectorComponent.h>

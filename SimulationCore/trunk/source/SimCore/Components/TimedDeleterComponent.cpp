@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtCore/uniqueid.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/basemessages.h>

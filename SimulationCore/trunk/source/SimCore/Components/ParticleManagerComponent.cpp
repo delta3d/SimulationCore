@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtCore/particlesystem.h>
 #include <dtCore/shadermanager.h>
 #include <dtGame/basemessages.h>

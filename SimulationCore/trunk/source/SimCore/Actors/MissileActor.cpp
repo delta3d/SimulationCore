@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <dtActors/particlesystemactorproxy.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtUtil/nodecollector.h>

@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <ostream>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Actors/StealthActor.h>

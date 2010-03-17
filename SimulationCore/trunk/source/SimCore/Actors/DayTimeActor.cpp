@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
