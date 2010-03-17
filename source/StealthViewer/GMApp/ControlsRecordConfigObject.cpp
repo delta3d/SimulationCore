@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  * @author Curtiss Murphy
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/ControlsRecordConfigObject.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <dtGame/serverloggercomponent.h>

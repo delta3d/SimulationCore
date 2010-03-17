@@ -21,7 +21,7 @@
  * @author Eddie Johnson
  * @author Curtiss Murphy
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/PreferencesGeneralConfigObject.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 

@@ -21,7 +21,7 @@
 * THE SOFTWARE.
 *
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QtGui/QSplashScreen>

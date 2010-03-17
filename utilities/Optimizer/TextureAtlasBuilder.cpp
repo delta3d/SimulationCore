@@ -573,8 +573,8 @@ bool TextureAtlasBuilder::Source::suitableForAtlas(unsigned int maximumAtlasWidt
             _texture->getWrap(osg::Texture2D::WRAP_T)==osg::Texture2D::MIRROR;
 
         // Calculate size of padded image
-        size_t width  = _image->s()+margin*2;
-        size_t height = _image->t()+margin*2;
+        //size_t width  = _image->s()+margin*2;
+        //size_t height = _image->t()+margin*2;
 
         // size too big?
         if ( _image->s()+margin*2 > maximumAtlasWidth || _image->t()+margin*2 > maximumAtlasHeight )
@@ -906,8 +906,8 @@ bool TextureAtlasBuilder::Atlas::addSource(Source* source)
     source->_x = imagePlace->x() + sMargin;
     source->_y = imagePlace->y() + tMargin;
     source->_atlas = this;
-    _width  = std::max ( _width,  imagePlace->x() + sourceWidth );
-    _height = std::max ( _height, imagePlace->y() + sourceHeight );
+    _width  = std::max ( unsigned(_width),  unsigned(imagePlace->x() + sourceWidth) );
+    _height = std::max ( unsigned(_height), unsigned(imagePlace->y() + sourceHeight) );
     return true;
 }
 
@@ -1623,11 +1623,11 @@ void TextureAtlasVisitor::remapTexturesToAtlases ( const Drawables& drawablesTha
             osg::Texture2D* texture = dynamic_cast<osg::Texture2D*>(stateset->getTextureAttribute(unit,osg::StateAttribute::TEXTURE));
             if (texture)
             {
-                bool s_repeat = texture->getWrap(osg::Texture2D::WRAP_S)==osg::Texture2D::REPEAT ||
-                                texture->getWrap(osg::Texture2D::WRAP_S)==osg::Texture2D::MIRROR;
-
-                bool t_repeat = texture->getWrap(osg::Texture2D::WRAP_T)==osg::Texture2D::REPEAT ||
-                                texture->getWrap(osg::Texture2D::WRAP_T)==osg::Texture2D::MIRROR;
+//                bool s_repeat = texture->getWrap(osg::Texture2D::WRAP_S)==osg::Texture2D::REPEAT ||
+//                                texture->getWrap(osg::Texture2D::WRAP_S)==osg::Texture2D::MIRROR;
+//
+//                bool t_repeat = texture->getWrap(osg::Texture2D::WRAP_T)==osg::Texture2D::REPEAT ||
+//                                texture->getWrap(osg::Texture2D::WRAP_T)==osg::Texture2D::MIRROR;
 
                 osg::Texture2D* newTexture = _builder.getTextureAtlas(texture);
                 if (newTexture && newTexture!=texture)

@@ -25,7 +25,7 @@
 *
 * @author David Guthrie
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <dtGame/gamemanager.h>
 //#include <dtABC/application.h>

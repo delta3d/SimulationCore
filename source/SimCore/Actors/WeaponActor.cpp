@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Chris Rodgers, editor Allen Danklefsen
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <dtUtil/mswin.h>
 #include <dtAudio/audiomanager.h>

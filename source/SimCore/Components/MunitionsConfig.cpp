@@ -21,7 +21,7 @@
  * @author Chris Rodgers
  */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #if XERCES_VERSION_MAJOR < 3

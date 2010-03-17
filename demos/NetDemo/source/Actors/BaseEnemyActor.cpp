@@ -10,7 +10,7 @@
 *
 * @author Curtiss Murphy
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 //#ifdef AGEIA_PHYSICS
 #include <Actors/BaseEnemyActor.h>

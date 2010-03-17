@@ -21,7 +21,7 @@
 * @author Allen Danklefsen
 */
 
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Components/ViewerMaterialComponent.h>

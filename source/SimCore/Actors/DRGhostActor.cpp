@@ -21,7 +21,7 @@
 *
 * Curtiss Murphy
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 
 #include <SimCore/Actors/DRGhostActor.h>
 

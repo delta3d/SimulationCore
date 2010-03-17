@@ -25,7 +25,7 @@
 *
 * @author Chris Rodgers
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <dtABC/application.h>

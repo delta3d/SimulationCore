@@ -25,7 +25,7 @@
  *
  * @author David Guthrie
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <SimCore/UnitEnums.h>
 

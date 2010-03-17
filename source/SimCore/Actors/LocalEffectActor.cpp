@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
 * @author David Guthrie
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LocalEffectActor.h>
 
 #include <dtCore/particlesystem.h>

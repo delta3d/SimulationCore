@@ -26,7 +26,7 @@
 //
 //                Originally Written by Bob Schade, 10-15-05
 // ===============================================================================
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #ifdef AGEIA_PHYSICS
 #include <SimCore/ModifiedStream.h>
 

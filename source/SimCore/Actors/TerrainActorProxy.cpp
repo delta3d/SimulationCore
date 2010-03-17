@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Matthew W. Campbell
  */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/CollisionGroupEnum.h>

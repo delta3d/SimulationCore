@@ -20,7 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
 * @author Allen Danklefsen
 */
-#include <prefix/SimCorePrefix-src.h>
+#include <prefix/SimCorePrefix.h>
 #ifdef AGEIA_PHYSICS
 #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
 #include <NxAgeiaWorldComponent.h>
