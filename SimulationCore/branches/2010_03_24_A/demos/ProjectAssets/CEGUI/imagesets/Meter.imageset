@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="Meter" Imagefile="CEGUI/imagesets/Meter.tga" NativeHorzRes="566" NativeVertRes="297" AutoScaled="true">
+   
+   <Image Name="MeterLeft"   XPos="0"  YPos="0" Width="32" Height="32" />
+   <Image Name="MeterRight"  XPos="96" YPos="0" Width="32" Height="32" />
+   <Image Name="MeterCenter" XPos="32" YPos="0" Width="64" Height="32" />
+   
+</Imageset>
+
