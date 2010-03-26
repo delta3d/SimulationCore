@@ -448,6 +448,7 @@ namespace SimCore
 
             SetDynamicLightProperties(dlActor, result);
             result->mSpotExponent = dlActor->GetSpotExponent();
+            result->mSpotCosCutoff = dlActor->GetSpotCosCutoff();
             result->mDirection = dlActor->GetSpotDirection();
             result->mUseAbsoluteDirection = dlActor->GetUseAbsoluteDirection();
 
