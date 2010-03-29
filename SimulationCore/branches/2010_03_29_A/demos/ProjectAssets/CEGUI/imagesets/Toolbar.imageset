@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="Toolbar" Imagefile="CEGUI/imagesets/Toolbar.tga" NativeHorzRes="566" NativeVertRes="297" AutoScaled="true">
+   
+   <!-- TOOLBAR BRACKETS -->
+   <Image Name="Bracket_Left"  XPos="0" YPos="0"  Width="26" Height="99" />
+   <Image Name="Bracket_Right" XPos="0" YPos="99" Width="26" Height="99" />
+   
+   <!-- TOOL - HELP -->
+   <Image Name="Help_OFF"      XPos="26" YPos="0"   Width="90" Height="99" />
+   <Image Name="Help_ON"       XPos="26" YPos="99"  Width="90" Height="99" />
+   <Image Name="Help_DISABLED" XPos="26" YPos="198" Width="90" Height="99" />
+
+   <!-- TOOL - BINOCULARS -->
+   <Image Name="Binoculars_OFF"      XPos="116" YPos="0"   Width="90" Height="99" />
+   <Image Name="Binoculars_ON"       XPos="116" YPos="99"  Width="90" Height="99" />
+   <Image Name="Binoculars_DISABLED" XPos="116" YPos="198" Width="90" Height="99" />
+
+   <!-- TOOL - COMPASS -->
+   <Image Name="Compass_OFF"      XPos="206" YPos="0"   Width="90" Height="99" />
+   <Image Name="Compass_ON"       XPos="206" YPos="99"  Width="90" Height="99" />
+   <Image Name="Compass_DISABLED" XPos="206" YPos="198" Width="90" Height="99" />
+
+   <!-- TOOL - NIGHT VISION -->
+   <Image Name="NightVision_OFF"      XPos="296" YPos="0"   Width="90" Height="99" />
+   <Image Name="NightVision_ON"       XPos="296" YPos="99"  Width="90" Height="99" />
+   <Image Name="NightVision_DISABLED" XPos="296" YPos="198" Width="90" Height="99" />
+   
+</Imageset>
+
