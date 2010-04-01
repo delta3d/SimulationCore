@@ -54,7 +54,7 @@ void main(void)
    float posY = gl_Vertex.y * sin(radians(radialScaleDegrees));
    vec4 localVert = vec4(posX, posY, 0.0, gl_Vertex.w);
 
-   localVert = vec4(localVert.x * scalar, localVert.y * scalar, 0.0, localVert.w);
+   localVert = vec4(localVert.x * scalar, localVert.y * scalar, 0.0, 1.0);
 
    // Compute a scalar based on the verts proximity to the clip plane. As it approaches
    // the clip plane, we don't want to adjust the height (so it's sort of flat at the horizon).
@@ -71,6 +71,7 @@ void main(void)
    vec2 offsetPos = pos.xy - cameraRecenter.xy;
 
    float zModifier = 0.0;
+   vertexWaveDir = vec2(0.0);
 
    shaderVertexNormal = vec3(0.0, 0.0, 1.0);
    // There are 2 vec4's of data per wave, so the loop is MAX_WAVES * 2 but increments by 2's

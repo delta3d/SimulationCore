@@ -89,7 +89,7 @@ void main (void)
    ////This samples the wave texture in a way that will remove tiling artifacts
    float fadeTransition = 0.05;
    float distToFragment = length(pos.xy);
-   float textureScale = 25.0 + clamp((35.0 * floor(distToFragment / 35.0)), 0.0, 2000.0);
+   float textureScale = 20.0 + clamp((50.0 * floor(distToFragment / 50.0)), 0.0, 2000.0);
    vec3 waveNormal = vec3(0.0, 0.0, 0.0); 
    vec2 waveCoords = 0.025 * shaderVertexNormal.xy + vec2(combinedPos.xy / textureScale);   
    waveCoords /= (0.5 + (modForFOV * 0.5) );
@@ -107,13 +107,8 @@ void main (void)
    waveNormal += fadeAmt3 * SampleNormalMap(waveTexture, waveCoords3);
    //////////////////////////////////////////////////////////////////////////////
 
-   float distantTurbulence = max(-1.0 * dot(waveNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
-   distantTurbulence = clamp(100.0 * pow(distantTurbulence, 2.0), 0.0, 1.0);
-   float distantTurbDistScale = pow(1.0 * (1.0 - distanceScale), 2.0);
-   distantTurbulence *= distantTurbDistScale;
-
-   float waveNormalFadeOut = clamp(distToFragment / 200.0, 0.0, 1.0);
-   waveNormal = mix(waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
+   float waveNormalFadeOut = clamp(distToFragment / 10000.0, 0.0, 1.0);
+   waveNormal = mix(2.0 * waveNormal, vec3(0.0, 0.0, 1.0), waveNormalFadeOut);
    waveNormal = normalize(waveNormal);
    vec3 normal = (2.0 * normalize(shaderVertexNormal)) + waveNormal;
    normal = normalize(normal);   
@@ -139,45 +134,47 @@ void main (void)
 
       lightContribFinal = sqrt(lightContribFinal);
 
-      vec3 noiseTexCoords = vec3(combinedPos.x / 25.0, combinedPos.y / 25.0, 0.05 * elapsedTime);
+      vec3 noiseTexCoords = vec3(combinedPos.x / 10.0, combinedPos.y / 10.0, 0.05 * elapsedTime);
       float noisevalue = abs(texture3D(noiseTexture, noiseTexCoords).a);
 
       //this is the nearby foam effect contribution
       float foamAmt = max(-1.0 * dot(normal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
-      float foamNoise = clamp(20.0 * pow(noisevalue, 10.0), 0.0, 1.0);         
-      foamAmt = clamp(1000.0 * pow(foamAmt, 6.0), 0.0, 1.0);
+      float foamNoise = clamp(10.0 * pow(noisevalue, 16.0), 0.0, 1.0);         
+      foamAmt = clamp(100.0 * pow(foamAmt, 3.0), 0.0, 1.0);
       foamAmt *= foamNoise;
 
-      //this is the distant foam effect contribution
+      //this is the distant foam effect contribution - it's really nutty. It is the outer band of 
+      // foam value. And, it changes based on the field of view! What we want is for the foam to 
+      // appear in little patches based on the normal on the wave.       
       float distfoamAmt = max(-1.0 * dot(shaderVertexNormal, vec3(vertexWaveDir.xy, 0.0)), 0.0);
-      float distFoamExp = (1.0 / (1.0 + (modForFOV * modForFOV))) * (10.0 + (camPos.z / 100.0));
+      // What we want.  0.5 at wide (90 HFov).  0.7 at med (45 HFov).  0.9 at narrow (< 10 HFov)
+      float distFoamExpFOVScalar = clamp(0.95 - (0.4 * (modForFOV)), 0.55, 0.95);
+      float distFoamExp = distFoamExpFOVScalar * (10.0 + (camPos.z / 75.0));
       distfoamAmt = clamp(1000.0 * pow(distfoamAmt, distFoamExp), 0.0, 1.0);
-      float foamDistScale = pow(55.0 * (1.0 - distanceScale), 6.0);
-      float foamDistScaleFar = pow(distanceScale, 10.0);
-      float distFoamNoise = clamp(10.0 * pow(noisevalue, 16.0), 0.0, 1.0);         
+      float foamDistScale = pow(46.0 * (1.0 - distanceScale), 6.0);
+      float foamDistScaleFar = pow(distanceScale, 4.0);
+      float distFoamNoise = foamNoise; //clamp(10.0 * pow(noisevalue, 16.0), 0.0, 1.0);         
       distfoamAmt = clamp(distfoamAmt * foamDistScale * foamDistScaleFar * distFoamNoise, 0.0, 1.0);
 
-      vec2 foamTexCoords = 0.1 * vec2(combinedPos.x, (0.66 * elapsedTime) - combinedPos.y);
+      vec2 foamTexCoords = 0.1 * vec2(combinedPos.x * 3.0, (0.66 * elapsedTime) - combinedPos.y * 3.0);
       foamTexCoords = rotateTexCoords(foamTexCoords, waveDirection);
       vec4 foamColor = texture2D(foamTexture, foamTexCoords);
    
       //this is the cumulative foam effect contribution
-      foamColor.xyz = lightContribFinal * foamColor * (foamAmt + distfoamAmt);
+      foamColor.xyz = lightContribFinal * foamColor.xyz * (clamp(foamAmt + distfoamAmt, 0.0, 1.0));
       
       vec3 waterColorContrib = lightContribFinal * (mix(reflectColor.xyz, 0.2 * deepWaterColor.xyz, waveNDotL));
       
       //calculates a specular contribution
       vec3 normRefLightVec = reflect(lightVect, normal);
       float specularContrib = max(0.0, dot(normRefLightVec, viewDir));
-      specularContrib = (0.2 * pow(specularContrib, 4.0)) + (0.25 * pow(specularContrib, 28.0));
+      specularContrib = (0.1 * pow(specularContrib, 8.0)) + (0.8 * pow(specularContrib, 200.0));
       vec3 resultSpecular = vec3(gl_LightSource[0].specular.xyz * specularContrib);     
       
       //adds in the fog contribution
-      vec4 finalColor = vec4(mix(waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x), WaterColor.a);
-      gl_FragColor = finalColor + foamColor;
-      //gl_FragColor = vec4(vec3(distantTurbDistScale), 1.0);//finalColor + foamColor;
-      //gl_FragColor = vec4(vertexWaveDir.x, vertexWaveDir.y, 0.0, WaterColor.a);
-      // gl_FragColor = vec4(vec3(waterColorContrib), WaterColor.a);
+      vec4 finalColor = vec4(mix(foamColor.xyz + waterColorContrib + resultSpecular, gl_Fog.color.rgb, vFog.x), WaterColor.a);
+      gl_FragColor = finalColor;
+      //gl_FragColor = vec4(vec3(foamDistScale * foamDistScaleFar), 1.0);
       // vec3 waveColor = 1.0 + waveNormal.xyz;
       // gl_FragColor = vec4(waveColor / 2.0, WaterColor.a);
    }
