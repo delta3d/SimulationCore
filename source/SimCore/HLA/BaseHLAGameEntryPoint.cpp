@@ -141,6 +141,10 @@ namespace SimCore
          multiCalc->SetName("TimeValue");
          hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
 
+         multiCalc = new dtHLAGM::DDMMultiEnumeratedCalculator;
+         multiCalc->SetName("LoggerPlayback");
+         hft->GetDDMSubscriptionCalculators().AddCalculator(*multiCalc);
+
          return hft;
       }
 
