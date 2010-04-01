@@ -187,6 +187,9 @@ namespace StealthQt
          /// Called when the Show Advanced options box is changed
          void OnShowAdvancedPlaybackOptionsChanged(int state);
 
+         /// Called when the Loop Continuously option box is changed
+         void OnLoopContinuouslyChanged(int state);
+
          /// Called when playback speed is adjusted
          void OnPlaybackSpeedChanged(const QString& newText);
 

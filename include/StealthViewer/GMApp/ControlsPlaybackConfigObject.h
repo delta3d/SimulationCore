@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
+ * @author Eddie Johnson, Curtiss Murphy
  */
 #ifndef _CONTROLS_PLAYBACK_CONFIG_OBJECT_H_
 #define _CONTROLS_PLAYBACK_CONFIG_OBJECT_H_
@@ -65,6 +65,18 @@ namespace StealthGM
           * @return mShowAdvancedOptions
           */
          bool GetShowAdvancedOptions() const { return mShowAdvancedOptions; }
+
+         /**
+          * Sets whether we should loop continuously at the end of our replay. 
+          * @param enable True to enable, false to disable
+          */
+         void SetLoopContinuously(bool enable) { mLoopContinuously = enable; SetIsUpdated(true); }
+
+         /**
+          * Returns true if advanced options are showing
+          * @return mShowAdvancedOptions
+          */
+         bool GetLoopContinuously() const { return mLoopContinuously; }
 
          /**
           * Begins a playback
@@ -124,6 +136,7 @@ namespace StealthGM
 
          std::string mInputFilename;
          bool mShowAdvancedOptions;
+         bool mLoopContinuously;
          bool mBeginPlayback;
          bool mEndPlayback;
          bool mJumpToNextKeyFrame;

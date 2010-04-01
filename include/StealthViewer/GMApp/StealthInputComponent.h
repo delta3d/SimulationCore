@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
+ * @author Eddie Johnson, Curtiss Murphy
  */
 #ifndef STEALTH_INPUT_COMPONENT_H_
 #define STEALTH_INPUT_COMPONENT_H_
@@ -108,6 +108,7 @@ namespace StealthGM
          void HandleSetAutoKeyFrameInterval(double mins);
          void HandleAddKeyFrame(const dtGame::LogKeyframe &kf);
          void HandleGetKeyFrames();
+         void HandleEndOfPlayback();
 
          void ChangeFlyMotionModelSpeed(bool higher);
 
@@ -125,6 +126,9 @@ namespace StealthGM
 
          void SetReconnectOnIdle( bool reconnect ) { mReconnectOnIdle = reconnect; }
          bool GetReconnectOnIdle() const { return mReconnectOnIdle; }
+
+         void SetLoopContinuouslyInPlayback(bool newValue);
+         bool GetLoopContinuouslyInPlayback();
 
          // Once a second (or so) it does processing that as required to keep the simulation
          // in sync. For instance, updating the camera speed based on FoV, etc...
@@ -155,7 +159,9 @@ namespace StealthGM
          bool mEnablePlayback;
          bool mWasConnected;
          bool mReconnectOnIdle;
+         bool mLoopContinuouslyInPlayback;
          int mTicksToLogStateChange;
+         int mTicksToRestartPlayback;
          const dtGame::LogStateEnumeration* mTargetLogState;
          dtCore::RefPtr<dtGame::LogController> mLogController;
 
