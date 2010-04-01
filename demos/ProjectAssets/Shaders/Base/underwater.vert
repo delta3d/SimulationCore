@@ -10,14 +10,18 @@ uniform mat4 inverseViewMatrix;
 varying vec4 worldSpacePos;
 varying vec3 lightVector;
 varying vec4 camPos;
-varying float height;
+
+const float FarPlane = 30000.0;
 
 void main(void)
 {    
     //transform our vector into screen space
    gl_Position = ftransform();   
 
-   worldSpacePos = gl_Position;
+   vec4 screenPos = gl_Position;
+   screenPos.z = 0.99;
+   worldSpacePos = (modelViewProjectionInverse * screenPos);
+
    
    mat3 inverseView3x3 = mat3(inverseViewMatrix[0].xyz, 
        inverseViewMatrix[1].xyz, inverseViewMatrix[2].xyz);
