@@ -88,6 +88,7 @@ namespace StealthGM
 {
    const std::string StealthInputComponent::DEFAULT_NAME = "Input Component";
 
+   /////////////////////////////////////////////////////////////////////////////////
    StealthInputComponent::StealthInputComponent(bool enableLogging,
                                                 bool enablePlayback,
                                                 const std::string& name,
@@ -98,21 +99,25 @@ namespace StealthGM
       , mEnablePlayback(enablePlayback)
       , mWasConnected(false)
       , mReconnectOnIdle(true)
+      , mLoopContinuouslyInPlayback(false)
+      , mTicksToLogStateChange(0)
+      , mTicksToRestartPlayback(0)
       , mTargetLogState(&dtGame::LogStateEnumeration::LOGGER_STATE_IDLE)
       , mFirstPersonAttachMode(true)
       , mHasUI(hasUI)
       , mCollideWithGround(true)
       , mCountDownToPeriodicProcessing(1.0)
-
    {
       mMachineInfo = new dtGame::MachineInfo;
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    StealthInputComponent::~StealthInputComponent()
    {
       mHLA = NULL;
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::OnAddedToGM()
    {
       // Attempt connection to the network
@@ -165,6 +170,19 @@ namespace StealthGM
             if (mTicksToLogStateChange == 0 )
             {
                ChangeAARState( *mTargetLogState );
+            }
+         }
+
+         // A playback ended a few ticks ago, and we are in looping mode, so we are going to start over.  
+         if (mTicksToRestartPlayback > 0)
+         {
+            mTicksToRestartPlayback--;
+
+            // If still in playback, then jump to first keyframe and start over.
+            if (mTicksToRestartPlayback == 0 && mLoopContinuouslyInPlayback && 
+               mLogController->GetLastKnownStatus().GetStateEnum() == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK)
+            {
+               GotoFirstKeyframe();
             }
          }
       }
@@ -245,6 +263,7 @@ namespace StealthGM
             {
                mStealthMM = new SimCore::StealthMotionModel(app.GetKeyboard(), app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
                mStealthMM->SetCollideWithGround(mCollideWithGround);
+               mStealthMM->SetUseSimTimeForSpeed(false);
             }
             mStealthMM->SetTarget(GetStealthActor());
             mStealthMM->SetScene(GetGameManager()->GetScene());
@@ -414,6 +433,11 @@ namespace StealthGM
          //   (GetGameManager()->GetComponentByName(SimCore::WeatherComponent::DEFAULT_NAME));
          //if (weatherComp != NULL)
          //   weatherComp->SetBaseElevation(600.0f);
+      }
+
+      else if (msgType == dtGame::MessageType::LOG_INFO_PLAYBACK_END_OF_MESSAGES)
+      {
+         HandleEndOfPlayback();
       }
    }
 
@@ -810,6 +834,7 @@ namespace StealthGM
       return handled;
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ChangeAARState( const dtGame::LogStateEnumeration& targetState )
    {
       if (targetState == dtGame::LogStateEnumeration::LOGGER_STATE_PLAYBACK )
@@ -863,6 +888,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::EnableIdle()
    {
       if (mEnableLogging && mLogController.valid())
@@ -872,6 +898,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::EnableRecord()
    {
       if (mEnableLogging && mLogController.valid())
@@ -881,12 +908,14 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::ChangeFlyMotionModelSpeed(bool higher)
    {
       float val = mStealthMM->GetMaximumFlySpeed();
       mStealthMM->SetMaximumFlySpeed(higher ? val * 1.5 : val / 1.5);
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::EnablePlayback()
    {
       if (mEnableLogging && mLogController.valid())
@@ -904,6 +933,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandlePause()
    {
       if (mEnableLogging && mEnablePlayback)
@@ -912,6 +942,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleSpeedChange(bool higherSpeed)
    {
       if (mEnableLogging && mEnablePlayback)
@@ -933,6 +964,19 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::SetLoopContinuouslyInPlayback(bool newValue)
+   {
+      mLoopContinuouslyInPlayback = newValue;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   bool StealthInputComponent::GetLoopContinuouslyInPlayback()
+   {
+      return mLoopContinuouslyInPlayback;
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleSpeedChange(float newSpeed)
    {
       if (mEnableLogging && mEnablePlayback)
@@ -942,6 +986,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleGotoKeyFrame(bool nextKeyFrame)
    {
       // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame" << std::endl;
@@ -951,6 +996,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleGotoKeyFrame(const std::string &name)
    {
       // DEBUG: std::cout << "StealthInputComponent::HandleGotoKeyFrame(" << name.c_str() << ")" << std::endl;
@@ -968,6 +1014,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleAddKeyFrame(const dtGame::LogKeyframe &kf)
    {
       if (mEnableLogging && mEnablePlayback)
@@ -976,6 +1023,7 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleGetKeyFrames()
    {
       if (mEnableLogging && mEnablePlayback)
@@ -984,11 +1032,22 @@ namespace StealthGM
       }
    }
 
+   /////////////////////////////////////////////////////////////////////////////////
    void StealthInputComponent::HandleSetAutoKeyFrameInterval(double interval)
    {
       if (mEnableLogging && mEnablePlayback)
       {
          mLogController->RequestSetAutoKeyframeInterval(interval);
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   void StealthInputComponent::HandleEndOfPlayback()
+   {
+      // Set a loop restart count down.
+      if (mEnableLogging && mEnablePlayback && mLoopContinuouslyInPlayback)
+      {
+         mTicksToRestartPlayback = 5; // There's really no rush.
       }
    }
 

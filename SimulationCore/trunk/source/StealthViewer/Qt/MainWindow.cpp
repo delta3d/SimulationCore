@@ -544,6 +544,9 @@ namespace StealthQt
       connect(mUi->mPlaybackShowAdvancedOptionsCheckBox, SIGNAL(stateChanged(int)),
                this,                                      SLOT(OnShowAdvancedPlaybackOptionsChanged(int)));
 
+      connect(mUi->mPlaybackLoopCheckBox, SIGNAL(stateChanged(int)),
+               this,                      SLOT(OnLoopContinuouslyChanged(int)));
+
       connect(mUi->mPlaybackPlaybackSpeedComboBox, SIGNAL(currentIndexChanged(const QString&)),
                this,                                SLOT(OnPlaybackSpeedChanged(const QString&)));
 
@@ -1197,6 +1200,17 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
       pbObject.SetShowAdvancedOptions(state == Qt::Checked);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////
+   void MainWindow::OnLoopContinuouslyChanged(int state)
+   {
+      if (mIsPlayingBack)
+      {
+         StealthGM::ControlsPlaybackConfigObject &pbObject =
+            StealthViewerData::GetInstance().GetPlaybackConfigObject();
+         pbObject.SetLoopContinuously(state == Qt::Checked);
+      }
    }
 
    ///////////////////////////////////////////////////////////////////////////////
@@ -1894,6 +1908,7 @@ namespace StealthQt
          StealthViewerData::GetInstance().GetPlaybackConfigObject();
 
       mUi->mPlaybackShowAdvancedOptionsCheckBox->setChecked(playbackConfig.GetShowAdvancedOptions());
+      mUi->mPlaybackLoopCheckBox->setChecked(playbackConfig.GetLoopContinuously());
       if (!playbackConfig.GetInputFilename().empty())
       {
          mUi->mPlaybackFileLineEdit->setText(tr(playbackConfig.GetInputFilename().c_str()));

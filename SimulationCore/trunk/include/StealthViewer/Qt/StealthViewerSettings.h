@@ -130,6 +130,7 @@ namespace StealthQt
 
          static const QString CONTROLS_PLAYBACK_GROUP;
             static const QString SHOW_ADVANCED_PLAYBACK_OPTIONS;
+            static const QString PLAYBACK_LOOP_CONTINUOUSLY;
             static const QString PLAYBACK_INPUT_FILE;
             static const QString PLAYBACK_SPEED;
 
