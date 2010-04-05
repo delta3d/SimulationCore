@@ -102,7 +102,7 @@ namespace StealthQt
    {
    public:
       ///Overwrite to generate a custom OSGAdapterWidget
-      virtual dtQt::OSGAdapterWidget* CreateWidget(bool drawOnSeparateThread, QWidget* parent = NULL,
+      virtual dtQt::OSGAdapterWidget* CreateWidget(const QGLFormat& format, bool drawOnSeparateThread, QWidget* parent = NULL,
                                              const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0)
       {
          static int count = 0;
@@ -112,7 +112,7 @@ namespace StealthQt
             f |= Qt::WindowStaysOnTopHint;
          }
          ++count;
-         return new StealthQt::AdditionalViewDockWidget(NULL, shareWidget, f);
+         return new StealthQt::AdditionalViewDockWidget(format, NULL, shareWidget, f);
       }
    };
 
