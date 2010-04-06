@@ -137,7 +137,6 @@ namespace StealthQt
 
    const QString StealthViewerSettings::CONTROLS_PLAYBACK_GROUP("CONTROLS_PLAYBACK_GROUP");
       const QString StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS("SHOW_ADVANCED_PLAYBACK_OPTIONS");
-      const QString StealthViewerSettings::PLAYBACK_LOOP_CONTINUOUSLY("PLAYBACK_LOOP_CONTINUOUSLY");
       const QString StealthViewerSettings::PLAYBACK_INPUT_FILE("PLAYBACK_INPUT_FILE");
       const QString StealthViewerSettings::PLAYBACK_SPEED("PLAYBACK_SPEED");
 
@@ -597,7 +596,6 @@ namespace StealthQt
       beginGroup(StealthViewerSettings::CONTROLS_PLAYBACK_GROUP);
 
          setValue(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS, pbObject.GetShowAdvancedOptions());
-         setValue(StealthViewerSettings::PLAYBACK_LOOP_CONTINUOUSLY, pbObject.GetLoopContinuously());
          setValue(StealthViewerSettings::PLAYBACK_INPUT_FILE, pbObject.GetInputFilename().c_str());
          setValue(StealthViewerSettings::PLAYBACK_SPEED, pbObject.GetPlaybackSpeed());
 
@@ -1092,12 +1090,6 @@ namespace StealthQt
          {
             bool savedValue = value(StealthViewerSettings::SHOW_ADVANCED_PLAYBACK_OPTIONS).toBool();
             playbackConfig.SetShowAdvancedOptions(savedValue);
-         }
-
-         if (contains(StealthViewerSettings::PLAYBACK_LOOP_CONTINUOUSLY))
-         {
-            bool savedValue = value(StealthViewerSettings::PLAYBACK_LOOP_CONTINUOUSLY).toBool();
-            playbackConfig.SetLoopContinuously(savedValue);
          }
 
          if (contains(StealthViewerSettings::PLAYBACK_INPUT_FILE))

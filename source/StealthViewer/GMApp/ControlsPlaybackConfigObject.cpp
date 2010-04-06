@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson, Curtiss Murphy
+ * @author Eddie Johnson
  */
 #include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
@@ -29,7 +29,6 @@ namespace StealthGM
 {
    ControlsPlaybackConfigObject::ControlsPlaybackConfigObject() :
       mShowAdvancedOptions(false), 
-      mLoopContinuously(false),
       mBeginPlayback(false),
       mEndPlayback(false),
       mJumpToNextKeyFrame(false),
@@ -112,10 +111,6 @@ namespace StealthGM
          inputComponent->GotoFirstKeyframe();
          mRestartPlayback = false;
       }
-
-      // Update the LoopContinuously flag.
-      if (inputComponent->GetLoopContinuouslyInPlayback() != mLoopContinuously)
-         inputComponent->SetLoopContinuouslyInPlayback(mLoopContinuously);
 
       inputComponent->HandleSpeedChange(mPlaybackSpeed);
 

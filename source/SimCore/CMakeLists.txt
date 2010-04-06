@@ -179,10 +179,8 @@ if (MSVC)
    ADD_DEFINITIONS(-DOSGEPHEMERIS_LIBRARY_STATIC)
 endif (MSVC)
 
-ADD_PRECOMPILED_HEADER(${LIB_NAME} prefix/SimCorePrefix.h prefix/SimCorePrefix.cpp LIB_SOURCES)
-
-ADD_LIBRARY(${LIB_NAME} SHARED
-    ${LIB_PUBLIC_HEADERS}
+ADD_LIBRARY(${LIB_NAME} SHARED                        
+    ${LIB_PUBLIC_HEADERS}                         
     ${LIB_SOURCES}
 )
 

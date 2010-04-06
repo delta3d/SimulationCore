@@ -28,8 +28,6 @@ OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" OFF)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
 OPTION(USE_dtPhysics "Enable the building of Simulation core with dtPhysics" OFF)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
-OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
-MARK_AS_ADVANCED(BUILD_WITH_PCH)
 
 if (BUILD_HLA)
    OPTION(USE_RTIS "Use RTI-s for the RTI implementation" ON)
@@ -176,8 +174,6 @@ FIND_PACKAGE(Delta3D REQUIRED)
 IF (DELTA3D_FOUND)
    #look for module loaders in delta3d CMakeModules
    SET(CMAKE_MODULE_PATH "${DELTA_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-
-   INCLUDE(PCHMacros)
 
    IF(NOT WIN32)
       FIND_PACKAGE(Curses REQUIRED)

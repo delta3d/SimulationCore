@@ -18,7 +18,6 @@ qt4_wrap_ui(UIC_HEADERS ${UI_FILES})
 #The ui files are output here, so it must be included.
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR})
 
-ADD_PRECOMPILED_HEADER(${LIB_NAME} prefix/StealthQtPrefix.h prefix/StealthQtPrefix.cpp LIB_SOURCES)
 
 ADD_LIBRARY(${LIB_NAME} STATIC
     ${LIB_PUBLIC_HEADERS}
