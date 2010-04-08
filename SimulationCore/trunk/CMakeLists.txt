@@ -24,7 +24,7 @@ PROJECT(SimulationCore)
 ################################################################################
 # User Options
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
-OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" OFF)
+OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
 OPTION(USE_dtPhysics "Enable the building of Simulation core with dtPhysics" OFF)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
@@ -38,6 +38,8 @@ if (BUILD_HLA)
    OPTION(USE_MAK "Use MAK for the RTI implementation" OFF)
    OPTION(USE_PORTICO "Use Portico for the RTI implementation" OFF)
    OPTION(USE_DMSO "Use DMSO for the RTI implementation" OFF)
+
+   OPTION(BUILD_STEALTH_VIEWER "Build the Stealth Viewer" ON)
 endif (BUILD_HLA)
 
 IF (WIN32)
@@ -196,17 +198,22 @@ IF (DELTA3D_FOUND)
    FIND_PACKAGE(HAWKNL REQUIRED)
    FIND_PACKAGE(GNE REQUIRED)
    FIND_PACKAGE(Boost)
-
+   #if (NOT Boost_INCLUDE_DIR)
+   #   FIND_PATH(Boost_INCLUDE_DIR PATH boost/version.hpp
+   #      PATH_SUFFIXES inc include
+   #      PATHS
+   #      $(DELTA3D_EXT_DIR)
+   #      $(CMAKE_SOURCE_DIR)/ext
+   #   )
+   #endif (NOT Boost_INCLUDE_DIR)
+   
 
    IF (NOT WIN32 AND NOT APPLE)
      FIND_PACKAGE(UUID REQUIRED) 
    ENDIF (NOT WIN32 AND NOT APPLE)
 
-   SET(QT_USE_QTOPENGL "true")
-   FIND_PACKAGE(Qt4 REQUIRED)
-
-   FIND_PACKAGE(GDAL)
-   FIND_PACKAGE(DIS)
+   #FIND_PACKAGE(GDAL)
+   #FIND_PACKAGE(DIS)
 
    IF (BUILD_HLA)
       IF (USE_RTIS)
@@ -229,8 +236,17 @@ IF (DELTA3D_FOUND)
          FIND_PACKAGE(RTIDMSO REQUIRED)
       ELSE (USE_RTIS)
          MESSAGE("No HLA RTI selected, choose USE_DMSO, USE_PORTICO, USE_MAK, USE_PRTI, USE_CERTI or USE_RTIS")
-         ENDIF (USE_RTIS)
-      ENDIF (BUILD_HLA)
+      ENDIF (USE_RTIS)
+
+      if (BUILD_STEALTH_VIEWER)
+         SET(QT_USE_QTOPENGL "true")
+         FIND_PACKAGE(Qt4 REQUIRED)
+      endif (BUILD_STEALTH_VIEWER)
+   ELSE (BUILD_HLA)
+      if (BUILD_STEALTH_VIEWER)
+         MESSAGE("You must set BUILD_HLA to ON/true in order to be able build the Stealth Viewer")
+      endif (BUILD_STEALTH_VIEWER)
+   ENDIF (BUILD_HLA)
 
 ENDIF (DELTA3D_FOUND)
 
@@ -249,8 +265,7 @@ INCLUDE_DIRECTORIES(
     ${HAWKNL_INCLUDE_DIR}
     ${XERCES_INCLUDE_DIR}
     ${Boost_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}  
-    ${Boost_INCLUDE_DIR}
+    ${PYTHON_INCLUDE_PATH}
 )
 
 IF (APPLE)
