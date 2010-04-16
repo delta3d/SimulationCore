@@ -234,23 +234,6 @@ namespace NetDemo
       physObj->SetTransform(transformForRot);
       physObj->SetActive(true);
 
-      // IFDEF AGEIA
-
-      // Create our vehicle with a starting position
-      //osg::Vec3 startVec = GetVehicleStartingPosition();
-      //NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
-      //SetCollisionSphere(startPos, GetSphereRadius(), 0,
-      //   mVehicleBaseWeight, 0, "Default", "Default", false);
-
-      // Reorient physics to our Y is forward system.
-      //NxMat33 orient;
-      //orient.setRow(0, NxVec3(1,0,0));
-      //orient.setRow(1, NxVec3(0,0,-1));
-      //orient.setRow(2, NxVec3(0,1,0));
-      //SwitchCoordinateSystem(orient);
-
-      // END IF
-
       return true;
    }
 

@@ -15,11 +15,10 @@
 #include "VehicleShield.h"
 #include "DriverActorRegistry.h"
 
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #include <HoverExplodingTargetActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
+#include <dtPhysics/physicshelper.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -69,13 +68,16 @@ namespace DriverDemo
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      //dtAgeiaPhysX::NxAgeiaPhysicsHelper * helper = new dtAgeiaPhysX::NxAgeiaPhysicsHelper(proxy);
       HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
-      helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
+
+      SetEntityType("HoverExplodingTarget"); // Used for HLA mostly. 
+      SetMunitionDamageTableName("StandardDamageType"); // Used for Munitions Damage.
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +95,7 @@ namespace DriverDemo
       osg::Vec3 startVec;
       if (!IsRemote()) // Local - we vary it's starting position.
       {
-         startVec = GetPhysicsHelper()->GetVehicleStartingPosition();
+         //startVec = GetPhysicsHelper()->GetVehicleStartingPosition();
          startVec[0] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[1] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[2] += dtUtil::RandFloat(0.0, 4.0);
@@ -102,8 +104,6 @@ namespace DriverDemo
          // one frame in the wrong place. Very ugly.
          ourTransform.SetTranslation(startVec[0], startVec[1], startVec[2]);
          SetTransform(ourTransform);
-
-         SetEntityType("HoverTarget"); // USED FOR MUNITIONS DAMAGE CLASS
 
          // Make a semi-unique name.
          static int targetCounter = 0;
@@ -116,7 +116,8 @@ namespace DriverDemo
       }
 
       // Create our physics object
-      GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
+      GetTargetPhysicsHelper()->CreateTarget(ourTransform, GetOSGNode());
+      //GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -125,7 +126,7 @@ namespace DriverDemo
       {
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
-         GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
+         //GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
       // LOCAL - Finish initial startup conditions
       else
@@ -138,16 +139,6 @@ namespace DriverDemo
          mGoalLocation[0] += dtUtil::RandFloat(-40.0, 40.0);
          mGoalLocation[1] += dtUtil::RandFloat(-50.0, 50.0);
          mGoalLocation[2] += dtUtil::RandFloat(2.0, 4.0);
-
-
-         // Register a munitions component to the target so it can take damage
-         SimCore::Components::MunitionsComponent* munitionsComp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName
-            (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-         if( munitionsComp != NULL )
-         {
-            munitionsComp->Register(*this);
-         }
       }
 
    }
@@ -210,7 +201,7 @@ namespace DriverDemo
    void HoverExplodingTargetActor::DoExplosion()
    {
       //const osg::Vec3& finalVelocity, const osg::Vec3& location, const dtCore::Transformable* target )
-      printf("Sending DETONATION\r\n");
+      //printf("Sending DETONATION\r\n");
 
       dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
       dtCore::Transform ourTransform;
@@ -267,8 +258,8 @@ namespace DriverDemo
          if (shooterProxy != NULL &&
             (shooterProxy->GetActorType() == *DriverActorRegistry::HOVER_VEHICLE_ACTOR_TYPE))
          {
-            std::cout << "Exploding Target was hit! Going to start chasing player [" <<
-               shooterProxy->GetName() << "]." << std::endl;
+            //std::cout << "Exploding Target was hit! Going to start chasing player [" <<
+            //   shooterProxy->GetName() << "]." << std::endl;
             mPlayerWeAreChasing = dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor *>
                (shooterProxy->GetActor());
 
@@ -289,10 +280,10 @@ namespace DriverDemo
          }
 
          // debugging stuff
-         else if (shooterProxy != NULL)
-            std::cout << "Exploding Target was hit by [" << shooterProxy->GetName() << "]! NO PLAYER TO CHASE." << std::endl;
-         else
-            std::cout << "Exploding Target was hit - NOT BY A BASE PHYSICS OBJECT. " << std::endl;
+         //else if (shooterProxy != NULL)
+         //   std::cout << "Exploding Target was hit by [" << shooterProxy->GetName() << "]! NO PLAYER TO CHASE." << std::endl;
+         //else
+         //   std::cout << "Exploding Target was hit - NOT BY A BASE PHYSICS OBJECT. " << std::endl;
 
       }
 
@@ -323,7 +314,7 @@ namespace DriverDemo
             FindShaderPrototype(newShaderName,GetShaderGroup());
          if (templateShader != NULL)
          {
-            std::cout << " LOADED SHADER [" << newShaderName << "]." << std::endl;
+            //std::cout << " LOADED SHADER [" << newShaderName << "]." << std::endl;
             mCurrentShader = dtCore::ShaderManager::GetInstance().
                AssignShaderFromPrototype(*templateShader, *GetOSGNode());
             //timerParam = dynamic_cast<dtCore::ShaderParamOscillator*> (mCurrentShader->FindParameter("TimeDilation"));
@@ -397,4 +388,4 @@ namespace DriverDemo
    }
 
 } // namespace
-#endif
+//#endif

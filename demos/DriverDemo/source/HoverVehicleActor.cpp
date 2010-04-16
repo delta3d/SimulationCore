@@ -14,11 +14,13 @@
 
 #include "VehicleShield.h"
 
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsmaterials.h>
+//#include <NxAgeiaWorldComponent.h>
+//#include <NxAgeiaRaycastReport.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -54,24 +56,21 @@ namespace DriverDemo
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(false);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       HoverVehiclePhysicsHelper *helper = new HoverVehiclePhysicsHelper(proxy);
-      helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
+
+      SetEntityType("HoverVehicle"); // Used for HLA mapping mostly
+      SetMunitionDamageTableName("VehicleDamageType"); // Used for Munitions Damage.
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    HoverVehicleActor::~HoverVehicleActor(void)
    {
-      //if(mSndBrake.valid())
-      //{
-      //   mSndBrake->Stop();
-      //   RemoveChild(mSndBrake.get());
-      //   mSndBrake.release();
-      //}
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -85,25 +84,14 @@ namespace DriverDemo
       //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
       //std::cout << nodes.c_str() << std::endl;
 
-      //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      //GetHoverPhysicsHelper()->SetLocalOffSet(osg::Vec3(0,0,0));
       dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetMainPhysicsObject();
-
-      if(!IsRemote())
-      {
-         GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
-            dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-         //GetHoverPhysicsHelper()->TurnObjectsGravityOff("Default");
-
-         SetEntityType("HoverTank");
-      }
-      //else // -- Flags set in the base class.
-      //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
+
+      /*
       if(IsRemote() && physActor != NULL)
       {
          GetHoverPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_GET_COLLISION_REPORT |
@@ -112,6 +100,7 @@ namespace DriverDemo
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
          physActor->clearBodyFlag(NX_BF_KINEMATIC);
       }
+      */
 
       // Add the swirly shield to remote vehicles.
       mShield = new VehicleShield();
@@ -140,22 +129,27 @@ namespace DriverDemo
             rsComp->AddDynamicLight(sl);
          }
       }
+
+      /*
+      if(!IsRemote())
+      {
+         // Setup our articulation helper for the vehicle
+         dtCore::RefPtr<SimCore::Components::DefaultFlexibleArticulationHelper> articHelper =
+            new SimCore::Components::DefaultFlexibleArticulationHelper();
+         articHelper->SetEntity(this);
+         SetArticulationHelper(articHelper.get());
+         articHelper->AddArticulation("dof_turret_01",
+            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_HEADING);
+         articHelper->AddArticulation("dof_gun_01",
+            SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
+      }
+      */
+
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::UpdateSoundEffects(float deltaTime)
    {
-      ////////////////////////////////////////////////////////////
-      // do sound here
-      // if the vehicle is moving
-
-      //if(mSndVehicleIdleLoop == NULL)
-      //   return;
-
-      //if(mSndVehicleIdleLoop->IsPlaying() == false)
-      //   mSndVehicleIdleLoop->Play();
-
-
       SimCore::Actors::BasePhysicsVehicleActor::UpdateSoundEffects(deltaTime);
    }
 
@@ -163,33 +157,12 @@ namespace DriverDemo
   ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
    {
-      //osg::ref_ptr<osgSim::DOFTransform> Wheel[4];
-      //osg::ref_ptr<osgSim::DOFTransform> steeringWheel;
-      if(!insideVehicle)
-      {
-         //Wheel[BACK_RIGHT] = GetNodeCollector()->GetDOFTransform("dof_wheel_rt_02");
-      }
-
-      //if(!insideVehicle)
-      //{
-            //osg::Vec3 HPR;
-            //HPR[0] = GetFourWheelPhysicsHelper()->GetWheelShape(i)->getSteerAngle();
-            //   HPR[1] = GetFourWheelPhysicsHelper()->GetAxleRotationOne();
-            //HPR[2] = 0.0f;
-            //Wheel[i]->setCurrentHPR(HPR);
-      //}
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::ResetVehicle()
    {
       SimCore::Actors::BasePhysicsVehicleActor::ResetVehicle();
-
-      //if(mSndIgnition != NULL)
-      //{
-      //   if(!mSndIgnition->IsPlaying())
-      //      mSndIgnition->Play();
-      //}
    }
 
 
@@ -239,15 +212,38 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::RepositionVehicle(float deltaTime)
+   void HoverVehicleActor::PostPhysicsUpdate()
    {
-      // Note - this should be refactored. There should be a base physics vehicle HELPER.
-      // See nxageiaFourWheelActor::RepositionVehicle() for more info.
+      // Mostly copied from BasePhysicsVehicleActor - we do NOT want want our vehicle to 'roll', so we
+      // take the position and throw away the rotation.
 
-      SimCore::Actors::BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
-      //GetFourWheelPhysicsHelper()->RepositionVehicle(deltaTime);
+      // This is ONLY called if we are LOCAL (we put the check here just in case... )
+      if (!IsRemote() && GetPhysicsHelper() != NULL)
+      {
+         // The base behavior is that we want to pull the translation and rotation off the object
+         // in our physics scene and apply it to our 3D object in the visual scene.
+         dtPhysics::PhysicsObject* physicsObject = GetPhysicsHelper()->GetMainPhysicsObject();
+
+         //TODO: Ask if the object is activated.  If not, the transform should not be pushed.
+         if (!GetPushTransformToPhysics())
+         {
+            if(physicsObject != NULL)
+            {
+               // Take rotation from physics and apply to current xform - IE NO ROTATION!
+               dtCore::Transform currentXForm;
+               GetTransform(currentXForm);
+               dtCore::Transform physicsXForm;
+               //physicsObject->GetTransform(physicsXForm);
+               physicsObject->GetTransformAsVisual(physicsXForm);
+               currentXForm.SetTranslation(physicsXForm.GetTranslation());
+               SetTransform(currentXForm);
+               SetPushTransformToPhysics(false);
+            }
+         }
+      }
    }
 
+   /*
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::AgeiaPrePhysicsUpdate()
    {
@@ -276,31 +272,7 @@ namespace DriverDemo
             NxVec3(rot.operator ()(2,0), rot.operator ()(2,1), rot.operator ()(2,2))));
       }
    }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void HoverVehicleActor::AgeiaPostPhysicsUpdate()
-   {
-      // This is ONLY called if we are LOCAL (we put the check here just in case... )
-      if (!IsRemote())
-      {
-         // Pull the position/rotation from the physics scene and put it on our actor in Delta3D.
-         // This allows attached cameras and other visuals to align. It also enables
-         // dead reckoning, which causes our position to be published automatically.
-
-         // For this hover vehicle, we really only want to push our translation, not our rotation.
-         // We want to bounce in place and move as a sphere. But, we don't want the roll.... ugh... seasick ... vomit!
-         dtPhysics::PhysicsObject* physXActor = GetHoverPhysicsHelper()->GetPhysicsObject();
-         if(!physXActor->isSleeping())
-         {
-            dtCore::Transform ourTransform;
-            GetTransform(ourTransform);
-            ourTransform.SetTranslation(physXActor->getGlobalPosition()[0],
-               physXActor->getGlobalPosition()[1], physXActor->getGlobalPosition()[2]);
-            SetTransform(ourTransform);
-         }
-      }
-
-   }
+   */
 
    //////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::OnTickLocal( const dtGame::TickMessage& tickMessage )
@@ -336,26 +308,10 @@ namespace DriverDemo
    void HoverVehicleActorProxy::BuildPropertyMap()
    {
       const std::string VEH_GROUP   = "Vehicle Property Values";
-      const std::string SOUND_GROUP = "Sound Property Values";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
       HoverVehicleActor  &actor = static_cast<HoverVehicleActor &>(GetGameActor());
-
-      //AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-      //   "VEHICLE_INSIDE_MODEL", "VEHICLE_INSIDE_MODEL_PATH", dtDAL::MakeFunctor(actor,
-      //   &HoverVehicleActor::SetVehicleInsideModel),
-      //   "What is the filepath / string of the inside model", VEH_GROUP));
-
-      //AddProperty(new dtDAL::FloatActorProperty("SOUND_BRAKE_SQUEAL_AMOUNT", "How much MPH for Squeal Brake",
-      //   dtDAL::MakeFunctor(actor, &HoverVehicleActor ::SetSound_brake_squeal_amount),
-      //   dtDAL::MakeFunctorRet(actor, &HoverVehicleActor ::GetSound_brake_squeal_amount),
-      //   "How many mph does the car have to go to squeal used with BRAKE_STOP_NOW_BRAKE_TIME", SOUND_GROUP));
-
-      //AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-      //   "SOUND_EFFECT_IGNITION", "SFX Ignition Path", dtDAL::MakeFunctor(actor,
-      //   &HoverVehicleActor::SetSound_effect_ignition),
-      //   "What is the filepath / string of the sound effect", SOUND_GROUP));
 
       AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
          dtDAL::MakeFunctor(actor, &HoverVehicleActor::SetVehicleIsTurret),
@@ -374,10 +330,8 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::OnEnteredWorld()
    {
-      //RegisterForMessages(dtGame::MessageType::INFO_GAME_EVENT);
-
       SimCore::Actors::BasePhysicsVehicleActorProxy::OnEnteredWorld();
    }
 
 } // namespace
-#endif
+//#endif

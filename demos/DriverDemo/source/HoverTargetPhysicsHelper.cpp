@@ -11,28 +11,40 @@
 * @author Curtiss Murphy
 */
 #include <HoverTargetPhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
+//#include <NxAgeiaWorldComponent.h>
+//#include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>
 #include <dtGame/exceptionenum.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/matrixutil.h>
 #include <SimCore/CollisionGroupEnum.h>
-
 #include <SimCore/PhysicsTypes.h>
+#include <dtPhysics/primitivetype.h>
+#include <dtPhysics/palphysicsworld.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+#include <dtPhysics/palphysicsworld.h>
+
 
 namespace DriverDemo
 {
 
    ////////////////////////////////////////////////////////////////////////////////////
    HoverTargetPhysicsHelper::HoverTargetPhysicsHelper(dtGame::GameActorProxy &proxy) :
-      NxAgeiaPhysicsHelper(proxy)
-      , mVehicleBaseWeight(100.0f)
-      , mSphereRadius(1.0f)
+      dtPhysics::PhysicsHelper(proxy)
+      //, mVehicleBaseWeight(100.0f)
+      //, mSphereRadius(1.0f)
       , mGroundClearance(4.0)
    {
       // non properties
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      AddPhysicsObject(*physicsObject);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
+      physicsObject->SetMass(100.0f);
+      physicsObject->SetExtents(osg::Vec3(1.0f, 1.0f, 1.0f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
@@ -50,35 +62,54 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////
    void HoverTargetPhysicsHelper::ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation)
    {
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
-      float weight = GetVehicleBaseWeight();
+      float weight = physicsObject->GetMass();
 
       // First thing we do is try to make sure we are hovering...
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
-      NxVec3 velocity = physicsObject->getLinearVelocity();
-      NxVec3 pos = physicsObject->getGlobalPosition();
-      NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
+      //NxVec3 velocity = physicsObject->getLinearVelocity();
+      //NxVec3 pos = physicsObject->getGlobalPosition();
+      //NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
+      osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
+      osg::Vec3 pos = physicsObject->GetTranslation();
+      osg::Vec3 posLookAhead = pos + velocity * 0.4; // where would our vehicle be in the future?
+      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
 
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
       // massively helps smooth out the bouncyness
-      osg::Vec3 location(pos.x, pos.y, pos.z);
-      osg::Vec3 locationLookAhead(posLookAhead.x, posLookAhead.y, posLookAhead.z);
+      //osg::Vec3 location(pos.x, pos.y, pos.z);
+      //osg::Vec3 locationLookAhead(posLookAhead.x, posLookAhead.y, posLookAhead.z);
+      //osg::Vec3 direction( 0.0f, 0.0f, -1.0f);
+      //float distanceToHit = 0.0;
+      //float futureAdjustment = ComputeEstimatedForceCorrection(locationLookAhead, direction, distanceToHit);
+      //float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
       osg::Vec3 direction( 0.0f, 0.0f, -1.0f);
       float distanceToHit = 0.0;
-      float futureAdjustment = ComputeEstimatedForceCorrection(locationLookAhead, direction, distanceToHit);
-      float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
+      float futureAdjustment = ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
+      float currentAdjustment = ComputeEstimatedForceCorrection(pos, direction, distanceToHit);
 
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
-      float finalAdjustment = currentAdjustment * 0.85 + futureAdjustment * 0.15;
-      NxVec3 dir(0.0, 0.0, 1.0);
-      physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
+      //float finalAdjustment = currentAdjustment * 0.85 + futureAdjustment * 0.15;
+      //NxVec3 dir(0.0, 0.0, 1.0);
+      //physicsObject->addForce(dir * (weight * finalAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
+      // modulate how we correct and other stuff, so that our vehicle
+      // behaves differently as we move faster. It also gives a little downward dip as we speed up
+      float modulation = 0.15;
+      // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
+      // Use current position and estimated future position to help smooth out the force.
+      float finalAdjustment = currentAdjustment * (1.0f - modulation) + futureAdjustment * (modulation);
+      float upForce = weight * finalAdjustment;// * deltaTime;
+      osg::Vec3 dir(0.0, 0.0, 1.0);
+      physicsObject->ApplyImpulse(dir * upForce * deltaTime);
+
+
 
       // Now, figure out how to move our target toward our goal. We want it to sort of oscillate a bit,
       // so we play with the forces a tad.
-      osg::Vec3 targetVector =  goalLocation - location;
-      osg::Vec3 targetVectorLookAhead = goalLocation - locationLookAhead;
+      osg::Vec3 targetVector =  goalLocation - pos;
+      osg::Vec3 targetVectorLookAhead = goalLocation - posLookAhead;
       float distanceAway = targetVector.length() * 0.4 + targetVectorLookAhead.length() * 0.6;
       float distanceAwayPercent = (distanceAway) / mGroundClearance;
       float forceAdjustment = dtUtil::Min(10.0f, distanceAwayPercent);
@@ -86,8 +117,10 @@ namespace DriverDemo
       targetVector[2] = 0.01; // cancel out the z - that's up above.
       targetVector[1] += dtUtil::RandFloat(0.0, 0.15); // cause minor fluctuations
       targetVector[0] += dtUtil::RandFloat(0.0, 0.15); // cause minor fluctuations
-      NxVec3 hoverDir(targetVector[0], targetVector[1], targetVector[2]);
-      physicsObject->addForce(hoverDir * (weight * forceAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
+      //NxVec3 hoverDir(targetVector[0], targetVector[1], targetVector[2]);
+      //physicsObject->addForce(hoverDir * (weight * forceAdjustment * deltaTime), NX_SMOOTH_IMPULSE);
+      osg::Vec3 hoverDir(targetVector[0], targetVector[1], targetVector[2]);
+      physicsObject->ApplyImpulse(hoverDir * weight * forceAdjustment * deltaTime);
 
    }
 
@@ -96,10 +129,12 @@ namespace DriverDemo
       const osg::Vec3 &direction, float &distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
-      float estimatedForceAdjustment = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z; // gravity
+      float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z();
       osg::Vec3 terrainHitLocation;
 
-      distanceToHit = GetClosestIntersectionUsingDirection(location,
+      //distanceToHit = GetClosestIntersectionUsingDirection(location,
+      //   direction, terrainHitLocation, GROUPS_FLAGS);
+      distanceToHit = TraceRay(location,
          direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
@@ -128,8 +163,16 @@ namespace DriverDemo
    //////////////////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////////
-   bool HoverTargetPhysicsHelper::CreateTarget(osg::Vec3 &startVec, bool isRemote)
+   //bool HoverTargetPhysicsHelper::CreateTarget(osg::Vec3 &startVec, bool isRemote)
+   bool HoverTargetPhysicsHelper::CreateTarget(const dtCore::Transform& transformForRot,
+      osg::Node* bodyNode)
    {
+      dtPhysics::PhysicsObject *physObj = GetMainPhysicsObject();
+      physObj->CreateFromProperties(bodyNode);
+      physObj->SetTransform(transformForRot);
+      physObj->SetActive(true);
+
+      /*
       // Create our Physics Sphere!
       NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
       SetCollisionSphere(startPos, mSphereRadius, 0, mVehicleBaseWeight, 0, "Default", "Default", false);
@@ -158,6 +201,7 @@ namespace DriverDemo
       //else // -- Flags set in the base class.
       //GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
 
+      */
 
       return true;
    }
@@ -169,10 +213,11 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverTargetPhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
    {
-      NxAgeiaPhysicsHelper::BuildPropertyMap(toFillIn);
+      dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
 
       const std::string& GROUP = "Vehicle Property Values";
 
+      /*
       toFillIn.push_back(new dtDAL::FloatActorProperty("BaseWeight", "BaseWeight",
          dtDAL::MakeFunctor(*this, &HoverTargetPhysicsHelper::SetVehicleBaseWeight),
          dtDAL::MakeFunctorRet(*this, &HoverTargetPhysicsHelper::GetVehicleBaseWeight),
@@ -182,6 +227,7 @@ namespace DriverDemo
          dtDAL::MakeFunctor(*this, &HoverTargetPhysicsHelper::SetSphereRadius),
          dtDAL::MakeFunctorRet(*this, &HoverTargetPhysicsHelper::GetSphereRadius),
          "The radius of the hover sphere.", GROUP));
+         */
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
          dtDAL::MakeFunctor(*this, &HoverTargetPhysicsHelper::SetGroundClearance),

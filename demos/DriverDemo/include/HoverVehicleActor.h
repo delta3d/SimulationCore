@@ -22,7 +22,7 @@
 *
 * @author Curtiss Murphy
 */
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #ifndef _HOVER_VEHICLE_ACTOR_
 #define _HOVER_VEHICLE_ACTOR_
 
@@ -69,20 +69,7 @@ namespace DriverDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-         //   dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
-
-         // You would have to make a new raycast to get this report,
-         // so no flag associated with it.
-         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
-         //   const dtPhysics::PhysicsObject& whatWeHit){}
-
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         virtual void AgeiaPrePhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         virtual void AgeiaPostPhysicsUpdate();
+         virtual void PostPhysicsUpdate();
 
          virtual void OnTickLocal( const dtGame::TickMessage& tickMessage );
          virtual void OnTickRemote( const dtGame::TickMessage& tickMessage );
@@ -94,18 +81,12 @@ namespace DriverDemo
          /// Reset to starting position In additional to base behavior, it turns off sounds.
          virtual void ResetVehicle();
 
-         /// Turns it up and moves up
-         //void RepositionVehicle(float deltaTime);
-
          HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
             return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
 
          //void SetSound_effect_collision_hit(const std::string& value){SOUND_EFFECT_COLLISION_HIT=value;}
          //void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
          //const std::string& GetSound_effect_collision_hit(){return SOUND_EFFECT_COLLISION_HIT;}
-
-         /// Turns it up and moves up
-         virtual void RepositionVehicle(float deltaTime);
 
          /// These methods are kind of odd. Some vehicles have a distinct turret (no up/down, just rotate) that is
          /// separate from the vehicle. On others, the turret is hard attached to the vehicle.
@@ -165,4 +146,4 @@ namespace DriverDemo
 }
 
 #endif
-#endif
+//#endif

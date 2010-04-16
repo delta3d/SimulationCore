@@ -342,7 +342,7 @@ namespace SimCore
             }
             else
             {
-               LOG_ALWAYS("Got a valid PlayerEnteredWorld with id: " + msg.GetAboutActorId().ToString());
+               LOG_INFO("Got a valid PlayerEnteredWorld with id: " + msg.GetAboutActorId().ToString());
 
                //Need to set the player on the dead reckoning component
                //so that it can use it for the LOD eye point for ground clamping
@@ -354,7 +354,7 @@ namespace SimCore
 
                if (drComp != NULL)
                {
-                  LOG_ALWAYS("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());
+                  LOG_INFO("Setting eye point on Dead Reckoning Component to the Player Actor: " + msg.GetAboutActorId().ToString());
                   drComp->SetEyePointActor(mPlayer.get());
                }
 

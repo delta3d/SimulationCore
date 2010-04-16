@@ -14,12 +14,13 @@
 #include <DriverActorRegistry.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #include <HoverVehicleActor.h>
 #include <HoverTargetActor.h>
 #include <HoverExplodingTargetActor.h>
-#include <NxAgeiaWorldComponent.h>
-#endif
+#include <dtPhysics/physicshelper.h>
+//#include <NxAgeiaWorldComponent.h>
+//#endif
 
 #include <dtCore/shadermanager.h>
 #include <dtCore/scene.h>

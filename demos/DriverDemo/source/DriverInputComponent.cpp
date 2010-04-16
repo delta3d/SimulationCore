@@ -46,7 +46,6 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/VehicleInterface.h>
-//#include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/VehicleAttachingConfigActor.h>
 #include <SimCore/Actors/ControlStateActor.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
@@ -55,15 +54,14 @@
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/CommandLineObject.h>
 #include <SimCore/ClampedMotionModel.h>
-//#include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
-//#include <SimCore/PlayerMotionModel.h>
 #include <SimCore/WeaponTypeEnum.h>
 #include <SimCore/Tools/Tool.h>
+#include <SimCore/Utilities.h>
 
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/deadreckoninghelper.h>
@@ -80,16 +78,15 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/message.h>
 
+#include <iostream>
 
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-//#include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
+//#ifdef AGEIA_PHYSICS
+#include <dtPhysics/physicscomponent.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
-#include <SimCore/Actors/NECCBoatActor.h>
 #include <SimCore/Actors/HumanWithPhysicsActor.h>
 #include <dtDAL/project.h>
-#endif
+//#endif
 
 // TEST INCLUDES --- START
 #include <dtDAL/groupactorproperty.h>
@@ -264,14 +261,6 @@ namespace DriverDemo
                articHelper->SetEntity( vehicle );
                vehicle->SetArticulationHelper( articHelper.get() );
 
-               // Register a munitions component to the vehicle
-               SimCore::Components::MunitionsComponent* munitionsComp;
-               gameManager.GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-               if( munitionsComp != NULL )
-               {
-                  munitionsComp->Register( *vehicle );
-               }
-
                // This method does all the cool stuff!!!
                AttachToVehicle(*vehicle);
             }
@@ -422,6 +411,20 @@ namespace DriverDemo
                ToggleEntityShaders();
          }
          break;
+
+         case 'P':
+            {
+               if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
+               {
+                  dtPhysics::PhysicsComponent* physicsComponent = NULL;
+                  GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
+                  if (physicsComponent != NULL)
+                  {
+                     physicsComponent->SetNextDebugDrawMode();
+                  }
+               }
+            }
+            break;
 
          case 'o':
          {
@@ -886,10 +889,10 @@ namespace DriverDemo
 
       SetViewMode();
 
-      dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
-      std::string nodes = nodePrinter->CollectNodeData(*vehicle.GetNonDamagedFileNode());
-      std::cout << " --------- NODE PRINT OUT FOR VEHICLE --------- " << std::endl;
-      std::cout << nodes.c_str() << std::endl;
+      //dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
+      //std::string nodes = nodePrinter->CollectNodeData(*vehicle.GetNonDamagedFileNode());
+      //std::cout << " --------- NODE PRINT OUT FOR VEHICLE --------- " << std::endl;
+      //std::cout << nodes.c_str() << std::endl;
 
 
    }

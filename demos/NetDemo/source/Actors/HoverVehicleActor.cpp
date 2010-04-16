@@ -78,19 +78,14 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
-      std::string nodes = nodePrinter->CollectNodeData(*GetNonDamagedFileNode());
-      std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
-      std::cout << nodes.c_str() << std::endl;
+      //dtCore::RefPtr<dtUtil::NodePrintOut> nodePrinter = new dtUtil::NodePrintOut();
+      //std::string nodes = nodePrinter->CollectNodeData(*GetNonDamagedFileNode());
+      //std::cout << " --------- NODE PRINT OUT FOR HOVER VEHICLE --------- " << std::endl;
+      //std::cout << nodes.c_str() << std::endl;
 
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
       //dtPhysics::PhysicsObject *physObj = GetHoverPhysicsHelper()->GetMainPhysicsObject();
-
-      if(!IsRemote())
-      {
-         //SetEntityType("HoverTank");
-      }
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -201,8 +196,6 @@ namespace NetDemo
       }
    }
 
-   // NOTE - Ifdef Ageia and put the pre and post update back.
-
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActor::PostPhysicsUpdate()
    {
@@ -225,7 +218,8 @@ namespace NetDemo
                dtCore::Transform currentXForm;
                GetTransform(currentXForm);
                dtCore::Transform physicsXForm;
-               physicsObject->GetTransform(physicsXForm);
+               //physicsObject->GetTransform(physicsXForm);
+               physicsObject->GetTransformAsVisual(physicsXForm);
                currentXForm.SetTranslation(physicsXForm.GetTranslation());
                SetTransform(currentXForm);
                SetPushTransformToPhysics(false);

@@ -506,7 +506,7 @@ namespace SimCore
             {
                mNumNodesLoaded = 0;
                mNumVertsLoaded = 0;
-               LOG_ALWAYS("Starting to load physics geometry for terrain.");
+               LOG_INFO("Starting to load physics geometry for terrain.");
 
                // For each geode it finds, it calls AddTerrainGeode();
                GeodeTriangleVisitor geodeVisitor(*this, nameOfNode);
@@ -515,7 +515,7 @@ namespace SimCore
                std::string numNodesString, numVertsString;
                dtUtil::MakeIndexString(mNumNodesLoaded, numNodesString);
                dtUtil::MakeIndexString(mNumVertsLoaded, numVertsString);
-               LOG_ALWAYS("Finished loading physics geometry. Found [" + numNodesString + "] nodes with [" + numVertsString + "] verts.");
+               LOG_INFO("Finished loading physics geometry. Found [" + numNodesString + "] nodes with [" + numVertsString + "] verts.");
                return NULL;
             }
             else

@@ -33,6 +33,7 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/WeaponActor.h>
+#include <dtCore/refptr.h>
 
 namespace dtAudio
 {

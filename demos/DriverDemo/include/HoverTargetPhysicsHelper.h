@@ -26,15 +26,16 @@
 #define _HOVER_TARGET_PHYSICS_HELPER_
 
 #include <DriverExport.h>
-//#include <Vehicles/NxWheelDesc.h>
-#include <NxAgeiaPhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
+#include <dtPhysics/physicshelper.h>
+//#include <NxAgeiaPhysicsHelper.h>
+//#include <NxAgeiaWorldComponent.h>
+#include <SimCore/PhysicsTypes.h>
 #include <osgSim/DOFTransform>
 
 namespace DriverDemo
 {
    //#define NUM_BRAKE_LEVELS_FOR_TABLE 10
-   class DRIVER_DEMO_EXPORT HoverTargetPhysicsHelper : public dtAgeiaPhysX::NxAgeiaPhysicsHelper
+   class DRIVER_DEMO_EXPORT HoverTargetPhysicsHelper : public dtPhysics::PhysicsHelper
    {
       public:
          HoverTargetPhysicsHelper(dtGame::GameActorProxy &proxy);
@@ -47,31 +48,17 @@ namespace DriverDemo
 
          //////////////////////////////////
          // Properties
-         //float  mVehicleMaxForwardMPH;  /// The max mph you want your vehicle to have - conceptual, not actual. Multiplied times mForceBoostFactor
-         //float  mVehicleMaxStrafeMPH;   /// The max reverse mph you can go - conceptual, not actual. Multiplied times mForceBoostFactor
-         float  mVehicleBaseWeight;     /// How much does the vehicle weight
-         float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
          float  mGroundClearance;       /// How far above the ground we should be.
-         //float  mForceBoostFactor;      /// Force boost factor is multiplied time max speeds to determine impulse force
 
       public:
 
          float GetCurentMPH();
 
-         /// Turns it up and moves up
-         //void RepositionVehicle(float deltaTime);
-
-         /**
-          * Call this method each frame from your actor after you have determined which direction to accelerate. 
-          * Note, the method may not correct you if you say you accelerated forward and back, left and right 
-          * at the same time - if it does check, left wins over right & forward wins over reverse.
-          */
-         //void UpdateVehicle(float deltaTime, bool accelForward, bool accelReverse, bool accelLeft, bool accelRight);
-
          /**
           * /brief Purpose : To create the target's physics structure
           */ 
-         bool CreateTarget(osg::Vec3 &startVec, bool isRemote); 
+         //bool CreateTarget(osg::Vec3 &startVec, bool isRemote); 
+         bool CreateTarget(const dtCore::Transform& transformForRot, osg::Node* bodyNode);
 
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
             const osg::Vec3 &direction, float &distanceToHit);
@@ -86,23 +73,18 @@ namespace DriverDemo
          // Build the property list for the actor
          virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-         //float GetVehicleMaxForwardMPH() {return mVehicleMaxForwardMPH;}            
-         //void SetVehicleMaxForwardMPH(float value) {mVehicleMaxForwardMPH = value;}            
-
-         //float GetVehicleMaxStrafeMPH() {return mVehicleMaxStrafeMPH;}     
-         //void SetVehicleMaxStrafeMPH(float value)  {mVehicleMaxStrafeMPH = value;}     
-
-         float GetVehicleBaseWeight() {return mVehicleBaseWeight;}        
-         void SetVehicleBaseWeight(float value)  {mVehicleBaseWeight = value;}        
-
-         float GetSphereRadius() {return mSphereRadius;}        
-         void SetSphereRadius(float value)  {mSphereRadius = value;}        
+         float GetSphereRadius() 
+         {
+            dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
+            if (physicsObject != NULL)
+               return physicsObject->GetExtents().x();
+            else 
+               return 0.0;
+         }
 
          float GetGroundClearance() {return mGroundClearance;}        
          void SetGroundClearance(float value)  {mGroundClearance = value;}        
 
-         //float GetForceBoostFactor() {return mForceBoostFactor;}        
-         //void SetForceBoostFactor(float value)  {mForceBoostFactor = value;}        
    };
 }
 

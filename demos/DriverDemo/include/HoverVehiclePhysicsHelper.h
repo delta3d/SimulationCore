@@ -26,16 +26,16 @@
 #define _HOVER_VEHICLE_PHYSICS_HELPER_
 
 #include <DriverExport.h>
-//#include <Vehicles/NxWheelDesc.h>
-#include <NxAgeiaPhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
+#include <dtPhysics/physicshelper.h>
+//#include <NxAgeiaPhysicsHelper.h>
+//#include <NxAgeiaWorldComponent.h>
 #include <SimCore/PhysicsTypes.h>
 #include <osgSim/DOFTransform>
 
 namespace DriverDemo
 {
    //#define NUM_BRAKE_LEVELS_FOR_TABLE 10
-   class DRIVER_DEMO_EXPORT HoverVehiclePhysicsHelper : public dtAgeiaPhysX::NxAgeiaPhysicsHelper
+   class DRIVER_DEMO_EXPORT HoverVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
    {
       public:
          HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
@@ -93,11 +93,14 @@ namespace DriverDemo
          float GetVehicleMaxStrafeMPH() {return mVehicleMaxStrafeMPH;}
          void SetVehicleMaxStrafeMPH(float value)  {mVehicleMaxStrafeMPH = value;}
 
-         float GetVehicleBaseWeight() {return mVehicleBaseWeight;}
-         void SetVehicleBaseWeight(float value)  {mVehicleBaseWeight = value;}
-
-         float GetSphereRadius() {return mSphereRadius;}
-         void SetSphereRadius(float value)  {mSphereRadius = value;}
+         float GetSphereRadius() 
+         {
+            dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
+            if (physicsObject != NULL)
+               return physicsObject->GetExtents().x();
+            else 
+               return 0.0;
+         }
 
          float GetGroundClearance() {return mGroundClearance;}
          void SetGroundClearance(float value)  {mGroundClearance = value;}

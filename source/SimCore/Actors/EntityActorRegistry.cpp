@@ -129,7 +129,7 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PHYSICS_MUNITIONS_PARTICLE_SYSTEM_TYPE(new dtDAL::ActorType("MunitionParticles", "Effects"));
 
       // needs to be implemented whether or not physics is on.
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("joe", "Terrain"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("PagedTerrainPhysicsActor", "Terrain"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(

@@ -40,6 +40,8 @@
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/PhysicsTypes.h>
 
+#include <dtPhysics/physicscomponent.h>
+
 #include <DriverInputComponent.h>
 ///////////////////////////////////
 
@@ -75,12 +77,6 @@ namespace DriverDemo
    DriverGameEntryPoint::~DriverGameEntryPoint()
    {
    }
-
-   ///////////////////////////////////////////////////////////////////////////
-   /*dtCore::ObserverPtr<dtGame::GameManager> DriverGameEntryPoint::CreateGameManager(dtCore::Scene& scene)
-   {
-      return BaseClass::CreateGameManager(scene);
-   }*/
 
    ///////////////////////////////////////////////////////////////////////////
    void DriverGameEntryPoint::Initialize(dtGame::GameApplication& app, int argc, char **argv)
@@ -129,8 +125,6 @@ namespace DriverDemo
       // initialize our guy / stealth actor
       gameAppComponent->InitializePlayer();
 
-      // Initialize tools and add them to the input component and the HUD toolbar
-      gameAppComponent->InitializeTools();
    }
 
    ///////////////////////////////////////////////////////////////////////////
@@ -154,41 +148,30 @@ namespace DriverDemo
       }
 
 
-#ifdef AGEIA_PHYSICS
-      ////////////////////////////////////////////////////////////////////////
-      // Initialize the ageia component
-      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent
-         = new dtPhysics::PhysicsComponent();
+      ////////////////////////////////////////////////////////////////
+      // PHYSICS
+      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(gm.GetConfiguration());
+      world->Init();
+      dtCore::RefPtr<dtPhysics::PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
       gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-
-      // Configure the Ageia Component
-      NxScene& nxScene = physicsComponent->GetPhysicsScene(std::string("Default"));
-
-      nxScene.setActorGroupPairFlags(GROUP_HUMAN_LOCAL, GROUP_TERRAIN,
-         NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
-
+      SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
+      // OLD - Physics collision group pairings. 
+      //nxScene.setActorGroupPairFlags(GROUP_HUMAN_LOCAL, GROUP_TERRAIN,
+      //   NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
       // contact reports
       // We really only care about the world and the world
-      nxScene.setActorGroupPairFlags(GROUP_TERRAIN, GROUP_TERRAIN,
-         NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
+      //nxScene.setActorGroupPairFlags(GROUP_TERRAIN, GROUP_TERRAIN,
+      //   NX_NOTIFY_ON_START_TOUCH | NX_NOTIFY_ON_TOUCH | NX_NOTIFY_ON_END_TOUCH);
 
-      ////////////////////////////////////////////////////////////////////////
-#else
-      dtCore::RefPtr<dtPhysics::PhysicsWorld> world = new dtPhysics::PhysicsWorld(dtPhysics::PhysicsWorld::BULLET_ENGINE);
-      world->Init();
-      dtCore::RefPtr<dtPhysics:PhysicsComponent> physicsComponent = new dtPhysics::PhysicsComponent(*world, false);
-      gm.AddComponent(*physicsComponent, dtGame::GameManager::ComponentPriority::NORMAL);
-#endif
 
-      SimCore::CollisionGroup::SetupDefaultGroupCollisions(*physicsComponent);
-
-      ////////////////////////////////////////////////////////////////////////
-      // rendering support component - terrain tiling atm, dynamic lights, etc...
+      // Rendering Support - Gives us lighting, sets up our viewmatrix, and other stuff.
+      // We disable the physics cull visitor (which is for large tiled terrains like Terrex)
+      // and also enable the static terrain physics (because it's loaded once). 
       dtCore::RefPtr<SimCore::Components::RenderingSupportComponent> renderingSupportComponent
          = new SimCore::Components::RenderingSupportComponent();
-      //the cull visitor must be enabled before we add the rendering support component
-      //doing this will swap out the original cullvisitor with our own that adds Ageia physics support
-      renderingSupportComponent->SetEnableCullVisitor(true);
+      renderingSupportComponent->SetEnableCullVisitor(false);
+      renderingSupportComponent->SetMaxSpotLights(1);
+      renderingSupportComponent->SetEnableStaticTerrainPhysics(true);
       gm.AddComponent(*renderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 
 
@@ -201,21 +184,6 @@ namespace DriverDemo
       ////////////////////////////////////////////////////////////////////////
       // init the input component with what it needs
       dtCore::RefPtr<DriverInputComponent> mInputComponent = new DriverInputComponent("Input Component");
-
-      // Set the starting Position. // NOTE - I'm pretty sure this code is now obsolete - CMM
-      const dtDAL::NamedVec3fParameter* param =
-         dynamic_cast<const dtDAL::NamedVec3fParameter*>(commandLineObject->GetParameter(GameAppComponent::CMD_LINE_STARTING_POSITION));
-      if(param != NULL)
-      {
-         // Set the starting position only if the position is not the origin,
-         // which is currently at empty space. osg::Vec3 startingPosition;
-         osg::Vec3 startingPosition = param->GetValue();
-         if( startingPosition.length2() > 0 )
-         {
-            mInputComponent->SetStartPosition( startingPosition );
-         }
-      }
-
       gm.AddComponent(*mInputComponent, dtGame::GameManager::ComponentPriority::NORMAL);
       //mInputComponent->SetListeners();
       dtCore::Camera* camera = gm.GetApplication().GetCamera();
@@ -234,12 +202,7 @@ namespace DriverDemo
       dtCore::RefPtr<DriverHUD> mHudGUI = new DriverHUD(gm.GetApplication().GetWindow());
       gm.AddComponent(*mHudGUI, dtGame::GameManager::ComponentPriority::NORMAL);
       mHudGUI->Initialize();
-      //if(callsignName == NULL)
-         mHudGUI->SetCallSign( "NoCallSignSet" );
-      //else
-      //{
-      //   mHudGUI->SetCallSign( callsignName->GetValue() );
-      //}
+      mHudGUI->SetCallSign( "NoCallSignSet" );
 
       ////////////////////////////////////////////////////////////////////////
       // Disable the weather component's ability to change the clipping planes.
