@@ -26,6 +26,11 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="ProjectPath">C:\Curtiss\Projects\Delta3D\SimulationCore\demos\ProjectAssets</Property>
       <Property Name="dtPhysics.PhysicsEngine">Bullet</Property> <!-- Bullet Novodex ODE -->
        <Property Name="dtPhysics.PalPluginPath">C:\Curtiss\Projects\Delta3D\dtPhysics\ext\PalPlugins\</Property>
+      <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
+      <Property Name="dtPhysics.NumProcessingElements">1</Property>
+      <Property Name="dtPhysics.SolverIterationCount">10</Property>
+      <Property Name="dtPhysics.TicksPerSecond">120</Property>
+      <Property Name="dtPhysics.DebugDrawRange">500.0</Property>
 
        <Property Name="MunitionsConfigFile">Configs:NetDemoMunitionsConfig.xml</Property>
       <Property Name="AdditionalMap1">DriverActors</Property> 

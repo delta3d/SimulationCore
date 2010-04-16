@@ -11,14 +11,23 @@
 * @author Curtiss Murphy
 */
 #include <HoverVehiclePhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
+//#include <NxAgeiaWorldComponent.h>
+//#include <NxAgeiaRaycastReport.h>
 #include <osg/MatrixTransform>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
 #include <SimCore/CollisionGroupEnum.h>
 #include <dtUtil/matrixutil.h>
-
+#include <SimCore/CollisionGroupEnum.h>
+#include <dtPhysics/primitivetype.h>
+#include <dtPhysics/palphysicsworld.h>
+#include <dtPhysics/physicshelper.h>
+#include <dtPhysics/physicsobject.h>
+#include <dtPhysics/bodywrapper.h>
+#include <dtPhysics/palphysicsworld.h>
+#include <dtPhysics/physicsmaterials.h>
+#include <osg/Vec3>
+#include <dtGame/gameactor.h>
 
 
 namespace DriverDemo
@@ -28,41 +37,25 @@ namespace DriverDemo
 
    ////////////////////////////////////////////////////////////////////////////////////
    HoverVehiclePhysicsHelper::HoverVehiclePhysicsHelper(dtGame::GameActorProxy &proxy) :
-      NxAgeiaPhysicsHelper(proxy)
+      dtPhysics::PhysicsHelper(proxy)
       , mVehicleMaxForwardMPH(120.0f)
       , mVehicleMaxStrafeMPH(40.0f)
-      , mVehicleBaseWeight(1000.0f)
-      , mSphereRadius(1.5f)
+      //, mSphereRadius(1.5f)
       , mGroundClearance(0.5)
       , mForceBoostFactor(0.25)
    {
       // non properties
-
+      dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
+      AddPhysicsObject(*physicsObject);
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::SPHERE);
+      physicsObject->SetMass(1000.0f);
+      physicsObject->SetExtents(osg::Vec3(1.5f, 1.5f, 1.5f));
+      physicsObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
 
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
    HoverVehiclePhysicsHelper::~HoverVehiclePhysicsHelper(){}
-
-   //??? Curt What the heck???
-   /*
-   ///////////////////////////////////////////////////////////////////////////////////
-   void FindMatrix(osg::Node* node, osg::Matrix& wcMatrix)
-   {
-      osg::NodePathList nodePathList = node->getParentalNodePaths();
-      if( !nodePathList.empty() )
-      {
-         osg::NodePath nodePath = nodePathList[0];
-
-         if( std::string( nodePath[0]->className() ) == std::string("CameraNode") )
-         {
-            nodePath = osg::NodePath( nodePath.begin()+1, nodePath.end() );
-         }
-
-         wcMatrix.set( osg::computeLocalToWorld(nodePath) );
-      }
-   }
-   */
 
    //////////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Meths                                   //
@@ -72,17 +65,17 @@ namespace DriverDemo
    // made into properties on the actor.
    static float testCorrection = 0.01f;
    //static float testForceBoost = 0.25f;
-   static float testJumpBoost = 2.3 * -dtAgeiaPhysX::DEFAULT_GRAVITY_Z;
+   static float testJumpBoost = 2.3 * -dtPhysics::DEFAULT_GRAVITY_Z;
    static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::DoJump(float deltaTime)
    {
-      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
-      float weight = GetVehicleBaseWeight();
-      NxVec3 dir(0.0, 0.0, 1.0);
-      physicsObject->addForce(dir * (weight * testJumpBoost), NX_SMOOTH_IMPULSE);
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
 
+      float weight = physicsObject->GetMass();
+      osg::Vec3 dir(0.0, 0.0, 1.0);
+      physicsObject->ApplyImpulse(dir * weight * testJumpBoost);
    }
 
    ////////////////////////////////////////////////////////////////////////////////////
@@ -90,34 +83,35 @@ namespace DriverDemo
       bool accelForward, bool accelReverse, bool accelLeft, bool accelRight)
    {
       deltaTime = (deltaTime > 0.2) ? 0.2 : deltaTime;  // cap at 0.2 second to avoid rare 'freak' outs.
-      float weight = GetVehicleBaseWeight();
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();  // Tick Local protects us from NULL.
+      float weight = physicsObject->GetMass();
 
       // First thing we do is try to make sure we are hovering...
-      dtPhysics::PhysicsObject* physicsObject = GetPhysicsObject();  // Tick Local protects us from NULL.
-      NxVec3 velocity = physicsObject->getLinearVelocity();
-      NxVec3 pos = physicsObject->getGlobalPosition();
-      NxVec3 posLookAhead = pos + velocity * 0.5; // where would our vehicle be in .5 seconds?
+      osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
+      osg::Vec3 pos = physicsObject->GetTranslation();
+      osg::Vec3 posLookAhead = pos + velocity * 0.4; // where would our vehicle be in the future?
+      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position
       // massively helps smooth out the bouncyness
-      osg::Vec3 location(pos.x, pos.y, pos.z);
-      osg::Vec3 locationLookAhead(posLookAhead.x, posLookAhead.y, posLookAhead.z);
       osg::Vec3 direction( 0.0f, 0.0f, -1.0f);
       float distanceToHit = 0.0;
-      float futureAdjustment = ComputeEstimatedForceCorrection(locationLookAhead, direction, distanceToHit);
-      float currentAdjustment = ComputeEstimatedForceCorrection(location, direction, distanceToHit);
+      float futureAdjustment = ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
+      float currentAdjustment = ComputeEstimatedForceCorrection(pos, direction, distanceToHit);
 
+      // modulate how we correct and other stuff, so that our vehicle
+      // behaves differently as we move faster. It also gives a little downward dip as we speed up
+      float modulation = 0.05;
       // Add an 'up' impulse based on the weight of the vehicle, our current time slice, and the adjustment.
       // Use current position and estimated future position to help smooth out the force.
-      float finalAdjustment = currentAdjustment * 0.95 + futureAdjustment * 0.05;
-      NxVec3 dir(0.0, 0.0, 1.0);
-      float upForce = weight * finalAdjustment * deltaTime;
-      //std::cout << " **** Up Force [" << upForce << "]." << std::endl;
-      physicsObject->addForce(dir * (upForce), NX_SMOOTH_IMPULSE);
+      float finalAdjustment = currentAdjustment * (1.0f - modulation) + futureAdjustment * (modulation);
+      float upForce = weight * finalAdjustment;// * deltaTime;
+      osg::Vec3 dir(0.0, 0.0, 1.0);
+      physicsObject->ApplyImpulse(dir * upForce * deltaTime);
 
       // Get the forward vector and the perpendicular side (right) vector.
       dtGame::GameActor* actor = NULL;
-      GetPhysicsGameActorProxy().GetActor( actor );
+      GetGameActorProxy()->GetActor( actor );
       osg::Matrix matrix;
       dtCore::Transformable::GetAbsoluteMatrix( actor->GetOSGNode(), matrix);
       osg::Vec3 lookDir = dtUtil::MatrixUtil::GetRow3(matrix, 1);
@@ -134,32 +128,27 @@ namespace DriverDemo
       // FORWARD
       if(accelForward)
       {
-         NxVec3 dir(lookDir[0], lookDir[1], lookDir[2]);
-         physicsObject->addForce(dir * (weight * speedModifier * deltaTime), NX_SMOOTH_IMPULSE);
+         physicsObject->AddForce(lookDir * (weight * speedModifier));
       }
       // REVERSE
       else if(accelReverse)
       {
-         NxVec3 dir(-lookDir[0], -lookDir[1], -lookDir[2]);
-         physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
+         physicsObject->AddForce(-lookDir * (weight * strafeModifier));
       }
 
       // LEFT
       if(accelLeft)
       {
-         NxVec3 dir(-rightDir[0], -rightDir[1], -rightDir[2]);
-         physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
+         physicsObject->AddForce(-rightDir * (weight * strafeModifier));
       }
       // RIGHT
       else if(accelRight)
       {
-         NxVec3 dir(rightDir[0], rightDir[1], rightDir[2]);
-         physicsObject->addForce(dir * (weight * strafeModifier * deltaTime), NX_SMOOTH_IMPULSE);
+         physicsObject->AddForce(rightDir * (weight * strafeModifier));
       }
 
       // Apply a 'wind' resistance force based on velocity. This is what causes you to slow down and
       // prevents you from achieving unheard of velocities.
-      float speed = dtUtil::Min(velocity.magnitude(), 300.0f);  // cap for silly values - probably init values
       if(speed > 0.001)
       {
          float windResistance = testQuicknessAdjustment * speed * testCorrection;
@@ -177,7 +166,8 @@ namespace DriverDemo
          }
 
          // Slow us down! Wind or coast effect
-         physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
+         //physicsObject->addForce(-velocity * (weight * windResistance * deltaTime), NX_SMOOTH_IMPULSE);
+         physicsObject->AddForce(-velocity * (weight * windResistance));
       }
 
       // TEST HACK STUFF
@@ -211,11 +201,10 @@ namespace DriverDemo
       const osg::Vec3 &direction, float &distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
-      float estimatedForceAdjustment = -dtAgeiaPhysX::DEFAULT_GRAVITY_Z; // gravity
+      float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z();
       osg::Vec3 terrainHitLocation;
 
-      distanceToHit = GetClosestIntersectionUsingDirection(location,
-         direction, terrainHitLocation, GROUPS_FLAGS);
+      distanceToHit = TraceRay(location, direction, terrainHitLocation, GROUPS_FLAGS);
 
       if (distanceToHit > 0.0f)
       {
@@ -246,18 +235,29 @@ namespace DriverDemo
    bool HoverVehiclePhysicsHelper::CreateVehicle(const dtCore::Transform& transformForRot,
       osgSim::DOFTransform* bodyNode)
    {
-      // Create our vehicle with a starting position
-      osg::Vec3 startVec = GetVehicleStartingPosition();
-      NxVec3 startPos(startVec[0], startVec[1],startVec[2]);
-      SetCollisionSphere(startPos, GetSphereRadius(), 0,
-         mVehicleBaseWeight, 0, "Default", "Default", false);
+      dtPhysics::PhysicsObject *physObj = GetMainPhysicsObject();
+      physObj->CreateFromProperties(bodyNode);
+      physObj->SetTransform(transformForRot);
+      physObj->SetActive(true);
 
-      // Reorient physics to our Y is forward system.
-      NxMat33 orient;
-      orient.setRow(0, NxVec3(1,0,0));
-      orient.setRow(1, NxVec3(0,0,-1));
-      orient.setRow(2, NxVec3(0,1,0));
-      SwitchCoordinateSystem(orient);
+      // Remove friction from our vehicle so that the physics body doesn't spin and cause
+      // wierd stagger steps on the terrain
+      // - NOTE - This does not help at all.
+      //if(!IsRemote())
+      //{
+         dtPhysics::Material *material = dtPhysics::PhysicsWorld::GetInstance().GetMaterials().GetMaterial("FrictionLessMaterial");
+         if (material == NULL )
+         {
+            dtPhysics::MaterialDef fallbackFriction;
+            fallbackFriction.SetStaticFriction(0.0f);
+            fallbackFriction.SetRestitution (0.3f);
+            dtPhysics::PhysicsWorld::GetInstance().GetMaterials().NewMaterial ("FrictionLessMaterial", fallbackFriction );
+            material = dtPhysics::PhysicsWorld::GetInstance().GetMaterials().GetMaterial("FrictionLessMaterial");
+         }
+
+         physObj->SetMaterial(material);
+      //}
+
 
       return true;
    }
@@ -269,7 +269,7 @@ namespace DriverDemo
    ////////////////////////////////////////////////////////////////////////////////////
    void HoverVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
    {
-      NxAgeiaPhysicsHelper::BuildPropertyMap(toFillIn);
+      dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
 
       const std::string& VEHICLEGROUP = "Vehicle Physics";
 
@@ -282,16 +282,6 @@ namespace DriverDemo
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleMaxStrafeMPH),
          dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleMaxStrafeMPH),
          "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
-
-      toFillIn.push_back(new dtDAL::FloatActorProperty("BaseWeight", "BaseWeight",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleBaseWeight),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleBaseWeight),
-         "The base weight of this vehicle.", VEHICLEGROUP));
-
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Sphere Radius", "Sphere Radius",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetSphereRadius),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetSphereRadius),
-         "The radius of the hover sphere.", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
          dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetGroundClearance),

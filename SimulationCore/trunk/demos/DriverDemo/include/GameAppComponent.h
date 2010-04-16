@@ -61,42 +61,15 @@ namespace DriverDemo
       public:
          static const std::string DEFAULT_NAME;
          static const std::string APPLICATION_NAME;
-         static const std::string SIM_ROLE_NAME_DRIVER;
-         static const std::string SIM_ROLE_NAME_COMMANDER;
-         static const std::string SIM_ROLE_NAME_GUNNER;
-         static const std::string SIM_ROLE_NAME_SOLDIER;
 
          static const std::string CMD_LINE_STARTING_POSITION;
          static const std::string CMD_LINE_HAS_NIGHTVISION;
          static const std::string CMD_LINE_MACHINE_ID;
-         //static const std::string CMD_LINE_VEHICLE_CALLSIGN;
          static const std::string CMD_LINE_VEHICLE_PROTOTYPE_NAME;
          static const std::string CMD_LINE_WEAPON;
          static const std::string CMD_LINE_START_HEADING;
-         //static const std::string CMD_LINE_START_LAT;
-         //static const std::string CMD_LINE_START_LON;
-         //static const std::string CMD_LINE_START_MGRS;
 
          static const int  LOG_TIME_AMOUNT = 20; // for logging
-
-         /*enum SimMode
-         {
-            SIM_MODE_NONE = -1,
-            SIM_MODE_DRIVER,
-            SIM_MODE_GUNNER,
-            SIM_MODE_COMMANDER,
-            SIM_MODE_SOLDIER,
-            SIM_MODE_MAX
-         };*/
-
-         /*enum PlayerStartCordType
-         {
-            PLAYER_START_NONE = -1,
-               PLAYER_START_MGRS,
-               PLAYER_START_XYZ,
-               PLAYER_START_LAT_LON,
-            PLAYER_START_MAX_CORD_TYPE
-         };*/
 
          /// Constructor
          GameAppComponent(const std::string &name = DEFAULT_NAME);
@@ -112,49 +85,22 @@ namespace DriverDemo
          /// line component.
          virtual void InitializeCommandLineOptionsAndRead(osg::ArgumentParser* parser);
 
-         /// inits tools from command line param
-         void InitializeTools();
-
          /// inits the player for the application
          void InitializePlayer();
 
          /// inits the vhiecle for app - Uses "Hover_Vehicle" as a default name. Pass in to command line to change.
          SimCore::Actors::BasePhysicsVehicleActor *CreateNewVehicle();
 
-         /// loads the terrain to the application, specific to CDMTS command line option.
-         //void InitializeTerrain();
-
       protected:
          /// Destructor
          virtual ~GameAppComponent(void);
 
-         /// updates the player start position from what the cmd line args were sent in
-         void UpdatePlayerStartingPosition();
-
       private:
          dtCore::RefPtr<SimCore::Actors::StealthActor> mStealth;
-
-         // players start lat through command line
-         double mLatitudeStart;
-
-         // players start lon through command line
-         double mLongitudeStart;
-
-         // players start mgrs through command line
-         std::string mMGRSStart;
-
-         // starting position for xyz in the world.
-         osg::Vec3 mStartingPosition;
-
-         // for cordinates
-         //PlayerStartCordType mStartingCordType;
 
          // if this is set to true, we are waiting for a vehicle to join the network
          // with the name of the group sent in.
          bool mWaitForVehicle;
-
-         // True if the user sent in and X and Y starting position
-         bool mStartingCoordSet;
    };
 } // namespace
 #endif

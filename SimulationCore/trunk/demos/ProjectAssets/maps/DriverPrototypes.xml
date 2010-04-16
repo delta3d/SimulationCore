@@ -45,7 +45,7 @@
                 <vec3>
                     <value1>100.0</value1>
                     <value2>10.0</value2>
-                    <value3>50.0</value3>
+                    <value3>0.0</value3>
                 </vec3>
             </property>
             <property>
@@ -216,7 +216,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>DriverVehicle</string>
+                <string>VehicleDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -290,7 +290,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoSim</string>
+                <string>HoverVehicle</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -553,7 +553,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>DriverVehicle</string>
+                <string>VehicleDamageType</string>
             </property>
             <property>
                 <name>Default Scale</name>
@@ -627,7 +627,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoSim</string>
+                <string>WheeledVehicle</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -1025,7 +1025,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>HoverTarget</string>
+                <string>StandardDamageType</string>
             </property>
             <property>
                 <name>Model Rotation</name>
@@ -1099,7 +1099,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoTarget</string>
+                <string>HoverTarget</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -1355,7 +1355,7 @@
             </property>
             <property>
                 <name>Munition Damage Table</name>
-                <string>HoverTarget</string>
+                <string>StandardDamageType</string>
             </property>
             <property>
                 <name>Model Rotation</name>
@@ -1429,7 +1429,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string>DriverDemoTarget</string>
+                <string>HoverExplodingTarget</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>

@@ -98,9 +98,6 @@ namespace NetDemo
          articHelper->AddArticulation("dof_gun_01",
             SimCore::Components::DefaultFlexibleArticulationHelper::ARTIC_TYPE_ELEVATION, "dof_turret_01");
          SetArticulationHelper(articHelper.get());
-
-         // Setup for damage tracking.
-         RegisterForDamageTracking();
       }
 
       BaseClass::OnEnteredWorld();
@@ -125,23 +122,6 @@ namespace NetDemo
          renderComp->AddDynamicLight(sl);
       }
    }
-
-   ///////////////////////////////////////////////////////////////////////////////////
-   void FortActor::RegisterForDamageTracking()
-   {
-      if( ! IsRemote())
-      {
-         SimCore::Components::MunitionsComponent* comp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(
-            SimCore::Components::MunitionsComponent::DEFAULT_NAME, comp);
-
-         if(comp != NULL)
-         {
-            comp->Register(*this, true);
-         }
-      }
-   }
-
 
    ///////////////////////////////////////////////////////////////////////////////////
    float FortActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message, 

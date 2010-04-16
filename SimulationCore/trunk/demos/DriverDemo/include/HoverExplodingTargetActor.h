@@ -22,7 +22,7 @@
 *
 * @author Curtiss Murphy
 */
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #ifndef _HOVER_EXPLODING_TARGET_ACTOR_
 #define _HOVER_EXPLODING_TARGET_ACTOR_
 
@@ -62,15 +62,6 @@ namespace DriverDemo
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
 
-         /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-         //virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-         //   dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit);
-
-         // You would have to make a new raycast to get this report,
-         // so no flag associated with it.
-         //virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
-         //   const dtPhysics::PhysicsObject& whatWeHit){}
-
          virtual void RespondToHit(const SimCore::DetonationMessage& message,
             const SimCore::Actors::MunitionTypeActor& munition, const osg::Vec3& force, 
             const osg::Vec3& location);
@@ -87,9 +78,6 @@ namespace DriverDemo
       public:
          float ComputeEstimatedForceCorrection(const osg::Vec3 &location,
             const osg::Vec3 &direction, float &distanceToHit);
-
-         /// Reset to starting position In additional to base behavior, it turns off sounds.
-         //virtual void ResetVehicle();
 
          HoverTargetPhysicsHelper* GetTargetPhysicsHelper() {
             return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
@@ -155,4 +143,4 @@ namespace DriverDemo
 }
 
 #endif
-#endif
+//#endif

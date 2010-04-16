@@ -102,8 +102,6 @@ namespace NetDemo
          /// Does nothing by default.
          virtual void UpdateSoundEffects(float deltaTime);
 
-         void RegisterForDamageTracking();
-
       // Private vars
       private:
 

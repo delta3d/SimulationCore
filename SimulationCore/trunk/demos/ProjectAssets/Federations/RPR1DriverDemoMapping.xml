@@ -477,9 +477,9 @@
 
         <!-- ****************************************************** -->
         <!-- This is A 4th tier object. Heirarchy is:                              -->
-        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HoverTank           -->
+        <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- HoverVehicle           -->
         <!-- ****************************************************** -->    
-           <object extends="Aircraft" name="HoverTank">
+           <object extends="Aircraft" name="HoverVehicle">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>DriverDemo.HoverActor</actorType>
             <remoteOnly>false</remoteOnly>
@@ -495,7 +495,7 @@
             <attrToProp>
                <gameName>EntityType</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>HoverActor</default>
+               <default>HoverVehicle</default>
             </attrToProp>
              <attrToProp>
                <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
@@ -535,7 +535,7 @@
             <attrToProp>
                <gameName>Munition Damage Table</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>DriverVehicle</default>
+               <default>VehicleDamageType</default>
             </attrToProp>
         </object>
 
@@ -544,7 +544,7 @@
         <!-- This is A 4th tier object. Heirarchy is:                              -->
         <!--    BaseEntity <- PhysicalEntity <- GroundVehicle <- WheeledTank           -->
         <!-- ****************************************************** -->    
-           <object extends="Aircraft" name="WheeledTank">
+           <object extends="Aircraft" name="WheeledVehicle">
             <objectClass>BaseEntity.PhysicalEntity.Platform.GroundVehicle</objectClass>
             <actorType>NxAgeiaPhysicsModels.NxAgeiaFourWheelVehicle</actorType>
             <remoteOnly>false</remoteOnly>
@@ -560,7 +560,7 @@
             <attrToProp>
                <gameName>EntityType</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>WheeledTank</default>
+               <default></default>
             </attrToProp>
              <attrToProp>
                <gameName>SOUND_EFFECT_VEHICLE_LOOP</gameName>
@@ -600,7 +600,7 @@
             <attrToProp>
                <gameName>Munition Damage Table</gameName>
                <gameDataType>STRING</gameDataType>
-               <default>DriverVehicle</default>
+               <default>VehicleDamageType</default>
             </attrToProp>
         </object>
 

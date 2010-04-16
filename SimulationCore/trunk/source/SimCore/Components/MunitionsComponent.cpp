@@ -131,7 +131,7 @@ namespace SimCore
                << std::endl;
             LOG_WARNING( ss.str() );
          }
-         else
+         else if (dtUtil::Log::GetInstance().IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
          {
             std::stringstream ss;
             ss << "Munition Component registered entity \""

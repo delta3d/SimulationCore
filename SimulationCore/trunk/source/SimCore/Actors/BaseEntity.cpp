@@ -612,15 +612,6 @@ namespace SimCore
             xform.GetRotation(rot);
             SetLastKnownRotation(rot);
 
-            // Previously, it set the smoothing time to 0.0 so that local actors would not smooth
-            // their DR pos & rot to potentially make a cleaner comparison with less publishes.
-            // In practice, the smoothing time is usually reduced down to the avg time between
-            // publishes. So, smoothing may be done by the next publish. And, remote sims may be smoothing anyway.
-            // Turning smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
-            // These values will typically be overridden by custom behaviors.
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
-
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
             {
@@ -633,20 +624,19 @@ namespace SimCore
                   munitionsComp->Register(*this, false, GetMaxDamageAmount());
                }
             }
+         }
 
-         }
-         else
-         {
-            // For remote actors, we want to make sure they have smoothing on DR changes.
-            // Note - this is usually set by the DR helper, but in case it's not, or in the case
-            // that an actor was changed from local to remote, we want a value... yes, it's obscure
-            if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
-                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_POS);
-            if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
-               GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
-                  //dtGame::DeadReckoningHelper::DEFAULT_MAX_SMOOTHING_TIME_ROT);
-         }
+         // The MaxTransSmoothingTime is usually set, but there are very obscure cases where it might
+         // not have been set or not published for some reason. In that case, we need a non-zero value.
+         // In practice, a vehicle that publishes will typically set these directly (for example, see 
+         // BasePhysicsVehicleActor.SetMaxUpdateSendRate()). 
+         // Previously, it set the smoothing time to 0.0 so that local actors would not smooth
+         // their DR pos & rot to potentially make a cleaner comparison with less publishes.
+         // Turning local smoothing on allows better vis & debugging of DR values (ex the DRGhostActor).
+         if (GetDeadReckoningHelper().GetMaxTranslationSmoothingTime() == 0.0f)
+            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.5f);
+         if (GetDeadReckoningHelper().GetMaxRotationSmoothingTime() == 0.0f)
+            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.5f);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

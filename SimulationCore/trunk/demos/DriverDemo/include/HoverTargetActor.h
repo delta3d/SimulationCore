@@ -22,7 +22,7 @@
 *
 * @author Curtiss Murphy
 */
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #ifndef _HOVER_TARGET_ACTOR_
 #define _HOVER_TARGET_ACTOR_
 
@@ -69,12 +69,6 @@ namespace DriverDemo
          float ComputeEstimatedForceCorrection(const osg::Vec3& location,
             const osg::Vec3& direction, float& distanceToHit);
 
-         /// Reset to starting position In additional to base behavior, it turns off sounds.
-         //virtual void ResetVehicle();
-
-         //HoverVehiclePhysicsHelper* GetHoverPhysicsHelper() {
-         //   return static_cast<HoverVehiclePhysicsHelper*> (GetPhysicsHelper());}
-
          HoverTargetPhysicsHelper* GetTargetPhysicsHelper() {
             return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
          }
@@ -102,8 +96,8 @@ namespace DriverDemo
          dtCore::RefPtr<dtAudio::Sound> mSndCollisionHit;
          ///////////////////////////////////////////////////
 
-         float  mVehicleBaseWeight;     /// How much does the vehicle weight
-         float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
+         //float  mVehicleBaseWeight;     /// How much does the vehicle weight
+         //float  mSphereRadius;          /// The radius (meters) of the hover sphere. Used to calculate lots of things...
          float  mGroundClearance;       /// How far above the ground we should be.
 
          osg::Vec3 mGoalLocation;       /// The general location we want to be.
@@ -131,4 +125,4 @@ namespace DriverDemo
 }
 
 #endif
-#endif
+//#endif

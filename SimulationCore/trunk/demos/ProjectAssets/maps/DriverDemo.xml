@@ -155,6 +155,24 @@
 		<resourceDisplayName>Terrains:Level_DriverDemo.ive</resourceDisplayName>
 		<resource>Terrains:Level_DriverDemo.ive</resource>
             </property>
+            <property>
+                <name>Terrain Physics Mode</name>
+                <enumerated>IMMEDIATE</enumerated>
+            </property>
+            <property>
+                <name>LoadTerrainMeshWithCaching</name>
+                <boolean>false</boolean>
+            </property>
+            <property>
+                <name>PhysicsModel</name>
+                <resourceType>StaticMeshes</resourceType>
+                <resourceDisplayName></resourceDisplayName>
+                <resource></resource>
+            </property>
+            <property>
+                <name>PhysicsDirectory</name>
+                <string></string>
+            </property>
         </actor>
         <actor>
             <type>dtutil.Coordinate Config</type>
@@ -198,7 +216,7 @@
             </property>
             <property>
                 <name>Local Coordinate Type</name>
-                <enumerated>Cartesian</enumerated>
+                <enumerated>Cartesian UTM</enumerated>
             </property>
         </actor>
     </actors>

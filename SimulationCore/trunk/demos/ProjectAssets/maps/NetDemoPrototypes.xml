@@ -2057,7 +2057,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string></string>
+                <string>WheeledVehicle</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>
@@ -4531,7 +4531,7 @@
             </property>
             <property>
                 <name>EntityType</name>
-                <string></string>
+                <string>WheeledVehicle</string>
             </property>
             <property>
                 <name>MinDistanceIdleSound</name>

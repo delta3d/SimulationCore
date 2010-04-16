@@ -14,11 +14,10 @@
 
 #include "VehicleShield.h"
 
-#ifdef AGEIA_PHYSICS
+//#ifdef AGEIA_PHYSICS
 #include <HoverTargetActor.h>
 #include <HoverVehiclePhysicsHelper.h>
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
+#include <dtPhysics/physicshelper.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtABC/application.h>
 #include <dtAudio/audiomanager.h>
@@ -44,7 +43,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverTargetActor ::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   HoverTargetActor::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)
@@ -57,13 +56,16 @@ namespace DriverDemo
 
       SetPublishLinearVelocity(true);
       SetPublishAngularVelocity(true);
+      SetMaxTranslationError(0.02f);
+      SetMaxRotationError(1.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      //dtAgeiaPhysX::NxAgeiaPhysicsHelper * helper = new dtAgeiaPhysX::NxAgeiaPhysicsHelper(proxy);
       HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
-      helper->SetBaseInterfaceClass(this);
       SetPhysicsHelper(helper);
+
+      SetEntityType("HoverTarget"); // Used for HLA mostly.  
+      SetMunitionDamageTableName("StandardDamageType"); // Used for Munitions Damage.
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -78,10 +80,9 @@ namespace DriverDemo
       // Create our vehicle with a starting position
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
-      osg::Vec3 startVec;
+      osg::Vec3 startVec(ourTransform.GetTranslation());
       if (!IsRemote()) // Local - we vary it's starting position.
       {
-         startVec = GetPhysicsHelper()->GetVehicleStartingPosition();
          startVec[0] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[1] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[2] += dtUtil::RandFloat(0.0, 4.0);
@@ -90,8 +91,6 @@ namespace DriverDemo
          // one frame in the wrong place. Very ugly.
          ourTransform.SetTranslation(startVec[0], startVec[1], startVec[2]);
          SetTransform(ourTransform);
-
-         SetEntityType("HoverTarget");
 
          // Make a semi-unique name.
          static int targetCounter = 0;
@@ -104,7 +103,9 @@ namespace DriverDemo
       }
 
       // Create our physics object
-      GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
+      GetTargetPhysicsHelper()->CreateTarget(ourTransform, GetOSGNode());
+         //GetNodeCollector()->GetDOFTransform("dof_chassis"));
+      //GetTargetPhysicsHelper()->CreateTarget(startVec, IsRemote());
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 
@@ -113,7 +114,7 @@ namespace DriverDemo
       {
          // THIS LINE MUST BE AFTER Super::OnEnteredWorld()! Undo the kinematic flag on remote entities. Lets us
          // apply velocities to remote hover vehicles so that they will impact us and make us bounce back
-         GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
+         //GetTargetPhysicsHelper()->GetMainPhysicsObject()->clearBodyFlag(NX_BF_KINEMATIC);
       }
       // LOCAL - Finish initial startup conditions
       else
@@ -126,16 +127,6 @@ namespace DriverDemo
          mGoalLocation[0] += dtUtil::RandFloat(-40.0, 40.0);
          mGoalLocation[1] += dtUtil::RandFloat(-50.0, 50.0);
          mGoalLocation[2] += dtUtil::RandFloat(2.0, 4.0);
-
-
-         // Register a munitions component to the target so it can take damage
-         SimCore::Components::MunitionsComponent* munitionsComp;
-         GetGameActorProxy().GetGameManager()->GetComponentByName
-            (SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
-         if( munitionsComp != NULL )
-         {
-            munitionsComp->Register(*this);
-         }
       }
 
    }
@@ -209,4 +200,4 @@ namespace DriverDemo
    }
 
 } // namespace
-#endif
+//#endif

@@ -1,5 +1,5 @@
 /* -*-c++-*-
-* Driver Demo - HoverVehicleActor (.cpp & .h) - Using 'The MIT License'
+* NetDemo - HoverVehicleActor (.cpp & .h) - Using 'The MIT License'
 * Copyright (C) 2008, Alion Science and Technology Corporation
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -66,12 +66,6 @@ namespace NetDemo
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.
          virtual void OnEnteredWorld();
-
-         /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-         //virtual void AgeiaPrePhysicsUpdate();
-
-         /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-         //virtual void AgeiaPostPhysicsUpdate();
 
          virtual void PostPhysicsUpdate();
 
