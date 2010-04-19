@@ -271,8 +271,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE("ParticleSystem must be obtainable from file", ptr.valid() );
 
          dtDAL::Project& project = dtDAL::Project::GetInstance();
-         std::string path = project.GetContext() + "/" +
-            project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
+         std::string path = project.GetResourcePath(dtDAL::ResourceDescriptor("Particles:unittestparticles.osg"));
 
          CPPUNIT_ASSERT(path != (project.GetContext() + "/"));
 
