@@ -96,6 +96,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mGM->AddActor(mStealthActor->GetGameActorProxy(), false, true);
 
          dtCore::System::GetInstance().Start();
+         dtCore::System::GetInstance().Step();
       }
 
       void tearDown()
@@ -116,24 +117,26 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
       {
          InternalTestStealthActorMessages(false);
 
-         std::vector<std::string> params;
+         std::vector<dtUtil::RefString> params;
 
-         params.push_back("Last Known Rotation");
-         params.push_back("Last Known Translation");
-
-         InternalTestStealthActorMessages(true, params);
-
-         params.clear();
-         params.push_back("Last Known Rotation");
+         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
-         params.push_back("Last Known Translation");
+         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
+         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+
+         InternalTestStealthActorMessages(true, params);
+
+         params.clear();
+         // Must put one property or it will send them all.
+         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE);
 
          InternalTestStealthActorMessages(true, params);
 
@@ -158,7 +161,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
    private:
 
-      void InternalTestStealthActorMessages(bool partial, const std::vector<std::string>& params = std::vector<std::string>())
+      void InternalTestStealthActorMessages(bool partial, const std::vector<dtUtil::RefString>& params = std::vector<dtUtil::RefString>())
       {
          mTestComp->reset();
 
@@ -219,8 +222,7 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          {
             bool result = mTestComp->FindDispatchNetworkMessageOfType(SimCore::MessageType::STEALTH_ACTOR_ROTATION).valid();
 
-            CPPUNIT_ASSERT_MESSAGE("No stealth actor rotation message should have been sent",
-              !result);
+            CPPUNIT_ASSERT_MESSAGE("No stealth actor rotation message should have been sent", !result);
          }
 
          if (!partial || paramSet.find("Last Known Translation") != paramSet.end())
