@@ -192,8 +192,8 @@ namespace NetDemo
 
       // Setup the main background for most menus.
       mBackground = new osg::MatrixTransform;
-      mBackground->addChild(LoadNodeFile("StaticMeshes/NetDemo/UI/MainBackground.ive"));
-      mBackground->addChild(LoadNodeFile("Particles/stars.osg"));
+      mBackground->addChild(LoadNodeFile("StaticMeshes:NetDemo:UI:MainBackground.ive"));
+      mBackground->addChild(LoadNodeFile("Particles:stars.osg"));
       mEffectsOverlay->addChild(mBackground.get());
 
       // Attach a special shader.

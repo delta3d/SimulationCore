@@ -327,9 +327,9 @@ namespace StealthQt
             {
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
 
-               config = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
-               fedFile = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
-               ridFile = context + dtUtil::FileUtils::PATH_SEPARATOR + project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
+               config = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[2].toStdString()));
+               fedFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[3].toStdString()));
+               ridFile = project.GetResourcePath(dtDAL::ResourceDescriptor(properties[6].toStdString()));
 
                mHLAComp->SetConfigFile(config);
                mHLAComp->SetFedFile(fedFile);
