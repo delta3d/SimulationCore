@@ -810,19 +810,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponActor::SoundLoad( const std::string& filePath, dtCore::RefPtr<dtAudio::Sound>& sound )
       {
-         // Find the specified file
-         std::string resourcePath = dtDAL::Project::GetInstance()
-            .GetResourcePath(dtDAL::ResourceDescriptor( filePath ));
-
-         if( resourcePath.empty() )
-         {
-            std::stringstream ss;
-            ss << "Failure: WeaponActor.LoadFireSound could not locate \""
-               << resourcePath.c_str() << "\"" << std::endl;
-            LOG_ERROR( ss.str() );
-            return;
-         }
-
          if(sound != NULL && sound->GetFilename() != NULL)
          {
             dtAudio::AudioManager::GetInstance().FreeSound(sound.get());
@@ -830,13 +817,17 @@ namespace SimCore
          }
 
          sound = NULL;
-         sound = dtAudio::AudioManager::GetInstance().NewSound();
 
-         if( ! sound.valid())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-            "Failed to create the sound object", __FILE__, __LINE__);
+         if (!filePath.empty())
+         {
+            sound = dtAudio::AudioManager::GetInstance().NewSound();
 
-         sound->LoadFile(filePath.c_str());
+            if( ! sound.valid())
+               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+               "Failed to create the sound object", __FILE__, __LINE__);
+
+            sound->LoadFile(filePath.c_str());
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////

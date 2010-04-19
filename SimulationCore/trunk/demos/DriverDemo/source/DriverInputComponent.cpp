@@ -245,7 +245,7 @@ namespace DriverDemo
       // Map first loaded. This only happens once, so we can do most of our inits now.
       else if(msgType == dtGame::MessageType::INFO_MAP_LOADED)
       {
-         dtGame::GameManager &gameManager = *GetGameManager();
+         dtGame::GameManager& gameManager = *GetGameManager();
 
          DriverDemo::GameAppComponent* gameAppComponent;
          gameManager.GetComponentByName(DriverDemo::GameAppComponent::DEFAULT_NAME, gameAppComponent);
