@@ -87,10 +87,10 @@ namespace NetDemo
    {
       dtDAL::ResourceDescriptor descriptor(projectRelativePath);
 
-      std::string resPath = dtDAL::Project::GetInstance().GetContext() + "/";
+      std::string resPath;
       try
       {
-         resPath += dtDAL::Project::GetInstance().GetResourcePath(descriptor);
+         resPath = dtDAL::Project::GetInstance().GetResourcePath(descriptor);
       }
       catch (...)
       {
