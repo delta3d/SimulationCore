@@ -413,13 +413,13 @@ namespace SimCore
             mArrowDrawOnNextFrame = true;
 
             // Hack Test Debug prints just to check Vel and Accel
-            if (mSlavedEntity.valid())
-            {
-               osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
-               osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
-               std::cout << "Ghost - Updated - Vel[" << velocity << 
-                  "], Accel[" << acceleration << "]." << std::endl;
-            }
+            //if (mSlavedEntity.valid())
+            //{
+            //   osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
+            //   osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
+            //   std::cout << "Ghost - Updated - Vel[" << velocity << 
+            //      "], Accel[" << acceleration << "]." << std::endl;
+            //}
          }
       }
 
