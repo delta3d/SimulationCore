@@ -75,12 +75,12 @@ namespace SimCore
             SimCore::Actors::BaseEntity *GetSlavedEntity() { return mSlavedEntity.get(); }
 
             /// The velocity scalar is used to magnify the velocity that is rendered to make it more or less visible. Default is 1.0f
-            void SetVelocityArrowDrawScalar(float newValue) { mVelocityArrowDrawScalar = newValue; }
-            float GetVelocityArrowDrawScalar() { return mVelocityArrowDrawScalar; }
+            void SetVelocityArrowDrawScalar(float newValue) { mArrowDrawScalar = newValue; }
+            float GetVelocityArrowDrawScalar() { return mArrowDrawScalar; }
 
             /// The number of velocity trails that we are showing. You MUST set this before adding it to the GM.
-            void SetVelocityArrowMaxNumVelTrails(unsigned int newValue);
-            unsigned int GetVelocityArrowMaxNumVelTrails() { return mVelocityArrowMaxNumVelTrails; }
+            void SetArrowMaxNumTrails(unsigned int newValue);
+            unsigned int GetArrowMaxNumTrails() { return mArrowMaxNumTrails; }
 
             void UpdateOurPosition();
 
@@ -90,7 +90,13 @@ namespace SimCore
             void CleanUp();
 
          protected:
-            void SetupVelocityLine();
+            void SetupVelocityArrows();
+            void SetupAccelerationArrows();
+
+            void SetupLineData(osg::Geode& arrowGeode, osg::Geometry& arrowGeom, 
+               osg::Vec3Array& arrowVerts, const osg::Vec3& arrowColor);
+
+            void SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta);
 
          private:
             dtCore::ObserverPtr<SimCore::Actors::BaseEntity> mSlavedEntity;
@@ -98,15 +104,21 @@ namespace SimCore
             int mPosUpdatedParticleCountdown;
 
             // Velocity Arrow
-            float mVelocityArrowDrawScalar;
             dtCore::RefPtr<osg::Geode> mVelocityArrowGeode;
             dtCore::RefPtr<osg::Geometry> mVelocityArrowGeom;
             dtCore::RefPtr<osg::Vec3Array> mVelocityArrowVerts;
             osg::Vec3 mVelocityArrowColor;
-            dtCore::RefPtr<dtCore::Transformable> mVelocityParentNode;
-            unsigned int mVelocityArrowMaxNumVelTrails;
-            int mVelocityArrowCurrentVelIndex;
-            bool mVelocityArrowDrawOnNextFrame;
+            // Acceleration Arrow
+            dtCore::RefPtr<osg::Geode> mAccelerationArrowGeode;
+            dtCore::RefPtr<osg::Geometry> mAccelerationArrowGeom;
+            dtCore::RefPtr<osg::Vec3Array> mAccelerationArrowVerts;
+            osg::Vec3 mAccelerationArrowColor;
+            // Vars for Vel and Acceleration Arrow trails.
+            dtCore::RefPtr<dtCore::Transformable> mArrowGlobalParentNode;
+            float mArrowDrawScalar; // Scalar to resize both vel and acceleration arrows
+            unsigned int mArrowMaxNumTrails; // number of accel and vel trails
+            int mArrowCurrentIndex; // current index into our pool of trails
+            bool mArrowDrawOnNextFrame; // do we add a new trail arrow next frame (caused by update)?
 
 
             dtCore::RefPtr<dtCore::ParticleSystem> mTrailParticles;
