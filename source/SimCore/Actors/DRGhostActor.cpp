@@ -102,11 +102,12 @@ namespace SimCore
       DRGhostActor::DRGhostActor(DRGhostActorProxy& proxy)
       : dtActors::GameMeshActor(proxy)
       , mSlaveUpdatedParticleIsActive(false)
-      , mVelocityArrowDrawScalar(1.0f)
+      , mArrowDrawScalar(1.0f)
       , mVelocityArrowColor(0.2f, 0.2f, 1.0f)
-      , mVelocityArrowMaxNumVelTrails(10)
-      , mVelocityArrowCurrentVelIndex(0)
-      , mVelocityArrowDrawOnNextFrame(false)
+      , mAccelerationArrowColor(0.2f, 1.0f, 0.2f)
+      , mArrowMaxNumTrails(10)
+      , mArrowCurrentIndex(0)
+      , mArrowDrawOnNextFrame(false)
       {
       }
 
@@ -129,11 +130,11 @@ namespace SimCore
       {
          // Remove our velocity line node from the scene before we go.
          dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
-         if (mVelocityParentNode.valid() && envProxy != NULL)
+         if (mArrowGlobalParentNode.valid() && envProxy != NULL)
          {
             dtGame::IEnvGameActor *envActor;
             envProxy->GetActor(envActor);
-            envActor->RemoveActor(*mVelocityParentNode);//GetMatrixNode()->removeChild(mVelocityParentNode);
+            envActor->RemoveActor(*mArrowGlobalParentNode);
          }
       }
 
@@ -144,15 +145,15 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetVelocityArrowMaxNumVelTrails(unsigned int newValue)
+      void DRGhostActor::SetArrowMaxNumTrails(unsigned int newValue)
       {
-         if (mVelocityParentNode.valid())
+         if (mArrowGlobalParentNode.valid())
          {
             LOG_ERROR("You cannot set the number of velocity trails AFTER the ghost has been added with GM.AddActor().");
          }
          else
          {
-            mVelocityArrowMaxNumVelTrails = newValue;
+            mArrowMaxNumTrails = newValue;
          }
       }
 
@@ -215,64 +216,87 @@ namespace SimCore
                dtCore::ShaderManager::GetInstance().AssignShaderFromPrototype(*shader, *mUpdateTrailParticles->GetOSGNode());
             }
 
-            SetupVelocityLine();
+
+            // Global Parent for Vel and Accel arrows
+            // We put all of our arrows under a special node that is NOT a child 
+            // of the slave OR the ghost. The parent is world relative and doesn't move.
+            mArrowGlobalParentNode = new dtCore::Transformable();
+            dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
+            if (envProxy != NULL)
+            {
+               dtGame::IEnvGameActor *envActor;
+               envProxy->GetActor(envActor);
+               envActor->AddActor(*mArrowGlobalParentNode);
+
+               // Make this a settable value.
+               dtCore::Transform xform(0.0f, 0.0f, 1.5f, 0.0f, 0.0f, 0.0f);
+               mArrowGlobalParentNode->SetTransform(xform);
+            }
+            else 
+            {
+               LOG_ERROR("There is no environment actor - The DRGhost will not function correctly.");
+            }
+
+            SetupVelocityArrows();
+            SetupAccelerationArrows();
          }
 
          BaseClass::OnEnteredWorld();
       }
 
       //////////////////////////////////////////////////////////////////////
-      void DRGhostActor::SetupVelocityLine()
+      void DRGhostActor::SetupVelocityArrows()
       {
-         mVelocityParentNode = new dtCore::Transformable();//osg::Group();
-
          // Create a velocity pointer.
          mVelocityArrowGeode = new osg::Geode();
          mVelocityArrowGeom = new osg::Geometry();
          mVelocityArrowVerts = new osg::Vec3Array();
+
+         SetupLineData(*mVelocityArrowGeode.get(), *mVelocityArrowGeom.get(), 
+            *mVelocityArrowVerts.get(), mVelocityArrowColor);
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void DRGhostActor::SetupAccelerationArrows()
+      {
+         // Create a velocity pointer.
+         mAccelerationArrowGeode = new osg::Geode();
+         mAccelerationArrowGeom = new osg::Geometry();
+         mAccelerationArrowVerts = new osg::Vec3Array();
+
+         SetupLineData(*mAccelerationArrowGeode.get(), *mAccelerationArrowGeom.get(), 
+            *mAccelerationArrowVerts.get(), mAccelerationArrowColor);
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void DRGhostActor::SetupLineData(osg::Geode& arrowGeode, osg::Geometry& arrowGeom, 
+         osg::Vec3Array& arrowVerts, const osg::Vec3& arrowColor)
+      {
          // 2 points to create a line for our velocity.
-         mVelocityArrowVerts->reserve(mVelocityArrowMaxNumVelTrails * 2);
-         for(unsigned int i = 0; i < mVelocityArrowMaxNumVelTrails; ++i)
+         arrowVerts.reserve(mArrowMaxNumTrails * 2);
+         for(unsigned int i = 0; i < mArrowMaxNumTrails; ++i)
          {
-            mVelocityArrowVerts->push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
-            mVelocityArrowVerts->push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
+            arrowVerts.push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
+            arrowVerts.push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
          }
 
-         mVelocityArrowGeom->setUseDisplayList(false);
-         mVelocityArrowGeom->setVertexArray(mVelocityArrowVerts.get());
-         mVelocityArrowGeode->addDrawable(mVelocityArrowGeom.get());
+         arrowGeom.setUseDisplayList(false);
+         arrowGeom.setVertexArray(&arrowVerts);
+         mVelocityArrowGeode->addDrawable(&arrowGeom);
          osg::StateSet* ss(NULL);
-         ss = mVelocityArrowGeode->getOrCreateStateSet();
+         ss = arrowGeode.getOrCreateStateSet();
          ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-         mVelocityArrowGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
+         arrowGeom.setColorBinding(osg::Geometry::BIND_OVERALL);
          // Note - for future - if the color changes on the actor, need to reset this.
          osg::Vec3Array* colors = new osg::Vec3Array;
-         colors->push_back(mVelocityArrowColor);
-         mVelocityArrowGeom->setColorArray(colors); 
+         colors->push_back(arrowColor);
+         arrowGeom.setColorArray(colors); 
 
-         mVelocityArrowGeom->setVertexArray(mVelocityArrowVerts);
-         mVelocityArrowGeom->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, 2 * mVelocityArrowMaxNumVelTrails));
+         arrowGeom.setVertexArray(&arrowVerts);
+         arrowGeom.addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, 2 * mArrowMaxNumTrails));
 
-         // We put all of our velocity arrows under a special node that is NOT a child 
-         // of the slave OR the ghost. The parent is world relative and doesn't move.
-         mVelocityParentNode->GetMatrixNode()->addChild(mVelocityArrowGeode.get()); // GetMatrixNode()->addChild()
-         dtGame::IEnvGameActorProxy *envProxy = GetGameActorProxy().GetGameManager()->GetEnvironmentActor();
-         if (envProxy != NULL)
-         {
-            dtGame::IEnvGameActor *envActor;
-            envProxy->GetActor(envActor);
-            envActor->AddActor(*mVelocityParentNode);
-
-            // Make this a settable value.
-            dtCore::Transform xform(0.0f, 0.0f, 1.5f, 0.0f, 0.0f, 0.0f);
-            mVelocityParentNode->SetTransform(xform);
-             
-         }
-         else 
-         {
-            LOG_ERROR("There is no environment actor - The DRGhost will not function correctly.");
-         }
+         mArrowGlobalParentNode->GetMatrixNode()->addChild(&arrowGeode);
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -284,31 +308,23 @@ namespace SimCore
          UpdateOurPosition();
 
          // Update our Velocity line.
-         if (mVelocityArrowDrawOnNextFrame && mSlavedEntity.valid())
+         if (mArrowDrawOnNextFrame && mSlavedEntity.valid())
          {
-            mVelocityArrowDrawOnNextFrame = false;
+            mArrowDrawOnNextFrame = false;
 
             dtCore::Transform xform;
             GetTransform(xform);
             osg::Vec3 ghostPos = xform.GetTranslation();
 
+            // Update one of our Velocity Lines
             osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
-            osg::Vec3Array* vertices = (osg::Vec3Array*)mVelocityArrowGeom->getVertexArray();
-            // Set our start point to be our current ghost position
-            unsigned int curIndex = mVelocityArrowCurrentVelIndex * 2;
-            (*vertices)[curIndex].x() = ghostPos.x();
-            (*vertices)[curIndex].y() = ghostPos.y(); 
-            (*vertices)[curIndex].z() = ghostPos.z(); 
+            SetCurrentLine(*mVelocityArrowGeom.get(), ghostPos, velocity);
 
-            // Set our end point to be current ghost pos + velocity.
-            (*vertices)[curIndex + 1].x() = ghostPos.x() + velocity.x() * mVelocityArrowDrawScalar;
-            (*vertices)[curIndex + 1].y() = ghostPos.y() + velocity.y() * mVelocityArrowDrawScalar;
-            (*vertices)[curIndex + 1].z() = ghostPos.z() + velocity.z() * mVelocityArrowDrawScalar;
-            mVelocityArrowCurrentVelIndex = (mVelocityArrowCurrentVelIndex + 1) % mVelocityArrowMaxNumVelTrails;
+            // Update one of our Acceleration Lines
+            osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
+            SetCurrentLine(*mAccelerationArrowGeom.get(), ghostPos, acceleration);
 
-            // Make sure that we force a redraw and bounds update so we see our new verts.
-            mVelocityArrowGeom->dirtyDisplayList();
-            mVelocityArrowGeom->dirtyBound();
+            mArrowCurrentIndex = (mArrowCurrentIndex + 1) % mArrowMaxNumTrails;
          }
 
 
@@ -339,6 +355,27 @@ namespace SimCore
             }
          }
          */
+      }
+
+      //////////////////////////////////////////////////////////////////////
+      void DRGhostActor::SetCurrentLine(osg::Geometry& arrowGeom, osg::Vec3& startPos, osg::Vec3& endPosDelta)
+      {
+         osg::Vec3Array* vertices = (osg::Vec3Array*)arrowGeom.getVertexArray();
+         // Set our start point to be our current ghost position
+         unsigned int curIndex = mArrowCurrentIndex * 2;
+         (*vertices)[curIndex].x() = startPos.x();
+         (*vertices)[curIndex].y() = startPos.y(); 
+         (*vertices)[curIndex].z() = startPos.z(); 
+
+         // Set our end point to be current ghost pos + velocity.
+         (*vertices)[curIndex + 1].x() = startPos.x() + endPosDelta.x() * mArrowDrawScalar;
+         (*vertices)[curIndex + 1].y() = startPos.y() + endPosDelta.y() * mArrowDrawScalar;
+         (*vertices)[curIndex + 1].z() = startPos.z() + endPosDelta.z() * mArrowDrawScalar;
+
+         // Make sure that we force a redraw and bounds update so we see our new verts.
+         arrowGeom.dirtyDisplayList();
+         arrowGeom.dirtyBound();
+
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -373,8 +410,16 @@ namespace SimCore
             mUpdateTrailParticles->GetOSGNode()->accept(pspv);
             mPosUpdatedParticleCountdown = 2; // 2 to make sure particles draw, even if we have a whacky frame hiccup.
 
+            mArrowDrawOnNextFrame = true;
 
-            mVelocityArrowDrawOnNextFrame = true;
+            // Hack Test Debug prints just to check Vel and Accel
+            if (mSlavedEntity.valid())
+            {
+               osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
+               osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
+               std::cout << "Ghost - Updated - Vel[" << velocity << 
+                  "], Accel[" << acceleration << "]." << std::endl;
+            }
          }
       }
 

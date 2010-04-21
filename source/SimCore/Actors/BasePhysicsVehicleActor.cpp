@@ -76,7 +76,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
-         , mVelocityAverageFrameCount(3U)
+         , mVelocityAverageFrameCount(1U)
          , mSecsSinceLastUpdateSent(0.0f)
          , mMaxUpdateSendRate(5.0f)
          , mVelocityMagThreshold(1.0f)
@@ -353,7 +353,6 @@ namespace SimCore
          // Note - we used to grab the velocity from the physics engines, but there were sometimes 
          // discontinuities reported by the various engines, so that was removed in favor of a simple
          // differential of position. 
-         float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
          dtCore::Transform xform;
          GetTransform(xform);
          osg::Vec3 pos;
@@ -362,21 +361,36 @@ namespace SimCore
          {
             osg::Vec3 distanceMoved = pos - mLastPos;
             osg::Vec3 instantVelocity = distanceMoved / deltaTime;
-            // Blend the vel over a few frames to ignore those half-steps or double steps, etc...
-            mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
 
             // Compute our acceleration as the instantaneous differential of the velocity
             // Note, we don't 'blend' the acceleration because we are already blending the velocity above.
             // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
             // and make your own call to SetCurrentAcceleration().
-            osg::Vec3 changeInVelocity = mAccumulatedLinearVelocity - GetCurrentVelocity();
-            mAccumulatedAcceleration = changeInVelocity / deltaTime;
+            osg::Vec3 changeInVelocity = instantVelocity - GetLastKnownVelocity();
+            mAccumulatedAcceleration = changeInVelocity / mSecsSinceLastUpdateSent;
+            // An alternate way to estimate is to do it every frame, exactly. This makes CIRCLES look great, but
+            // sharp back and forth turns become wild and unbelievable. .
+            //osg::Vec3 changeInVelocity = instantVelocity - mAccumulatedLinearVelocity;
+            //mAccumulatedAcceleration = changeInVelocity / deltaTime;
+
+            // Compute Vel - either the instant Vel or a blended value over a couple of frames. Blended Velocities tend to make acceleration less useful
+            if (mVelocityAverageFrameCount == 1)
+            {
+               mAccumulatedLinearVelocity = instantVelocity;
+            }
+            else 
+            {
+               float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
+               mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
+            }
+
             // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
             // be published, the vehicle will go all over the place nutty. So, we zero it out. 
-            // This is not a good solution, but is workable because vehicles that really do have a lot of
+            // This is not an ideal solution, but is workable because vehicles that really do have a lot of
             // z acceleration are probably flying and by definition are not as close to other objects so the z accel
             // is less visually apparent.
             mAccumulatedAcceleration.z() = 0.0f; 
+
             SetCurrentAcceleration(mAccumulatedAcceleration);
 
             SetCurrentVelocity(mAccumulatedLinearVelocity);
@@ -885,14 +899,10 @@ namespace SimCore
          {
             // If we are setting our smoothing time, then we need to force the DR helper
             // to ALWAYS use that, instead of using the avg update rate.
-            // TODO - Put this back in, once the DRHelper is updated to have this method.
             GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
-
-
-            // CURT - FIX THIS.  REMOVE THE 1.33!!!!! 
-            float transUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            float transUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
-            float rotUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.33f/maxUpdateSendRate));
+            float rotUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
          }
 
