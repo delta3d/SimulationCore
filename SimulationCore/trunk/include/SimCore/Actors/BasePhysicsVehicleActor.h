@@ -76,6 +76,9 @@ namespace SimCore
             */
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
+            /// Called once we decided to publish - does a quick calc on acceleration. 
+            virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
+
             /**
             * This method is an invokable called when an object is remote and
             * receives a tick.
@@ -261,6 +264,7 @@ namespace SimCore
             osg::Vec3 mLastPos;
             osg::Vec3 mAccumulatedLinearVelocity;
             osg::Vec3 mAccumulatedAcceleration; 
+            osg::Vec3 mAccelerationCalculatedForLastPublish; // Used in SetLastKnownValuesBeforePublish()
             int mVelocityAverageFrameCount;
 
             ///////////////////////////////////////////////////
