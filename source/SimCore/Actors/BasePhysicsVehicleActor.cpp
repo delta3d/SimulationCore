@@ -322,6 +322,27 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
+      {
+
+         /// DAMPEN THE ACCELERATION TO PREVENT WILD SWINGS WITH DEAD RECKONING
+         //
+         // Dampen the acceleration before publication if the vehicle is making drastic changes 
+         // in direction. With drastic changes, the acceleration will cause the Dead Reckoned 
+         // pos to oscillate wildly. Whereas it will improve DR on smooth curves such as a circle.
+         // The math is: take the current accel and the non-scaled accel from the last publish;
+         // normalize them; dot them and use the product to scale our current Acceleration. 
+         osg::Vec3 curAccel = GetCurrentAcceleration();
+         curAccel.normalize();
+         float accelDotProduct = curAccel * mAccelerationCalculatedForLastPublish; // dot product
+         SetCurrentAcceleration(GetCurrentAcceleration() * dtUtil::Max(0.0f, accelDotProduct));
+         mAccelerationCalculatedForLastPublish = curAccel; // Hold for next time (pre-normalized)
+
+
+         BaseClass::SetLastKnownValuesBeforePublish(pos, rot);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateDeadReckoningValues(float deltaTime)
       {
          // Increment how long it's been since our last DR check. We can only send out an update
@@ -363,15 +384,11 @@ namespace SimCore
             osg::Vec3 instantVelocity = distanceMoved / deltaTime;
 
             // Compute our acceleration as the instantaneous differential of the velocity
-            // Note, we don't 'blend' the acceleration because we are already blending the velocity above.
+            // Acceleration is dampened before publication - see SetLastKnownValuesBeforePublish().
             // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
             // and make your own call to SetCurrentAcceleration().
-            osg::Vec3 changeInVelocity = instantVelocity - GetLastKnownVelocity();
-            mAccumulatedAcceleration = changeInVelocity / mSecsSinceLastUpdateSent;
-            // An alternate way to estimate is to do it every frame, exactly. This makes CIRCLES look great, but
-            // sharp back and forth turns become wild and unbelievable. .
-            //osg::Vec3 changeInVelocity = instantVelocity - mAccumulatedLinearVelocity;
-            //mAccumulatedAcceleration = changeInVelocity / deltaTime;
+            osg::Vec3 changeInVelocity = instantVelocity - mAccumulatedLinearVelocity;
+            mAccumulatedAcceleration = changeInVelocity / deltaTime;
 
             // Compute Vel - either the instant Vel or a blended value over a couple of frames. Blended Velocities tend to make acceleration less useful
             if (mVelocityAverageFrameCount == 1)
