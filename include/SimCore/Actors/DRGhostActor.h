@@ -75,8 +75,8 @@ namespace SimCore
             SimCore::Actors::BaseEntity *GetSlavedEntity() { return mSlavedEntity.get(); }
 
             /// The velocity scalar is used to magnify the velocity that is rendered to make it more or less visible. Default is 1.0f
-            void SetVelocityArrowDrawScalar(float newValue) { mArrowDrawScalar = newValue; }
-            float GetVelocityArrowDrawScalar() { return mArrowDrawScalar; }
+            void SetArrowDrawScalar(float newValue) { mArrowDrawScalar = newValue; }
+            float GetArrowDrawScalar() { return mArrowDrawScalar; }
 
             /// The number of velocity trails that we are showing. You MUST set this before adding it to the GM.
             void SetArrowMaxNumTrails(unsigned int newValue);
