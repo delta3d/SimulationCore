@@ -185,13 +185,13 @@ namespace DriverDemo
       mTimeSinceBorn += deltaTime;
 
       // Delete the target after dead a while or just too 'old'
-      if (mTimeSinceKilled > 1.0 || mTimeSinceWasHit > 10.0f)
+      if (mTimeSinceKilled > 1.0 || mTimeSinceWasHit > 8.0f)
       {
          DoExplosion();
 
          GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
       }
-      else if (mTimeSinceBorn > 120.0f)
+      else if (mTimeSinceBorn > 90.0f)
       {
          GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
       }

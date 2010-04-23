@@ -33,6 +33,7 @@
 #include <SimCore/MessageType.h>
 #include <SimCore/PlayerMotionModel.h>
 #include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/Actors/DRGhostActor.h>
 #include <dtCore/refptr.h>
 
 namespace dtAudio
@@ -249,10 +250,14 @@ namespace DriverDemo
          void ToggleView();
          void AttachToView( const std::string& viewNodeName );
 
-      private:
+         /// Clean up method for the dead reckoning ghost actor
+         void CleanUpDRGhost();
+         /// Create or destroy the dead reckoning ghost actor
+         void ToggleDRGhost();
 
-         // ?:???? void UpdateInteriorModel();
-         //void StopAnyWeaponsFiring();
+         void KillEnemy(bool killAllEnemies);
+
+      private:
 
          void HandleHelpPressed();
          DriverHUD* GetHUDComponent();
@@ -360,6 +365,11 @@ namespace DriverDemo
          static const dtUtil::RefString DOF_NAME_VIEW_01;
          static const dtUtil::RefString DOF_NAME_VIEW_02;
          static const dtUtil::RefString DOF_NAME_VIEW_DEFAULT;
+
+         enum DR_GHOST_MODE { NONE = 1, GHOST_ON };
+         DR_GHOST_MODE mDRGhostMode;
+         dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;
+
    };
 }
 #endif

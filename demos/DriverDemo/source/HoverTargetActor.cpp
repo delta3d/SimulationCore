@@ -26,6 +26,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
+#include <dtCore/System.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/basemessages.h>
 #include <osg/Switch>
@@ -39,6 +40,8 @@
 
 #include <dtUtil/nodeprintout.h>
 
+#include <osg/Stats>
+
 namespace DriverDemo
 {
 
@@ -48,6 +51,7 @@ namespace DriverDemo
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)
       , mTimeSinceBorn(0.0f)
+      , mPerfThrottleCountDown(0)
    {
 
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
@@ -85,7 +89,7 @@ namespace DriverDemo
       {
          startVec[0] += dtUtil::RandFloat(-10.0, 10.0);
          startVec[1] += dtUtil::RandFloat(-10.0, 10.0);
-         startVec[2] += dtUtil::RandFloat(0.0, 4.0);
+         startVec[2] += dtUtil::RandFloat(-3.0, 1.0);
 
          // Since we changed our starting position, update our visual actor, or it 'blips' for
          // one frame in the wrong place. Very ugly.
@@ -120,7 +124,7 @@ namespace DriverDemo
       else
       {
          // Give it a boost upwards on creation.
-         osg::Vec3 dir(0.0, 0.0, 2000.0);
+         osg::Vec3 dir(0.0, 0.0, 1000.0);
          ApplyForce(dir, osg::Vec3(0.0f, 0.0f, 0.0f), true);
 
          // Offset the Target Dir so that they spread out around the map.
@@ -144,11 +148,54 @@ namespace DriverDemo
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   bool HoverTargetActor::CheckAndUpdatePerformanceThrottle(float deltaTime)
+   {
+      bool result = false;
+
+      // if already throttling, 
+      if (mPerfThrottleCountDown > 0)
+      {
+         mPerfThrottleCountDown --;
+         result = (mPerfThrottleCountDown == 0);
+      }
+      else // Check to see if we should throttle down for performance reasons
+      {
+         result = true; // for sure we need to do it this frame, but maybe we skip next time.
+         
+         // get pre-frame time
+         //osg::Stats* stats = dtCore::System::GetInstance().GetStats();
+         //if (stats != NULL && stats->collectStats(dtCore::System::MESSAGE_PRE_FRAME))
+         //{
+         //   double lastPreFrameTime = stats->getAttribute(stats->getLatestFrameNumber(), dtCore::System::MESSAGE_PRE_FRAME);
+         //}
+         double lastPreFrameTime = dtCore::System::GetInstance().
+            GetSystemStageTime(dtCore::System::STAGE_PREFRAME);
+         if (lastPreFrameTime > 2.0) // past our budget
+         {
+            // determine how many to skip. Needs to be random or else all 
+            // the targets will skip at the same time in a staggered burst
+            // get a num from 0.5 to 5.5. Multiply by a rand (0,1). Truncate to int. Skip that many.
+            float modifier = (((float) lastPreFrameTime) - 1.0f)/2.0f; 
+            modifier = dtUtil::Min(modifier, 5.5f) * dtUtil::RandFloat(0.0f, 1.0f);
+            mPerfThrottleCountDown = (int) modifier;
+         }
+      }
+      return result;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
    void HoverTargetActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       if( ! IsMobilityDisabled())
       {
-         GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
+         if (CheckAndUpdatePerformanceThrottle(deltaTime))
+         {
+            GetTargetPhysicsHelper()->ApplyTargetHoverForces(deltaTime, mGoalLocation);
+         }
+         else
+         {
+            GetTargetPhysicsHelper()->ApplyForceFromLastFrame(deltaTime);
+         }
       }
       else
       {
@@ -158,11 +205,20 @@ namespace DriverDemo
       mTimeSinceBorn += deltaTime;
 
       // Delete the target after dead a while or just too 'old'
-      if (mTimeSinceBorn > 120.0f || mTimeSinceKilled > 20.0f)
+      if (mTimeSinceBorn > 90.0f || mTimeSinceKilled > 10.0f)
       {
          GetGameActorProxy().GetGameManager()->DeleteActor(GetGameActorProxy());
       }
    }
+
+   //////////////////////////////////////////////////////////////////////
+   float HoverTargetActor::ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message,
+      const SimCore::Actors::MunitionTypeActor& munition)
+   {
+      // Take more damage so we die quicker.
+      return incomingDamage * 2.0f;
+   }
+
 
    //////////////////////////////////////////////////////////////////////
    // PROXY

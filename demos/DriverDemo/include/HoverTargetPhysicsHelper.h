@@ -50,6 +50,8 @@ namespace DriverDemo
          // Properties
          float  mGroundClearance;       /// How far above the ground we should be.
 
+         osg::Vec3 mTotalForceAppliedLastTime;
+
       public:
 
          float GetCurentMPH();
@@ -64,6 +66,7 @@ namespace DriverDemo
             const osg::Vec3 &direction, float &distanceToHit);
 
          void ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation);
+         void ApplyForceFromLastFrame(float deltaTime);
 
          //////////////////////////////////////////////////////////////////////////////////////
          //                                    Properties                                    //

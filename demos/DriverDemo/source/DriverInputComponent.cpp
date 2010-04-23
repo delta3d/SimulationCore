@@ -142,7 +142,8 @@ namespace DriverDemo
       mLastDamageState(&SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE),
       mViewNodeName(DOF_NAME_VIEW_DEFAULT.Get()),
       mEnvUpdateTime(0.0f),
-      mEnvUpdateAttempts(2)
+      mEnvUpdateAttempts(2),
+      mDRGhostMode(NONE)
    {
       mMachineInfo = new dtGame::MachineInfo;
 
@@ -172,6 +173,8 @@ namespace DriverDemo
          mSoundTurretTurnEnd.release();
          mSoundTurretTurnEnd = NULL;
       }
+
+      mDRGhostActorProxy = NULL;
    }
 
    ////////////////////////////////////////////////////////////////////////////////
@@ -402,6 +405,15 @@ namespace DriverDemo
          }
          break;
 
+         case osgGA::GUIEventAdapter::KEY_Delete:
+            {
+               // Delete all if shift held, otherwise, just one.
+               bool deleteAll = keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_L) ||
+                  keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_R);
+               KillEnemy(deleteAll);
+            }
+            break;
+
          case 'p':
          {
             std::string developerMode;
@@ -425,6 +437,12 @@ namespace DriverDemo
                }
             }
             break;
+
+         case 'g':
+            {
+               ToggleDRGhost();
+               break;
+            }
 
          case 'o':
          {
@@ -1447,7 +1465,7 @@ namespace DriverDemo
             mDOFSeat->removeChild( mSeat->GetOSGNode() );
          }
 
-         mDOFSeat = mVehicle->GetNodeCollector()->GetDOFTransform(mViewNodeName);
+         mDOFSeat = mVehicle->GetNodeCollector()->GetDOFTransform(viewNodeName/*mViewNodeName*/);
 
          if( mDOFSeat.valid() )
          {
@@ -1455,6 +1473,92 @@ namespace DriverDemo
             mDOFSeat->addChild( mSeat->GetOSGNode() );
          }
       }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::ToggleDRGhost()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      // basic error check.
+      if (!mVehicle.valid() || mPhysVehicle == NULL)
+      {
+         CleanUpDRGhost();
+         return;
+      }
+
+      // state - NONE, go to GHOST_ON
+      if (mDRGhostMode == NONE)
+      {
+         // create ghost and add to world
+         LOG_ALWAYS("Enabling Ghost Dead Reckoning behavior.");
+         GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
+         if (mDRGhostActorProxy.valid())
+         {
+            SimCore::Actors::DRGhostActor* actor = NULL;
+            mDRGhostActorProxy->GetActor(actor);
+            actor->SetSlavedEntity(mVehicle);
+            GetGameManager()->AddActor(*mDRGhostActorProxy, false, false);
+         }
+
+         mDRGhostMode = GHOST_ON;
+      }
+
+      // state - GHOST_ON, go to NONE
+      else if (mDRGhostMode == GHOST_ON)
+      {
+         LOG_ALWAYS(" --- Removing DR Ghost.");
+         CleanUpDRGhost();
+      }
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::CleanUpDRGhost()
+   {
+      if (mDRGhostActorProxy.valid())
+      {
+         GetGameManager()->DeleteActor(*mDRGhostActorProxy.get());
+         mDRGhostActorProxy = NULL;
+         mDRGhostMode = NONE;
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::KillEnemy(bool killAllEnemies)
+   {
+      // We use the Munitions Component to do the damage to the object
+      SimCore::Components::MunitionsComponent* munitionsComp = NULL;
+      GetGameManager()->GetComponentByName(SimCore::Components::MunitionsComponent::DEFAULT_NAME, munitionsComp);
+      if (munitionsComp == NULL)
+      {
+         LOG_ERROR("No Munitions Component. ERROR!");
+         return;
+      }
+
+      // Look for a enemy actor.
+      std::vector<dtGame::GameActorProxy*> allGameActors;
+      GetGameManager()->GetAllGameActors(allGameActors);
+      // Iterate through all the game actors to find one of our enemies.
+      unsigned int numActors = allGameActors.size();
+      for(unsigned i = 0; i < numActors; i++)
+      {
+         // Find an entity that is not already destroyed and is also a mine, helix, etc...
+         SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(allGameActors[i]->GetActor());
+         if (entity != NULL && entity->GetDamageState() != SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED && 
+            (allGameActors[i]->GetActorType() == *DriverActorRegistry::HOVER_TARGET_ACTOR_TYPE ||
+            allGameActors[i]->GetActorType() == *DriverActorRegistry::HOVER_EXPLODING_TARGET_ACTOR_TYPE))
+         {
+            munitionsComp->SetDamage(*entity, SimCore::Components::DamageType::DAMAGE_KILL);
+            //SimCore::Components::DamageStateEnum::DESTROYED);
+
+            // Stop after one or keep going for all
+            if (!killAllEnemies)
+               break;
+         }
+      }
+
    }
 
 }

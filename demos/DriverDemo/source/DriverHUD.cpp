@@ -344,19 +344,21 @@ namespace DriverDemo
             * Vehicle Controls * \n\
             \n\
             Mouse - Aim weapon\n\
-            Mouse + Left Crtl - Look around\n\
             Mouse Left Btn - Fire\n\
             Mouse + Right Btn - Turn ring mount\n\
-            H - Cycle weapon\n\
+            H - Change Weapon\n\
             Space - Jump\n\
             R - Reset Vehicle\n\
-            T - Drop Hover Target\n\
-            . - Toggle View Mode\
-            \n\
+            T - Create Target\n\
+            . - Toggle View Mode\n\
+            G - Show DR Ghost\n\
+            Del - Kill Target (+ Shft=All)\n\
+            I & O - Change Time\n\
             F1 - Help\n\
             \n\
             Alt-X - Exit the app\n\
             Esc - Full screen");
+            //Mouse + Left Crtl - Look around\n\
 
       mHelpText_Gunner = CreateText( "HelpText_Gunner", text, offsetX, offsetY, 1.0, 1.0 );
       mHelpText_Gunner->SetAlignment(*align);
