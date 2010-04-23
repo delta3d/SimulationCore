@@ -36,6 +36,16 @@ namespace dtAudio
    class Sound;
 }
 
+namespace SimCore
+{
+   class DetonationMessage;
+
+   namespace Actors
+   {
+      class MunitionTypeActor;
+   }
+}
+
 namespace DriverDemo
 {
    class VehicleShield;
@@ -73,6 +83,10 @@ namespace DriverDemo
             return static_cast<HoverTargetPhysicsHelper*> (GetPhysicsHelper());
          }
 
+         /// Overridden from Base Entity. Allows us to take more or less damage from a hit.
+         virtual float ValidateIncomingDamage(float incomingDamage, const SimCore::DetonationMessage& message,
+            const SimCore::Actors::MunitionTypeActor& munition);
+
 
       protected:
          /// Angles/ steering moving etc done here. Of the updates, this is called first.
@@ -87,6 +101,7 @@ namespace DriverDemo
          /// Does nothing by default.
          virtual void UpdateSoundEffects(float deltaTime);
 
+         bool CheckAndUpdatePerformanceThrottle(float deltaTime);
 
       // Private vars
       private:
@@ -104,6 +119,8 @@ namespace DriverDemo
 
          float mTimeSinceKilled;        /// How long it's been since the target was killed, delete after like 20 seconds
          float mTimeSinceBorn;          /// How long we've been alive - so we can time out after a while.
+
+         int mPerfThrottleCountDown; // num of frames we will skip if we had to slow down for perf reasons
 
 
          dtCore::RefPtr<VehicleShield> mShield;

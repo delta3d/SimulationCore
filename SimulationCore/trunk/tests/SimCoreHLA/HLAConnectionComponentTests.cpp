@@ -115,10 +115,11 @@ void HLAConnectionComponentTests::TestAdditionalMaps()
       mGameManager->AddComponent(*mTranslator, dtGame::GameManager::ComponentPriority::NORMAL);
       mGameManager->AddComponent(*mHLACC, dtGame::GameManager::ComponentPriority::NORMAL);
       
-      
       mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "1", "Map1");
       mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "2", "Map2");
       mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "3", "Map3");
+      // The config file is being found in the root dir and it is using that when it starts up.
+      mApp->SetConfigPropertyValue(SimCore::Utils::CONFIG_PROP_ADDITIONAL_MAP + "4", "");
 
       std::vector<std::string> toFill;
       SimCore::Utils::GetAdditionalMaps(*mGameManager, toFill);
