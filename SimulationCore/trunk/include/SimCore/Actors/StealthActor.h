@@ -39,7 +39,7 @@ namespace SimCore
          public:
 
             /// Constructor
-            StealthActor(dtGame::GameActorProxy &proxy);
+            StealthActor(dtGame::GameActorProxy& proxy);
 
             /**
              * Sets the on the Stealth Actor
@@ -60,8 +60,8 @@ namespace SimCore
              * Invokable used to make this entity attach to another.
              */
             virtual void AttachToActor(const dtGame::Message& attachMessage);
-            void Detach(const dtGame::Message &msg);
-            void UpdateFromParent(const dtGame::Message &msg);
+            void Detach(const dtGame::Message& msg);
+            void UpdateFromParent(const dtGame::Message& msg);
 
             /**
              * Invokable used to make this entity warp to a position.  It will also detach.
@@ -73,7 +73,7 @@ namespace SimCore
 
             /// Direct callable version of attaching/detaching without an attach message
             void AttachOrDetachActor(dtGame::GameActorProxy* ga, 
-               const dtCore::UniqueId &id, const std::string &attachPointNode = std::string(""), 
+               const dtCore::UniqueId& id, const std::string& attachPointNode = std::string(""),
                const osg::Vec3 &attachRotationHPR = osg::Vec3());
 
          protected:
@@ -89,8 +89,8 @@ namespace SimCore
              */
             void AttachOrDetachActor(const AttachToActorMessage* ataMsg = NULL);
             void DoDetach();
-            virtual void DoAttach(dtGame::GameActorProxy& ga, const std::string &attachPointNode, 
-               const osg::Vec3 &attachRotationHPR);
+            virtual void DoAttach(dtGame::GameActorProxy& ga, const std::string& attachPointNode,
+               const osg::Vec3& attachRotationHPR);
             void DoAttach(const AttachToActorMessage& ataMsg, dtGame::GameActorProxy& ga);
 
             /// This should be set to false in the PlayerActor subclass of this class
