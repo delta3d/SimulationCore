@@ -251,8 +251,7 @@ namespace DriverDemo
             dtPhysics::MaterialDef fallbackFriction;
             fallbackFriction.SetStaticFriction(0.0f);
             fallbackFriction.SetRestitution (0.3f);
-            dtPhysics::PhysicsWorld::GetInstance().GetMaterials().NewMaterial ("FrictionLessMaterial", fallbackFriction );
-            material = dtPhysics::PhysicsWorld::GetInstance().GetMaterials().GetMaterial("FrictionLessMaterial");
+            material = dtPhysics::PhysicsWorld::GetInstance().GetMaterials().NewMaterial ("FrictionLessMaterial", fallbackFriction );
          }
 
          physObj->SetMaterial(material);
