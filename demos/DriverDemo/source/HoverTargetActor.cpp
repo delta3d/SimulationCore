@@ -26,7 +26,7 @@
 #include <dtUtil/mathdefines.h>
 #include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
-#include <dtCore/System.h>
+#include <dtCore/system.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/basemessages.h>
 #include <osg/Switch>
