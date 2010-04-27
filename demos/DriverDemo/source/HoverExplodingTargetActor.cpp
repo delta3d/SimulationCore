@@ -54,7 +54,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverExplodingTargetActor ::HoverExplodingTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   HoverExplodingTargetActor ::HoverExplodingTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)

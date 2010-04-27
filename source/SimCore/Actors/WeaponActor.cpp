@@ -876,151 +876,152 @@ namespace SimCore
       {
          PlatformActorProxy::BuildPropertyMap();
 
-         WeaponActor& actor = static_cast<WeaponActor&>(GetGameActor());
+         WeaponActor* actor = NULL;
+         GetActor(actor);
 
-         const std::string& groupResources("Resources");
-         const std::string& groupMunitions("Munitions");
-         const std::string& groupBehaviors("Behaviors");
-         const std::string& groupStatus("Status");
-         const std::string& groupActors("Associate Actors");
+         static const dtUtil::RefString groupResources("Resources");
+         static const dtUtil::RefString groupMunitions("Munitions");
+         static const dtUtil::RefString groupBehaviors("Behaviors");
+         static const dtUtil::RefString groupStatus("Status");
+         static const dtUtil::RefString groupActors("Associate Actors");
 
          // --- RESOURCE PROPERTIES --- //
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "Fire Sound", "Fire Sound",
-            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundFire),
+            dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundFire),
             "The sound produced when this weapon fires.",
             groupResources));
 
          /*AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "Dry Fire Sound", "Dry Fire Sound",
-            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundDryFire),
+            dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundDryFire),
             "The sound produced when this weapon attempts to fire nothing.",
             groupResources));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
             "Jammed Sound", "Jammed Sound",
-            dtDAL::MakeFunctor(actor, &WeaponActor::LoadSoundJammed),
+            dtDAL::ResourceActorProperty::SetFuncType(actor, &WeaponActor::LoadSoundJammed),
             "The sound produced when this weapon fires unsuccessfully, jamming on its internal ammunition or parts.",
             groupResources));*/
 
          // --- PRIMITIVE PROPERTIES --- //
 
          AddProperty(new dtDAL::BooleanActorProperty("Use Bullet Physics","Use Bullet Physics",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetUsingBulletPhysics),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsUsingBulletPhysics),
+            dtDAL::BooleanActorProperty::SetFuncType( actor, &WeaponActor::SetUsingBulletPhysics),
+            dtDAL::BooleanActorProperty::GetFuncType( actor, &WeaponActor::IsUsingBulletPhysics),
             "Enables the weapon to send detonation messages for rounds when they impact.",
             groupStatus));
 
          AddProperty(new dtDAL::BooleanActorProperty("Trigger Held","Trigger Held",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetTriggerHeld),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsTriggerHeld),
+            dtDAL::BooleanActorProperty::SetFuncType( actor, &WeaponActor::SetTriggerHeld),
+            dtDAL::BooleanActorProperty::GetFuncType( actor, &WeaponActor::IsTriggerHeld),
             "Sets the trigger's state to held or not held.",
             groupStatus));
 
          AddProperty(new dtDAL::BooleanActorProperty("Jammed","Jammed",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetJammed),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::IsJammed),
+            dtDAL::BooleanActorProperty::SetFuncType( actor, &WeaponActor::SetJammed),
+            dtDAL::BooleanActorProperty::GetFuncType( actor, &WeaponActor::IsJammed),
             "Sets the weapon's state to jammed/unjammed",
             groupStatus));
 
          AddProperty(new dtDAL::FloatActorProperty("Recoil Distance","Recoil Distance",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetRecoilDistance),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetRecoilDistance),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetRecoilDistance),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetRecoilDistance),
             "The distance in meters that the weapon jumps backward along the line of fire.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Recoil Rest Time","Recoil Rest Time",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetRecoilRestTime),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetRecoilRestTime),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetRecoilRestTime),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetRecoilRestTime),
             "The time in seconds that it take the weapon to return to it resting position from recoil",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Auto Sleep Time","Auto Sleep Time",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetAutoSleepTime),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAutoSleepTime),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetAutoSleepTime),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetAutoSleepTime),
             "The time in seconds from the last fired shot to the instant the weapon will unregister from TickLocal.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Fire Velocity", "Fire Velocity",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFireVelocity ),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFireVelocity ),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetFireVelocity ),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetFireVelocity ),
             "The average scalar velocity of munitions leaving this weapon.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Fire Rate","Fire Rate",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFireRate),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFireRate),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetFireRate),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetFireRate),
             "Number of rounds that can be fired per second; fractional numbers can be used for odd or slow re-fire cycles.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Jam Probability","Jam Probability",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetJamProbability),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetJamProbability),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetJamProbability),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetJamProbability),
             "Probability from 0.0 to 1.0 that this weapon will jam when firing a round.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Flash Probability","Flash Probability",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashProbability),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashProbability),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetFlashProbability),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetFlashProbability),
             "Probability from 0.0 to 1.0 that this weapon will produce a flash effect when firing a round.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Flash Time","Flash Time",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashTime),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashTime),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetFlashTime),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetFlashTime),
             "time in seconds that a weapon flash will remain visible.",
             groupBehaviors));
 
          AddProperty(new dtDAL::FloatActorProperty("Time Between Messages","Time Between Messages",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetTimeBetweenMessages),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetTimeBetweenMessages),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponActor::SetTimeBetweenMessages),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponActor::GetTimeBetweenMessages),
             "The minimum amount of time allowed between fire and detonation messages.",
             groupBehaviors));
 
          AddProperty(new dtDAL::IntActorProperty( "Tracer Frequency", "Tracer Frequency",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetTracerFrequency),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetTracerFrequency),
+            dtDAL::IntActorProperty::SetFuncType( actor, &WeaponActor::SetTracerFrequency),
+            dtDAL::IntActorProperty::GetFuncType( actor, &WeaponActor::GetTracerFrequency),
             "The number of rounds that must be fired to reveal one tracer round.",
             groupBehaviors));
 
          AddProperty(new dtDAL::IntActorProperty( "Ammo Count", "Ammo Count",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetAmmoCount),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoCount),
+            dtDAL::IntActorProperty::SetFuncType( actor, &WeaponActor::SetAmmoCount),
+            dtDAL::IntActorProperty::GetFuncType( actor, &WeaponActor::GetAmmoCount),
             "The current count of ammo this weapon is holding (this clamped by Ammo Max).",
             groupStatus));
 
          AddProperty(new dtDAL::IntActorProperty( "Ammo Max", "Ammo Max",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetAmmoMax),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetAmmoMax),
+            dtDAL::IntActorProperty::SetFuncType( actor, &WeaponActor::SetAmmoMax),
+            dtDAL::IntActorProperty::GetFuncType( actor, &WeaponActor::GetAmmoMax),
             "The maximum count of ammo this weapon can hold.",
             groupStatus));
 
          AddProperty(new dtDAL::StringActorProperty( "Munition Type Name", "Munition Type Name",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeName),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeName),
+            dtDAL::StringActorProperty::SetFuncType( actor, &WeaponActor::SetMunitionTypeName),
+            dtDAL::StringActorProperty::GetFuncType( actor, &WeaponActor::GetMunitionTypeName),
             "Set the munition type name of the MunitionTypeActor to be loaded from the MunitionsComponent.",
             groupMunitions));
 
          // --- ACTOR PROPERTIES --- //
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Munition Type", "Munition Type",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetMunitionTypeProxy ),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetMunitionTypeDrawable ),
+            dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetMunitionTypeProxy ),
+            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetMunitionTypeDrawable ),
             MunitionTypeActorProxy::CLASS_NAME,
             "A reference to the MunitionTypeActor that will have data related to the munition this weapon will fire.",
             groupMunitions));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Owner", "Owner",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetOwner ),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetOwner ),
+            dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetOwner ),
+            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetOwner ),
             "", // anything might be able to own a weapon
             "A reference to the owning actor that is published on the network and that will need to send its ID in weapon fire messages.",
             groupActors));
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "Flash Actor", "Flash Actor",
-            dtDAL::MakeFunctor( actor, &WeaponActor::SetFlashActorProxy ),
-            dtDAL::MakeFunctorRet( actor, &WeaponActor::GetFlashActorDrawable ),
+            dtDAL::ActorActorProperty::SetFuncType( actor, &WeaponActor::SetFlashActorProxy ),
+            dtDAL::ActorActorProperty::GetFuncType( actor, &WeaponActor::GetFlashActorDrawable ),
             WeaponFlashActorProxy::CLASS_NAME,
             "A reference to the flash actor responsible for timing and rendering flash effects.",
             groupActors));

@@ -218,9 +218,10 @@ namespace NetDemo
    {
       BaseClass::BuildPropertyMap();
       
-      const std::string GROUP = "Enemy Props";
+      static const dtUtil::RefString GROUP = "Enemy Props";
 
-      EnemyMothershipActor& actor = static_cast<EnemyMothershipActor &>(GetGameActor());
+//      EnemyMotherShip* actor = NULL;
+//      GetActor(actor);
 
    }
 
@@ -240,6 +241,7 @@ namespace NetDemo
 
    void EnemyMothershipActorProxy::OnRemovedFromWorld()
    {
-      EnemyMothershipActor& actor = static_cast<EnemyMothershipActor&>(GetGameActor());      
+//      EnemyMotherShip* actor = NULL;
+//      GetActor(actor);
    }
 } // namespace

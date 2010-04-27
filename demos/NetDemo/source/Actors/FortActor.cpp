@@ -188,7 +188,8 @@ namespace NetDemo
       const std::string VEH_GROUP   = "Fort Values";
       BaseClass::BuildPropertyMap();
 
-      FortActor& actor = *static_cast<FortActor*>(GetActor());
+//      FortActor* actor = NULL;
+//      GetActor(actor);
 
       // Add properties
    }

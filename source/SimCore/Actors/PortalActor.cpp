@@ -46,25 +46,26 @@ namespace SimCore
       ///////////////////////////////////////////////////////
       void PortalProxy::BuildPropertyMap()
       {
-         const std::string GROUP = "Portal";
+         static const std::string GROUP = "Portal";
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         Portal &actor = static_cast<Portal&>(GetGameActor());
+         Portal* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::StringActorProperty("Portal Name", "Portal Name",
-            dtDAL::MakeFunctor(actor, &Portal::SetPortalName),
-            dtDAL::MakeFunctorRet(actor, &Portal::GetPortalName),
+            dtDAL::StringActorProperty::SetFuncType(actor, &Portal::SetPortalName),
+            dtDAL::StringActorProperty::GetFuncType(actor, &Portal::GetPortalName),
             "Portal Send over name",GROUP ));
 
          AddProperty(new dtDAL::ActorActorProperty(*this, "ActorLink", "ActorLink",
-            dtDAL::MakeFunctor(actor, &Portal::SetActorLink),
-            dtDAL::MakeFunctorRet(actor, &Portal::GetActorLink),
+            dtDAL::ActorActorProperty::SetFuncType(actor, &Portal::SetActorLink),
+            dtDAL::ActorActorProperty::GetFuncType(actor, &Portal::GetActorLink),
             "SimCore::Actors::Platform",
             "Portal Attached", GROUP));
 
          AddProperty(new dtDAL::BooleanActorProperty("DoorOpen", "DoorOpen",
-            dtDAL::MakeFunctor(actor, &Portal::SetIsOpen),
-            dtDAL::MakeFunctorRet(actor, &Portal::GetIsOpen),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &Portal::SetIsOpen),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &Portal::GetIsOpen),
             "Is the door open?",GROUP ));
       }
 

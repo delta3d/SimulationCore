@@ -524,15 +524,15 @@ namespace SimCore
          static const dtUtil::RefString PROPERTY_SOURCE_FORCE_DESC("The force of the entity that reported this.");
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(
             PROPERTY_SOURCE_FORCE, PROPERTY_SOURCE_FORCE,
-            dtDAL::MakeFunctor(*pm, &PositionMarker::SetSourceForce),
-            dtDAL::MakeFunctorRet(*pm, &PositionMarker::GetSourceForce),
+            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::SetFuncType(pm, &PositionMarker::SetSourceForce),
+            dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>::GetFuncType(pm, &PositionMarker::GetSourceForce),
             PROPERTY_SOURCE_FORCE_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_SOURCE_SERVICE_DESC("The service of the entity that reported this.");
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>(
             PROPERTY_SOURCE_SERVICE, PROPERTY_SOURCE_SERVICE,
-            dtDAL::MakeFunctor(*pm, &PositionMarker::SetSourceService),
-            dtDAL::MakeFunctorRet(*pm, &PositionMarker::GetSourceService),
+            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::SetFuncType(pm, &PositionMarker::SetSourceService),
+            dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>::GetFuncType(pm, &PositionMarker::GetSourceService),
             PROPERTY_SOURCE_SERVICE_DESC, POSITION_MARKER_GROUP));
 
          static const dtUtil::RefString PROPERTY_SOURCE_CALLSIGN_DESC("The callsign of the entity that reported this.");
@@ -634,8 +634,8 @@ namespace SimCore
                   "Valid values are 0.0 - 1.0 where 0.0 is invisible.");
          AddProperty(new dtDAL::FloatActorProperty(
             PROPERTY_INITIAL_ALPHA, PROPERTY_INITIAL_ALPHA,
-            dtDAL::MakeFunctor(*pm, &PositionMarker::SetInitialAlpha),
-            dtDAL::MakeFunctorRet(*pm, &PositionMarker::GetInitialAlpha),
+            dtDAL::FloatActorProperty::SetFuncType(pm, &PositionMarker::SetInitialAlpha),
+            dtDAL::FloatActorProperty::GetFuncType(pm, &PositionMarker::GetInitialAlpha),
             PROPERTY_INITIAL_ALPHA_DESC, POSITION_MARKER_GROUP));
       }
 

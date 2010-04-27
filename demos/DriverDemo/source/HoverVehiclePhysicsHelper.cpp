@@ -270,27 +270,28 @@ namespace DriverDemo
    {
       dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
 
-      const std::string& VEHICLEGROUP = "Vehicle Physics";
+      static const dtUtil::RefString VEHICLEGROUP = "Vehicle Physics";
 
+      static const dtUtil::RefString MAX_FORWARD_MPH_DESC("The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.");
       toFillIn.push_back(new dtDAL::FloatActorProperty("Max Forward MPH", "Max Forward MPH",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleMaxForwardMPH),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleMaxForwardMPH),
-         "The theoretical max speed this vehicle can go (using forward thrust) in any direction under normal conditions.", VEHICLEGROUP));
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetVehicleMaxForwardMPH),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetVehicleMaxForwardMPH),
+               MAX_FORWARD_MPH_DESC, VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Max Strafe Or ReverseMPH", "Max Strafe Or ReverseMPH",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetVehicleMaxStrafeMPH),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetVehicleMaxStrafeMPH),
-         "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetVehicleMaxStrafeMPH),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetVehicleMaxStrafeMPH),
+               "The theoretical max speed this vehicle would go using just reverse or strafe thrust under normal conditions.", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetGroundClearance),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetGroundClearance),
-         "The height we should try to leave beneath our vehicle (cause we hover...).", VEHICLEGROUP));
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetGroundClearance),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetGroundClearance),
+               "The height we should try to leave beneath our vehicle (cause we hover...).", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("ForceBoostFactor", "Force Boost Factor",
-         dtDAL::MakeFunctor(*this, &HoverVehiclePhysicsHelper::SetForceBoostFactor),
-         dtDAL::MakeFunctorRet(*this, &HoverVehiclePhysicsHelper::GetForceBoostFactor),
-         "Multiplied times the max speeds to determine force to apply (ex. 0.25).", VEHICLEGROUP));
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverVehiclePhysicsHelper::SetForceBoostFactor),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverVehiclePhysicsHelper::GetForceBoostFactor),
+               "Multiplied times the max speeds to determine force to apply (ex. 0.25).", VEHICLEGROUP));
 
    }
 } // end namespace

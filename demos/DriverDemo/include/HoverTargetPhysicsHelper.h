@@ -62,10 +62,10 @@ namespace DriverDemo
          //bool CreateTarget(osg::Vec3 &startVec, bool isRemote); 
          bool CreateTarget(const dtCore::Transform& transformForRot, osg::Node* bodyNode);
 
-         float ComputeEstimatedForceCorrection(const osg::Vec3 &location, 
-            const osg::Vec3 &direction, float &distanceToHit);
+         float ComputeEstimatedForceCorrection(const osg::Vec3& location,
+            const osg::Vec3& direction, float& distanceToHit);
 
-         void ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation);
+         void ApplyTargetHoverForces(float deltaTime, osg::Vec3& goalLocation);
          void ApplyForceFromLastFrame(float deltaTime);
 
          //////////////////////////////////////////////////////////////////////////////////////
@@ -76,17 +76,10 @@ namespace DriverDemo
          // Build the property list for the actor
          virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-         float GetSphereRadius() 
-         {
-            dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
-            if (physicsObject != NULL)
-               return physicsObject->GetExtents().x();
-            else 
-               return 0.0;
-         }
+         float GetSphereRadius();
 
-         float GetGroundClearance() {return mGroundClearance;}        
-         void SetGroundClearance(float value)  {mGroundClearance = value;}        
+         float GetGroundClearance() const;
+         void SetGroundClearance(float value);
 
    };
 }

@@ -26,6 +26,8 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <SimCore/Actors/DynamicLightPrototypeActor.h>
 
+#include <dtDAL/functor.h> // deprecated
+
 namespace SimCore
 {
    namespace Actors

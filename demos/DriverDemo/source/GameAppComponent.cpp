@@ -97,7 +97,7 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void GameAppComponent::ProcessMessage(const dtGame::Message &msg)
+   void GameAppComponent::ProcessMessage(const dtGame::Message& msg)
    {      
    }
 
@@ -143,7 +143,7 @@ namespace DriverDemo
    }
 
    //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::BasePhysicsVehicleActor *GameAppComponent::CreateNewVehicle()
+   SimCore::Actors::BasePhysicsVehicleActor* GameAppComponent::CreateNewVehicle()
    {
       SimCore::Actors::BasePhysicsVehicleActor* vehicle = NULL;
       std::string vehicleName = "Hover_Vehicle"; // The default. Change with command line args.

@@ -55,22 +55,23 @@ namespace SimCore
 
       void FireActorProxy::BuildPropertyMap()
       {
-         FireActor *fa = static_cast<FireActor*>(GetActor());
+         FireActor* fa = NULL;
+         GetActor(fa);
 
          LocalEffectActorProxy::BuildPropertyMap();
 
          AddProperty(new dtDAL::BooleanActorProperty("Enable Fire", "Enable Fire", 
-            dtDAL::MakeFunctor(*fa, &FireActor::SetEnabled), 
-            dtDAL::MakeFunctorRet(*fa, &FireActor::GetEnabled), 
+            dtDAL::BooleanActorProperty::SetFuncType(fa, &FireActor::SetEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(fa, &FireActor::GetEnabled),
             "Toggles the state of the particle system", "Fire"));
             
          AddProperty(new dtDAL::FloatActorProperty("Light Range", "Light Range", 
-            dtDAL::MakeFunctor(*fa, &FireActor::SetLightRange), 
-            dtDAL::MakeFunctorRet(*fa, &FireActor::GetLightRange), 
+            dtDAL::FloatActorProperty::SetFuncType(fa, &FireActor::SetLightRange),
+            dtDAL::FloatActorProperty::GetFuncType(fa, &FireActor::GetLightRange),
             "Light range of the illumination of this fire"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Fire File", "Fire File", dtDAL::MakeFunctor(*this, &FireActorProxy::LoadFile), 
+            "Fire File", "Fire File", dtDAL::ResourceActorProperty::SetFuncType(this, &FireActorProxy::LoadFile),
             "Loads the file of this particle system", "Fire"));
       }
 

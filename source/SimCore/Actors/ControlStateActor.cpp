@@ -788,38 +788,39 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         ControlStateActor& actor = static_cast<ControlStateActor&>(GetGameActor());
+         ControlStateActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::ActorActorProperty( *this, "EntityID", "EntityID",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetEntity ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetEntity ),
+            dtDAL::ActorActorProperty::SetFuncType( actor, &ControlStateActor::SetEntity ),
+            dtDAL::ActorActorProperty::GetFuncType( actor, &ControlStateActor::GetEntity ),
             "SimCore::Actors::Platform",
             "Entity to which the control state points and modifies"));
 
          AddProperty(new dtDAL::IntActorProperty( "StationType", "StationType",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetStationType ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetStationType ),
+            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetStationType ),
+            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetStationType ),
             "Station type of the controls state"));
 
          AddProperty(new dtDAL::IntActorProperty( "NumDiscreteControls", "NumDiscreteControls",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetNumDiscreteControls ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetNumDiscreteControls ),
+            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumDiscreteControls ),
+            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumDiscreteControls ),
             "The expected number of elements in the discrete controls array"));
 
          AddProperty(new dtDAL::GroupActorProperty( "DiscreteControlsArray", "DiscreteControlsArray",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
+            dtDAL::GroupActorProperty::SetFunctorType( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
+            dtDAL::GroupActorProperty::GetFunctorType( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
 
          AddProperty(new dtDAL::IntActorProperty( "NumContinuousControls", "NumContinuousControls",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetNumContinuousControls ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetNumContinuousControls ),
+            dtDAL::IntActorProperty::SetFuncType( actor, &ControlStateActor::SetNumContinuousControls ),
+            dtDAL::IntActorProperty::GetFuncType( actor, &ControlStateActor::GetNumContinuousControls ),
             "The expected number of elements in the continuous controls array"));
 
          AddProperty(new dtDAL::GroupActorProperty( "ContinuousControlsArray", "ContinuousControlsArray",
-            dtDAL::MakeFunctor( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
-            dtDAL::MakeFunctorRet( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
+            dtDAL::GroupActorProperty::SetFunctorType( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
+            dtDAL::GroupActorProperty::GetFunctorType( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
       }

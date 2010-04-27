@@ -46,7 +46,7 @@ namespace DriverDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   HoverTargetActor::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   HoverTargetActor::HoverTargetActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
       , mGoalLocation(10.0, 10.0, 10.0)
       , mTimeSinceKilled(0.0f)
@@ -65,7 +65,7 @@ namespace DriverDemo
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
-      HoverTargetPhysicsHelper *helper = new HoverTargetPhysicsHelper(proxy);
+      HoverTargetPhysicsHelper* helper = new HoverTargetPhysicsHelper(proxy);
       SetPhysicsHelper(helper);
 
       SetEntityType("HoverTarget"); // Used for HLA mostly.  
@@ -175,9 +175,9 @@ namespace DriverDemo
             // determine how many to skip. Needs to be random or else all 
             // the targets will skip at the same time in a staggered burst
             // get a num from 0.5 to 5.5. Multiply by a rand (0,1). Truncate to int. Skip that many.
-            float modifier = (((float) lastPreFrameTime) - 1.0f)/2.0f; 
+            float modifier = ((float(lastPreFrameTime)) - 1.0f)/2.0f;
             modifier = dtUtil::Min(modifier, 5.5f) * dtUtil::RandFloat(0.0f, 1.0f);
-            mPerfThrottleCountDown = (int) modifier;
+            mPerfThrottleCountDown = int(modifier);
          }
       }
       return result;
@@ -231,12 +231,9 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverTargetActorProxy::BuildPropertyMap()
    {
-      const std::string& VEHICLEGROUP   = "Vehicle Property Values";
+      //const std::string VEHICLEGROUP   = "Vehicle Property Values";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
-
-      HoverTargetActor  &actor = static_cast<HoverTargetActor &>(GetGameActor());
-
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

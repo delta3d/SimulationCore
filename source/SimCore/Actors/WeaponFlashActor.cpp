@@ -210,41 +210,42 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         WeaponFlashActor& actor = static_cast<WeaponFlashActor&>(GetGameActor());
+         WeaponFlashActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::BooleanActorProperty("Visible", "Visible",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetVisible),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::IsVisible),
+            dtDAL::BooleanActorProperty::SetFuncType( actor, &WeaponFlashActor::SetVisible),
+            dtDAL::BooleanActorProperty::GetFuncType( actor, &WeaponFlashActor::IsVisible),
             "Set the visibility to true to execute the flash"));
 
          AddProperty(new dtDAL::FloatActorProperty("Flash Time", "Flash Time",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetFlashTime),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::GetFlashTime),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponFlashActor::SetFlashTime),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponFlashActor::GetFlashTime),
             "The life time the flash in seconds. Negative values will make the flash hold its visibility."));
 
          AddProperty(new dtDAL::FloatActorProperty("Length", "Length",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetLength),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::GetLength),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponFlashActor::SetLength),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponFlashActor::GetLength),
             "The length of the flash effect in meters."));
 
          AddProperty(new dtDAL::FloatActorProperty("Thickness", "Thickness",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetThickness),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::GetThickness),
+            dtDAL::FloatActorProperty::SetFuncType( actor, &WeaponFlashActor::SetThickness),
+            dtDAL::FloatActorProperty::GetFuncType( actor, &WeaponFlashActor::GetThickness),
             "The thickness of the flash effect in meters."));
 
          AddProperty(new dtDAL::StringActorProperty("Shader Name","Shader Name",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetShaderName),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::GetShaderName),
+            dtDAL::StringActorProperty::SetFuncType( actor, &WeaponFlashActor::SetShaderName),
+            dtDAL::StringActorProperty::GetFuncType( actor, &WeaponFlashActor::GetShaderName),
             "The name of the volumetric line shader to be used."));
 
          AddProperty(new dtDAL::StringActorProperty("Shader Group","Shader Group",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetShaderGroup),
-            dtDAL::MakeFunctorRet( actor, &WeaponFlashActor::GetShaderGroup),
+            dtDAL::StringActorProperty::SetFuncType( actor, &WeaponFlashActor::SetShaderGroup),
+            dtDAL::StringActorProperty::GetFuncType( actor, &WeaponFlashActor::GetShaderGroup),
             "The group name of the volumetric line shader to be used."));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Particle Effect", "Particle Effect",
-            dtDAL::MakeFunctor( actor, &WeaponFlashActor::SetParticleEffect),
+            dtDAL::ResourceActorProperty::SetFuncType( actor, &WeaponFlashActor::SetParticleEffect),
             "The particle system that will represent the flash effect."));
       }
 

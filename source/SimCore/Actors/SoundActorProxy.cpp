@@ -228,7 +228,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildInvokables();
 
          AddInvokable(*new dtGame::Invokable(SoundActorProxy::INVOKABLE_TIMER_HANDLER.Get(),
-                  dtDAL::MakeFunctor(*this, &SoundActorProxy::HandleActorTimers)));
+                  dtUtil::MakeFunctor(&SoundActorProxy::HandleActorTimers, this)));
 
          RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED,
                   SoundActorProxy::INVOKABLE_TIMER_HANDLER.Get());
@@ -255,7 +255,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////
       void SoundActorProxy::BuildPropertyMap()
       {
-         const dtUtil::RefString GROUPNAME = "Sound";
+         static const dtUtil::RefString GROUPNAME = "Sound";
          GameActorProxy::BuildPropertyMap();
 
          // This property toggles whether or not a sound loops. A
@@ -265,8 +265,8 @@ namespace SimCore
          AddProperty(new dtDAL::BooleanActorProperty(
                   PROPERTY_LOOPING,
                   PROPERTY_LOOPING,
-                  MakeFunctor(*this, &SoundActorProxy::SetLooping),
-                  MakeFunctorRet(*this, &SoundActorProxy::IsLooping),
+                  dtDAL::BooleanActorProperty::SetFuncType(this, &SoundActorProxy::SetLooping),
+                  dtDAL::BooleanActorProperty::GetFuncType(this, &SoundActorProxy::IsLooping),
                   "Toggles if a sound loops continuously.", GROUPNAME));
 
          // This property manipulates the gain of a sound. It uses
@@ -276,8 +276,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_GAIN,
                   PROPERTY_GAIN,
-                  MakeFunctor(*this, &SoundActorProxy::SetGain),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetGain),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetGain),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetGain),
                   "Sets the gain of a sound.", GROUPNAME));
 
          // This property manipulates the pitch of a sound. It uses
@@ -286,8 +286,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_PITCH,
                   PROPERTY_PITCH,
-                  MakeFunctor(*this, &SoundActorProxy::SetPitch),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetPitch),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetPitch),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetPitch),
                   "Sets the pitch of a sound.", GROUPNAME));
 
          // This property toggles whether or not a sound is listerner
@@ -296,8 +296,8 @@ namespace SimCore
          AddProperty(new dtDAL::BooleanActorProperty(
                   PROPERTY_LISTENER_RELATIVE,
                   PROPERTY_LISTENER_RELATIVE,
-                  MakeFunctor(*this, &SoundActorProxy::SetListenerRelative),
-                  MakeFunctorRet(*this, &SoundActorProxy::IsListenerRelative),
+                  dtDAL::BooleanActorProperty::SetFuncType(this, &SoundActorProxy::SetListenerRelative),
+                  dtDAL::BooleanActorProperty::GetFuncType(this, &SoundActorProxy::IsListenerRelative),
                   "Toggles if a sound is relative to the listener.", GROUPNAME));
 
          // This property manipulates the maximum distance of a sound. It uses
@@ -306,8 +306,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_MAX_DISTANCE,
                   PROPERTY_MAX_DISTANCE,
-                  MakeFunctor(*this, &SoundActorProxy::SetMaxDistance),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetMaxDistance),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetMaxDistance),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetMaxDistance),
                   "Sets the maximum distance of a sound.", GROUPNAME));
 
          // This property manipulates the roll off factor of a sound. It uses
@@ -316,8 +316,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_ROLLOFF_FACTOR,
                   PROPERTY_ROLLOFF_FACTOR,
-                  MakeFunctor(*this, &SoundActorProxy::SetRolloffFactor),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetRolloffFactor),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetRolloffFactor),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetRolloffFactor),
                   "Sets the rolloff factor of a sound.", GROUPNAME));
 
          // This property manipulates the minimum gain of a sound. It uses
@@ -326,8 +326,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_MIN_GAIN,
                   PROPERTY_MIN_GAIN,
-                  MakeFunctor(*this, &SoundActorProxy::SetMinGain),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetMinGain),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetMinGain),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetMinGain),
                   "Sets the minimum gain of a sound.", GROUPNAME));
 
          // This property manipulates the maximum gain of a sound. It uses
@@ -336,8 +336,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_MAX_GAIN,
                   PROPERTY_MAX_GAIN,
-                  MakeFunctor(*this, &SoundActorProxy::SetMaxGain),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetMaxGain),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetMaxGain),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetMaxGain),
                   "Sets the maximum gain of a sound.", GROUPNAME));
 
          // This property manipulates the direction of a sound. It uses
@@ -346,8 +346,8 @@ namespace SimCore
          AddProperty(new dtDAL::Vec3ActorProperty(
                   PROPERTY_DIRECTION,
                   PROPERTY_DIRECTION,
-                  MakeFunctor(*this, &SoundActorProxy::SetDirection),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetDirection),
+                  dtDAL::Vec3ActorProperty::SetFuncType(this, &SoundActorProxy::SetDirection),
+                  dtDAL::Vec3ActorProperty::GetFuncType(this, &SoundActorProxy::GetDirection),
                   "Sets the direction of a sound.", GROUPNAME));
 
          // This property manipulates the velocity of a sound. It uses
@@ -356,44 +356,44 @@ namespace SimCore
          AddProperty(new dtDAL::Vec3ActorProperty(
                   PROPERTY_VELOCITY,
                   PROPERTY_VELOCITY,
-                  MakeFunctor(*this, &SoundActorProxy::SetVelocity),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetVelocity),
+                  dtDAL::Vec3ActorProperty::SetFuncType(this, &SoundActorProxy::SetVelocity),
+                  dtDAL::Vec3ActorProperty::GetFuncType(this, &SoundActorProxy::GetVelocity),
                   "Sets the velocity of a sound.", GROUPNAME));
 
          // new properties
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_MAX_RANDOM_TIME,
                   PROPERTY_MAX_RANDOM_TIME,
-                  MakeFunctor(*this, &SoundActorProxy::SetMaxRandomTime),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetMaxRandomTime),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetMaxRandomTime),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetMaxRandomTime),
                   "Maximum seconds to wait between random executions of the sound", GROUPNAME));
 
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_MIN_RANDOM_TIME,
                   PROPERTY_MIN_RANDOM_TIME,
-                  MakeFunctor(*this, &SoundActorProxy::SetMinRandomTime),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetMinRandomTime),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetMinRandomTime),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetMinRandomTime),
                   "Minimum seconds to wait between random executions of the sound", GROUPNAME));
 
          AddProperty(new dtDAL::FloatActorProperty(
                   PROPERTY_INITIAL_OFFSET_TIME,
                   PROPERTY_INITIAL_OFFSET_TIME,
-                  MakeFunctor(*this, &SoundActorProxy::SetOffsetTime),
-                  MakeFunctorRet(*this, &SoundActorProxy::GetOffsetTime),
+                  dtDAL::FloatActorProperty::SetFuncType(this, &SoundActorProxy::SetOffsetTime),
+                  dtDAL::FloatActorProperty::GetFuncType(this, &SoundActorProxy::GetOffsetTime),
                   "Time in seconds to wait before the sound is played when it enters the Game Manager", GROUPNAME));
 
          AddProperty(new dtDAL::BooleanActorProperty(
                   PROPERTY_PLAY_AS_RANDOM,
                   PROPERTY_PLAY_AS_RANDOM,
-                  MakeFunctor(*this, &SoundActorProxy::SetToHaveRandomSoundEffect),
-                  MakeFunctorRet(*this, &SoundActorProxy::IsARandomSoundEffect),
+                  dtDAL::BooleanActorProperty::SetFuncType(this, &SoundActorProxy::SetToHaveRandomSoundEffect),
+                  dtDAL::BooleanActorProperty::GetFuncType(this, &SoundActorProxy::IsARandomSoundEffect),
                   "Will have a timer go off and play sound so often", GROUPNAME));
 
          AddProperty(new dtDAL::BooleanActorProperty(
                   PROPERTY_PLAY_AT_STARTUP,
                   PROPERTY_PLAY_AT_STARTUP,
-                  MakeFunctor(*this, &SoundActorProxy::SetPlayAtStartup),
-                  MakeFunctorRet(*this, &SoundActorProxy::IsPlayedAtStartup),
+                  dtDAL::BooleanActorProperty::SetFuncType(this, &SoundActorProxy::SetPlayAtStartup),
+                  dtDAL::BooleanActorProperty::GetFuncType(this, &SoundActorProxy::IsPlayedAtStartup),
                   "Will play sound at startup", GROUPNAME));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,

@@ -1772,16 +1772,17 @@ namespace SimCore
       {
          BaseClass::BuildInvokables();
 
-         WaterGridActor& wga = static_cast<WaterGridActor&>(GetGameActor());
+         WaterGridActor* wga = NULL;
+         GetActor(wga);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
-            dtDAL::MakeFunctor(wga, &WaterGridActor::Init)));
+            dtUtil::MakeFunctor(&WaterGridActor::Init, wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_UPDATE,
-            dtDAL::MakeFunctor(wga, &WaterGridActor::ActorUpdate)));
+                  dtUtil::MakeFunctor(&WaterGridActor::ActorUpdate, wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_CREATED,
-            dtDAL::MakeFunctor(wga, &WaterGridActor::ActorCreated)));
+                  dtUtil::MakeFunctor(&WaterGridActor::ActorCreated, wga)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1806,16 +1807,17 @@ namespace SimCore
 
          BaseClass::BuildPropertyMap();
 
-         WaterGridActor& actor = static_cast<WaterGridActor&>(GetGameActor());
+         WaterGridActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::ColorRgbaActorProperty(PROPERTY_WATER_COLOR, PROPERTY_WATER_COLOR,
-            dtDAL::MakeFunctor(actor,&WaterGridActor::SetWaterColor),
-            dtDAL::MakeFunctorRet(actor,&WaterGridActor::GetWaterColor),
+            dtDAL::ColorRgbaActorProperty::SetFuncType(actor,&WaterGridActor::SetWaterColor),
+            dtDAL::ColorRgbaActorProperty::GetFuncType(actor,&WaterGridActor::GetWaterColor),
             "Sets the color of the water.", GROUPNAME));
 
          AddProperty(new dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>(PROPERTY_CHOPPINESS, PROPERTY_CHOPPINESS,
-            dtDAL::MakeFunctor(actor, &WaterGridActor::SetChoppiness),
-            dtDAL::MakeFunctorRet(actor, &WaterGridActor::GetChoppiness),
+            dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>::SetFuncType(actor, &WaterGridActor::SetChoppiness),
+            dtDAL::EnumActorProperty<WaterGridActor::ChoppinessSettings>::GetFuncType(actor, &WaterGridActor::GetChoppiness),
             "Sets the choppiness for the water.", GROUPNAME));
 
       }

@@ -307,16 +307,17 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverVehicleActorProxy::BuildPropertyMap()
    {
-      const std::string VEH_GROUP   = "Vehicle Property Values";
+      static const dtUtil::RefString VEH_GROUP   = "Vehicle Property Values";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      HoverVehicleActor  &actor = static_cast<HoverVehicleActor &>(GetGameActor());
+      HoverVehicleActor* actor = NULL;
+      GetActor(actor);
 
       AddProperty(new dtDAL::BooleanActorProperty("VehicleIsTheTurret", "Vehicle Is The Turret",
-         dtDAL::MakeFunctor(actor, &HoverVehicleActor::SetVehicleIsTurret),
-         dtDAL::MakeFunctorRet(actor, &HoverVehicleActor::GetVehicleIsTurret),
-         "True means the turret and the vehicle rotate together (unlike a HMMWV with a distinct turret).", VEH_GROUP));
+               dtDAL::BooleanActorProperty::SetFuncType(actor, &HoverVehicleActor::SetVehicleIsTurret),
+               dtDAL::BooleanActorProperty::GetFuncType(actor, &HoverVehicleActor::GetVehicleIsTurret),
+               "True means the turret and the vehicle rotate together (unlike a HMMWV with a distinct turret).", VEH_GROUP));
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -97,17 +97,18 @@ namespace SimCore
       //////////////////////////////////////////////////////////
       void DayTimeActorProxy::BuildPropertyMap()
       {
-         DayTimeActor& actor = static_cast<DayTimeActor&>(GetGameActor());
+         DayTimeActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::IntActorProperty("Time Of Day", "Time Of Day", 
-            dtDAL::MakeFunctor(actor, &DayTimeActor::SetTime), 
-            dtDAL::MakeFunctorRet(actor, &DayTimeActor::GetTime), 
+            dtDAL::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetTime),
+            dtDAL::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetTime),
             "The time of day measured in milliseconds"));
 
          AddProperty(new dtDAL::IntActorProperty("Prime Meridian Hour Offset", 
             "Prime Meridian Hour Offset", 
-            dtDAL::MakeFunctor(actor, &DayTimeActor::SetPrimeMeridianHourOffset), 
-            dtDAL::MakeFunctorRet(actor, &DayTimeActor::GetPrimeMeridianHourOffset), 
+            dtDAL::IntActorProperty::SetFuncType(actor, &DayTimeActor::SetPrimeMeridianHourOffset),
+            dtDAL::IntActorProperty::GetFuncType(actor, &DayTimeActor::GetPrimeMeridianHourOffset),
             "The time zone hour offset from the Prime Meridian"));
       }
 

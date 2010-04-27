@@ -200,7 +200,7 @@ namespace DriverDemo
       else if (msgType == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD &&
          message.GetSource() == GetGameManager()->GetMachineInfo())
       {
-         dtGame::GameActorProxy *stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
+         dtGame::GameActorProxy* stealthProxy = GetGameManager()->FindGameActorById(message.GetAboutActorId());
          if(stealthProxy == NULL)
          {
             GetLogger().LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
@@ -208,7 +208,7 @@ namespace DriverDemo
             return;
          }
 
-         SimCore::Actors::StealthActor *stealthActor
+         SimCore::Actors::StealthActor* stealthActor
             = dynamic_cast<SimCore::Actors::StealthActor*>(&stealthProxy->GetGameActor());
          if(stealthActor == NULL)
          {

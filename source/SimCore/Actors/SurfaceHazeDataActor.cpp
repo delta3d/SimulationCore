@@ -97,8 +97,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
             SurfaceHazeDataActorProxy::PROPERTY_EXTINCTION_COEFFICIENT,
             SurfaceHazeDataActorProxy::PROPERTY_EXTINCTION_COEFFICIENT, 
-            dtDAL::MakeFunctor( *actor, &SurfaceHazeDataActor::SetExtinctionCoefficient ), 
-            dtDAL::MakeFunctorRet( *actor, &SurfaceHazeDataActor::GetExtinctionCoefficient ), 
+            dtDAL::FloatActorProperty::SetFuncType(actor, &SurfaceHazeDataActor::SetExtinctionCoefficient),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &SurfaceHazeDataActor::GetExtinctionCoefficient),
             "Visibility extinction coefficient for cell[0] at the specified latitude and longitude; this is originally a 2D array property will any number of cells.",
             GROUP));
       }

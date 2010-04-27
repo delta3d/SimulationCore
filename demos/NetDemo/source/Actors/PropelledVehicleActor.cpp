@@ -179,7 +179,7 @@ namespace NetDemo
 
             steering = 1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, -1.0, 0.0);
-            float torqueMagnitude = 1000;
+            //float torqueMagnitude = 1000;
             //po->AddLocalTorque(torqueDirection * torqueMagnitude);
             //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));
          }
@@ -189,7 +189,7 @@ namespace NetDemo
 
             steering = -1.0;
             osg::Vec3 torqueDirection = osg::Vec3(0.0, 1.0, 0.0);
-            float torqueMagnitude = 1000;
+            //float torqueMagnitude = 1000;
 
             //po->AddLocalTorque(torqueDirection * torqueMagnitude);
             //po->AddLocalForce(osg::Vec3(0.0, 0.0, -1000.0));

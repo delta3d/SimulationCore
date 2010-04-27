@@ -83,20 +83,20 @@ namespace SimCore
 
 
          AddProperty(new dtDAL::BooleanActorProperty("WaterSpray Enabled", "WaterSpray Enabled",
-            dtDAL::MakeFunctor(static_cast<SurfaceVesselActor&>(GetGameActor()), &SurfaceVesselActor::SetWaterSprayEnabled),
-            dtDAL::MakeFunctorRet(static_cast<SurfaceVesselActor&>(GetGameActor()), &SurfaceVesselActor::GetWaterSprayEnabled),
+            dtDAL::BooleanActorProperty::SetFuncType(&actor, &SurfaceVesselActor::SetWaterSprayEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(&actor, &SurfaceVesselActor::GetWaterSprayEnabled),
             "Turns the WaterSpray particle system on or off", group));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSprayFrontFile", "Water Spray Front File", dtDAL::MakeFunctor(actor, &SurfaceVesselActor::LoadWaterSprayFrontFile),
+            "WaterSprayFrontFile", "Water Spray Front File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayFrontFile),
             "Loads the particle system for the water spray effect on the front of the ship", group));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSpraySideFile", "Water Spray Side File", dtDAL::MakeFunctor(actor, &SurfaceVesselActor::LoadWaterSpraySideFile),
+            "WaterSpraySideFile", "Water Spray Side File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSpraySideFile),
             "Loads the particle system for the water spray effect on the side of the ship", group));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "WaterSprayBackFile", "Water Spray Back File", dtDAL::MakeFunctor(actor, &SurfaceVesselActor::LoadWaterSprayBackFile),
+            "WaterSprayBackFile", "Water Spray Back File", dtDAL::ResourceActorProperty::SetFuncType(&actor, &SurfaceVesselActor::LoadWaterSprayBackFile),
             "Loads the particle system for the water spray effect on the back of the ship", group));
 
          

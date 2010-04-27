@@ -30,9 +30,9 @@ namespace DriverDemo
 {
 
    ////////////////////////////////////////////////////////////////////////////////////
-   HoverTargetPhysicsHelper::HoverTargetPhysicsHelper(dtGame::GameActorProxy &proxy) :
-      dtPhysics::PhysicsHelper(proxy)
-      , mGroundClearance(4.0)
+   HoverTargetPhysicsHelper::HoverTargetPhysicsHelper(dtGame::GameActorProxy& proxy)
+   : dtPhysics::PhysicsHelper(proxy)
+   , mGroundClearance(4.0)
    {
       // non properties
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("VehicleBody");
@@ -113,8 +113,8 @@ namespace DriverDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   float HoverTargetPhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3 &location,
-      const osg::Vec3 &direction, float &distanceToHit)
+   float HoverTargetPhysicsHelper::ComputeEstimatedForceCorrection(const osg::Vec3& location,
+      const osg::Vec3&  direction, float& distanceToHit)
    {
       static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
       float estimatedForceAdjustment = -dtPhysics::PhysicsWorld::GetInstance().GetGravity().z();
@@ -133,12 +133,18 @@ namespace DriverDemo
             estimatedForceAdjustment *= (1.0f + (distanceAwayPercent * distanceAwayPercent));
          }
          else if (distanceToCorrect > -1.0f) // if we are slightly too high, then slow down our force
+         {
             estimatedForceAdjustment *= (0.01f + ((1.0f+distanceToCorrect) * 0.99)); // part gravity, part reduced
+         }
          else // opportunity to counteract free fall if we want.
+         {
             estimatedForceAdjustment = 0.0f;//0.01f;
+         }
       }
       else
+      {
          estimatedForceAdjustment = 0.0f;
+      }
 
       return estimatedForceAdjustment;
 
@@ -179,13 +185,40 @@ namespace DriverDemo
    {
       dtPhysics::PhysicsHelper::BuildPropertyMap(toFillIn);
 
-      const std::string& GROUP = "Vehicle Property Values";
+      const std::string GROUP = "Vehicle Property Values";
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Ground Clearance", "Ground Clearance",
-         dtDAL::MakeFunctor(*this, &HoverTargetPhysicsHelper::SetGroundClearance),
-         dtDAL::MakeFunctorRet(*this, &HoverTargetPhysicsHelper::GetGroundClearance),
+               dtDAL::FloatActorProperty::SetFuncType(this, &HoverTargetPhysicsHelper::SetGroundClearance),
+               dtDAL::FloatActorProperty::GetFuncType(this, &HoverTargetPhysicsHelper::GetGroundClearance),
          "The height we should try to leave beneath our vehicle (cause we hover...).", GROUP));
 
    }
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   float HoverTargetPhysicsHelper::GetSphereRadius()
+   {
+      dtPhysics::PhysicsObject* physicsObject = GetMainPhysicsObject();
+      if (physicsObject != NULL)
+      {
+         return physicsObject->GetExtents().x();
+      }
+      else
+      {
+         return 0.0;
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   float HoverTargetPhysicsHelper::GetGroundClearance() const
+   {
+      return mGroundClearance;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////
+   void HoverTargetPhysicsHelper::SetGroundClearance(float value)
+   {
+      mGroundClearance = value;
+   }
+
 } // end namespace
 
