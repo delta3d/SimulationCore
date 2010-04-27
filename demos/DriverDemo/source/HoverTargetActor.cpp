@@ -162,12 +162,6 @@ namespace DriverDemo
       {
          result = true; // for sure we need to do it this frame, but maybe we skip next time.
          
-         // get pre-frame time
-         //osg::Stats* stats = dtCore::System::GetInstance().GetStats();
-         //if (stats != NULL && stats->collectStats(dtCore::System::MESSAGE_PRE_FRAME))
-         //{
-         //   double lastPreFrameTime = stats->getAttribute(stats->getLatestFrameNumber(), dtCore::System::MESSAGE_PRE_FRAME);
-         //}
          double lastPreFrameTime = dtCore::System::GetInstance().
             GetSystemStageTime(dtCore::System::STAGE_PREFRAME);
          if (lastPreFrameTime > 2.0) // past our budget
