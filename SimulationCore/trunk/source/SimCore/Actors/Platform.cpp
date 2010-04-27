@@ -52,6 +52,7 @@
 #include <dtDAL/actorproxyicon.h>
 #include <dtDAL/actortype.h>
 #include <dtDAL/namedparameter.h>
+#include <dtDAL/functor.h> // deprecated
 
 #include <dtUtil/boundingshapeutils.h>
 #include <dtUtil/log.h>

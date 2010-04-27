@@ -24,6 +24,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <dtUtil/stringutils.h>
+#include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
 
 namespace SimCore

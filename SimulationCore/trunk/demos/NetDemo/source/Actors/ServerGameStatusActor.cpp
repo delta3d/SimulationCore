@@ -302,54 +302,55 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      ServerGameStatusActor &actor = static_cast<ServerGameStatusActor &>(GetGameActor());
+      ServerGameStatusActor* actor = NULL;
+      GetActor(actor);
 
       static const dtUtil::RefString PROP_GAME_STATUS_DESC("Indicates the game status - server perspective.");
       AddProperty(new dtDAL::EnumActorProperty<ServerGameStatusActor::ServerGameStatusEnum>(PROP_GAME_STATUS, PROP_GAME_STATUS,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetGameStatus),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetGameStatus),
+         dtDAL::EnumActorProperty<ServerGameStatusActor::ServerGameStatusEnum>::SetFuncType(actor, &ServerGameStatusActor::SetGameStatus),
+         dtDAL::EnumActorProperty<ServerGameStatusActor::ServerGameStatusEnum>::GetFuncType(actor, &ServerGameStatusActor::GetGameStatus),
          PROP_GAME_STATUS_DESC, GROUP));
 
       static const dtUtil::RefString PROP_WAVE_NUMBER_DESC("The current wave we are fighting.");
       AddProperty(new dtDAL::IntActorProperty(PROP_WAVE_NUMBER, PROP_WAVE_NUMBER,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetWaveNumber),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetWaveNumber),
+         dtDAL::IntActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetWaveNumber),
+         dtDAL::IntActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetWaveNumber),
          PROP_WAVE_NUMBER_DESC, GROUP));
 
       static const dtUtil::RefString PROP_NUM_ENEMIES_KILLED_DESC("The total number of enemies killed so far.");
       AddProperty(new dtDAL::IntActorProperty(PROP_NUM_ENEMIES_KILLED, PROP_NUM_ENEMIES_KILLED,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetNumEnemiesKilled),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetNumEnemiesKilled),
+         dtDAL::IntActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetNumEnemiesKilled),
+         dtDAL::IntActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetNumEnemiesKilled),
          PROP_NUM_ENEMIES_KILLED_DESC, GROUP));
 
       static const dtUtil::RefString PROP_TIME_LEFT_IN_CUR_STATE_DESC("The time remaining in our current state (such as wave begin or end)");
       AddProperty(new dtDAL::FloatActorProperty(PROP_TIME_LEFT_IN_CUR_STATE, PROP_TIME_LEFT_IN_CUR_STATE,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetTimeLeftInCurState),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetTimeLeftInCurState),
+         dtDAL::FloatActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetTimeLeftInCurState),
+         dtDAL::FloatActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetTimeLeftInCurState),
          PROP_TIME_LEFT_IN_CUR_STATE_DESC, GROUP));
 
       static const dtUtil::RefString PROP_LAST_PUBLISHED_TIME_DESC("The last time we published an update (sim time, in seconds)");
       AddProperty(new dtDAL::DoubleActorProperty(PROP_LAST_PUBLISHED_TIME, PROP_LAST_PUBLISHED_TIME,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetLastPublishTime),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetLastPublishTime),
+         dtDAL::DoubleActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetLastPublishTime),
+         dtDAL::DoubleActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetLastPublishTime),
          PROP_LAST_PUBLISHED_TIME_DESC, GROUP));
 
       static const dtUtil::RefString PROP_GAME_DIFFICULTY_DESC("A difficulty modifier");
       AddProperty(new dtDAL::IntActorProperty(PROP_GAME_DIFFICULTY, PROP_GAME_DIFFICULTY,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetGameDifficulty),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetGameDifficulty),
+         dtDAL::IntActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetGameDifficulty),
+         dtDAL::IntActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetGameDifficulty),
          PROP_GAME_DIFFICULTY_DESC, GROUP));
 
       static const dtUtil::RefString PROP_NUM_PLAYERS_DESC("The number of current players");
       AddProperty(new dtDAL::IntActorProperty(PROP_NUM_PLAYERS, PROP_NUM_PLAYERS,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetNumPlayers),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetNumPlayers),
+         dtDAL::IntActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetNumPlayers),
+         dtDAL::IntActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetNumPlayers),
          PROP_NUM_PLAYERS_DESC, GROUP));
 
       static const dtUtil::RefString PROP_NUM_TEAMS_DESC("The number of teams (usually 1)");
       AddProperty(new dtDAL::IntActorProperty(PROP_NUM_TEAMS, PROP_NUM_TEAMS,
-         dtDAL::MakeFunctor(actor, &ServerGameStatusActor::SetNumTeams),
-         dtDAL::MakeFunctorRet(actor, &ServerGameStatusActor::GetNumTeams),
+         dtDAL::IntActorProperty::SetFuncType(actor, &ServerGameStatusActor::SetNumTeams),
+         dtDAL::IntActorProperty::GetFuncType(actor, &ServerGameStatusActor::GetNumTeams),
          PROP_NUM_TEAMS_DESC, GROUP));
 
 

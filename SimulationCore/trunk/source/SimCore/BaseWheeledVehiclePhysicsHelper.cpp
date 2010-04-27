@@ -430,101 +430,101 @@ namespace SimCore
                "Maximum torque developed by engine", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Max Break Torque", "Max Break Torque",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetMaxBrakeTorque),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetMaxBrakeTorque),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetMaxBrakeTorque),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetMaxBrakeTorque),
                "Maximum torque developed by engine", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Top Speed (MPH)", "Top Speed (MPH)",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeed),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeed),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeed),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeed),
                "Top speed of vehicle", VEHICLEGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("mVehicleTopSpeedReverse", "mVehicleTopSpeedReverse",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeedReverse),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeedReverse),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeedReverse),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeedReverse),
                "Top speed in reverse", VEHICLEGROUP));
 #if 0
       toFillIn.push_back(new dtDAL::IntActorProperty("Horsepower", "Horsepower",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleHorsePower),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleHorsePower),
+               dtDAL::IntActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleHorsePower),
+               dtDAL::IntActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleHorsePower),
                "Currently unused", VEHICLEGROUP));
 #endif
       toFillIn.push_back(new dtDAL::FloatActorProperty("mWheelTurnRadiusPerUpdate", "mWheelTurnRadiusPerUpdate",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTurnRadiusPerUpdate),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTurnRadiusPerUpdate),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTurnRadiusPerUpdate),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTurnRadiusPerUpdate),
                "", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("WheelMass", "Wheel Mass",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelInverseMass),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelInverseMass),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelInverseMass),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelInverseMass),
                "This is not used for dtPhysics.", WHEELGROUP));
 
 #if 0
       toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Radius", "Wheel Radius",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelRadius),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelRadius),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelRadius),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelRadius),
                "Rolling radius of wheel", WHEELGROUP));
 #endif
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Width", "Wheel Width",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelWidth),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelWidth),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelWidth),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelWidth),
                "Width of the wheel.  PhysX doesn't use this.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Travel", "Suspension Travel",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetWheelSuspensionTravel),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetWheelSuspensionTravel),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelSuspensionTravel),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelSuspensionTravel),
                "Total suspension travel from full rebound to full jounce", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Spring Coefficient", "Spring Coefficent",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringCoef),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringCoef),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringCoef),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringCoef),
                "Spring Coefficient (force/distance) at wheel", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Damping Coefficient", "Suspension Damping Coefficient",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringDamper),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringDamper),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringDamper),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringDamper),
                "Coefficient of linear damping (force/velocity)", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Spring Target", "Suspension Spring Target",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringTarget),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringTarget),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringTarget),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringTarget),
                "Target value position of spring where the spring force is zero.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Max Steer Angle", "Max Steer Angle",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetMaxSteerAngle),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetMaxSteerAngle),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetMaxSteerAngle),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetMaxSteerAngle),
                "The maximum angle the wheel can steer (rotate about its vertical axis) in degrees.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Extreme Slip", "Tire Extreme Slip",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireExtremumSlip),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireExtremumSlip),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireExtremumSlip),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireExtremumSlip),
                "Extremal point of curve.  Values must be positive.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Extreme Value", "Tire Extreme Value",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireExtremumValue),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireExtremumValue),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireExtremumValue),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireExtremumValue),
                "Extremal point of curve.  Values must be positive.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Asymptote Slip", "Tire Asymptote Slip",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireAsymptoteSlip),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireAsymptoteSlip),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireAsymptoteSlip),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireAsymptoteSlip),
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Asymptote Value", "Tire Asymptote Value",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireAsymptoteValue),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireAsymptoteValue),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireAsymptoteValue),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireAsymptoteValue),
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Stiffness", "Tire Stiffness",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireStiffnessFactor),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireStiffnessFactor),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireStiffnessFactor),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireStiffnessFactor),
                "This is an additional overall positive scaling that gets applied to the tire forces before passing them to the solver.  Higher values make for better grip.  If you raise the values above, you may need to lower this. A setting of zero will disable all friction in this direction.",
                WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Tire Restitution", "Tire Restitution",
-               dtDAL::MakeFunctor(*this, &BaseWheeledVehiclePhysicsHelper::SetTireRestitution),
-               dtDAL::MakeFunctorRet(*this, &BaseWheeledVehiclePhysicsHelper::GetTireRestitution),
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetTireRestitution),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetTireRestitution),
                "Coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.  Note that values close to or above 1 may cause stability problems and/or increasing energy.",
                WHEELGROUP));
 

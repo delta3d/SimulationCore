@@ -50,21 +50,25 @@ namespace SimCore
       {
          StealthActorProxy::BuildPropertyMap();
 
+         PlayerActor* playerActor = NULL;
+         GetActor(playerActor);
+
          AddProperty(new dtDAL::EnumActorProperty<SimCore::MessageType>("Enabled Tool", "Enabled Tool",
-            dtDAL::MakeFunctor(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::SetEnabledTool),
-            dtDAL::MakeFunctorRet(static_cast<PlayerActor&>(GetGameActor()), &PlayerActor::GetEnabledTool),
+                  dtDAL::EnumActorProperty<SimCore::MessageType>::SetFuncType(playerActor, &PlayerActor::SetEnabledTool),
+                  dtDAL::EnumActorProperty<SimCore::MessageType>::GetFuncType(playerActor, &PlayerActor::GetEnabledTool),
             "Sets the currently enabled tool on the player"));
       }
 
       //////////////////////////////////////////////////////////////////////////
       void PlayerActorProxy::BuildInvokables()
       {
-         PlayerActor& pa = static_cast<PlayerActor&>(GetGameActor());
+         PlayerActor* pa = NULL;
+         GetActor(pa);
 
          StealthActorProxy::BuildInvokables();
 
          AddInvokable(*new dtGame::Invokable("Enable Tool",
-            dtDAL::MakeFunctor(pa, &PlayerActor::EnableTool)));
+            dtUtil::MakeFunctor(&PlayerActor::EnableTool, pa)));
 
          // TODO Register same invokable for the other tools when implemented
          RegisterForMessagesAboutSelf(SimCore::MessageType::BINOCULARS, "Enable Tool");
@@ -115,7 +119,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void PlayerActor::SetEnabledTool(SimCore::MessageType &tool)
+      void PlayerActor::SetEnabledTool(SimCore::MessageType& tool)
       {
          mActiveTool = &tool;
       }

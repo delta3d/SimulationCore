@@ -417,8 +417,8 @@ namespace SimCore
          AddProperty(new dtDAL::BooleanActorProperty(
             DynamicParticleSystemActorProxy::PROPERTY_ENABLED.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_ENABLED.Get(),
-            dtDAL::MakeFunctor(*actor, &DynamicParticleSystemActor::SetEnabled),
-            dtDAL::MakeFunctorRet(*actor, &DynamicParticleSystemActor::IsEnabled),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::IsEnabled),
             "Sets whether the particle system should be enabled or disabled when it enters the scene.",
             GROUPNAME));
 
@@ -426,8 +426,8 @@ namespace SimCore
          AddProperty(new dtDAL::FloatActorProperty(
             DynamicParticleSystemActorProxy::PROPERTY_START_INTERPOLATION.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_START_INTERPOLATION.Get(),
-            dtDAL::MakeFunctor(*actor, &DynamicParticleSystemActor::SetInterpolation),
-            dtDAL::MakeFunctorRet(*actor, &DynamicParticleSystemActor::GetInterpolation),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetInterpolation),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &DynamicParticleSystemActor::GetInterpolation),
             "Sets the initial interpolation for the particle system between it start and end interpolation settings.",
             GROUPNAME));
 
@@ -436,7 +436,7 @@ namespace SimCore
             dtDAL::DataType::PARTICLE_SYSTEM,
             DynamicParticleSystemActorProxy::PROPERTY_PARTICLE_FILE.Get(),
             DynamicParticleSystemActorProxy::PROPERTY_PARTICLE_FILE.Get(),
-            dtDAL::MakeFunctor(*actor, &DynamicParticleSystemActor::SetParticleSystemFile),
+            dtDAL::ResourceActorProperty::SetFuncType(actor, &DynamicParticleSystemActor::SetParticleSystemFile),
             "Sets the particle system file to be loaded",
             GROUPNAME));
       }

@@ -27,6 +27,7 @@
 #include <dtCore/particlesystem.h>
 #include <dtCore/transform.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/functor.h>
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <SimCore/Actors/MissileActor.h>

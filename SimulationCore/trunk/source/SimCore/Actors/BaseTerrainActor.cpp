@@ -107,7 +107,7 @@ namespace SimCore
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::TERRAIN, 
             "TerrainMesh", "TerrainMesh", 
-            dtDAL::MakeFunctor(ta, &BaseTerrainActor::LoadFile), 
+            dtDAL::ResourceActorProperty::SetFuncType(&ta, &BaseTerrainActor::LoadFile),
             "Loads in a terrain mesh for this object", "Terrain"));
       }
    }

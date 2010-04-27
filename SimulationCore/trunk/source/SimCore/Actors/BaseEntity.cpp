@@ -35,6 +35,7 @@
 
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/functor.h>
 #include <dtUtil/templateutility.h>
 
 #include <osg/MatrixTransform>

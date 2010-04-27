@@ -59,37 +59,38 @@ namespace SimCore
 
       void LocalEffectActorProxy::BuildPropertyMap()
       {
-         LocalEffectActor *sa = static_cast<LocalEffectActor*>(GetActor());
+         LocalEffectActor *sa = NULL;
+         GetActor(sa);
 
          dtGame::GameActorProxy::BuildPropertyMap();
 
          AddProperty(new dtDAL::FloatActorProperty("Bounding Sphere Radius", "Bounding Sphere Radius", 
-            dtDAL::MakeFunctor(*sa, &LocalEffectActor::SetBoundingSphereRadius), 
-            dtDAL::MakeFunctorRet(*sa, &LocalEffectActor::GetBoundingSphereRadius), 
+            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetBoundingSphereRadius),
+            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetBoundingSphereRadius),
             "Sets the bounding sphere radius", "Smoke"));
 
          AddProperty(new dtDAL::FloatActorProperty("Smoke Plume Length", "Smoke Plume Length", 
-            dtDAL::MakeFunctor(*sa, &LocalEffectActor::SetSmokePlumeLength), 
-            dtDAL::MakeFunctorRet(*sa, &LocalEffectActor::GetSmokePlumeLength), 
+            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetSmokePlumeLength),
+            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetSmokePlumeLength),
             "Length of the smoke plume"));
 
          AddProperty(new dtDAL::FloatActorProperty("Horizontal Velocity", "Horizontal Velocity", 
-            dtDAL::MakeFunctor(*sa, &LocalEffectActor::SetHorizontalVelocity), 
-            dtDAL::MakeFunctorRet(*sa, &LocalEffectActor::GetHorizontalVelocity), 
+            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetHorizontalVelocity),
+            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetHorizontalVelocity),
             "Horizontal velocity of this smoke"));
 
          AddProperty(new dtDAL::FloatActorProperty("Vertical Velocity", "Vertical Velocity", 
-            dtDAL::MakeFunctor(*sa, &LocalEffectActor::SetVerticalVelocity), 
-            dtDAL::MakeFunctorRet(*sa, &LocalEffectActor::GetVerticalVelocity), 
+            dtDAL::FloatActorProperty::SetFuncType(sa, &LocalEffectActor::SetVerticalVelocity),
+            dtDAL::FloatActorProperty::GetFuncType(sa, &LocalEffectActor::GetVerticalVelocity),
             "Vertical velocity of this smoke"));
 
          AddProperty(new dtDAL::BooleanActorProperty("Enable", "Enable", 
-            dtDAL::MakeFunctor(*sa, &LocalEffectActor::SetEnabled), 
-            dtDAL::MakeFunctorRet(*sa, &LocalEffectActor::GetEnabled), 
+            dtDAL::BooleanActorProperty::SetFuncType(sa, &LocalEffectActor::SetEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(sa, &LocalEffectActor::GetEnabled),
             "Toggles the state of the particle system", "Smoke"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM, 
-            "Smoke File", "Smoke File", dtDAL::MakeFunctor(*this, &LocalEffectActorProxy::LoadFile), 
+            "Smoke File", "Smoke File", dtDAL::ResourceActorProperty::SetFuncType(this, &LocalEffectActorProxy::LoadFile),
             "Loads the smoke file for the particle system", "Smoke"));
       }
 

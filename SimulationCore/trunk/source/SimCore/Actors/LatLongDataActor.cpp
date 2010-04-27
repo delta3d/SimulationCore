@@ -109,16 +109,16 @@ namespace SimCore
          AddProperty(new dtDAL::DoubleActorProperty(
             LatLongDataActorProxy::PROPERTY_LATITUDE,
             LatLongDataActorProxy::PROPERTY_LATITUDE, 
-            dtDAL::MakeFunctor( *actor, &LatLongDataActor::SetLatitude ), 
-            dtDAL::MakeFunctorRet( *actor, &LatLongDataActor::GetLatitude ), 
+            dtDAL::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLatitude),
+            dtDAL::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLatitude),
             "Latitude location relevant to the data.",
             GROUP));
 
          AddProperty(new dtDAL::DoubleActorProperty(
             LatLongDataActorProxy::PROPERTY_LONGITUDE,
             LatLongDataActorProxy::PROPERTY_LONGITUDE, 
-            dtDAL::MakeFunctor( *actor, &LatLongDataActor::SetLongitude ), 
-            dtDAL::MakeFunctorRet( *actor, &LatLongDataActor::GetLongitude ), 
+            dtDAL::DoubleActorProperty::SetFuncType(actor, &LatLongDataActor::SetLongitude),
+            dtDAL::DoubleActorProperty::GetFuncType(actor, &LatLongDataActor::GetLongitude),
             "Longitude location relevant to the data.",
             GROUP));
       }

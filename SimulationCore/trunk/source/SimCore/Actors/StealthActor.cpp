@@ -58,19 +58,20 @@ namespace SimCore
       {
          PlatformActorProxy::BuildInvokables();
 
-         StealthActor &sa = static_cast<StealthActor&>(GetGameActor());
+         StealthActor* sa = NULL;
+         GetActor(sa);
 
          AddInvokable(*new dtGame::Invokable("AttachToActor",
-            dtDAL::MakeFunctor(sa, &StealthActor::AttachToActor)));
+            dtUtil::MakeFunctor(&StealthActor::AttachToActor, sa)));
 
          AddInvokable(*new dtGame::Invokable("Detach",
-            dtDAL::MakeFunctor(sa, &StealthActor::Detach)));
+            dtUtil::MakeFunctor(&StealthActor::Detach, sa)));
 
          AddInvokable(*new dtGame::Invokable("UpdateFromParent",
-            dtDAL::MakeFunctor(sa, &StealthActor::UpdateFromParent)));
+            dtUtil::MakeFunctor(&StealthActor::UpdateFromParent, sa)));
 
          AddInvokable(*new dtGame::Invokable("WarpToPosition",
-            dtDAL::MakeFunctor(sa, &StealthActor::WarpToPosition)));
+            dtUtil::MakeFunctor(&StealthActor::WarpToPosition, sa)));
 
       }
 
@@ -79,11 +80,12 @@ namespace SimCore
       {
 	   	PlatformActorProxy::BuildPropertyMap();
 
-         StealthActor &sa = static_cast<StealthActor&>(GetGameActor());
+         StealthActor* sa = NULL;
+         GetActor(sa);
 
          AddProperty(new dtDAL::Vec3ActorProperty("Attach Offset", "Attach Offset",
-             dtDAL::Vec3ActorProperty::SetFuncType(&sa, &StealthActor::SetAttachOffset),
-             dtDAL::Vec3ActorProperty::GetFuncType(&sa, &StealthActor::GetAttachOffset),
+             dtDAL::Vec3ActorProperty::SetFuncType(sa, &StealthActor::SetAttachOffset),
+             dtDAL::Vec3ActorProperty::GetFuncType(sa, &StealthActor::GetAttachOffset),
              "Property for the attach offset."));
       }
 

@@ -138,20 +138,21 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void EnemyDescriptionActorProxy::BuildPropertyMap()
    {
-      const std::string& GROUP = "Enemy Description";
+      static const dtUtil::RefString GROUP = "Enemy Description";
 
       BaseClass::BuildPropertyMap();
 
-      EnemyDescriptionActor& actor = static_cast<EnemyDescriptionActor &>(GetGameActor());
+      EnemyDescriptionActor* actor = NULL;
+      GetActor(actor);
 
       static const dtUtil::RefString PROP_ENEMY_TYPE_DESC("Indicates the enemy type.");
       AddProperty(new dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>(PROP_ENEMY_TYPE, PROP_ENEMY_TYPE,
-         dtDAL::MakeFunctor(actor, &EnemyDescriptionActor::SetEnemyType),
-         dtDAL::MakeFunctorRet(actor, &EnemyDescriptionActor::GetEnemyType),
-         PROP_ENEMY_TYPE_DESC, GROUP));
+               dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>::SetFuncType(actor, &EnemyDescriptionActor::SetEnemyType),
+               dtDAL::EnumActorProperty<EnemyDescriptionActor::EnemyType>::GetFuncType(actor, &EnemyDescriptionActor::GetEnemyType),
+               PROP_ENEMY_TYPE_DESC, GROUP));
 
       //do this to register properties from EnemySpawnInfo
-      actor.GetSpawnInfo().RegisterProperties(*this, GROUP);
+      actor->GetSpawnInfo().RegisterProperties(*this, GROUP);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

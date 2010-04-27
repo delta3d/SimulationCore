@@ -52,35 +52,36 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////////
       void VehicleAttachingConfigActorProxy::BuildPropertyMap()
       {
-         const std::string GROUP = "VehicleConfig";
+         static const dtUtil::RefString GROUP = "VehicleConfig";
          dtGame::GameActorProxy::BuildPropertyMap();
-         VehicleAttachingConfigActor &actor = static_cast<VehicleAttachingConfigActor&>(GetGameActor());
+         VehicleAttachingConfigActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL_GOOD", "VEHICLE_INSIDE_MODEL_PATH_GOOD", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceGood),
+            "VEHICLE_INSIDE_MODEL_GOOD", "VEHICLE_INSIDE_MODEL_PATH_GOOD", dtDAL::ResourceActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceGood),
             "What is the filepath / string of the inside model good", GROUP));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL_DESTROYED", "VEHICLE_INSIDE_MODEL_PATH_DESTROYED", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDestroyed),
+            "VEHICLE_INSIDE_MODEL_DESTROYED", "VEHICLE_INSIDE_MODEL_PATH_DESTROYED", dtDAL::ResourceActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDestroyed),
             "What is the filepath / string of the inside model dmged", GROUP));
          
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "VEHICLE_INSIDE_MODEL_DAMAGED", "VEHICLE_INSIDE_MODEL_PATH_DAMAGED", dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDamaged),
+            "VEHICLE_INSIDE_MODEL_DAMAGED", "VEHICLE_INSIDE_MODEL_PATH_DAMAGED", dtDAL::ResourceActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetInsideModelResourceDamaged),
             "What is the filepath / string of the inside model destroyed", GROUP));
 
          AddProperty(new dtDAL::Vec3ActorProperty("SeatOffSetPosition", "SeatOffSetPosition",
-            dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetSeatPosition),
-            dtDAL::MakeFunctorRet(actor, &VehicleAttachingConfigActor::GetSeatPosition),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetSeatPosition),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetSeatPosition),
             "For positioning, wheres the offset?", GROUP));
 
          AddProperty(new dtDAL::Vec3ActorProperty("SeatOffSetRotation", "SeatOffSetRotation",
-            dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetRotationOffSet),
-            dtDAL::MakeFunctorRet(actor, &VehicleAttachingConfigActor::GetRotationOffSet),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetRotationOffSet),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetRotationOffSet),
             "For rotation, wheres the offset?", GROUP));
 
          AddProperty(new dtDAL::BooleanActorProperty("UseInsideModel", "UseInsideModel",
-            dtDAL::MakeFunctor(actor, &VehicleAttachingConfigActor::SetUsesInsideModel),
-            dtDAL::MakeFunctorRet(actor, &VehicleAttachingConfigActor::GetUsesInsideModel),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &VehicleAttachingConfigActor::SetUsesInsideModel),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &VehicleAttachingConfigActor::GetUsesInsideModel),
             "Does it use the inside model or not?", GROUP));
       }
 

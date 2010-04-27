@@ -84,7 +84,7 @@ namespace SimCore
          dtGame::GameActorProxy::BuildInvokables();
 
          AddInvokable(*new dtGame::Invokable("HandleDetonationActorTimers",
-            dtDAL::MakeFunctor(*this, &DetonationActorProxy::HandleDetonationActorTimers)));
+            dtUtil::MakeFunctor(&DetonationActorProxy::HandleDetonationActorTimers, this)));
 
          RegisterForMessagesAboutSelf(dtGame::MessageType::INFO_TIMER_ELAPSED, "HandleDetonationActorTimers");
       }
@@ -94,48 +94,49 @@ namespace SimCore
       {
          dtGame::GameActorProxy::BuildPropertyMap();
 
-         DetonationActor &da = static_cast<DetonationActor&>(GetGameActor());
+         DetonationActor* da = NULL;
+         GetActor(da);
 
          AddProperty(new dtDAL::BooleanActorProperty("Enable Physics","Enable Physics",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetPhysicsEnabled),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::IsPhysicsEnabled),
+            dtDAL::BooleanActorProperty::SetFuncType(da, &DetonationActor::SetPhysicsEnabled),
+            dtDAL::BooleanActorProperty::GetFuncType(da, &DetonationActor::IsPhysicsEnabled),
             "Sets whether the detonation actor should have physics particles."));
 
          AddProperty(new dtDAL::FloatActorProperty("Lingering Shot Seconds", "Lingering Shot Seconds",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetLingeringSmokeSecs),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetLingeringSmokeSecs),
+            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetLingeringSmokeSecs),
+            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetLingeringSmokeSecs),
             "Sets the number of seconds that smoke will linger around after the explosion effect"));
 
          AddProperty(new dtDAL::FloatActorProperty("Explosion Timer Seconds", "Explosion Timer Seconds",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetExplosionTimerSecs),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetExplosionTimerSecs),
+            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetExplosionTimerSecs),
+            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetExplosionTimerSecs),
             "Sets the number of seconds an explosion will render"));
 
          AddProperty(new dtDAL::FloatActorProperty("Delete Actor Timer Seconds", "Delete Actor Timer Seconds",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetDeleteActorTimerSecs),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetDeleteActorTimerSecs),
+            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetDeleteActorTimerSecs),
+            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetDeleteActorTimerSecs),
             "Sets the number of seconds after smoke is rendered for an actor to be deleted"));
 
          AddProperty(new dtDAL::FloatActorProperty("Max Sound Distance", "Max Sound Distance",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetMaximumSoundDistance),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetMaximumSoundDistance),
+            dtDAL::FloatActorProperty::SetFuncType(da, &DetonationActor::SetMaximumSoundDistance),
+            dtDAL::FloatActorProperty::GetFuncType(da, &DetonationActor::GetMaximumSoundDistance),
             "Sets the maximum number of meters that a sound will clip"));
 
          AddProperty(new dtDAL::StringActorProperty("Light Name", "Light Name",
-            dtDAL::MakeFunctor(da, &DetonationActor::SetLightName),
-            dtDAL::MakeFunctorRet(da, &DetonationActor::GetLightName),
+            dtDAL::StringActorProperty::SetFuncType(da, &DetonationActor::SetLightName),
+            dtDAL::StringActorProperty::GetFuncType(da, &DetonationActor::GetLightName),
             "Sets the name of the light effect to be used when a detonation is spawned"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Smoke Particle System", "Smoke Particle System", dtDAL::MakeFunctor(da, &DetonationActor::LoadSmokeFile),
+            "Smoke Particle System", "Smoke Particle System", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadSmokeFile),
             "Loads the particle system for this detonation to use for smoke"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Detonation Particle System", "Detonation Particle System", dtDAL::MakeFunctor(da, &DetonationActor::LoadDetonationFile),
+            "Detonation Particle System", "Detonation Particle System", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadDetonationFile),
             "Loads the particle system for this detonation to use for the explosion"));
 
          AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::SOUND,
-            "Explosion Sound", "Explosion Sound", dtDAL::MakeFunctor(da, &DetonationActor::LoadSoundFile),
+            "Explosion Sound", "Explosion Sound", dtDAL::ResourceActorProperty::SetFuncType(da, &DetonationActor::LoadSoundFile),
             "Loads the sound for this detonation to use"));
       }
 
@@ -394,7 +395,7 @@ namespace SimCore
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
 
          if(!mSound.valid())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            throw dtGame::InvalidParameterException(
             "Failed to create the detonation sound pointer", __FILE__, __LINE__);
 
          mSound->LoadFile(fileName.c_str());

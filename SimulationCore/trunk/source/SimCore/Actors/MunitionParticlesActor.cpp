@@ -785,16 +785,17 @@ namespace SimCore
          const std::string GROUP = "MunitionParticlesActor";
 
          PhysicsParticleSystemActorProxy::BuildPropertyMap();
-         MunitionParticlesActor &actor = static_cast<MunitionParticlesActor&>(GetGameActor());
+         MunitionParticlesActor* actor = NULL;
+         GetActor(actor);
 
          AddProperty(new dtDAL::IntActorProperty("FrequencyOfTracers", "FrequencyOfTracers",
-                  dtDAL::MakeFunctor(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
-                  dtDAL::MakeFunctorRet(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
+                  dtDAL::IntActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetFrequencyOfTracers),
+                  dtDAL::IntActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetFrequencyOfTracers),
                   "", GROUP));
 
          AddProperty(new dtDAL::BooleanActorProperty("UseTracers", "UseTracers",
-                  dtDAL::MakeFunctor(actor, &MunitionParticlesActor::SetSystemToUseTracers),
-                  dtDAL::MakeFunctorRet(actor, &MunitionParticlesActor::GetSystemToUseTracers),
+                  dtDAL::BooleanActorProperty::SetFuncType(actor, &MunitionParticlesActor::SetSystemToUseTracers),
+                  dtDAL::BooleanActorProperty::GetFuncType(actor, &MunitionParticlesActor::GetSystemToUseTracers),
                   "", GROUP));
       }
 

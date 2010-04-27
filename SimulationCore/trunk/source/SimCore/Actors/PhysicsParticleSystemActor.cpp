@@ -39,6 +39,7 @@
 #include <dtCore/transform.h>
 
 #include <dtDAL/enginepropertytypes.h>
+#include <dtDAL/functor.h>
 
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
