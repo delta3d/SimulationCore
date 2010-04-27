@@ -73,8 +73,8 @@ namespace DriverDemo
       // massively helps smooth out the bounciness
       osg::Vec3 direction( 0.0f, 0.0f, -1.0f);
       float distanceToHit = 0.0;
-      float futureAdjustment = 0.0f;//ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
-      float currentAdjustment = 0.0f;//ComputeEstimatedForceCorrection(pos, direction, distanceToHit);
+      float futureAdjustment = ComputeEstimatedForceCorrection(posLookAhead, direction, distanceToHit);
+      float currentAdjustment = ComputeEstimatedForceCorrection(pos, direction, distanceToHit);
 
       // modulate how we correct and other stuff, so that our vehicle
       // behaves differently as we move faster. It also gives a little downward dip as we speed up
