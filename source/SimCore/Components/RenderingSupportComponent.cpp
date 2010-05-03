@@ -381,6 +381,7 @@ namespace SimCore
          }
       }
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       void RenderingSupportComponent::SetDynamicLightProperties( SimCore::Actors::DynamicLightPrototypeActor* dlActor, DynamicLight* result )
       {
          result->mAttenuation = dlActor->GetAttenuation();
@@ -428,7 +429,7 @@ namespace SimCore
          return result;
       }
 
-      RenderingSupportComponent::SpotLight* RenderingSupportComponent::AddSpotLightByPrototypeName( const std::string &prototypeName )
+      RenderingSupportComponent::SpotLight* RenderingSupportComponent::AddSpotLightByPrototypeName(const std::string& prototypeName )
       {
          SpotLight* result = NULL;
 
@@ -694,12 +695,8 @@ namespace SimCore
                   dtUtil::MakeIndexString(nameCounter, bogusIndexthing);
                   nameCounter ++;
 
-                  //the per-geode loading crashes on linux when using PhysX.
-#ifdef DELTA_WIN32
                   bool usePerGeodeLoading = true;
-#else
-                  bool usePerGeodeLoading = true;
-#endif
+
                   // Build the terrain as a static mesh, but with each geode loaded separately
                   landActor->BuildTerrainAsStaticMesh(terrainActorProxy->GetActor()->GetOSGNode(),
                      "Base Terrain " + bogusIndexthing, usePerGeodeLoading);
