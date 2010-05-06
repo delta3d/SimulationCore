@@ -917,9 +917,9 @@ namespace SimCore
             // If we are setting our smoothing time, then we need to force the DR helper
             // to ALWAYS use that, instead of using the avg update rate.
             GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
-            float transUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
+            float transUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
-            float rotUpdateRate = dtUtil::Max(0.02f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
+            float rotUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
          }
 
