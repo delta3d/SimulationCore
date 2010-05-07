@@ -28,6 +28,8 @@
 
 #include <SimCore/Actors/IGActor.h>
 
+#include <dtUtil/getsetmacros.h>
+
 namespace dtGame
 {
    class DeadReckoningComponent;
@@ -213,58 +215,88 @@ namespace SimCore
              */
             BaseEntityActorProxy::DamageStateEnum& GetDamageState() const;
 
+
             /**
              * Controls the maximum damage that the munitions component will allow before killing
              * this entity. Only applies to local entities, and only before the munitions component
              * is registered. See MunitionsComponent and DamageHelper for how this is used.
              */
-            void SetMaxDamageAmount(float newValue) { mMaxDamageAmount = newValue;  }
-            /**
-             * Controls the maximum damage that the munitions component will allow before killing
-             * this entity. Only applies to local entities, and only before the munitions component
-             * is registered. See MunitionsComponent and DamageHelper for how this is used.
-             */
-            float GetMaxDamageAmount() const { return mMaxDamageAmount; }
+            DECLARE_PROPERTY(float, MaxDamageAmount);
 
             /**
              * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
              * This value is controlled by the munitions component - NEVER set this manually.
              */
-            void SetCurDamageRatio(float newValue) { mCurDamageRatio = newValue;  }
+            DECLARE_PROPERTY(float, CurDamageRatio);
+
+            DECLARE_PROPERTY(std::string, MappingName);
+            DECLARE_PROPERTY(std::string, EntityTypeId);
+
+            /// Set the environment the entity is specialized in navigating.
+            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
+
+            /// Sets the force for which this entity is fighting.
+            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
+
+            /// Sets the service of this entity
+            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
+
+            /// Toggles engine smoke on and off
+            DECLARE_PROPERTY(bool, EngineSmokeOn);
+            /// Toggles smoke plumes on and off
+            DECLARE_PROPERTY(bool, SmokePlumePresent);
+            /// Toggles fire on and off
+            DECLARE_PROPERTY(bool, FlamesPresent);
+            bool IsFlamesPresent() const { return GetFlamesPresent(); }
+
             /**
-             * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
-             * Use this for any HUD or UI displays instead of asking the MunitionsComponent for its DamageHelper.
+             * True means no ground following should be performed on this actor.  False
+             * it will follow the ground as it moves.
              */
-            float GetCurDamageRatio() const { return mCurDamageRatio; }
+            DECLARE_PROPERTY(bool, Flying);
+            bool IsFlying() const { return GetFlying(); }
 
+            /// Set this to make the model for this entity show or not.
+            DECLARE_PROPERTY(bool, DrawingModel);
+            bool IsDrawingModel() const { return GetDrawingModel(); }
+
+            /// Set this to when a player attaches to this entity
+            DECLARE_PROPERTY(bool, PlayerAttached);
+            bool IsPlayerAttached() const { return GetPlayerAttached(); }
+
+            /// Set the mobility state of this entity. This is intended for use by the entity's damage helper.
+            DECLARE_PROPERTY(bool, MobilityDisabled);
+            bool IsMobilityDisabled() const { return GetMobilityDisabled(); }
+
+            /// Set the mobility state of this entity. This is intended for use by the entity's damage helper.
+            DECLARE_PROPERTY(bool, FirepowerDisabled);
+            bool IsFirepowerDisabled() const { return GetFirepowerDisabled(); }
+
+            DECLARE_PROPERTY(bool, Frozen);
 
             /**
-            * Toggles whether a local version of this entity will automatically attempt to register
-            * itself with a MunitionsComponent (if one exists).
-            * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
-            * @param newValue True to enable, false to not. Default is true.
-            */
-            void SetAutoRegisterWithMunitionsComponent(bool newValue) { mAutoRegisterWithMunitionsComponent = newValue; }
-
-            /**
-            * Toggles whether a local version of this entity will automatically attempt to register
-            * itself with a MunitionsComponent (if one exists).
-            * Not currently an Actor Property to avoid publishing this value repeatedly - its for setup only.
-            * @return mAutoRegisterWithMunitionsComponent
-            */
-            bool IsAutoRegisterWithMunitionsComponent() const { return mAutoRegisterWithMunitionsComponent; }
-
-            /**
-             * Set the environment the entity is specialized in navigating.
-             * @param domain Type of domain to be set.
+             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
+             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
+             * If false, linear velocity will be zero. Should be made into a property...
              */
-            void SetDomain(BaseEntityActorProxy::DomainEnum& domain);
+            DECLARE_PROPERTY(bool, PublishLinearVelocity);
+            bool IsPublishLinearVelocity() const { return GetPublishLinearVelocity(); }
 
             /**
-             * Get the environment the entity is specialized in navigating.
-             * @return Type of domain in which this entity is specialized.
+             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
+             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
+             * If false, linear velocity will be zero. Should be made into a property...
              */
-            BaseEntityActorProxy::DomainEnum& GetDomain() const;
+            DECLARE_PROPERTY(bool, PublishAngularVelocity);
+            bool IsPublishAngularVelocity() const { return GetPublishAngularVelocity(); }
+
+            DECLARE_PROPERTY(bool, AutoRegisterWithMunitionsComponent);
+
+            /**
+             * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
+             * @param tableName The name of the table, usually the same name as the entity class
+             */
+            DECLARE_PROPERTY(std::string, MunitionDamageTableName);
 
             /**
              * Sets this entity's minimum Dead Reckoning Algorithm.
@@ -278,64 +310,6 @@ namespace SimCore
              */
             dtGame::DeadReckoningAlgorithm& GetDeadReckoningAlgorithm() const;
 
-            /**
-             * Sets the force for which this entity is fighting.
-             * @param newForceEnum the new enum value to set.
-             */
-            virtual void SetForceAffiliation(BaseEntityActorProxy::ForceEnum& newForceEnum);
-
-            /**
-             * @return the force for which this entity is fighting.
-             */
-            BaseEntityActorProxy::ForceEnum& GetForceAffiliation() const;
-
-            /**
-             * Sets the service of this entity
-             * @param service The new service
-             */
-            virtual void SetService(BaseEntityActorProxy::ServiceEnum& service);
-
-            /**
-             * Gets the service of this entity
-             * @return mService
-             */
-            BaseEntityActorProxy::ServiceEnum& GetService() const;
-
-            /**
-             * Toggles engine smoke on and off
-             * @param enable True to enable, false to not
-             */
-            virtual void SetEngineSmokeOn(bool enable);
-
-            /**
-             * Gets if engine smoke is currently enabled
-             * @return mEngineSmokeOn
-             */
-            bool IsEngineSmokeOn() const { return mEngineSmokeOn; }
-
-            /**
-             * Toggles smoke plumes on and off
-             * @param enable True to enable, false to not
-             */
-            void SetSmokePlumePresent(bool enable);
-
-            /**
-             * Gets if smoke plumes are currently enabled
-             * @return mSmokePlumePresent
-             */
-            bool IsSmokePlumePresent() const { return mSmokePlumePresent; }
-
-            /**
-             * Toggles fire on and off
-             * @param enable True to enable, false to not
-             */
-            void SetFlamesPresent(bool enable);
-
-            /**
-             * Gets if fire is currently enabled
-             * @return mFlamesPresent
-             */
-            bool IsFlamesPresent() const { return mFlamesPresent; }
 
             /**
              * Sets the position of engine smoke on a model
@@ -511,83 +485,6 @@ namespace SimCore
             */
             osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
 
-            /**
-             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
-             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
-             * If false, linear velocity will be zero. Should be made into a property...
-             * @param newValue True to enable, false to not. Default is true.
-             */
-            void SetPublishLinearVelocity(bool newValue) { mPublishLinearVelocity = newValue; }
-            /**
-             * Are we set to publish linear velocity&  acceleration.
-             * @see #SetPublishLinearVelocity()
-             * @return mPublishLinearVelocity
-             */
-            bool IsPublishLinearVelocity() const { return mPublishLinearVelocity; }
-
-            /**
-            * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
-            * Allows tightly controlled entities that do motion model stuff to not mess up velocity
-            * If false, linear velocity will be zero. Should be made into a property...
-            * @param newValue True to enable, false to not. Default is true.
-            */
-            void SetPublishAngularVelocity(bool newValue) { mPublishAngularVelocity = newValue; }
-            /**
-             * Are we set to publish angular velocity.
-             * @see #SetPublishAngularVelocity()
-             * @return mPublishAngularVelocity
-             */
-            bool IsPublishAngularVelocity() const { return mPublishAngularVelocity; }
-
-
-            void SetFrozen(bool frozen);
-
-            bool GetFrozen() const;
-
-
-            /**
-             * @return true if no ground following should be performed on this actor.
-             */
-            bool IsFlying() const;
-
-            /**
-             * True means no ground following should be performed on this actor.  False
-             * it will follow the ground as it moves.
-             * @param newFlying the new value to set.
-             */
-            void SetFlying(bool newFlying);
-
-            /**
-             * @return true if the model is being drawn.
-             */
-            bool IsDrawingModel() const;
-
-            /**
-             * Set this to make the model for this entity show or not.
-             * @param newDrawing the new value to set.
-             */
-            void SetDrawingModel(bool newDrawing);
-
-            /**
-             * @return true a player is attached to this entity
-             */
-            bool IsPlayerAttached() const;
-
-            /**
-             * Set this to when a player attaches to this entity
-             * @param attach the new value to set.
-             */
-            void SetIsPlayerAttached(bool attach);
-
-            /// Set the mobility state of this entity. This is intended for use by
-            /// the entity's damage helper.
-            bool IsMobilityDisabled() const { return mDisabledMobility; }
-            void SetMobilityDisabled( bool disabled ) { mDisabledMobility = disabled; }
-
-            /// Set the mobility state of this entity. This is intended for use by
-            /// the entity's damage helper.
-            bool IsFirepowerDisabled() const { return mDisabledFirepower; }
-            void SetFirepowerDisabled( bool disabled ) { mDisabledFirepower = disabled; }
 
             /**
              * Sets the offset from the ground the actor should be clamped to.
@@ -598,14 +495,6 @@ namespace SimCore
 
             ///@return The distance from the ground that the actor should be.
             float GetGroundOffset() const;
-
-            /**
-             * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
-             * @param tableName The name of the table, usually the same name as the entity class
-             */
-            void SetMunitionDamageTableName( const std::string& tableName );
-            ///@ return The name of the referenced munition damage table, usually the same name as the entity class
-            std::string GetMunitionDamageTableName() const;
 
             /**
              * Sets the maximum translation offset from the last update translation this
@@ -696,12 +585,6 @@ namespace SimCore
             /// Getter for the time until next update value.  Used for testing
             float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
 
-            void SetMappingName( const std::string& name );
-            const std::string& GetMappingName() const;
-
-            void SetEntityTypeId( const std::string& entityType );
-            const std::string& GetEntityTypeId() const;
-
             /**
              * Gives a local entity an opportunity to respond to damage from a munition.
              * Called from the MunitionsComponent via the DamageHelper. Typically called
@@ -780,32 +663,13 @@ namespace SimCore
             osg::Vec3 mCurrentAcceleration;
             osg::Vec3 mCurrentAngularVelocity;
 
-            ///The force for which this entity is fighting.
-            BaseEntityActorProxy::ForceEnum* mForceAffiliation;
-
             /// The particle systems used for fire and smoke
             dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem, mSmokePlumesSystem, mFlamesSystem;
-
-            /// The entity's service
-            BaseEntityActorProxy::ServiceEnum* mService;
 
             /// The file names that are loaded into the above particle systems
             std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;
             ///The entity's DIS/RPR-FOM damage state.
             BaseEntityActorProxy::DamageStateEnum* mDamageState;
-
-            /// The max amount of damage before dead - use when registering local actors with the MunitionsComponent
-            float mMaxDamageAmount;
-            /// The cur damage ratio (0.0 to 1.0 dead). Do not set manually - controlled by the MunitionsComonent when a local entity takes damage
-            float mCurDamageRatio;
-            /// If true, local actors will automatically attempt to register with the Munitions Component (if one exists). True by default
-            bool mAutoRegisterWithMunitionsComponent;
-
-            /// Environment the entity is specialized in navigating.
-            BaseEntityActorProxy::DomainEnum* mDomain;
-
-            /// The name of the munition damage table as found in Configs/MunitionsConfig.xml
-            std::string mMunitionTableName;
 
             /// Position of the engine for smoke
             osg::Vec3 mEngineSmokePosition;
@@ -823,23 +687,6 @@ namespace SimCore
             float mMaxTranslationError2;
 
             unsigned mFireLightID;
-
-            std::string mEntityType;
-            std::string mMappingName;
-
-            /// Flags for particle effects
-            bool mEngineSmokeOn: 1;
-            bool mSmokePlumePresent: 1;
-            bool mFlamesPresent: 1;
-            bool mFlying: 1;
-            bool mDrawing: 1;
-            bool mIsPlayerAttached: 1;
-            bool mDisabledFirepower: 1;
-            bool mDisabledMobility: 1;
-            bool mIsFrozen: 1;
-
-            bool mPublishLinearVelocity: 1;
-            bool mPublishAngularVelocity: 1;
 
 
       };

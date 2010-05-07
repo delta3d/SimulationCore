@@ -509,11 +509,8 @@ namespace SimCore
          HumanWithPhysicsActor* actor = NULL;
          GetActor(actor);
          std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-#ifdef AGEIA_PHYSICS
          actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-#else
-         actor->GetPhysicsHelper()->BuildPropertyMap(toFillIn);
-#endif
+
          for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
             AddProperty(toFillIn[i].get());
       }

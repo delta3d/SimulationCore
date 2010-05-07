@@ -601,7 +601,7 @@ namespace NetDemo
       }
       else //if (mVehicle.valid()) //  Attached
       {
-         bool enableVehicleModels = !mVehicle->IsFlamesPresent();
+         bool enableVehicleModels = !mVehicle->GetFlamesPresent();
          mWeaponMM->SetEnabled(enableVehicleModels);
          mRingMM->SetEnabled(enableVehicleModels);
 
@@ -717,8 +717,8 @@ namespace NetDemo
       {
          if (!ctrlIsPressed)
          {
-            mPhysVehicle->SetPublishLinearVelocity(!mPhysVehicle->IsPublishLinearVelocity());
-            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->IsPublishLinearVelocity() << 
+            mPhysVehicle->SetPublishLinearVelocity(!mPhysVehicle->GetPublishLinearVelocity());
+            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->GetPublishLinearVelocity() <<
                "]. Ctrl to change VelDRDecision." << std::endl;
          }
          else
