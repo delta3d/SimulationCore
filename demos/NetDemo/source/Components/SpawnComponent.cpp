@@ -55,6 +55,12 @@ namespace NetDemo
 
    }
 
+   IMPLEMENT_PROPERTY(SpawnComponent, int, Difficulty);
+   IMPLEMENT_PROPERTY(SpawnComponent,int, WaveNumber);
+   IMPLEMENT_PROPERTY(SpawnComponent, int, NumPlayers);
+   IMPLEMENT_PROPERTY(SpawnComponent, float, TimeLeftInWave);
+   IMPLEMENT_PROPERTY(SpawnComponent, dtUtil::EnumerationPointer<ServerGameStatusActor::ServerGameStatusEnum>, GameStatus);
+
    /////////////////////////////////////////////////////////////
    void SpawnComponent::CleanUp()
    {
@@ -96,7 +102,7 @@ namespace NetDemo
             if(gap != NULL)
             {
                ServerGameStatusActor* serverStatus = static_cast<ServerGameStatusActor*>(gap->GetActor());
-               UpdateGameState(&serverStatus->GetGameStatus(), serverStatus->GetWaveNumber(), serverStatus->GetTimeLeftInCurState());
+               UpdateGameState(serverStatus->GetGameStatus(), serverStatus->GetWaveNumber(), serverStatus->GetTimeLeftInCurState());
             }
          }
       }
@@ -108,7 +114,7 @@ namespace NetDemo
          if(proxy != NULL)
          {
             ServerGameStatusActor& actor = static_cast<ServerGameStatusActor&>(proxy->GetGameActor());
-            InitGameState(&actor.GetGameStatus(), actor.GetGameDifficulty(), actor.GetNumPlayers(), actor.GetMaxNumWaves());
+            InitGameState(actor.GetGameStatus(), actor.GetGameDifficulty(), actor.GetNumPlayers(), actor.GetMaxNumWaves());
          }
          else
          {
@@ -193,7 +199,7 @@ namespace NetDemo
    }
 
 
-   void SpawnComponent::InitGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int difficulty, int numPlayers, int numWaves )
+   void SpawnComponent::InitGameState(ServerGameStatusActor::ServerGameStatusEnum& gameStatus, int difficulty, int numPlayers, int numWaves )
    {
       SetGameStatus(gameStatus);
       SetWaveNumber(0);
@@ -202,7 +208,7 @@ namespace NetDemo
       SetDifficulty(difficulty);
    }
 
-   void SpawnComponent::UpdateGameState(const ServerGameStatusActor::ServerGameStatusEnum* gameStatus, int waveNumber, float timeLeftInWave)
+   void SpawnComponent::UpdateGameState(ServerGameStatusActor::ServerGameStatusEnum& gameStatus, int waveNumber, float timeLeftInWave)
    {
       SetGameStatus(gameStatus);
       SetWaveNumber(waveNumber);
@@ -211,7 +217,7 @@ namespace NetDemo
 
    void SpawnComponent::Tick(float dt)
    {
-      if(GetGameStatus() == &ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
+      if(GetGameStatus() == ServerGameStatusActor::ServerGameStatusEnum::WAVE_IN_PROGRESS)
       {
          //LOG_ALWAYS("Wave in progress");
          EnemyDescriptionActor* desc = NULL;
