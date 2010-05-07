@@ -36,6 +36,7 @@
 #include <dtDAL/actorproperty.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/functor.h>
+#include <dtDAL/propertymacros.h>
 #include <dtUtil/templateutility.h>
 
 #include <osg/MatrixTransform>
@@ -172,12 +173,15 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::BuildPropertyMap()
       {
-         BaseEntity &e = static_cast<BaseEntity&>(GetGameActor());
+         BaseEntity& e = static_cast<BaseEntity&>(GetGameActor());
 
          BaseClass::BuildPropertyMap();
 
          static const dtUtil::RefString BASE_ENTITY_GROUP("Base Entity");
          static const dtUtil::RefString DEAD_RECKONING_GROUP("Dead Reckoning");
+
+         typedef dtDAL::PropertyRegHelper<BaseEntityActorProxy&, BaseEntity> PropRegType;
+         PropRegType propRegHelper(*this, &e, "Base Entity");
 
          static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last known position of this BaseEntity. Do not change by hand.");
          AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
@@ -209,39 +213,19 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAngularVelocity),
             PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_FROZEN_DESC("Whether or not the simulation of the entity is frozen.");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FROZEN, PROPERTY_FROZEN,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetFrozen),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetFrozen),
-            PROPERTY_FROZEN_DESC, BASE_ENTITY_GROUP));
+         REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
 
-         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION_LABEL("Engine Smoke Position");
-         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION_DESC("Sets the engine smoke position of this BaseEntity");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_SMOKE_POSITION, PROPERTY_ENGINE_SMOKE_POSITION_LABEL,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokePos),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetEngineSmokePos),
-            PROPERTY_ENGINE_SMOKE_POSITION_DESC, BASE_ENTITY_GROUP));
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
+                  "Sets the engine smoke position of this BaseEntity", PropRegType, propRegHelper);
 
-         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON_LABEL("Engine Smoke On");
-         static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON_DESC("Enables engine smoke");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_ENGINE_SMOKE_ON, PROPERTY_ENGINE_SMOKE_ON_LABEL,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokeOn),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsEngineSmokeOn),
-            PROPERTY_ENGINE_SMOKE_ON_DESC, BASE_ENTITY_GROUP));
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokeOn, PROPERTY_ENGINE_SMOKE_ON, "Engine Smoke On",
+                  "Enables engine smoke", PropRegType, propRegHelper);
 
-         static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_LABEL("Flames Present");
-         static const dtUtil::RefString PROPERTY_FLAMES_PRESENT_DESC("Should the actor be burning");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLAMES_PRESENT, PROPERTY_FLAMES_PRESENT_LABEL,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetFlamesPresent),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlamesPresent),
-            PROPERTY_FLAMES_PRESENT_DESC, BASE_ENTITY_GROUP));
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(FlamesPresent, PROPERTY_FLAMES_PRESENT, "Flames Present",
+                  "Should the actor be burning", PropRegType, propRegHelper);
 
-         static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT_LABEL("Flames Present");
-         static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT_DESC("Enables engine smoke");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_SMOKE_PLUME_PRESENT, PROPERTY_SMOKE_PLUME_PRESENT_LABEL,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetSmokePlumePresent),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsSmokePlumePresent),
-            PROPERTY_SMOKE_PLUME_PRESENT_DESC, BASE_ENTITY_GROUP));
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
+                  "Enables full entity smoking", PropRegType, propRegHelper);
 
          static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
          dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
@@ -283,14 +267,14 @@ namespace SimCore
             ("Flags if the dead-reckoning code should not make this actor follow the ground as it moves.");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLYING, PROPERTY_FLYING,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFlying),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsFlying),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetFlying),
             PROPERTY_FLYING_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_DRAWING_MODEL_DESC
             ("Flags if this entity should draw it's model.  This is typically turned off if the entity has the player attached to it.");
          AddProperty(new dtDAL::BooleanActorProperty("DrawingModel", "Draw Model",
             dtDAL::MakeFunctor(e, &BaseEntity::SetDrawingModel),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsDrawingModel),
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetDrawingModel),
             PROPERTY_DRAWING_MODEL_DESC, DEAD_RECKONING_GROUP));
 
          static const dtUtil::RefString PROPERTY_DAMAGE_STATE_DESC
@@ -347,10 +331,11 @@ namespace SimCore
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetService),
             "Sets the service of this entity", BASE_ENTITY_GROUP));
 
-         AddProperty(new dtDAL::StringActorProperty("Munition Damage Table","Munition Damage Table",
-            dtDAL::MakeFunctor(e, &BaseEntity::SetMunitionDamageTableName),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetMunitionDamageTableName),
-            "The name of the munition damage table name found in Configs/MunitionsConfig.xml", BASE_ENTITY_GROUP));
+
+         REGISTER_PROPERTY_WITH_NAME(MunitionDamageTableName, "Munition Damage Table",
+                  "The name of the munition damage table name found in Configs/MunitionsConfig.xml",
+                  PropRegType, propRegHelper);
+
 
          static const dtUtil::RefString PROPERTY_DEFAULT_SCALE_DESC
             ("Changes the desired base scale to make the model/geometry "
@@ -395,15 +380,15 @@ namespace SimCore
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FIREPOWER_DISABLED,
             PROPERTY_FIREPOWER_DISABLED,
             dtDAL::MakeFunctor(e, &BaseEntity::SetFirepowerDisabled),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsFirepowerDisabled),
-            "Determines if this entity has had its fire power disabled."));
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetFirepowerDisabled),
+            "Determines if this entity has had its fire power disabled.", BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_MOBILITY_DISABLED("Mobility Disabled");
          AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_MOBILITY_DISABLED,
             PROPERTY_MOBILITY_DISABLED,
             dtDAL::MakeFunctor(e, &BaseEntity::SetMobilityDisabled),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::IsMobilityDisabled),
-            "Determines if this entity has had its mobility disabled."));
+            dtDAL::MakeFunctorRet(e, &BaseEntity::GetMobilityDisabled),
+            "Determines if this entity has had its mobility disabled.", BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::StringActorProperty(
             PROPERTY_ENTITY_TYPE_ID,
@@ -511,6 +496,22 @@ namespace SimCore
 
       BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy)
          : IGActor(proxy)
+         , mMaxDamageAmount(1.0f)
+         , mCurDamageRatio(0.0f)
+         , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
+         , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
+         , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
+         , mEngineSmokeOn(false)
+         , mSmokePlumePresent(false)
+         , mFlamesPresent(false)
+         , mDrawingModel(true)
+         , mPlayerAttached(false)
+         , mMobilityDisabled(false)
+         , mFirepowerDisabled(false)
+         , mFrozen(false)
+         , mPublishLinearVelocity(true)
+         , mPublishAngularVelocity(true)
+         , mAutoRegisterWithMunitionsComponent(true)
          , mTimeUntilNextUpdate(0.0f)
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
@@ -518,13 +519,7 @@ namespace SimCore
          , mCurrentVelocity(0.0f, 0.0f, 0.0f)
          , mCurrentAcceleration(0.0f, 0.0f, 0.0f)
          , mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
-         , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
-         , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
-         , mMaxDamageAmount(1.0f)
-         , mCurDamageRatio(0.0f)
-         , mAutoRegisterWithMunitionsComponent(true)
-         , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
          , mMaxRotationError(2.0f)
@@ -532,16 +527,6 @@ namespace SimCore
          , mMaxTranslationError(0.15f)
          , mMaxTranslationError2(0.0225f)
          , mFireLightID(0)
-         , mEngineSmokeOn(false)
-         , mSmokePlumePresent(false)
-         , mFlamesPresent(false)
-         , mDrawing(true)
-         , mIsPlayerAttached(false)
-         , mDisabledFirepower(false)
-         , mDisabledMobility(false)
-         , mIsFrozen(false)
-         , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
          osg::Group* g = GetOSGNode()->asGroup();
@@ -558,29 +543,26 @@ namespace SimCore
          SetFlamesPresent(false);
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMappingName(const std::string& name)
-      {
-         mMappingName = name;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      const std::string& BaseEntity::GetMappingName() const
-      {
-         return mMappingName;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetEntityTypeId(const std::string& entityType)
-      {
-         mEntityType = entityType;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      const std::string& BaseEntity::GetEntityTypeId() const
-      {
-         return mEntityType;
-      }
+      IMPLEMENT_PROPERTY(BaseEntity, float, MaxDamageAmount);
+      IMPLEMENT_PROPERTY(BaseEntity, float, CurDamageRatio);
+      IMPLEMENT_PROPERTY(BaseEntity, std::string, MappingName);
+      IMPLEMENT_PROPERTY(BaseEntity, std::string, EntityTypeId);
+      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
+      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
+      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
+      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, EngineSmokeOn);
+      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, SmokePlumePresent);
+      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, FlamesPresent);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, Flying);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, DrawingModel);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, PlayerAttached);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, MobilityDisabled);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, FirepowerDisabled);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, Frozen);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, PublishLinearVelocity);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, PublishAngularVelocity);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
+      IMPLEMENT_PROPERTY(BaseEntity, std::string, MunitionDamageTableName);
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::InitDeadReckoningHelper()
@@ -674,18 +656,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      BaseEntityActorProxy::DomainEnum& BaseEntity::GetDomain() const
-      {
-         return *mDomain;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetDomain(BaseEntityActorProxy::DomainEnum& domain)
-      {
-         mDomain = &domain;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm& newAlgorithm)
       {
          mDRAlgorithm = &newAlgorithm;
@@ -696,30 +666,6 @@ namespace SimCore
       dtGame::DeadReckoningAlgorithm& BaseEntity::GetDeadReckoningAlgorithm() const
       {
          return *mDRAlgorithm;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetForceAffiliation(BaseEntityActorProxy::ForceEnum& newForceEnum)
-      {
-         mForceAffiliation = &newForceEnum;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      BaseEntityActorProxy::ForceEnum& BaseEntity::GetForceAffiliation() const
-      {
-         return *mForceAffiliation;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetService(BaseEntityActorProxy::ServiceEnum &service)
-      {
-         mService = &service;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      BaseEntityActorProxy::ServiceEnum& BaseEntity::GetService() const
-      {
-         return *mService;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -768,52 +714,6 @@ namespace SimCore
       osg::Vec3 BaseEntity::GetLastKnownAngularVelocity() const
       {
          return mDeadReckoningHelper->GetLastKnownAngularVelocity();
-      }
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::IsFlying() const
-      {
-         return mDeadReckoningHelper->IsFlying();
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetFlying(bool newFlying)
-      {
-         mDeadReckoningHelper->SetFlying(newFlying);
-//         if (mFlying)
-//            mNode->asGroup()->removeChild(mPointsGeode.get());
-//         else
-//            mNode->asGroup()->addChild(mPointsGeode.get());
-
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::IsDrawingModel() const
-      {
-         return mDrawing;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetDrawingModel(bool newDrawing)
-      {
-         mDrawing = newDrawing;
-         SetNodeVisible(mDrawing, GetScaleMatrixTransform());
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::IsPlayerAttached() const
-      {
-         return mIsPlayerAttached;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetIsPlayerAttached(bool attach)
-      {
-         mIsPlayerAttached = attach;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -1164,18 +1064,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMunitionDamageTableName(const std::string& tableName)
-      {
-         mMunitionTableName = tableName;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      std::string BaseEntity::GetMunitionDamageTableName() const
-      {
-         return mMunitionTableName;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       osg::Vec3 BaseEntity::GetLastKnownTranslation() const
       {
          return mDeadReckoningHelper->GetLastKnownTranslation();
@@ -1249,18 +1137,6 @@ namespace SimCore
          xform.Set(mScaleMatrixNode->getMatrix());
          xform.GetRotation(result);
          return result;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetFrozen(bool frozen)
-      {
-         mIsFrozen = frozen;
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::GetFrozen() const
-      {
-         return mIsFrozen;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////

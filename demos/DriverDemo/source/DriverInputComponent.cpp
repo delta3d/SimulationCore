@@ -614,7 +614,7 @@ namespace DriverDemo
       bool fireEnabled = false;
       if( enable && mVehicle.valid() )
       {
-         fireEnabled = mVehicle->IsFlamesPresent();
+         fireEnabled = mVehicle->GetFlamesPresent();
          enable = ! fireEnabled;
       }
 
@@ -975,7 +975,7 @@ namespace DriverDemo
    {
       if( mWeaponMM.valid())
       {
-         bool flamesPresent = mVehicle.valid() && mVehicle->IsFlamesPresent();
+         bool flamesPresent = mVehicle.valid() && mVehicle->GetFlamesPresent();
          mWeaponMM->SetEnabled( !flamesPresent);
       }
    }
@@ -1392,7 +1392,7 @@ namespace DriverDemo
       // Turn on motion models specific to the mode.
       if( enable )
       {
-         if( mVehicle.valid() && ! mVehicle->IsFlamesPresent() )
+         if( mVehicle.valid() && ! mVehicle->GetFlamesPresent() )
          {
             if( mRingMM.valid() )
             {

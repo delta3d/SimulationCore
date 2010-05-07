@@ -51,7 +51,7 @@
 #include <dtAI/aiplugininterface.h>
 
 //use a property container to hold ai data
-#include <dtDAL/propertymacros.h>
+#include <dtUtil/getsetmacros.h>
 
 #include <dtUtil/log.h>
 

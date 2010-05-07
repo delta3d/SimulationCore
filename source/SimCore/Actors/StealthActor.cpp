@@ -141,7 +141,7 @@ namespace SimCore
             {
                if(!mAttachAsThirdPerson)
                {
-                  entityParent->SetIsPlayerAttached(false);
+                  entityParent->SetPlayerAttached(false);
                   entityParent->SetDrawingModel(true);
                }
 
@@ -173,12 +173,12 @@ namespace SimCore
             if(!mAttachAsThirdPerson)
             {
                entity->SetDrawingModel(false);
-               entity->SetIsPlayerAttached(true);
+               entity->SetPlayerAttached(true);
             }
             else
             {
                entity->SetDrawingModel(true);
-               entity->SetIsPlayerAttached(true);
+               entity->SetPlayerAttached(true);
             }
             SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
 
