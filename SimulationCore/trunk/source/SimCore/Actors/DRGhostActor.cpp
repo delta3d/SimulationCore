@@ -405,9 +405,12 @@ namespace SimCore
 
             // When our slave entity got updated, we are going to turn on red particle shader for one frame.
             //mUpdateTrailParticles->SetEnabled(true); // put back when ParticleSystemParameterVisitor is deleted
-            mSlaveUpdatedParticleIsActive = true;
-            ParticleSystemParameterVisitor pspv = ParticleSystemParameterVisitor(true);
-            mUpdateTrailParticles->GetOSGNode()->accept(pspv);
+            if (!mSlaveUpdatedParticleIsActive) // if not already active.
+            {
+               mSlaveUpdatedParticleIsActive = true;
+               ParticleSystemParameterVisitor pspv = ParticleSystemParameterVisitor(true);
+               mUpdateTrailParticles->GetOSGNode()->accept(pspv);
+            }
             mPosUpdatedParticleCountdown = 2; // 2 to make sure particles draw, even if we have a whacky frame hiccup.
 
             mArrowDrawOnNextFrame = true;
