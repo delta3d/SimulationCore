@@ -215,7 +215,7 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    TestBaseEntityVisOpts(*eap);
 
-   dtDAL::ActorProperty *prop = NULL;
+   dtDAL::ActorProperty* prop = NULL;
 
    prop = eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
    CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
@@ -225,6 +225,25 @@ void BaseEntityActorProxyTests::TestPlatform()
    CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
    static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
    CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
+   osg::Vec3 vec;
+   vec.set(1.14, 8.21, 7.85);
+   prop = eap->GetProperty("EngineSmokePosition");
+   CPPUNIT_ASSERT_MESSAGE("The engine smoke position property should not be NULL", prop != NULL);
+   static_cast<dtDAL::Vec3ActorProperty*>(prop)->SetValue(vec);
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3ActorProperty*>(prop)->GetValue() == vec);
+
+   bool b = true;
+   prop = eap->GetProperty("EngineSmokeOn");
+   CPPUNIT_ASSERT_MESSAGE("The engine smoke on property should not be NULL", prop != NULL);
+   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
+   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
+
+   prop = eap->GetProperty("Engine smoke particles");
+   CPPUNIT_ASSERT_MESSAGE("The \"Engine smoke particles\" property should not be NULL", prop != NULL);
+   dtDAL::ResourceDescriptor rd = static_cast<dtDAL::ResourceActorProperty*>(prop)->GetValue();
+   CPPUNIT_ASSERT_MESSAGE("\"Engine smoke particles\" value should not be NULL", !rd.IsEmpty());
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Engine smoke particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:smoke.osg"));
 
    CPPUNIT_ASSERT_EQUAL(1, eap->referenceCount());
    eap = NULL;
@@ -576,21 +595,10 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    static_cast<dtDAL::Vec3fActorProperty*>(prop)->SetValue(vec);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3fActorProperty*>(prop)->GetValue() == vec);
 
-   vec.set(1.14, 8.21, 7.85);
-   prop = eap.GetProperty("EngineSmokePosition");
-   CPPUNIT_ASSERT_MESSAGE("The engine smoke position property should not be NULL", prop != NULL);
-   static_cast<dtDAL::Vec3ActorProperty*>(prop)->SetValue(vec);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3ActorProperty*>(prop)->GetValue() == vec);
-
-   bool b = true;
-   prop = eap.GetProperty("EngineSmokeOn");
-   CPPUNIT_ASSERT_MESSAGE("The engine smoke on property should not be NULL", prop != NULL);
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-
    SimCore::Actors::HumanActorProxy *hap = dynamic_cast<SimCore::Actors::HumanActorProxy*>(&eap);
    if(hap == NULL)
    {
+      bool b = true;
       prop = eap.GetProperty("FlamesPresent");
       CPPUNIT_ASSERT_MESSAGE("The flames present property should not be NULL", prop != NULL);
       static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(b);
@@ -623,12 +631,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    rd = static_cast<dtDAL::ResourceActorProperty*>(prop)->GetValue();
    CPPUNIT_ASSERT_MESSAGE("\"Fire particles\" value should not be NULL", !rd.IsEmpty());
    CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Fire particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:fire.osg"));
-
-   prop = eap.GetProperty("Engine smoke particles");
-   CPPUNIT_ASSERT_MESSAGE("The \"Engine smoke particles\" property should not be NULL", prop != NULL);
-   rd = static_cast<dtDAL::ResourceActorProperty*>(prop)->GetValue();
-   CPPUNIT_ASSERT_MESSAGE("\"Engine smoke particles\" value should not be NULL", !rd.IsEmpty());
-   CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Engine smoke particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:smoke.osg"));
 
    std::string munitionTableName("LARGE EXPLOSION");
    prop = eap.GetProperty("Munition Damage Table");
