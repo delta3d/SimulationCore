@@ -71,6 +71,7 @@ set(LIB_SOURCES_2
    "${SOURCE_PATH}/Actors/EphemerisEnvironmentActor.cpp"
    "${SOURCE_PATH}/Actors/FireActor.cpp"
    "${SOURCE_PATH}/Actors/FlareActor.cpp"
+   "${SOURCE_PATH}/Actors/FourWheelVehicleActor.cpp"
    "${SOURCE_PATH}/Actors/Human.cpp"
    "${SOURCE_PATH}/Actors/HumanWithPhysicsActor.cpp"
    "${SOURCE_PATH}/Actors/IGActor.cpp"

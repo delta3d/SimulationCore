@@ -25,6 +25,7 @@
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
+#include <osg/ComputeBoundsVisitor>
 #include <osgSim/DOFTransform>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtCore/transform.h>
@@ -52,14 +53,13 @@ namespace SimCore
    , mVehicleTopSpeed(120.0f)
    , mVehicleTopSpeedReverse(40.0f)
    , mHorsePower(150)
-   , mWheelTurnRadiusPerUpdate(0.03f)
    , mWheelInverseMass(0.15)
-   , mWheelRadius(0.5f)
-   , mWheelWidth(0.25f)
+   , mWheelRadius(-1.0f)
+   , mWheelWidth(-1.0f)
    , mMaxSteerAngle(45.0f)
    , mWheelSuspensionTravel(0.35f)
-   , mSuspensionSpringCoef(600.0f)
-   , mSuspensionSpringDamper(15.0f)
+   , mSuspensionSpringFreq(1.1f)
+   , mSuspensionSpringDamper(0.4f)
    , mSuspensionSpringTarget(0.0f)
    , mTireExtremumSlip(1.0f)
    , mTireExtremumValue(2.0f)
@@ -73,16 +73,14 @@ namespace SimCore
    , mMaxBrakeTorque(100.0f)
    , mVehicleTopSpeed(120.0f)
    , mVehicleTopSpeedReverse(40.0f)
-   , mHorsePower(150)
-   , mWheelTurnRadiusPerUpdate(0.03f)
    , mWheelInverseMass(0.15)
-   , mWheelRadius(0.5f)
-   , mWheelWidth(0.4f)
+   , mWheelRadius(-1.0f)
+   , mWheelWidth(-1.0f)
    , mMaxSteerAngle(45.0f)
-   , mWheelSuspensionTravel(0.5f)
-   , mSuspensionSpringCoef(588.0f)
-   , mSuspensionSpringDamper(2.3f)
-   , mSuspensionSpringTarget(0.4f)
+   , mWheelSuspensionTravel(0.3f)
+   , mSuspensionSpringFreq(1.1f)
+   , mSuspensionSpringDamper(0.4f)
+   , mSuspensionSpringTarget(0.35f)
    , mTireExtremumSlip(10.5f)
    , mTireExtremumValue(2.0f)
    , mTireAsymptoteSlip(2.0f)
@@ -144,8 +142,25 @@ namespace SimCore
    /// @retval            Pointer to the new wheel, which is already attached to
    ///                    actor.
    /// @retval            NULL if the wheel could not be created.
-   WheelType BaseWheeledVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, osg::Transform& node, bool powered, bool steered, bool braked)
+   WheelType BaseWheeledVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, osg::Transform& node,
+            float springRate, float damperCoef, bool powered, bool steered, bool braked)
    {
+      osg::ComputeBoundsVisitor bb;
+
+      node.accept(bb);
+
+      float wheelRadius = (bb.getBoundingBox().zMax() - bb.getBoundingBox().zMin()) / 2.0f;
+      float wheelWidth = (bb.getBoundingBox().xMax() - bb.getBoundingBox().xMin()) / 2.0f;
+
+      if (mWheelRadius > FLT_EPSILON)
+      {
+         wheelRadius = mWheelRadius;
+      }
+
+      if (mWheelWidth > FLT_EPSILON)
+      {
+         wheelWidth = mWheelWidth;
+      }
 
       NxWheelShapeDesc wheelShapeDesc;
 
@@ -177,10 +192,10 @@ namespace SimCore
       osg::Vec3 newPosition = position + GetLocalOffSet();
       wheelShapeDesc.localPose.t = dtPhysics::VectorType(newPosition[0], newPosition[1], newPosition[2]);
 
-      wheelShapeDesc.suspension.spring       = mSuspensionSpringCoef;
-      wheelShapeDesc.suspension.damper       = mSuspensionSpringDamper;
+      wheelShapeDesc.suspension.spring       = springRate;
+      wheelShapeDesc.suspension.damper       = damperCoef;
       wheelShapeDesc.suspension.targetValue  = mSuspensionSpringTarget;
-      wheelShapeDesc.radius                  = mWheelRadius;
+      wheelShapeDesc.radius                  = wheelRadius;
       wheelShapeDesc.suspensionTravel        = mWheelSuspensionTravel;
       wheelShapeDesc.inverseWheelMass        = mWheelInverseMass;
 
@@ -207,7 +222,7 @@ namespace SimCore
       return wheel;
    }
 #else
-   WheelType BaseWheeledVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, osg::Transform& node, bool powered, bool steered, bool braked)
+   WheelType BaseWheeledVehiclePhysicsHelper::AddWheel(const osg::Vec3& position, osg::Transform& node, float springRate, float damperCoef, bool powered, bool steered, bool braked)
    {
       WheelType wheel;
       //pal keeps track of this, but I set the anyway for completeness.
@@ -216,11 +231,27 @@ namespace SimCore
       wheel.mBraked = braked;
 
       wheel.mWheel = mVehicle->AddWheel();
+      osg::ComputeBoundsVisitor bb;
+
+      node.accept(bb);
+
+      float wheelRadius = (bb.getBoundingBox().zMax() - bb.getBoundingBox().zMin()) / 2.0f;
+      float wheelWidth = (bb.getBoundingBox().xMax() - bb.getBoundingBox().xMin()) / 2.0f;
+
+      if (mWheelRadius > FLT_EPSILON)
+      {
+         wheelRadius = mWheelRadius;
+      }
+
+      if (mWheelWidth > FLT_EPSILON)
+      {
+         wheelWidth = mWheelWidth;
+      }
 
       wheel.mWheel->Init(position.x(), position.y(), position.z(),
-               node.getBound().radius(), mWheelWidth, mSuspensionSpringTarget,
-               mSuspensionSpringCoef/100.0f, // in newtons per centimeter
-               mSuspensionSpringDamper,
+               wheelRadius, wheelWidth, mSuspensionSpringTarget,
+               springRate, // in newtons per meter
+               damperCoef,
                powered, steered, braked,
                mWheelSuspensionTravel * 100.0f,  // in centimeters
                mTireRestitution);
@@ -410,6 +441,21 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
+   float BaseWheeledVehiclePhysicsHelper::CalcSpringRate(float freq, float vehMass, float wheelbase, float leverArm) const
+   {
+      float lumpedMass = leverArm / wheelbase * 0.5f * vehMass;
+      float temp = osg::PI * 2.0f * freq;
+      return lumpedMass * temp * temp;
+   }
+
+   //////////////////////////////////////////////////////////////////////////////////////
+   float BaseWheeledVehiclePhysicsHelper::CalcDamperCoeficient(float dampingFactor, float vehMass, float springRate, float wheelbase, float leverArm) const
+   {
+      float lumpedMass = leverArm / wheelbase * 0.5f * vehMass;
+      return dampingFactor * 2.0f * std::sqrt ( springRate * lumpedMass );
+   }
+
+   //////////////////////////////////////////////////////////////////////////////////////
    //                                    Properties                                    //
    //////////////////////////////////////////////////////////////////////////////////////
 
@@ -443,30 +489,18 @@ namespace SimCore
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTopSpeedReverse),
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTopSpeedReverse),
                "Top speed in reverse", VEHICLEGROUP));
-#if 0
-      toFillIn.push_back(new dtDAL::IntActorProperty("Horsepower", "Horsepower",
-               dtDAL::IntActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleHorsePower),
-               dtDAL::IntActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleHorsePower),
-               "Currently unused", VEHICLEGROUP));
-#endif
-      toFillIn.push_back(new dtDAL::FloatActorProperty("mWheelTurnRadiusPerUpdate", "mWheelTurnRadiusPerUpdate",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetVehicleTurnRadiusPerUpdate),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetVehicleTurnRadiusPerUpdate),
-               "", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("WheelMass", "Wheel Mass",
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelInverseMass),
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelInverseMass),
                "This is not used for dtPhysics.", WHEELGROUP));
 
-#if 0
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Radius", "Wheel Radius",
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Radius", "Wheel Radius Override",
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelRadius),
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelRadius),
                "Rolling radius of wheel", WHEELGROUP));
-#endif
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Width", "Wheel Width",
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Wheel Width", "Wheel Width Override",
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetWheelWidth),
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelWidth),
                "Width of the wheel.  PhysX doesn't use this.", WHEELGROUP));
@@ -476,15 +510,15 @@ namespace SimCore
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetWheelSuspensionTravel),
                "Total suspension travel from full rebound to full jounce", WHEELGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Spring Coefficient", "Spring Coefficent",
-               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringCoef),
-               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringCoef),
-               "Spring Coefficient (force/distance) at wheel", WHEELGROUP));
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Spring Frequency", "Spring Frequency",
+               dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringFreq),
+               dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringFreq),
+               "The oscillation frequency of the spring in Hz, 1.0-2.0 is usual", WHEELGROUP));
 
-      toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Damping Coefficient", "Suspension Damping Coefficient",
+      toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Damping Factor", "Suspension Damping Factor",
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringDamper),
                dtDAL::FloatActorProperty::GetFuncType(this, &BaseWheeledVehiclePhysicsHelper::GetSuspensionSpringDamper),
-               "Coefficient of linear damping (force/velocity)", WHEELGROUP));
+               "Ratio this damping to the critical damping for the suspsension, usually 0-0.5", WHEELGROUP));
 
       toFillIn.push_back(new dtDAL::FloatActorProperty("Suspension Spring Target", "Suspension Spring Target",
                dtDAL::FloatActorProperty::SetFuncType(this, &BaseWheeledVehiclePhysicsHelper::SetSuspensionSpringTarget),
