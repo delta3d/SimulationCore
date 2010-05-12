@@ -249,13 +249,6 @@ namespace SimCore
             DECLARE_PROPERTY(bool, FlamesPresent);
             bool IsFlamesPresent() const { return GetFlamesPresent(); }
 
-            /**
-             * True means no ground following should be performed on this actor.  False
-             * it will follow the ground as it moves.
-             */
-            DECLARE_PROPERTY(bool, Flying);
-            bool IsFlying() const { return GetFlying(); }
-
             /// Set this to make the model for this entity show or not.
             DECLARE_PROPERTY(bool, DrawingModel);
             bool IsDrawingModel() const { return GetDrawingModel(); }
@@ -297,6 +290,14 @@ namespace SimCore
              * @param tableName The name of the table, usually the same name as the entity class
              */
             DECLARE_PROPERTY(std::string, MunitionDamageTableName);
+
+            /**
+             * True means no ground following should be performed on this actor.  False
+             * it will follow the ground as it moves.
+             */
+            bool IsFlying() const { return GetFlying(); }
+            bool GetFlying() const;
+            void SetFlying(bool);
 
             /**
              * Sets this entity's minimum Dead Reckoning Algorithm.
