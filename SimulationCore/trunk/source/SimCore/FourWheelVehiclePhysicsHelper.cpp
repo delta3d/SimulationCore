@@ -44,6 +44,8 @@ namespace SimCore
    /// Constructor that provides default values for properties and initial values for state variables.
    FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
    : BaseClass(proxy)
+   , mMaxMPH(200.0f)
+   , mIsVehicleFourWheelDrive(false)
    , mFrontTrackAdjustment(0.0f)
    , mRearTrackAdjustment(0.0f)
    , mCurrentNormalizedSteering(0.0f)
@@ -51,7 +53,6 @@ namespace SimCore
    , mCurrentNormalizedBrakes(0.0f)
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
-   , mFourWheelDrive(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -106,29 +107,10 @@ namespace SimCore
       return 0.0;
    }
 
-   /////////////////////////////////////////////////////////////////////////////////////
-   float FourWheelVehiclePhysicsHelper::GetFrontTrackAdjustment() const
-   {
-      return mFrontTrackAdjustment;
-   }
-
-   /////////////////////////////////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::SetFrontTrackAdjustment(float adjustment)
-   {
-      mFrontTrackAdjustment = adjustment;
-   }
-
-   /////////////////////////////////////////////////////////////////////////////////////
-   float FourWheelVehiclePhysicsHelper::GetRearTrackAdjustment() const
-   {
-      return mRearTrackAdjustment;
-   }
-
-   /////////////////////////////////////////////////////////////////////////////////////
-   void FourWheelVehiclePhysicsHelper::SetRearTrackAdjustment(float adjustment)
-   {
-      mRearTrackAdjustment = adjustment;
-   }
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, MaxMPH);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);
 
    // ///////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Methods                                 //
@@ -243,16 +225,23 @@ namespace SimCore
       float wheelbase       = frontLeverArm + rearLeverArm;
       if (wheelbase <= 0.0)
       {
-         LOG_ERROR("Wheelbase must be greater than zero. "
+         LOGN_ERROR("FourWheelVehiclePhysicsHelper.cpp", "Wheelbase must be greater than zero. "
                   "A zero wheel base can be a result of wheels being configured in the wrong order in the array.");
          //Prevent NAN and INF
          wheelbase = 1.0;
       }
 
+      float frontDamping, rearDamping, frontSpring, rearSpring;
+
+      frontSpring = CalcSpringRate(GetSuspensionSpringFreq(), GetChassisMass(), wheelbase, rearLeverArm);
+      rearSpring = CalcSpringRate(GetSuspensionSpringFreq(), GetChassisMass(), wheelbase, frontLeverArm);
+      frontDamping = CalcDamperCoeficient(GetSuspensionSpringDamper(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
+      rearDamping = CalcDamperCoeficient(GetSuspensionSpringDamper(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
+
       float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
       float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
-      float frontDeflection = (frontWheelLoad / GetSuspensionSpringCoef());
-      float rearDeflection  = (rearWheelLoad / GetSuspensionSpringCoef());
+      float frontDeflection = (frontWheelLoad / frontSpring);
+      float rearDeflection  = (rearWheelLoad / rearSpring);
       mFrontMaxJounce       = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - frontDeflection);
       mRearMaxJounce        = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - rearDeflection);
 
@@ -284,10 +273,10 @@ namespace SimCore
 //
 //      }
 
-      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), true, false, true);
-      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), true, false, true);
+      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), frontSpring, frontDamping, GetIsVehicleFourWheelDrive(), true, true);
+      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), frontSpring, frontDamping, GetIsVehicleFourWheelDrive(), true, true);
+      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), rearSpring, rearDamping, true, false, true);
+      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), rearSpring, rearDamping, true, false, true);
 
 
 #ifdef AGEIA_PHYSICS

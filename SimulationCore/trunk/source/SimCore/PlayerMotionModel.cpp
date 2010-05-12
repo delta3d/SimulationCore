@@ -47,87 +47,13 @@ namespace SimCore
    //////////////////////////////////////////////////////////////////////////         
    PlayerMotionModel::PlayerMotionModel(dtCore::Keyboard* keyboard,
                                     dtCore::Mouse* mouse) 
-      : dtCore::FPSMotionModel(keyboard,mouse),
-      mGroundClearance(1.5),
-      mElevation(0.0)
+      : dtCore::FPSMotionModel(keyboard,mouse)
    {
    }
 
    //////////////////////////////////////////////////////////////////////////         
    PlayerMotionModel::~PlayerMotionModel()
    {
-   }
-
-   //////////////////////////////////////////////////////////////////////////         
-   void PlayerMotionModel::SetCollidableGeometry(dtCore::DeltaDrawable* geometry)
-   {
-      if( mIsector.valid() == false )
-      {
-         mIsector = new dtCore::Isector();
-      }
-      mIsector->SetGeometry( geometry );
-   }
-
-   //////////////////////////////////////////////////////////////////////////         
-   const dtCore::DeltaDrawable* PlayerMotionModel::GetCollidableGeometry() const
-   {
-      return mIsector.valid() ? mIsector->GetQueryRoot() : NULL;
-   }
-
-   //////////////////////////////////////////////////////////////////////////         
-   void PlayerMotionModel::ResetIsector( const osg::Vec3& camPosition )
-   {
-      if( ! mIsector.valid() )
-      {
-         return;
-      }
-
-      osg::Vec3 vec( 0.0, 0.0, 1.0 );
-      double isectorSpan = 100.0;
-      mIsector->Reset();
-      mIsector->SetStartPosition( camPosition + osg::Vec3(0.0,0.0,-isectorSpan) );
-      mIsector->SetDirection( vec );
-      mIsector->SetLength( isectorSpan * 2.0 );
-   }
-
-   //////////////////////////////////////////////////////////////////////////         
-   void PlayerMotionModel::CollideWithGround()
-   {
-      // Obtain the camera position
-      osg::Vec3 xyz, hpr;
-      dtCore::Transform transform;
-      GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
-      transform.GetTranslation(xyz);
-
-      // Ensure isector ray is in the correct
-      // position, orientation and length.
-      ResetIsector( xyz );
-
-      // If there was a collision...
-      if( mIsector->Update() )
-      {
-         // Get the collision point
-         osg::Vec3 hitPt( xyz[0], xyz[1], 0.0 );
-         mIsector->GetHitPoint( hitPt, 0 );
-
-         // Account for clearance from the ground
-         hitPt[2] += mGroundClearance;
-
-         // Correct camera Z position if
-         // camera is inside the terrain.
-//            if( hitPt[2] >= xyz[2] )
-         {
-            //set our new position/rotation
-            xyz[2] = hitPt[2];
-            transform.SetTranslation(xyz);
-            GetTarget()->SetTransform(transform, dtCore::Transformable::ABS_CS); 
-         }
-      }
-
-      // Capture the elevation
-      mElevation = xyz[2];
-      transform.GetRotation(mRotation);
-      transform.GetTranslation(mPosition);
    }
 
    //////////////////////////////////////////////////////////////////////////         
@@ -163,33 +89,5 @@ namespace SimCore
             player->SetMovementTransform(movement);
          }
       }
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   SimCore::Actors::Platform* PlayerMotionModel::CheckWithCloseToVehicle()
-   {
-      SimCore::Actors::HumanWithPhysicsActor* player = dynamic_cast<SimCore::Actors::HumanWithPhysicsActor*>(GetTarget());
-      if(player != NULL)
-      {
-         SimCore::Components::PortalComponent* portalComponent; 
-         player->GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::PortalComponent::DEFAULT_NAME,
-                  portalComponent);
-         
-         if(portalComponent != NULL)
-         {
-            if(portalComponent->GetNumberOfPortals() > 0)
-            {
-               dtCore::Transform transform;
-               osg::Vec3 position;
-               GetTarget()->GetTransform(transform, dtCore::Transformable::ABS_CS);
-               transform.GetTranslation(position);
-               std::vector<dtGame::GameActorProxy*> toFillIn;
-               portalComponent->FindPortalsInRange(position, 3.0f, toFillIn);
-               if(toFillIn.size())
-                  return dynamic_cast<SimCore::Actors::Platform*>(toFillIn.front()->GetActor());
-            }
-         }
-      }
-      return NULL;
    }
 }

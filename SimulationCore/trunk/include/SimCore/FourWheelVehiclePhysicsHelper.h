@@ -26,6 +26,7 @@
 #define DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER
 #include <SimCore/Export.h>
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
+#include <dtUtil/getsetmacros.h>
 
 namespace osgSim
 {
@@ -41,7 +42,7 @@ namespace SimCore
       enum WheelLocation {FRONT_LEFT = 0, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT};
 
    public:
-      FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
+      FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy& proxy);
 
 
       // ///////////////////////////////////////////////////////////////////////////////////
@@ -68,38 +69,32 @@ namespace SimCore
       // Build the property list for the actor
       virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
-      bool GetIsVehicleFourWheelDrive() const     {return mFourWheelDrive;}
-      void SetIsVehicleFourWheelDrive(bool value)     {mFourWheelDrive = value;}
 
-      float GetFrontTrackAdjustment() const;
-
-      /**
-       * Track is the distance along the axle of a wheel from the centerline of the vehicle.
-       * Setting this to a positive number moves the wheel farther away than defined in the model.
-       * Setting it negative moves it closer.
-       */
-      void SetFrontTrackAdjustment(float adjustment);
-
-      float GetRearTrackAdjustment() const;
+      DECLARE_PROPERTY(float, MaxMPH);
+      DECLARE_PROPERTY(bool, IsVehicleFourWheelDrive);
 
       /**
        * Track is the distance along the axle of a wheel from the centerline of the vehicle.
        * Setting this to a positive number moves the wheel farther away than defined in the model.
        * Setting it negative moves it closer.
        */
-      void SetRearTrackAdjustment(float adjustment);
+      DECLARE_PROPERTY(float, FrontTrackAdjustment);
+      /**
+       * Track is the distance along the axle of a wheel from the centerline of the vehicle.
+       * Setting this to a positive number moves the wheel farther away than defined in the model.
+       * Setting it negative moves it closer.
+       */
+      DECLARE_PROPERTY(float, RearTrackAdjustment);
 
    protected:
       virtual ~FourWheelVehiclePhysicsHelper();
+
       static const float ACC_GRAVITY;
 
 
    private:
 
       WheelType        mWheels[4];                //!< All of the vehicle's wheels
-
-      float            mFrontTrackAdjustment;
-      float            mRearTrackAdjustment;
 
       float            mCurrentNormalizedSteering;     //!< Current steering from -1.0 to 1.0
       float            mCurrentEngineTorque;      //!< Current torque from engine: depends on mAccelerator and mEngineTorque

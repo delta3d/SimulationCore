@@ -33,22 +33,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
-namespace dtCore
-{
-   struct MessageData;
-   class DeltaDrawable;
-   class Isector;
-   class Keyboard;
-   class Mouse;
-}
-
 namespace SimCore
 {
-   namespace Actors
-   {
-      class Platform;
-   }
-
    //////////////////////////////////////////////////////////////////////////
    // PLAYER MOTION MODEL
    //////////////////////////////////////////////////////////////////////////
@@ -67,44 +53,11 @@ namespace SimCore
          // Destructor
          virtual ~PlayerMotionModel();
 
-         void SetGroundClearance( float groundClearance ) { mGroundClearance = groundClearance; }
-
-         float GetGroundClearance() const { return (float)mGroundClearance; }
-
-         void SetCollidableGeometry( dtCore::DeltaDrawable* geometry );
-         const dtCore::DeltaDrawable* GetCollidableGeometry() const;
-
-         const osg::Vec3& GetRotation() const { return mRotation; }
-         const osg::Vec3& GetPosition() const { return mPosition; }
-
-         // Gets the recently calculated elevation.
-         // @return elevation above sea level measured in meters
-         double GetElevation() const { return mElevation; }
-
-         void ResetIsector( const osg::Vec3& camPosition );
-
-         void CollideWithGround();
-
          // Message handler callback.
          // @param data the message data
          virtual void OnMessage(MessageData *data);
-         
-         SimCore::Actors::Platform* CheckWithCloseToVehicle();
-         //virtual void SetEnabled(bool enabled);
 
-   private:
-
-         // The metric distance the camera should stay away from terrain.
-         double mGroundClearance;
-
-         // The elevation above sea level measured in meters.
-         double mElevation;
-
-         // An ISector reference used in ground collision.
-         dtCore::RefPtr<dtCore::Isector> mIsector; 
-
-         osg::Vec3 mRotation;
-         osg::Vec3 mPosition;
+      private:
    };
 }
 

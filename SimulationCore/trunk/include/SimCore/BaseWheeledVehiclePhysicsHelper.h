@@ -63,7 +63,7 @@ namespace SimCore
    class SIMCORE_EXPORT BaseWheeledVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
    {
    public:
-      BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy &proxy);
+      BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy& proxy);
 
       //////////////////////////////////////////////////////////////////////////////////////
       //                               Vehicle Initialization                             //
@@ -72,7 +72,8 @@ namespace SimCore
       /**
       * /brief Purpose : Create Wheels onto the main physics vehicle
       */
-      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, bool powered = true, bool steered = true, bool braked = true);
+      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, float springRate, float damperCoef,
+               bool powered = true, bool steered = true, bool braked = true);
 
       /**
       * /brief Purpose : To create the chassis for the physics.
@@ -92,13 +93,11 @@ namespace SimCore
       float       GetMaxBrakeTorque() const              {return mMaxBrakeTorque;}
       float       GetVehicleTopSpeed() const             {return mVehicleTopSpeed;}
       float       GetVehicleTopSpeedReverse() const      {return mVehicleTopSpeedReverse;}
-      int         GetVehicleHorsePower() const           {return mHorsePower;}
-      float       GetVehicleTurnRadiusPerUpdate() const  {return mWheelTurnRadiusPerUpdate;}
       float       GetWheelInverseMass() const            {return mWheelInverseMass;}
       float       GetWheelRadius() const                 {return mWheelRadius;}
       float       GetWheelWidth() const                  {return mWheelWidth; }
       float       GetWheelSuspensionTravel() const       {return mWheelSuspensionTravel;}
-      float       GetSuspensionSpringCoef() const        {return mSuspensionSpringCoef;}
+      float       GetSuspensionSpringFreq() const        {return mSuspensionSpringFreq;}
       float       GetSuspensionSpringDamper()const       {return mSuspensionSpringDamper;}
       float       GetSuspensionSpringTarget() const      {return mSuspensionSpringTarget;}
       float       GetMaxSteerAngle() const               {return mMaxSteerAngle;}
@@ -113,13 +112,11 @@ namespace SimCore
       void SetMaxBrakeTorque(float value)             {mMaxBrakeTorque =  value;}
       void SetVehicleTopSpeed(float value)            {mVehicleTopSpeed = value;}
       void SetVehicleTopSpeedReverse(float value)     {mVehicleTopSpeedReverse = value;}
-      void SetVehicleHorsePower(int value)            {mHorsePower = value;}
-      void SetVehicleTurnRadiusPerUpdate(float value) {mWheelTurnRadiusPerUpdate = value;}
       void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}
       void SetWheelRadius(float value)                {mWheelRadius = value;}
       void SetWheelWidth(float width)                 { mWheelWidth = width; }
       void SetWheelSuspensionTravel(float value)      {mWheelSuspensionTravel = value;}
-      void SetSuspensionSpringCoef(float value)       {mSuspensionSpringCoef = value;}
+      void SetSuspensionSpringFreq(float value)       {mSuspensionSpringFreq = value;}
       void SetSuspensionSpringDamper(float value)     {mSuspensionSpringDamper = value;}
       void SetSuspensionSpringTarget(float value)     {mSuspensionSpringTarget = value;}
       void SetMaxSteerAngle(float value)              {mMaxSteerAngle = value;}
@@ -156,7 +153,12 @@ namespace SimCore
       /// Computes the aero dynamic drag on the vehicle.  It will be positive, you have to figure out the direction.
       osg::Vec3 ComputeAeroDynDrag(const osg::Vec3& linearVelocity);
    protected:
+
       virtual ~BaseWheeledVehiclePhysicsHelper();
+
+      float CalcSpringRate(float freq, float vehMass, float wheelbase, float leverArm) const;
+
+      float CalcDamperCoeficient(float dampingFactor, float vehMass, float springRate, float wheelbase, float leverArm) const;
 
 #ifndef AGEIA_PHYSICS
       palVehicle* GetPalVehicle() { return mVehicle; };
@@ -172,15 +174,13 @@ namespace SimCore
       float             mMaxBrakeTorque;              //!< Maximum braking torque
       float             mVehicleTopSpeed;            //!< Top speed of vehicle
       float             mVehicleTopSpeedReverse;     //!< Top speed in reverse
-      int               mHorsePower;               //!< @todo Used for brake torque, not implemented currently
 
-      float             mWheelTurnRadiusPerUpdate; //!< How much do the tires move when you press the movement key
       float             mWheelInverseMass;         //!< Affects acceleration of the vehicle with MOVEMENT_AMOUNT
-      float             mWheelRadius;              //!< how big our rims our, cant get exact between meters / inches / etc, have to play with
-      float             mWheelWidth;              //!< width of the wheel
+      float             mWheelRadius;              //!< wheel radius in meters.  use -1 for auto calculate
+      float             mWheelWidth;              //!< wheel width in meters.  use -1 for auto calculate
       float             mMaxSteerAngle;            //!< Maximum steer angle at wheel
       float             mWheelSuspensionTravel;    //!< Total suspension travel from full rebound to full jounce
-      float             mSuspensionSpringCoef;     //!< Spring constant
+      float             mSuspensionSpringFreq;     //!< Spring constant
       float             mSuspensionSpringDamper;   //!< Coefficient for linear damping
       float             mSuspensionSpringTarget;   //!< Set to 0 usually
 

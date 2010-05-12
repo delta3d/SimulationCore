@@ -28,37 +28,29 @@
 
 #include <DemoExport.h>
 #include <dtDAL/propertymacros.h>
-#include <SimCore/Actors/BasePhysicsVehicleActor.h>
+#include <SimCore/Actors/FourWheelVehicleActor.h>
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 
 namespace NetDemo
 {
 
-   class PropelledVehicleActor : public SimCore::Actors::BasePhysicsVehicleActor
+   class PropelledVehicleActor : public SimCore::Actors::FourWheelVehicleActor
    {
    public:
-      typedef SimCore::Actors::BasePhysicsVehicleActor BaseClass;
+      typedef SimCore::Actors::FourWheelVehicleActor BaseClass;
 
-      PropelledVehicleActor(SimCore::Actors::PlatformActorProxy& proxy);
+      PropelledVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy);
 
       virtual void OnEnteredWorld();
-      virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
       virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
-      virtual void PostPhysicsUpdate();
-
-      void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
-
    protected:
       virtual ~PropelledVehicleActor();
-   private:
-      
-      dtCore::RefPtr<SimCore::FourWheelVehiclePhysicsHelper> mHelper;
    };
 
-   class PropelledVehicleActorProxy : public SimCore::Actors::BasePhysicsVehicleActorProxy
+   class PropelledVehicleActorProxy : public SimCore::Actors::FourWheelVehicleActorProxy
    {
    public:
-      typedef SimCore::Actors::BasePhysicsVehicleActorProxy BaseClass;
+      typedef SimCore::Actors::FourWheelVehicleActorProxy BaseClass;
 
       PropelledVehicleActorProxy();
 
