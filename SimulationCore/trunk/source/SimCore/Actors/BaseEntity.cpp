@@ -136,12 +136,9 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR("Velocity Vector");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR("Acceleration Vector");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FROZEN("Frozen");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLYING("Flying");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAX_DAMAGE_AMOUNT("Max Damage Amount");
@@ -215,26 +212,11 @@ namespace SimCore
 
          REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
-                  "Sets the engine smoke position of this BaseEntity", PropRegType, propRegHelper);
-
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokeOn, PROPERTY_ENGINE_SMOKE_ON, "Engine Smoke On",
-                  "Enables engine smoke", PropRegType, propRegHelper);
-
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(FlamesPresent, PROPERTY_FLAMES_PRESENT, "Flames Present",
                   "Should the actor be burning", PropRegType, propRegHelper);
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
                   "Enables full entity smoking", PropRegType, propRegHelper);
-
-         static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
-         dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
-                  dtDAL::Vec3ActorProperty::SetFuncType(),
-                  dtDAL::Vec3ActorProperty::GetFuncType(&e, &BaseEntity::GetEngineSmokePos),
-                  PROPERTY_ENGINE_POSITION_DESC, BASE_ENTITY_GROUP);
-
-         prop->SetReadOnly(true);
-         AddProperty(prop);
 
          dtCore::RefPtr<dtDAL::ResourceActorProperty>  rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
             "Smoke plume particles", "Smoke plume particles",
@@ -252,15 +234,6 @@ namespace SimCore
 
          dtDAL::ResourceDescriptor rdFire("Particles:fire.osg");
          rp->SetValue(rdFire);
-         AddProperty(rp.get());
-
-         rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
-            "Engine smoke particles", "Engine smoke particles",
-            dtDAL::MakeFunctor(e, &BaseEntity::SetEngineSmokeFile),
-            "This is the file for engine smoke particles", BASE_ENTITY_GROUP);
-
-         dtDAL::ResourceDescriptor rdEngine("Particles:smoke.osg");
-         rp->SetValue(rdEngine);
          AddProperty(rp.get());
 
          static const dtUtil::RefString PROPERTY_FLYING_DESC
@@ -501,7 +474,6 @@ namespace SimCore
          , mDomain(&BaseEntityActorProxy::DomainEnum::GROUND)
          , mForceAffiliation(&BaseEntityActorProxy::ForceEnum::NEUTRAL)
          , mService(&BaseEntityActorProxy::ServiceEnum::MARINES)
-         , mEngineSmokeOn(false)
          , mSmokePlumePresent(false)
          , mFlamesPresent(false)
          , mDrawingModel(true)
@@ -550,7 +522,6 @@ namespace SimCore
       IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
       IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
       IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
-      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, EngineSmokeOn);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, SmokePlumePresent);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, FlamesPresent);
       IMPLEMENT_PROPERTY(BaseEntity, bool, DrawingModel);
@@ -797,42 +768,6 @@ namespace SimCore
             }
          }
          mFlamesPresent = enable;
-
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetEngineSmokeOn(bool enable)
-      {
-         if (mEngineSmokeOn == enable)
-            return;
-
-         if (enable)
-         {
-            if (!mEngineSmokeSystem.valid())
-               mEngineSmokeSystem = new dtCore::ParticleSystem;
-
-            mEngineSmokeSystem->LoadFile(mEngineSmokeSystemFile, true);
-            dtCore::Transform xform;
-            xform.MakeScale(osg::Vec3d(0.25, 0.24, 0.25));
-            xform.SetTranslation(mEngineSmokePosition);
-
-            mEngineSmokeSystem->SetTransform(xform, dtCore::Transformable::REL_CS);
-            mEngineSmokeSystem->SetEnabled(enable);
-         }
-         else
-         {
-            if (mEngineSmokeSystem.valid())
-            {
-               RemoveChild(mEngineSmokeSystem.get());
-               mEngineSmokeSystem = NULL;
-            }
-         }
-         mEngineSmokeOn = enable;
 
          // Major visual has changed, so force a full update.
          if (!IsRemote())

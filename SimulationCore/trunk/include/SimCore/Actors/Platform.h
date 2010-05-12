@@ -91,6 +91,9 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_MESH_NON_DAMAGED_ACTOR;
             static const dtUtil::RefString PROPERTY_MESH_DAMAGED_ACTOR;
             static const dtUtil::RefString PROPERTY_MESH_DESTROYED_ACTOR;
+            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION;
+            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON;
+            static const dtUtil::RefString PROPERTY_ENGINE_POSITION;
 
             // Constructor
             PlatformActorProxy();
@@ -294,6 +297,25 @@ namespace SimCore
 
             void SetNonDamagedNodeFileName(const std::string& value) {mNonDamagedNodeFileName = value;}
             std::string GetNonDamagedNodeFileName() {return mNonDamagedNodeFileName;}
+
+
+            /**
+             * Sets The file name of the smoke particle system being used
+             * @param fileName The name of the file
+             */
+            void SetEngineSmokeFile(const std::string& fileName) { mEngineSmokeSystemFile = fileName; }
+
+            /**
+             * Gets the name of the the file that the particle system is using
+             * @return mEngineSmokeSystemFile
+             */
+            std::string GetEngineSmokeFile() const { return mEngineSmokeSystemFile; }
+
+
+            DECLARE_PROPERTY(osg::Vec3, EngineSmokePos);
+            /// Toggles engine smoke on and off
+            DECLARE_PROPERTY(bool, EngineSmokeOn);
+
          protected:
 
             /**
@@ -316,6 +338,10 @@ namespace SimCore
             bool LoadModelNodeInternal(osg::Group& modelNode, const std::string& fileName, const std::string& copiedNodeName,
                      bool populateNodeCollector);
 
+            // Allows a sub-class to set the engine smoke value without doing all the engine
+            // smoke 'stuff'.
+            void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
+
          private:
             /// The minimum time allowed between control state updates
             float mTimeBetweenControlStateUpdates;
@@ -330,6 +356,11 @@ namespace SimCore
 
             /// Node that switched model damagable states
             dtCore::RefPtr<osg::Switch> mSwitchNode;
+
+            /// The particle systems used for fire and smoke
+            dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem;
+            /// The file names that are loaded into the above particle systems
+            std::string mEngineSmokeSystemFile;
 
             std::string mVehiclesSeatConfigActorName;
 

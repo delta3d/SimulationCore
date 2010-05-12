@@ -57,12 +57,9 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR;
             static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR;
             static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR;
-            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_POSITION;
-            static const dtUtil::RefString PROPERTY_ENGINE_SMOKE_ON;
             static const dtUtil::RefString PROPERTY_FROZEN;
             static const dtUtil::RefString PROPERTY_FLAMES_PRESENT;
             static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT;
-            static const dtUtil::RefString PROPERTY_ENGINE_POSITION;
             static const dtUtil::RefString PROPERTY_FLYING;
             static const dtUtil::RefString PROPERTY_DAMAGE_STATE;
             static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT;
@@ -241,8 +238,6 @@ namespace SimCore
             /// Sets the service of this entity
             DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
 
-            /// Toggles engine smoke on and off
-            DECLARE_PROPERTY(bool, EngineSmokeOn);
             /// Toggles smoke plumes on and off
             DECLARE_PROPERTY(bool, SmokePlumePresent);
             /// Toggles fire on and off
@@ -313,18 +308,6 @@ namespace SimCore
 
 
             /**
-             * Sets the position of engine smoke on a model
-             * @param pos The position to set
-             */
-            void SetEngineSmokePos(const osg::Vec3& pos) { mEngineSmokePosition = pos; }
-
-            /**
-             * Gets the position of smoke coming from an engine
-             * @return The position
-             */
-            osg::Vec3 GetEngineSmokePos() const { return mEngineSmokePosition; }
-
-            /**
              * Sets The file name of the fire particle system being used
              * @param fileName The name of the file
              */
@@ -347,18 +330,6 @@ namespace SimCore
              * @return mSmokePlumesSystemFile
              */
             std::string GetSmokePlumesFile() const { return mSmokePlumesSystemFile; }
-
-            /**
-             * Sets The file name of the smoke particle system being used
-             * @param fileName The name of the file
-             */
-            void SetEngineSmokeFile(const std::string& fileName) { mEngineSmokeSystemFile = fileName; }
-
-            /**
-             * Gets the name of the the file that the particle system is using
-             * @return mEngineSmokeSystemFile
-             */
-            std::string GetEngineSmokeFile() const { return mEngineSmokeSystemFile; }
 
             /**
              * Sets this entity's last known translation.  This should
@@ -642,10 +613,6 @@ namespace SimCore
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
             virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
-            // Allows a sub-class to set the engine smoke value without doing all the engine
-            // smoke 'stuff'.
-            void InnerSetEngineSmokeOn(bool enable) { mEngineSmokeOn = enable; }
-
             /// Called once we decided to publish - push our last known values onto the DR helper
             virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
 
@@ -665,15 +632,12 @@ namespace SimCore
             osg::Vec3 mCurrentAngularVelocity;
 
             /// The particle systems used for fire and smoke
-            dtCore::RefPtr<dtCore::ParticleSystem> mEngineSmokeSystem, mSmokePlumesSystem, mFlamesSystem;
+            dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
 
             /// The file names that are loaded into the above particle systems
-            std::string mEngineSmokeSystemFile, mSmokePlumesSystemFile, mFlamesSystemFile;
+            std::string mSmokePlumesSystemFile, mFlamesSystemFile;
             ///The entity's DIS/RPR-FOM damage state.
             BaseEntityActorProxy::DamageStateEnum* mDamageState;
-
-            /// Position of the engine for smoke
-            osg::Vec3 mEngineSmokePosition;
 
             /// the default xyz scale of the model
             osg::Vec3 mDefaultScale;

@@ -58,6 +58,7 @@
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/configproperties.h>
+#include <dtDAL/propertymacros.h>
 
 #include <dtAudio/sound.h>
 #include <dtAudio/audiomanager.h>
@@ -87,6 +88,9 @@ namespace SimCore
       const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_NON_DAMAGED_ACTOR("Non-damaged actor");
       const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_DAMAGED_ACTOR("Damaged actor");
       const dtUtil::RefString PlatformActorProxy::PROPERTY_MESH_DESTROYED_ACTOR("Destroyed actor");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_POSITION("Engine Position");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_SMOKE_POSITION("EngineSmokePosition");
+      const dtUtil::RefString PlatformActorProxy::PROPERTY_ENGINE_SMOKE_ON("EngineSmokeOn");
 
       ////////////////////////////////////////////////////////////////////////////////////
       PlatformActorProxy::PlatformActorProxy()
@@ -117,6 +121,9 @@ namespace SimCore
       void PlatformActorProxy::BuildPropertyMap()
       {
          Platform& plat = static_cast<Platform&>(GetGameActor());
+
+         typedef dtDAL::PropertyRegHelper<PlatformActorProxy&, Platform> PropRegType;
+         PropRegType propRegHelper(*this, &plat, "Platform");
 
          BaseClass::BuildPropertyMap();
 
@@ -183,6 +190,29 @@ namespace SimCore
             "mSFXSoundIdleEffect", "mSFXSoundIdleEffect", dtDAL::MakeFunctor(plat,
             &Platform::SetSFXEngineIdleLoop),
             "What is the filepath / string of the sound effect", SOUND_PROPERTY_TYPE));
+
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokePos, PROPERTY_ENGINE_SMOKE_POSITION, "Engine Smoke Position",
+                  "Sets the engine smoke position of this BaseEntity", PropRegType, propRegHelper);
+
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(EngineSmokeOn, PROPERTY_ENGINE_SMOKE_ON, "Engine Smoke On",
+                  "Enables engine smoke", PropRegType, propRegHelper);
+         static const dtUtil::RefString PROPERTY_ENGINE_POSITION_DESC("Position of the engine in the vehicle");
+         dtDAL::Vec3ActorProperty *prop = new dtDAL::Vec3ActorProperty(PROPERTY_ENGINE_POSITION, PROPERTY_ENGINE_POSITION,
+                  dtDAL::Vec3ActorProperty::SetFuncType(),
+                  dtDAL::Vec3ActorProperty::GetFuncType(&plat, &Platform::GetEngineSmokePos),
+                  PROPERTY_ENGINE_POSITION_DESC, "Platform");
+
+         prop->SetReadOnly(true);
+         AddProperty(prop);
+
+         dtCore::RefPtr<dtDAL::ResourceActorProperty> rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
+            "Engine smoke particles", "Engine smoke particles",
+            dtDAL::MakeFunctor(plat, &Platform::SetEngineSmokeFile),
+            "This is the file for engine smoke particles", "Platform");
+
+         dtDAL::ResourceDescriptor rdEngine("Particles:smoke.osg");
+         rp->SetValue(rdEngine);
+         AddProperty(rp.get());
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -246,17 +276,19 @@ namespace SimCore
       const std::string Platform::DOF_NAME_HEAD_LIGHTS("headlight_01");
 
       ////////////////////////////////////////////////////////////////////////////////////
-      Platform::Platform(dtGame::GameActorProxy &proxy) : BaseEntity(proxy),
-         mTimeBetweenControlStateUpdates(0.3333f),
-         mTimeUntilControlStateUpdate(0.0f),
-         mNonDamagedFileNode(new osg::Group()),
-         mDamagedFileNode(new osg::Group()),
-         mDestroyedFileNode(new osg::Group()),
-         mSwitchNode(new osg::Switch),
-         mHeadLightsEnabled(false),
-         mHeadLightID(0),
-         mMinIdleSoundDistance(5.0f),
-         mMaxIdleSoundDistance(30.0f)
+      Platform::Platform(dtGame::GameActorProxy& proxy)
+      : BaseEntity(proxy)
+      , mEngineSmokeOn(false)
+      , mTimeBetweenControlStateUpdates(0.3333f)
+      , mTimeUntilControlStateUpdate(0.0f)
+      , mNonDamagedFileNode(new osg::Group())
+      , mDamagedFileNode(new osg::Group())
+      , mDestroyedFileNode(new osg::Group())
+      , mSwitchNode(new osg::Switch)
+      , mHeadLightsEnabled(false)
+      , mHeadLightID(0)
+      , mMinIdleSoundDistance(5.0f)
+      , mMaxIdleSoundDistance(30.0f)
       {
          mSwitchNode->insertChild(0, mNonDamagedFileNode.get());
          mSwitchNode->insertChild(1, mDamagedFileNode.get());
@@ -275,6 +307,45 @@ namespace SimCore
             mSndIdleLoop->Stop();
             RemoveChild(mSndIdleLoop.get());
             mSndIdleLoop.release();
+         }
+      }
+
+      IMPLEMENT_PROPERTY(Platform, osg::Vec3, EngineSmokePos);
+      IMPLEMENT_PROPERTY_GETTER(Platform, bool, EngineSmokeOn);
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::SetEngineSmokeOn(bool enable)
+      {
+         if (mEngineSmokeOn == enable)
+            return;
+
+         if (enable)
+         {
+            if (!mEngineSmokeSystem.valid())
+               mEngineSmokeSystem = new dtCore::ParticleSystem;
+
+            mEngineSmokeSystem->LoadFile(mEngineSmokeSystemFile, true);
+            dtCore::Transform xform;
+            xform.MakeScale(osg::Vec3d(0.25, 0.24, 0.25));
+            xform.SetTranslation(mEngineSmokePos);
+
+            mEngineSmokeSystem->SetTransform(xform, dtCore::Transformable::REL_CS);
+            mEngineSmokeSystem->SetEnabled(enable);
+         }
+         else
+         {
+            if (mEngineSmokeSystem.valid())
+            {
+               RemoveChild(mEngineSmokeSystem.get());
+               mEngineSmokeSystem = NULL;
+            }
+         }
+         mEngineSmokeOn = enable;
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
          }
       }
 
