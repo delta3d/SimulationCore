@@ -553,7 +553,6 @@ namespace SimCore
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, EngineSmokeOn);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, SmokePlumePresent);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, FlamesPresent);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, Flying);
       IMPLEMENT_PROPERTY(BaseEntity, bool, DrawingModel);
       IMPLEMENT_PROPERTY(BaseEntity, bool, PlayerAttached);
       IMPLEMENT_PROPERTY(BaseEntity, bool, MobilityDisabled);
@@ -714,6 +713,28 @@ namespace SimCore
       osg::Vec3 BaseEntity::GetLastKnownAngularVelocity() const
       {
          return mDeadReckoningHelper->GetLastKnownAngularVelocity();
+      }
+      
+      ////////////////////////////////////////////////////////////////////////////////////
+      bool BaseEntity::GetFlying() const
+      {
+         return mDeadReckoningHelper->IsFlying();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetFlying(bool newFlying)
+      {
+         mDeadReckoningHelper->SetFlying(newFlying);
+//         if (mFlying)
+//            mNode->asGroup()->removeChild(mPointsGeode.get());
+//         else
+//            mNode->asGroup()->addChild(mPointsGeode.get());
+
+         // Major visual has changed, so force a full update.
+         if (!IsRemote())
+         {
+            mTimeUntilNextUpdate = 0.0f;
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
