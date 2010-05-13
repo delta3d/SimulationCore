@@ -77,11 +77,6 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
-         ///, mVelocityAverageFrameCount(1U)
-         ///, mSecsSinceLastUpdateSent(0.0f)
-         ///, mMaxUpdateSendRate(5.0f)
-         ///, mVelocityMagThreshold(1.0f)
-         ///, mVelocityDotThreshold(0.9f)
          , mTerrainPresentDropHeight(5.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
@@ -111,21 +106,6 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
          physicsComp->RegisterHelper(*mPhysicsHelper.get());
 
-
-#ifdef AGEIA_PHYSICS
-         if(IsRemote())
-         {
-            GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-            GetPhysicsHelper()->SetObjectAsKinematic();
-         }
-         else // Local
-         {
-            GetPhysicsHelper()->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-            // Disable gravity until the map has loaded terrain under our feet...
-            // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
-            GetPhysicsHelper()->TurnObjectsGravityOff("Default");
-         }
-#else
          if(IsRemote()) // Remote
          {
             GetPhysicsHelper()->SetPrePhysicsCallback(
@@ -143,7 +123,6 @@ namespace SimCore
             // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
             GetPhysicsHelper()->GetMainPhysicsObject()->SetGravityEnabled(false);
          }
-#endif
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -168,50 +147,24 @@ namespace SimCore
          }
 
          // Check to see if we are currently up under the earth, if so, snap them back up.
-#ifdef AGEIA_PHYSICS
-         NxVec3 pos = physicsObject->getGlobalPosition();
-         osg::Vec3 location( pos.x, pos.y, pos.z );
-#else
          dtPhysics::TransformType xform;
          dtPhysics::VectorType location;
          physicsObject->GetTransformAsVisual(xform);
          xform.GetTranslation(location);
-#endif
-         osg::Vec3 terrainPoint;
 
-         // DEBUG: std::cout << "\tAttempting detection at [" << location << "]...";
+         osg::Vec3 terrainPoint;
 
          // If a point was detected on the terrain...
          bool terrainDetected = GetTerrainPoint( location, terrainPoint );
          if( terrainDetected )
          {
-            // DEBUG: std::cout << "DETECTED!" << std::endl;
-
             // ...and snap just above that point.
 
             terrainPoint.z() += mTerrainPresentDropHeight;
-#ifdef AGEIA_PHYSICS
-            physicsObject->setGlobalPosition(
-               NxVec3( pos.x, pos.y, terrainPoint.z()) );
-
-            // And turn gravity on if it is off...
-            if( physicsObject->readBodyFlag(NX_BF_DISABLE_GRAVITY) )
-            {
-               // DEBUG: std::cout << "\t\tTurning vehicle gravity ON.\n" << std::endl;
-
-               GetPhysicsHelper()->TurnObjectsGravityOn();
-            }
-#else
             xform.SetTranslation(terrainPoint);
             physicsObject->SetTransformAsVisual(xform);
             physicsObject->SetGravityEnabled(true);
-#endif
          }
-         // DEBUG:
-         /*else
-         {
-            std::cout << "NOT detected :(\n" << std::endl;
-         }*/
 
          return terrainDetected;
       }
@@ -228,17 +181,6 @@ namespace SimCore
          return mTerrainPresentDropHeight;
       }
 
-#ifdef AGEIA_PHYSICS
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
-      {
-         if (isImpulse)
-            GetPhysicsHelper()->GetMainPhysicsObject()->addForce(NxVec3(force[0],force[1],force[2]), NX_SMOOTH_IMPULSE);
-         else
-            GetPhysicsHelper()->GetMainPhysicsObject()->addForce(NxVec3(force[0],force[1],force[2]), NX_FORCE);
-      }
-
-#else
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
       {
@@ -248,7 +190,8 @@ namespace SimCore
             GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(force);
       }
 
-#endif
+
+      ///////////////////////////////////////////////////////////////////////////////////
       /// Overridden so that it will flag the actor as being transformed when you set the position.
       void BasePhysicsVehicleActor::SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs)
       {
@@ -268,12 +211,7 @@ namespace SimCore
             return;
          }
          bool isDynamic = true;
-#ifdef AGEIA_PHYSICS
-         if (physicsObject->isSleeping())
-         {
-            physicsObject->wakeUp();
-         }
-#else
+
          if (physicsObject->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
          {
             isDynamic = false;
@@ -285,7 +223,7 @@ namespace SimCore
          {
             physicsObject->SetActive(true);
          }
-#endif
+
          // Check if terrain is available. (For startup)
          if (!mHasFoundTerrain)
          {
@@ -331,187 +269,13 @@ namespace SimCore
          Platform::OnTickLocal(tickMessage);
       }
 
-/*      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
-      {
 
-         /// DAMPEN THE ACCELERATION TO PREVENT WILD SWINGS WITH DEAD RECKONING
-         //
-         // Dampen the acceleration before publication if the vehicle is making drastic changes 
-         // in direction. With drastic changes, the acceleration will cause the Dead Reckoned 
-         // pos to oscillate wildly. Whereas it will improve DR on smooth curves such as a circle.
-         // The math is: take the current accel and the non-scaled accel from the last publish;
-         // normalize them; dot them and use the product to scale our current Acceleration. 
-         osg::Vec3 curAccel = GetCurrentAcceleration();
-         curAccel.normalize();
-         float accelDotProduct = curAccel * mAccelerationCalculatedForLastPublish; // dot product
-         SetCurrentAcceleration(GetCurrentAcceleration() * dtUtil::Max(0.0f, accelDotProduct));
-         mAccelerationCalculatedForLastPublish = curAccel; // Hold for next time (pre-normalized)
-
-
-         BaseClass::SetLastKnownValuesBeforePublish(pos, rot);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::UpdateDeadReckoningValues(float deltaTime)
-      {
-         // Increment how long it's been since our last DR check. We can only send out an update
-         // so many times a second.
-         mSecsSinceLastUpdateSent += deltaTime;
-
-         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
-         if (physObj == NULL)
-         {
-            LOG_ERROR("No physics object found. Cannot update Dead Reckoning values from physics.");
-            return;
-         }
-
-         ComputeCurrentVelocity(deltaTime);
-
-         osg::Vec3 physAngularVelocity;
-#ifdef AGEIA_PHYSICS
-         NxVec3 angVelVec3 = physObj->getAngularVelocity();
-         physAngularVelocity.set(angVelVec3.x, angVelVec3.y, angVelVec3.z);
-#else
-         physAngularVelocity = physObj->GetAngularVelocity();
-#endif
-         SetCurrentAngularVelocity(physAngularVelocity);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ComputeCurrentVelocity(float deltaTime)
-      {
-         // Note - we used to grab the velocity from the physics engines, but there were sometimes 
-         // discontinuities reported by the various engines, so that was removed in favor of a simple
-         // differential of position. 
-         dtCore::Transform xform;
-         GetTransform(xform);
-         osg::Vec3 pos;
-         xform.GetTranslation(pos);
-         if (deltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
-         {
-            osg::Vec3 distanceMoved = pos - mLastPos;
-            osg::Vec3 instantVelocity = distanceMoved / deltaTime;
-
-            // Compute our acceleration as the instantaneous differential of the velocity
-            // Acceleration is dampened before publication - see SetLastKnownValuesBeforePublish().
-            // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
-            // and make your own call to SetCurrentAcceleration().
-            osg::Vec3 changeInVelocity = instantVelocity - mAccumulatedLinearVelocity;
-            mAccumulatedAcceleration = changeInVelocity / deltaTime;
-
-            // Compute Vel - either the instant Vel or a blended value over a couple of frames. Blended Velocities tend to make acceleration less useful
-            if (mVelocityAverageFrameCount == 1)
-            {
-               mAccumulatedLinearVelocity = instantVelocity;
-            }
-            else 
-            {
-               float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
-               mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
-            }
-
-            // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
-            // be published, the vehicle will go all over the place nutty. So, we zero it out. 
-            // This is not an ideal solution, but is workable because vehicles that really do have a lot of
-            // z acceleration are probably flying and by definition are not as close to other objects so the z accel
-            // is less visually apparent.
-            mAccumulatedAcceleration.z() = 0.0f; 
-
-            // TESTING - Add ability to turn off acceleration temporarily for detailed testing.
-            std::string stringValue = GetGameActorProxy().GetGameManager()->GetConfiguration().
-               GetConfigPropertyValue("SimCore.PublishAcceleration", "true");
-            if (stringValue == "true" || stringValue == "TRUE")
-            {
-               SetCurrentAcceleration(mAccumulatedAcceleration);
-            }
-
-            SetCurrentVelocity(mAccumulatedLinearVelocity);
-         }
-         mLastPos = pos;
-      }
-*/
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
       {
          // Do nothing in the base. That's yer job.
       }
-/*
-      ///////////////////////////////////////////////////////////////////////////////////
-      bool BasePhysicsVehicleActor::ShouldForceUpdate(
-         const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
-      {
-         bool forceUpdateResult = fullUpdate; // if full update set, we assume we will publish
-         bool enoughTimeHasPassed = (mMaxUpdateSendRate > 0.0f &&
-            (mSecsSinceLastUpdateSent >= 1.0f / mMaxUpdateSendRate));
 
-         if (fullUpdate || enoughTimeHasPassed)
-         {
-            // Let parent determine if we are outside our threshold values
-            if (!fullUpdate)
-            {
-               forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
-
-               // Parent says we're ok, but check velocity here, just in case.
-               if (!forceUpdateResult && GetUseVelocityInDRUpdateDecision())
-               {
-                  osg::Vec3 oldVel = GetLastKnownVelocity();
-                  osg::Vec3 curVel = GetCurrentVelocity();
-                  float oldMag = oldVel.normalize();
-                  float curMag = curVel.normalize();
-                  float velMagChange = dtUtil::Abs(curMag - oldMag);
-                  dtUtil::Log::GetInstance("BasePhysicsVehicleActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG,
-                           __FUNCTION__, __LINE__,
-                           "Change in velocity magnitude an vehicle %s: \"%f\"", GetName().c_str(), velMagChange);
-                  if (velMagChange > mVelocityMagThreshold)
-                  {
-                     forceUpdateResult = true;
-                     LOGN_DEBUG("BasePhysicsVehicleActor.cpp", "Forcing update based on velocity magnitude.")
-                  }
-                  else
-                  {
-                     float dotProd = oldVel * curVel;
-                     dtUtil::Log::GetInstance("BasePhysicsVehicleActor.cpp").LogMessage(dtUtil::Log::LOG_DEBUG,
-                              __FUNCTION__, __LINE__,
-                              "Dot of old velocity with current velocity: \"%f\"", dotProd);
-                     if (dotProd < mVelocityDotThreshold)
-                     {
-                        forceUpdateResult = true;
-                        LOGN_DEBUG("BasePhysicsVehicleActor.cpp", "Forcing update based on velocity angle.")
-                     }
-                  }
-               }
-            }
-
-            // If we are going to update, then set our velocities so others can do remote dead reckoning.
-            if (forceUpdateResult)
-            {
-               //std::cout << "VEHICLE - Vel\"" << GetCurrentVelocity() << "\" Speed\"" << GetCurrentVelocity().length()
-               //<< "\"" << GetName() << "\" ." << std::endl;
-
-               // Since we are about to publish, set our time since last publish back to 0.
-               // This allows us to immediately send out a change the exact moment it happens (ex if we
-               // were moving slowly and hadn't updated recently).
-               mSecsSinceLastUpdateSent = 0.0f;
-            }
-
-         }
-
-         return forceUpdateResult;
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetPercentageChangeDifference(float startValue, float newValue)
-      {
-         if(std::abs(startValue) < 0.01f && std::abs(newValue) < 0.01f)
-            return 1.0;
-
-         if(startValue == 0)
-            startValue = 1.0f;
-
-         return std::abs((((newValue - startValue) / startValue) * 100.0f));
-      }
-*/
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
       {
@@ -530,72 +294,6 @@ namespace SimCore
       {
          mPushTransformToPhysics = flag;
       }
-
-#ifdef AGEIA_PHYSICS
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::AgeiaPrePhysicsUpdate()
-      {
-         NxActor* physObject = GetPhysicsHelper()->GetMainPhysicsObject();
-
-         // The PRE physics update is only trapped if we are remote. It updates the physics
-         // engine and moves the vehicle to where we think it is now (based on Dead Reckoning)
-         // We do this because we don't own remote vehicles and naturally can't just go
-         // physically simulating them however we like. But, the physics scene needs them to interact with.
-         if (physObject != NULL && (IsRemote() || GetPushTransformToPhysics()))
-         {
-            mPushTransformToPhysics = false;
-            dtCore::Transform xform;
-            GetTransform(xform);
-
-            // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
-            // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
-            // but we want to act like their not.
-            if (IsRemote())
-            {
-               osg::Vec3 velocity = GetLastKnownVelocity();
-               NxVec3 physVelocity(velocity[0], velocity[1], velocity[2]);
-               physObject->setLinearVelocity(physVelocity );
-            }
-
-            if (physObject != NULL)
-            {
-               NxMat34 mat;
-               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
-
-               if (physObject->readBodyFlag(NX_BF_KINEMATIC))
-               {
-                  physObject->moveGlobalPose(mat);
-               }
-               else
-               {
-                  physObject->setGlobalPose(mat);
-               }
-            }
-         }
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::AgeiaPostPhysicsUpdate()
-      {
-         // This is ONLY called if we are LOCAL (we put the check here just in case... )
-         if (!IsRemote() && GetPhysicsHelper() != NULL)
-         {
-            // The base behavior is that we want to pull the translation and rotation off the object
-            // in our physics scene and apply it to our 3D object in the visual scene.
-            dtPhysics::PhysicsObject* physicsActor = GetPhysicsHelper()->GetMainPhysicsObject();
-            if (physicsActor != NULL && !GetPushTransformToPhysics() && !physicsActor->isSleeping())
-            {
-               dtCore::Transform xform;
-
-               NxMat34 mat = physicsActor->getGlobalPose();
-               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
-               SetTransform(xform);
-               SetPushTransformToPhysics(false);
-            }
-         }
-      }
-
-#else
 
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::PrePhysicsUpdate()
@@ -653,8 +351,6 @@ namespace SimCore
 
       }
 
-#endif
-
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateRotationDOFS(float deltaTime, bool insideVehicle)
       {
@@ -667,57 +363,6 @@ namespace SimCore
       {
       }
 
-#ifdef AGEIA_PHYSICS
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::ResetVehicle()
-      {
-         GetPhysicsHelper()->ResetToStarting();
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::RepositionVehicle(float deltaTime)
-      {
-         // This behavior is semi duplicated in the four wheel vehicle helper.
-         // It has been moved here to allow vehicles to have separate behavior. Eventually,
-         // we need a base vehicle helper and it should be moved there.
-         // The code in PhysicsHelper::RepositionVehicle can be refactored out
-
-         dtPhysics::PhysicsObject* physObj = GetPhysicsHelper()->GetMainPhysicsObject();
-         float glmat[16];
-
-         for(int i = 0 ; i < 16; i++)
-            glmat[i] = 0.0f;
-         glmat[0]  = glmat[5]  = glmat[10] = glmat[15] = 1.0f;
-         glmat[12] = physObj->getGlobalPosition()[0];
-         glmat[13] = physObj->getGlobalPosition()[1];
-         glmat[14] = physObj->getGlobalPosition()[2];
-         glmat[10] = 1.0f;
-
-         float xyOffset = deltaTime;
-         float zOffset = deltaTime * 5.0f;
-
-         GetPhysicsHelper()->SetTransform(NxVec3(physObj->getGlobalPosition()[0] + xyOffset,
-            physObj->getGlobalPosition()[1] + xyOffset, physObj->getGlobalPosition()[2] + zOffset), osg::Matrix(glmat));
-
-
-         GetPhysicsHelper()->ResetForces();
-      }
-      ///////////////////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetMPH()
-      {
-         static const float METERSPS_TO_MILESPH = 2.236936291;
-         if (IsRemote())
-         {
-            return GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
-         }
-         else
-         {
-            return GetPhysicsHelper()->GetMainPhysicsObject()->getLinearVelocity().magnitude()
-                  * METERSPS_TO_MILESPH;
-         }
-      }
-
-#else
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::ResetVehicle()
       {
@@ -764,7 +409,7 @@ namespace SimCore
                   * METERSPS_TO_MILESPH;
          }
       }
-#endif
+
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::KeepAboveGround()
       {
@@ -829,22 +474,6 @@ namespace SimCore
 
          osg::Vec3 rayStart(location);
          rayStart.z() += 10000.0f;
-#ifdef AGEIA_PHYSICS
-         NxRay ray;
-         ray.orig = NxVec3(rayStart.x(), rayStart.y(), rayStart.z());
-         ray.dir = NxVec3(0.0f,0.0f,-1.0f);
-
-         // Create a raycast report that should ignore this vehicle.
-         dtAgeiaPhysX::SimpleRaycastReport report( this );
-         static const int GROUPS_FLAGS = (1 << SimCore::CollisionGroup::GROUP_TERRAIN);
-
-         unsigned int numHits = physObject->getScene().raycastAllShapes(
-            ray, report, NX_ALL_SHAPES, GROUPS_FLAGS );
-
-         if( numHits > 0 && report.HasHit() )
-         {
-            report.GetClosestHit( outPoint );
-#else
          dtPhysics::RayCast ray;
          std::vector<dtPhysics::RayCast::Report> hits;
          ray.SetOrigin(rayStart);
@@ -871,7 +500,7 @@ namespace SimCore
             // closestReport can't be null here because it can't get in this branch
             // if hits is empty.
             outPoint = closestReport->mHitPos;
-#endif
+
             return true;
          }
          return false;
@@ -942,20 +571,6 @@ namespace SimCore
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
             VEH_GROUP));
 
-         /*AddProperty(new dtDAL::IntActorProperty("VelocityAverageFrameCount",
-            "Current Velocity Averaging Frame Count",
-            dtDAL::IntActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetVelocityAverageFrameCount),
-            dtDAL::IntActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetVelocityAverageFrameCount),
-            "This actor computes it's current velocity by averaging the change in position over the given number of frames.",
-            VEH_GROUP));
-
-         AddProperty(new dtDAL::FloatActorProperty("DesiredNumUpdatesPerSec",
-            "Desired Number of Updates Per Second",
-            dtDAL::FloatActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetMaxUpdateSendRate),
-            dtDAL::FloatActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetMaxUpdateSendRate),
-            "This desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.",
-            VEH_GROUP));
-            */
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

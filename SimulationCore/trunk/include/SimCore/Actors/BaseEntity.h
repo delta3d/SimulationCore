@@ -383,65 +383,6 @@ namespace SimCore
             osg::Vec3 GetLastKnownAngularVelocity() const;
 
             /**
-            * Sets the CURRENT velocity. This should be updated each frame and is different
-            * from the LastKnownVelocityVector (which is used for DeadReckoning).
-            * If you perform your own physics, you should set this at the start of the frame,
-            * BEFORE you perform physics for the current frame. BaseEntity sets this as the
-            * LastKnownVelocity right before it publishes.
-            * Since the physics component runs before entities get ticked, the timing works.
-            * @param vec the velocity vector to copy
-            * @see #SetLastKnownVelocity
-            */
-            // void SetCurrentVelocity(const osg::Vec3& vec) { mCurrentVelocity = vec; }
-            /**
-            * Gets the CURRENT velocity. This is different from the LastKnownVelocity.
-            * @see #SetCurrentVelocity()
-            * @see #SetLastKnownVelocity()
-            * @return the current instantaneous velocity.
-            */
-            //osg::Vec3 GetCurrentVelocity() const { return mCurrentVelocity; }
-
-            /**
-            * Sets the CURRENT acceleration. This is sort of hard to compute accurately,
-            * but is provided since it is published and will be used for dead reckoning
-            * by entities. If you CAN compute this for a local entity, you should set this at the
-            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity
-            * will set this as the LastKnownAcceleration right before it publishes.
-            * Since the physics component runs before entities get ticked, the timing works.
-            * @param vec the new value
-            * @see #SetLastKnownAcceleration
-            */
-            //void SetCurrentAcceleration(const osg::Vec3& vec) { mCurrentAcceleration = vec; }
-            /**
-            * Gets the CURRENT acceleration. This is different from the LastKnownAcceleration.
-            * @see #SetCurrentAcceleration()
-            * @see #SetLastKnownAcceleration()
-            * @return the current acceleration from the start of the frame.
-            */
-            //osg::Vec3 GetCurrentAcceleration() const { return mCurrentAcceleration; }
-
-            /**
-            * Sets the CURRENT angular velocity. This is often hard to compute accurately,
-            * but is provided since it is published and can be used for dead reckoning
-            * remote entities. If you CAN compute this for a local entity, you should set this at the
-            * start of the frame, BEFORE you perform physics for the current frame. BaseEntity
-            * will set this as the LastKnownAcceleration right before it publishes.
-            * Since the physics component runs before entities get ticked, the timing works.
-            * Note - Angular Velocity is future 'rate' of change in the rotation.
-            * @param vec the new value
-            * @see #SetLastKnownAngularVelocity()
-            */
-            //void SetCurrentAngularVelocity(const osg::Vec3& vec) { mCurrentAngularVelocity = vec; }
-            /**
-            * Gets the CURRENT angular velocity. This is different from the LastKnownAngularVelocity.
-            * @see #SetCurrentAngularVelocity()
-            * @see #SetLastKnownAngularVelocity()
-            * @return the current angular velocity that was set at the start of the frame.
-            */
-            //osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
-
-
-            /**
              * Sets the offset from the ground the actor should be clamped to.
              * This only matters if flying is set to false.
              * @param newOffset the new offset value.
@@ -579,12 +520,6 @@ namespace SimCore
 
             void RegisterWithDeadReckoningComponent();
 
-            /// Called by tick local to see if an update should be sent and if it is a full or partial.
-            //virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-
-            /// Called once we decided to publish - push our last known values onto the DR helper
-            //virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
-
          private:
             ///a sub-matrix node just for doing scale on the model.
             dtCore::RefPtr<osg::MatrixTransform> mScaleMatrixNode;
@@ -596,9 +531,6 @@ namespace SimCore
             //This is stored on both the entity and the helper because the
             //two values are not always the same.
             dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
-            //osg::Vec3 mCurrentVelocity;
-            //osg::Vec3 mCurrentAcceleration;
-            //osg::Vec3 mCurrentAngularVelocity;
 
             /// The particle systems used for fire and smoke
             dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
@@ -614,13 +546,10 @@ namespace SimCore
             /// the xyz magnification of default scale to display.
             osg::Vec3 mScaleMagnification;
 
-
             unsigned mFireLightID;
 
-            
             // held onto since we use this fairly often.
             dtCore::RefPtr<DRPublishingActComp> mDRPublishingActComp;
-
       };
 
    }
