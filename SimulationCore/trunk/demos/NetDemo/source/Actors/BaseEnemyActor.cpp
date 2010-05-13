@@ -29,6 +29,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/CollisionGroupEnum.h>
@@ -62,11 +63,6 @@ namespace NetDemo
       // changed if the actor is loaded from a map or when received as a remote actor
       /////////////////////////////////////////////////////////////////
 
-      SetMaxUpdateSendRate(4.0f);
-
-      SetPublishLinearVelocity(true);
-      SetPublishAngularVelocity(true);
-
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
@@ -97,6 +93,22 @@ namespace NetDemo
    {
    }
 
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void BaseEnemyActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(4.0f);
+      drPublishingActComp->SetPublishLinearVelocity(true);
+      drPublishingActComp->SetPublishAngularVelocity(true);
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////
    void BaseEnemyActor::OnEnteredWorld()

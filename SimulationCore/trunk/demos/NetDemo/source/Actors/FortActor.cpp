@@ -33,6 +33,7 @@
 #include <SimCore/Messages.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Actors/BaseEntity.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 
 //#include <dtUtil/nodeprintout.h>
 #include <osgSim/DOFTransform>
@@ -47,11 +48,6 @@ namespace NetDemo
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
       SetTerrainPresentDropHeight(0.0);
-      SetMaxUpdateSendRate(2.0f);
-
-      SetPublishLinearVelocity(false);
-      SetPublishAngularVelocity(false);
-
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
       dtPhysics::PhysicsHelper *helper = new dtPhysics::PhysicsHelper(proxy);
@@ -73,6 +69,22 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    FortActor::~FortActor(void)
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void FortActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
+      drPublishingActComp->SetPublishLinearVelocity(false);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/BasePhysicsVehicleActor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 
 
 #ifdef AGEIA_PHYSICS
@@ -76,19 +77,16 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
-         , mVelocityAverageFrameCount(1U)
-         , mSecsSinceLastUpdateSent(0.0f)
-         , mMaxUpdateSendRate(5.0f)
-         , mVelocityMagThreshold(1.0f)
-         , mVelocityDotThreshold(0.9f)
+         ///, mVelocityAverageFrameCount(1U)
+         ///, mSecsSinceLastUpdateSent(0.0f)
+         ///, mMaxUpdateSendRate(5.0f)
+         ///, mVelocityMagThreshold(1.0f)
+         ///, mVelocityDotThreshold(0.9f)
          , mTerrainPresentDropHeight(5.0f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
-         , mNotifyFullUpdate(true)
-         , mNotifyPartialUpdate(true)
          , mPerformAboveGroundSafetyCheck(false)
          , mPushTransformToPhysics(false)
-         , mUseVelocityInDRUpdateDecision(false)
       {
          // If you subclass this actor, you MUST do something like the following in the constructor.
          // The actor can't do it's job without having a physics helper! Might even crash!!!
@@ -112,9 +110,6 @@ namespace SimCore
          dtPhysics::PhysicsComponent* physicsComp = NULL;
          GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComp);
          physicsComp->RegisterHelper(*mPhysicsHelper.get());
-
-         // The base class may have overwritten our update rate values - or they may not have been set yet due to Init order
-         SetMaxUpdateSendRate(GetMaxUpdateSendRate());
 
 
 #ifdef AGEIA_PHYSICS
@@ -308,11 +303,26 @@ namespace SimCore
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
          float elapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
-         UpdateDeadReckoningValues(elapsedTime);
+         // Previously - updated DR values here.
+
 
          UpdateVehicleTorquesAndAngles(elapsedTime);
          UpdateRotationDOFS(elapsedTime, true);
          UpdateSoundEffects(elapsedTime);
+
+
+         // ANGULAR VELOCITY - uses physics engine
+         dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
+         if (physObj != NULL)
+         {
+            osg::Vec3 physAngularVelocity;
+            physAngularVelocity = physObj->GetAngularVelocity();
+            GetDRPublishingActComp()->SetCurrentAngularVelocity(physAngularVelocity);
+         }
+         else
+         {
+            LOG_ERROR("No physics object found. Cannot update Dead Reckoning values from physics.");
+         }
 
 
          // Allow the base class to handle expected base functionality.
@@ -321,7 +331,7 @@ namespace SimCore
          Platform::OnTickLocal(tickMessage);
       }
 
-      ///////////////////////////////////////////////////////////////////////////////////
+/*      ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
       {
 
@@ -408,19 +418,25 @@ namespace SimCore
             // is less visually apparent.
             mAccumulatedAcceleration.z() = 0.0f; 
 
-            SetCurrentAcceleration(mAccumulatedAcceleration);
+            // TESTING - Add ability to turn off acceleration temporarily for detailed testing.
+            std::string stringValue = GetGameActorProxy().GetGameManager()->GetConfiguration().
+               GetConfigPropertyValue("SimCore.PublishAcceleration", "true");
+            if (stringValue == "true" || stringValue == "TRUE")
+            {
+               SetCurrentAcceleration(mAccumulatedAcceleration);
+            }
 
             SetCurrentVelocity(mAccumulatedLinearVelocity);
          }
          mLastPos = pos;
       }
-
+*/
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::UpdateSoundEffects(float deltaTime)
       {
          // Do nothing in the base. That's yer job.
       }
-
+/*
       ///////////////////////////////////////////////////////////////////////////////////
       bool BasePhysicsVehicleActor::ShouldForceUpdate(
          const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
@@ -495,7 +511,7 @@ namespace SimCore
 
          return std::abs((((newValue - startValue) / startValue) * 100.0f));
       }
-
+*/
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
       {
@@ -895,91 +911,6 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetSecsSinceLastUpdateSent(float secsSinceLastUpdateSent)
-      {
-         mSecsSinceLastUpdateSent = secsSinceLastUpdateSent;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetSecsSinceLastUpdateSent() const
-      {
-         return mSecsSinceLastUpdateSent;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetMaxUpdateSendRate(float maxUpdateSendRate)
-      {
-         mMaxUpdateSendRate = maxUpdateSendRate;
-
-         // The DR helper should be kept in the loop about the max send rate. 
-         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f)
-         {
-            // If we are setting our smoothing time, then we need to force the DR helper
-            // to ALWAYS use that, instead of using the avg update rate.
-            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
-            float transUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
-            float rotUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
-         }
-
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetMaxUpdateSendRate() const
-      {
-         return mMaxUpdateSendRate;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetVelocityMagnitudeUpdateThreshold(float thresh)
-      {
-         mVelocityMagThreshold = thresh;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityMagnitudeUpdateThreshold() const
-      {
-         return mVelocityMagThreshold;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetVelocityDotProductUpdateThreshold(float thresh)
-      {
-         mVelocityDotThreshold = thresh;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetVelocityDotProductUpdateThreshold() const
-      {
-         return mVelocityMagThreshold;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetUseVelocityInDRUpdateDecision(bool value)
-      {
-         mUseVelocityInDRUpdateDecision = value;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      bool BasePhysicsVehicleActor::GetUseVelocityInDRUpdateDecision() const
-      {
-         return mUseVelocityInDRUpdateDecision;
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::SetVelocityAverageFrameCount(int count)
-      {
-         mVelocityAverageFrameCount = dtUtil::Max(1, count);
-      }
-
-      //////////////////////////////////////////////////////////////////////
-      int BasePhysicsVehicleActor::GetVelocityAverageFrameCount() const
-      {
-         return mVelocityAverageFrameCount;
-      }
-
-      //////////////////////////////////////////////////////////////////////
       // PROXY
       //////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActorProxy::BasePhysicsVehicleActorProxy()
@@ -1011,7 +942,7 @@ namespace SimCore
             "Use an Isector as a safety check to keep the vehicle above ground if the collision detection fails.",
             VEH_GROUP));
 
-         AddProperty(new dtDAL::IntActorProperty("VelocityAverageFrameCount",
+         /*AddProperty(new dtDAL::IntActorProperty("VelocityAverageFrameCount",
             "Current Velocity Averaging Frame Count",
             dtDAL::IntActorProperty::SetFuncType(&actor, &BasePhysicsVehicleActor::SetVelocityAverageFrameCount),
             dtDAL::IntActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetVelocityAverageFrameCount),
@@ -1024,6 +955,7 @@ namespace SimCore
             dtDAL::FloatActorProperty::GetFuncType(&actor, &BasePhysicsVehicleActor::GetMaxUpdateSendRate),
             "This desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.",
             VEH_GROUP));
+            */
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

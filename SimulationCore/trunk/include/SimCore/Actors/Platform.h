@@ -298,6 +298,8 @@ namespace SimCore
             void SetNonDamagedNodeFileName(const std::string& value) {mNonDamagedNodeFileName = value;}
             std::string GetNonDamagedNodeFileName() {return mNonDamagedNodeFileName;}
 
+            /// Ticks are registered for on all local entities. Over ride for custom stuff.
+            virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             /**
              * Sets The file name of the smoke particle system being used
@@ -324,7 +326,7 @@ namespace SimCore
             virtual ~Platform();
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
-            virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
+            //virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
             osg::Vec3 mMuzzleFlashPosition;
 

@@ -64,6 +64,10 @@ namespace NetDemo
 
          /// Constructor
          TowerActor (SimCore::Actors::BasePhysicsVehicleActorProxy &proxy);
+
+         /// Override this to add your own components or to init values on the ones that are already added.
+         virtual void BuildActorComponents();
+
          virtual void OnEnteredWorld();
          virtual void OnRemovedFromWorld();
 

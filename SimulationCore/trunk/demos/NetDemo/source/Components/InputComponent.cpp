@@ -34,6 +34,7 @@
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BaseEntity.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 
 
 
@@ -650,7 +651,7 @@ namespace NetDemo
          GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::DR_GHOST_ACTOR_TYPE, mDRGhostActorProxy);
          if (mDRGhostActorProxy.valid())
          {
-            mOriginalPublishTimesPerSecond = mPhysVehicle->GetMaxUpdateSendRate();
+            mOriginalPublishTimesPerSecond = mPhysVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
             SimCore::Actors::DRGhostActor* actor = NULL;
             mDRGhostActorProxy->GetActor(actor);
             actor->SetSlavedEntity(mVehicle);
@@ -717,15 +718,17 @@ namespace NetDemo
       {
          if (!ctrlIsPressed)
          {
-            mPhysVehicle->SetPublishLinearVelocity(!mPhysVehicle->GetPublishLinearVelocity());
-            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->GetPublishLinearVelocity() <<
+            mPhysVehicle->GetDRPublishingActComp()->SetPublishLinearVelocity(
+               !mPhysVehicle->GetDRPublishingActComp()->GetPublishLinearVelocity());
+            std::cout << "TEST - Publish Linear Velocity changed to [" << mPhysVehicle->GetDRPublishingActComp()->GetPublishLinearVelocity() <<
                "]. Ctrl to change VelDRDecision." << std::endl;
          }
          else
          {
-            mPhysVehicle->SetUseVelocityInDRUpdateDecision(!mPhysVehicle->GetUseVelocityInDRUpdateDecision());
+            mPhysVehicle->GetDRPublishingActComp()->SetUseVelocityInDRUpdateDecision(
+               !mPhysVehicle->GetDRPublishingActComp()->GetUseVelocityInDRUpdateDecision());
             std::cout << "Toggle - UseVelocity in DR Update Decision changed to [" << 
-               mPhysVehicle->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
+               mPhysVehicle->GetDRPublishingActComp()->GetUseVelocityInDRUpdateDecision() << "]." << std::endl;
          }
       }
    }
@@ -741,7 +744,7 @@ namespace NetDemo
             dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
          if (mPhysVehicle != NULL)
          {
-            mPhysVehicle->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
+            mPhysVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(mOriginalPublishTimesPerSecond);
          }
          mDRGhostMode = NONE;
       }
@@ -755,9 +758,9 @@ namespace NetDemo
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
       if (physVehicle != NULL)
       {
-         float timesPerSecondRate = physVehicle->GetMaxUpdateSendRate();
+         float timesPerSecondRate = physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
-         physVehicle->SetMaxUpdateSendRate(timesPerSecondRate);
+         physVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(timesPerSecondRate);
          float rateInSeconds = 1.0f / timesPerSecondRate;
 
          //mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
@@ -828,18 +831,14 @@ namespace NetDemo
             dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
          if (mPhysVehicle != NULL)
          {
-            mPhysVehicle->SetMaxUpdateSendRate(3.0f);
+            mPhysVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(3.0f);
+            mPhysVehicle->GetDRPublishingActComp()->SetUseVelocityInDRUpdateDecision(true);
+            mPhysVehicle->GetDRPublishingActComp()->SetPublishLinearVelocity(true);
          }
 
          mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(1.0f);
          mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(1.0f);
-
-         mPhysVehicle->SetUseVelocityInDRUpdateDecision(true);
-
-
-         mPhysVehicle->SetPublishLinearVelocity(true);
       }
-
    }
 
    ////////////////////////////////////////////////////////////////////////////////

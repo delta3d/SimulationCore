@@ -61,6 +61,7 @@
 #include <SimCore/Actors/DetonationActor.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/ViewerMaterialActor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
 #include <SimCore/VisibilityOptions.h>
@@ -753,8 +754,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
          "The time until next update should be seeded to the time between complete updates.",
-         SimCore::Actors::BaseEntity::TIME_BETWEEN_UPDATES,
-         entityActor.GetTimeUntilNextUpdate(), 1e-3f);
+         SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES,
+         entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    dtCore::System::GetInstance().Step();
 
@@ -762,8 +763,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
          "The time until the next update should decrement by the step time",
-         SimCore::Actors::BaseEntity::TIME_BETWEEN_UPDATES - (newTime - oldTime),
-         entityActor.GetTimeUntilNextUpdate(), 1e-3f);
+         SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES - (newTime - oldTime),
+         entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());
 

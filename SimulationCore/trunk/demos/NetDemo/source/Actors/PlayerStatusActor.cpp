@@ -316,8 +316,6 @@ namespace NetDemo
    {
       PlayerStatusActor* playerStatusActor = new PlayerStatusActor(*this);
       SetActor(*playerStatusActor);
-
-      playerStatusActor->InitDeadReckoningHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

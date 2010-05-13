@@ -35,6 +35,7 @@
 #include <SimCore/Components/ArticulationHelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/CollisionGroupEnum.h>
 #include <SimCore/Components/MunitionsComponent.h>
 
@@ -53,15 +54,9 @@ namespace DriverDemo
       , mTimeSinceBorn(0.0f)
       , mPerfThrottleCountDown(0)
    {
+      // Some init values are now in BuildActorComponents()
 
       SetDefaultScale(osg::Vec3(2.0f, 2.0f, 2.0f));
-
-      SetMaxUpdateSendRate(3.0f);
-
-      SetPublishLinearVelocity(true);
-      SetPublishAngularVelocity(true);
-      SetMaxTranslationError(0.02f);
-      SetMaxRotationError(1.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
@@ -75,6 +70,22 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverTargetActor::~HoverTargetActor(void)
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverTargetActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(3.0f);
+      drPublishingActComp->SetMaxTranslationError(0.02f);
+      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
