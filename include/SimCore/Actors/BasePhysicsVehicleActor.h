@@ -29,11 +29,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/VehicleInterface.h>
 #include <SimCore/PhysicsTypes.h>
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaPhysicsHelper.h>
-#else
 #include <dtPhysics/physicshelper.h>
-#endif
 
 namespace dtAudio
 {
@@ -52,9 +48,6 @@ namespace SimCore
        * This class is abstract. Makes no sense to have a base instantiation...
        */
       class SIMCORE_EXPORT BasePhysicsVehicleActor : public Platform,
-#ifdef AGEIA_PHYSICS
-      public dtAgeiaPhysX::NxAgeiaPhysicsInterface,
-#endif
                                                        public VehicleInterface
       {
          public:
@@ -76,9 +69,6 @@ namespace SimCore
             */
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
-            /// Called once we decided to publish - does a quick calc on acceleration. 
-            //virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
-
             /**
             * This method is an invokable called when an object is remote and
             * receives a tick.
@@ -97,26 +87,10 @@ namespace SimCore
              */
             virtual void OnRemovedFromWorld();
 
-#ifdef AGEIA_PHYSICS
-            /// Corresponds to the AGEIA_FLAGS_PRE_UPDATE flag
-            /// Does most of what is needed. Shouldn't need to override this behavior.
-            virtual void AgeiaPrePhysicsUpdate();
-
-            /// Corresponds to the AGEIA_FLAGS_POST_UPDATE
-            virtual void AgeiaPostPhysicsUpdate();
-
-            /// Corresponds to the AGEIA_FLAGS_GET_COLLISION_REPORT
-            virtual void AgeiaCollisionReport(dtAgeiaPhysX::ContactReport& contactReport,
-               dtPhysics::PhysicsObject& ourSelf, dtPhysics::PhysicsObject& whatWeHit) {}
-
-            virtual void AgeiaRaycastReport(const NxRaycastHit& hit, const dtPhysics::PhysicsObject& ourSelf,
-               const dtPhysics::PhysicsObject& whatWeHit){}
-#else
             /// dtPhysics post physics callback.
             virtual void PrePhysicsUpdate();
             virtual void PostPhysicsUpdate();
 
-#endif
 
             /**
              * Handle forces received from the environment, such as detonations and impacts
@@ -136,12 +110,8 @@ namespace SimCore
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);
 
-            //virtual bool ShouldForceUpdate( const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
-
             void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
             dtPhysics::PhysicsHelper* GetPhysicsHelper();
-
-            //?? virtual void SetVehicleInsideModel(const std::string &value)  {VEHICLE_INSIDE_MODEL = value;}
 
             void SetHasDriver(bool hasDriver);
             bool GetHasDriver() const;
@@ -149,62 +119,8 @@ namespace SimCore
             void SetPerformAboveGroundSafetyCheck(bool enable);
             bool GetPerformAboveGroundSafetyCheck() const;
 
-            //void SetSecsSinceLastUpdateSent(float secsSinceLastUpdateSent);
-            //float GetSecsSinceLastUpdateSent() const;
-
-            /**
-             * Sets the max number of times per second an update may be sent if the dead reckoning tolerances
-             * this it should be.
-             */
-            //void SetMaxUpdateSendRate(float maxUpdateSendRate);
-
-            /**
-             * @return the max number of times per second an update may be sent if the dead reckoning tolerances
-             * this it should be.
-             */
-            //float GetMaxUpdateSendRate() const;
-
-            //void SetVelocityMagnitudeUpdateThreshold(float);
-            //float GetVelocityMagnitudeUpdateThreshold() const;
-            //void SetVelocityDotProductUpdateThreshold(float);
-            //float GetVelocityDotProductUpdateThreshold() const;
-
-            ////void SetUseVelocityInDRUpdateDecision(bool);
-            ////bool GetUseVelocityInDRUpdateDecision() const;
-
-            /**
-             * Computes and assigns the current velocity using a moving average.
-             * @see SetVelocityAverageFrameCount
-             */
-            //virtual void ComputeCurrentVelocity(float deltaTime);
-
-            /// Accum Acceleration is computed each frame inside ComputeCurrentVel. Override that if you want to set this.
-            //void SetAccumulatedAcceleration(const osg::Vec3 &newValue) { mAccumulatedAcceleration = newValue; }
-            //osg::Vec3 GetAccumulatedAcceleration() const { return mAccumulatedAcceleration; }
-
-            /**
-             * The current velocity is computed using a moving average of the
-             * change in position over time.  The frame count passed in is used to
-             * to decide about how many frames the velocity will be average across.
-             */
-            //void SetVelocityAverageFrameCount(int frames);
-
-            /**
-             * @see SetVelocityAverageFrameCount
-             */
-            //int GetVelocityAverageFrameCount() const;
 
          protected:
-            /**
-            * Set our DR values - velocity, acceleration, and angular velocity
-            * Note - we MUST do this BEFORE we calculate new physics forces on our vehicle
-            * The physics component runs at the start of the frame, so we set the values
-            * on baseentity in case it needs to do a publish this frame. (see ShouldForceUpdate())
-            * This is called from OnTickLocal() BEFORE the other update methods.
-            * By default - handles most of the settings you need to keep your Dead Reckoning in sync.
-            */
-            //virtual void UpdateDeadReckoningValues(float deltaTime);
-
             /// Angles/ steering moving etc done here. From TickLocal - called second -
             /// after UpdateDeadReckoningValues(). This does nothing by default.
             virtual void UpdateVehicleTorquesAndAngles(float deltaTime);
@@ -261,20 +177,6 @@ namespace SimCore
             std::string VEHICLE_INSIDE_MODEL;      /// for interior views
             ///////////////////////////////////////////////////
 
-            //osg::Vec3 mLastPos;
-            //osg::Vec3 mAccumulatedLinearVelocity;
-            //osg::Vec3 mAccumulatedAcceleration; 
-            //osg::Vec3 mAccelerationCalculatedForLastPublish; // Used in SetLastKnownValuesBeforePublish()
-            //int mVelocityAverageFrameCount;
-
-            ///////////////////////////////////////////////////
-            // sending out dead reckoning
-            float mSecsSinceLastUpdateSent;
-            float mMaxUpdateSendRate;
-            float mVelocityMagThreshold;
-            float mVelocityDotThreshold;
-            float mInstantaneousVelocityWeight;
-
             float mTerrainPresentDropHeight;
 
             ///////////////////////////////////////////////////
@@ -291,8 +193,6 @@ namespace SimCore
 
             /// When this is true, the position and rotation will be pushed to the physics engine on pre physics.
             bool mPushTransformToPhysics : 1;
-
-            ////bool mUseVelocityInDRUpdateDecision: 1;
 
       };
 

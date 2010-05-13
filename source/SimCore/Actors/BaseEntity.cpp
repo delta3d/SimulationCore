@@ -484,20 +484,12 @@ namespace SimCore
          , mFirepowerDisabled(false)
          , mFrozen(false)
          , mAutoRegisterWithMunitionsComponent(true)
-         //, mTimeUntilNextUpdate(0.0f)
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
          , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
-         //, mCurrentVelocity(0.0f, 0.0f, 0.0f)
-         //, mCurrentAcceleration(0.0f, 0.0f, 0.0f)
-         //, mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
-         //, mMaxRotationError(2.0f)
-         //, mMaxRotationError2(4.0f)
-         //, mMaxTranslationError(0.15f)
-         //, mMaxTranslationError2(0.0225f)
          , mFireLightID(0)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
@@ -695,32 +687,6 @@ namespace SimCore
          return mDeadReckoningHelper->IsFlying();
       }
 
-      /*
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMaxTranslationError(float distance)
-      {
-         GetDRPublishingActComp()->SetMaxTranslationError(distance);
-      }
-
-      ///////////////////////////////////////////////////////////////////////////////////
-      float BaseEntity::GetMaxTranslationError()
-      {
-         return GetDRPublishingActComp()->GetMaxTranslationError();
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetMaxRotationError(float rotation)
-      {
-         GetDRPublishingActComp()->SetMaxRotationError(rotation);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      float BaseEntity::GetMaxRotationError()
-      {
-         return GetDRPublishingActComp()->GetMaxRotationError();
-      }
-      */
-
       ////////////////////////////////////////////////////////////////////////////////////
       DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
       {
@@ -832,48 +798,6 @@ namespace SimCore
          mSmokePlumePresent = enable;
       }
 
-/*      ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
-      {
-         bool forceUpdate = fullUpdate;
-
-         // If it's going to be a full update, then we don't have to check.
-         // If it's none, then we don't WANT to check.
-         if (!forceUpdate && GetDeadReckoningHelper().GetDeadReckoningAlgorithm() !=
-            dtGame::DeadReckoningAlgorithm::NONE)
-         {
-            // check to see if it's moved or turned enough to warrant one.
-
-            osg::Vec3 distanceMoved = pos - GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
-            // Note the rotation check isn't perfect (ie, not a quaternion), so you might get
-            // an extra update, but it's close enough and is very cheap processor wise.
-            osg::Vec3 distanceTurned = rot - GetDeadReckoningHelper().GetCurrentDeadReckonedRotation();
-
-            if (distanceMoved.length2() > mMaxTranslationError2)
-            {
-               forceUpdate = true;
-            }
-            else if (distanceTurned.length2() > mMaxRotationError2)
-            {
-               forceUpdate = true;
-            }
-
-            if (forceUpdate && mLogger->IsLevelEnabled(dtUtil::Log::LOG_DEBUG))
-            {
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
-                  "The change in the translation is \"%f\" for \"%s\" named \"%s\".  The max is \"%f\".",
-                  distanceMoved.length(), GetGameActorProxy().GetName().c_str(),
-                  GetName().c_str(),  mMaxTranslationError);
-
-               mLogger->LogMessage(dtUtil::Log::LOG_DEBUG, __FUNCTION__, __LINE__,
-                  "The change in the rotation is \"%f\" for \"%s\" named \"%s\".  The max is \"%f\".",
-                  distanceTurned.length(), GetGameActorProxy().GetName().c_str(),
-                  GetName().c_str(),  mMaxRotationError);
-            }
-         }
-         return forceUpdate;
-      }
-*/
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::RegisterWithDeadReckoningComponent()
       {
@@ -897,32 +821,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::ProcessMessage(const dtGame::Message& message)
       {
-/*
-         if (message.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
-         {
-            const dtGame::ActorUpdateMessage &updateMessage =
-               static_cast<const dtGame::ActorUpdateMessage&> (message);
-            const dtGame::MessageParameter *velParameter =
-               updateMessage.GetUpdateParameter(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
-
-            // Debug Print out test stuff
-            if (posParameter != NULL && rotParameter != NULL)
-            {
-               dtCore::Transform ourTransform;
-               GetTransform(ourTransform);
-               osg::Vec3 pos = ourTransform.GetTranslation();
-               osg::Vec3 rot;
-               ourTransform.GetRotation(rot);
-               std::ostringstream oss;
-               //oss << "RCV [" << GetName() << "] XYZ [" << posParameter->ToString();// <<
-                  //"] VEL [" << velParameter->ToString() << "].";
-                  //"] ROTATION [" << rotParameter->ToString() << "].";
-               //if (velParameter != NULL)
-               //   std::cout << "VEL [" << velParameter->ToString() << "].";
-               //std::cout << std::endl;
-               //LOG_ALWAYS(oss.str());
-            }
-         }*/
       }
 
 
@@ -932,98 +830,8 @@ namespace SimCore
 
          GameActor::OnTickLocal(tickMessage);
 
-         /*
-         mTimeUntilNextUpdate -= tickMessage.GetDeltaSimTime();
-
-         bool forceUpdate = false;
-         bool fullUpdate = false;
-
-         dtCore::Transform xform;
-         GetTransform(xform);
-         osg::Vec3 rot;
-         xform.GetRotation(rot);
-         osg::Vec3 pos;
-         xform.GetTranslation(pos);
-
-         if (mTimeUntilNextUpdate <= 0.0f)
-         {
-            mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
-            fullUpdate = true;
-            forceUpdate = true;
-         }
-
-         // Check for update (on sub class). Call this even if fullUpdate, because they may set some
-         // properties that we need to publish
-         forceUpdate = ShouldForceUpdate(pos, rot, fullUpdate);
-
-         if (forceUpdate)
-         {
-            SetLastKnownValuesBeforePublish(pos, rot);
-
-            // If it is almost time to do a full update and our entity wants to do a partial update anyway, 
-            // then go ahead and do a full update now. This prevents the heart beat from causing 
-            // discontinuities in the update rate - mainly for vehicles that publish quickly and regularly
-            // The logic should cause an update at between 9.5 - 10.5 seconds assuming a 10s heart beat
-            if (mTimeUntilNextUpdate < TIME_BETWEEN_UPDATES * 0.1f)
-            {
-               mTimeUntilNextUpdate = 1.05f * TIME_BETWEEN_UPDATES;
-               fullUpdate = true;
-            }
-
-            if (fullUpdate)
-            {
-               GetGameActorProxy().NotifyFullActorUpdate();
-            }
-            else
-            {
-               GetGameActorProxy().NotifyPartialActorUpdate();
-            }
-         }
-         */
       }
 
-/*      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
-      {
-         SetLastKnownTranslation(pos);
-         SetLastKnownRotation(rot);
-
-         // Linear Velocity & acceleration - push the current value to the Last Known
-         if (mPublishLinearVelocity)
-         {
-            osg::Vec3 velocity = GetCurrentVelocity();
-            // If the value is very close to 0, set it to zero to prevent wiggling or shaking
-            if (velocity.length() < 0.0001)
-            {
-               SetLastKnownVelocity(osg::Vec3(0.f, 0.f, 0.f));
-            }
-            else
-            {
-               SetLastKnownVelocity(velocity);
-            }
-
-            // Acceleration is paired with velocity
-            SetLastKnownAcceleration(GetCurrentAcceleration());
-
-         }
-
-         // Angular Velocity - push the current value to the Last Known
-         if (mPublishAngularVelocity)
-         {
-            osg::Vec3 angularVelocity = GetCurrentAngularVelocity();
-            // If the value is very close to 0, set it to zero to prevent wiggling or shaking
-            if (angularVelocity.length() < 0.001)
-            {
-               SetLastKnownAngularVelocity(osg::Vec3(0.f, 0.f, 0.f));
-            }
-            else
-            {
-               SetLastKnownAngularVelocity(angularVelocity);
-            }
-         }
-
-      }
-*/
       ////////////////////////////////////////////////////////////////////////////////////
       osg::MatrixTransform& BaseEntity::GetScaleMatrixTransform()
       {
