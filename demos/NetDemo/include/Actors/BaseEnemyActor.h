@@ -66,6 +66,8 @@ namespace NetDemo
 
       // INHERITED PUBLIC
       public:
+         /// Override this to add your own components or to init values on the ones that are already added.
+         virtual void BuildActorComponents();
 
          // Called when the actor has been added to the game manager.
          // You can respond to OnEnteredWorld on either the proxy or actor or both.

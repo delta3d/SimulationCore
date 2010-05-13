@@ -44,6 +44,7 @@ namespace SimCore
    namespace Actors
    {
       class MunitionTypeActor;
+      class DRPublishingActComp;
 
 
       ///////////////////////////////////////////////////////////////
@@ -175,6 +176,7 @@ namespace SimCore
             virtual ~BaseEntityActorProxy();
             virtual void OnEnteredWorld();
 
+
             /// Overridden to remove Pos & rotation. See method for explanation.
             virtual void NotifyFullActorUpdate();
 
@@ -186,13 +188,10 @@ namespace SimCore
       {
          public:
 
-            /**
-             * TODO This should be a default and the code should allow changing this value for runtime, and possibly
-             *      allow setting the global default in the config xml.
-             */
-            static const float TIME_BETWEEN_UPDATES;
-
             BaseEntity(dtGame::GameActorProxy& proxy);
+
+            /// Override this to add your own components or to init values on the ones that are already added.
+            virtual void BuildActorComponents();
 
             virtual void OnEnteredWorld();
 
@@ -261,22 +260,6 @@ namespace SimCore
             bool IsFirepowerDisabled() const { return GetFirepowerDisabled(); }
 
             DECLARE_PROPERTY(bool, Frozen);
-
-            /**
-             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
-             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
-             * If false, linear velocity will be zero. Should be made into a property...
-             */
-            DECLARE_PROPERTY(bool, PublishLinearVelocity);
-            bool IsPublishLinearVelocity() const { return GetPublishLinearVelocity(); }
-
-            /**
-             * When publishing pos/rot updates with dead reckoning - do we send velocity/acceleration or not?
-             * Allows tightly controlled entities that do motion model stuff to not mess up velocity
-             * If false, linear velocity will be zero. Should be made into a property...
-             */
-            DECLARE_PROPERTY(bool, PublishAngularVelocity);
-            bool IsPublishAngularVelocity() const { return GetPublishAngularVelocity(); }
 
             DECLARE_PROPERTY(bool, AutoRegisterWithMunitionsComponent);
 
@@ -409,14 +392,14 @@ namespace SimCore
             * @param vec the velocity vector to copy
             * @see #SetLastKnownVelocity
             */
-            void SetCurrentVelocity(const osg::Vec3& vec) { mCurrentVelocity = vec; }
+            // void SetCurrentVelocity(const osg::Vec3& vec) { mCurrentVelocity = vec; }
             /**
             * Gets the CURRENT velocity. This is different from the LastKnownVelocity.
             * @see #SetCurrentVelocity()
             * @see #SetLastKnownVelocity()
             * @return the current instantaneous velocity.
             */
-            osg::Vec3 GetCurrentVelocity() const { return mCurrentVelocity; }
+            //osg::Vec3 GetCurrentVelocity() const { return mCurrentVelocity; }
 
             /**
             * Sets the CURRENT acceleration. This is sort of hard to compute accurately,
@@ -428,14 +411,14 @@ namespace SimCore
             * @param vec the new value
             * @see #SetLastKnownAcceleration
             */
-            void SetCurrentAcceleration(const osg::Vec3& vec) { mCurrentAcceleration = vec; }
+            //void SetCurrentAcceleration(const osg::Vec3& vec) { mCurrentAcceleration = vec; }
             /**
             * Gets the CURRENT acceleration. This is different from the LastKnownAcceleration.
             * @see #SetCurrentAcceleration()
             * @see #SetLastKnownAcceleration()
             * @return the current acceleration from the start of the frame.
             */
-            osg::Vec3 GetCurrentAcceleration() const { return mCurrentAcceleration; }
+            //osg::Vec3 GetCurrentAcceleration() const { return mCurrentAcceleration; }
 
             /**
             * Sets the CURRENT angular velocity. This is often hard to compute accurately,
@@ -448,14 +431,14 @@ namespace SimCore
             * @param vec the new value
             * @see #SetLastKnownAngularVelocity()
             */
-            void SetCurrentAngularVelocity(const osg::Vec3& vec) { mCurrentAngularVelocity = vec; }
+            //void SetCurrentAngularVelocity(const osg::Vec3& vec) { mCurrentAngularVelocity = vec; }
             /**
             * Gets the CURRENT angular velocity. This is different from the LastKnownAngularVelocity.
             * @see #SetCurrentAngularVelocity()
             * @see #SetLastKnownAngularVelocity()
             * @return the current angular velocity that was set at the start of the frame.
             */
-            osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
+            //osg::Vec3 GetCurrentAngularVelocity() const { return mCurrentAngularVelocity; }
 
 
             /**
@@ -468,31 +451,15 @@ namespace SimCore
             ///@return The distance from the ground that the actor should be.
             float GetGroundOffset() const;
 
-            /**
-             * Sets the maximum translation offset from the last update translation this
-             * actor may have before forcing an update message to be sent.
-             */
-            void SetMaxTranslationError(float distance)
-            {
-               mMaxTranslationError = distance;
-               mMaxTranslationError2 = distance * distance;
-            }
+            /// Set - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
+            void SetMaxTranslationError(float distance);
+            /// Get - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
+            float GetMaxTranslationError() const;
 
-            ///@return the max translation error allowed before forcing an update.
-            float GetMaxTranslationError() const { return mMaxTranslationError; }
-
-            /**
-             * Sets the maximum rotation offset (in degrees) from the last update rotation this
-             * actor may have before forcing an update message to be sent.
-             */
-            void SetMaxRotationError(float rotation)
-            {
-               mMaxRotationError = rotation;
-               mMaxRotationError2 = rotation * rotation;
-            }
-
-            ///@return the max rotation (in degrees) error allowed before forcing an update.
-            float GetMaxRotationError() const { return mMaxRotationError; }
+            /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
+            void SetMaxRotationError(float rotation);
+            /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
+            float GetMaxRotationError() const;
 
             /**
              * Sets the default scale of the entity.  The actual scale is the default scale x scale magnification
@@ -523,9 +490,7 @@ namespace SimCore
             ///@return the rotation on the model matrix
             osg::Vec3 GetModelRotation() const;
 
-            /**
-             * Overridden to handle dead-reckoning and other such issues related to rendering a local actor.
-             */
+            /// Ticks are registered for on all local entities. Over ride for custom stuff.
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             virtual void ProcessMessage(const dtGame::Message& message);
@@ -555,7 +520,7 @@ namespace SimCore
             virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool IsImpulse = false) {}
 
             /// Getter for the time until next update value.  Used for testing
-            float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
+            //float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
 
             /**
              * Gives a local entity an opportunity to respond to damage from a munition.
@@ -584,12 +549,16 @@ namespace SimCore
             /// @return true if this entity should be visible based on the options given.
             bool ShouldBeVisible(const SimCore::VisibilityOptions& options);
 
+            /// Call when an important property changes that requires a full update. The update is not sent immediately, but later during the DR Publishing
+            void CauseFullUpdate();
+
+            /// Accessor for the dr publishing component. Allows setting properties, changing behaviors, forcing updates, unit tests, etc. 
+            DRPublishingActComp* GetDRPublishingActComp();
+
          protected:
             virtual ~BaseEntity();
 
             dtUtil::Log* mLogger;
-            /// TODO this needs to private, and subclasses should call a method to set this to 0 so it forces an update.
-            float mTimeUntilNextUpdate;
 
             /**
              * @return the matrix transform node that holds the scale.  This should be the parent
@@ -611,10 +580,10 @@ namespace SimCore
             void RegisterWithDeadReckoningComponent();
 
             /// Called by tick local to see if an update should be sent and if it is a full or partial.
-            virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
+            //virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 
             /// Called once we decided to publish - push our last known values onto the DR helper
-            virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
+            //virtual void SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot);
 
          private:
             ///a sub-matrix node just for doing scale on the model.
@@ -627,9 +596,9 @@ namespace SimCore
             //This is stored on both the entity and the helper because the
             //two values are not always the same.
             dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
-            osg::Vec3 mCurrentVelocity;
-            osg::Vec3 mCurrentAcceleration;
-            osg::Vec3 mCurrentAngularVelocity;
+            //osg::Vec3 mCurrentVelocity;
+            //osg::Vec3 mCurrentAcceleration;
+            //osg::Vec3 mCurrentAngularVelocity;
 
             /// The particle systems used for fire and smoke
             dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;
@@ -645,14 +614,12 @@ namespace SimCore
             /// the xyz magnification of default scale to display.
             osg::Vec3 mScaleMagnification;
 
-            //members for sending updates on a local actor.
-            float mMaxRotationError;
-            float mMaxRotationError2;
-            float mMaxTranslationError;
-            float mMaxTranslationError2;
 
             unsigned mFireLightID;
 
+            
+            // held onto since we use this fairly often.
+            dtCore::RefPtr<DRPublishingActComp> mDRPublishingActComp;
 
       };
 

@@ -46,6 +46,7 @@
 #include <SimCore/Actors/TerrainActorProxy.h>
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/PhysicsTypes.h>
 
 namespace SimCore
@@ -65,11 +66,6 @@ namespace SimCore
       , mLastGearChange(FIRST_GEAR)
       {
          SetPhysicsHelper( new SimCore::FourWheelVehiclePhysicsHelper(proxy));
-         SetMaxTranslationError(0.02f);
-         SetMaxRotationError(1.0f);
-         SetMaxUpdateSendRate(3.0f);
-         SetPublishLinearVelocity(true);
-         SetPublishAngularVelocity(true);
 
          SetEntityType("WheeledVehicle"); // Used for HLA mapping mostly
          SetMunitionDamageTableName("VehicleDamageTable"); // Used for Munitions Damage.
@@ -111,6 +107,22 @@ namespace SimCore
             mVehiclesPortal = NULL;
          }
 
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      void FourWheelVehicleActor::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+         if (drPublishingActComp == NULL)
+         {
+            LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component on the Hover Target.");
+            return;
+         }
+         drPublishingActComp->SetMaxUpdateSendRate(3.0f);
+         drPublishingActComp->SetMaxTranslationError(0.02f);
+         drPublishingActComp->SetMaxRotationError(1.0f);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////

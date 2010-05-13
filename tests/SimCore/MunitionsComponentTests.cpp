@@ -1203,7 +1203,7 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "Last notified damage state should still be KILL",
             helper->GetLastNotifiedDamageState() == DamageType::DAMAGE_KILL );
          dtCore::System::GetInstance().Step();
-         // Next test is wierd. The actor automatically generates an update, on the tick in ShouldForceUpdate()
+         // Next test is wierd. The actor automatically generates an update, via the DRPublishingActComp
          // So we want to make sure there is only 1 message, not 2.
          CPPUNIT_ASSERT_MESSAGE( "DamageHelper should NOT have sent a network message",
             mDamageComp->GetTotalProcessedMessages() == 1 ); // NotifyNetwork was NOT called

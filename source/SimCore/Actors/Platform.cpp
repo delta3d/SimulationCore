@@ -18,12 +18,14 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author David Guthrie
- * @author Eddie Johnson
- */
+* @author David Guthrie
+* @author Eddie Johnson
+* @author Curtiss Murphy
+*/
 #include <prefix/SimCorePrefix.h>
 #include <string>
 #include <SimCore/Actors/Platform.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/VisibilityOptions.h>
@@ -342,11 +344,7 @@ namespace SimCore
          }
          mEngineSmokeOn = enable;
 
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
+         CauseFullUpdate();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -953,6 +951,19 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void Platform::OnTickLocal(const dtGame::TickMessage& tickMessage)
+      {         
+         DRPublishingActComp* drPublishingComp = GetDRPublishingActComp();
+         if (drPublishingComp != NULL && mArticHelper.valid() && mArticHelper->IsDirty())
+         {
+            drPublishingComp->ForceUpdateAtNextOpportunity();
+         }
+
+         BaseClass::OnTickLocal(tickMessage);
+      }
+
+      /*
+      ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
          bool forceUpdate = BaseClass::ShouldForceUpdate(pos, rot, fullUpdate)
@@ -960,6 +971,7 @@ namespace SimCore
 
          return forceUpdate;
       }
+      */
 
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::ShouldBeVisible(const SimCore::VisibilityOptions& options)

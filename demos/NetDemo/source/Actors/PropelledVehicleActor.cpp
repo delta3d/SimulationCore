@@ -39,6 +39,7 @@
 // TEMP:
 // For appling shaders to different parts of th vehicle.
 #include <SimCore/ApplyShaderVisitor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <dtCore/shaderprogram.h>
 
 namespace NetDemo
@@ -54,8 +55,6 @@ namespace NetDemo
 //   , mTimeToResetBoost(5.0f)
 //   , mBoostResetTimer(0.0f)
    {
-      SetMaxUpdateSendRate(5.0f);
-
       SetEntityType("WheeledVehicle"); // Used for HLA mapping mostly
       SetMunitionDamageTableName("VehicleDamageTable"); // Used for Munitions Damage.
    }
@@ -63,6 +62,22 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    PropelledVehicleActor::~PropelledVehicleActor()
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void PropelledVehicleActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
+      drPublishingActComp->SetMaxTranslationError(0.02f);
+      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -77,6 +92,12 @@ namespace NetDemo
       visitor->SetShaderName("ColorPulseShader");
       visitor->SetShaderGroup("CustomizableVehicleShaderGroup");
       GetOSGNode()->accept(*visitor);
+
+      // Add a particle system to see where the vehicle has been.
+      //mTrailParticles = new dtCore::ParticleSystem;
+      //mTrailParticles->LoadFile("Particles/SimpleSpotTrail.osg", true);
+      //mTrailParticles->SetEnabled(true);
+      //AddChild(mTrailParticles.get());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

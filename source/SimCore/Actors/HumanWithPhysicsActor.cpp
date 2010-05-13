@@ -233,6 +233,7 @@ namespace SimCore
             Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
       }
 
+      /*
       ////////////////////////////////////////////////////////////////////////////////////
       bool HumanWithPhysicsActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
@@ -257,17 +258,11 @@ namespace SimCore
             mNotifyChangeOrient = true;
          }
 
-         // DEBUG:
-         /*if( mNotifyChangeVelocity )
-         {
-            std::cout << "\n\tUpdate Velocity:\t" << GetLastKnownVelocity() << std::endl;
-         }//*/
-
          // Do full updates for now until partial updates are required.
          return mNotifyChangeVelocity ||
             mNotifyChangeOrient || mNotifyChangePosition;
       }
-
+*/
       ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::SetMovementTransform(const osg::Vec3& movement)
       {

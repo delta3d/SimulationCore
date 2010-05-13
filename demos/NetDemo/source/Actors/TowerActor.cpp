@@ -31,6 +31,7 @@
 //#include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/DefaultFlexibleArticulationHelper.h>
 #include <SimCore/Actors/WeaponActor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/CollisionGroupEnum.h>
 
@@ -57,11 +58,6 @@ namespace NetDemo
    TowerActor::TowerActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
-      SetMaxUpdateSendRate(2.0f);
-
-      SetPublishLinearVelocity(false);
-      SetPublishAngularVelocity(false);
-
       SetTerrainPresentDropHeight(0.0);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
@@ -87,6 +83,22 @@ namespace NetDemo
    ///////////////////////////////////////////////////////////////////////////////////
    TowerActor::~TowerActor(void)
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void TowerActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component.");
+         return;
+      }
+      drPublishingActComp->SetMaxUpdateSendRate(2.0f);
+      drPublishingActComp->SetPublishLinearVelocity(false);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

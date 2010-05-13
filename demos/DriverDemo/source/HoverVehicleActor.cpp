@@ -38,6 +38,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 #include <dtUtil/nodeprintout.h>
@@ -52,12 +53,6 @@ namespace DriverDemo
    , mTimeTillJumpReady(0.0f)
    , mVehicleIsTurret(true)
    {
-      SetMaxUpdateSendRate(5.0f);
-
-      SetPublishLinearVelocity(true);
-      SetPublishAngularVelocity(false);
-      SetMaxTranslationError(0.02f);
-      SetMaxRotationError(1.0f);
 
       // create my unique physics helper.  almost all of the physics is on the helper.
       // The actor just manages properties and key presses mostly.
@@ -71,6 +66,25 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    HoverVehicleActor::~HoverVehicleActor(void)
    {
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   void HoverVehicleActor::BuildActorComponents()
+   {
+      BaseClass::BuildActorComponents();
+
+      SimCore::Actors::DRPublishingActComp* drPublishingActComp = GetDRPublishingActComp();
+      if (drPublishingActComp == NULL)
+      {
+         LOG_ERROR("CRITICAL ERROR - No DR Publishing Actor Component on the Hover Target.");
+         return;
+      }
+
+      drPublishingActComp->SetMaxUpdateSendRate(5.0f);
+      drPublishingActComp->SetPublishLinearVelocity(true);
+      drPublishingActComp->SetPublishAngularVelocity(false);
+      drPublishingActComp->SetMaxTranslationError(0.02f);
+      drPublishingActComp->SetMaxRotationError(1.0f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

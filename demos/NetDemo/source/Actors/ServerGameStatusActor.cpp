@@ -364,8 +364,6 @@ namespace NetDemo
    {
       ServerGameStatusActor* newActor = new ServerGameStatusActor(*this);
       SetActor(*newActor);
-
-      //ServerGameStatusActor->InitDeadReckoningHelper();
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

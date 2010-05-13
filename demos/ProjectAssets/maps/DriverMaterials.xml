@@ -17,10 +17,6 @@
             <name>SimCore</name>
             <version></version>
         </library>
-        <library>
-            <name>dtPhysX</name>
-            <version></version>
-        </library>
     </libraries>
     <actors>
         <actor>

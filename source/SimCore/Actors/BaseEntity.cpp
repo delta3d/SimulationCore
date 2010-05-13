@@ -1,3 +1,4 @@
+
 /* -*-c++-*-
 * Simulation Core
 * Copyright 2007-2008, Alion Science and Technology
@@ -24,6 +25,7 @@
 #include <prefix/SimCorePrefix.h>
 
 #include <dtUtil/mswin.h>
+#include <dtUtil/mathdefines.h>
 
 #include <SimCore/Actors/BaseEntity.h>
 
@@ -45,6 +47,7 @@
 #include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Messages.h>
 #include <SimCore/VisibilityOptions.h>
 #include <SimCore/Components/ParticleManagerComponent.h>
@@ -382,9 +385,9 @@ namespace SimCore
       void BaseEntityActorProxy::Init(const dtDAL::ActorType& actorType)
       {
          BaseClass::Init(actorType);
-         BaseEntity* entity = NULL;
-         GetActor(entity);
-         entity->InitDeadReckoningHelper();
+         //BaseEntity* entity = NULL;
+         //GetActor(entity);
+         //entity->InitDeadReckoningHelper();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -465,7 +468,6 @@ namespace SimCore
       /////////////////////////////////////////////////////////////////////
       ///////////////   BaseEntity                     ////////////////////
       /////////////////////////////////////////////////////////////////////
-      const float BaseEntity::TIME_BETWEEN_UPDATES(10.0f);
 
       BaseEntity::BaseEntity(dtGame::GameActorProxy& proxy)
          : IGActor(proxy)
@@ -481,23 +483,21 @@ namespace SimCore
          , mMobilityDisabled(false)
          , mFirepowerDisabled(false)
          , mFrozen(false)
-         , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
          , mAutoRegisterWithMunitionsComponent(true)
-         , mTimeUntilNextUpdate(0.0f)
+         //, mTimeUntilNextUpdate(0.0f)
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
          , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
-         , mCurrentVelocity(0.0f, 0.0f, 0.0f)
-         , mCurrentAcceleration(0.0f, 0.0f, 0.0f)
-         , mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
+         //, mCurrentVelocity(0.0f, 0.0f, 0.0f)
+         //, mCurrentAcceleration(0.0f, 0.0f, 0.0f)
+         //, mCurrentAngularVelocity(0.0f, 0.0f, 0.0f)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
-         , mMaxRotationError(2.0f)
-         , mMaxRotationError2(4.0f)
-         , mMaxTranslationError(0.15f)
-         , mMaxTranslationError2(0.0225f)
+         //, mMaxRotationError(2.0f)
+         //, mMaxRotationError2(4.0f)
+         //, mMaxTranslationError(0.15f)
+         //, mMaxTranslationError2(0.0225f)
          , mFireLightID(0)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseEntity.cpp");
@@ -529,8 +529,6 @@ namespace SimCore
       IMPLEMENT_PROPERTY(BaseEntity, bool, MobilityDisabled);
       IMPLEMENT_PROPERTY(BaseEntity, bool, FirepowerDisabled);
       IMPLEMENT_PROPERTY(BaseEntity, bool, Frozen);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, PublishLinearVelocity);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, PublishAngularVelocity);
       IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
       IMPLEMENT_PROPERTY(BaseEntity, std::string, MunitionDamageTableName);
 
@@ -547,15 +545,24 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         InitDeadReckoningHelper();
+
+         mDRPublishingActComp = new DRPublishingActComp();
+         AddComponent(*mDRPublishingActComp);
+         mDRPublishingActComp->SetDeadReckoningHelper(&GetDeadReckoningHelper());
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::OnEnteredWorld()
       {
          GetOSGNode()->setName(GetName());
 
          if (!IsRemote())
          {
-            //for now. Set the time for update sending to 10 seconds.
-            mTimeUntilNextUpdate = TIME_BETWEEN_UPDATES;
-
             dtCore::Transform xform;
             GetTransform(xform);
             osg::Vec3 pos;
@@ -618,11 +625,7 @@ namespace SimCore
 
          mDamageState = &damageState;
 
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
+         CauseFullUpdate();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -692,6 +695,38 @@ namespace SimCore
          return mDeadReckoningHelper->IsFlying();
       }
 
+      /*
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetMaxTranslationError(float distance)
+      {
+         GetDRPublishingActComp()->SetMaxTranslationError(distance);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      float BaseEntity::GetMaxTranslationError()
+      {
+         return GetDRPublishingActComp()->GetMaxTranslationError();
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetMaxRotationError(float rotation)
+      {
+         GetDRPublishingActComp()->SetMaxRotationError(rotation);
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      float BaseEntity::GetMaxRotationError()
+      {
+         return GetDRPublishingActComp()->GetMaxRotationError();
+      }
+      */
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
+      {
+         return mDRPublishingActComp.get();
+      }
+
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlying(bool newFlying)
       {
@@ -701,11 +736,7 @@ namespace SimCore
 //         else
 //            mNode->asGroup()->addChild(mPointsGeode.get());
 
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
+         CauseFullUpdate();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -769,14 +800,9 @@ namespace SimCore
          }
          mFlamesPresent = enable;
 
-         // Major visual has changed, so force a full update.
-         if (!IsRemote())
-         {
-            mTimeUntilNextUpdate = 0.0f;
-         }
+         CauseFullUpdate();
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetSmokePlumePresent(bool enable)
       {
          if (mSmokePlumePresent == enable)
@@ -806,7 +832,7 @@ namespace SimCore
          mSmokePlumePresent = enable;
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
+/*      ////////////////////////////////////////////////////////////////////////////////////
       bool BaseEntity::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
       {
          bool forceUpdate = fullUpdate;
@@ -847,7 +873,7 @@ namespace SimCore
          }
          return forceUpdate;
       }
-
+*/
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::RegisterWithDeadReckoningComponent()
       {
@@ -903,9 +929,11 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-         mTimeUntilNextUpdate -= tickMessage.GetDeltaSimTime();
 
          GameActor::OnTickLocal(tickMessage);
+
+         /*
+         mTimeUntilNextUpdate -= tickMessage.GetDeltaSimTime();
 
          bool forceUpdate = false;
          bool fullUpdate = false;
@@ -951,9 +979,10 @@ namespace SimCore
                GetGameActorProxy().NotifyPartialActorUpdate();
             }
          }
+         */
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////
+/*      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
       {
          SetLastKnownTranslation(pos);
@@ -994,7 +1023,7 @@ namespace SimCore
          }
 
       }
-
+*/
       ////////////////////////////////////////////////////////////////////////////////////
       osg::MatrixTransform& BaseEntity::GetScaleMatrixTransform()
       {
@@ -1124,6 +1153,15 @@ namespace SimCore
          bool domainIsVisible = basicOptions.IsEnumVisible(GetDomain());
 
          return forceIsVisible && domainIsVisible;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::CauseFullUpdate()
+      {
+         if (!IsRemote())
+         {
+            GetDRPublishingActComp()->ForceFullUpdateAtNextOpportunity();
+         }
       }
 
    }
