@@ -529,7 +529,7 @@ namespace SimCore
       {
          mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
 
-         SetFlying(false);
+         mDeadReckoningHelper->SetFlying(false);
 
          // attempt to fix the z-fighting on treads and wheels that are
          // very close to the ground. We move the vehicle up about 3-4 inches...
