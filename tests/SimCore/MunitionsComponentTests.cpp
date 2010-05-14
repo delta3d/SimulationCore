@@ -1521,11 +1521,12 @@ namespace SimCore
          dtCore::System::GetInstance().Step();
          mDamageComp->ResetTotalProcessedMessages();
          mDamageComp->SetDamage( *entity, DamageType::DAMAGE_KILL );
-         CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have set entity damage to NONE.",
+         CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have set entity damage to DAMAGE_KILL.",
             helper->GetDamageState() == DamageType::DAMAGE_KILL );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should NOT have sent a network message when changing damage with its own SetDamage function.",
-            int(mDamageComp->GetTotalProcessedMessages()), int(0) );
+         // Setting the damage state WILL cause a full actor update from the BaseEntity. Changed recently.
+         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should have sent ONE network message when changing damage with its own SetDamage function.",
+            int(mDamageComp->GetTotalProcessedMessages()), int(1) );
          CPPUNIT_ASSERT( entity->IsMobilityDisabled() );
          CPPUNIT_ASSERT( entity->IsFirepowerDisabled() );
       }
@@ -1736,8 +1737,9 @@ namespace SimCore
          CPPUNIT_ASSERT_MESSAGE( "MunitionsComponent should have set entity damage to NONE.",
             helper->GetDamageState() == DamageType::DAMAGE_NONE );
          dtCore::System::GetInstance().Step();
-         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should have sent exactly one network message when changing damage with its own SetDamage function.",
-            int(mDamageComp->GetTotalProcessedMessages()), int(1) );
+         // One message from the damage helper (being set to true in the constructor) and one from the entity.
+         CPPUNIT_ASSERT_EQUAL_MESSAGE( "MunitionsComponent should have sent exactly two network message when changing damage with its own SetDamage function.",
+            int(mDamageComp->GetTotalProcessedMessages()), int(2) );
          CPPUNIT_ASSERT( ! entity->IsMobilityDisabled() );
          CPPUNIT_ASSERT( ! entity->IsFirepowerDisabled() );
 
