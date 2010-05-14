@@ -752,10 +752,18 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    double oldTime = dtCore::System::GetInstance().GetSimulationTime();
 
-   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
-         "The time until next update should be seeded to the time between complete updates.",
-         SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES,
-         entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
+   float initialTimeUntilNextFullUpdate = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
+   float defaultValue = SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES;
+   bool initialValueIsInRange = 
+      (initialTimeUntilNextFullUpdate < defaultValue * 1.5001f) && 
+      (initialTimeUntilNextFullUpdate > defaultValue * 0.4999f);
+
+   CPPUNIT_ASSERT_MESSAGE("The first full update time should be between 0.5 & 1.5 times the default.",
+      initialValueIsInRange);
+   //CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
+   //      "The time until next update should be seeded to the time between complete updates.",
+   //      SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES,
+   //      entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    dtCore::System::GetInstance().Step();
 
@@ -763,7 +771,7 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
          "The time until the next update should decrement by the step time",
-         SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES - (newTime - oldTime),
+         ((double) initialTimeUntilNextFullUpdate) - (newTime - oldTime),
          entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
 
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());

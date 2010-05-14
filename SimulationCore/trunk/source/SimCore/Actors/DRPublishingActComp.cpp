@@ -164,7 +164,7 @@ namespace SimCore
             // then go ahead and do a full update now. This prevents the heart beat from causing 
             // discontinuities in the update rate - mainly for vehicles that publish quickly and regularly
             // The logic should cause an update at between 9.5 - 10.5 seconds assuming a 10s heart beat
-            if (mTimeUntilNextFullUpdate < TIME_BETWEEN_UPDATES * 0.1f)
+            if (!fullUpdate && mTimeUntilNextFullUpdate < TIME_BETWEEN_UPDATES * 0.1f)
             {
                mTimeUntilNextFullUpdate = 1.05f * TIME_BETWEEN_UPDATES;
                fullUpdate = true;
