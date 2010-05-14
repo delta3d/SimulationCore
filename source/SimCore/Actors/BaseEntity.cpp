@@ -966,7 +966,7 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::CauseFullUpdate()
       {
-         if (!IsRemote())
+         if (!IsRemote() && GetDRPublishingActComp() != NULL && GetGameActorProxy().IsInGM())
          {
             GetDRPublishingActComp()->ForceFullUpdateAtNextOpportunity();
          }
