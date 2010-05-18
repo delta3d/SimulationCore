@@ -126,10 +126,11 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       HUDElement::HUDElement(const std::string& name, const std::string& type)
-         : dtCore::Base(name),
-         mAlign(&HUDAlignment::LEFT_TOP),
-         mAbsPos(false),
-         mAbsSize(false)
+         : dtCore::Base(name)
+         , mAlign(&HUDAlignment::LEFT_TOP)
+         , mAbsPos(false)
+         , mAbsSize(false)
+         , mAllowDelete(true)
       {
          CEGUI::WindowManager* wm = CEGUI::WindowManager::getSingletonPtr();
          try
@@ -146,10 +147,11 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       HUDElement::HUDElement(CEGUI::Window& window)
-         : dtCore::Base(window.getName().c_str()),
-         mAlign(&HUDAlignment::ClassifyAlignment(window)),
-         mAbsPos(false),
-         mAbsSize(false)
+         : dtCore::Base(window.getName().c_str())
+         , mAlign(&HUDAlignment::ClassifyAlignment(window))
+         , mAbsPos(false)
+         , mAbsSize(false)
+         , mAllowDelete(true)
       {
          mWindow = &window;
       }
@@ -157,7 +159,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-         if (mWindow != NULL)
+         if (mAllowDelete && mWindow != NULL)
          {
             mWindow->destroy();
          }
@@ -352,6 +354,30 @@ namespace SimCore
       bool HUDElement::IsVisible() const
       {
          return mWindow->isVisible();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetAlpha(float alpha)
+      {
+         mWindow->setAlpha(alpha);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      float HUDElement::GetAlpha() const
+      {
+         return mWindow->getAlpha();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void HUDElement::SetDeleteWindowOnDestruct(bool enable)
+      {
+         mAllowDelete = enable;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool HUDElement::GetDeleteWindowOnDestruct() const
+      {
+         return mAllowDelete;
       }
 
       //////////////////////////////////////////////////////////////////////////
