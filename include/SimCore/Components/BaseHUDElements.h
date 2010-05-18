@@ -138,6 +138,12 @@ namespace SimCore
             virtual void SetVisible( bool visible );
             bool IsVisible() const;
 
+            void SetAlpha(float alpha);
+            float GetAlpha() const;
+
+            void SetDeleteWindowOnDestruct(bool enable);
+            bool GetDeleteWindowOnDestruct() const;
+
             virtual void Hide();
             virtual void Show();
 
@@ -162,6 +168,7 @@ namespace SimCore
             CEGUI::Window *mWindow;
             bool mAbsPos;
             bool mAbsSize;
+            bool mAllowDelete;
 
          private:
       };
