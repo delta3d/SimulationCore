@@ -95,18 +95,16 @@ CPPUNIT_TEST_SUITE_REGISTRATION(StealthViewerSettingsTests);
 
 void StealthViewerSettingsTests::setUp()
 {
-   std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory();
-
 #if defined (_MSC_VER) && defined (_DEBUG)
-   dir += "bin/StealthViewerSettingsTestsd.exe";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTestsd.exe";
 #elif defined (_MSC_VER)
-   dir += "bin/StealthViewerSettingsTests.exe";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTests.exe";
 #else
-   dir += "bin/StealthViewerSettingsTests";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTests";
 #endif
 
-   int numParams = 1;
-   const char *exe = dir.c_str();
+   static int numParams = 1;
+   static const char *exe = dir.c_str();
 
    mQApp = new QApplication(numParams, const_cast<char**>(&exe));
 }
