@@ -30,18 +30,27 @@ namespace SimCore
    namespace GUI
    {
       //////////////////////////////////////////////////////////////////////////
-      // VEC2 INTERPOLATOR CODE
+      // VEC INTERPOLATOR CODE - for vec 2, 3 & 4
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT Vec2Interpolator
+      template<typename T_VEC>
+      class SIMCORE_EXPORT VecInterpolator
       {
          public:
             static void GetInterpolatedTarget( float interpolationRatio,
-               const osg::Vec2& startTarget, const osg::Vec2& endTarget,
-               osg::Vec2& outInterpolatedTarget );
+               const T_VEC& startTarget, const T_VEC& endTarget,
+               T_VEC& outInterpolatedTarget )
+            {
+               T_VEC normal(endTarget - startTarget);
+               float displacement = normal.length() * interpolationRatio;
+
+               normal.normalize();
+               normal *= displacement;
+               outInterpolatedTarget = normal + startTarget;
+            }
 
          private:
-            Vec2Interpolator(){}
-            virtual ~Vec2Interpolator(){}
+            VecInterpolator(){}
+            virtual ~VecInterpolator(){}
       };
 
 
@@ -80,33 +89,33 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      // POSITION CONTROLLER CODE
+      // VEC3 (COLOR - RGB) CONTROLLER CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT PositionController : public Vec2Controller
+      class SIMCORE_EXPORT Vec3Controller : public AnimationController<osg::Vec3> 
       {
          public:
-            typedef Vec2Controller BaseClass;
+            typedef AnimationController<osg::Vec3> BaseClass;
 
-            PositionController( AnimCallbackSetVec2* callback = NULL );
+            Vec3Controller( AnimCallbackSetVec3* callback = NULL );
 
          protected:
-            virtual ~PositionController();
+            virtual ~Vec3Controller();
       };
 
 
 
       //////////////////////////////////////////////////////////////////////////
-      // SIZE CONTROLLER CODE
+      // VEC4 (COLOR - RGBA) CONTROLLER CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT SizeController : public Vec2Controller
+      class SIMCORE_EXPORT Vec4Controller : public AnimationController<osg::Vec4> 
       {
          public:
-            typedef Vec2Controller BaseClass;
+            typedef AnimationController<osg::Vec4> BaseClass;
 
-            SizeController( AnimCallbackSetVec2* callback = NULL );
+            Vec4Controller( AnimCallbackSetVec4* callback = NULL );
 
          protected:
-            virtual ~SizeController();
+            virtual ~Vec4Controller();
       };
 
 
@@ -125,6 +134,15 @@ namespace SimCore
             virtual ~BoundsController();
       };
 
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // TYPEDEFS - Simple Controllers
+      //////////////////////////////////////////////////////////////////////////
+      typedef Vec2Controller PositionController;
+      typedef Vec2Controller SizeController;
+      typedef Vec3Controller Color3Controller;
+      typedef Vec4Controller Color4Controller;
    }
 }
 

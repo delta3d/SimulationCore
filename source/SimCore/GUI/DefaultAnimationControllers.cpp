@@ -24,23 +24,6 @@ namespace SimCore
    namespace GUI
    {
       //////////////////////////////////////////////////////////////////////////
-      // VEC2 INTERPOLATOR CODE
-      //////////////////////////////////////////////////////////////////////////
-      void Vec2Interpolator::GetInterpolatedTarget( float interpolationRatio,
-         const osg::Vec2& startTarget, const osg::Vec2& endTarget,
-         osg::Vec2& outInterpolatedTarget )
-      {
-         osg::Vec2 normal( endTarget - startTarget );
-         float displacement = normal.length() * interpolationRatio;
-
-         normal.normalize();
-         normal *= displacement;
-         outInterpolatedTarget = normal + startTarget;
-      }
-
-
-
-      //////////////////////////////////////////////////////////////////////////
       // BOUNDS INTERPOLATOR CODE
       //////////////////////////////////////////////////////////////////////////
       void BoundsInterpolator::GetInterpolatedTarget( float interpolationRatio,
@@ -76,7 +59,7 @@ namespace SimCore
       // VEC2 (POSITION & SIZE) CONTROLLER CODE
       //////////////////////////////////////////////////////////////////////////
       Vec2Controller::Vec2Controller( AnimCallbackSetVec2* callback )
-         : BaseClass(dtUtil::MakeFunctor(&Vec2Interpolator::GetInterpolatedTarget))
+         : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec2>::GetInterpolatedTarget))
       {
          if( callback != NULL )
          {
@@ -92,30 +75,38 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      // POSITION CONTROLLER CODE
+      // VEC3 (COLOR - RGB) CONTROLLER CODE
       //////////////////////////////////////////////////////////////////////////
-      PositionController::PositionController( AnimCallbackSetVec2* callback )
-         : BaseClass(callback)
+      Vec3Controller::Vec3Controller( AnimCallbackSetVec3* callback )
+         : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec3>::GetInterpolatedTarget))
       {
+         if( callback != NULL )
+         {
+            SetTargetSetCallback( callback );
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      PositionController::~PositionController()
+      Vec3Controller::~Vec3Controller()
       {
       }
 
 
 
       //////////////////////////////////////////////////////////////////////////
-      // SIZE CONTROLLER CODE
+      // VEC4 (COLOR - RGBA) CONTROLLER CODE
       //////////////////////////////////////////////////////////////////////////
-      SizeController::SizeController( AnimCallbackSetVec2* callback )
-         : BaseClass(callback)
+      Vec4Controller::Vec4Controller( AnimCallbackSetVec4* callback )
+         : BaseClass(dtUtil::MakeFunctor(&VecInterpolator<osg::Vec4>::GetInterpolatedTarget))
       {
+         if( callback != NULL )
+         {
+            SetTargetSetCallback( callback );
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      SizeController::~SizeController()
+      Vec4Controller::~Vec4Controller()
       {
       }
 
