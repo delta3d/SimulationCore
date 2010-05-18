@@ -76,7 +76,7 @@ class StealthViewerHLAOptionsTests : public CPPUNIT_NS::TestFixture
    private:
       void TestConvertFileName(const QString& testFile, const QString& projectDir, const QString& expectedResult);
 
-      QApplication *mQApp;
+      QApplication* mQApp;
 
 };
 
@@ -84,18 +84,16 @@ CPPUNIT_TEST_SUITE_REGISTRATION(StealthViewerHLAOptionsTests);
 
 void StealthViewerHLAOptionsTests::setUp()
 {
-   std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory();
-
 #if defined (_MSC_VER) && defined (_DEBUG)
-   dir += "bin/StealthViewerHLAOptionsTestsd.exe";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTestsd.exe";
 #elif defined (_MSC_VER)
-   dir += "bin/StealthViewerHLAOptionsTests.exe";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTests.exe";
 #else
-   dir += "bin/StealthViewerHLAOptionsTests";
+   static std::string dir = dtUtil::FileUtils::GetInstance().CurrentDirectory() + "bin/StealthViewerSettingsTests";
 #endif
 
-   int numParams = 1;
-   const char *exe = dir.c_str();
+   static int numParams = 1;
+   static const char* exe = dir.c_str();
   
    mQApp = new QApplication(numParams, const_cast<char**>(&exe));
 }
