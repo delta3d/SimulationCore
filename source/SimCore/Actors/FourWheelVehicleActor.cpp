@@ -451,7 +451,7 @@ namespace SimCore
             }
             else
             {
-               if (mCurrentSteeringAngleNormalized < angleChange)
+               if (mCurrentSteeringAngleNormalized < -angleChange)
                {
                   mCurrentSteeringAngleNormalized += angleChange;
                }
