@@ -140,7 +140,6 @@ namespace SimCore
             virtual bool IsPlaceable()  { return true; }
 
             /// Called by tick local when sending a partial update to get a list of the properties to send.
-            ///virtual void FillPartialUpdatePropertyVector(std::vector<std::string>& propNamesToFill);
             virtual void GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill);
 
             /**
@@ -159,10 +158,6 @@ namespace SimCore
 
             /// Build the invokables
             virtual void BuildInvokables();
-
-            // CURT
-            //void SetLastKnownRotation(const osg::Vec3& vec);
-            //osg::Vec3 GetLastKnownRotation() const;
 
          protected:
             virtual ~BaseEntityActorProxy();
@@ -264,26 +259,6 @@ namespace SimCore
              */
             DECLARE_PROPERTY(std::string, MunitionDamageTableName);
 
-            /**
-             * True means no ground following should be performed on this actor.  False
-             * it will follow the ground as it moves.
-             */
-            //bool IsFlying() const { return GetFlying(); }
-            //bool GetFlying() const;
-            //void SetFlying(bool);
-
-            /**
-             * Sets this entity's minimum Dead Reckoning Algorithm.
-             *
-             * @param newAlgorithm the new algorithm enum value.
-             */
-            //void SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm& newAlgorithm);
-
-            /**
-             * @return the current minimum Dead Reckoning Algorithm.
-             */
-            //dtGame::DeadReckoningAlgorithm& GetDeadReckoningAlgorithm() const;
-
 
             /**
              * Sets The file name of the fire particle system being used
@@ -308,94 +283,6 @@ namespace SimCore
              * @return mSmokePlumesSystemFile
              */
             std::string GetSmokePlumesFile() const { return mSmokePlumesSystemFile; }
-
-            /**
-             * Sets this entity's last known translation.  This should
-             * only be set for remote actors.
-             *
-             * @param vec the new last position.
-             */
-            //virtual void SetLastKnownTranslation(const osg::Vec3& vec);
-
-            /**
-             * @return the last known position for this if it's a remote entity.
-             */
-            //osg::Vec3 GetLastKnownTranslation() const;
-
-            /**
-             * Sets this entity's last known rotation.  This should
-             * only be set for remote actors.
-             *
-             * @param vec the new last rotation as yaw, pitch, roll.
-             */
-            //virtual void SetLastKnownRotation(const osg::Vec3& vec);
-
-            /**
-             * @return the last known rotation for this if it's a remote entity as yaw, pitch, roll.
-             */
-            //osg::Vec3 GetLastKnownRotation() const;
-
-            /**
-             * Sets this entity's DIS/RPR-FOM velocity vector.
-             *
-             * @param vec the velocity vector to copy
-             */
-            //void SetLastKnownVelocity(const osg::Vec3& vec);
-
-            /**
-             * Retrieves this entity's DIS/RPR-FOM velocity vector.
-             *
-             * @return the velocity vector
-             */
-            //osg::Vec3 GetLastKnownVelocity() const;
-
-            /**
-             * Sets this entity's DIS/RPR-FOM acceleration vector.
-             *
-             * @param accelerationVector the acceleration vector to copy
-             */
-            //void SetLastKnownAcceleration(const osg::Vec3& vec);
-
-            /**
-             * Retrieves this entity's DIS/RPR-FOM acceleration vector.
-             *
-             * @return the acceleration vector
-             */
-            //osg::Vec3 GetLastKnownAcceleration() const;
-
-            /**
-             * Sets this entity's DIS/RPR-FOM angular velocity vector.
-             *
-             * @param angularVelocityVector the angular velocity vector to copy
-             */
-            //void SetLastKnownAngularVelocity(const osg::Vec3& vec);
-
-            /**
-             * Retrieves this entity's DIS/RPR-FOM angular velocity vector.
-             *
-             * @return the angular velocity vector
-             */
-            //osg::Vec3 GetLastKnownAngularVelocity() const;
-
-            /**
-             * Sets the offset from the ground the actor should be clamped to.
-             * This only matters if flying is set to false.
-             * @param newOffset the new offset value.
-             */
-            //void SetGroundOffset(float newOffset);
-
-            ///@return The distance from the ground that the actor should be.
-            //float GetGroundOffset() const;
-
-            /// Set - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
-            //void SetMaxTranslationError(float distance);
-            /// Get - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
-            //float GetMaxTranslationError() const;
-
-            /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
-            //void SetMaxRotationError(float rotation);
-            /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
-            //float GetMaxRotationError() const;
 
             /**
              * Sets the default scale of the entity.  The actual scale is the default scale x scale magnification
@@ -436,10 +323,6 @@ namespace SimCore
             const dtGame::DeadReckoningHelper& GetDeadReckoningHelper() const { return *mDeadReckoningHelper; }
             bool IsDeadReckoningHelperValid() const { return (mDeadReckoningHelper.valid()); }
 
-            //this is used to create the dead reckoning helper and initialize the default options
-            //made virtual  for supporting custom dr helpers
-            //virtual void InitDeadReckoningHelper();
-
             /**
              * This function is intended for use by entities that implement physics
              * simulation behaviors.
@@ -455,8 +338,6 @@ namespace SimCore
              */
             virtual void ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool IsImpulse = false) {}
 
-            /// Getter for the time until next update value.  Used for testing
-            //float GetTimeUntilNextUpdate() const { return mTimeUntilNextUpdate; }
 
             /**
              * Gives a local entity an opportunity to respond to damage from a munition.
