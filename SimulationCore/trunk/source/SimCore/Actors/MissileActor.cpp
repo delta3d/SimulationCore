@@ -336,36 +336,6 @@ namespace SimCore
          }
       }
 
-
-      //////////////////////////////////////////////////////////
-      void MissileActor::SetLastKnownTranslation(const osg::Vec3& vec)
-      {
-         if(!mLastTranslationSet)
-         {
-            dtCore::Transform trans;
-            GetTransform(trans);
-            trans.SetTranslation(vec);
-            SetTransform(trans, dtCore::Transformable::REL_CS);
-            mLastTranslationSet = true;
-         }
-         Platform::SetLastKnownTranslation(vec);
-      }
-
-
-      //////////////////////////////////////////////////////////
-      void MissileActor::SetLastKnownRotation(const osg::Vec3& vec)
-      {
-         if(!mLastRotationSet)
-         {
-            dtCore::Transform trans;
-            GetTransform(trans);
-            trans.SetRotation(vec);
-            SetTransform(trans, dtCore::Transformable::REL_CS);
-            mLastRotationSet = true;
-         }
-         Platform::SetLastKnownRotation(vec);
-      }
-
    }
 }
 

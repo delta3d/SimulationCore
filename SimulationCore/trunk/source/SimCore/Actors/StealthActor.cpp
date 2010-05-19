@@ -31,6 +31,7 @@
 #include <dtGame/gamemanager.h>
 #include <dtGame/invokable.h>
 #include <dtGame/environmentactor.h>
+#include <dtGame/deadreckoninghelper.h>
 #include <dtCore/scene.h>
 #include <dtCore/transform.h>
 #include <dtUtil/log.h>
@@ -118,7 +119,7 @@ namespace SimCore
       StealthActor::StealthActor(dtGame::GameActorProxy &proxy) :
          Platform(proxy),
          mAttachAsThirdPerson(true),
-         mOldDRA(&GetDeadReckoningAlgorithm()),
+         mOldDRA(&dtGame::DeadReckoningAlgorithm::NONE),
          mAttachOffset(0.0f, 0.0f, 1.5f)
       {
          mLogger = &dtUtil::Log::GetInstance("StealthActor.cpp");
@@ -149,7 +150,7 @@ namespace SimCore
                GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, entityParent->GetUniqueId(), "UpdateFromParent");
             }
 
-            SetDeadReckoningAlgorithm(*mOldDRA);
+            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(*mOldDRA);
             GetParent()->RemoveChild(this);
          }
       }
@@ -180,7 +181,10 @@ namespace SimCore
                entity->SetDrawingModel(true);
                entity->SetPlayerAttached(true);
             }
-            SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
+            mOldDRA = &GetDeadReckoningHelper().GetDeadReckoningAlgorithm();
+
+            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(
+               entity->GetDeadReckoningHelper().GetDeadReckoningAlgorithm());
 
          }
 
@@ -274,7 +278,7 @@ namespace SimCore
             {
                GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, GetParent()->GetUniqueId(), "Detach");
                GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, GetParent()->GetUniqueId(), "UpdateFromParent");
-               SetDeadReckoningAlgorithm(*mOldDRA);
+               GetDeadReckoningHelper().SetDeadReckoningAlgorithm(*mOldDRA);
 
                if(GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
                {
@@ -305,10 +309,10 @@ namespace SimCore
          if(entity == NULL)
             return;
 
-         SetDeadReckoningAlgorithm(entity->GetDeadReckoningAlgorithm());
-         SetLastKnownVelocity(entity->GetLastKnownVelocity());
-         SetLastKnownAngularVelocity(entity->GetLastKnownAngularVelocity());
-         SetLastKnownAcceleration(entity->GetLastKnownAcceleration());
+         GetDeadReckoningHelper().SetDeadReckoningAlgorithm(entity->GetDeadReckoningHelper().GetDeadReckoningAlgorithm());
+         GetDeadReckoningHelper().SetLastKnownVelocity(entity->GetDeadReckoningHelper().GetLastKnownVelocity());
+         GetDeadReckoningHelper().SetLastKnownAngularVelocity(entity->GetDeadReckoningHelper().GetLastKnownAngularVelocity());
+         GetDeadReckoningHelper().SetLastKnownAcceleration(entity->GetDeadReckoningHelper().GetLastKnownAcceleration());
 
          GetGameActorProxy().NotifyFullActorUpdate();
       }

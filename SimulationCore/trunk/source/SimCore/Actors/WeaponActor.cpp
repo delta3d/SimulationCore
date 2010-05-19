@@ -38,6 +38,7 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/exceptionenum.h>
 #include <dtGame/messagefactory.h>
+#include <dtGame/deadreckoninghelper.h>
 
 
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
@@ -361,7 +362,7 @@ namespace SimCore
                if (entityProxy != NULL)
                {
                   const BaseEntity &entity = static_cast<const BaseEntity&>(entityProxy->GetGameActor());
-                  vehicleVelocity = entity.GetLastKnownVelocity();
+                  vehicleVelocity = entity.GetDeadReckoningHelper().GetLastKnownVelocity();
                   //std::cout << "      NOW SETTING PARENT VELOCITY TO [" << vehicleVelocity << "]." << std::endl;
                   particleSystem->SetParentsWorldRelativeVelocityVector(vehicleVelocity);
                }

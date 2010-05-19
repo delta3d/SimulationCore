@@ -28,6 +28,10 @@
 #include <SimCore/Actors/Platform.h>
 #include <osg/Vec3>
 
+namespace dtGame
+{
+   class DeadReckoningAlgorithm;
+}
 namespace SimCore
 {
    class AttachToActorMessage;

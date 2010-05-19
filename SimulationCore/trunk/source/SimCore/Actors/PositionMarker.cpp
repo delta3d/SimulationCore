@@ -411,7 +411,7 @@ namespace SimCore
       void PositionMarker::OnEnteredWorld()
       {
          BaseClass::OnEnteredWorld();
-         RegisterWithDeadReckoningComponent();
+         //RegisterWithDeadReckoningComponent(); // moved to base class
          // Register always.  this could be revisited, but the logic is somewhat complex;
          GetGameActorProxy().RegisterForMessagesAboutSelf(
                   dtGame::MessageType::INFO_TIMER_ELAPSED,

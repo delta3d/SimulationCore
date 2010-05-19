@@ -57,7 +57,8 @@ namespace SimCore
          static const float TIME_BETWEEN_UPDATES;
 
 
-         DRPublishingActComp();
+         /// Constructor - pass in false if you are using the DR Publisher ONLY for heartbeats, without a DR Helper to do the Dead Reckoning
+         DRPublishingActComp(bool requiresDRHelper = true);
 
          ////////////////////////////////////////////////////////////////
          // Basic Actor Component Behaviors
@@ -213,8 +214,10 @@ namespace SimCore
          /// Set - threshold for rot (degrees) from last update before deciding to publish 
          float GetMaxRotationError() const;
 
-         /// Getter for the time until next update value.  Used for testing
+         /// Getter for the time until next update value.  Used for testing mostly
          float GetTimeUntilNextFullUpdate() const;
+         /// Sets Full Update counter back to heart beat time. Pass true to distribute the updates.
+         void ResetFullUpdateTimer(bool doRandomOffset = false);
 
          /// The Dead Reckoning Helper is part of the actor and is a requirement to use this actor comp.
          dtGame::DeadReckoningHelper& GetDeadReckoningHelper();
@@ -239,6 +242,8 @@ namespace SimCore
           virtual void ComputeCurrentVelocity(float deltaTime, const osg::Vec3& pos, const osg::Vec3& rot);
 
       private:
+         /// Do we insist a DR helper is set? If yes, log error if missing. Default is true on construction
+         bool mRequiresDRHelper; 
          float mTimeUntilNextFullUpdate;
 
          // Current values - not published or directly settable

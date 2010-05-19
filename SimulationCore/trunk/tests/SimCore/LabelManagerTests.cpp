@@ -101,6 +101,12 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, mPlatform1);
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, mPlatform2);
 
+         SimCore::Actors::BaseEntity* curEntity;
+         curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(mPlatform1->GetGameActor()));
+         curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
+         curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(mPlatform2->GetGameActor()));
+         curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
+
          CPPUNIT_ASSERT(mPlatform1.valid());
          CPPUNIT_ASSERT(mPlatform2.valid());
 

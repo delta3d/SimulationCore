@@ -274,7 +274,7 @@ namespace SimCore
                mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE );
                //if( mLastDRAlgorithm != NULL )
                //{
-               //   mEntity->SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
+               //   mEntity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm( *mLastDRAlgorithm );
                //}
                mEntity->SetFlamesPresent( false );
             }
@@ -304,7 +304,7 @@ namespace SimCore
                mEntity->SetDamageState( SimCore::Actors::BaseEntityActorProxy::DamageStateEnum::DESTROYED );
                // We no longer turn off the DR algorithm when we are dead. The reason is that we could 
                // be pushed around, or falling (if a plane gets shot, it falls down) even though we are dead
-               //mEntity->SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
+               //mEntity->GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC );
                mEntity->SetFlamesPresent( true );
             }
          }

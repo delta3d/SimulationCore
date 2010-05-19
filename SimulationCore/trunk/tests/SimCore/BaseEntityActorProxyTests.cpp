@@ -749,8 +749,11 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    // prevents too many updates being sent based on 'smoothing' changes.
    entityActor.GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.0f);
    entityActor.GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.0f);
+   entityActor.GetDRPublishingActComp()->SetMaxUpdateSendRate(60.0f); // can update 60 times a second
+   entityActor.GetDRPublishingActComp()->SetMaxRotationError(4.0f);
+   entityActor.GetDRPublishingActComp()->SetMaxTranslationError(10.0f);
 
-   double oldTime = dtCore::System::GetInstance().GetSimulationTime();
+   //double oldTime = dtCore::System::GetInstance().GetSimTimeSinceStartup();
 
    float initialTimeUntilNextFullUpdate = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
    float defaultValue = SimCore::Actors::DRPublishingActComp::TIME_BETWEEN_UPDATES;
@@ -767,16 +770,10 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    dtCore::System::GetInstance().Step();
 
-   double newTime = dtCore::System::GetInstance().GetSimulationTime();
-
-   CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(
-         "The time until the next update should decrement by the step time",
-         ((double) initialTimeUntilNextFullUpdate) - (newTime - oldTime),
-         entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate(), 1e-3f);
-
    CPPUNIT_ASSERT(tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_CREATED).valid());
 
    tc->reset();
+
    osg::Vec3 smallMovement(0.01f, 0.01f, 0.01f);
 
    dtCore::Transform xform;
@@ -787,7 +784,19 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetTranslation(pos + smallMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
+   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+
+   float timeUntilUpdate1 = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
    dtCore::System::GetInstance().Step();
+   float timeUntilUpdate2 = entityActor.GetDRPublishingActComp()->GetTimeUntilNextFullUpdate();
+
+   /// TEST the time Until Update processing
+   RefPtr<const dtGame::TickMessage> tickMessage = static_cast<const dtGame::TickMessage*>(
+      tc->FindProcessMessageOfType(dtGame::MessageType::TICK_LOCAL).get());
+   float tickTime = tickMessage->GetDeltaSimTime();
+   CPPUNIT_ASSERT_EQUAL_MESSAGE("The time until the next update should decrement by the step time",
+      timeUntilUpdate1 - tickTime, timeUntilUpdate2);
+
 
    CPPUNIT_ASSERT_MESSAGE("The translation was small. It should NOT have sent an update.",
       !tc->FindProcessMessageOfType(dtGame::MessageType::INFO_ACTOR_UPDATED).valid());
@@ -796,6 +805,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    osg::Vec3 largeMovement(200.0f, 345.0f, 657.0f);
    xform.SetTranslation(pos + largeMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+
+   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    dtCore::System::GetInstance().Step();
 
@@ -823,6 +834,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
    xform.SetRotation(smallMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
 
+   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
+
    dtCore::System::GetInstance().Step();
 
    CPPUNIT_ASSERT_MESSAGE("The rotation was small. It should NOT have sent an update.",
@@ -832,6 +845,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorUpdates(SimCore::Actors::Base
 
    xform.SetRotation(largeMovement);
    entityActor.SetTransform(xform, dtCore::Transformable::REL_CS);
+
+   SLEEP(20);// Give the DR Publisher time to do the actor update. At 60 hz, we technically only need 16.6 ms
 
    dtCore::System::GetInstance().Step();
 
@@ -868,8 +883,8 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
    //osg::Vec3 basePos(201.0358f, 41.591f, 1.02f);
    osg::Vec3 basePos(196.0123f, 37.2345f, 1.02f);
    osg::Vec3 baseRot(140.01f, -0.84f, -0.13f);
-   entity.SetLastKnownTranslation(basePos);
-   entity.SetLastKnownRotation(baseRot);
+   entity.GetDeadReckoningHelper().SetLastKnownTranslation(basePos);
+   entity.GetDeadReckoningHelper().SetLastKnownRotation(baseRot);
 
    // do a loop - 1000 times is better, but if everyone runs this, it will find it eventually.
    for (unsigned int counter = 0; counter < 250; counter ++)
@@ -878,8 +893,8 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       float randMult = dtUtil::RandFloat(0.001f, 2.003f);
       osg::Vec3 newPos = basePos * randMult;
       osg::Vec3 newRot = baseRot * randMult;
-      entity.SetLastKnownTranslation(newPos);
-      entity.SetLastKnownRotation(newRot);
+      entity.GetDeadReckoningHelper().SetLastKnownTranslation(newPos);
+      entity.GetDeadReckoningHelper().SetLastKnownRotation(newRot);
 
       // generate an update message 
       dtCore::RefPtr<dtGame::Message> updateMsg =
@@ -898,8 +913,8 @@ void BaseEntityActorProxyTests::TestEntityUpdateToFromStream()
       // Get pos & rot from the message
       eap->ApplyActorUpdate(*messageFromStream, false);
       osg::Vec3 posFromMessage, rotFromMessage;
-      posFromMessage = entity.GetLastKnownTranslation();
-      rotFromMessage = entity.GetLastKnownRotation();
+      posFromMessage = entity.GetDeadReckoningHelper().GetLastKnownTranslation();
+      rotFromMessage = entity.GetDeadReckoningHelper().GetLastKnownRotation();
 
       // compare values.
       std::ostringstream ss1;
@@ -976,10 +991,10 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
 
    osg::Vec3 setVec = osg::Vec3(1.0, 1.2, 1.3);
 
-   entity.SetLastKnownTranslation(setVec);
-   entity.SetLastKnownRotation(setVec);
-   entity.SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
-   entity.SetFlying(true);
+   entity.GetDeadReckoningHelper().SetLastKnownTranslation(setVec);
+   entity.GetDeadReckoningHelper().SetLastKnownRotation(setVec);
+   entity.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
+   entity.GetDeadReckoningHelper().SetFlying(true);
 
    dtCore::System::GetInstance().Step();
 
@@ -995,7 +1010,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
                   osg::equivalent(vec.z(), 0.0f, 1e-2f)
                   );
 
-   entity.SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
+   entity.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::STATIC);
    dtCore::System::GetInstance().Step();
 
    entity.GetTransform(xform);

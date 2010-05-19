@@ -26,6 +26,7 @@
 #include <SimCore/MessageType.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtGame/invokable.h>
+#include <dtGame/deadreckoninghelper.h>
 
 namespace SimCore
 {
@@ -125,10 +126,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void PlayerActor::InitDeadReckoningHelper()
+      void PlayerActor::BuildActorComponents()
       {
-         BaseClass::InitDeadReckoningHelper();
-         SetGroundOffset(3.0f);
+         BaseClass::BuildActorComponents(); 
+
+         // Initiaze Dead reckoning offset values after DR Act Component added
+         GetDeadReckoningHelper().SetGroundOffset(3.0f);
       }
    }
 }

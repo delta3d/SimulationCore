@@ -808,7 +808,7 @@ namespace NetDemo
 
       if (mPhysVehicle != NULL)
       {
-         if (mPhysVehicle->IsFlying())
+         if (mPhysVehicle->GetDeadReckoningHelper().IsFlying())
          {
             LOG_ALWAYS("TEST -- Toggling - ENABLE ground clamping for DR. ");
          }
@@ -816,7 +816,8 @@ namespace NetDemo
          {
             LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
          }
-         mPhysVehicle->SetFlying(!mPhysVehicle->IsFlying());
+         mPhysVehicle->GetDeadReckoningHelper().SetFlying(
+            !mPhysVehicle->GetDeadReckoningHelper().IsFlying());
       }
 
    }

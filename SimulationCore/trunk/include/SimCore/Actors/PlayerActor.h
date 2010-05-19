@@ -62,7 +62,8 @@ namespace SimCore
             ///Method to handle the enable/disable tool message.
             void EnableTool(const dtGame::Message &msg);
 
-            virtual void InitDeadReckoningHelper();
+            /// Overridden - sets init values
+            virtual void BuildActorComponents();
 
          private:
 

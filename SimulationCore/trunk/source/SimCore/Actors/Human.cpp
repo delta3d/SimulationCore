@@ -159,7 +159,7 @@ namespace SimCore
                   //update our velocity vector
                   if(mParentHuman.valid())
                   {
-                     mSpeed = mParentHuman->GetLastKnownVelocity().length();
+                     mSpeed = mParentHuman->GetDeadReckoningHelper().GetLastKnownVelocity().length();
                      //std::cout << "Human Speed: " << mSpeed << std::endl;
                   }
                   else
@@ -603,7 +603,7 @@ namespace SimCore
             animComponent->RegisterActor(GetGameActorProxy(), *mAnimationHelper);
          }
 
-         RegisterWithDeadReckoningComponent();
+         //RegisterWithDeadReckoningComponent(); // Now handled in base class
          GetDeadReckoningHelper().SetUseModelDimensions(false);
          GetDeadReckoningHelper().SetAdjustRotationToGround(false);
 
@@ -645,14 +645,14 @@ namespace SimCore
                << "Stance:  \"" << GetStance().GetName()
                << "\"\n Primary Weapon: \"" << GetPrimaryWeaponState().GetName()
                << "\"\n Damage: \"" << GetDamageState().GetName()
-               << "\"\n Velocity: \"" << GetLastKnownVelocity() << "\"\n";
-               ExecuteActionCountMap::const_iterator i, iend;
-               i = mExecutedActionCounts.begin();
-               iend = mExecutedActionCounts.end();
-               for (; i != iend; ++i)
-               {
-                  ss << i->first->GetName() << ": \"" << i->second << "\" \n";
-               }
+               << "\"\n Velocity: \"" << GetDeadReckoningHelper().GetLastKnownVelocity() << "\"\n";
+            ExecuteActionCountMap::const_iterator i, iend;
+            i = mExecutedActionCounts.begin();
+            iend = mExecutedActionCounts.end();
+            for (; i != iend; ++i)
+            {
+               ss << i->first->GetName() << ": \"" << i->second << "\" \n";
+            }
             mLogger.LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__, ss.str());
          }
          return false;
@@ -828,7 +828,7 @@ namespace SimCore
 
          //This requires that plans be made in one frame.
          //Moving is the same as the velocity > 0.
-         if (movingState->Get() != !dtUtil::Equivalent(GetLastKnownVelocity().length2(), 0.0f))
+         if (movingState->Get() != !dtUtil::Equivalent(GetDeadReckoningHelper().GetLastKnownVelocity().length2(), 0.0f))
             return false;
 
          bool actionStateResult =
