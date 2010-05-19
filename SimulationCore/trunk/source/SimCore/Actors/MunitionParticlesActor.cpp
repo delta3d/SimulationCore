@@ -259,25 +259,10 @@ namespace SimCore
          std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
          for (;iter!= mOurParticleList.end();)
          {
-   // DG - the physics object does not seem to be needed.
-   //#ifdef AGEIA_PHYSICS
-   //         dtPhysics::PhysicsObject* object = (*iter)->GetPhysicsObject();
-   //#else
-   //         dtPhysics::PhysicsObject* object = (*iter)->GetPhysicsObject();
-   //#endif
             MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>((*iter).get());
 
    //         if (object == NULL)
    //            continue;
-
-            // CURT HACK FOR IPT 2 - DISABLED FORCE ON MUNITIONS
-            /*if(false && mApplyForces)
-            {
-               object->addForce(
-                  NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]),
-                           GetRandBetweenTwoFloats(mForceVectorMax[1], mForceVectorMin[1]),
-                           GetRandBetweenTwoFloats(mForceVectorMax[2], mForceVectorMin[2])));
-            }*/
 
             (*iter)->UpdateTime(ElapsedTime);
 

@@ -149,16 +149,6 @@ void PhysicsParticleSystemActor::TickLocal(const dtGame::Message &tickMessage)
    std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
    for(;iter!= mOurParticleList.end();)
    {
-      // CURT HACK FOR IPT 2 - DISABLED FORCE ON MUNITIONS
-      /* if(false && mApplyForces)
-      {
-         dtPhysics::PhysicsObject* physXActor = (*iter)->GetPhysicsActor();
-         physXActor->addForce(
-            NxVec3(  GetRandBetweenTwoFloats(mForceVectorMax[0], mForceVectorMin[0]),
-                     GetRandBetweenTwoFloats(mForceVectorMax[1], mForceVectorMin[1]),
-                     GetRandBetweenTwoFloats(mForceVectorMax[2], mForceVectorMin[2])));
-      }*/
-
       (*iter)->UpdateTime(ElapsedTime);
       if((*iter)->ShouldBeRemoved())
       {
