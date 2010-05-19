@@ -95,6 +95,15 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////
+      void HumanWithPhysicsActor::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         // We don't want the human to lean sideways, regardless of what is sent. It looks stupid
+         GetDeadReckoningHelper().SetForceUprightRotation(true);
+      }
+
+      ////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
          mNotifyChangePosition = false;
@@ -206,12 +215,13 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void HumanWithPhysicsActor::SetLastKnownRotation(const osg::Vec3 &vec)
-      {
-         Human::SetLastKnownRotation( osg::Vec3( vec.x(), 0.0f, 0.0f) );
-      }
+      //void HumanWithPhysicsActor::SetLastKnownRotation(const osg::Vec3 &vec)
+      //{
+      //   Human::SetLastKnownRotation( osg::Vec3( vec.x(), 0.0f, 0.0f) );
+      //}
 
-      ////////////////////////////////////////////////////////////////////////////////////
+
+/*      ////////////////////////////////////////////////////////////////////////////////////
       void HumanWithPhysicsActor::SetLastKnownTranslation(const osg::Vec3 &vec)
       {
 #ifdef AGEIA_PHYSICS
@@ -233,6 +243,7 @@ namespace SimCore
             Human::SetLastKnownTranslation(osg::Vec3(vec[0], vec[1], vec[2]));
       }
 
+      */
       /*
       ////////////////////////////////////////////////////////////////////////////////////
       bool HumanWithPhysicsActor::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)

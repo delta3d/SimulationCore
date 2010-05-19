@@ -134,15 +134,9 @@ namespace SimCore
       }
 
 
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION("Last Known Translation");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION("Last Known Rotation");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR("Velocity Vector");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR("Acceleration Vector");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR("Angular Velocity Vector");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FROZEN("Frozen");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLAMES_PRESENT("FlamesPresent");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_SMOKE_PLUME_PRESENT("SmokePlumePresent");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FLYING("Flying");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DAMAGE_STATE("Damage State");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAX_DAMAGE_AMOUNT("Max Damage Amount");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_CUR_DAMAGE_RATIO("Cur Damage Ratio");
@@ -154,19 +148,16 @@ namespace SimCore
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_ENTITY_TYPE_ID("Entity Type Id");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_MAPPING_NAME("Object Mapping Name");
       const dtUtil::RefString BaseEntityActorProxy::PROPERTY_FORCE("Force Affiliation");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_GROUND_OFFSET("Ground Offset");
-      const dtUtil::RefString BaseEntityActorProxy::PROPERTY_DEAD_RECKONING_ALGORITHM("Dead Reckoning Algorithm");
 
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::GetPartialUpdateProperties(std::vector<dtUtil::RefString>& propNamesToFill)
       {
-         propNamesToFill.reserve(propNamesToFill.size() + 4U);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ANGULAR_VELOCITY_VECTOR);
-         propNamesToFill.push_back(BaseEntityActorProxy::PROPERTY_ACCELERATION_VECTOR);
+         // Add the properties for dead reckoning such as last known translation, etc...
+         BaseEntity& e = static_cast<BaseEntity&>(GetGameActor());
+         e.GetDeadReckoningHelper().GetPartialUpdateProperties(propNamesToFill);
+
+         // Add your own properties that you want to publish with EVERY partial update (ie very often)
       }
 
 
@@ -183,35 +174,57 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<BaseEntityActorProxy&, BaseEntity> PropRegType;
          PropRegType propRegHelper(*this, &e, "Base Entity");
 
-         static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last known position of this BaseEntity. Do not change by hand.");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownTranslation),
-            PROPERTY_LAST_KNOWN_TRANSLATION_DESC, DEAD_RECKONING_GROUP));
+         //static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION_DESC("Sets the last known position of this BaseEntity. Do not change by hand.");
+         //AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_TRANSLATION, PROPERTY_LAST_KNOWN_TRANSLATION,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownTranslation),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownTranslation),
+         //   PROPERTY_LAST_KNOWN_TRANSLATION_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION_DESC("Sets the last known rotation of this BaseEntity. Do not change by hand.");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_ROTATION, PROPERTY_LAST_KNOWN_ROTATION,
-            dtDAL::MakeFunctor(*this, &BaseEntityActorProxy::SetLastKnownRotation),
-            dtDAL::MakeFunctorRet(*this, &BaseEntityActorProxy::GetLastKnownRotation),
-            PROPERTY_LAST_KNOWN_ROTATION_DESC, DEAD_RECKONING_GROUP));
+         //static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION_DESC("Sets the last known rotation of this BaseEntity. Do not change by hand.");
+         //AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_LAST_KNOWN_ROTATION, PROPERTY_LAST_KNOWN_ROTATION,
+         //   dtDAL::MakeFunctor(*this, &BaseEntityActorProxy::SetLastKnownRotation),
+         //   dtDAL::MakeFunctorRet(*this, &BaseEntityActorProxy::GetLastKnownRotation),
+         //   PROPERTY_LAST_KNOWN_ROTATION_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR_DESC("Sets the last known velocity vector of this BaseEntity. Do not change by hand.");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_VELOCITY_VECTOR, PROPERTY_VELOCITY_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownVelocity),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownVelocity),
-            PROPERTY_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
+         //static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR_DESC("Sets the last known velocity vector of this BaseEntity. Do not change by hand.");
+         //AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_VELOCITY_VECTOR, PROPERTY_VELOCITY_VECTOR,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownVelocity),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownVelocity),
+         //   PROPERTY_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR_DESC("Sets the last known acceleration vector of this BaseEntity. Do not change by hand.");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ACCELERATION_VECTOR, PROPERTY_ACCELERATION_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAcceleration),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAcceleration),
-            PROPERTY_ACCELERATION_VECTOR_DESC, DEAD_RECKONING_GROUP));
+         //static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR_DESC("Sets the last known acceleration vector of this BaseEntity. Do not change by hand.");
+         //AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ACCELERATION_VECTOR, PROPERTY_ACCELERATION_VECTOR,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAcceleration),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAcceleration),
+         //   PROPERTY_ACCELERATION_VECTOR_DESC, DEAD_RECKONING_GROUP));
 
-         static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC("Sets the last known angular velocity vector of this BaseEntity. Do not change by hand.");
-         AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ANGULAR_VELOCITY_VECTOR, PROPERTY_ANGULAR_VELOCITY_VECTOR,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAngularVelocity),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAngularVelocity),
-            PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
+         //static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC("Sets the last known angular velocity vector of this BaseEntity. Do not change by hand.");
+         //AddProperty(new dtDAL::Vec3ActorProperty(PROPERTY_ANGULAR_VELOCITY_VECTOR, PROPERTY_ANGULAR_VELOCITY_VECTOR,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetLastKnownAngularVelocity),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetLastKnownAngularVelocity),
+         //   PROPERTY_ANGULAR_VELOCITY_VECTOR_DESC, DEAD_RECKONING_GROUP));
+
+         //static const dtUtil::RefString PROPERTY_DEAD_RECKONING_ALGORITHM_DESC("Sets the enumerated dead reckoning algorithm to use.");
+         //AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>(
+         //   PROPERTY_DEAD_RECKONING_ALGORITHM, PROPERTY_DEAD_RECKONING_ALGORITHM,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetDeadReckoningAlgorithm),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetDeadReckoningAlgorithm),
+         //   PROPERTY_DEAD_RECKONING_ALGORITHM_DESC, BASE_ENTITY_GROUP));
+
+         //static const dtUtil::RefString PROPERTY_FLYING_DESC
+         //   ("Flags if the dead-reckoning code should not make this actor follow the ground as it moves.");
+         //AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLYING, PROPERTY_FLYING,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetFlying),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetFlying),
+         //   PROPERTY_FLYING_DESC, BASE_ENTITY_GROUP));
+
+         //static const dtUtil::RefString PROPERTY_GROUND_OFFSET_DESC("Sets the offset from the ground "
+         //   "this entity should have.  This only matters if it is not flying.");
+         //AddProperty(new dtDAL::FloatActorProperty(PROPERTY_GROUND_OFFSET, PROPERTY_GROUND_OFFSET,
+         //   dtDAL::MakeFunctor(e, &BaseEntity::SetGroundOffset),
+         //   dtDAL::MakeFunctorRet(e, &BaseEntity::GetGroundOffset),
+         //   PROPERTY_GROUND_OFFSET_DESC, BASE_ENTITY_GROUP));
+
 
          REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
 
@@ -238,13 +251,6 @@ namespace SimCore
          dtDAL::ResourceDescriptor rdFire("Particles:fire.osg");
          rp->SetValue(rdFire);
          AddProperty(rp.get());
-
-         static const dtUtil::RefString PROPERTY_FLYING_DESC
-            ("Flags if the dead-reckoning code should not make this actor follow the ground as it moves.");
-         AddProperty(new dtDAL::BooleanActorProperty(PROPERTY_FLYING, PROPERTY_FLYING,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetFlying),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetFlying),
-            PROPERTY_FLYING_DESC, BASE_ENTITY_GROUP));
 
          static const dtUtil::RefString PROPERTY_DRAWING_MODEL_DESC
             ("Flags if this entity should draw it's model.  This is typically turned off if the entity has the player attached to it.");
@@ -282,25 +288,11 @@ namespace SimCore
             "Specifies the type of environment an entity is specialized in navigating.",
             BASE_ENTITY_GROUP));
 
-         static const dtUtil::RefString PROPERTY_DEAD_RECKONING_ALGORITHM_DESC("Sets the enumerated dead reckoning algorithm to use.");
-         AddProperty(new dtDAL::EnumActorProperty<dtGame::DeadReckoningAlgorithm>(
-                  PROPERTY_DEAD_RECKONING_ALGORITHM, PROPERTY_DEAD_RECKONING_ALGORITHM,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetDeadReckoningAlgorithm),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetDeadReckoningAlgorithm),
-            PROPERTY_DEAD_RECKONING_ALGORITHM_DESC, BASE_ENTITY_GROUP));
-
          static const dtUtil::RefString PROPERTY_FORCE_DESC("The force for which the entity is fighting.");
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ForceEnum>(PROPERTY_FORCE, PROPERTY_FORCE,
             dtDAL::MakeFunctor(e, &BaseEntity::SetForceAffiliation),
             dtDAL::MakeFunctorRet(e, &BaseEntity::GetForceAffiliation),
             PROPERTY_FORCE_DESC, BASE_ENTITY_GROUP));
-
-         static const dtUtil::RefString PROPERTY_GROUND_OFFSET_DESC("Sets the offset from the ground "
-                  "this entity should have.  This only matters if it is not flying.");
-         AddProperty(new dtDAL::FloatActorProperty(PROPERTY_GROUND_OFFSET, PROPERTY_GROUND_OFFSET,
-            dtDAL::MakeFunctor(e, &BaseEntity::SetGroundOffset),
-            dtDAL::MakeFunctorRet(e, &BaseEntity::GetGroundOffset),
-            PROPERTY_GROUND_OFFSET_DESC, BASE_ENTITY_GROUP));
 
          AddProperty(new dtDAL::EnumActorProperty<BaseEntityActorProxy::ServiceEnum>("Service", "Service",
             dtDAL::MakeFunctor(e, &BaseEntity::SetService),
@@ -425,21 +417,6 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntityActorProxy::SetLastKnownRotation(const osg::Vec3 &vec)
-      {
-         static_cast<BaseEntity&>(GetGameActor()).SetLastKnownRotation(osg::Vec3(vec[2], vec[0], vec[1]));
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntityActorProxy::GetLastKnownRotation() const
-      {
-         const BaseEntity &e = static_cast<const BaseEntity&>(GetGameActor());
-
-         const osg::Vec3& result = e.GetLastKnownRotation();
-         return osg::Vec3(result[1], result[2], result[0]);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntityActorProxy::NotifyFullActorUpdate()
       {
          // Remove the rot and trans from the full actor update.
@@ -484,9 +461,10 @@ namespace SimCore
          , mFirepowerDisabled(false)
          , mFrozen(false)
          , mAutoRegisterWithMunitionsComponent(true)
+         , mAutoRegisterWithDeadReckoningComponent(true)
          , mScaleMatrixNode(new osg::MatrixTransform)
          , mDeadReckoningHelper(NULL)
-         , mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
+         //, mDRAlgorithm(&dtGame::DeadReckoningAlgorithm::NONE)
          , mDamageState(&BaseEntityActorProxy::DamageStateEnum::NO_DAMAGE)
          , mDefaultScale(1.0f, 1.0f, 1.0f)
          , mScaleMagnification(1.0f, 1.0f, 1.0f)
@@ -522,30 +500,34 @@ namespace SimCore
       IMPLEMENT_PROPERTY(BaseEntity, bool, FirepowerDisabled);
       IMPLEMENT_PROPERTY(BaseEntity, bool, Frozen);
       IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
+      IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithDeadReckoningComponent);
       IMPLEMENT_PROPERTY(BaseEntity, std::string, MunitionDamageTableName);
-
-      ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::InitDeadReckoningHelper()
-      {
-         mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
-
-         mDeadReckoningHelper->SetFlying(false);
-
-         // attempt to fix the z-fighting on treads and wheels that are
-         // very close to the ground. We move the vehicle up about 3-4 inches...
-         mDeadReckoningHelper->SetGroundOffset(0.09);
-      }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::BuildActorComponents()
       {
          BaseClass::BuildActorComponents();
 
-         InitDeadReckoningHelper();
+         // DEAD RECKONING - ACT COMPONENT
+         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
+         {
+            mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
+            mDeadReckoningHelper->SetFlying(false); // Causes ground clamping by default
+            // attempt to fix the z-fighting on treads and wheels that are
+            // very close to the ground. We move the vehicle up about 3-4 inches...
+            mDeadReckoningHelper->SetGroundOffset(0.09);
+            AddComponent(*mDeadReckoningHelper);
+         }
 
-         mDRPublishingActComp = new DRPublishingActComp();
-         AddComponent(*mDRPublishingActComp);
-         mDRPublishingActComp->SetDeadReckoningHelper(&GetDeadReckoningHelper());
+
+         // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
+         if (!HasComponent(DRPublishingActComp::TYPE)) // not added by a subclass
+         {
+            mDRPublishingActComp = new DRPublishingActComp();
+            // CURT - Remove the set here once the DR Helper is an Act Comp
+            //mDRPublishingActComp->SetDeadReckoningHelper(&GetDeadReckoningHelper());
+            AddComponent(*mDRPublishingActComp);  // Add AFTER the DRhelper.
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -559,10 +541,10 @@ namespace SimCore
             GetTransform(xform);
             osg::Vec3 pos;
             xform.GetTranslation(pos);
-            SetLastKnownTranslation(pos);
+            GetDeadReckoningHelper().SetLastKnownTranslation(pos);
             osg::Vec3 rot;
             xform.GetRotation(rot);
-            SetLastKnownRotation(rot);
+            GetDeadReckoningHelper().SetLastKnownRotation(rot);
 
             // Local entities usually need the ability to take damage. So, register with the munitions component.
             if (mAutoRegisterWithMunitionsComponent)
@@ -576,6 +558,11 @@ namespace SimCore
                   munitionsComp->Register(*this, false, GetMaxDamageAmount());
                }
             }
+         }
+
+         if (mAutoRegisterWithDeadReckoningComponent)
+         {
+            RegisterWithDeadReckoningComponent();
          }
 
          // The MaxTransSmoothingTime is usually set, but there are very obscure cases where it might
@@ -598,10 +585,11 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetDeadReckoningHelper(dtGame::DeadReckoningHelper* pHelper)
-      {
-         mDeadReckoningHelper = pHelper;
-      }
+      //void BaseEntity::SetDeadReckoningHelper(dtGame::DeadReckoningHelper* pHelper)
+      //   // CURT - Remove this or Refactor
+      //{
+      //   mDeadReckoningHelper = pHelper;
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
       BaseEntityActorProxy::DamageStateEnum& BaseEntity::GetDamageState() const
@@ -620,6 +608,7 @@ namespace SimCore
          CauseFullUpdate();
       }
 
+      /*
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm& newAlgorithm)
       {
@@ -632,60 +621,61 @@ namespace SimCore
       {
          return *mDRAlgorithm;
       }
+      */
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownTranslation(const osg::Vec3& vec)
-      {
-         mDeadReckoningHelper->SetLastKnownTranslation(vec);
-      }
+      //void BaseEntity::SetLastKnownTranslation(const osg::Vec3& vec)
+     // {
+      //   mDeadReckoningHelper->SetLastKnownTranslation(vec);
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownRotation(const osg::Vec3& vec)
-      {
-         mDeadReckoningHelper->SetLastKnownRotation(vec);
-      }
+      //void BaseEntity::SetLastKnownRotation(const osg::Vec3& vec)
+     // {
+      //   mDeadReckoningHelper->SetLastKnownRotation(vec);
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownVelocity(const osg::Vec3& vec)
-      {
-         mDeadReckoningHelper->SetLastKnownVelocity(vec);
-      }
+      //void BaseEntity::SetLastKnownVelocity(const osg::Vec3& vec)
+      //{
+      //   mDeadReckoningHelper->SetLastKnownVelocity(vec);
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetLastKnownVelocity() const
-      {
-         return mDeadReckoningHelper->GetLastKnownVelocity();
-      }
+      //osg::Vec3 BaseEntity::GetLastKnownVelocity() const
+      //{
+      //   return mDeadReckoningHelper->GetLastKnownVelocity();
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownAcceleration(const osg::Vec3& vec)
-      {
-         mDeadReckoningHelper->SetLastKnownAcceleration(vec);
-      }
+      //void BaseEntity::SetLastKnownAcceleration(const osg::Vec3& vec)
+     // {
+      //   mDeadReckoningHelper->SetLastKnownAcceleration(vec);
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetLastKnownAcceleration() const
-      {
-         return mDeadReckoningHelper->GetLastKnownAcceleration();
-      }
+      //osg::Vec3 BaseEntity::GetLastKnownAcceleration() const
+      //{
+       //  return mDeadReckoningHelper->GetLastKnownAcceleration();
+     // }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetLastKnownAngularVelocity(const osg::Vec3 &vec)
-      {
-         mDeadReckoningHelper->SetLastKnownAngularVelocity(vec);
-      }
+      //void BaseEntity::SetLastKnownAngularVelocity(const osg::Vec3 &vec)
+      //{
+       //  mDeadReckoningHelper->SetLastKnownAngularVelocity(vec);
+     // }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      osg::Vec3 BaseEntity::GetLastKnownAngularVelocity() const
-      {
-         return mDeadReckoningHelper->GetLastKnownAngularVelocity();
-      }
+      //osg::Vec3 BaseEntity::GetLastKnownAngularVelocity() const
+      //{
+      //   return mDeadReckoningHelper->GetLastKnownAngularVelocity();
+      //}
       
       ////////////////////////////////////////////////////////////////////////////////////
-      bool BaseEntity::GetFlying() const
-      {
-         return mDeadReckoningHelper->IsFlying();
-      }
+      //bool BaseEntity::GetFlying() const
+      //{
+      //   return mDeadReckoningHelper->IsFlying();
+      //}
 
       ////////////////////////////////////////////////////////////////////////////////////
       DRPublishingActComp* BaseEntity::GetDRPublishingActComp()
@@ -693,6 +683,7 @@ namespace SimCore
          return mDRPublishingActComp.get();
       }
 
+      /*
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlying(bool newFlying)
       {
@@ -704,6 +695,7 @@ namespace SimCore
 
          CauseFullUpdate();
       }
+      */
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetFlamesPresent(bool enable)
@@ -769,6 +761,7 @@ namespace SimCore
          CauseFullUpdate();
       }
 
+      ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetSmokePlumePresent(bool enable)
       {
          if (mSmokePlumePresent == enable)
@@ -806,6 +799,16 @@ namespace SimCore
          GetGameActorProxy().GetGameManager()->
             GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drc);
 
+         // We have to have a DR helper to add the component
+         if (!IsDeadReckoningHelperValid())
+         {
+            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+               "Actor \"%s\"\"%s\" does not have a DeadReckoningHelper.",
+               GetName().c_str(), GetUniqueId().ToString().c_str());
+
+            return;
+         }
+
          if (drc != NULL)
          {
             drc->RegisterActor(GetGameActorProxy(), GetDeadReckoningHelper());
@@ -816,6 +819,7 @@ namespace SimCore
                "Actor \"%s\"\"%s\" unable to find DeadReckoningComponent.",
                GetName().c_str(), GetUniqueId().ToString().c_str());
          }
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -844,6 +848,7 @@ namespace SimCore
          return *mScaleMatrixNode;
       }
 
+      /*
       ////////////////////////////////////////////////////////////////////////////////////
       float BaseEntity::GetGroundOffset() const
       {
@@ -867,6 +872,7 @@ namespace SimCore
       {
          return mDeadReckoningHelper->GetLastKnownRotation();
       }
+      */
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDefaultScale(const osg::Vec3& newDefScale)

@@ -764,7 +764,7 @@ namespace SimCore
             GetDeadReckoningHelper().SetUpdateMode(dtGame::DeadReckoningHelper::UpdateMode::CALCULATE_ONLY);
          }
 
-         RegisterWithDeadReckoningComponent();
+         //RegisterWithDeadReckoningComponent(); // moved to base class.
 
          //// Curt - bump mapping
          dtCore::ShaderProgram *defaultShader = dtCore::ShaderManager::GetInstance().

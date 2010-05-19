@@ -234,7 +234,8 @@ namespace SimCore
             AddChild( mParticles.get() );
             RegisterParticleSystem( *mParticles );
 
-            RegisterWithDeadReckoningComponent();
+            // Now handled in base class.
+            //RegisterWithDeadReckoningComponent();
 
 
             //to make an illumination round dynamic light we must note that

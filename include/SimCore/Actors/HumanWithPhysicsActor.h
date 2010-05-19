@@ -60,6 +60,9 @@ namespace SimCore
             /// Destructor
             virtual ~HumanWithPhysicsActor();
 
+            /// Overridden to force upright rotations on the Dead Reckoning Helper
+            void BuildActorComponents();
+
             /**
             * This method is an invokable called when an object is local and
             * receives a tick.
@@ -82,8 +85,9 @@ namespace SimCore
             // You can respond to OnEnteredWorld on either the proxy or actor or both.
             virtual void OnEnteredWorld();
 
-            virtual void SetLastKnownRotation(const osg::Vec3& vec);
-            virtual void SetLastKnownTranslation(const osg::Vec3& vec);
+            // CURT
+            //virtual void SetLastKnownRotation(const osg::Vec3& vec);
+            //virtual void SetLastKnownTranslation(const osg::Vec3& vec);
 
             //virtual bool ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate);
 

@@ -229,7 +229,7 @@ namespace SimCore
                envActor->AddActor(*mArrowGlobalParentNode);
 
                // Make this a settable value.
-               dtCore::Transform xform(0.0f, 0.0f, 1.5f, 0.0f, 0.0f, 0.0f);
+               dtCore::Transform xform(0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 0.0f);
                mArrowGlobalParentNode->SetTransform(xform);
             }
             else 
@@ -317,11 +317,11 @@ namespace SimCore
             osg::Vec3 ghostPos = xform.GetTranslation();
 
             // Update one of our Velocity Lines
-            osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
+            osg::Vec3 velocity = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity();
             SetCurrentLine(*mVelocityArrowGeom.get(), ghostPos, velocity);
 
             // Update one of our Acceleration Lines
-            osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
+            osg::Vec3 acceleration = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownAcceleration();
             SetCurrentLine(*mAccelerationArrowGeom.get(), ghostPos, acceleration);
 
             mArrowCurrentIndex = (mArrowCurrentIndex + 1) % mArrowMaxNumTrails;
@@ -418,8 +418,8 @@ namespace SimCore
             // Hack Test Debug prints just to check Vel and Accel
             //if (mSlavedEntity.valid())
             //{
-            //   osg::Vec3 velocity = mSlavedEntity->GetLastKnownVelocity();
-            //   osg::Vec3 acceleration = mSlavedEntity->GetLastKnownAcceleration();
+            //   osg::Vec3 velocity = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownVelocity();
+            //   osg::Vec3 acceleration = mSlavedEntity->GetDeadReckoningHelper().GetLastKnownAcceleration();
             //   std::cout << "Ghost - Updated - Vel[" << velocity << 
             //      "], Accel[" << acceleration << "]." << std::endl;
             //}

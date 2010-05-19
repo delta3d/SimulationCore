@@ -31,6 +31,7 @@
 #include <dtGame/gameactor.h>
 #include <dtCore/transform.h>
 #include <osg/Geode>
+//#include <iostream>
 
 
 namespace SimCore
@@ -42,8 +43,9 @@ namespace SimCore
       const float DRPublishingActComp::TIME_BETWEEN_UPDATES(10.0f);
 
       ////////////////////////////////////////////////////////////////////////////////
-      DRPublishingActComp::DRPublishingActComp()
+      DRPublishingActComp::DRPublishingActComp(bool requiresDRHelper/*=true*/)
          : ActorComponent(TYPE)
+         , mRequiresDRHelper(requiresDRHelper)
          , mTimeUntilNextFullUpdate(0.0f)
          , mVelocityAverageFrameCount(1U)
          , mMaxUpdateSendRate(5.0f)
@@ -80,13 +82,9 @@ namespace SimCore
 
       IMPLEMENT_PROPERTY(DRPublishingActComp, bool, PublishAngularVelocity);
 
-
       ////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::OnAddedToActor(dtGame::GameActor& actor)
       {
-         // The base class may have overwritten our update rate values - or they may not have been set yet due to Init order
-         SetMaxUpdateSendRate(GetMaxUpdateSendRate());
-
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -99,24 +97,16 @@ namespace SimCore
       void DRPublishingActComp::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
 
-         // We can't do anything without a helper, and it's possible it is going to get set later or
-         // because it's an observer pointer, maybe it has gone away.
-         if (!IsDeadReckoningHelperValid())
-         {
-            return; 
-         }
-
          double elapsedTime = tickMessage.GetDeltaSimTime();
+         bool forceUpdate = false;
+         bool fullUpdate = false;
 
-         // UPDATE OUR DR VALUES         
+         // UPDATE OUR DR TIME
          mTimeUntilNextFullUpdate -= elapsedTime;
          mSecsSinceLastUpdateSent += elapsedTime; // We can only send out an update so many times a second.
 
          dtGame::GameActor* actor;
          GetOwner(actor);
-
-         bool forceUpdate = false;
-         bool fullUpdate = false;
 
          dtCore::Transform xform;
          actor->GetTransform(xform);
@@ -125,11 +115,11 @@ namespace SimCore
          osg::Vec3 pos;
          xform.GetTranslation(pos);
 
+         // Have to update instant velocity even if we don't publish
          ComputeCurrentVelocity(elapsedTime, pos, rot);
 
          if (mTimeUntilNextFullUpdate <= 0.0f)
          {
-            mTimeUntilNextFullUpdate = 1.05f * TIME_BETWEEN_UPDATES;
             fullUpdate = true;
             forceUpdate = true;
          }
@@ -142,9 +132,18 @@ namespace SimCore
          }
          else if (!fullUpdate)
          {
+            // The normal case. The one that makes the decision most of the time. 
             forceUpdate = ShouldForceUpdate(pos, rot);
          }
 
+         // If the extra settings on DR Helper changed (like flying), then we need a full update
+         if (IsDeadReckoningHelperValid() && GetDeadReckoningHelper().IsExtraDataUpdated())
+         {
+            forceUpdate = true;
+            fullUpdate = true;
+
+            GetDeadReckoningHelper().SetExtraDataUpdated(false);
+         }
 
          if (forceUpdate)
          {
@@ -166,12 +165,14 @@ namespace SimCore
             // The logic should cause an update at between 9.5 - 10.5 seconds assuming a 10s heart beat
             if (!fullUpdate && mTimeUntilNextFullUpdate < TIME_BETWEEN_UPDATES * 0.1f)
             {
-               mTimeUntilNextFullUpdate = 1.05f * TIME_BETWEEN_UPDATES;
                fullUpdate = true;
             }
 
             if (fullUpdate)
             {
+               // Reset our timer.
+               ResetFullUpdateTimer(false);
+
                actor->GetGameActorProxy().NotifyFullActorUpdate();
             }
             else
@@ -193,10 +194,26 @@ namespace SimCore
          {
             RegisterForTicks();
 
-            // We publish full updates periodically, but we want to randomize their start point, 
-            // so all actors loaded in a map don't do full updates on the same frame. 
-            mTimeUntilNextFullUpdate = TIME_BETWEEN_UPDATES - 0.5f * dtUtil::RandFloat(0.0f, TIME_BETWEEN_UPDATES);
+            ResetFullUpdateTimer(true);
          }
+
+         // Lookup the DR Helper from our actor. If we need it, and don't have it, then report an error one time.
+         // This flag allows developers to use the DRPublishing component to JUST do heartbeats, without actual Dead reckoning
+         if (mRequiresDRHelper && !IsDeadReckoningHelperValid())
+         {
+            dtGame::DeadReckoningHelper* deadReckoningHelper;
+            actor->GetComponent(deadReckoningHelper);
+            mDeadReckoningHelper = deadReckoningHelper;
+            if (!mDeadReckoningHelper.valid())
+            {
+               std::string error = std::string("Actor [") + actor->GetName() + "] is setup to use a Dead Reckoning Helper in the DRPublishingActComp but doesn't have one. If you want one, add it before adding this component. If you don't want one, pass false to the constructor.";
+               LOGN_ERROR("DRPublishingActComp.cpp", error);
+            }
+         }
+
+         // Now that we have a dead reckoning helper, we need to call our set update send rate 
+         // method because it initializes the DR Helper smoothing times. 
+         SetMaxUpdateSendRate(GetMaxUpdateSendRate());
 
       }
 
@@ -211,6 +228,8 @@ namespace SimCore
          {
             UnregisterForTicks();
          }
+
+         mDeadReckoningHelper = NULL;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -223,22 +242,9 @@ namespace SimCore
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(VelocityAverageFrameCount, "VelocityAveragingFrameCount", "Velocity Averaging Frame Count",
             "This actor computes it's current velocity by averaging the change in position over the given number of frames.", PropRegType, propRegHelper);
-         //static const dtUtil::RefString VEL_AVG_FRAME_COUNT_DESC("This actor computes it's current velocity by averaging the change in position over the given number of frames.");
-         //AddProperty(new dtDAL::IntActorProperty(PROP_VEL_AVG_FRAME_COUNT, PROP_VEL_AVG_FRAME_COUNT,
-         //   dtDAL::IntActorProperty::SetFuncType(this &DRPublishingActComp::SetVelocityAverageFrameCount),
-         //   dtDAL::IntActorProperty::GetFuncType(this, &DRPublishingActComp::GetVelocityAverageFrameCount),
-         //   VEL_AVG_FRAME_COUNT_DESC,
-         //   GROUPNAME));
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(MaxUpdateSendRate, "DesiredNumUpdatesPerSec", "Desired Number of Updates Per Second",
             "The desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.", PropRegType, propRegHelper);
-         //AddProperty(new dtDAL::FloatActorProperty("DesiredNumUpdatesPerSec",
-         //   ,
-         //   dtDAL::FloatActorProperty::SetFuncType(this, &DRPublishingActComp::SetMaxUpdateSendRate),
-         //  dtDAL::FloatActorProperty::GetFuncType(this, &DRPublishingActComp::GetMaxUpdateSendRate),
-         //   ,
-         //   GROUPNAME));
-
       }
 
       //////////////////////////////////////////////////////////////////////
@@ -285,18 +291,6 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
-      //float DRPublishingActComp::GetMaxUpdateSendRate()
-      //{
-      //   return mMaxUpdateSendRate;
-      //}
-
-      //////////////////////////////////////////////////////////////////////
-      //void DRPublishingActComp::SetVelocityMagnitudeUpdateThreshold(float thresh)
-      //{
-      //   mVelocityMagThreshold = thresh;
-      //}
-
-      //////////////////////////////////////////////////////////////////////
       float DRPublishingActComp::GetVelocityMagnitudeUpdateThreshold() const
       {
          return mVelocityMagThreshold;
@@ -313,19 +307,6 @@ namespace SimCore
       {
          return mVelocityMagThreshold;
       }
-
-      //////////////////////////////////////////////////////////////////////
-      //void DRPublishingActComp::SetVelocityAverageFrameCount(int count)
-      //{
-      //   mVelocityAverageFrameCount = dtUtil::Max(1, count);
-      //}
-
-      //////////////////////////////////////////////////////////////////////
-      //int DRPublishingActComp::GetVelocityAverageFrameCount() const
-      //{
-      //   return mVelocityAverageFrameCount;
-      //}
-
 
       //////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::SetUseVelocityInDRUpdateDecision(bool value)
@@ -407,6 +388,19 @@ namespace SimCore
          return mTimeUntilNextFullUpdate; 
       }
 
+      ////////////////////////////////////////////////////////////////////////////////
+      void DRPublishingActComp::ResetFullUpdateTimer(bool doRandomOffset)
+      {
+         mTimeUntilNextFullUpdate = 1.05f * TIME_BETWEEN_UPDATES;
+
+         if (doRandomOffset)
+         {
+            // We publish full updates periodically, but we want to randomize their start point, 
+            // so all actors loaded in a map don't do full updates on the same frame. 
+            mTimeUntilNextFullUpdate -= 0.5f * dtUtil::RandFloat(0.0f, TIME_BETWEEN_UPDATES);
+         }
+      }
+
       ///////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::SetAccumulatedAcceleration(const osg::Vec3 &newValue)
       { 
@@ -441,10 +435,14 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::SetLastKnownValuesBeforePublish(const osg::Vec3& pos, const osg::Vec3& rot)
       {
+         // We can't do this without a helper. Reported as an error in OnEnteredWorld().
+         if (!IsDeadReckoningHelperValid())
+         {
+            return; 
+         }
 
          GetDeadReckoningHelper().SetLastKnownTranslation(pos);
          GetDeadReckoningHelper().SetLastKnownRotation(rot);
-
 
 
          // Linear Velocity & acceleration - push the current value to the Last Known
@@ -492,19 +490,19 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::ComputeCurrentVelocity(float deltaTime, const osg::Vec3& pos, const osg::Vec3& rot)
       {
+         // We can't do this without a helper. Reported as an error in OnEnteredWorld().
+         if (!IsDeadReckoningHelperValid())
+         {
+            return; 
+         }
+
          if (mPublishLinearVelocity) // If not publishing, then don't do anything.
          {
-            // Note - we used to grab the velocity from the physics engines, but there were sometimes 
-            // discontinuities reported by the various engines, so that was removed in favor of a simple
-            // differential of position. 
-            //dtGame::GameActor* actor;
-            //GetOwner(actor);
-            //dtCore::Transform xform;
-            //actor->GetTransform(xform);
-            //osg::Vec3 pos;
-            //xform.GetTranslation(pos);
             if (deltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
             {
+               // Note - we used to grab the velocity from the physics engines, but there were sometimes 
+               // discontinuities reported by the various engines, so that was removed in favor of a simple
+               // differential of position. 
                osg::Vec3 distanceMoved = pos - mLastPos;
                osg::Vec3 instantVelocity = distanceMoved / deltaTime;
 
@@ -544,15 +542,18 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       bool DRPublishingActComp::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot)
       {
+         // We can't do this without a helper. Reported as an error in OnEnteredWorld().
+         if (!IsDeadReckoningHelperValid())
+         {
+            return false; 
+         }
+
          bool forceUpdateResult = false; // if full update set, we assume we will publish
          bool enoughTimeHasPassed = (mMaxUpdateSendRate > 0.0f &&
             (mSecsSinceLastUpdateSent >= 1.0f / mMaxUpdateSendRate));
 
          if (enoughTimeHasPassed)
          {
-            //// PREVIOUSLY THIS PART WAS IN BASE ENTITY
-            //forceUpdateResult = Platform::ShouldForceUpdate(pos, rot, fullUpdate);
-
             // If no DR is occuring, then we don't want to check.
             if (GetDeadReckoningHelper().GetDeadReckoningAlgorithm() != dtGame::DeadReckoningAlgorithm::NONE)
             {

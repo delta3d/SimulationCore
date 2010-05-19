@@ -76,10 +76,6 @@ namespace SimCore
 
          dtActors::ParticleSystemActorProxy* GetSmokeTrail();
 
-         void SetLastKnownTranslation(const osg::Vec3& vec);
-
-         void SetLastKnownRotation(const osg::Vec3& vec);
-
          void ScheduleSmokeTrailDelete();
 
       protected:

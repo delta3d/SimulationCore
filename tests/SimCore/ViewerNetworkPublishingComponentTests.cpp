@@ -42,6 +42,7 @@
 #include <dtGame/exceptionenum.h>
 #include <dtGame/messagetype.h>
 #include <dtGame/actorupdatemessage.h>
+#include <dtGame/deadreckoninghelper.h>
 
 #include <dtCore/system.h>
 #include <dtCore/deltawin.h>
@@ -119,18 +120,18 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          std::vector<dtUtil::RefString> params;
 
-         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
-         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
+         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
-         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_ROTATION);
+         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
 
          InternalTestStealthActorMessages(true, params);
 
          params.clear();
-         params.push_back(SimCore::Actors::BaseEntityActorProxy::PROPERTY_LAST_KNOWN_TRANSLATION);
+         params.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
 
          InternalTestStealthActorMessages(true, params);
 
@@ -171,8 +172,8 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
 
          //Must set both the last known and the actual values so the message and
          //and actor will match after being stepped
-         mStealthActor->SetLastKnownTranslation(testVec);
-         mStealthActor->SetLastKnownRotation(testRot);
+         mStealthActor->GetDeadReckoningHelper().SetLastKnownTranslation(testVec);
+         mStealthActor->GetDeadReckoningHelper().SetLastKnownRotation(testRot);
 
          dtCore::Transform xform;
          mStealthActor->GetTransform(xform, dtCore::Transformable::ABS_CS);

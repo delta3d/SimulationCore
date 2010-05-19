@@ -33,7 +33,7 @@
 namespace dtGame
 {
    class DeadReckoningComponent;
-   class DeadReckoningAlgorithm;
+   //class DeadReckoningAlgorithm;
    class DeadReckoningHelper;
 }
 
@@ -53,15 +53,9 @@ namespace SimCore
          public:
             typedef dtGame::GameActorProxy BaseClass;
 
-            static const dtUtil::RefString PROPERTY_LAST_KNOWN_TRANSLATION;
-            static const dtUtil::RefString PROPERTY_LAST_KNOWN_ROTATION;
-            static const dtUtil::RefString PROPERTY_VELOCITY_VECTOR;
-            static const dtUtil::RefString PROPERTY_ACCELERATION_VECTOR;
-            static const dtUtil::RefString PROPERTY_ANGULAR_VELOCITY_VECTOR;
             static const dtUtil::RefString PROPERTY_FROZEN;
             static const dtUtil::RefString PROPERTY_FLAMES_PRESENT;
             static const dtUtil::RefString PROPERTY_SMOKE_PLUME_PRESENT;
-            static const dtUtil::RefString PROPERTY_FLYING;
             static const dtUtil::RefString PROPERTY_DAMAGE_STATE;
             static const dtUtil::RefString PROPERTY_MAX_DAMAGE_AMOUNT;
             static const dtUtil::RefString PROPERTY_CUR_DAMAGE_RATIO;
@@ -73,8 +67,6 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_ENTITY_TYPE_ID;
             static const dtUtil::RefString PROPERTY_MAPPING_NAME;
             static const dtUtil::RefString PROPERTY_FORCE;
-            static const dtUtil::RefString PROPERTY_GROUND_OFFSET;
-            static const dtUtil::RefString PROPERTY_DEAD_RECKONING_ALGORITHM;
 
             class SIMCORE_EXPORT DomainEnum : public dtUtil::Enumeration
             {
@@ -168,9 +160,9 @@ namespace SimCore
             /// Build the invokables
             virtual void BuildInvokables();
 
-            void SetLastKnownRotation(const osg::Vec3& vec);
-
-            osg::Vec3 GetLastKnownRotation() const;
+            // CURT
+            //void SetLastKnownRotation(const osg::Vec3& vec);
+            //osg::Vec3 GetLastKnownRotation() const;
 
          protected:
             virtual ~BaseEntityActorProxy();
@@ -262,6 +254,9 @@ namespace SimCore
             DECLARE_PROPERTY(bool, Frozen);
 
             DECLARE_PROPERTY(bool, AutoRegisterWithMunitionsComponent);
+            /// Not an actual property. Defaults to true. Set to false if for some bizarre reason you don't want the DR Component
+            DECLARE_PROPERTY(bool, AutoRegisterWithDeadReckoningComponent);
+
 
             /**
              * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
@@ -273,21 +268,21 @@ namespace SimCore
              * True means no ground following should be performed on this actor.  False
              * it will follow the ground as it moves.
              */
-            bool IsFlying() const { return GetFlying(); }
-            bool GetFlying() const;
-            void SetFlying(bool);
+            //bool IsFlying() const { return GetFlying(); }
+            //bool GetFlying() const;
+            //void SetFlying(bool);
 
             /**
              * Sets this entity's minimum Dead Reckoning Algorithm.
              *
              * @param newAlgorithm the new algorithm enum value.
              */
-            void SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm& newAlgorithm);
+            //void SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm& newAlgorithm);
 
             /**
              * @return the current minimum Dead Reckoning Algorithm.
              */
-            dtGame::DeadReckoningAlgorithm& GetDeadReckoningAlgorithm() const;
+            //dtGame::DeadReckoningAlgorithm& GetDeadReckoningAlgorithm() const;
 
 
             /**
@@ -320,12 +315,12 @@ namespace SimCore
              *
              * @param vec the new last position.
              */
-            virtual void SetLastKnownTranslation(const osg::Vec3& vec);
+            //virtual void SetLastKnownTranslation(const osg::Vec3& vec);
 
             /**
              * @return the last known position for this if it's a remote entity.
              */
-            osg::Vec3 GetLastKnownTranslation() const;
+            //osg::Vec3 GetLastKnownTranslation() const;
 
             /**
              * Sets this entity's last known rotation.  This should
@@ -333,74 +328,74 @@ namespace SimCore
              *
              * @param vec the new last rotation as yaw, pitch, roll.
              */
-            virtual void SetLastKnownRotation(const osg::Vec3& vec);
+            //virtual void SetLastKnownRotation(const osg::Vec3& vec);
 
             /**
              * @return the last known rotation for this if it's a remote entity as yaw, pitch, roll.
              */
-            osg::Vec3 GetLastKnownRotation() const;
+            //osg::Vec3 GetLastKnownRotation() const;
 
             /**
              * Sets this entity's DIS/RPR-FOM velocity vector.
              *
              * @param vec the velocity vector to copy
              */
-            void SetLastKnownVelocity(const osg::Vec3& vec);
+            //void SetLastKnownVelocity(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM velocity vector.
              *
              * @return the velocity vector
              */
-            osg::Vec3 GetLastKnownVelocity() const;
+            //osg::Vec3 GetLastKnownVelocity() const;
 
             /**
              * Sets this entity's DIS/RPR-FOM acceleration vector.
              *
              * @param accelerationVector the acceleration vector to copy
              */
-            void SetLastKnownAcceleration(const osg::Vec3& vec);
+            //void SetLastKnownAcceleration(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM acceleration vector.
              *
              * @return the acceleration vector
              */
-            osg::Vec3 GetLastKnownAcceleration() const;
+            //osg::Vec3 GetLastKnownAcceleration() const;
 
             /**
              * Sets this entity's DIS/RPR-FOM angular velocity vector.
              *
              * @param angularVelocityVector the angular velocity vector to copy
              */
-            void SetLastKnownAngularVelocity(const osg::Vec3& vec);
+            //void SetLastKnownAngularVelocity(const osg::Vec3& vec);
 
             /**
              * Retrieves this entity's DIS/RPR-FOM angular velocity vector.
              *
              * @return the angular velocity vector
              */
-            osg::Vec3 GetLastKnownAngularVelocity() const;
+            //osg::Vec3 GetLastKnownAngularVelocity() const;
 
             /**
              * Sets the offset from the ground the actor should be clamped to.
              * This only matters if flying is set to false.
              * @param newOffset the new offset value.
              */
-            void SetGroundOffset(float newOffset);
+            //void SetGroundOffset(float newOffset);
 
             ///@return The distance from the ground that the actor should be.
-            float GetGroundOffset() const;
+            //float GetGroundOffset() const;
 
             /// Set - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
-            void SetMaxTranslationError(float distance);
+            //void SetMaxTranslationError(float distance);
             /// Get - The threshold for the translation from last update before deciding to publish. Part of DRPublishingActComp 
-            float GetMaxTranslationError() const;
+            //float GetMaxTranslationError() const;
 
             /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
-            void SetMaxRotationError(float rotation);
+            //void SetMaxRotationError(float rotation);
             /// Set - threshold for rot (degrees) from last update before deciding to publish. Part of DRPublishingActComp
-            float GetMaxRotationError() const;
+            //float GetMaxRotationError() const;
 
             /**
              * Sets the default scale of the entity.  The actual scale is the default scale x scale magnification
@@ -443,7 +438,7 @@ namespace SimCore
 
             //this is used to create the dead reckoning helper and initialize the default options
             //made virtual  for supporting custom dr helpers
-            virtual void InitDeadReckoningHelper();
+            //virtual void InitDeadReckoningHelper();
 
             /**
              * This function is intended for use by entities that implement physics
@@ -516,8 +511,7 @@ namespace SimCore
             ///updates the scale of the model base on the default scale and magnification.
             void UpdateModelScale();
 
-            void SetDeadReckoningHelper(dtGame::DeadReckoningHelper* pHelper);
-
+            /// Called in OnEnteredWorld. A basic part of entities.
             void RegisterWithDeadReckoningComponent();
 
          private:
@@ -528,9 +522,10 @@ namespace SimCore
             // Note that the LastKnown values are stored on the DR helper, but the CURRENT
             // values are part of the entity. See the get/set methods for info.
             dtCore::RefPtr<dtGame::DeadReckoningHelper> mDeadReckoningHelper;
+            
             //This is stored on both the entity and the helper because the
             //two values are not always the same.
-            dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
+            //dtGame::DeadReckoningAlgorithm* mDRAlgorithm;
 
             /// The particle systems used for fire and smoke
             dtCore::RefPtr<dtCore::ParticleSystem> mSmokePlumesSystem, mFlamesSystem;

@@ -314,7 +314,7 @@ namespace SimCore
                // In order to make our local vehicle bounce on impact, the physics engine needs the velocity of
                // the remote entities. Essentially remote entities are kinematic (physics isn't really simulating),
                // but we want to act like their not.
-               osg::Vec3 velocity = GetLastKnownVelocity();
+               osg::Vec3 velocity = GetDeadReckoningHelper().GetLastKnownVelocity();
                physicsObject->SetLinearVelocity(velocity);
             }
 
@@ -401,7 +401,7 @@ namespace SimCore
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
          {
-            return GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
+            return GetDeadReckoningHelper().GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
          }
          else
          {
