@@ -42,11 +42,6 @@ namespace SimCore
    {
       class HUDGroup;
    }
-
-   namespace GUI
-   {
-      class PositionController;
-   }
 }
 
 namespace NetDemo
