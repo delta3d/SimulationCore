@@ -46,7 +46,6 @@
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 
@@ -117,20 +116,18 @@ class TimingListener : public CppUnit::TestListener
 
 void SetupCEGUI(dtABC::Application& app)
 {
-   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
+   dtDAL::ResourceDescriptor guiScheme("CEGUI:schemes:WindowsLook.scheme");
 
    GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
-   std::string path = dtCore::FindFileInPathList(guiScheme);
+   std::string path = dtDAL::Project::GetInstance().GetResourcePath(guiScheme);
    if (path.empty())
    {
       throw dtUtil::Exception("Failed to find the scheme file.",
          __FILE__, __LINE__);
    }
 
-   std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
-   //dtUtil::FileUtils::GetInstance().PushDirectory(dir);
    try
    {
       CEGUI::SchemeManager::getSingleton().loadScheme(path);

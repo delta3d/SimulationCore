@@ -191,7 +191,7 @@ namespace SimCore
    AttachToActorMessage::AttachToActorMessage()
    : mAttachToActorParam(*new dtGame::ActorMessageParameter("AttachToActor"))
    , mAttachPointNodeNameParam(*new dtGame::StringMessageParameter("Attach Point Node Name"))
-   , mInitialAttachRotationHPRParam(*new dtGame::Vec3MessageParameter("Initial Attach Rotation HPR"))
+   , mInitialAttachRotationHPRParam(*new dtGame::Vec3fMessageParameter("Initial Attach Rotation HPR"))
    {
       AddParameter(&mAttachToActorParam);
       AddParameter(&mAttachPointNodeNameParam);

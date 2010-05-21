@@ -28,7 +28,7 @@
 
 namespace dtDAL
 {
-   class NamedVec3Parameter;
+   class NamedVec3fParameter;
    class NamedStringParameter;
    class NamedActorParameter;
 }
@@ -214,7 +214,7 @@ namespace SimCore
          virtual ~AttachToActorMessage();
          dtDAL::NamedActorParameter& mAttachToActorParam;
          dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
-         dtDAL::NamedVec3Parameter& mInitialAttachRotationHPRParam;
+         dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
    };
 
    /**

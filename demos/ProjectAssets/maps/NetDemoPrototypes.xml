@@ -6086,7 +6086,7 @@
             </property>
             <property>
                 <name>Restitution</name>
-                <float>0.2</float>
+                <float>0.0</float>
             </property>
             <property>
                 <name>KineticAnisotropicFriction</name>

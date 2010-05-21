@@ -114,7 +114,7 @@ namespace DriverDemo
       BaseGameAppComponent::InitializeCommandLineOptionsAndRead(parser);
 
       parser->getApplicationUsage()->addCommandLineOption("--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME,
-         "Vehicle we are attaching to - use the prototype actor name in DriverPrototypes.xml");
+         "Vehicle we are attaching to - use the prototype actor name in DriverPrototypes.xml", "Hover_Vehicle");
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
 
@@ -137,7 +137,7 @@ namespace DriverDemo
       else
       {
          LOG_ALWAYS("To choose your vehicle, pass '--" + CMD_LINE_VEHICLE_PROTOTYPE_NAME +
-            "' on the command line \n     followed by either, 'Hover_Vehicle' or 'Wheeled_Vehicle'.");
+            "' on the command line \n     followed by either, 'Hover_Vehicle' or 'Wheeled_Vehicle'.  Defaults to Hover_Vehicle");
       }
 
    }

@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <Components/GUIComponent.h>
 #include <dtABC/application.h>
-#include <dtCore/globals.h>
+#include <dtUtil/datapathutils.h>
 #include <dtCore/scene.h>
 #include <dtCore/shaderprogram.h>
 #include <dtGame/actorupdatemessage.h>
@@ -303,7 +303,7 @@ namespace NetDemo
       // preventing the GUI from being unintentionally removed.
       GetGameManager()->GetScene().GetSceneNode()->addChild(mGUI->GetOSGNode());
 
-      std::string path = dtCore::FindFileInPathList(schemeFile);
+      std::string path = dtUtil::FindFileInPathList(schemeFile);
       if(path.empty())
       {
          throw dtUtil::Exception(

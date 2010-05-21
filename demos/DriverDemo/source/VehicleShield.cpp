@@ -6,7 +6,6 @@
 #include "VehicleShield.h"
 
 #include <dtCore/shadermanager.h>
-#include <dtCore/globals.h>
 #include <dtCore/system.h>
 
 #include <dtDAL/project.h>
@@ -105,12 +104,12 @@ namespace DriverDemo
       mNoiseTexture = new osg::Uniform( osg::Uniform::SAMPLER_3D, "NoiseTexture" );
       mNoiseTexture->set( 0 );
 
-      std::string fileName("Sphere_ForceField.ive");
-      std::string fullPath = dtCore::FindFileInPathList(dtDAL::Project::GetInstance().GetContext() + "/StaticMeshes/" + fileName);
+      dtDAL::ResourceDescriptor forceFieldResource("StaticMeshes:Sphere_ForceField.ive");
+      std::string fullPath = dtDAL::Project::GetInstance().GetResourcePath(forceFieldResource);
       if(fullPath.empty())
       {
-         LOG_ERROR("Error Loading StaticMesh '" + fileName + "'.");
-         throw dtUtil::Exception("Unable to locate static mesh '" + fileName + "' for VehicleShield", __FUNCTION__, __LINE__);
+         LOG_ERROR("Error Loading StaticMesh '" + forceFieldResource.GetResourceIdentifier() + "'.");
+         throw dtUtil::Exception("Unable to locate static mesh '" + forceFieldResource.GetResourceIdentifier() + "' for VehicleShield", __FUNCTION__, __LINE__);
       }
 
       mForceField = osgDB::readNodeFile(fullPath);

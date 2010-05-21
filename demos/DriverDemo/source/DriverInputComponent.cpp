@@ -514,7 +514,7 @@ namespace DriverDemo
             }
 
          default:
-            // Implemented to get rid of warnings in Linux
+            // Implemented to get rid of warnings on g++
             handled = false;
          break;
       }

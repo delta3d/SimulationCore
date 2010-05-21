@@ -27,8 +27,8 @@
 #include <dtUtil/log.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 #include <dtCore/transform.h>
+#include <dtDAL/project.h>
 
 #include <osg/Node>
 #include <osg/NodeVisitor>
@@ -209,8 +209,8 @@ namespace SimCore
          double windowWidth = res.width;
          double windowHeight = res.height;
 
-         std::string lensaticNode("Textures/hud/compass/lensatic.osg");
-         lensaticNode = dtCore::FindFileInPathList(lensaticNode);
+         std::string lensaticNode("Textures:hud:compass:lensatic.osg");
+         lensaticNode = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor(lensaticNode));
 
          osg::ref_ptr<osg::Node> fileNode;
 
@@ -262,8 +262,9 @@ namespace SimCore
          mCompassOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
-         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.frag");
-         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.vert");
+
+         std::string fragFileName = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Shaders:Base:fisheye.frag"));
+         std::string vertFileName = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Shaders:Base:fisheye.vert"));
 
          if( fragFileName.length() != 0 && vertFileName.length() != 0)
          {
