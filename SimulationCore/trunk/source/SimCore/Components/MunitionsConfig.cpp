@@ -33,9 +33,11 @@
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/stringutils.h>
+#include <dtUtil/datapathutils.h>
 
-#include <dtCore/globals.h>
 #include <dtCore/scene.h>
+
+#include <dtDAL/project.h>
 
 #include <SimCore/Components/DamageHelper.h>
 #include <SimCore/Components/MunitionsComponent.h>
@@ -113,7 +115,7 @@ namespace SimCore
          mXercesParser->setFeature(xercesc::XMLUni::fgXercesUseCachedGrammarInParse, true);
          mXercesParser->setFeature(xercesc::XMLUni::fgXercesCacheGrammarFromParse, true);
 
-         std::string schemaFileName = dtCore::FindFileInPathList("Configs/MunitionsConfig.xsd");
+         std::string schemaFileName = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Configs:MunitionsConfig.xsd"));
 
          if (!dtUtil::FileUtils::GetInstance().FileExists(schemaFileName))
          {
@@ -142,8 +144,9 @@ namespace SimCore
 
          try
          {
+            // TODO this should take a resource descriptor
             // Locate the xml file
-            std::string path = dtCore::FindFileInPathList(filePath);
+            std::string path = dtUtil::FindFileInPathList(filePath);
             if (!dtUtil::FileUtils::GetInstance().FileExists(path))
             {
                mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__,  __LINE__,

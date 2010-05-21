@@ -29,6 +29,7 @@
 #include <dtDAL/functor.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
+#include <dtDAL/project.h>
 
 #include <dtGame/messagetype.h>
 #include <dtGame/basemessages.h>
@@ -41,7 +42,6 @@
 #include <dtCore/transform.h>
 #include <dtCore/scene.h>
 #include <dtCore/cloudplane.h>
-#include <dtCore/globals.h>
 #include <dtABC/application.h>
 
 #include <dtUtil/mathdefines.h>
@@ -797,7 +797,7 @@ namespace SimCore
 
            
          osg::Texture2D* foamTexture2D = new osg::Texture2D();
-         std::string foamTextureFile = dtCore::FindFileInPathList("Textures\\OceanFoam.tga");
+         std::string foamTextureFile = dtDAL::Project::GetInstance().GetResourcePath(dtDAL::ResourceDescriptor("Textures:OceanFoam.tga"));
          osg::Image* newImage = osgDB::readImageFile(foamTextureFile);
          if (newImage == NULL)
          {

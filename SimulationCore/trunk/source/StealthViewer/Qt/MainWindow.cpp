@@ -73,10 +73,10 @@
 #include <dtUtil/datetime.h>
 
 #include <dtCore/camera.h>
-#include <dtCore/globals.h>
 #include <dtCore/transformable.h>
 #include <dtCore/transform.h>
 
+#include <dtDAL/project.h>
 #include <dtDAL/actorproperty.h>
 
 #include <dtGame/gameapplication.h>
@@ -180,8 +180,8 @@ namespace StealthQt
 
       // This was coverted to a png from a jpg because of weird loading problems
       // on Windows XP
-      const std::string helpImageResource("icons/help_controls_small.png");
-      const std::string& file = dtCore::FindFileInPathList(helpImageResource);
+      dtDAL::ResourceDescriptor helpImageResource("icons:help_controls_small.png");
+      const std::string file = dtDAL::Project::GetInstance().GetResourcePath(helpImageResource);
       if (!file.empty())
       {
          QPixmap pixmap;
@@ -192,11 +192,11 @@ namespace StealthQt
       }
       else
       {
-         LOG_ERROR("Couldn't find camera help image \"" + helpImageResource + "\".");
+         LOG_ERROR("Couldn't find camera help image \"" + helpImageResource.GetResourceIdentifier() + "\".");
       }
 
-      const std::string iconImageResource("icons/stealthviewer.png");
-      const std::string& iconFile = dtCore::FindFileInPathList(iconImageResource);
+      dtDAL::ResourceDescriptor iconImageResource("icons:stealthviewer.png");
+      const std::string iconFile = dtDAL::Project::GetInstance().GetResourcePath(iconImageResource);
       if (!iconFile.empty())
       {
          QIcon *icon = new QIcon;
@@ -209,7 +209,7 @@ namespace StealthQt
       }
       else
       {
-         LOG_ERROR("Couldn't find app icon \"" + iconImageResource + "\".");
+         LOG_ERROR("Couldn't find app icon \"" + iconImageResource.GetResourceIdentifier() + "\".");
       }
 
       AddConfigObjectsToViewerComponent();
@@ -416,7 +416,7 @@ namespace StealthQt
 
       if (comp == NULL)
       {
-         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+         throw dtGame::InvalidParameterException(
                   "Failed to locate the HLAConnectionComponent on the Game Manager. Aborting application.",
                   __FILE__, __LINE__);
       }
@@ -828,12 +828,9 @@ namespace StealthQt
       {
          cameraObject.WarpToPosition(lat, lon, elev);
       }
-      catch (const dtUtil::Exception& ex)
+      catch (const dtUtil::CoordinateConversionInvalidInput& ex)
       {
-         if (ex.TypeEnum() == dtUtil::CoordinateConversionExceptionEnum::INVALID_INPUT)
-         {
-            QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
-         }
+         QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
       }
    }
 
@@ -849,16 +846,13 @@ namespace StealthQt
       {
          cameraObject.WarpToPosition(MGRS, elev);
       }
+      catch (const dtUtil::CoordinateConversionInvalidInput& ex)
+      {
+            QMessageBox::information(this, "Invalid Input", QString(ex.What().c_str()));
+      }
       catch (const dtUtil::Exception& ex)
       {
-         if (ex.TypeEnum() == dtUtil::CoordinateConversionExceptionEnum::INVALID_INPUT)
-         {
-            QMessageBox::information(this, "Invalid Input", QString(ex.What().c_str()));
-         }
-         else
-         {
-            QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
-         }
+         QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
       }
    }
 
@@ -875,12 +869,9 @@ namespace StealthQt
       {
          cameraObject.WarpToPosition(xyz);
       }
-      catch (const dtUtil::Exception& ex)
+      catch (const dtUtil::CoordinateConversionInvalidInput& ex)
       {
-         if (ex.TypeEnum() == dtUtil::CoordinateConversionExceptionEnum::INVALID_INPUT)
-         {
-            QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
-         }
+         QMessageBox::critical(this, "Error", QString(ex.What().c_str()));
       }
    }
 
@@ -1519,8 +1510,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnWeatherThemeChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject &envConfig =
-         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
+//      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
+//         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       QString hack = tr("Theme ") + text;
 
@@ -1529,8 +1520,8 @@ namespace StealthQt
 
    void MainWindow::OnTimeThemeChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
-         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
+//      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
+//         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       QString hack = tr("Time ") + text;
 
@@ -1626,8 +1617,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnVisibilityChanged(const QString& text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
-         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
+//      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
+//         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       // Convert to match the name of the actor's enum. The full name
       // doesn't look pretty in the UI, so we shortened it
@@ -1639,8 +1630,8 @@ namespace StealthQt
    ///////////////////////////////////////////////////////////////////////////////
    void MainWindow::OnCloudCoverChanged(const QString &text)
    {
-      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
-         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
+//      StealthGM::PreferencesEnvironmentConfigObject& envConfig =
+//         StealthViewerData::GetInstance().GetEnvironmentConfigObject();
 
       const std::string cloudCoverName = text.toStdString();
       // TODO reimplement
@@ -2368,7 +2359,7 @@ namespace StealthQt
       (mApp->GetGameManager()->GetComponentByName(StealthGM::StealthHUD::DEFAULT_NAME));
       if (hudComponent == NULL)
       {
-         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+         throw dtGame::InvalidParameterException(
                   "Failed to locate the StealthHUD Component on the Game Manager. Critical failure.",
                   __FILE__, __LINE__);
       }

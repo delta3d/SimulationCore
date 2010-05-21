@@ -121,27 +121,24 @@ namespace DriverDemo
       mShield->SetTranslation(osg::Vec3(0.0f, 0.0f, 0.5f));
       AddChild(mShield.get());
 
-      dtGame::GMComponent* comp = GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
-      if(comp)
+      SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+      GetGameActorProxy().GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+      if( rsComp != NULL)
       {
-         SimCore::Components::RenderingSupportComponent* rsComp = dynamic_cast<SimCore::Components::RenderingSupportComponent*>(comp);
-         if(rsComp)
-         {
-            rsComp->SetMaxSpotLights(1);
-            //Add a spot light
-            SimCore::Components::RenderingSupportComponent::SpotLight* sl = new SimCore::Components::RenderingSupportComponent::SpotLight();
-            sl->mIntensity = 1.0f;
-            sl->mColor.set(1.0f, 1.0f, 1.0f);
-            sl->mAttenuation.set(0.00002, 0.00002, 0.00005);
-            sl->mDirection.set(0.0f, 1.0f, 0.0f);
-            sl->mSpotExponent = 20.0f;
-            sl->mSpotCosCutoff = 0.75f;
-            sl->mTarget = this;
-            sl->mAutoDeleteLightOnTargetNull = true;
-            sl->mUseAbsoluteDirection = false;
+         rsComp->SetMaxSpotLights(1);
+         //Add a spot light
+         SimCore::Components::RenderingSupportComponent::SpotLight* sl = new SimCore::Components::RenderingSupportComponent::SpotLight();
+         sl->mIntensity = 1.0f;
+         sl->mColor.set(1.0f, 1.0f, 1.0f);
+         sl->mAttenuation.set(0.00002, 0.00002, 0.00005);
+         sl->mDirection.set(0.0f, 1.0f, 0.0f);
+         sl->mSpotExponent = 20.0f;
+         sl->mSpotCosCutoff = 0.75f;
+         sl->mTarget = this;
+         sl->mAutoDeleteLightOnTargetNull = true;
+         sl->mUseAbsoluteDirection = false;
 
-            rsComp->AddDynamicLight(sl);
-         }
+         rsComp->AddDynamicLight(sl);
       }
 
       /*
