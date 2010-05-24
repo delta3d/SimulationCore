@@ -105,7 +105,7 @@ namespace SimCore
       , mArrowDrawScalar(1.0f)
       , mVelocityArrowColor(0.2f, 0.2f, 1.0f)
       , mAccelerationArrowColor(0.2f, 1.0f, 0.2f)
-      , mArrowMaxNumTrails(10)
+      , mArrowMaxNumTrails(40)
       , mArrowCurrentIndex(0)
       , mArrowDrawOnNextFrame(false)
       {

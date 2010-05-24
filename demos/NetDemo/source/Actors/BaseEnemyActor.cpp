@@ -107,7 +107,7 @@ namespace NetDemo
       }
       drPublishingActComp->SetMaxUpdateSendRate(4.0f);
       drPublishingActComp->SetPublishLinearVelocity(true);
-      drPublishingActComp->SetPublishAngularVelocity(true);
+      drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

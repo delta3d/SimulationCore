@@ -50,7 +50,7 @@ namespace SimCore
          , mVelocityAverageFrameCount(1U)
          , mMaxUpdateSendRate(5.0f)
          , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
+         , mPublishAngularVelocity(false)
          , mSecsSinceLastUpdateSent(0.0f)
          , mVelocityMagThreshold(1.0f)
          , mVelocityDotThreshold(0.9f)
@@ -80,7 +80,22 @@ namespace SimCore
 
       IMPLEMENT_PROPERTY(DRPublishingActComp, bool, PublishLinearVelocity);
 
-      IMPLEMENT_PROPERTY(DRPublishingActComp, bool, PublishAngularVelocity);
+      IMPLEMENT_PROPERTY_GETTER(DRPublishingActComp, bool, PublishAngularVelocity);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      void DRPublishingActComp::SetPublishAngularVelocity(bool publishAngularVelocity)
+      {
+         mPublishAngularVelocity = publishAngularVelocity;
+
+         // If we are now off, then set our last known value to 0,0,0, in case it was previously set,
+         // That way, we don't have to continue setting it to zero every time we publish.
+         if (!mPublishAngularVelocity && IsDeadReckoningHelperValid())
+         {
+            osg::Vec3 zeroAngularVelocity;
+            SetCurrentAngularVelocity(zeroAngularVelocity);
+            GetDeadReckoningHelper().SetLastKnownAngularVelocity(zeroAngularVelocity);
+         }
+      }
 
       ////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::OnAddedToActor(dtGame::GameActor& actor)
@@ -389,15 +404,22 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      void DRPublishingActComp::ResetFullUpdateTimer(bool doRandomOffset)
+      void DRPublishingActComp::ResetFullUpdateTimer(bool doBigRandomOffset)
       {
-         mTimeUntilNextFullUpdate = 1.05f * TIME_BETWEEN_UPDATES;
+         mTimeUntilNextFullUpdate = TIME_BETWEEN_UPDATES * 1.05f;
 
-         if (doRandomOffset)
+         if (doBigRandomOffset)
          {
             // We publish full updates periodically, but we want to randomize their start point, 
             // so all actors loaded in a map don't do full updates on the same frame. 
-            mTimeUntilNextFullUpdate -= 0.5f * dtUtil::RandFloat(0.0f, TIME_BETWEEN_UPDATES);
+            float halfUpdateTime = 0.5f * TIME_BETWEEN_UPDATES;
+            mTimeUntilNextFullUpdate += dtUtil::RandFloat(-halfUpdateTime, halfUpdateTime);
+         }
+         else
+         {
+            // Added a slight randomize in all cases to help spread them out.
+            float smallRandomness = 0.05f * TIME_BETWEEN_UPDATES;
+            mTimeUntilNextFullUpdate += (dtUtil::RandFloat(-smallRandomness, smallRandomness)) ;
          }
       }
 
