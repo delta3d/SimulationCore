@@ -16,7 +16,7 @@
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * David Guthrie
+ * David Guthrie, Curtiss Murphy
  */
 #ifndef RES_GAME_INPUT_COMPONENT
 #define RES_GAME_INPUT_COMPONENT
@@ -135,6 +135,21 @@ namespace NetDemo
          /// Turns on/off using velocity settings for DR testing. 
          void ToggleVelocityDR();
 
+         /// Cycles between one of the debug toggle modes. Use with ToggleCurrentDebugState() 
+         void ChangeDebugToggleMode();
+
+         /// Changes the current debug toggle mode.
+         void ToggleCurrentDebugMode();
+
+         /// Debug toggle - changes between use Cubic Spline or Linear for Dead Reckoning
+         void ToggleUseCubicSplineForDR();
+
+         /// Debug toggle - changes between publishing the angular velocity or not (for DR).
+         void TogglePublishAngularVelocity();
+
+         /// Debug toggle - changes between the various dead reckoning algorithms (static, velocity, etc)
+         void ToggleDeadReckoningAlgorithm();
+
          /// Turns on/off the use of ground clamping (aka flying) related to Dead reckoning
          void ToggleGroundClamping();
 
@@ -154,6 +169,9 @@ namespace NetDemo
       private:
          enum DR_GHOST_MODE { NONE = 1, GHOST_ON, ATTACH_TO_GHOST, HIDE_REAL, DETACH_FROM_VEHICLE };
          DR_GHOST_MODE mDRGhostMode;
+         enum DEBUG_TOGGLE_MODE { DEBUG_TOGGLE_DR_ALGORITHM, DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY, 
+            DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE, DEBUG_TOGGLE_GROUND_CLAMPING};
+         DEBUG_TOGGLE_MODE mDebugToggleMode; 
 
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
          dtCore::RefPtr<SimCore::Actors::DRGhostActorProxy> mDRGhostActorProxy;

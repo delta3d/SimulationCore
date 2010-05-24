@@ -8,7 +8,7 @@
 * Norfolk, VA 23513
 * (757) 857-5670, www.alionscience.com
 *
- David Guthrie
+ David Guthrie, Curtiss Murphy
 */
 #include <dtUtil/mswin.h>
 #include <Components/InputComponent.h>
@@ -66,6 +66,7 @@ namespace NetDemo
    InputComponent::InputComponent(const std::string& name)
       : SimCore::Components::BaseInputComponent(name)
       , mDRGhostMode(NONE)
+      , mDebugToggleMode(DEBUG_TOGGLE_DR_ALGORITHM)
       , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
       , mOriginalPublishTimesPerSecond(3.0f)
@@ -301,13 +302,15 @@ namespace NetDemo
             }
          case '9':
             {
-               ResetTestingValues();
+               ChangeDebugToggleMode();
+               //ResetTestingValues();
                break;
             }
 
          case '0':
             {
-               ToggleGroundClamping();
+               ToggleCurrentDebugMode();
+               //ToggleGroundClamping();
                break;
             }
          case 't':
@@ -801,14 +804,135 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void InputComponent::ToggleGroundClamping()
+   void InputComponent::ChangeDebugToggleMode()
    {
-      SimCore::Actors::BasePhysicsVehicleActor* mPhysVehicle =
+      if (mDebugToggleMode == DEBUG_TOGGLE_DR_ALGORITHM)
+      {
+         mDebugToggleMode = DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY;
+         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to PUBLISH_ANGULAR_VELOCITY. Press 0 to do toggle.");
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
+      {
+         mDebugToggleMode = DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE;
+         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DR_WITH_CUBIC_SPLINE. Press 0 to do toggle.");
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+      {
+         mDebugToggleMode = DEBUG_TOGGLE_GROUND_CLAMPING;
+         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to GROUND_CLAMPING. Press 0 to do toggle.");
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
+      {
+         mDebugToggleMode = DEBUG_TOGGLE_DR_ALGORITHM;
+         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DR_ALGORITHM. Press 0 to do toggle.");
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleCurrentDebugMode()
+   {
+      if (mDebugToggleMode == DEBUG_TOGGLE_DR_ALGORITHM)
+      {
+         ToggleDeadReckoningAlgorithm();
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY)
+      {
+         TogglePublishAngularVelocity();
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE)
+      {
+         ToggleUseCubicSplineForDR();
+      }
+      else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
+      {
+         ToggleGroundClamping();
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::TogglePublishAngularVelocity()
+   {
+      // Toggle the publishing of angular velocity
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+      if (physVehicle != NULL && physVehicle->GetDRPublishingActComp() != NULL)
+      {
+         if (physVehicle->GetDRPublishingActComp()->GetPublishAngularVelocity())
+         {
+            physVehicle->GetDRPublishingActComp()->SetPublishAngularVelocity(false);
+            LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to FALSE");
+         }
+         else
+         {
+            physVehicle->GetDRPublishingActComp()->SetPublishAngularVelocity(true);
+            LOG_ALWAYS("TEST -- Toggling - Publish Angular Velocity to TRUE");
+         }
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleUseCubicSplineForDR()
+   {
+      // Toggle the Use Cubic Spline
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+      if (physVehicle != NULL && physVehicle->IsDeadReckoningHelperValid())
+      {
+         if (physVehicle->GetDeadReckoningHelper().GetUseCubicSplineTransBlend())
+         {
+            physVehicle->GetDeadReckoningHelper().SetUseCubicSplineTransBlend(false);
+            LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - FALSE");
+         }
+         else
+         {
+            physVehicle->GetDeadReckoningHelper().SetUseCubicSplineTransBlend(true);
+            LOG_ALWAYS("TEST -- Toggling - Use CUBIC Spline - TRUE");
+         }
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleDeadReckoningAlgorithm()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
 
-      if (mPhysVehicle != NULL)
+      if (physVehicle != NULL)
       {
-         if (mPhysVehicle->GetDeadReckoningHelper().IsFlying())
+         if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
+            == dtGame::DeadReckoningAlgorithm::STATIC)
+         {
+            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
+               (dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity Only. ");
+         }
+         else if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
+            == dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY)
+         {
+            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
+               (dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
+            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to Velocity AND Acceleration. ");
+         }
+         else if (physVehicle->GetDeadReckoningHelper().GetDeadReckoningAlgorithm() 
+            == dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION)
+         {
+            physVehicle->GetDeadReckoningHelper().SetDeadReckoningAlgorithm
+               (dtGame::DeadReckoningAlgorithm::STATIC);
+            LOG_ALWAYS("TEST -- Toggling - DR Algorithm to STATIC . ");
+         }
+         return;
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleGroundClamping()
+   {
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+
+      if (physVehicle != NULL)
+      {
+         if (physVehicle->GetDeadReckoningHelper().IsFlying())
          {
             LOG_ALWAYS("TEST -- Toggling - ENABLE ground clamping for DR. ");
          }
@@ -816,8 +940,8 @@ namespace NetDemo
          {
             LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
          }
-         mPhysVehicle->GetDeadReckoningHelper().SetFlying(
-            !mPhysVehicle->GetDeadReckoningHelper().IsFlying());
+         physVehicle->GetDeadReckoningHelper().SetFlying(
+            !physVehicle->GetDeadReckoningHelper().IsFlying());
       }
 
    }
