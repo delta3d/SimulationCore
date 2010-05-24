@@ -44,6 +44,13 @@
 #include <osg/MatrixTransform>
 #include <osg/Matrix>
 
+#include <dtABC/applicationconfigschema.h>
+
+//these are to realize a window if we do not have a valid context to initialize
+#include <osg/GraphicsContext>
+#include <osgViewer/GraphicsWindow>
+
+
 namespace SimCore
 {
    namespace Components
@@ -88,9 +95,39 @@ namespace SimCore
          delete mScriptModule; // a script module does not extend dtCore::Base
       }
 
+
       //////////////////////////////////////////////////////////////////////////
       void BaseHUD::Initialize( unsigned int designedResWidth, unsigned int designedResHeight )
       {
+         bool realized = GetGameManager()->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow()->isRealized();
+         //this code will create an opengl context to initialize CEGUI with
+         //we only need to do this if OSG does not realize on creation
+         dtCore::RefPtr<osg::GraphicsContext> gc;
+         if(!realized)
+         {
+            osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+            traits->x = 0;
+            traits->y = 0;
+            traits->width = 1;
+            traits->height = 1;
+            traits->windowDecoration = false;
+            traits->doubleBuffer = false;
+            traits->sharedContext = 0;
+            traits->pbuffer = false;
+
+            gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+
+            if (gc.valid()) 
+            {
+               gc->realize();
+               gc->makeCurrent();
+               if (!dynamic_cast<osgViewer::GraphicsWindow*>(gc.get()))
+               {              
+                  LOG_ERROR("Unable to create graphics context to initialize CEGUI.");
+               }
+            }
+         }
+
          InitializeCEGUI();
 
          dtCore::RefPtr<HUDGroup> hudOverlay = new HUDGroup( "HUDOverlay" );
