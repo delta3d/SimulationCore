@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<Imageset Name="UFOButton" Imagefile="CEGUI/imagesets/UFOButton.tga" NativeHorzRes="1280" NativeVertRes="1024" AutoScaled="true">
+   
+   <Image Name="UFOButton"  XPos="0" YPos="0"  Width="128" Height="128" />
+   
+</Imageset>
+
