@@ -115,6 +115,14 @@ namespace SimCore
             mPhysicsHelper->SetCollisionStaticMesh(mNodeForGeometry.get(), NxVec3(0,0,0), false, "");
 #else
             mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
+
+            osg::Matrix bodyOffset;
+            bodyOffset.makeIdentity();
+            bodyOffset.setTrans(-mPhysicsHelper->GetMainPhysicsObject()->GetOriginOffset());
+            dtCore::Transform offsetXform;
+            offsetXform.Set(bodyOffset);
+
+            mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 #endif
          }
          else // this is for objects moving around, in our case vehicles
