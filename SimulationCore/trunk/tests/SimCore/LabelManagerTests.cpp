@@ -244,7 +244,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          xform.SetTranslation(plat2Pos);
          platActor->SetTransform(xform);
 
-         mLabelManager->Update(0.016);
+         mLabelManager->Update(0.016f);
 
          //This tests both GetOrCreateLabel and AddLabel.
          dtCore::RefPtr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
@@ -272,7 +272,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          xform.SetTranslation(plat1Pos);
          platActor->SetTransform(xform);
 
-         mLabelManager->Update(0.016);
+         mLabelManager->Update(0.016f);
 
          label = mLabelManager->GetOrCreateLabel(*mPlatform1);
          label1Next = mLabelManager->GetOrCreateLabel(*mPlatform1);

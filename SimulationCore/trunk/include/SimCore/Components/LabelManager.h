@@ -34,6 +34,8 @@
 #include <dtCore/observerptr.h>
 #include <dtGame/gamemanager.h>
 
+#include <OpenThreads/Mutex>
+
 #include <map>
 #include <vector>
 ////////////////////////////////////////////////////////////////////////////////
@@ -169,6 +171,7 @@ namespace SimCore
       class SIMCORE_EXPORT LabelManager : public dtCore::Base//osg::Referenced
       {
          public:
+            typedef std::map<dtCore::UniqueId, dtCore::RefPtr<SimCore::Components::HUDLabel> > LabelMap;
 
             LabelManager();
 
@@ -191,7 +194,7 @@ namespace SimCore
 
             void AddLabel(SimCore::Components::HUDLabel& label);
 
-            void Update(float timeDelta);
+            void Update(float dt);
 
 
             const std::string AssignLabelColor(const dtDAL::ActorProxy& actor, HUDLabel& label);
@@ -208,13 +211,15 @@ namespace SimCore
             virtual void OnMessage(MessageData* data);
             // TEMP:
 
+            /// Called to update a single label on a single actor.
+            void ApplyLabelToActor(dtDAL::ActorProxy& proxy, dtCore::Camera& deltaCamera, LabelMap& newLabels, std::string& nameBuffer);
+
          protected:
             virtual ~LabelManager();
 
          private:
             void ClearLabelsFromGUILayer();
 
-            typedef std::map<dtCore::UniqueId, dtCore::RefPtr<SimCore::Components::HUDLabel> > LabelMap;
             typedef std::vector<SimCore::Components::HUDLabel*> CEGUISortList;
 
             dtCore::ObserverPtr<dtGame::GameManager> mGM;
@@ -222,6 +227,9 @@ namespace SimCore
             dtCore::RefPtr<SimCore::Components::HUDElement> mGUILayer;
             LabelMap mLastLabels;
             CEGUISortList mCEGUISortList;
+
+            OpenThreads::Mutex mTaskMutex;
+            float mTimeUntilSort;
       };
 
    }
