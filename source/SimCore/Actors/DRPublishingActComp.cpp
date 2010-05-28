@@ -29,6 +29,9 @@
 #include <dtDAL/propertymacros.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/gameactor.h>
+#include <dtGame/invokable.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/message.h>
 #include <dtCore/transform.h>
 #include <osg/Geode>
 //#include <iostream>
@@ -207,7 +210,18 @@ namespace SimCore
          // LOCAL ACTOR -  do our setup
          if (!actor->IsRemote())
          {
-            RegisterForTicks();
+            // We used to register for tick local
+            //RegisterForTicks();
+            // Now we register for tick remote, so that we guarantee it happens AFTER our actor 
+            // It also needs to run AFTER the DeadReckoningComponent
+            std::string tickInvokable = "Tick Remote " + GetType().Get();
+            if(!actor->GetGameActorProxy().GetInvokable(tickInvokable))
+            {
+               actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable, 
+                  dtUtil::MakeFunctor(&DRPublishingActComp::OnTickLocal, this)));
+            }
+            actor->GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
+
 
             ResetFullUpdateTimer(true);
          }
@@ -241,7 +255,11 @@ namespace SimCore
          // LOCAL ACTOR - cleanup
          if (!actor->IsRemote())
          {
-            UnregisterForTicks();
+            //UnregisterForTicks();
+            // Our tick local now happens on tick remote. See OnEnteredWorld() for more info
+            std::string tickInvokable = "Tick Remote " + GetType().Get();
+            actor->GetGameActorProxy().UnregisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
+            actor->GetGameActorProxy().RemoveInvokable(tickInvokable);
          }
 
          mDeadReckoningHelper = NULL;
