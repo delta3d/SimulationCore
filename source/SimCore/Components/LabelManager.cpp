@@ -45,6 +45,7 @@
 #include <dtUtil/exception.h>
 #include <dtUtil/log.h>
 #include <dtUtil/mathdefines.h>
+#include <dtUtil/threadpool.h>
 
 #include <osg/FrameStamp>
 #include <osg/Matrix>
@@ -55,6 +56,8 @@
 #include <osg/ShapeDrawable>
 #include <osg/Shape>
 #include <osg/Math>
+
+#include <OpenThreads/ScopedLock>
 
 #include <iostream>
 #include <queue>
@@ -70,6 +73,8 @@ namespace SimCore
       const std::string HUDLabel::PROPERTY_COLOR("IconColour");
       const std::string HUDLabel::PROPERTY_TEXT("CallSign");
       const std::string HUDLabel::PROPERTY_LINE2("Line2Text");
+
+      static const float TIME_BETWEEN_DEPTH_SORTS = 2.00f;
 
       //////////////////////////////////////////////////////////////////////////
       HUDLabel::HUDLabel( const std::string& name, const std::string& type )
@@ -350,6 +355,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       LabelManager::LabelManager()
+      : mTimeUntilSort(0.0f)
       {
          AddSender( &dtCore::System::GetInstance() );
       }
@@ -421,6 +427,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<SimCore::Components::HUDLabel> LabelManager::GetOrCreateLabel(dtDAL::ActorProxy& actor)
       {
+         // safely push all the received messages onto the GameManager message queue
          dtCore::RefPtr<SimCore::Components::HUDLabel> label;
 
          LabelMap::iterator i = mLastLabels.find(actor.GetId());
@@ -431,6 +438,8 @@ namespace SimCore
          }
          else
          {
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
+
             SimCore::Actors::BaseEntity* entity = dynamic_cast<SimCore::Actors::BaseEntity*>(actor.GetActor());
             if (entity != NULL)
             {
@@ -468,8 +477,38 @@ namespace SimCore
          mGUILayer->GetCEGUIWindow()->addChildWindow(label.GetCEGUIWindow());
       }
 
+      class ApplyLabelTask : public dtUtil::ThreadPoolTask
+      {
+      public:
+         ApplyLabelTask(LabelManager& labelManager, std::vector<dtDAL::ActorProxy*>& actors, dtCore::Camera& camera, LabelManager::LabelMap& newLabels,
+                  unsigned low, unsigned high)
+         : mLabelManager(labelManager)
+         , mActors(actors)
+         , mCamera(&camera)
+         , mNewLabels(newLabels)
+         , mLow(low)
+         , mHigh(high)
+         {
+         }
+
+         virtual void operator () ()
+         {
+            for (unsigned i = mLow; i < mHigh; ++i)
+            {
+               mLabelManager.ApplyLabelToActor(*mActors[i], *mCamera, mNewLabels, nameBuffer);
+            }
+         }
+
+         LabelManager& mLabelManager;
+         std::vector<dtDAL::ActorProxy*>& mActors;
+         dtCore::RefPtr<dtCore::Camera> mCamera;
+         LabelManager::LabelMap& mNewLabels;
+         std::string nameBuffer;
+         unsigned mLow, mHigh;
+      };
+
       //////////////////////////////////////////////////////////////////////////
-      void LabelManager::Update( float timeDelta )
+      void LabelManager::Update(float dt)
       {
          // Get all entities from the game manager.
          typedef std::vector<dtDAL::ActorProxy*> ProxyList;
@@ -486,6 +525,54 @@ namespace SimCore
 
          mCEGUISortList.clear(); // This should always happen between frames.
 
+         LabelMap newLabels;
+
+
+         unsigned numTasks = (dtUtil::ThreadPool::GetNumImmediateWorkerThreads());
+         unsigned  proxiesPerTask = (proxies.size() / numTasks) + 1;
+
+         for (unsigned i = 0; i < numTasks; ++i)
+         {
+            unsigned low, high;
+            low = i * proxiesPerTask;
+            high = low + proxiesPerTask;
+            // The last task won't have an many unless the number of actors is evenly divisible by the number of actors.
+            high = dtUtil::Min(high, unsigned(proxies.size()));
+            if (high > low)
+            {
+               dtUtil::ThreadPool::AddTask(*new ApplyLabelTask(*this, proxies, *deltaCamera, newLabels, low, high));
+            }
+         }
+
+         dtUtil::ThreadPool::ExecuteTasks();
+
+
+         //We stored add the labels we're using now in the new map, so we swap with the last set
+         //for the next frame.
+         mLastLabels.swap(newLabels);
+
+         mTimeUntilSort -= dt;
+         if (mTimeUntilSort < 0.0f)
+         {
+            mTimeUntilSort = TIME_BETWEEN_DEPTH_SORTS;
+
+            CompareHUDLabelPointers compLabels;
+            std::sort(mCEGUISortList.begin(), mCEGUISortList.end(), compLabels);
+
+            CEGUISortList::iterator curWindow = mCEGUISortList.begin();
+            CEGUISortList::iterator endWindowList = mCEGUISortList.end();
+            unsigned int i = 0;
+            for( ; curWindow != endWindowList; ++curWindow, ++i )
+            {
+               CEGUI::Window* w = (*curWindow)->GetCEGUIWindow();
+               w->moveToBack();
+            }
+         }
+      }
+
+      void LabelManager::ApplyLabelToActor(dtDAL::ActorProxy& proxy, dtCore::Camera& deltaCamera,
+               LabelMap& newLabels, std::string& nameBuffer)
+      {
          // Declare variables to be used for each loop iteration.
          dtCore::Transformable* actor = NULL;
          dtCore::RefPtr<SimCore::Components::HUDLabel> label;
@@ -493,83 +580,72 @@ namespace SimCore
          osg::Vec3d worldPos;
          osg::Vec3d screenPos;
 
-         LabelMap newLabels;
 
-         CompareHUDLabelPointers compLabels;
+         // Get the current entity actor.
+         proxy.GetActor(actor);
 
-         std::string nameBuffer;
+         osg::Node* n = actor->GetOSGNode();
 
-         ProxyList::iterator curProxy = proxies.begin();
-         ProxyList::iterator endProxyList = proxies.end();
-         for (; curProxy != endProxyList; ++curProxy)
+         //if we have a valid bounding sphere, use the center point.
+         if (n->getBound()._radius > 0.0)
          {
-            dtDAL::ActorProxy& proxy = **curProxy;
-            // Get the current entity actor.
-            proxy.GetActor(actor);
+            worldPos = n->getBound()._center;
+         }
+         else
+         {
+            dtCore::Transform xform;
+            actor->GetTransform(xform);
+            osg::Vec3 worldPos;
+            xform.GetTranslation(worldPos);
+         }
 
-            osg::Node* n = actor->GetOSGNode();
+         //Determine if entity is in view.
+         if (!deltaCamera.ConvertWorldCoordinateToScreenCoordinate(worldPos, screenPos))
+         {
+            //Entity not in view, avoid setting a label for it.
+            return;
+         }
 
-            //if we have a valid bounding sphere, use the center point.
-            if (n->getBound()._radius > 0.0)
-            {
-               worldPos = n->getBound()._center;
-            }
-            else
-            {
-               dtCore::Transform xform;
-               actor->GetTransform(xform);
-               osg::Vec3 worldPos;
-               xform.GetTranslation(worldPos);
-            }
+         dtCore::Transform camXform;
+         deltaCamera.GetTransform(camXform);
+         osg::Vec3 camPos;
+         camXform.GetTranslation(camPos);
+         if (GetOptions().GetMaxLabelDistance() > 0.0 &&
+                  (camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
+         {
+            return;
+         }
 
-            //Determine if entity is in view.
-            if (!deltaCamera->ConvertWorldCoordinateToScreenCoordinate(worldPos, screenPos))
-            {
-               //Entity not in view, avoid setting a label for it.
-               continue;
-            }
+         // Find a label that is not being used.
+         label = GetOrCreateLabel(proxy);
 
-            dtCore::Transform camXform;
-            deltaCamera->GetTransform(camXform);
-            osg::Vec3 camPos;
-            camXform.GetTranslation(camPos);
-            if (GetOptions().GetMaxLabelDistance() > 0.0 &&
-                     (camPos - worldPos).length2() > GetOptions().GetMaxLabelDistance2())
-            {
-               continue;
-            }
+         dtDAL::StringActorProperty* mappingTypeProp = NULL;
+         proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
+         if (mappingTypeProp != NULL)
+         {
+            nameBuffer = proxy.GetName() + "  /  " + mappingTypeProp->GetValue();
+         }
+         else
+         {
+            nameBuffer = proxy.GetName();
+         }
 
-            // Find a label that is not being used.
-            label = GetOrCreateLabel(proxy);
+         if (nameBuffer != label->GetText())
+         {
 
-            newLabels.insert(std::make_pair(actor->GetUniqueId(), label));
+            // If a valid label was successfully obtained...
+            // Set the label text.
+            label->SetText(nameBuffer);
 
-            dtDAL::StringActorProperty* mappingTypeProp = NULL;
-            proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME, mappingTypeProp);
-            if (mappingTypeProp != NULL)
-            {
-               nameBuffer = proxy.GetName() + "  /  " + mappingTypeProp->GetValue();
-            }
-            else
-            {
-               nameBuffer = proxy.GetName();
-            }
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
+            // Change the size base on the size of the font with text.
+            CEGUI::Font* font = label->GetCEGUIWindow()->getFont();
+            float width = font->getTextExtent(proxy.GetName());
+            label->SetSize( width, font->getLineSpacing() );
+         }
 
-            if (nameBuffer != label->GetText())
-            {
-
-               // If a valid label was successfully obtained...
-               // Set the label text.
-               label->SetText(nameBuffer);
-
-               // Change the size base on the size of the font with text.
-               CEGUI::Font* font = label->GetCEGUIWindow()->getFont();
-               float width = font->getTextExtent(proxy.GetName());
-               label->SetSize( width, font->getLineSpacing() );
-            }
-
-            osg::Vec2 labelSize;
-            label->GetSize(labelSize);
+         osg::Vec2 labelSize;
+         label->GetSize(labelSize);
 
 //            dtDAL::Vec3ActorProperty* velProp = NULL;
 //            proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_VELOCITY_VECTOR, velProp);
@@ -578,42 +654,30 @@ namespace SimCore
 //               label->SetVelocity(velProp->GetValue());
 //            }
 
-            dtDAL::ActorProperty* damProp = NULL;
-            proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
-            if (damProp != NULL)
-            {
-               label->SetLine2(damProp->ToString());
-            }
-
-            AssignLabelColor(proxy, *label);
-
-            osg::Vec2 pos = CalculateLabelScreenPosition(*actor, *deltaCamera, screenPos, labelSize);
-
-            //x / 2 is to center it. subtracting the y size puts it at the top.
-            label->SetPosition(pos.x(), pos.y());
-
-            // Set the label's depth so that it can be sorted in a label sorting loop.
-            label->SetZDepth( screenPos.z() );
-
-            mCEGUISortList.push_back(label.get());
-         }
-
-         std::sort(mCEGUISortList.begin(), mCEGUISortList.end(), compLabels);
-
-         //We stored add the labels we're using now in the new map, so we swap with the last set
-         //for the next frame.
-         mLastLabels.swap(newLabels);
-
-         CEGUISortList::iterator curWindow = mCEGUISortList.begin();
-         CEGUISortList::iterator endWindowList = mCEGUISortList.end();
-         unsigned int i = 0;
-         for( ; curWindow != endWindowList; ++curWindow, ++i )
+         dtDAL::ActorProperty* damProp = NULL;
+         proxy.GetProperty(SimCore::Actors::BaseEntityActorProxy::PROPERTY_DAMAGE_STATE, damProp);
+         if (damProp != NULL)
          {
-            CEGUI::Window* w = (*curWindow)->GetCEGUIWindow();
-            w->moveToBack();
+            label->SetLine2(damProp->ToString());
          }
-      }
 
+         AssignLabelColor(proxy, *label);
+
+         osg::Vec2 pos = CalculateLabelScreenPosition(*actor, deltaCamera, screenPos, labelSize);
+
+         //x / 2 is to center it. subtracting the y size puts it at the top.
+         label->SetPosition(pos.x(), pos.y());
+
+         // Set the label's depth so that it can be sorted in a label sorting loop.
+         label->SetZDepth( screenPos.z() );
+
+         {
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
+            mCEGUISortList.push_back(label.get());
+            newLabels.insert(std::make_pair(actor->GetUniqueId(), label));
+         }
+
+      }
 
       //////////////////////////////////////////////////////////////////////////
       const std::string LabelManager::AssignLabelColor( const dtDAL::ActorProxy& actor, HUDLabel& label)
@@ -650,7 +714,7 @@ namespace SimCore
          size_t labelCount = mLastLabels.size();
          size_t labelAttachedCount = 0;
 
-         if( mGUILayer.valid() )
+         if (mGUILayer.valid())
          {
             CEGUI::Window* layerWindow = mGUILayer->GetCEGUIWindow();
 
@@ -763,14 +827,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void LabelManager::OnMessage( MessageData *data )
+      void LabelManager::OnMessage( MessageData* data )
       {
-         // This behavior solves the problem - when is my camera position finished? Ideally, we need 4 steps in
-         // our system: 1) Simulate, 2) Update Camera Pos, 3) Post Camera Update, and 4) Draw. Currently, we only
-         // have 1 (preframe), 2 (framesynch), &  4 (frame).
-         // The following code traps during the framesynch and forces the camera to update itself, and then
-         // does our 'Post Camera' work.
-         // This behavior is duplicated in RenderingSupportComponent. If you change this, you should change that...
+         // In frame sync, the cameras have already had their view matrices updated
+         // which we need, so here is where the update occurs.
          if( data->message == dtCore::System::MESSAGE_FRAME_SYNCH)
          {
             try
