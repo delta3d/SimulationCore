@@ -13,7 +13,6 @@
 #include <dtUtil/mswin.h>
 #include <Components/InputComponent.h>
 #include <Components/WeaponComponent.h>
-
 #include <osgGA/GUIEventAdapter>
 
 #include <dtGame/messagetype.h>
@@ -23,7 +22,6 @@
 #include <dtABC/application.h>
 #include <dtActors/engineactorregistry.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/shadermanager.h>
 
 #include <SimCore/Utilities.h>
 #include <SimCore/BaseGameEntryPoint.h>
@@ -246,28 +244,22 @@ namespace NetDemo
       bool keyUsed = true;
       switch(key)
       {
+         case '\\':
+         case osgGA::GUIEventAdapter::KEY_Insert:
+         {
+            SetNextStatisticsIfDevMode();
+         }
+         break;
+
          case 'p':
          {
-            if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
-            {
-               dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
-               //ToggleEntityShaders();
-               LOG_ALWAYS("Reloading All Shaders...");
-            }
-            break;
+            ReloadShadersIfDevMode();
          }
+         break;
 
          case 'P':
          {
-            if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
-            {
-               dtPhysics::PhysicsComponent* physicsComponent = NULL;
-               GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
-               if (physicsComponent != NULL)
-               {
-                  physicsComponent->SetNextDebugDrawMode();
-               }
-            }
+            SetNextPhysicsDebugDrawIfDevMode();
          }
          break;
 
@@ -335,19 +327,6 @@ namespace NetDemo
                bool deleteAll = keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_L) ||
                   keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Shift_R);
                KillEnemy(deleteAll);
-            }
-            break;
-
-         case '\\':
-         case osgGA::GUIEventAdapter::KEY_Insert:
-            {
-               std::string developerMode;
-               developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue
-                  (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
-               if (developerMode == "true" || developerMode == "1")
-               {
-                  GetGameManager()->GetApplication().SetNextStatisticsType();
-               }
             }
             break;
 

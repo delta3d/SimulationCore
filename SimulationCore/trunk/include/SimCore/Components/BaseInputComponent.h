@@ -96,6 +96,23 @@ namespace SimCore
             SimCore::Actors::StealthActor* GetStealthActor();
             void SetStealthActor(SimCore::Actors::StealthActor* stealth);
 
+            /**
+             * Moves to the next on-screen system timing statistics if dev mode is enabled via
+             * config option.  This is a helper method that exists so apps can easily map a key to this.
+             */
+            void SetNextStatisticsIfDevMode();
+
+            /**
+             * Moves to the next physics debug draw mode if dev mode is enabled via
+             * config option.  This is a helper method that exists so apps can easily map a key to this.
+             */
+            void SetNextPhysicsDebugDrawIfDevMode();
+
+            /**
+             * Reloads and and reassigns all shaders from disk if dev mode is enabled via
+             * config option.  This is a helper method that exists so apps can easily map a key to this.
+             */
+            void ReloadShadersIfDevMode();
 
          protected:
             //Increases/decreases the Level of Detail scale by 10%
