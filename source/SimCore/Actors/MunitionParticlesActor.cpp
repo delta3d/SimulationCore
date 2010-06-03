@@ -243,6 +243,9 @@ namespace SimCore
       , mCurrentTracerRoundNumber(0)
       , mFrequencyOfTracers(10)
       {
+#ifndef AGEIA_PHYSICS
+         mPhysicsHelper->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
+#endif
       }
 
       ////////////////////////////////////////////////////////////////////
