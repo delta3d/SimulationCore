@@ -33,6 +33,7 @@
 #include <osg/MatrixTransform>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtUtil/mathdefines.h>
+#include <dtDAL/propertymacros.h>
 
 namespace SimCore
 {
@@ -42,7 +43,7 @@ namespace SimCore
    void GetLocalMatrix(osgSim::DOFTransform* node, osg::Matrix& wcMatrix);
 
    /// Constructor that provides default values for properties and initial values for state variables.
-   FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
+   FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy& proxy)
    : BaseClass(proxy)
    , mMaxMPH(200.0f)
    , mIsVehicleFourWheelDrive(false)
@@ -53,6 +54,32 @@ namespace SimCore
    , mCurrentNormalizedBrakes(0.0f)
    , mFrontMaxJounce(0.0f)
    , mRearMaxJounce(0.0f)
+   , mFrontWheelMass(25.0f)
+   , mFrontWheelRadius(-1.0f)
+   , mFrontWheelWidth(-1.0f)
+   , mFrontSuspensionTravel(0.3f)
+   , mFrontSuspensionRestLength(0.35f)
+   , mFrontSuspensionSpringFreq(1.1f)
+   , mFrontSuspensionDamperFactor(0.4f)
+   , mFrontTireSlip(0.05)
+   , mFrontTireValue(0.1)
+   , mFrontTireAsymptoteSlip(0.1)
+   , mFrontTireAsymptoteValue(1.01)
+   , mFrontTireStiffness(100000.0f)
+   , mFrontTireRestitution(0.1f)
+   , mRearWheelMass(25.0f)
+   , mRearWheelRadius(-1.0f)
+   , mRearWheelWidth(-1.0f)
+   , mRearSuspensionTravel(0.3f)
+   , mRearSuspensionRestLength(0.35f)
+   , mRearSuspensionSpringFreq(1.1f)
+   , mRearSuspensionDamperFactor(0.4f)
+   , mRearTireSlip(0.1f)
+   , mRearTireValue(0.1f)
+   , mRearTireAsymptoteSlip(0.1f)
+   , mRearTireAsymptoteValue(0.1f)
+   , mRearTireStiffness(100000.0f)
+   , mRearTireRestitution(0.1f)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -111,6 +138,38 @@ namespace SimCore
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelMass);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelRadius);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelWidth);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionTravel);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionRestLength);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionSpringFreq);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionDamperFactor);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireSlip);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireValue);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteSlip);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteValue);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireStiffness);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireRestitution);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelMass);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelRadius);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelWidth);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionTravel);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionRestLength);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionSpringFreq);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionDamperFactor);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireSlip);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireValue);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteSlip);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteValue);
+
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireStiffness);
+   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireRestitution);
 
    // ///////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Methods                                 //
@@ -233,17 +292,17 @@ namespace SimCore
 
       float frontDamping, rearDamping, frontSpring, rearSpring;
 
-      frontSpring = CalcSpringRate(GetSuspensionSpringFreq(), GetChassisMass(), wheelbase, rearLeverArm);
-      rearSpring = CalcSpringRate(GetSuspensionSpringFreq(), GetChassisMass(), wheelbase, frontLeverArm);
-      frontDamping = CalcDamperCoeficient(GetSuspensionSpringDamper(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
-      rearDamping = CalcDamperCoeficient(GetSuspensionSpringDamper(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
+      frontSpring = CalcSpringRate(GetFrontSuspensionSpringFreq(), GetChassisMass(), wheelbase, rearLeverArm);
+      rearSpring = CalcSpringRate(GetRearSuspensionSpringFreq(), GetChassisMass(), wheelbase, frontLeverArm);
+      frontDamping = CalcDamperCoeficient(GetFrontSuspensionDamperFactor(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
+      rearDamping = CalcDamperCoeficient(GetRearSuspensionDamperFactor(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
 
       float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
       float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
       float frontDeflection = (frontWheelLoad / frontSpring);
       float rearDeflection  = (rearWheelLoad / rearSpring);
-      mFrontMaxJounce       = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - frontDeflection);
-      mRearMaxJounce        = dtUtil::Max(0.0f, GetWheelSuspensionTravel() - rearDeflection);
+      mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionTravel() - frontDeflection);
+      mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionTravel() - rearDeflection);
 
       WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
       WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;
@@ -273,10 +332,42 @@ namespace SimCore
 //
 //      }
 
-      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), frontSpring, frontDamping, GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), frontSpring, frontDamping, GetIsVehicleFourWheelDrive(), true, true);
-      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), rearSpring, rearDamping, true, false, true);
-      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), rearSpring, rearDamping, true, false, true);
+      BaseWheeledVehiclePhysicsHelper::TireParameters tp;
+      BaseWheeledVehiclePhysicsHelper::SuspensionParameters sp;
+
+      tp.mWidth = GetFrontWheelWidth();
+      tp.mRadius = GetFrontWheelRadius();
+      tp.mStiffness = GetFrontTireStiffness();
+      tp.mRestitution = GetFrontTireRestitution();
+      tp.mExtremeSlip = GetFrontTireSlip();
+      tp.mExtremeValue = GetFrontTireValue();
+      tp.mAsymptoteSlip = GetFrontTireAsymptoteSlip();
+      tp.mAsypmtoteValue = GetFrontTireAsymptoteValue();
+
+      sp.mDamperCoef = frontDamping;
+      sp.mSpringRate = frontSpring;
+      sp.mRestLength = GetFrontSuspensionRestLength();
+      sp.mTravel = GetFrontSuspensionTravel();
+
+      mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
+      mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
+
+      tp.mWidth = GetRearWheelWidth();
+      tp.mRadius = GetRearWheelRadius();
+      tp.mStiffness = GetRearTireStiffness();
+      tp.mRestitution = GetRearTireRestitution();
+      tp.mExtremeSlip = GetRearTireSlip();
+      tp.mExtremeValue = GetRearTireValue();
+      tp.mAsymptoteSlip = GetRearTireAsymptoteSlip();
+      tp.mAsypmtoteValue = GetRearTireAsymptoteValue();
+
+      sp.mDamperCoef = rearDamping;
+      sp.mSpringRate = rearSpring;
+      sp.mRestLength = GetRearSuspensionRestLength();
+      sp.mTravel = GetRearSuspensionTravel();
+
+      mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), tp, sp, true, false, true);
+      mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), tp, sp, true, false, true);
 
 
 #ifdef AGEIA_PHYSICS
@@ -302,7 +393,6 @@ namespace SimCore
 
    void FourWheelVehiclePhysicsHelper::BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn)
    {
-      BaseClass::BuildPropertyMap(toFillIn);
 
       static const dtUtil::RefString FOUR_WHEEL_GROUP("Four Wheel Vehicle");
 
@@ -324,5 +414,113 @@ namespace SimCore
                "Track is the distance along the axle of a wheel from the centerline of a vehicle."
                "Setting this moves the rear wheels closer or farther from the centerline.",
                FOUR_WHEEL_GROUP));
+
+      static const dtUtil::RefString WHEELGROUP("Wheel Physics");
+      typedef dtDAL::PropertyRegHelper<FourWheelVehiclePhysicsHelper&, FourWheelVehiclePhysicsHelper> PropRegType;
+      PropRegType propRegHelper(*this, this, WHEELGROUP);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontWheelMass, "Front Wheel Mass","This is not used for dtPhysics."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontWheelRadius, "Front Wheel Radius","Rolling radius of wheel, -1 to auto calc."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontWheelWidth, "Front Wheel Width","Width of wheel, -1 to auto calc."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionTravel, "Front Suspension Travel",
+               "Total suspension travel from full rebound to full jounce"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionRestLength, "Front Suspension Rest Length",
+               "Target value position of spring where the spring force is zero.  This should > the suspension travel."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionSpringFreq, "Front Spring Frequency",
+               "The oscillation frequency of the spring in Hz, 1.0-2.0 is usual"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionDamperFactor, "Front Suspension Damping Factor",
+               "Ratio this damping to the critical damping for the suspension, usually 0-0.5"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireSlip, "Front Tire Slip",
+               "The point on the tire curve where the tire stops applying any more lateral force"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireValue, "Front Tire Value",
+               "The point on the tire curve where the tire stops responding with force near linearly vs. the lateral force"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteSlip, "Front Tire Asymptote Slip",
+               "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteValue, "Front Tire Asymptote Value",
+               "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireStiffness, "Front Tire Stiffness",
+               "The spring coefficient in N/m for the tire.  Should be very large, 100 thousands range"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(FrontTireRestitution, "Front Tire Restitution",
+               "Coefficient of restitution --  0 makes the tire bounce as little as possible, "
+               "higher values up to 1.0 result in more bounce.  "
+               "Note that values close to or above 1 may cause stability problems and/or increasing energy."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearWheelMass, "Rear Wheel Mass","This is not used for dtPhysics."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearWheelRadius, "Rear Wheel Radius","Rolling radius of wheel, -1 to auto calc."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearWheelWidth, "Rear Wheel Width","Width of wheel, -1 to auto calc."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionTravel, "Rear Suspension Travel",
+               "Total suspension travel from full rebound to full jounce"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionRestLength, "Rear Suspension Rest Length",
+               "Target value position of spring where the spring force is zero.  This should > the suspension travel."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionSpringFreq, "Rear Spring Frequency",
+               "The oscillation frequency of the spring in Hz, 1.0-2.0 is usual"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionDamperFactor, "Rear Suspension Damping Factor",
+               "Ratio this damping to the critical damping for the suspension, usually 0-0.5"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireSlip, "Rear Tire Slip",
+               "The point on the tire curve where the tire stops applying any more lateral force"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireValue, "Rear Tire Value",
+               "The point on the tire curve where the tire stops responding with force near linearly vs. the lateral force"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteSlip, "Rear Tire Asymptote Slip",
+               "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteValue, "Rear Tire Asymptote Value",
+               "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireStiffness, "Rear Tire Stiffness",
+               "The spring coefficient in N/m for the tire.  Should be very large, 100 thousands range"
+               , PropRegType, propRegHelper);
+
+      REGISTER_PROPERTY_WITH_LABEL(RearTireRestitution, "Rear Tire Restitution",
+               "Coefficient of restitution --  0 makes the tire bounce as little as possible, "
+               "higher values up to 1.0 result in more bounce.  "
+               "Note that values close to or above 1 may cause stability problems and/or increasing energy."
+               , PropRegType, propRegHelper);
+
+      BaseClass::BuildPropertyMap(toFillIn);
    }
 } // end namespace

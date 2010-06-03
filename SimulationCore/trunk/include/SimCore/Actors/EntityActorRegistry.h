@@ -67,8 +67,8 @@ namespace SimCore
 
             static dtCore::RefPtr<dtDAL::ActorType> PAGED_TERRAIN_PHYSICS_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> AGEIA_VEHICLE_ACTOR_TYPE;
+            static dtCore::RefPtr<dtDAL::ActorType> FOUR_WHEEL_VEHICLE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> HUMAN_PHYSICS_ACTOR_TYPE;
-            //static dtCore::RefPtr<dtDAL::ActorType> AGEIA_EMBARKABLE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> PORTAL_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> VEHICLE_CONFIG_ACTOR_TYPE;
@@ -77,7 +77,6 @@ namespace SimCore
             static dtCore::RefPtr<dtDAL::ActorType> DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE;
             static dtCore::RefPtr<dtDAL::ActorType> OCEAN_WATER_ACTOR_TYPE;
-            static dtCore::RefPtr<dtDAL::ActorType> NECC_BOAT_ACTOR_TYPE;
 
             static dtCore::RefPtr<dtDAL::ActorType> BLIP_ACTOR_TYPE;
 

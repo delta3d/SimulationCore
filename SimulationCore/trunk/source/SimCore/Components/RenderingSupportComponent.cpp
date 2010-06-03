@@ -679,6 +679,14 @@ namespace SimCore
             SimCore::Actors::PagedTerrainPhysicsActorProxy* landActorProxy = NULL;
             GetGameManager()->FindActorByName(SimCore::Actors::PagedTerrainPhysicsActor::DEFAULT_NAME, landActorProxy);
 
+            if (landActorProxy == NULL)
+            {
+               dtCore::RefPtr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = NULL;
+               GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
+               GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
+               landActorProxy = terrainPhysicsActorProxy;
+            }
+
             if (landActorProxy != NULL)
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
@@ -998,6 +1006,15 @@ namespace SimCore
             {
                SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
                landActorProxy->GetActor(landActor);
+               mCullVisitor->SetLandActor(landActor);
+            }
+            else
+            {
+               dtCore::RefPtr<SimCore::Actors::PagedTerrainPhysicsActorProxy> terrainPhysicsActorProxy = NULL;
+               GetGameManager()->CreateActor(*SimCore::Actors::EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE, terrainPhysicsActorProxy);
+               GetGameManager()->AddActor(*terrainPhysicsActorProxy, false, false);
+               SimCore::Actors::PagedTerrainPhysicsActor* landActor = NULL;
+               terrainPhysicsActorProxy->GetActor(landActor);
                mCullVisitor->SetLandActor(landActor);
             }
          }
