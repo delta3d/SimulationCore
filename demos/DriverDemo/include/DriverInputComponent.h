@@ -218,9 +218,6 @@ namespace DriverDemo
          /// Destructor
          virtual ~DriverInputComponent();
 
-         //void Cycle(bool forward, bool attach);
-         void ToggleEntityShaders();
-
          void ResetTurnSpeeds();
 
          // This function tracks states such as the vehicle's damage state.
