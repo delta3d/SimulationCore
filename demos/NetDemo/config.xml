@@ -60,7 +60,7 @@ C:\Curtiss\Projects\SimulationCore\demos\DriverDemo
       <Property Name="dtNetGM.Role">client</Property>
       <Property Name="dtNetGM.Role">Server</Property>
       -->
-      <Property Name="dtNetGM.Role">Server</Property>
+               <Property Name="dtNetGM.Role">Server</Property>
       <Property Name="dtNetGM.ServerPort">7329</Property>
       <!--<Property Name="dtNetGM.ServerPort">5111</Property>-->
       <!--<Property Name="dtNetGM.ServerHost">216.54.77.50</Property>-->

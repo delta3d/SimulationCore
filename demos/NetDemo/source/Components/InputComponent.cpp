@@ -171,6 +171,9 @@ namespace NetDemo
       BaseClass::OnAddedToGM();
       dtABC::Application& app = GetGameManager()->GetApplication();
       mMotionModel = new dtCore::FlyMotionModel(app.GetKeyboard(),app.GetMouse(), dtCore::FlyMotionModel::OPTION_DEFAULT);
+      mMotionModel->SetMaximumFlySpeed(5.0f);
+      mMotionModel->SetMaximumTurnSpeed(90.0f);
+
 
       mRingMM = new SimCore::ClampedMotionModel(app.GetKeyboard(), app.GetMouse());
       mRingMM->SetMaximumMouseTurnSpeed(40.0f);
