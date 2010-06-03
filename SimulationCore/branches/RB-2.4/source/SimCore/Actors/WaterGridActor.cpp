@@ -1126,10 +1126,10 @@ namespace SimCore
 
          float a0 = 0.05f;
          float a1 = 1.25f; // 5.0f;
-         float outerMostRingDistance = 1000.0; // the furthest rings get an extra reach.
-         float middleRingDistance = 10.0; // Middle rings get a minor boost too.
-         int numOuterRings = 5;
-         int numMiddleRings = 15;
+         float outerMostRingDistance = 1250.0; // the furthest rings get an extra reach.
+         float middleRingDistance = 12.5; // Middle rings get a minor boost too.
+         int numOuterRings = 10;
+         int numMiddleRings = 50;
          float innerExpBase = 1.025f;
          float middleExpBase = 1.05;
          float outerExpBase = 1.5f;
