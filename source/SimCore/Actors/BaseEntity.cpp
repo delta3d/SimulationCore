@@ -463,6 +463,10 @@ namespace SimCore
             mDeadReckoningHelper->SetGroundOffset(0.09);
             AddComponent(*mDeadReckoningHelper);
          }
+         else
+         {
+            GetComponent(mDeadReckoningHelper);
+         }
 
 
          // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
