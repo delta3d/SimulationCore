@@ -12,6 +12,7 @@ PROJECT(SimulationCore)
 
 ################################################################################
 # User Options
+OPTION(BUILD_DIS "Enables the linking of dtDIS for StealthViewer" OFF)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
@@ -218,6 +219,10 @@ IF (DELTA3D_FOUND)
 
    #FIND_PACKAGE(GDAL)
    #FIND_PACKAGE(DIS)
+
+   IF (BUILD_DIS)
+     FIND_PACKAGE(dtDIS REQUIRED)
+   ENDIF (BUILD_DIS)
 
    IF (BUILD_HLA)
       IF (USE_RTIS)
