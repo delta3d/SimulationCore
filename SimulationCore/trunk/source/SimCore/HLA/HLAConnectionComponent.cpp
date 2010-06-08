@@ -111,7 +111,7 @@ namespace SimCore
       void HLAConnectionComponent::DoReconnectToNetwork()
       {
          // Look for a coordinate config actor.
-         dtActors::CoordinateConfigActor* ccActor;
+         dtActors::CoordinateConfigActor* ccActor = NULL;
          std::vector<dtDAL::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
@@ -138,7 +138,6 @@ namespace SimCore
          // DIS
          else if (*mConnectionType == ConnectionType::TYPE_DIS)
          {
-            DoConnectToDIS(ccActor);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
          }
 
@@ -224,26 +223,6 @@ namespace SimCore
             }
          }
 
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////
-      void HLAConnectionComponent::DoConnectToDIS(dtActors::CoordinateConfigActor* ccActor)
-      {
-#ifdef DIS_CONNECTIONS_AVAILABLE
-         // Find the existing client component. If none exists, then create it.
-         dtDIS::MasterComponent* disComponent;
-         GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
-         if (disComponent == NULL)
-         {
-            mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
-               "Error - could not find DIS Component in the Game Manager.", __FILE__, __LINE__);
-         }
-         else if (ccActor != NULL)
-         {
-            disComponent->GetSharedState()->GetCoordinateConverter() = ccActor->GetCoordinateConverter();
-         }
-#endif
       }
 
       ///////////////////////////////////////////////////////////////////////
