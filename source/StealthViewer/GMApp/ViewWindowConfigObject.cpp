@@ -97,6 +97,11 @@ namespace StealthGM
    {
       if (IsUpdated() || GetMainViewWindow().IsUpdated())
       {
+         /// Setting the near/far planes on the main window from the global ones.
+         GetMainViewWindow().SetNearClippingPlane(GetNearClippingPlane());
+         GetMainViewWindow().SetFarClippingPlane(GetFarClippingPlane());
+         GetMainViewWindow().ApplyChanges(gameManager);
+
          // Send the Near/Far clipping plane to the weather component
          SimCore::Components::WeatherComponent* weatherComp = NULL;
          gameManager.GetComponentByName(SimCore::Components::WeatherComponent::DEFAULT_NAME, weatherComp);
@@ -107,10 +112,6 @@ namespace StealthGM
             weatherComp->UpdateFog();
          }
 
-         /// Setting the near/far planes on the main window from the global ones.
-         GetMainViewWindow().SetNearClippingPlane(GetNearClippingPlane());
-         GetMainViewWindow().SetFarClippingPlane(GetFarClippingPlane());
-         GetMainViewWindow().ApplyChanges(gameManager);
          SetIsUpdated(false);
       }
       std::for_each(mViewWindows.begin(), mViewWindows.end(), CallUpdate<ViewWindowContainer::value_type>(*this, gameManager));
