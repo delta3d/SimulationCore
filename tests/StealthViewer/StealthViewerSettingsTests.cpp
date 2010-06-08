@@ -274,7 +274,9 @@ void StealthViewerSettingsTests::TestParseIniFile()
    settings.AddConnection(QString("TestName"), QString("TestMap"),   QString("TestConfig"),
                           QString("TestFed"),  QString("TestFedex"), QString("TestFedName"),
                           QString("TestRid"), QString("HLA"), QString("TestIPAddress"), 
-                          QString("TestServerPort"), QString("TestServerGameName"), QString("1"));
+                          QString("TestServerPort"), QString("TestServerGameName"), QString("1"),
+                          QString("TestDISIPAddress"), 62040, 1, 1500, 0,
+                          0, QString("TestDISActorXMLFile"));
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
    settings.ClearAllSettings(false);
@@ -300,10 +302,20 @@ void StealthViewerSettingsTests::TestParseIniFile()
    testProps.push_back(QString("TestServerPort"));
    testProps.push_back(QString("TestServerGameName"));
    testProps.push_back(QString("1"));
+   testProps.push_back(QString("TestDISIPAddress"));
+   testProps.push_back(QString("62040"));
+   testProps.push_back(QString("1"));
+   testProps.push_back(QString("1500"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("TestDISActorXMLFile"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
       testProps[3], testProps[4], testProps[5], testProps[6], 
-      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11]);
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11],
+      testProps[12], testProps[13].toUInt(), testProps[14].toUInt(),
+      testProps[15].toUShort(), testProps[16].toUShort(),
+      testProps[17].toUInt(), testProps[18]);
 
    CPPUNIT_ASSERT_EQUAL(1U, settings.GetNumConnections());
 
@@ -333,11 +345,21 @@ void StealthViewerSettingsTests::TestAddConnection()
    testProps.push_back(QString("TestServerPort"));
    testProps.push_back(QString("TestServerGameName"));
    testProps.push_back(QString("1"));
+   testProps.push_back(QString("TestDISIPAddress"));
+   testProps.push_back(QString("62040"));
+   testProps.push_back(QString("1"));
+   testProps.push_back(QString("1500"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("TestDISActorXMLFile"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
                           testProps[3], testProps[4], testProps[5],
                           testProps[6], testProps[7], testProps[8], 
-                          testProps[9], testProps[10], testProps[11]);
+                          testProps[9], testProps[10], testProps[11],
+                          testProps[12], testProps[13].toUInt(), testProps[14].toUInt(),
+                          testProps[15].toUShort(), testProps[16].toUShort(),
+                          testProps[17].toUInt(), testProps[18]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 
@@ -373,7 +395,14 @@ void StealthViewerSettingsTests::TestRemoveConnection()
                              QString("ServerIPAddress")  + QString::number(i),
                              QString("ServerPort")  + QString::number(i),
                              QString("ServerGameName")  + QString::number(i),
-                             QString("12")  + QString::number(i));
+                             QString("12")  + QString::number(i),
+                             QString("TestDISIPAddress") + QString::number(i),
+                             (QString("62040") + QString::number(i)).toUInt(),
+                             (QString("1") + QString::number(i)).toUInt(),
+                             (QString("1500") + QString::number(i)).toUShort(),
+                             (QString("0") + QString::number(i)).toUShort(),
+                             (QString("0") + QString::number(i)).toUInt(),
+                             QString("TestDISActorXMLFile") + QString::number(i));
    }
 
    CPPUNIT_ASSERT_EQUAL(numConnections, settings.GetNumConnections());

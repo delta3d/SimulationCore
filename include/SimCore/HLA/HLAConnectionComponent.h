@@ -73,6 +73,7 @@ namespace SimCore
                static ConnectionType TYPE_NONE;;
                static ConnectionType TYPE_HLA;
                static ConnectionType TYPE_CLIENTSERVER;
+               static ConnectionType TYPE_DIS;
                static ConnectionType TYPE_OTHER;
 
             protected:
@@ -187,6 +188,41 @@ namespace SimCore
             /// Game Version (ex 1) is only used with type ClientServer
             int GetServerGameVersion() const { return mServerGameVersion; }
 
+            /// IP Address used with type DIS Connections
+            void SetDISIPAddress(const std::string &newValue) { mDISIPAddress = newValue; }
+            /// IP Address used with type DIS Connections
+            const std::string& GetDISIPAddress() const { return mDISIPAddress; }
+
+            /// Port used with type DIS Connections
+            void SetDISPort(unsigned int newValue) { mDISPort = newValue; }
+            /// Port used with type DIS Connections
+            unsigned int GetDISPort() const { return mDISPort; }
+
+            /// Exercise ID used with type DIS Connections
+            void SetDISExerciseID(unsigned char newValue) { mDISExerciseID = newValue; }
+            /// Exercise ID used with type DIS Connections
+            unsigned char GetDISExerciseID() const { return mDISExerciseID; }
+
+            /// Site ID used with type DIS Connections
+            void SetDISSiteID(unsigned short newValue) { mDISSiteID = newValue; }
+            /// Site ID used with type DIS Connections
+            unsigned short GetDISSiteID() const { return mDISSiteID; }
+
+            /// Application ID used with type DIS Connections
+            void SetDISApplicationID(unsigned short newValue) { mDISApplicationID = newValue; }
+            /// Application ID used with type DIS Connections
+            unsigned short GetDISApplicationID() const { return mDISApplicationID; }
+
+            /// MTU used with type DIS Connections
+            void SetDISMTU(unsigned int newValue) { mDISMTU = newValue; }
+            /// MTU used with type DIS Connections
+            unsigned int GetDISMTU() const { return mDISMTU; }
+
+            /// Actor XML File used with type DIS Connections
+            void SetDISActorXMLFile(const std::string &newValue) { mDISActorXMLFile = newValue; }
+            /// Actor XML File used with type DIS Connections
+            const std::string& GetDISActorXMLFile() const { return mDISActorXMLFile; }
+
             /**
              * Tells this component to start the initial connection to a network. First 
              * thing it does it reload the maps. The map_loaded message then triggers the connection
@@ -222,6 +258,9 @@ namespace SimCore
             /// Connect to the client server network. Called internally - after map is loaded based on mConnectionType
             void DoConnectToClientServer(dtActors::CoordinateConfigActor* ccActor);
 
+            /// Connect to the DIS network. Called internally - after map is loaded based on mConnectionType
+            void DoConnectToDIS(dtActors::CoordinateConfigActor* ccActor);
+
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
@@ -247,6 +286,13 @@ namespace SimCore
             std::string mServerPort;
             std::string mServerGameName;
             int mServerGameVersion;
+            std::string mDISIPAddress;
+            unsigned int mDISPort;
+            unsigned char mDISExerciseID;
+            unsigned short mDISSiteID;
+            unsigned short mDISApplicationID;
+            unsigned int mDISMTU;
+            std::string mDISActorXMLFile;
 
             const ConnectionState *mState;
       };

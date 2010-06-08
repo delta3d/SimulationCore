@@ -124,10 +124,20 @@ void StealthViewerHLAWindowTests::TestDisplaySavedConnections()
    testProps.push_back(QString("ServerPort"));
    testProps.push_back(QString("ServerGameName"));
    testProps.push_back(QString("ServerVersion"));
+   testProps.push_back(QString("TestDISIPAddress"));
+   testProps.push_back(QString("62040"));
+   testProps.push_back(QString("1"));
+   testProps.push_back(QString("1500"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("0"));
+   testProps.push_back(QString("TestDISActorXMLFile"));
 
    settings.AddConnection(testProps[0], testProps[1], testProps[2],
       testProps[3], testProps[4], testProps[5], testProps[6], 
-      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11]);
+      testProps[7], testProps[8], testProps[9], testProps[10], testProps[11],
+      testProps[12], testProps[13].toInt(), testProps[14].toUInt(),
+      testProps[15].toUShort(), testProps[16].toUShort(),
+      testProps[17].toUInt(), testProps[18]);
 
    CPPUNIT_ASSERT_EQUAL((unsigned int)(1), settings.GetNumConnections());
 

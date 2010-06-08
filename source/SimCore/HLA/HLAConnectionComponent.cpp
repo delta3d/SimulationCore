@@ -30,6 +30,11 @@
 #include <dtHLAGM/hlacomponent.h>
 #include <dtHLAGM/ddmcalculatorgeographic.h>
 
+#ifdef DIS_CONNECTIONS_AVAILABLE
+   #include <dtDIS/mastercomponent.h>
+   #include <dtDIS/sharedstate.h>
+#endif
+
 #include <dtActors/engineactorregistry.h>
 #include <dtActors/coordinateconfigactor.h>
 
@@ -60,6 +65,7 @@ namespace SimCore
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_NONE("NONE");
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_HLA("TYPE_HLA");
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_CLIENTSERVER("TYPE_CLIENTSERVER");
+      HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_DIS("TYPE_DIS");
       HLAConnectionComponent::ConnectionType HLAConnectionComponent::ConnectionType::TYPE_OTHER("TYPE_OTHER");
 
       const std::string HLAConnectionComponent::DEFAULT_NAME("HLAConnectionComponent");
@@ -105,14 +111,17 @@ namespace SimCore
       void HLAConnectionComponent::DoReconnectToNetwork()
       {
          // Look for a coordinate config actor.
+         dtActors::CoordinateConfigActor* ccActor;
          std::vector<dtDAL::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
          if(proxies.empty())
          {
             LOG_ERROR("!!!! ERROR !!!! -- Failed to find a coordinate config actor in the map. This will likely cause major runtime problems or even a crash!!!");
          }
-         dtActors::CoordinateConfigActor* ccActor;
-         proxies[0]->GetActor(ccActor);
+         else
+         {
+            proxies[0]->GetActor(ccActor);
+         }
 
          // HLA
          if (*mConnectionType == ConnectionType::TYPE_HLA)
@@ -124,6 +133,12 @@ namespace SimCore
          else if (*mConnectionType == ConnectionType::TYPE_CLIENTSERVER)
          {
             DoConnectToClientServer(ccActor);
+            mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
+         }
+         // DIS
+         else if (*mConnectionType == ConnectionType::TYPE_DIS)
+         {
+            DoConnectToDIS(ccActor);
             mState = &HLAConnectionComponent::ConnectionState::STATE_CONNECTED;
          }
 
@@ -211,6 +226,26 @@ namespace SimCore
 
       }
 
+      ////////////////////////////////////////////////////////////////////////////////
+      void HLAConnectionComponent::DoConnectToDIS(dtActors::CoordinateConfigActor* ccActor)
+      {
+#ifdef DIS_CONNECTIONS_AVAILABLE
+         // Find the existing client component. If none exists, then create it.
+         dtDIS::MasterComponent* disComponent;
+         GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
+         if (disComponent == NULL)
+         {
+            mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
+            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+               "Error - could not find DIS Component in the Game Manager.", __FILE__, __LINE__);
+         }
+         else if (ccActor != NULL)
+         {
+            disComponent->GetSharedState()->GetCoordinateConverter() = ccActor->GetCoordinateConverter();
+         }
+#endif
+      }
+
       ///////////////////////////////////////////////////////////////////////
       void HLAConnectionComponent::StartNetworkConnection()
       {
@@ -260,7 +295,31 @@ namespace SimCore
                GetGameManager()->AddComponent(*clientNetworkComponent, dtGame::GameManager::ComponentPriority::NORMAL);
             }
          }
+#ifdef DIS_CONNECTIONS_AVAILABLE
+         else if (*mConnectionType == ConnectionType::TYPE_DIS)
+         {
+            dtDIS::MasterComponent* disComponent;
+            GetGameManager()->GetComponentByName(dtDIS::MasterComponent::DEFAULT_NAME, disComponent);
+            if(disComponent != NULL) // if it was already created, remove the old one and replace it with a new one
+            {
+               GetGameManager()->RemoveComponent(*disComponent);
+            }
 
+            dtDIS::ConnectionData disConnectionData;
+            disConnectionData.ip = mDISIPAddress;
+            disConnectionData.port = mDISPort;
+            disConnectionData.exercise_id = mDISExerciseID;
+            disConnectionData.site_id = mDISSiteID;
+            disConnectionData.application_id = mDISApplicationID;
+            disConnectionData.MTU = mDISMTU;
+
+            dtDIS::SharedState* disConfig = new dtDIS::SharedState("", mDISActorXMLFile);
+            disConfig->SetConnectionData(disConnectionData);
+
+            disComponent = new dtDIS::MasterComponent(disConfig);
+            GetGameManager()->AddComponent(*disComponent);
+         }
+#endif
       }
 
       ///////////////////////////////////////////////////////////////////////

@@ -47,6 +47,7 @@ namespace StealthQt
          static const dtUtil::RefString CONNECTIONTYPE_NONE;
          static const dtUtil::RefString CONNECTIONTYPE_HLA;
          static const dtUtil::RefString CONNECTIONTYPE_CLIENTSERVER;
+         static const dtUtil::RefString CONNECTIONTYPE_DIS;
 
          static const QString ORGANIZATION;
          static const QString APPLICATION;
@@ -64,6 +65,13 @@ namespace StealthQt
          static const QString SERVER_PORT;
          static const QString SERVER_GAMENAME;
          static const QString SERVER_GAMEVERSION;
+         static const QString DIS_IP_ADDRESS;
+         static const QString DIS_PORT;
+         static const QString DIS_EXERCISE_ID;
+         static const QString DIS_SITE_ID;
+         static const QString DIS_APPLICATION_ID;
+         static const QString DIS_MTU;
+         static const QString DIS_ACTOR_XML_FILE;
 
          static const QString GENERAL_GROUP;
             static const int WINDOW_DOCK_ID = 0;
@@ -173,7 +181,10 @@ namespace StealthQt
             const QString &ridFile, const QString &connectionType,
             const QString &serverIPAddress, const QString &serverPort, 
             const QString &serverGameName, const QString &serverGameVersion,
-            bool isEditMode = false);
+            const QString &disIPAddress, const unsigned int &disPort,
+            const unsigned char &disExerciseID, const unsigned short &disSiteID,
+            const unsigned short &disApplicationID, const unsigned int &disMTU,
+            const QString &actorXMLFile, bool isEditMode = false);
 
          /**
           * Returns a string list of the properties in the following order:

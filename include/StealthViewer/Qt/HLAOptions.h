@@ -85,6 +85,9 @@ namespace StealthQt
          /// Called when the rid file tool button is clicked
          void OnRidFileToolButtonClicked(bool checked = false);
 
+         /// Called when the actor xml file tool button is clicked
+         void OnActorXMLFileToolButtonClicked(bool checked = false);
+
          /// Called when the Connection Type combo has been changed
          void OnConnectionTypeComboChanged(const QString &text);
 

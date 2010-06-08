@@ -465,7 +465,7 @@ namespace SimCore
          }
          else
          {
-            GetComponent(mDeadReckoningHelper);
+            GetComponent(mDeadReckoningHelper->GetType());
          }
 
 
