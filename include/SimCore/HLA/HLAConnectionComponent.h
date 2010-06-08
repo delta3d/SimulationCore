@@ -258,9 +258,6 @@ namespace SimCore
             /// Connect to the client server network. Called internally - after map is loaded based on mConnectionType
             void DoConnectToClientServer(dtActors::CoordinateConfigActor* ccActor);
 
-            /// Connect to the DIS network. Called internally - after map is loaded based on mConnectionType
-            void DoConnectToDIS(dtActors::CoordinateConfigActor* ccActor);
-
             /**
              * Returns a reference to the HLAGMComponent we use
              * @return The component
