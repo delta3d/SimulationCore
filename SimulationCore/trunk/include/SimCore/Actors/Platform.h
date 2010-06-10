@@ -318,6 +318,11 @@ namespace SimCore
             /// Toggles engine smoke on and off
             DECLARE_PROPERTY(bool, EngineSmokeOn);
 
+            /**
+             * Override method to add actor components needed by this class.
+             */
+            virtual void BuildActorComponents();
+
          protected:
 
             /**
