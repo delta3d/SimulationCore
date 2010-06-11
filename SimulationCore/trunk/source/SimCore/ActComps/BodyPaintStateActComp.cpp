@@ -42,12 +42,13 @@ namespace SimCore
       // CONSTANTS
       //////////////////////////////////////////////////////////////////////////
       const dtGame::ActorComponent::ACType BodyPaintStateActComp::TYPE("BodyPaintStateActComp");
-      const dtUtil::RefString BodyPaintStateActComp::PROPERTY_DIFFUSE_FRAME_OFFSET("Diffuse Frame Offset");
+      const dtUtil::RefString BodyPaintStateActComp::PROPERTY_PAINT_STATE("Paint State");
       const dtUtil::RefString BodyPaintStateActComp::PROPERTY_DIFFUSE_FRAME_SCALE("Diffuse Frame Scale");
+      const dtUtil::RefString BodyPaintStateActComp::PROPERTY_OVERLAY_FRAME_SCALE("Overlay Frame Scale");
       const dtUtil::RefString BodyPaintStateActComp::PROPERTY_OVERLAY_TEXTURE("Overlay Texture");
 
       //////////////////////////////////////////////////////////////////////////
-      const dtUtil::RefString BodyPaintStateActComp::UNIFORM_DIFFUSE_FRAME_OFFSET_AND_SCALE("DiffuseOffsetAndScale");
+      const dtUtil::RefString BodyPaintStateActComp::UNIFORM_FRAME_OFFSET_AND_SCALES("FrameOffsetAndScales");
       const dtUtil::RefString BodyPaintStateActComp::UNIFORM_OVERLAY_TEXTURE("OverlayTexture");
 
 
@@ -71,8 +72,9 @@ namespace SimCore
       {
          BaseClass::SetDefaults();
 
-         mDiffuseFrameOffset.set(0.0f, 0.0f);
-         mDiffuseFrameScale.set(1.0f, 1.0f);
+         mPaintState = 0.0f;
+         mDiffuseFrameScale = 1.0f;
+         mOverlayFrameScale = 1.0f;
       }
 
 
@@ -81,32 +83,48 @@ namespace SimCore
       // PROPERTY MACROS
       // These macros define the Getter method body for each property
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, osg::Vec2, DiffuseFrameOffset); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, osg::Vec2, DiffuseFrameScale); // Setter is implemented below
+      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, PaintState); // Setter is implemented below
+      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, DiffuseFrameScale); // Setter is implemented below
+      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, OverlayFrameScale); // Setter is implemented below
       IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, dtDAL::ResourceDescriptor, OverlayTexture); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintStateActComp::SetDiffuseFrameOffset(const osg::Vec2& offset)
+      void BodyPaintStateActComp::SetPaintState(float state)
       {
-         mDiffuseFrameOffset.set(offset.x(), offset.y());
+         mPaintState = state;
 
          osg::Vec4 offsetAndScale(
-            offset.x(), offset.y(),
-            mDiffuseFrameScale.x(),
-            mDiffuseFrameScale.y());
-         SetUniform(GetStateSet(), UNIFORM_DIFFUSE_FRAME_OFFSET_AND_SCALE, offsetAndScale);
+            state,
+            mDiffuseFrameScale,
+            mOverlayFrameScale,
+            0.0f);
+         SetUniform(GetStateSet(), UNIFORM_FRAME_OFFSET_AND_SCALES, offsetAndScale);
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintStateActComp::SetDiffuseFrameScale(const osg::Vec2& scale)
+      void BodyPaintStateActComp::SetDiffuseFrameScale(float scale)
       {
-         mDiffuseFrameScale.set(scale.x(), scale.y());
+         mDiffuseFrameScale = scale;
 
          osg::Vec4 offsetAndScale(
-            mDiffuseFrameOffset.x(),
-            mDiffuseFrameOffset.y(),
-            scale.x(), scale.y());
-         SetUniform(GetStateSet(), UNIFORM_DIFFUSE_FRAME_OFFSET_AND_SCALE, offsetAndScale);
+            mPaintState,
+            mDiffuseFrameScale,
+            mOverlayFrameScale,
+            0.0f);
+         SetUniform(GetStateSet(), UNIFORM_FRAME_OFFSET_AND_SCALES, offsetAndScale);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void BodyPaintStateActComp::SetOverlayFrameScale(float scale)
+      {
+         mOverlayFrameScale = scale;
+
+         osg::Vec4 offsetAndScale(
+            mPaintState,
+            mDiffuseFrameScale,
+            mOverlayFrameScale,
+            0.0f);
+         SetUniform(GetStateSet(), UNIFORM_FRAME_OFFSET_AND_SCALES, offsetAndScale);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -125,17 +143,24 @@ namespace SimCore
 
          // VEC PROPERTIES
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
-            DiffuseFrameOffset,
-            PROPERTY_DIFFUSE_FRAME_OFFSET,
-            PROPERTY_DIFFUSE_FRAME_OFFSET,
-            "The offset into the diffuse texture to shift the UV coordinates to a certain image, as if the texture were a series of images.",
+            PaintState,
+            PROPERTY_PAINT_STATE,
+            PROPERTY_PAINT_STATE,
+            "The whole number frame offset into the diffuse and overlay textures, to shift their UV coordinates to a certain image/frame, as if the texture were a series of images. The frame offset multiplies with each frame scale to determine the appropriate linear offset for UVs.",
             PropRegType, propRegHelper);
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             DiffuseFrameScale,
             PROPERTY_DIFFUSE_FRAME_SCALE,
             PROPERTY_DIFFUSE_FRAME_SCALE,
-            "The scale factor of imagery in the diffuse texture, as if the texture were a series of images.",
+            "The scale factor of imagery in the diffuse texture, as if the texture were a series of images. The scale is relative to the direction images are lain out (horizontal or vertical) and is equal to 1/number of frames",
+            PropRegType, propRegHelper);
+
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+            OverlayFrameScale,
+            PROPERTY_OVERLAY_FRAME_SCALE,
+            PROPERTY_OVERLAY_FRAME_SCALE,
+            "The scale factor of imagery in the overlay texture, as if the texture were a series of images. The scale is relative to the direction images are lain out (horizontal or vertical) and is equal to 1/number of frames",
             PropRegType, propRegHelper);
 
          // FILE PROPERTIES

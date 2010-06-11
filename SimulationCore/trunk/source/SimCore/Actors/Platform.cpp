@@ -458,8 +458,8 @@ namespace SimCore
       {
          if(IsDrawingModel())
          {
-
             bool setUseDimensions = true;
+            float stateNum = 0.0f;
             osg::Node* modelToCalcDims = NULL;
 
             if(damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
@@ -469,11 +469,13 @@ namespace SimCore
             }
             else if(damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
+               stateNum = 1.0f;
                mSwitchNode->setSingleChildOn(1);
                modelToCalcDims = mDamagedFileNode.get();
             }
             else if(damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
+               stateNum = 2.0f;
                mSwitchNode->setSingleChildOn(2);
                modelToCalcDims = mDestroyedFileNode.get();
             }
@@ -483,6 +485,15 @@ namespace SimCore
                "Damage state is not a valid state");
 
                setUseDimensions = false;
+            }
+
+            // Update the entity painting effect to show damage.
+            SimCore::ActComps::BodyPaintStateActComp* paintActComp
+               = dynamic_cast<SimCore::ActComps::BodyPaintStateActComp*>
+               (GetComponent(SimCore::ActComps::BodyPaintStateActComp::TYPE));
+            if(paintActComp != NULL)
+            {
+               paintActComp->SetPaintState(stateNum);
             }
 
 

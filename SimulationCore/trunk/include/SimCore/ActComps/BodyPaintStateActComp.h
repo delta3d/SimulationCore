@@ -49,12 +49,13 @@ namespace SimCore
             static const ActorComponent::ACType TYPE;
 
             // Property Names
-            static const dtUtil::RefString PROPERTY_DIFFUSE_FRAME_OFFSET;
+            static const dtUtil::RefString PROPERTY_PAINT_STATE;
             static const dtUtil::RefString PROPERTY_DIFFUSE_FRAME_SCALE;
+            static const dtUtil::RefString PROPERTY_OVERLAY_FRAME_SCALE;
             static const dtUtil::RefString PROPERTY_OVERLAY_TEXTURE;
 
             // Uniform Names
-            static const dtUtil::RefString UNIFORM_DIFFUSE_FRAME_OFFSET_AND_SCALE;
+            static const dtUtil::RefString UNIFORM_FRAME_OFFSET_AND_SCALES;
             static const dtUtil::RefString UNIFORM_OVERLAY_TEXTURE;
 
             BodyPaintStateActComp();
@@ -62,8 +63,9 @@ namespace SimCore
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
-            DECLARE_PROPERTY(osg::Vec2, DiffuseFrameOffset);
-            DECLARE_PROPERTY(osg::Vec2, DiffuseFrameScale);
+            DECLARE_PROPERTY(float, PaintState);
+            DECLARE_PROPERTY(float, DiffuseFrameScale);
+            DECLARE_PROPERTY(float, OverlayFrameScale);
             DECLARE_PROPERTY(dtDAL::ResourceDescriptor, OverlayTexture);
 
             ////////////////////////////////////////////////////////////////////

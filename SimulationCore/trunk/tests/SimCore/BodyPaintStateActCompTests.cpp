@@ -137,19 +137,20 @@ namespace SimCore
             CPPUNIT_ASSERT(constComp.GetPaintColor4() == color4);
 
             // Test other vec properties
-            // --- Diffuse Frame Offset
-            osg::Vec2 tempOffset;
-            CPPUNIT_ASSERT(constComp.GetDiffuseFrameOffset() == tempOffset);
-            tempOffset.set(-12.34f, 56.78f);
-            mActComp->SetDiffuseFrameOffset(tempOffset);
-            CPPUNIT_ASSERT(constComp.GetDiffuseFrameOffset() == tempOffset);
+            // --- Paint State
+            CPPUNIT_ASSERT(constComp.GetPaintState() == 0.0f);
+            mActComp->SetPaintState(2.0f);
+            CPPUNIT_ASSERT(constComp.GetPaintState() == 2.0f);
 
             // --- Diffuse Frame Scale
-            tempOffset.set(1.0f, 1.0f);
-            CPPUNIT_ASSERT(constComp.GetDiffuseFrameScale() == tempOffset);
-            tempOffset.set(-12.34f, 56.78f);
-            mActComp->SetDiffuseFrameScale(tempOffset);
-            CPPUNIT_ASSERT(constComp.GetDiffuseFrameScale() == tempOffset);
+            CPPUNIT_ASSERT(constComp.GetDiffuseFrameScale() == 1.0f);
+            mActComp->SetDiffuseFrameScale(-12.34f);
+            CPPUNIT_ASSERT(constComp.GetDiffuseFrameScale() == -12.34f);
+
+            // --- Overlay Frame Scale
+            CPPUNIT_ASSERT(constComp.GetOverlayFrameScale() == 1.0f);
+            mActComp->SetOverlayFrameScale(56.78f);
+            CPPUNIT_ASSERT(constComp.GetOverlayFrameScale() == 56.78f);
 
             // --- Model Dims
             osg::Vec4 temp(1.0f, 1.0f, 1.0f, 1.0f);
@@ -211,8 +212,9 @@ namespace SimCore
             osg::Vec2 tmpV2;
             osg::Vec4 tmpV4;
             dtDAL::ResourceDescriptor tmpFile("Fake/File.tga");
-            actComp->SetDiffuseFrameOffset(tmpV2);
-            actComp->SetDiffuseFrameScale(tmpV2);
+            actComp->SetPaintState(0);
+            actComp->SetDiffuseFrameScale(1.0f);
+            actComp->SetOverlayFrameScale(1.0f);
             actComp->SetPaintColor1(tmpV4);
             actComp->SetPaintColor2(tmpV4);
             actComp->SetPaintColor3(tmpV4);
@@ -240,7 +242,7 @@ namespace SimCore
       void BodyPaintStateActCompTests::SubTestUniforms(osg::StateSet& stateSet)
       {
          typedef BodyPaintStateActComp ClassName;
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_DIFFUSE_FRAME_OFFSET_AND_SCALE) != NULL);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_FRAME_OFFSET_AND_SCALES) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_1) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_2) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_3) != NULL);
