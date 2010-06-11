@@ -68,11 +68,6 @@ namespace StealthQt
 
       ConnectSlots();
 
-#ifdef DIS_CONNECTIONS_AVAILABLE
-      // Add the DIS option if we have that option set
-      mUi->mConnectionTypeCombo->addItem(QString::fromStdString(StealthViewerSettings::CONNECTIONTYPE_DIS));
-#endif
-
       // Check name of previous entry before defaulting
       PopulateFields(connectionName);
 
@@ -113,9 +108,6 @@ namespace StealthQt
 
       connect(mUi->mRidFileToolButton, SIGNAL(clicked(bool)), 
              this,                     SLOT(OnRidFileToolButtonClicked(bool)));
-
-      connect(mUi->mDISActorToolButton, SIGNAL(clicked(bool)), 
-              this,                     SLOT(OnActorXMLFileToolButtonClicked(bool)));
 
       connect(mUi->mConnectionTypeCombo, SIGNAL(currentIndexChanged(const QString&)),
              this,                     SLOT(OnConnectionTypeComboChanged(const QString&)));
@@ -208,16 +200,6 @@ namespace StealthQt
          mUi->mRidFileLineEdit->setText(result);   
    }
 
-   ////////////////////////////////////////////////////////////////////////////////
-   void HLAOptions::OnActorXMLFileToolButtonClicked(bool checked /*= false*/)
-   {
-      QString file = QFileDialog::getOpenFileName(this, QString("Select an actor XML file"), 
-         QString(), QString("XML Files(*.xml)"));
-
-      if(!file.isEmpty())
-         mUi->mDISActorEdit->setText(file);   
-   }
-
    ////////////////////////////////////////////////////////////////////
    void HLAOptions::OnOk(bool checked)
    {
@@ -232,22 +214,13 @@ namespace StealthQt
               serverIPAddress = mUi->mServerIPAddressEdit->text(),
               serverPort = mUi->mServerPortEdit->text(),
               serverGameName = mUi->mServerGameNameEdit->text(), 
-              serverGameVersionStr = mUi->mServerGameVersionEdit->text(),
-              disIPAddress = mUi->mDISIPAddressEdit->text(),
-              actorXMLFile = mUi->mDISActorEdit->text();
+              serverGameVersionStr = mUi->mServerGameVersionEdit->text();
       QString connectionType = mUi->mConnectionTypeCombo->currentText();
-      unsigned int disPort = mUi->mDISPortEdit->value(),
-                   disMTU  = mUi->mDISMTUEdit->value();
-      unsigned char disExerciseID = mUi->mDISExerciseIDEdit->value();
-      unsigned short disSiteID        = mUi->mDISSiteIDEdit->value(),
-                     disApplicationID = mUi->mDISApplicationIDEdit->value();
-          
           //itemText(mUi->mConnectionTypeCombo->getCurrentIndex()).toStdString();
 
 
       if (connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER && 
-         connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_HLA &&
-         connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_DIS)
+         connectionType.toStdString() != StealthViewerSettings::CONNECTIONTYPE_HLA)
       {
          QMessageBox::information(this, tr("Error"), tr("Please select a connection type."), 
             QMessageBox::Ok);
@@ -368,33 +341,9 @@ namespace StealthQt
          }
       }
 
-      ////////////////////////////////////////////
-      // DIS OPTIONS
-      if (connectionType.toStdString() == StealthViewerSettings::CONNECTIONTYPE_DIS)
-      {
-         if(disIPAddress.isEmpty())
-         {
-            QMessageBox::information(this, tr("Error"), tr("Please enter a DIS IP Address."), 
-               QMessageBox::Ok);
-
-            reject();
-            return;
-         }
-
-         if(actorXMLFile.isEmpty())
-         {
-            QMessageBox::information(this, tr("Error"), tr("Please enter an Actor XML file."), 
-               QMessageBox::Ok);
-
-            reject();
-            return;
-         }
-      }
-
       bool success = StealthViewerData::GetInstance().GetSettings().AddConnection
          (name, map, config, fedFile, fedex, fedName, ridFile, connectionType, 
-         serverIPAddress, serverPort, serverGameName, serverGameVersionStr, disIPAddress,
-         disPort, disExerciseID, disSiteID, disApplicationID, disMTU, actorXMLFile, mIsEditMode);
+         serverIPAddress, serverPort, serverGameName, serverGameVersionStr, mIsEditMode);
 
       if(!success)
       {
@@ -448,14 +397,6 @@ namespace StealthQt
       mUi->mServerGameNameEdit->setText(list.value(10));
       mUi->mServerGameVersionEdit->setText(list.value(11));
 
-      // Load DIS Settings
-      mUi->mDISIPAddressEdit->setText(list.value(12));
-      mUi->mDISPortEdit->setValue(list.value(13).toUInt());
-      mUi->mDISExerciseIDEdit->setValue(list.value(14).toUInt());
-      mUi->mDISSiteIDEdit->setValue(list.value(15).toUShort());
-      mUi->mDISApplicationIDEdit->setValue(list.value(16).toUShort());
-      mUi->mDISMTUEdit->setValue(list.value(17).toUInt());
-      mUi->mDISActorEdit->setText(list.value(18));
 
       // We default to HLA in all cases unless ClientServer explictly set.
       // This supports backward compatibility with existing systems.
@@ -463,11 +404,6 @@ namespace StealthQt
       {
          mUi->mConnectionTypeCombo->setCurrentIndex(2);
          OnConnectionTypeComboChanged(QString(StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER.Get().c_str()));
-      }
-      else if (connectionType.toStdString() == StealthViewerSettings::CONNECTIONTYPE_DIS)
-      {
-         mUi->mConnectionTypeCombo->setCurrentIndex(3);
-         OnConnectionTypeComboChanged(QString(StealthViewerSettings::CONNECTIONTYPE_DIS.Get().c_str()));
       }
       else 
       {
@@ -542,25 +478,16 @@ namespace StealthQt
       {
          mUi->mHLAOptionsGroup->show();
          mUi->mClientServerGroup->hide();
-         mUi->mDISGroup->hide();
       }
       else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER)
       {
          mUi->mHLAOptionsGroup->hide();
          mUi->mClientServerGroup->show();
-         mUi->mDISGroup->hide();
-      }
-      else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_DIS)
-      {
-         mUi->mHLAOptionsGroup->hide();
-         mUi->mClientServerGroup->hide();
-         mUi->mDISGroup->show();
       }
       else  // unknown still. 
       {
          mUi->mHLAOptionsGroup->hide();
          mUi->mClientServerGroup->hide();
-         mUi->mDISGroup->hide();
       }
    }
 }

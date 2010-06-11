@@ -24,10 +24,7 @@ file(GLOB LIB_PUBLIC_HEADERS_6
 file(GLOB LIB_PUBLIC_HEADERS_7 
    "${HEADER_PATH}/Components/GameState/*.h"
    )
-file(GLOB LIB_PUBLIC_HEADERS_8 
-   "${HEADER_PATH}/ActComps/*.h"
-   )
-SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5} ${LIB_PUBLIC_HEADERS_6} ${LIB_PUBLIC_HEADERS_7} ${LIB_PUBLIC_HEADERS_8})
+SET(LIB_PUBLIC_HEADERS ${LIB_PUBLIC_HEADERS_1} ${LIB_PUBLIC_HEADERS_2} ${LIB_PUBLIC_HEADERS_3} ${LIB_PUBLIC_HEADERS_4} ${LIB_PUBLIC_HEADERS_5} ${LIB_PUBLIC_HEADERS_6} ${LIB_PUBLIC_HEADERS_7})
 
 set(LIB_SOURCES_1 
    "${SOURCE_PATH}/AttachedMotionModel.cpp"
@@ -175,11 +172,7 @@ set( LIB_SOURCES_7
    "${SOURCE_PATH}/Components/GameState/GameStateComponent.cpp"
    "${SOURCE_PATH}/Components/GameState/TransitionXMLHandler.cpp"
    )
-set( LIB_SOURCES_8 
-   "${SOURCE_PATH}/ActComps/BodyPaintActComp.cpp"
-   "${SOURCE_PATH}/ActComps/BodyPaintStateActComp.cpp"
-   )
-SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6} ${LIB_SOURCES_7} ${LIB_SOURCES_8})
+SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6} ${LIB_SOURCES_7})
 
 
 list(REMOVE_ITEM LIB_SOURCES ${SOURCE_PATH}/precomp.cpp)
@@ -201,7 +194,6 @@ source_group("Header Files\\ComponentsH" FILES ${LIB_PUBLIC_HEADERS_4})
 source_group("Header Files\\GUIH" FILES ${LIB_PUBLIC_HEADERS_5})
 source_group("Header Files\\ComponentsH\\ConversationsH" FILES ${LIB_PUBLIC_HEADERS_6})
 source_group("Header Files\\ComponentsH\\GameStateH" FILES ${LIB_PUBLIC_HEADERS_7})
-source_group("Header Files\\ActCompsH" FILES ${LIB_PUBLIC_HEADERS_8})
 
 source_group("Source Files\\Actors" FILES ${LIB_SOURCES_2})
 source_group("Source Files\\Tools" FILES ${LIB_SOURCES_3})
@@ -209,7 +201,6 @@ source_group("Source Files\\Components" FILES ${LIB_SOURCES_4})
 source_group("Source Files\\GUI" FILES ${LIB_SOURCES_5})
 source_group("Source Files\\Components\\Conversations" FILES ${LIB_SOURCES_6})
 source_group("Source Files\\Components\\GameState" FILES ${LIB_SOURCES_7})
-source_group("Source Files\\ActComps" FILES ${LIB_SOURCES_8})
 
 LINK_WITH_VARIABLES(${LIB_NAME}
                                    DTUTIL_LIBRARY

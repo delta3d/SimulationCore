@@ -36,7 +36,6 @@
 #else
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/trianglerecorder.h>
-#include <dtPhysics/geometry.h>
 #include <dtCore/transform.h>
 #endif
 
@@ -79,8 +78,8 @@ namespace SimCore
          }
 
       private:
-         PagedTerrainPhysicsActor& mLandActor;
          std::string mNodeName;
+         PagedTerrainPhysicsActor& mLandActor;
          osg::ref_ptr<osg::MatrixTransform> mTempParentTransform;
       };
 
@@ -118,11 +117,8 @@ namespace SimCore
                   if(d->supports(mFunctor))
                   {
                      osg::NodePath nodePath = getNodePath();
-#ifdef AGEIA_PHYSICS
                      mFunctor.mMatrix = osg::computeLocalToWorld(nodePath);
-#else
-                     mFunctor.SetMatrix(osg::computeLocalToWorld(nodePath));
-#endif
+
                      osg::StateSet* tempStateSet = d->getStateSet();
                      osg::ref_ptr<osg::IntArray> mOurList;
                      if(tempStateSet != NULL)
@@ -524,33 +520,13 @@ namespace SimCore
             }
             else
             {
-
-               DrawableTriangleVisitor<dtPhysics::TriangleRecorder> dtv(*this);
-               nodeToParse->accept(dtv);
-
-               if (!dtv.mFunctor.mVertices.empty())
-               {
-                  dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
-                  mPhysicsHelper->AddPhysicsObject(*newTile);
-                  newTile->SetName(nameOfNode);
-                  newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-                  newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-
-                  dtPhysics::VertexData data;
-                  data.mIndices = &dtv.mFunctor.mIndices.front();
-                  data.mVertices = (dtPhysics::Real*)&dtv.mFunctor.mVertices.front();
-                  data.mNumIndices = dtv.mFunctor.mIndices.size();
-                  data.mNumVertices = dtv.mFunctor.mVertices.size();
-                  dtCore::Transform xform;
-                  dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
-
-                  newTile->CreateFromGeometry(*geom);
-                  return newTile.get();
-               }
-               else
-               {
-                  return NULL;
-               }
+               dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(nameOfNode);
+               mPhysicsHelper->AddPhysicsObject(*newTile);
+               newTile->SetName(nameOfNode);
+               newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
+               newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+               newTile->CreateFromProperties(nodeToParse);
+               return newTile.get();
             }
          }
 

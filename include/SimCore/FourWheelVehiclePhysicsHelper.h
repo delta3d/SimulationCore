@@ -86,63 +86,6 @@ namespace SimCore
        */
       DECLARE_PROPERTY(float, RearTrackAdjustment);
 
-      DECLARE_PROPERTY(float, FrontWheelMass);
-      DECLARE_PROPERTY(float, FrontWheelRadius);
-      DECLARE_PROPERTY(float, FrontWheelWidth);
-      DECLARE_PROPERTY(float, FrontSuspensionTravel);
-      DECLARE_PROPERTY(float, FrontSuspensionRestLength);
-      DECLARE_PROPERTY(float, FrontSuspensionSpringFreq);
-      DECLARE_PROPERTY(float, FrontSuspensionDamperFactor);
-
-      /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, FrontTireSlip);
-      // extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, FrontTireValue);
-      /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, FrontTireAsymptoteSlip);
-      /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, FrontTireAsymptoteValue);
-
-      /**
-      *  This is an additional overall positive scaling that gets applied to the tire forces before passing
-      *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
-      *  need to lower this. A setting of zero will disable all friction in this direction.
-      */
-      DECLARE_PROPERTY(float, FrontTireStiffness);
-      /**
-      * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
-      * Note that values close to or above 1 may cause stability problems and/or increasing energy.
-      */
-      DECLARE_PROPERTY(float, FrontTireRestitution);
-
-      DECLARE_PROPERTY(float, RearWheelMass);
-      DECLARE_PROPERTY(float, RearWheelRadius);
-      DECLARE_PROPERTY(float, RearWheelWidth);
-      DECLARE_PROPERTY(float, RearSuspensionTravel);
-      DECLARE_PROPERTY(float, RearSuspensionRestLength);
-      DECLARE_PROPERTY(float, RearSuspensionSpringFreq);
-      DECLARE_PROPERTY(float, RearSuspensionDamperFactor);
-
-      /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, RearTireSlip);
-      /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, RearTireValue);
-      /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, RearTireAsymptoteSlip);
-      /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, RearTireAsymptoteValue);
-
-      /**
-      *  This is an additional overall positive scaling that gets applied to the tire forces before passing
-      *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
-      *  need to lower this. A setting of zero will disable all friction in this direction.
-      */
-      DECLARE_PROPERTY(float, RearTireStiffness);
-      /**
-      * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
-      * Note that values close to or above 1 may cause stability problems and/or increasing energy.
-      */
-      DECLARE_PROPERTY(float, RearTireRestitution);
    protected:
       virtual ~FourWheelVehiclePhysicsHelper();
 
@@ -161,7 +104,6 @@ namespace SimCore
       float            mFrontMaxJounce;           //!< Vertical translation of front wheel (relative to body) with suspension fully compressed.
       float            mRearMaxJounce;            //!< Vertical translation of rear wheel (relative to body) with suspension fully compressed.
       bool             mFourWheelDrive;           //!< Is this vehicle using 4 wheel drive or not? affects speed
-
    };
 }
 #endif //DELTA_FOUR_WHEEL_VEHICLE_PHYSICS_HELPER

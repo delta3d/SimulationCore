@@ -255,8 +255,6 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
       PhysicsParticleSystemActorProxy();
       virtual void BuildPropertyMap();
 
-      virtual dtCore::RefPtr<dtDAL::ActorProperty> GetDeprecatedProperty(const std::string& name);
-
    protected:
       virtual ~PhysicsParticleSystemActorProxy();
       void CreateActor();

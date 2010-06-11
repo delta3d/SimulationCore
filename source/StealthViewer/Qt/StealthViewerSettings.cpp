@@ -56,7 +56,6 @@ namespace StealthQt
    const dtUtil::RefString StealthViewerSettings::CONNECTIONTYPE_NONE("(Select Type)");
    const dtUtil::RefString StealthViewerSettings::CONNECTIONTYPE_HLA("HLA");
    const dtUtil::RefString StealthViewerSettings::CONNECTIONTYPE_CLIENTSERVER("Client-Server");
-   const dtUtil::RefString StealthViewerSettings::CONNECTIONTYPE_DIS("DIS");
 
    const QString StealthViewerSettings::ORGANIZATION("delta3d.org");
    const QString StealthViewerSettings::APPLICATION("Stealth Viewer");
@@ -74,13 +73,6 @@ namespace StealthQt
    const QString StealthViewerSettings::SERVER_PORT("SERVER_PORT");
    const QString StealthViewerSettings::SERVER_GAMENAME("SERVER_GAMENAME");
    const QString StealthViewerSettings::SERVER_GAMEVERSION("SERVER_GAMEVERSION");
-   const QString StealthViewerSettings::DIS_IP_ADDRESS("DIS_IP_ADDRESS");
-   const QString StealthViewerSettings::DIS_PORT("DIS_PORT");
-   const QString StealthViewerSettings::DIS_EXERCISE_ID("DIS_EXERCISE_ID");
-   const QString StealthViewerSettings::DIS_SITE_ID("DIS_SITE_ID");
-   const QString StealthViewerSettings::DIS_APPLICATION_ID("DIS_APPLICATION_ID");
-   const QString StealthViewerSettings::DIS_MTU("DIS_MTU");
-   const QString StealthViewerSettings::DIS_ACTOR_XML_FILE("DIS_ACTOR_XML_FILE");
 
    const QString StealthViewerSettings::GENERAL_GROUP("GENERAL_GROUP");
       const QString StealthViewerSettings::DOCK_STATE("DOCK_STATE");
@@ -186,10 +178,7 @@ namespace StealthQt
       const QString &fedex, const QString &federateName, const QString &ridFile,
       const QString &connectionType, const QString &serverIPAddress, 
       const QString &serverPort, const QString &serverGameName, const QString &serverGameVersion, 
-      const QString &disIPAddress, const unsigned int &disPort,
-      const unsigned char &disExerciseID, const unsigned short &disSiteID,
-      const unsigned short &disApplicationID, const unsigned int &disMTU,
-      const QString &actorXMLFile, bool isEditMode)
+      bool isEditMode)
    {
       // CONNECTION values
       if (name.isEmpty() || mapResource.isEmpty() || connectionType.isEmpty()) 
@@ -210,13 +199,6 @@ namespace StealthQt
          (serverIPAddress.isEmpty() || serverPort.isEmpty())) // Note - don't check name or version
       {
          std::string error = "Could not add the current Client Server connection [" + name.toStdString() + "] because it contained empty data.";
-         LOG_ERROR(error);
-         return false;
-      }
-      else if (connectionType.toStdString() == CONNECTIONTYPE_DIS &&
-         (disIPAddress.isEmpty() || actorXMLFile.isEmpty()))
-      {
-         std::string error = "Could not add the current DIS connection [" + name.toStdString() + "] because it contained empty data.";
          LOG_ERROR(error);
          return false;
       }
@@ -246,25 +228,18 @@ namespace StealthQt
          QString groupName = StealthViewerSettings::CONNECTION + QString::number(mNumConnections);
          beginGroup(groupName);
 
-            setValue(StealthViewerSettings::NAME,               name);
-            setValue(StealthViewerSettings::MAP_RESOURCE,       mapResource);
-            setValue(StealthViewerSettings::CONFIG_RESOURCE,    configResource);
-            setValue(StealthViewerSettings::FED_RESOURCE,       fedResource);
-            setValue(StealthViewerSettings::FEDEX,              fedex);
-            setValue(StealthViewerSettings::FEDERATE_NAME,      federateName);
-            setValue(StealthViewerSettings::RID_FILE,           ridFile);
-            setValue(StealthViewerSettings::CONNECTION_TYPE,    connectionType);
-            setValue(StealthViewerSettings::SERVER_IP_ADDRESS,  serverIPAddress);
-            setValue(StealthViewerSettings::SERVER_PORT,        serverPort);
-            setValue(StealthViewerSettings::SERVER_GAMENAME,    serverGameName);
-            setValue(StealthViewerSettings::SERVER_GAMEVERSION, serverGameVersion);
-            setValue(StealthViewerSettings::DIS_IP_ADDRESS,     disIPAddress);
-            setValue(StealthViewerSettings::DIS_PORT,           disPort);
-            setValue(StealthViewerSettings::DIS_EXERCISE_ID,    disExerciseID);
-            setValue(StealthViewerSettings::DIS_SITE_ID,        disSiteID);
-            setValue(StealthViewerSettings::DIS_APPLICATION_ID, disApplicationID);
-            setValue(StealthViewerSettings::DIS_MTU,            disMTU);
-            setValue(StealthViewerSettings::DIS_ACTOR_XML_FILE, actorXMLFile);
+            setValue(StealthViewerSettings::NAME,            name);
+            setValue(StealthViewerSettings::MAP_RESOURCE,    mapResource);
+            setValue(StealthViewerSettings::CONFIG_RESOURCE, configResource);
+            setValue(StealthViewerSettings::FED_RESOURCE,    fedResource);
+            setValue(StealthViewerSettings::FEDEX,           fedex);
+            setValue(StealthViewerSettings::FEDERATE_NAME,   federateName);
+            setValue(StealthViewerSettings::RID_FILE,        ridFile);
+            setValue(StealthViewerSettings::CONNECTION_TYPE, connectionType);
+            setValue(StealthViewerSettings::SERVER_IP_ADDRESS, serverIPAddress);
+            setValue(StealthViewerSettings::SERVER_PORT,       serverPort);
+            setValue(StealthViewerSettings::SERVER_GAMENAME,   serverGameName);
+            setValue(StealthViewerSettings::SERVER_GAMEVERSION,serverGameVersion);
 
          endGroup();
 
@@ -285,25 +260,18 @@ namespace StealthQt
             QString groupName = StealthViewerSettings::CONNECTION + QString::number(itor->second);
             beginGroup(groupName);
 
-               setValue(StealthViewerSettings::NAME,               name);
-               setValue(StealthViewerSettings::MAP_RESOURCE,       mapResource);
-               setValue(StealthViewerSettings::CONFIG_RESOURCE,    configResource);
-               setValue(StealthViewerSettings::FED_RESOURCE,       fedResource);
-               setValue(StealthViewerSettings::FEDEX,              fedex);
-               setValue(StealthViewerSettings::FEDERATE_NAME,      federateName);
-               setValue(StealthViewerSettings::RID_FILE,           ridFile);
-               setValue(StealthViewerSettings::CONNECTION_TYPE,    connectionType);
-               setValue(StealthViewerSettings::SERVER_IP_ADDRESS,  serverIPAddress);
-               setValue(StealthViewerSettings::SERVER_PORT,        serverPort);
-               setValue(StealthViewerSettings::SERVER_GAMENAME,    serverGameName);
-               setValue(StealthViewerSettings::SERVER_GAMEVERSION, serverGameVersion);
-               setValue(StealthViewerSettings::DIS_IP_ADDRESS,     disIPAddress);
-               setValue(StealthViewerSettings::DIS_PORT,           disPort);
-               setValue(StealthViewerSettings::DIS_EXERCISE_ID,    disExerciseID);
-               setValue(StealthViewerSettings::DIS_SITE_ID,        disSiteID);
-               setValue(StealthViewerSettings::DIS_APPLICATION_ID, disApplicationID);
-               setValue(StealthViewerSettings::DIS_MTU,            disMTU);
-               setValue(StealthViewerSettings::DIS_ACTOR_XML_FILE, actorXMLFile);
+               setValue(StealthViewerSettings::NAME,            name);
+               setValue(StealthViewerSettings::MAP_RESOURCE,    mapResource);
+               setValue(StealthViewerSettings::CONFIG_RESOURCE, configResource);
+               setValue(StealthViewerSettings::FED_RESOURCE,    fedResource);
+               setValue(StealthViewerSettings::FEDEX,           fedex);
+               setValue(StealthViewerSettings::FEDERATE_NAME,   federateName);
+               setValue(StealthViewerSettings::RID_FILE,        ridFile);
+               setValue(StealthViewerSettings::CONNECTION_TYPE, connectionType);
+               setValue(StealthViewerSettings::SERVER_IP_ADDRESS, serverIPAddress);
+               setValue(StealthViewerSettings::SERVER_PORT,     serverPort);
+               setValue(StealthViewerSettings::SERVER_GAMENAME,   serverGameName);
+               setValue(StealthViewerSettings::SERVER_GAMEVERSION,serverGameVersion);
 
             endGroup();
 
@@ -389,10 +357,7 @@ namespace StealthQt
          // Add internally
          AddConnection(list[0], list[1], list[2],
                        list[3], list[4], list[5], list[6],
-                       list[7], list[8], list[9], list[10], list[11],
-                       list[12], list[13].toInt(), list[14].toUInt(),
-                       list[15].toUShort(), list[16].toUShort(),
-                       list[17].toUInt(), list[18]);
+                       list[7], list[8], list[9], list[10], list[11]);
       }
 
       mIsLoadingFromIni = false;
@@ -441,10 +406,7 @@ namespace StealthQt
          AddConnection(connectionsToAdd[i][0], connectionsToAdd[i][1], connectionsToAdd[i][2],
                        connectionsToAdd[i][3], connectionsToAdd[i][4], connectionsToAdd[i][5],
                        connectionsToAdd[i][6], connectionsToAdd[i][7], connectionsToAdd[i][8], 
-                       connectionsToAdd[i][9], connectionsToAdd[i][10], connectionsToAdd[i][11],
-                       connectionsToAdd[i][12], connectionsToAdd[i][13].toInt(), connectionsToAdd[i][14].toUInt(),
-                       connectionsToAdd[i][15].toUShort(), connectionsToAdd[i][16].toUShort(),
-                       connectionsToAdd[i][17].toUInt(), connectionsToAdd[i][18]);
+                       connectionsToAdd[i][9], connectionsToAdd[i][10], connectionsToAdd[i][11]);
       }
 
       emit ItemDeleted(connectionName);
@@ -1387,41 +1349,6 @@ namespace StealthQt
 
          if (contains(StealthViewerSettings::SERVER_GAMEVERSION))
             props.push_back(value(StealthViewerSettings::SERVER_GAMEVERSION).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_IP_ADDRESS))
-            props.push_back(value(StealthViewerSettings::DIS_IP_ADDRESS).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_PORT))
-            props.push_back(value(StealthViewerSettings::DIS_PORT).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_EXERCISE_ID))
-            props.push_back(value(StealthViewerSettings::DIS_EXERCISE_ID).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_SITE_ID))
-            props.push_back(value(StealthViewerSettings::DIS_SITE_ID).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_APPLICATION_ID))
-            props.push_back(value(StealthViewerSettings::DIS_APPLICATION_ID).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_MTU))
-            props.push_back(value(StealthViewerSettings::DIS_MTU).toString());
-         else
-            props.push_back(tr(""));
-
-         if (contains(StealthViewerSettings::DIS_ACTOR_XML_FILE))
-            props.push_back(value(StealthViewerSettings::DIS_ACTOR_XML_FILE).toString());
          else
             props.push_back(tr(""));
 

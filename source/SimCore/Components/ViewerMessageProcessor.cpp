@@ -148,7 +148,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      RefPtr<dtGame::GameActorProxy> ViewerMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage& msg)
+      RefPtr<dtGame::GameActorProxy> ViewerMessageProcessor::ProcessRemoteCreateActor(const dtGame::ActorUpdateMessage &msg)
       {
          RefPtr<dtGame::GameActorProxy> ap = dtGame::DefaultMessageProcessor::ProcessRemoteCreateActor(msg);
 
@@ -184,7 +184,7 @@ namespace SimCore
 
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage& msg)
+      void ViewerMessageProcessor::ProcessLocalUpdateActor(const dtGame::ActorUpdateMessage &msg)
       {
          dtGame::GameActorProxy *ap = GetGameManager()->FindGameActorById(msg.GetAboutActorId());
          if (ap == NULL)
@@ -211,7 +211,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessLocalDeleteActor(const dtGame::Message& msg)
+      void ViewerMessageProcessor::ProcessLocalDeleteActor(const dtGame::Message &msg)
       {
          if(mPlayer.valid() && msg.GetAboutActorId() == mPlayer->GetUniqueId())
          {
@@ -220,7 +220,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessUnhandledLocalMessage(const dtGame::Message& msg)
+      void ViewerMessageProcessor::ProcessUnhandledLocalMessage(const dtGame::Message &msg)
       {
          if(msg.GetSource() != GetGameManager()->GetMachineInfo())
          {
@@ -324,7 +324,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessPlayerEnteredWorldMessage(const dtGame::Message& msg)
+      void ViewerMessageProcessor::ProcessPlayerEnteredWorldMessage(const dtGame::Message &msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
          {

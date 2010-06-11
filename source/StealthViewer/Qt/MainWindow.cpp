@@ -2442,7 +2442,7 @@ namespace StealthQt
                || entity->GetDomain() == SimCore::Actors::BaseEntityActorProxy::DomainEnum::AMPHIBIOUS)
       {
          // Convert to knots and truncate past two decimal places.
-         oss << std::floor((speed * 1.94384449f) * 100.0f) / 100.0f << " KNOTS";
+         oss << std::floor((speed / 1.94384449f) * 100.0f) / 100.0f << " KNOTS";
       }
       else
       {

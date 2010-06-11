@@ -28,18 +28,14 @@
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/StealthActor.h>
-#include <SimCore/Utilities.h>
-
 #include <dtABC/application.h>
 #include <dtCore/logicalinputdevice.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
 #include <dtCore/system.h>
 #include <dtCore/camera.h>
-#include <dtCore/shadermanager.h>
 #include <dtUtil/mathdefines.h>
 #include <dtGame/messagefactory.h>
-#include <dtPhysics/physicscomponent.h>
 
 using dtCore::RefPtr;
 using SimCore::MessageType;
@@ -177,48 +173,12 @@ namespace SimCore
             dtCore::System::GetInstance().GetSimulationClockTime() + dtCore::Timer_t(((minuteStep * 60) * 1000000)));
       }
 
-      ////////////////////////////////////////////////////////////////////
-      void BaseInputComponent::SetNextStatisticsIfDevMode()
-      {
-         if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
-         {
-            GetGameManager()->GetApplication().SetNextStatisticsType();
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      void BaseInputComponent::SetNextPhysicsDebugDrawIfDevMode()
-      {
-         if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
-         {
-            dtPhysics::PhysicsComponent* physicsComponent = NULL;
-            GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
-            if (physicsComponent != NULL)
-            {
-               physicsComponent->SetNextDebugDrawMode();
-            }
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////
-      void BaseInputComponent::ReloadShadersIfDevMode()
-      {
-         if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
-         {
-            dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
-            //ToggleEntityShaders();
-            LOG_ALWAYS("Reloading All Shaders...");
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::OnAddedToGM()
       {
          BaseClass::OnAddedToGM();
          //SetListeners();
       }
 
-      ////////////////////////////////////////////////////////////////////
       void BaseInputComponent::ProcessMessage(const dtGame::Message& msg)
       {
          if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN)

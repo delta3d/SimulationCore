@@ -1,4 +1,15 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.1 FATAL_ERROR)
+IF(WIN32)
+    CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6 FATAL_ERROR)
+ELSE(WIN32)
+    IF(APPLE)
+        CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6 FATAL_ERROR)
+        IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
+            MESSAGE("Warning: A critical CMake bug exists in 2.4.6 and below. Trying to build Universal Binaries will result in a compile error that seems unrelated. Either avoid building Universal Binaries by changing the CMAKE_OSX_ARCHITECTURES field to list only your architecture, or upgrade to the current CVS version of CMake or a newer stable version if it exists.")
+        ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4 AND ${CMAKE_PATCH_VERSION} LESS 7)
+    ELSE(APPLE) 
+        CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0 FATAL_ERROR)
+    ENDIF(APPLE) 
+ENDIF(WIN32)
 
 if(COMMAND cmake_policy)
    cmake_policy(SET CMP0003 NEW) 
@@ -12,7 +23,6 @@ PROJECT(SimulationCore)
 
 ################################################################################
 # User Options
-OPTION(BUILD_DIS "Enables the linking of dtDIS for StealthViewer" OFF)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
 OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
@@ -55,32 +65,17 @@ FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE(UtilityMacros)
 
 IF(APPLE)
-   FIND_LIBRARY(CARBON_LIBRARY Carbon)
-   FIND_LIBRARY(APPSERVICES_LIBRARY ApplicationServices)
-   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
-   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
-   FIND_LIBRARY(AGL_LIBRARY AGL)
-   FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+    FIND_LIBRARY(CARBON_LIBRARY Carbon)
+    FIND_LIBRARY(APPSERVICES_LIBRARY ApplicationServices)
+    FIND_LIBRARY(IOKIT_LIBRARY IOKit)
+    FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
+    FIND_LIBRARY(AGL_LIBRARY AGL)
+    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
  
-   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnewline-eof -pipe")
-
-   SET(CMAKE_C_FLAGS "-pipe -Wnewline-eof")
-
-   if (NOT CMAKE_OSX_ARCHITECTURES)
-     set(CMAKE_OSX_ARCHITECTURES "i386")
-   endif()
-
-   if (NOT CMAKE_OSX_SYSROOT)
-     set(CMAKE_OSX_SYSROOT "/Developer/SDKs/MacOSX10.5.sdk")
-   endif()
-
-   if (NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-     # use 10.5 because osg atomics won't build on less.
-     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.5")
-   endif()
-
-   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-single_module -compatibility_version 2 -current_version 2" )
-   SET(CMAKE_CXX_FLAGS_DEBUG "-gdwarf-2")
+    SET(CMAKE_CXX_FLAGS "-pipe -mmacosx-version-min=10.4")
+    SET(CMAKE_C_FLAGS "-pipe -mmacosx-version-min=10.4")
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-single_module -compatibility_version 2 -current_version 2" )
+    SET(CMAKE_CXX_FLAGS_DEBUG "-gdwarf-2")
 ELSE (APPLE)
    #We only want X11 if we are not running on OSX, but still with a unix-like environment 
    IF(UNIX)
@@ -219,10 +214,6 @@ IF (DELTA3D_FOUND)
 
    #FIND_PACKAGE(GDAL)
    #FIND_PACKAGE(DIS)
-
-   IF (BUILD_DIS)
-     FIND_PACKAGE(dtDIS REQUIRED)
-   ENDIF (BUILD_DIS)
 
    IF (BUILD_HLA)
       IF (USE_RTIS)

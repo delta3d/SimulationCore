@@ -101,7 +101,6 @@ PhysicsParticleSystemActor::PhysicsParticleSystemActor(dtGame::GameActorProxy &p
    mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
    mPhysicsHelper->SetPostPhysicsCallback(
             dtPhysics::PhysicsHelper::UpdateCallback(this, &PhysicsParticleSystemActor::PostPhysicsUpdate));
-   mPhysicsHelper->SetDefaultCollisionGroup(SimCore::CollisionGroup::GROUP_PARTICLE);
 #endif
 }
 
@@ -814,17 +813,6 @@ void PhysicsParticleSystemActorProxy::OnRemovedFromWorld()
    {
       actor->ResetParticleSystem();
    }
-}
-//////////////////////////////////////////////////////////////////////////
-dtCore::RefPtr<dtDAL::ActorProperty> PhysicsParticleSystemActorProxy::GetDeprecatedProperty(const std::string& name)
-{
-#ifndef AGEIA_PHYSICS
-   PhysicsParticleSystemActor* actor = NULL;
-   GetActor(actor);
-   return actor->GetPhysicsHelper().GetDeprecatedProperty(name);
-#else
-   return NULL;
-#endif
 }
 
 //////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@ TARGET_LINK_LIBRARIES(${PROG_NAME}
    ${STEALTHGM_LIBRARY}
    ${STEALTHQT_LIBRARY}
 )
-
+    
 INCLUDE(ModuleInstall OPTIONAL)
 
 #little hack to get the .dll into /bin and .lib into /lib

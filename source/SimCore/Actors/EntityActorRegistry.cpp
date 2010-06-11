@@ -54,11 +54,9 @@
 #include <SimCore/Actors/SoundActorProxy.h>
 #include <SimCore/Actors/DynamicParticleSystem.h>
 
+
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
-
-#include <SimCore/Actors/FourWheelVehicleActor.h>
-
 
 #ifdef AGEIA_PHYSICS
    #include <SimCore/Actors/NxAgeiaFourWheelVehicleActor.h>
@@ -134,8 +132,6 @@ namespace SimCore
       RefPtr<dtDAL::ActorType> EntityActorRegistry::PAGED_TERRAIN_PHYSICS_ACTOR_TYPE(new dtDAL::ActorType("PagedTerrainPhysicsActor", "Terrain"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::AGEIA_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("NxAgeiaFourWheelVehicle", "NxAgeiaPhysicsModels", "",
                EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
-      RefPtr<dtDAL::ActorType> EntityActorRegistry::FOUR_WHEEL_VEHICLE_ACTOR_TYPE(new dtDAL::ActorType("FourWheelVehicle", "Entity", "",
-               EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::HUMAN_PHYSICS_ACTOR_TYPE(
                new dtDAL::ActorType("HumanWithPhysicsActor", "Entity", "Human with a physics collision mesh",
                         EntityActorRegistry::HUMAN_ACTOR_TYPE.get()));
@@ -147,6 +143,8 @@ namespace SimCore
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::DYNAMIC_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("DynamicLightPrototypeActorType", "Effects"));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::SPOT_LIGHT_PROTOTYPE_ACTOR_TYPE(new dtDAL::ActorType("SpotLightPrototypeActorType", "Effects"));
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::NECC_BOAT_ACTOR_TYPE(new dtDAL::ActorType("NeccBoatActorType", "NxAgeiaPhysicsModels", "",
+               EntityActorRegistry::PLATFORM_ACTOR_TYPE.get()));
 
       RefPtr<dtDAL::ActorType> EntityActorRegistry::BLIP_ACTOR_TYPE(
                new dtDAL::ActorType("Blip", "Entity", ""));
@@ -259,9 +257,8 @@ namespace SimCore
          mActorFactory->RegisterType<NECCBoatActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #else
          mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(AGEIA_VEHICLE_ACTOR_TYPE.get());
+         mActorFactory->RegisterType<PlatformWithPhysicsActorProxy>(NECC_BOAT_ACTOR_TYPE.get());
 #endif
-         mActorFactory->RegisterType<FourWheelVehicleActorProxy>(FOUR_WHEEL_VEHICLE_ACTOR_TYPE.get());
-
          mActorFactory->RegisterType<HumanWithPhysicsActorProxy>(HUMAN_PHYSICS_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(AGEIA_TLAND_ACTOR_TYPE.get());
          mActorFactory->RegisterType<PagedTerrainPhysicsActorProxy>(PAGED_TERRAIN_PHYSICS_ACTOR_TYPE.get());

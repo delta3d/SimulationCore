@@ -24,7 +24,6 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <string>
-#include <SimCore/ActComps/BodyPaintStateActComp.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
@@ -980,17 +979,6 @@ namespace SimCore
          const BasicVisibilityOptions& basicOptions = options.GetBasicOptions();
          bool baseVal = BaseClass::ShouldBeVisible(options);
          return baseVal && basicOptions.mPlatforms;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////
-      void Platform::BuildActorComponents()
-      {
-         BaseClass::BuildActorComponents();
-
-         // Setup the body paint component.
-         dtCore::RefPtr<SimCore::ActComps::BodyPaintStateActComp> bodyPaintComp
-            = new SimCore::ActComps::BodyPaintStateActComp;
-         AddComponent(*bodyPaintComp);
       }
 
    }

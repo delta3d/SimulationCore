@@ -432,7 +432,7 @@ namespace SimCore
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
-               accel = -0.4f;
+               brake = 1.0f;
             }
 
             if (keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))

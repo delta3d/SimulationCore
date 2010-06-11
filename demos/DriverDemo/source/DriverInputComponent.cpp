@@ -24,6 +24,9 @@
 #include <dtDAL/enginepropertytypes.h>
 
 #include <dtCore/logicalinputdevice.h>
+#include <dtCore/shadermanager.h>
+#include <dtCore/shaderprogram.h>
+#include <dtCore/shaderparamfloat.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
 #include <dtCore/scene.h>
@@ -390,6 +393,18 @@ namespace DriverDemo
          }
          break;
 
+         case osgGA::GUIEventAdapter::KEY_Insert:
+         {
+            std::string developerMode;
+            developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue
+               (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+            if (developerMode == "true" || developerMode == "1")
+            {
+               GetGameManager()->GetApplication().SetNextStatisticsType();
+            }
+         }
+         break;
+
          case osgGA::GUIEventAdapter::KEY_Delete:
             {
                // Delete all if shift held, otherwise, just one.
@@ -399,24 +414,29 @@ namespace DriverDemo
             }
             break;
 
-         case '\\':
-         case osgGA::GUIEventAdapter::KEY_Insert:
-         {
-            SetNextStatisticsIfDevMode();
-         }
-         break;
-
          case 'p':
          {
-            ReloadShadersIfDevMode();
+            std::string developerMode;
+            developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue
+               (SimCore::BaseGameEntryPoint::CONFIG_PROP_DEVELOPERMODE, "false");
+            if (developerMode == "true" || developerMode == "1")
+               ToggleEntityShaders();
          }
          break;
 
          case 'P':
-         {
-            SetNextPhysicsDebugDrawIfDevMode();
-         }
-         break;
+            {
+               if (SimCore::Utils::IsDevModeOn(*GetGameManager()))
+               {
+                  dtPhysics::PhysicsComponent* physicsComponent = NULL;
+                  GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, physicsComponent);
+                  if (physicsComponent != NULL)
+                  {
+                     physicsComponent->SetNextDebugDrawMode();
+                  }
+               }
+            }
+            break;
 
          case 'g':
             {
@@ -650,6 +670,12 @@ namespace DriverDemo
          else
             mHUDComponent->SetHUDState(SimCore::Components::HUDState::HELP);
       }
+   }
+
+   /////////////////////////////////////////////////////////////////////////////////
+   void DriverInputComponent::ToggleEntityShaders()
+   {
+      dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
    }
 
    /////////////////////////////////////////////////////////////////////////////////

@@ -597,6 +597,8 @@ namespace NetDemo
          gameStatus.SetWaveNumber(1);
          gameStatus.SetTimeLeftInCurState(10.0f);
          GetGameManager()->AddActor(*(mServerGameStatusProxy.get()), false, true);
+
+
       }
 
    }

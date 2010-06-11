@@ -317,13 +317,6 @@ namespace StealthQt
          std::string serverPort = properties[9].toStdString();
          std::string serverGameName = properties[10].toStdString();
          int serverGameVersionInt = properties[11].toInt();
-         std::string disIPAddress = properties[12].toStdString();
-         unsigned int disPort = properties[13].toUInt();
-         unsigned char disExerciseID = properties[14].toUInt();
-         unsigned short disSiteID = properties[15].toUShort();
-         unsigned short disApplicationID = properties[16].toUShort();
-         unsigned int disMTU = properties[17].toUInt();
-         std::string disActorXMLFile = properties[18].toStdString();
 
          if(mHLAComp != NULL)
          {
@@ -352,18 +345,6 @@ namespace StealthQt
                mHLAComp->SetServerPort(serverPort);
                mHLAComp->SetServerGameName(serverGameName);
                mHLAComp->SetServerGameVersion(serverGameVersionInt);
-            }
-            else if (connectionType == StealthViewerSettings::CONNECTIONTYPE_DIS)
-            {
-               mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_DIS);
-
-               mHLAComp->SetDISIPAddress(disIPAddress);
-               mHLAComp->SetDISPort(disPort);
-               mHLAComp->SetDISExerciseID(disExerciseID);
-               mHLAComp->SetDISSiteID(disSiteID);
-               mHLAComp->SetDISApplicationID(disApplicationID);
-               mHLAComp->SetDISMTU(disMTU);
-               mHLAComp->SetDISActorXMLFile(disActorXMLFile);
             }
             else 
                mHLAComp->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_NONE);

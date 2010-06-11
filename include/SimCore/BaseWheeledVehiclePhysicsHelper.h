@@ -69,24 +69,10 @@ namespace SimCore
       //                               Vehicle Initialization                             //
       //////////////////////////////////////////////////////////////////////////////////////
 
-      struct TireParameters
-      {
-         float mExtremeSlip, mExtremeValue, mAsymptoteSlip, mAsypmtoteValue;
-         float mStiffness, mRestitution;
-         float mRadius, mWidth;
-      };
-
-      struct SuspensionParameters
-      {
-         float mTravel, mRestLength;
-         float mSpringRate, mDamperCoef;
-      };
-
       /**
       * /brief Purpose : Create Wheels onto the main physics vehicle
       */
-      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, TireParameters& tireParams,
-               SuspensionParameters& suspensionParams,
+      virtual WheelType AddWheel(const osg::Vec3& position, osg::Transform& node, float springRate, float damperCoef,
                bool powered = true, bool steered = true, bool braked = true);
 
       /**
@@ -107,15 +93,39 @@ namespace SimCore
       float       GetMaxBrakeTorque() const              {return mMaxBrakeTorque;}
       float       GetVehicleTopSpeed() const             {return mVehicleTopSpeed;}
       float       GetVehicleTopSpeedReverse() const      {return mVehicleTopSpeedReverse;}
+      float       GetWheelInverseMass() const            {return mWheelInverseMass;}
+      float       GetWheelRadius() const                 {return mWheelRadius;}
+      float       GetWheelWidth() const                  {return mWheelWidth; }
+      float       GetWheelSuspensionTravel() const       {return mWheelSuspensionTravel;}
+      float       GetSuspensionSpringFreq() const        {return mSuspensionSpringFreq;}
+      float       GetSuspensionSpringDamper()const       {return mSuspensionSpringDamper;}
+      float       GetSuspensionSpringTarget() const      {return mSuspensionSpringTarget;}
+      float       GetMaxSteerAngle() const               {return mMaxSteerAngle;}
+      float       GetTireExtremumSlip() const            {return mTireExtremumSlip;}
+      float       GetTireExtremumValue() const           {return mTireExtremumValue;}
+      float       GetTireAsymptoteSlip() const           {return mTireAsymptoteSlip;}
+      float       GetTireAsymptoteValue() const          {return mTireAsymptoteValue;}
+      float       GetTireStiffnessFactor() const         {return mTireStiffnessFactor;}
+      float       GetTireRestitution() const             {return mTireRestitution;}
 
       void SetEngineTorque(float value)               {mEngineTorque = value;}
       void SetMaxBrakeTorque(float value)             {mMaxBrakeTorque =  value;}
       void SetVehicleTopSpeed(float value)            {mVehicleTopSpeed = value;}
       void SetVehicleTopSpeedReverse(float value)     {mVehicleTopSpeedReverse = value;}
-
+      void SetWheelInverseMass(float value)           {mWheelInverseMass = value;}
+      void SetWheelRadius(float value)                {mWheelRadius = value;}
+      void SetWheelWidth(float width)                 { mWheelWidth = width; }
+      void SetWheelSuspensionTravel(float value)      {mWheelSuspensionTravel = value;}
+      void SetSuspensionSpringFreq(float value)       {mSuspensionSpringFreq = value;}
+      void SetSuspensionSpringDamper(float value)     {mSuspensionSpringDamper = value;}
+      void SetSuspensionSpringTarget(float value)     {mSuspensionSpringTarget = value;}
       void SetMaxSteerAngle(float value)              {mMaxSteerAngle = value;}
-
-      float       GetMaxSteerAngle() const               {return mMaxSteerAngle;}
+      void SetTireExtremumSlip(float value)           {mTireExtremumSlip = value;}
+      void SetTireExtremumValue(float value)          {mTireExtremumValue = value;}
+      void SetTireAsymptoteSlip(float value)          {mTireAsymptoteSlip = value;}
+      void SetTireAsymptoteValue(float value)         {mTireAsymptoteValue = value;}
+      void SetTireStiffnessFactor(float value)        {mTireStiffnessFactor = value;}
+      void SetTireRestitution(float value)            {mTireRestitution = value;}
 
       float GetChassisMass() const;
 
@@ -165,7 +175,35 @@ namespace SimCore
       float             mVehicleTopSpeed;            //!< Top speed of vehicle
       float             mVehicleTopSpeedReverse;     //!< Top speed in reverse
 
-      float             mMaxSteerAngle;
+      float             mWheelInverseMass;         //!< Affects acceleration of the vehicle with MOVEMENT_AMOUNT
+      float             mWheelRadius;              //!< wheel radius in meters.  use -1 for auto calculate
+      float             mWheelWidth;              //!< wheel width in meters.  use -1 for auto calculate
+      float             mMaxSteerAngle;            //!< Maximum steer angle at wheel
+      float             mWheelSuspensionTravel;    //!< Total suspension travel from full rebound to full jounce
+      float             mSuspensionSpringFreq;     //!< Spring constant
+      float             mSuspensionSpringDamper;   //!< Coefficient for linear damping
+      float             mSuspensionSpringTarget;   //!< Set to 0 usually
+
+      //////////////////////////////////////////////////////////////////////
+      // Parameters to tire model
+      //////////////////////////////////////////////////////////////////////
+
+      float             mTireExtremumSlip;         //!< extremal point of curve.  Values must be positive.
+      float             mTireExtremumValue;        //!< extremal point of curve.  Values must be positive.
+      float             mTireAsymptoteSlip;        //!< point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
+      float             mTireAsymptoteValue;       //!< point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
+      /**
+      *  This is an additional overall positive scaling that gets applied to the tire forces before passing
+      *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
+      *  need to lower this. A setting of zero will disable all friction in this direction.
+      */
+      float             mTireStiffnessFactor;
+
+      /**
+      * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
+      * Note that values close to or above 1 may cause stability problems and/or increasing energy.
+      */
+      float             mTireRestitution;
 
       float mAeroDynDragCoefficient;
       float mAeroDynDragArea;
