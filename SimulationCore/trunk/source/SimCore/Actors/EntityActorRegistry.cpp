@@ -53,10 +53,8 @@
 #include <SimCore/Actors/SurfaceVesselActor.h>
 #include <SimCore/Actors/SoundActorProxy.h>
 #include <SimCore/Actors/DynamicParticleSystem.h>
-
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/MunitionParticlesActor.h>
-
 #include <SimCore/Actors/FourWheelVehicleActor.h>
 
 
@@ -72,9 +70,9 @@
 #include <SimCore/Actors/OceanDataActor.h>
 #include <SimCore/Actors/SurfaceHazeDataActor.h>
 #include <SimCore/Actors/DRGhostActor.h>
-
 #include <SimCore/Actors/LogicConditionalActor.h>
 #include <SimCore/Actors/LogicOnEventActor.h>
+#include <SimCore/Actors/CamoConfigActor.h>
 
 #include <dtActors/engineactorregistry.h>
 
@@ -192,6 +190,10 @@ namespace SimCore
          new dtDAL::ActorType("LogicConditionalActor", "SimCore.Logic", "A true & false data class that is used by one of the Logic behavior classes such as LogicOnEventActor."));
       RefPtr<dtDAL::ActorType> EntityActorRegistry::LOGIC_ON_EVENT_ACTOR_TYPE(
          new dtDAL::ActorType("LogicOnEventActor", "SimCore.Logic", "A logic actor that can fire events when some set of conditions for its children have been met."));
+      
+      // Config Actors
+      RefPtr<dtDAL::ActorType> EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE(
+         new dtDAL::ActorType("CamoConfigActor", "SimCore.Config", "An actor that loads information about camo patterns and colors from a specified config file."));
 
 
       ///////////////////////////////////////////////////////////////////////////
@@ -298,6 +300,9 @@ namespace SimCore
          // Game Event Logic pieces
          mActorFactory->RegisterType<LogicConditionalActorProxy>(LOGIC_CONDITIONAL_ACTOR_TYPE.get());
          mActorFactory->RegisterType<LogicOnEventActorProxy>(LOGIC_ON_EVENT_ACTOR_TYPE.get());
+         
+         // Config Actors
+         mActorFactory->RegisterType<CamoConfigActorProxy>(CAMO_CONFIG_ACTOR_TYPE.get());
 
       }
    }
