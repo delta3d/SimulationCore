@@ -440,7 +440,8 @@ namespace SimCore
                brake = 1.0f;
             }
 
-            float angleChange = (1.0f / float(mNumUpdatesUntilFullSteeringAngle));
+            float updateCountInSecs = float(mNumUpdatesUntilFullSteeringAngle) / 60.00f;
+            float angleChange = deltaTime / updateCountInSecs;
             if (keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
             {
                mCurrentSteeringAngleNormalized += angleChange;
