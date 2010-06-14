@@ -2149,23 +2149,23 @@
             </property>
             <property>
                 <name>FrontSuspensionTravel</name>
-                <float>0.16</float>
+                <float>0.30</float>
             </property>
             <property>
                 <name>FrontSuspensionRestLength</name>
-                <float>0.163</float>
+                <float>0.32</float>
             </property>
             <property>
                 <name>FrontSuspensionSpringFreq</name>
-                <float>1.6</float>
+                <float>1.3</float>
             </property>
             <property>
                 <name>FrontSuspensionDamperFactor</name>
-                <float>0.75999999</float>
+                <float>0.38</float>
             </property>
             <property>
                 <name>FrontTireSlip</name>
-                <float>0.0099999998</float>
+                <float>1.0</float>
             </property>
             <property>
                 <name>FrontTireValue</name>
@@ -2201,23 +2201,23 @@
             </property>
             <property>
                 <name>RearSuspensionTravel</name>
-                <float>0.16</float>
+                <float>0.30</float>
             </property>
             <property>
                 <name>RearSuspensionRestLength</name>
-                <float>0.163</float>
+                <float>0.32</float>
             </property>
             <property>
                 <name>RearSuspensionSpringFreq</name>
-                <float>1.8</float>
+                <float>1.3</float>
             </property>
             <property>
                 <name>RearSuspensionDamperFactor</name>
-                <float>0.75</float>
+                <float>0.38</float>
             </property>
             <property>
                 <name>RearTireSlip</name>
-                <float>0.1</float>
+                <float>1.0</float>
             </property>
             <property>
                 <name>RearTireValue</name>
@@ -2296,7 +2296,7 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>0.300000</value2>
-                    <value3>0.350000</value3>
+                    <value3>0.390000</value3>
                 </vec3>
             </property>
             <property>
@@ -2341,7 +2341,7 @@
             </property>
             <property>
                 <name>Four Wheel Drive</name>
-                <boolean>false</boolean>
+                <boolean>true</boolean>
             </property>
             <property>
                 <name>FrontTrackAdjustment</name>
@@ -3490,7 +3490,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>9.2157001</float>
+                <float>0.0</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4042,7 +4042,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>3.1150999</float>
+                <float>0.0</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4598,7 +4598,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>5.6317</float>
+                <float>0.0</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4956,23 +4956,23 @@
             </property>
             <property>
                 <name>FrontSuspensionTravel</name>
-                <float>0.16</float>
+                <float>0.30</float>
             </property>
             <property>
                 <name>FrontSuspensionRestLength</name>
-                <float>0.163</float>
+                <float>0.31</float>
             </property>
             <property>
                 <name>FrontSuspensionSpringFreq</name>
-                <float>1.3</float>
+                <float>1.5</float>
             </property>
             <property>
                 <name>FrontSuspensionDamperFactor</name>
-                <float>0.74</float>
+                <float>0.40</float>
             </property>
             <property>
                 <name>FrontTireSlip</name>
-                <float>0.05</float>
+                <float>0.7</float>
             </property>
             <property>
                 <name>FrontTireValue</name>
@@ -5008,23 +5008,23 @@
             </property>
             <property>
                 <name>RearSuspensionTravel</name>
-                <float>0.16</float>
+                <float>0.30</float>
             </property>
             <property>
                 <name>RearSuspensionRestLength</name>
-                <float>0.163</float>
+                <float>0.31</float>
             </property>
             <property>
                 <name>RearSuspensionSpringFreq</name>
-                <float>1.7</float>
+                <float>1.6</float>
             </property>
             <property>
                 <name>RearSuspensionDamperFactor</name>
-                <float>0.76</float>
+                <float>0.40</float>
             </property>
             <property>
                 <name>RearTireSlip</name>
-                <float>0.9</float>
+                <float>0.8</float>
             </property>
             <property>
                 <name>RearTireValue</name>
@@ -5103,7 +5103,7 @@
                 <vec3>
                     <value1>0.000000</value1>
                     <value2>0.000000</value2>
-                    <value3>0.950000</value3>
+                    <value3>0.900000</value3>
                 </vec3>
             </property>
             <property>
@@ -5116,7 +5116,7 @@
             </property>
             <property>
                 <name>chassis: Mass</name>
-                <float>1800</float>
+                <float>2300</float>
             </property>
             <property>
                 <name>chassis: Skin Thickness</name>
@@ -5160,7 +5160,7 @@
             </property>
             <property>
                 <name>Engine Torque</name>
-                <float>6100</float>
+                <float>1700</float>
             </property>
             <property>
                 <name>Max Break Torque</name>
@@ -5172,11 +5172,11 @@
             </property>
             <property>
                 <name>Top Speed (MPH)</name>
-                <float>60</float>
+                <float>71</float>
             </property>
             <property>
                 <name>mVehicleTopSpeedReverse</name>
-                <float>100</float>
+                <float>30</float>
             </property>
             <property>
                 <name>AeroDynDragCoefficient</name>
@@ -5184,7 +5184,7 @@
             </property>
             <property>
                 <name>AeroDynDragArea</name>
-                <float>8</float>
+                <float>7</float>
             </property>
             <property>
                 <name>Perform_Above_Ground_Safety_Check</name>

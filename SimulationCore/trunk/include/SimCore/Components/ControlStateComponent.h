@@ -32,6 +32,7 @@
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/ControlStateActor.h>
 
+#include <dtDAL/resourcedescriptor.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,16 +130,16 @@ namespace SimCore
              * @return List of file names for weapon models that this component will
              * be responsible for loading..
              */
-            std::vector<std::string>& GetWeaponModelFileList() { return mWeaponModelFileList; }
-            const std::vector<std::string>& GetWeaponModelFileList() const { return mWeaponModelFileList; }
+            const std::vector<dtDAL::ResourceDescriptor>& GetWeaponModelResourceList() const;
+            void SetWeaponModelResourceList(const std::vector<dtDAL::ResourceDescriptor>& newList);
 
             /**
-             * Get the name of the weapon file assigned to the specified weapon number.
+             * Get the name of the weapon reasource assigned to the specified weapon number.
              * @param weaponIndex Index of the weapon used in the application. The index will
              *        map to the index of the file name in the contained file name list.
              * @return file name of the weapon with the specified index; empty string if not found.
              */
-            const std::string& GetWeaponModelFileName( unsigned weaponIndex );
+            const dtDAL::ResourceDescriptor& GetWeaponModelResource( unsigned weaponIndex );
 
             void SetSelectedWeapon( unsigned weaponIndex );
             unsigned GetSelectedWeapon() const;
@@ -187,7 +188,7 @@ namespace SimCore
             RemoteControlStateMap mRemoteVehicleMap;
 
             // Weapon Model File List
-            std::vector<std::string> mWeaponModelFileList;
+            std::vector<dtDAL::ResourceDescriptor> mWeaponModelFileList;
 
             ControlStateInfo* GetControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID );
             bool AddControlStateInfo( RemoteControlStateMap& infoMap, const dtCore::UniqueId& vehicleID, ControlStateInfo& info );

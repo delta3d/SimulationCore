@@ -30,6 +30,7 @@
 #include <dtCore/uniqueid.h>
 #include <dtUtil/nodecollector.h>
 #include <dtDAL/actorproxy.h>
+#include <dtDAL/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/deadreckoninghelper.h>
@@ -421,18 +422,20 @@ namespace SimCore
             osgSim::DOFTransform* dof = nodeCollector->GetDOFTransform( dofName );
             if( dof != NULL )
             {
-               // DEBUG: std::cout << "\tAdd Child" << std::endl;
-               dof->addChild( &model );
-
                // If this is the weapon model being attached, add the
                // weapon's hotspot to the vehicle's node collector so
                // that the hot spot can be found in the munitions component
                // for rendering flash effects on the remote vehicle.
                if( dofName == DOF_NAME_WEAPON )
                {
+                  // clear all children of dof before adding the gun.
+                  dof->removeChildren(0, dof->getNumChildren());
+
+                  dof->addChild( &model );
+
                   // Get access to the hot spot on the weapon model
                   dtCore::RefPtr<dtUtil::NodeCollector> weaponNodeCollector
-                     = new dtUtil::NodeCollector(&model,dtUtil::NodeCollector::DOFTransformFlag);
+                     = new dtUtil::NodeCollector(&model, dtUtil::NodeCollector::DOFTransformFlag);
                   osgSim::DOFTransform* hotspotDof = weaponNodeCollector->GetDOFTransform(DOF_NAME_WEAPON_HOTSPOT);
 
                   if( hotspotDof != NULL )
@@ -440,6 +443,10 @@ namespace SimCore
                      // DEBUG: std::cout << "Hotspot found on weapon model" << std::endl;
                      vehicle.GetNodeCollector()->AddDOFTransform(DOF_NAME_WEAPON_HOTSPOT, *hotspotDof );
                   }
+               }
+               else
+               {
+                  dof->addChild( &model );
                }
                return true;
             }
@@ -499,10 +506,20 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////
-      const std::string& ControlStateComponent::GetWeaponModelFileName( unsigned weaponIndex )
+      const std::vector<dtDAL::ResourceDescriptor>& ControlStateComponent::GetWeaponModelResourceList() const
       {
-         static const std::string EMPTY("");
+         return mWeaponModelFileList;
+      }
 
+      ////////////////////////////////////////////////////////////////////////////////
+      void ControlStateComponent::SetWeaponModelResourceList(const std::vector<dtDAL::ResourceDescriptor>& newList)
+      {
+         mWeaponModelFileList = newList;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      const dtDAL::ResourceDescriptor& ControlStateComponent::GetWeaponModelResource( unsigned weaponIndex )
+      {
          if( ! mWeaponModelFileList.empty() && mWeaponModelFileList.size() > weaponIndex )
          {
             // DEBUG:
@@ -510,7 +527,7 @@ namespace SimCore
             //   << "\n\tchangeToWeapon(" << weaponIndex << ")" << std::endl;
             return mWeaponModelFileList[weaponIndex];
          }
-         return EMPTY;
+         return dtDAL::ResourceDescriptor::NULL_RESOURCE;
       }
 
       ////////////////////////////////////////////////////////////////////////////////
@@ -654,13 +671,16 @@ namespace SimCore
             }
 
             // Attempt attachment of a new weapon model.
-            const std::string& weaponFileName = GetWeaponModelFileName( controlStateInfo.mWeaponSelected );
-            dtCore::RefPtr<osg::Node> cachedModel;
+            dtDAL::ResourceDescriptor weaponResource = GetWeaponModelResource( controlStateInfo.mWeaponSelected );
+            bool isModelLoaded = false;
+            if (weaponResource != dtDAL::ResourceDescriptor::NULL_RESOURCE)
+            {
+               const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(weaponResource);
+               dtCore::RefPtr<osg::Node> cachedModel;
 
-            bool isModelLoaded
-               = SimCore::Actors::IGActor::LoadFileStatic( weaponFileName, cachedModel, controlStateInfo.mWeaponModel );
-
-            // DEBUG: std::cout << "\tweapon(" << (isModelLoaded?weaponFileName:"NULL") << ")" << std::endl;
+               bool isModelLoaded
+                  = SimCore::Actors::IGActor::LoadFileStatic( weaponFileName, cachedModel, controlStateInfo.mWeaponModel );
+            }
 
             if( isModelLoaded )
             {

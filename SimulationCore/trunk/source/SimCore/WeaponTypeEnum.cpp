@@ -26,30 +26,40 @@
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/WeaponTypeEnum.h>
 
-
-
 namespace SimCore
 {
    ////////////////////////////////////////////////////////////////////////////////
    // WEAPON TYPE ENUMERATION CODE
    ////////////////////////////////////////////////////////////////////////////////
    IMPLEMENT_ENUM(WeaponTypeEnum);
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_50CAL("Weaon_50Cal", 0, "StaticMeshes/m2 .50cal/m2_50cal.ive"); 
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_MK19("Weaon_MK19", 1, "StaticMeshes/mk19/mk19.ive"); 
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_M240("Weaon_M240", 2, "StaticMeshes/m240/m240.ive");
-   WeaponTypeEnum WeaponTypeEnum::WEAPON_M249("Weaon_M249", 3, "StaticMeshes/m249/m249.ive");
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_50CAL("Weaon_50Cal", 0, dtDAL::ResourceDescriptor("StaticMeshes:m2 .50cal:m2_50cal.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_MK19("Weaon_MK19", 1, dtDAL::ResourceDescriptor("StaticMeshes:mk19:mk19.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_M240("Weaon_M240", 2, dtDAL::ResourceDescriptor("StaticMeshes:m240:m240.ive"));
+   WeaponTypeEnum WeaponTypeEnum::WEAPON_M249("Weaon_M249", 3, dtDAL::ResourceDescriptor("StaticMeshes:m249:m249.ive"));
 
    ////////////////////////////////////////////////////////////////////////////////
-   WeaponTypeEnum::WeaponTypeEnum(const std::string &name, unsigned enumValue, const std::string& modelFileUrl)
+   WeaponTypeEnum::WeaponTypeEnum(const std::string& name, unsigned enumValue, const dtDAL::ResourceDescriptor& modelResource)
    : dtUtil::Enumeration(name),
    mEnumValue(enumValue),
-   mModelFileUrl(modelFileUrl)
+   mModelResource(modelResource)
    {
       AddInstance(this);
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void WeaponTypeEnum::GetModelFileUrlList( std::vector<std::string>& outFileUrlList )
+   unsigned WeaponTypeEnum::GetEnumValue() const
+   {
+      return mEnumValue;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   const dtDAL::ResourceDescriptor& WeaponTypeEnum::GetModelResource() const
+   {
+      return mModelResource;
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void WeaponTypeEnum::GetModelResourceList( std::vector<dtDAL::ResourceDescriptor>& outFileList )
    {
       const std::vector<dtUtil::Enumeration*>& weaponTypes = WeaponTypeEnum::Enumerate();
 
@@ -60,7 +70,7 @@ namespace SimCore
          curType = dynamic_cast<const WeaponTypeEnum*>(weaponTypes[i]);
          if( curType != NULL )
          {
-            outFileUrlList.push_back( curType->GetModelFileUrl() );
+            outFileList.push_back( curType->mModelResource );
          }
       }
    }
