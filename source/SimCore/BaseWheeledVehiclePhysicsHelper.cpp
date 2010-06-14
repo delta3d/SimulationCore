@@ -120,13 +120,23 @@ namespace SimCore
          wheelWidth = tireParams.mWidth;
       }
 
-      wheel.mWheel->Init(position.x(), position.y(), position.z(),
-               wheelRadius, wheelWidth, suspensionParams.mRestLength,
-               suspensionParams.mSpringRate, // in newtons per meter
-               suspensionParams.mDamperCoef,
-               powered, steered, braked,
-               suspensionParams.mTravel * 100.0f,  // in centimeters
-               tireParams.mExtremeSlip);
+      palWheelInfo wheelInfo;
+      wheelInfo.m_fPosX = position.x();
+      wheelInfo.m_fPosY = position.y();
+      wheelInfo.m_fPosZ = position.z();
+      wheelInfo.m_fRadius = wheelRadius;
+      wheelInfo.m_fWidth = wheelWidth;
+      wheelInfo.m_fSuspension_Travel = suspensionParams.mTravel;
+      wheelInfo.m_fSuspension_Rest_Length = suspensionParams.mRestLength;
+      wheelInfo.m_fSuspension_Ks = suspensionParams.mSpringRate;
+      wheelInfo.m_fSuspension_Kd = suspensionParams.mDamperCoef;
+      wheelInfo.m_fRoll_Influence = suspensionParams.mRollInfluence;
+      wheelInfo.m_fFriction_Slip = tireParams.mExtremeSlip;
+      wheelInfo.m_bBrake = braked;
+      wheelInfo.m_bSteer = steered;
+      wheelInfo.m_bDrive = powered;
+
+      wheel.mWheel->Init(wheelInfo);
 
       wheel.mTransform = &node;
 

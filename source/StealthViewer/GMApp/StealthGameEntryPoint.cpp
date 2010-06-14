@@ -350,8 +350,9 @@ namespace StealthGM
          = new SimCore::Components::ControlStateComponent;
       gameManager.AddComponent(*controlsStateComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-      std::vector<std::string>& weaponModelFileList = controlsStateComp->GetWeaponModelFileList();
-      SimCore::WeaponTypeEnum::GetModelFileUrlList( weaponModelFileList );
+      std::vector<dtDAL::ResourceDescriptor> weaponModelResourceList;
+      SimCore::WeaponTypeEnum::GetModelResourceList( weaponModelResourceList );
+      controlsStateComp->SetWeaponModelResourceList(weaponModelResourceList);
 
       // This function will initialize both the HUD and Input Component
       // with tools that have been enabled in the command line arguments.

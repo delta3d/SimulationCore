@@ -36,8 +36,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <dtUtil/enumeration.h>
-
-
+#include <dtDAL/resourcedescriptor.h>
 
 namespace SimCore
 {
@@ -54,17 +53,17 @@ namespace SimCore
          static WeaponTypeEnum WEAPON_M240;
          static WeaponTypeEnum WEAPON_M249;
 
-         unsigned GetEnumValue() const { return mEnumValue; }
+         unsigned GetEnumValue() const;
 
-         const std::string& GetModelFileUrl() const { return mModelFileUrl; }
+         const dtDAL::ResourceDescriptor& GetModelResource() const;
 
-         static void GetModelFileUrlList( std::vector<std::string>& outFileUrlList );
+         static void GetModelResourceList(std::vector<dtDAL::ResourceDescriptor>& outFileList);
 
       private:
-         WeaponTypeEnum(const std::string &name, unsigned enumValue, const std::string& modelFileUrl);
+         WeaponTypeEnum(const std::string& name, unsigned enumValue, const dtDAL::ResourceDescriptor& modelResource);
 
          unsigned mEnumValue;
-         std::string mModelFileUrl;
+         dtDAL::ResourceDescriptor mModelResource;
    };
 }
 

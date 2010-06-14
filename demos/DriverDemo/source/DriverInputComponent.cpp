@@ -56,7 +56,6 @@
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/MunitionsComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
-#include <SimCore/WeaponTypeEnum.h>
 #include <SimCore/Tools/Tool.h>
 #include <SimCore/Utilities.h>
 

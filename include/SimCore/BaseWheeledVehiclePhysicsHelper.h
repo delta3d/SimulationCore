@@ -80,6 +80,7 @@ namespace SimCore
       {
          float mTravel, mRestLength;
          float mSpringRate, mDamperCoef;
+         float mRollInfluence;
       };
 
       /**

@@ -301,8 +301,8 @@ namespace SimCore
       float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
       float frontDeflection = (frontWheelLoad / frontSpring);
       float rearDeflection  = (rearWheelLoad / rearSpring);
-      mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionTravel() - frontDeflection);
-      mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionTravel() - rearDeflection);
+      mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionRestLength() - frontDeflection);
+      mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionRestLength() - rearDeflection);
 
       WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
       WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;
@@ -348,6 +348,7 @@ namespace SimCore
       sp.mSpringRate = frontSpring;
       sp.mRestLength = GetFrontSuspensionRestLength();
       sp.mTravel = GetFrontSuspensionTravel();
+      sp.mRollInfluence = 0.3f;
 
       mWheels[FRONT_LEFT]   = AddWheel(WheelVec[FRONT_LEFT], *static_cast<osg::Transform*>(wheels[FRONT_LEFT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
       mWheels[FRONT_RIGHT]  = AddWheel(WheelVec[FRONT_RIGHT], *static_cast<osg::Transform*>(wheels[FRONT_RIGHT]->getParent(0)), tp, sp, GetIsVehicleFourWheelDrive(), true, true);
@@ -365,6 +366,7 @@ namespace SimCore
       sp.mSpringRate = rearSpring;
       sp.mRestLength = GetRearSuspensionRestLength();
       sp.mTravel = GetRearSuspensionTravel();
+      sp.mRollInfluence = 0.1f;
 
       mWheels[BACK_LEFT]    = AddWheel(WheelVec[BACK_LEFT], *static_cast<osg::Transform*>(wheels[BACK_LEFT]->getParent(0)), tp, sp, true, false, true);
       mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), tp, sp, true, false, true);
