@@ -664,7 +664,6 @@ namespace SimCore
 
 
          // Should mStaticTerrainPhysicsEnabled & mEnableCullVisitor be mutually exclusive?
-
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1027,6 +1026,9 @@ namespace SimCore
                mCullVisitor->SetTerrainNode(toFill[0]->GetActor()->GetOSGNode()->asTransform());
             }
          }
+
+         // Finalize if there is anything to do.
+         mCullVisitor->FinalizeTerrain();
 
          dtCore::Transform cameraTransform;
          GetGameManager()->GetApplication().GetCamera()->GetTransform(cameraTransform);

@@ -284,43 +284,49 @@ namespace SimCore
          }
 
          //////////////////////////////////////////////////////////////////////
-         bool PagedTerrainPhysicsActor::FinalizeTerrain(int amountOfFrames)
+         bool PagedTerrainPhysicsActor::FinalizeTerrain(int numberOfFrames)
          {
             std::map<osg::Geode*, dtCore::RefPtr<TerrainNode> >::iterator removeIter;
             for(unsigned int i = 0;
                mFinalizeTerrainIter != mTerrainMap.end()
-               && i < mTerrainMap.size() / amountOfFrames + 1;
+               && i < mTerrainMap.size() ;/// numberOfFrames;
                ++i)
             {
                TerrainNode* currentNode = mFinalizeTerrainIter->second.get();
 
-               if(currentNode->GetGeodePointer() == NULL)
+               if (currentNode->GetGeodePointer() == NULL)
                {
-                  // Remove ageia stuff if its loaded.
-                  if(currentNode->IsFilled())
+                  // Remove physics stuff if its loaded.
+                  if (currentNode->IsFilled())
                   {
+#ifdef AGEIA_PHYSICS
                      mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
+#else
+                     mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
+#endif
                   }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
                }
-               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_DISABLE
+               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_DISABLE
                      &&currentNode->IsFilled())
                {
 #ifdef AGEIA_PHYSICS
                   mPhysicsHelper->TurnOffCollision(currentNode->GetPhysicsObject());
 #else
+                  currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
 #endif
                }
-               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
+               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
                      &&currentNode->IsFilled())
                {
 #ifdef AGEIA_PHYSICS
                   mPhysicsHelper->TurnOnCollision(currentNode->GetPhysicsObject());
 #else
+                  currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
 #endif
                }
-               else if(currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD
+               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD
                      &&currentNode->GetGeodePointer() != NULL)
                {
                   // load the tile to ageia
@@ -535,6 +541,7 @@ namespace SimCore
                   newTile->SetName(nameOfNode);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
+                  newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
 
                   dtPhysics::VertexData data;
                   data.mIndices = &dtv.mFunctor.mIndices.front();

@@ -66,9 +66,10 @@ namespace SimCore
 
          // 26 is our boat actor.
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_BULLET, true);  // bullets don't hit anything directly.
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
-         physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets and boats
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets remote humans
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_TERRAIN, true);  // land & vehicles and boats
          physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_WATER, false);  // remote characters DO NOT interact with world - don't push the boat
 
