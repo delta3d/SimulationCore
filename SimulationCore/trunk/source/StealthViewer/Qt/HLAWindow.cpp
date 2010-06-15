@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <ui_HLAWindowUi.h>
 #include <StealthViewer/Qt/HLAOptions.h>

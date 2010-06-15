@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson, Curtiss Murphy
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/HLAOptions.h>
 #include <ui_HLAOptionsUi.h>
 #include <StealthViewer/Qt/MapSelectDialog.h>

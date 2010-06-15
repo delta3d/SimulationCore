@@ -26,6 +26,7 @@
  * @author David Guthrie
  */
 
+#include <prefix/StealthQtPrefix.h>
 #include <QtCore/QString>
 #include <QtCore/QString>
 

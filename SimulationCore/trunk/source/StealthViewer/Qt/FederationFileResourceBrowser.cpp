@@ -25,6 +25,7 @@
  *
  * @author Eddie Johnson
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/FederationFileResourceBrowser.h>
 #include <ui_FederationFileResourceBrowserUi.h>
 #include <QtGui/QHeaderView>

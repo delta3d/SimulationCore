@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/CustomWeatherSettings.h>
 #include <ui_CustomWeatherSettingsUi.h>
 
