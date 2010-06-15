@@ -20,4 +20,21 @@
  * circumstances in which the U. S. Government may have rights in the software.
  * david
  */
-#include <prefix/dtgameprefix.h>
+#ifndef SIMCOREPREFIX_h__
+#define SIMCOREPREFIX_h__
+
+   #ifdef SIMCORE_USE_PCH
+     #ifdef _MSC_VER
+       #include <osg/Node>
+       #include <osg/Texture>
+       #include <osgDB/Registry>
+       #include <dtDAL/enginepropertytypes.h>
+       #include <dtDAL/namedparameter.h>
+       #include <dtGame/gameactor.h>
+       #include <dtCore/particlesystem.h>
+     #else //_MSC_VER
+       #include <prefix/dtgameprefix.h>
+     #endif  //_MSC_VER
+   #endif //SIMCORE_USE_PCH
+
+#endif // SIMCOREPREFIX_h__
