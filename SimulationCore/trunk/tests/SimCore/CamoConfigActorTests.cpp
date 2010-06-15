@@ -34,6 +34,8 @@
 #include <dtGame/gamemanager.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/CamoConfigActor.h>
+#include <SimCore/Actors/Platform.h>
+#include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <UnitTestMain.h>
 
 
@@ -52,6 +54,7 @@ namespace SimCore
          CPPUNIT_TEST(TestActorProperties);
          CPPUNIT_TEST(TestCamoParamsManagement);
          CPPUNIT_TEST(TestCamoConfigLoading);
+         CPPUNIT_TEST(TestCamoSettingOnActor);
          CPPUNIT_TEST_SUITE_END();
 
          public:
@@ -64,10 +67,11 @@ namespace SimCore
             void TestActorProperties();
             void TestCamoParamsManagement();
             void TestCamoConfigLoading();
+            void TestCamoSettingOnActor();
 
          private:
             dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<dtGame::GameActorProxy> mProxy;
+            dtCore::RefPtr<CamoConfigActorProxy> mProxy;
             CamoConfigActor* mActor;
       };
 
@@ -155,7 +159,12 @@ namespace SimCore
       {
          try
          {
-            // TODO: More tests...
+            const CamoConfigActor& constActor = *mActor;
+            std::string filePath = "Configs/CamoConfig.xml";
+
+            CPPUNIT_ASSERT(constActor.GetConfigFile().empty());
+            mActor->SetConfigFile(filePath);
+            CPPUNIT_ASSERT(constActor.GetConfigFile() == filePath);
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -300,13 +309,6 @@ namespace SimCore
             mActor->SetConfigFile("Configs/CamoConfig.xml");
 
             CamoParamsList camoList;
-            CPPUNIT_ASSERT(mActor->GetCamoParamsCount() == 0);
-            CPPUNIT_ASSERT(mActor->GetCamoParamsList(camoList) == 0);
-            CPPUNIT_ASSERT(camoList.empty());
-
-            // --- adding the actor to the scene should trigger the file loading.
-            mGM->AddActor(*mProxy, false, false);
-
             CPPUNIT_ASSERT(mActor->GetCamoParamsCount() == 4);
             CPPUNIT_ASSERT(mActor->GetCamoParamsList(camoList) == 4);
             CPPUNIT_ASSERT(camoList.size() == 4);
@@ -350,6 +352,62 @@ namespace SimCore
             CPPUNIT_ASSERT(camo1->GetColor3() == color3);
             CPPUNIT_ASSERT(camo1->GetColor4() == color4);
             CPPUNIT_ASSERT(camo1->GetPatternTexture().GetResourceIdentifier() == "Textures/ShadersBase/CamoPatternHard.tga");
+         }
+         catch (const dtUtil::Exception& ex)
+         {
+            CPPUNIT_FAIL(ex.ToString());
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void CamoConfigActorTests::TestCamoSettingOnActor()
+      {
+         using namespace SimCore::ActComps;
+
+         try
+         {
+            // Load some camo definitions.
+            mActor->SetConfigFile("Configs/CamoConfig.xml");
+            mGM->AddActor(*mProxy);
+            const CamoParams* camo1 = mActor->GetCamoParamsByName("Test");
+            const CamoParams* camo2 = mActor->GetCamoParamsByName("Desert");
+            CPPUNIT_ASSERT(camo1 != NULL);
+            CPPUNIT_ASSERT(camo2 != NULL);
+            CamoParams::CamoId camoId1 = camo1->GetId();
+            CamoParams::CamoId camoId2 = camo2->GetId();
+
+            // Create a proxy.
+            dtCore::RefPtr<dtGame::GameActorProxy> proxy;
+            mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, proxy);
+
+            // Get the actor that was created.
+            SimCore::Actors::Platform* actor = NULL;
+            CPPUNIT_ASSERT(proxy.valid());
+            proxy->GetActor(actor);
+
+            // Get the actor's Camo Paint Actor Component
+            CamoPaintStateActComp* actComp = dynamic_cast<CamoPaintStateActComp*>
+               (actor->GetComponent(CamoPaintStateActComp::TYPE));
+            CPPUNIT_ASSERT(actComp != NULL);
+            actComp->SetCamoId(camoId2);
+
+            // Add the actor to the scene so it can access the 
+            mGM->AddActor(*proxy, false, false);
+
+            // Ensure the camo colors were set on the actor when it entered the world.
+            CPPUNIT_ASSERT(actComp->GetPaintColor1() == camo2->GetColor1());
+            CPPUNIT_ASSERT(actComp->GetPaintColor2() == camo2->GetColor2());
+            CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo2->GetColor3());
+            CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo2->GetColor4());
+            CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo2->GetPatternTexture());
+
+            // TODO:
+            actComp->SetCamoId(camoId1);
+            CPPUNIT_ASSERT(actComp->GetPaintColor1() == camo1->GetColor1());
+            CPPUNIT_ASSERT(actComp->GetPaintColor2() == camo1->GetColor2());
+            CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo1->GetColor3());
+            CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo1->GetColor4());
+            CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo1->GetPatternTexture());
          }
          catch (const dtUtil::Exception& ex)
          {
