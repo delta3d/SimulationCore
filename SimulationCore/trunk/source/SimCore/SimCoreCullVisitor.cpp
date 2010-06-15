@@ -95,6 +95,15 @@ namespace SimCore
    }
 
    ///////////////////////////////////////////////////////////////////////////
+   void SimCoreCullVisitor::FinalizeTerrain()
+   {
+      if (mEnablePhysics && mCurrentlyInTerrain == false && mRunFinalizeTerrain && mLandActor.valid())
+      {
+         mRunFinalizeTerrain = mLandActor->FinalizeTerrain(mCheckTerrainAmount - 1);
+      }
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
    void SimCoreCullVisitor::apply(osg::Transform& node)
    {
       if(mTerrainNode.valid() 
@@ -120,11 +129,6 @@ namespace SimCore
       if(&node == mTerrainNode.get())
       {
          mCurrentlyInTerrain = false;
-      }
-
-      if(mEnablePhysics && mCurrentlyInTerrain == false && mRunFinalizeTerrain && mLandActor.valid())
-      {
-         mRunFinalizeTerrain = mLandActor->FinalizeTerrain(mCheckTerrainAmount - 1);
       }
    }
 

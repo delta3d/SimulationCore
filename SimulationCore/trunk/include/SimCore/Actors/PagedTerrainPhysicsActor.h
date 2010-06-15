@@ -95,13 +95,11 @@ namespace SimCore
             /////////////////////////////////////////////////////////////////////////
             void SetPhysicsObject(dtPhysics::PhysicsObject* object) {mPhysicsObject = object;}
 
-#ifdef AGEIA_PHYSICS
-            dtPhysics::PhysicsObject* GetPhysicsObject() {return mPhysicsObject;}
+            dtPhysics::PhysicsObject* GetPhysicsObject() { return mPhysicsObject; }
          private:
+#ifdef AGEIA_PHYSICS
             dtPhysics::PhysicsObject*                mPhysicsObject;
 #else
-            dtPhysics::PhysicsObject* GetPhysicsObject() {return mPhysicsObject.get();}
-         private:
             dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
 #endif
 
@@ -181,7 +179,7 @@ namespace SimCore
             void ResetTerrainIterator();
 
             /// called to act on the flags.
-            bool FinalizeTerrain(int amountOfFrames);
+            bool FinalizeTerrain(int numberOfFrames);
 
             // public accessor to get the variable
             dtPhysics::PhysicsHelper* GetPhysicsHelper() const {return mPhysicsHelper.get();}

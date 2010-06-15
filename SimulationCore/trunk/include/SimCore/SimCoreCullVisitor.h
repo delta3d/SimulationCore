@@ -81,6 +81,7 @@ namespace SimCore
          void SetFrameDelay(int);
          int GetFrameDelay() const;
 
+         void FinalizeTerrain();
 
       protected:
          /// Destructor
