@@ -18,9 +18,9 @@
  *
  * @author David Guthrie
  */
+#include <prefix/SimCorePrefix.h>
 #ifndef _TEST_COMPONENT_H_
 #define _TEST_COMPONENT_H_
-
 #include <dtCore/refptr.h>
 #include <dtGame/gmcomponent.h>
 #include <dtGame/messagetype.h>

@@ -25,8 +25,7 @@
 *
 * Chris Rodgers
 */
-//can't find this, do I need it? -bga
-//#include <prefix/dtgameprefix.h>
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <SimCore/Actors/SoundActorProxy.h>
