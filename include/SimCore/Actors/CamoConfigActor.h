@@ -28,6 +28,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
+#include <osg/Node>
 #include <osg/Vec4>
 #include <dtUtil/getsetmacros.h>
 #include <dtDAL/resourcedescriptor.h>
@@ -68,13 +69,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ACTOR CODE
       //////////////////////////////////////////////////////////////////////////
-      class CamoConfigActorProxy;
-      class SIMCORE_EXPORT CamoConfigActor : public dtGame::GameActor
+      class SIMCORE_EXPORT CamoConfigActor : public dtCore::DeltaDrawable
       {
          public:
-            typedef dtGame::GameActor BaseClass;
+            typedef dtCore::DeltaDrawable BaseClass;
 
-            CamoConfigActor(CamoConfigActorProxy& proxy);
+            CamoConfigActor();
 
             DECLARE_PROPERTY(std::string, ConfigFile);
 
@@ -92,9 +92,11 @@ namespace SimCore
             bool LoadConfigFile();
             bool LoadConfigFile(const std::string& file);
 
-            virtual void OnEnteredWorld();
-
             void Clear();
+
+            // Inherited Abstract Methods
+            virtual osg::Node* GetOSGNode();
+            virtual const osg::Node* GetOSGNode() const;
 
          protected:
             virtual ~CamoConfigActor();
@@ -110,15 +112,17 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // PROXY CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT CamoConfigActorProxy : public dtGame::GameActorProxy
+      class SIMCORE_EXPORT CamoConfigActorProxy : public dtDAL::ActorProxy
       {
          public:
             static const dtUtil::RefString CLASS_NAME;
             static const dtUtil::RefString PROPERTY_CONFIG_FILE;
 
-            typedef dtGame::GameActorProxy BaseClass;
+            typedef dtDAL::ActorProxy BaseClass;
 
             CamoConfigActorProxy();
+
+            virtual bool IsPlaceable() const {return false;}
 
             virtual void CreateActor();
 

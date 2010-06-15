@@ -139,8 +139,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ACTOR CODE
       //////////////////////////////////////////////////////////////////////////
-      CamoConfigActor::CamoConfigActor(CamoConfigActorProxy& proxy)
-         : BaseClass(proxy)
+      CamoConfigActor::CamoConfigActor()
+         : CamoConfigActor::BaseClass("CamoConfigActor")
       {
       }
 
@@ -150,7 +150,18 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY(CamoConfigActor, std::string, ConfigFile);
+      IMPLEMENT_PROPERTY_GETTER(CamoConfigActor, std::string, ConfigFile); // setter implemented below.
+
+      //////////////////////////////////////////////////////////////////////////
+      void CamoConfigActor::SetConfigFile(const std::string& file)
+      {
+         mConfigFile = file;
+
+         if( ! file.empty())
+         {
+            LoadConfigFile(mConfigFile);
+         }
+      }
 
       //////////////////////////////////////////////////////////////////////////
       unsigned CamoConfigActor::GetCamoParamsList(CamoParamsList& outList)
@@ -262,6 +273,10 @@ namespace SimCore
             
             if(dtUtil::FileUtils::GetInstance().FileExists(filePath))
             {
+               // Remove old camo parameters.
+               Clear();
+
+               // Read in new camo parameters
                CamoConfigHandler handler(this);
                dtUtil::XercesParser parser;
                success = parser.Parse(filePath, handler);
@@ -280,17 +295,21 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void CamoConfigActor::OnEnteredWorld()
-      {
-         BaseClass::OnEnteredWorld();
-
-         LoadConfigFile();
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       void CamoConfigActor::Clear()
       {
          mCamoMap.clear();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::Node* CamoConfigActor::GetOSGNode()
+      {
+         return NULL;
+      }
+      
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Node* CamoConfigActor::GetOSGNode() const
+      {
+         return NULL;
       }
 
 
@@ -315,7 +334,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void CamoConfigActorProxy::CreateActor()
       {
-         SetActor(*new CamoConfigActor(*this));
+         SetActor(*new CamoConfigActor());
       }
 
       //////////////////////////////////////////////////////////////////////////

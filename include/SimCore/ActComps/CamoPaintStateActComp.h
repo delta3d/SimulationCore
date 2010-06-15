@@ -22,15 +22,28 @@
 * @author Chris Rodgers
 */
 
-#ifndef BODY_PAINT_STATE_ACT_COMP_H_
-#define BODY_PAINT_STATE_ACT_COMP_H_
+#ifndef CAMO_PAINT_STATE_ACT_COMP_H_
+#define CAMO_PAINT_STATE_ACT_COMP_H_
 
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
 #include <osg/Vec2>
-#include <SimCore/ActComps/BodyPaintActComp.h>
+#include <SimCore/ActComps/BodyPaintStateActComp.h>
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FORWARD DECLARATIONS
+////////////////////////////////////////////////////////////////////////////////
+namespace SimCore
+{
+   namespace Actors
+   {
+      class CamoParams;
+   }
+}
 
 
 
@@ -41,32 +54,22 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // CLASS CODE
       //////////////////////////////////////////////////////////////////////////
-      class SIMCORE_EXPORT BodyPaintStateActComp : public BodyPaintActComp
+      class SIMCORE_EXPORT CamoPaintStateActComp : public BodyPaintStateActComp
       {
          public:
-            typedef BodyPaintActComp BaseClass;
+            typedef BodyPaintStateActComp BaseClass;
 
             static const ActorComponent::ACType TYPE;
 
             // Property Names
-            static const dtUtil::RefString PROPERTY_PAINT_STATE;
-            static const dtUtil::RefString PROPERTY_DIFFUSE_FRAME_SCALE;
-            static const dtUtil::RefString PROPERTY_OVERLAY_FRAME_SCALE;
-            static const dtUtil::RefString PROPERTY_OVERLAY_TEXTURE;
+            static const dtUtil::RefString PROPERTY_CAMO_ID;
 
-            // Uniform Names
-            static const dtUtil::RefString UNIFORM_FRAME_OFFSET_AND_SCALES;
-            static const dtUtil::RefString UNIFORM_OVERLAY_TEXTURE;
-
-            BodyPaintStateActComp();
+            CamoPaintStateActComp();
 
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
-            DECLARE_PROPERTY(float, PaintState);
-            DECLARE_PROPERTY(float, DiffuseFrameScale);
-            DECLARE_PROPERTY(float, OverlayFrameScale);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, OverlayTexture);
+            DECLARE_PROPERTY(int, CamoId);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent
@@ -78,15 +81,9 @@ namespace SimCore
             virtual void BuildPropertyMap();
          
          protected:
-            BodyPaintStateActComp(const ActorComponent::ACType& actType); // for derived classes
+            virtual ~CamoPaintStateActComp();
 
-            virtual ~BodyPaintStateActComp();
-
-            /**
-            * Sets default values for any constructor overloads.
-            * This should be called from constructors only.
-            */
-            virtual void SetDefaults();
+            const SimCore::Actors::CamoParams* GetCamoParameters(int camoId);
       };
 
    }

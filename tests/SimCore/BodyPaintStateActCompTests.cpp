@@ -34,7 +34,7 @@
 #include <osg/StateSet>
 #include <dtGame/gameactorproxy.h>
 #include <dtGame/gamemanager.h>
-#include <SimCore/ActComps/BodyPaintStateActComp.h>
+#include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/Platform.h>
 #include <UnitTestMain.h>
@@ -77,7 +77,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintStateActCompTests::setUp()
       {
-         std::cout << "\n\tEntering: BodyPaintStateActCompTests\n\n";
          try
          {
             // Create the Game Manager.
@@ -199,9 +198,9 @@ namespace SimCore
 
             // Ensure the component exists
             mActComp = NULL;
-            BodyPaintStateActComp* actComp
-               = dynamic_cast<BodyPaintStateActComp*>
-               (actor->GetComponent(BodyPaintStateActComp::TYPE));
+            CamoPaintStateActComp* actComp
+               = dynamic_cast<CamoPaintStateActComp*>
+               (actor->GetComponent(CamoPaintStateActComp::TYPE));
             CPPUNIT_ASSERT(actComp != NULL);
             CPPUNIT_ASSERT(actComp->GetOwnerNode() == actor->GetOSGNode());
 

@@ -24,7 +24,7 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <string>
-#include <SimCore/ActComps/BodyPaintStateActComp.h>
+#include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
@@ -488,9 +488,9 @@ namespace SimCore
             }
 
             // Update the entity painting effect to show damage.
-            SimCore::ActComps::BodyPaintStateActComp* paintActComp
-               = dynamic_cast<SimCore::ActComps::BodyPaintStateActComp*>
-               (GetComponent(SimCore::ActComps::BodyPaintStateActComp::TYPE));
+            using namespace SimCore::ActComps;
+            CamoPaintStateActComp* paintActComp
+               = dynamic_cast<CamoPaintStateActComp*>(GetComponent(CamoPaintStateActComp::TYPE));
             if(paintActComp != NULL)
             {
                paintActComp->SetPaintState(stateNum);
@@ -999,8 +999,8 @@ namespace SimCore
          BaseClass::BuildActorComponents();
 
          // Setup the body paint component.
-         dtCore::RefPtr<SimCore::ActComps::BodyPaintStateActComp> bodyPaintComp
-            = new SimCore::ActComps::BodyPaintStateActComp;
+         dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> bodyPaintComp
+            = new SimCore::ActComps::CamoPaintStateActComp;
          AddComponent(*bodyPaintComp);
       }
 

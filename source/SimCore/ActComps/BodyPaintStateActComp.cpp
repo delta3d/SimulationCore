@@ -63,6 +63,13 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      BodyPaintStateActComp::BodyPaintStateActComp(const ActorComponent::ACType& actType)
+         : BaseClass(actType)
+      {
+         SetDefaults();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       BodyPaintStateActComp::~BodyPaintStateActComp()
       {
       }
