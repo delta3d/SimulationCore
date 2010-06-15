@@ -26,6 +26,8 @@
  * David Guthrie
  */
 
+#include <prefix/StealthQtPrefix.h>
+
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>

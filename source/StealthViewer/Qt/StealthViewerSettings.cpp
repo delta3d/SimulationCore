@@ -20,6 +20,7 @@
  * @author Eddie Johnson, Curtiss Murphy
  */
 // For the Force and Domain Enums.  Thas has to be first because of a macro conflict with Qt.
+#include <prefix/StealthQtPrefix.h>
 #include <SimCore/Actors/BaseEntity.h>
 
 #include <StealthViewer/Qt/StealthViewerSettings.h>

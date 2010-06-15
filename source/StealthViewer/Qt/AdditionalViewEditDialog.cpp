@@ -26,6 +26,7 @@
  * David Guthrie
  */
 
+#include <prefix/StealthQtPrefix.h>
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>

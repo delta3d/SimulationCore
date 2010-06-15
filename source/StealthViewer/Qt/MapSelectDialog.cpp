@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/MapSelectDialog.h>
 #include <ui_MapSelectDialogUi.h>
 #include <dtDAL/project.h>

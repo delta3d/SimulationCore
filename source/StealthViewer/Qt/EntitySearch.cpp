@@ -26,6 +26,7 @@
  * @author Eddie Johnson
  * @author Curtiss Murphy
  */
+#include <prefix/StealthQtPrefix.h>
 #include <StealthViewer/Qt/EntitySearch.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <dtGame/deadreckoninghelper.h>
