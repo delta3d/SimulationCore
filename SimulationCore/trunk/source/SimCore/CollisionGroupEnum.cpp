@@ -25,6 +25,7 @@
 * throughout the Sim Core code.
 */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/CollisionGroupEnum.h>
 
 namespace SimCore

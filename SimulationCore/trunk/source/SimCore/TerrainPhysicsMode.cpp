@@ -21,6 +21,7 @@
  * david
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/TerrainPhysicsMode.h>
 
 namespace SimCore

@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/EphemerisEnvironmentActor.h>
 #include <osgEphemeris/EphemerisData.h>
 #include <dtCore/shadermanager.h>

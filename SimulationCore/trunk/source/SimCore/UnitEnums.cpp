@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/UnitEnums.h>
 #include <osg/Math>
 
