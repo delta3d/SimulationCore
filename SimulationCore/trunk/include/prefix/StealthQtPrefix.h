@@ -21,5 +21,17 @@
  *
  * David Guthrie
  */
-#include <prefix/dtgameprefix.h>
+#ifndef STEALTHQTPREFIX_h__
+#define STEALTHQTPREFIX_h__
 
+  #ifdef SIMCORE_USE_PCH
+    #ifdef _MSC_VER
+      #include <QtGui/QDialog>
+      #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
+      #include <StealthViewer/GMApp/PreferencesVisibilityConfigObject.h>
+    #else //_MSC_VER
+      #include <prefix/dtgameprefix.h>
+   #endif  //_MSC_VER
+ #endif //SIMCORE_USE_PCH
+
+#endif // STEALTHQTPREFIX_h__
