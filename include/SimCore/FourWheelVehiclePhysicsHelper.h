@@ -48,7 +48,6 @@ namespace SimCore
       // ///////////////////////////////////////////////////////////////////////////////////
       //                               Utility Calculations                               //
       // ///////////////////////////////////////////////////////////////////////////////////
-      float GetMPH();
       float GetWheelRotation(WheelLocation index) const;
       float GetWheelJounce(WheelLocation index) const;
 
@@ -70,7 +69,6 @@ namespace SimCore
       virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
 
-      DECLARE_PROPERTY(float, MaxMPH);
       DECLARE_PROPERTY(bool, IsVehicleFourWheelDrive);
 
       /**

@@ -33,9 +33,9 @@ namespace SimCore
       class SIMCORE_EXPORT VehicleInterface
       {
          public:
-            virtual float GetMPH() = 0;
+            virtual float GetMPH() const = 0;
             virtual void SetHasDriver( bool hasDriver ) {}
-            virtual bool GetHasDriver() { return false; }
+            virtual bool GetHasDriver() const { return false; }
             
          protected:
             //added to get rid of warning

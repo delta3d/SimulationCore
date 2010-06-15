@@ -128,6 +128,9 @@ namespace SimCore
       /// This is the frontal area to use for wind drag.
       void SetAeroDynDragArea(float area);
 
+      /// Made virtual so it can be calculated in a way more appropriate for the subclass simulated vehicle
+      virtual float GetMPH() const;
+
       ////////// Vehicle Control///////////////////
       void Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes);
 
