@@ -202,6 +202,35 @@ namespace SimCore
    }
 
    ////////////////////////////////////////////////////////
+   float BaseWheeledVehiclePhysicsHelper::GetMPH() const
+   {
+#ifdef AGEIA_PHYSICS
+      return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[0].mWheel->getAxleSpeed();
+#endif
+      static const float METERSPS_TO_MILESPH = 2.236936291;
+      const dtPhysics::PhysicsObject* po = GetMainPhysicsObject();
+      if (po == NULL)
+      {
+         return 0.0f;
+      }
+
+      dtPhysics::VectorType vec = po->GetLinearVelocity();
+      dtCore::Transform xform;
+      po->GetTransform(xform);
+      osg::Vec3 fwd;
+      xform.GetRow(1, fwd);
+
+      dtPhysics::VectorType vecNormal = vec;
+      vecNormal.normalize();
+
+      float dot = fwd * vecNormal;
+
+      float mph = dot * vec.length() * METERSPS_TO_MILESPH;
+
+      return mph;
+   }
+
+   ////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsHelper::Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes)
    {
 
@@ -210,6 +239,22 @@ namespace SimCore
       //std::ostringstream ss;
       //ss << "vehicle stats: accel " << acceleration * mEngineTorque << " steering " << turningFraction  << " brakes " << normalizedBrakes * mMaxBrakeTorque;
       //LOG_ALWAYS(ss.str());
+
+      if (acceleration < 0.0f)
+      {
+         if (GetVehicleTopSpeedReverse() < -GetMPH())
+         {
+            acceleration = 0.0f;
+         }
+      }
+      else if (acceleration > 0.0f)
+      {
+         if (GetVehicleTopSpeed() < GetMPH())
+         {
+            acceleration = 0.0f;
+         }
+      }
+
       mVehicle->ForceControl(turningFraction, acceleration * mEngineTorque, normalizedBrakes * mMaxBrakeTorque);
 
    }

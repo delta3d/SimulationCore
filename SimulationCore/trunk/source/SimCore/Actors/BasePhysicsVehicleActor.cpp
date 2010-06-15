@@ -396,7 +396,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      float BasePhysicsVehicleActor::GetMPH()
+      float BasePhysicsVehicleActor::GetMPH() const
       {
          static const float METERSPS_TO_MILESPH = 2.236936291;
          if (IsRemote())
@@ -511,8 +511,9 @@ namespace SimCore
       {
          mPhysicsHelper = newHelper;
       }
+
       //////////////////////////////////////////////////////////////////////
-      dtPhysics::PhysicsHelper* BasePhysicsVehicleActor::GetPhysicsHelper()
+      dtPhysics::PhysicsHelper* BasePhysicsVehicleActor::GetPhysicsHelper() const
       {
          return mPhysicsHelper.get();
       }

@@ -46,7 +46,6 @@ namespace SimCore
    /// Constructor that provides default values for properties and initial values for state variables.
    FourWheelVehiclePhysicsHelper::FourWheelVehiclePhysicsHelper(dtGame::GameActorProxy& proxy)
    : BaseClass(proxy)
-   , mMaxMPH(200.0f)
    , mIsVehicleFourWheelDrive(false)
    , mFrontTrackAdjustment(0.0f)
    , mRearTrackAdjustment(0.0f)
@@ -96,17 +95,6 @@ namespace SimCore
    //                               Utility Calculations                               //
    // ///////////////////////////////////////////////////////////////////////////////////
 
-   /// Returns the current speed in miles/hour
-   float FourWheelVehiclePhysicsHelper::GetMPH()
-   {
-#ifdef AGEIA_PHYSICS
-      // ( X * 10 * 60) / (5280* 12) * 100 = X * 0.9469696
-      //return (-((10 * GetWheelSizeWidth() * NxPi * mWheels[BACK_LEFT]->getAxleSpeed() * 60) / (5280 * 12)) * 100);
-      return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[BACK_LEFT].mWheel->getAxleSpeed();
-#endif
-      return 0.0;
-   }
-
    float FourWheelVehiclePhysicsHelper::GetWheelRotation( WheelLocation index ) const
    {
       return mAxleRotation[(int(index) < 2) ? 0 : 1];
@@ -135,7 +123,6 @@ namespace SimCore
       return 0.0;
    }
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, MaxMPH);
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
    IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);

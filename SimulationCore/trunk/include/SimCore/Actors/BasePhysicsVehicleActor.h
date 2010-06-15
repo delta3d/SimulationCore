@@ -102,7 +102,7 @@ namespace SimCore
             virtual void SetTransform(const dtCore::Transform& xform, dtCore::Transformable::CoordSysEnum cs = dtCore::Transformable::ABS_CS);
 
             /// Utility Methods
-            virtual float GetMPH();
+            virtual float GetMPH() const;
 
             /// Tells the physics helper to reset teh vehicle to starting. Override if you need to do other stuff also.
             virtual void ResetVehicle();
@@ -111,7 +111,7 @@ namespace SimCore
             virtual void RepositionVehicle(float deltaTime);
 
             void SetPhysicsHelper(dtPhysics::PhysicsHelper* newHelper);
-            dtPhysics::PhysicsHelper* GetPhysicsHelper();
+            dtPhysics::PhysicsHelper* GetPhysicsHelper() const;
 
             void SetHasDriver(bool hasDriver);
             bool GetHasDriver() const;

@@ -71,7 +71,7 @@ namespace SimCore
             /// Reset to starting position In additional to base behavior, it turns off sounds.
             virtual void ResetVehicle();
 
-            SimCore::FourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper();
+            SimCore::FourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper() const;
 
             /// The number of updates to go from straight to full turn angle
             DECLARE_PROPERTY(int, NumUpdatesUntilFullSteeringAngle);
@@ -91,6 +91,8 @@ namespace SimCore
 
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);
+
+            virtual float GetMPH() const;
 
          protected:
             /// Angles/ steering moving etc done here. Of the updates, this is called first.

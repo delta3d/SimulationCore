@@ -65,7 +65,7 @@ namespace SimCore
             virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
 
             /// since it derives off vehicle interface
-            virtual float GetMPH() {return 0.0f;}
+            virtual float GetMPH() const {return 0.0f;}
 
 #ifdef AGEIA_PHYSICS
 

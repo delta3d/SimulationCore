@@ -126,7 +126,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      SimCore::FourWheelVehiclePhysicsHelper* FourWheelVehicleActor::GetFourWheelPhysicsHelper()
+      SimCore::FourWheelVehiclePhysicsHelper* FourWheelVehicleActor::GetFourWheelPhysicsHelper() const
       {
          return static_cast<SimCore::FourWheelVehiclePhysicsHelper*> (GetPhysicsHelper());
       }
@@ -274,7 +274,7 @@ namespace SimCore
          if (mSndVehicleIdleLoop->IsPlaying() == false)
             mSndVehicleIdleLoop->Play();
 
-         if (GetMPH() > 1)
+         if (GetMPH() > 1.0f)
          {
             float minpitchBend   = 1.0f;
             float maxpitchBend   = 1.5f;
@@ -319,15 +319,15 @@ namespace SimCore
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
-            else if (GetMPH() < GetFourWheelPhysicsHelper()->GetMaxMPH())
+            else if (GetMPH() < GetFourWheelPhysicsHelper()->GetVehicleTopSpeed())
             {
                if (mLastGearChange != FOURTH_GEAR  && mSndAcceleration != NULL)
                {
                   mSndAcceleration->Play();
                }
                mLastGearChange = FOURTH_GEAR;
-               dis = GetFourWheelPhysicsHelper()->GetMaxMPH() - GetMPH();
-               dif = GetFourWheelPhysicsHelper()->GetMaxMPH() - GetGearChangeHigh();
+               dis = GetFourWheelPhysicsHelper()->GetVehicleTopSpeed() - GetMPH();
+               dif = GetFourWheelPhysicsHelper()->GetVehicleTopSpeed() - GetGearChangeHigh();
                tick = (maxpitchBend - minpitchBend) / dif;
                pitchBend = maxpitchBend  - (dis * tick) + mLastGearChange * .1;
             }
@@ -432,7 +432,7 @@ namespace SimCore
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
-               accel = -0.4f;
+               accel = -1.0f;
             }
 
             if (keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
@@ -501,6 +501,22 @@ namespace SimCore
 
          BasePhysicsVehicleActor::RepositionVehicle(deltaTime);
          //GetFourWheelPhysicsHelper()->RepositionVehicle(deltaTime);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
+      float FourWheelVehicleActor::GetMPH() const
+      {
+         float result = 0.0f;
+         if (IsRemote())
+         {
+            static const float METERSPS_TO_MILESPH = 2.236936291;
+            result = GetDeadReckoningHelper().GetLastKnownVelocity().length() * METERSPS_TO_MILESPH;
+         }
+         else
+         {
+            result = dtUtil::Abs(GetFourWheelPhysicsHelper()->GetMPH());
+         }
+         return result;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
