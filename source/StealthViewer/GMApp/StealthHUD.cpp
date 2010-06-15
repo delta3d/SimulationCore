@@ -21,6 +21,7 @@
 * @author Curtiss Murphy
 */
 
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/StealthHUD.h>
 #include <SimCore/Components/LabelManager.h>
 #include <SimCore/Components/RenderingSupportComponent.h>

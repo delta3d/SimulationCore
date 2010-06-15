@@ -25,6 +25,7 @@
 *
 * @author Eddie Johnson
 */
+#include <prefix/SimCorePrefix.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <StealthViewer/Qt/HLAWindow.h>
 #include <StealthViewer/Qt/StealthViewerSettings.h>

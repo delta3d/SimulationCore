@@ -21,6 +21,7 @@
  * david
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/ViewWindowConfigObject.h>
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Components/RenderingSupportComponent.h>

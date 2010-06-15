@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/ControlsCameraConfigObject.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/MessageType.h>

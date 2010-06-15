@@ -21,6 +21,7 @@
  * @author Eddie Johnson
  * @author David Guthrie
  */
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/StealthGameEntryPoint.h>
 #include <StealthViewer/GMApp/StealthInputComponent.h>
 #include <StealthViewer/GMApp/StealthMessageProcessor.h>

@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author David Guthrie
  */
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/HLA/BaseHLAGameEntryPoint.h>
 
 #include <dtUtil/log.h>

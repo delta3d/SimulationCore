@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author Eddie Johnson
  */
+#include <prefix/SimCorePrefix.h>
 #include <StealthViewer/GMApp/StealthMessageProcessor.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/gamemanager.h>

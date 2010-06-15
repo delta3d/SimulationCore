@@ -20,6 +20,7 @@
 * circumstances in which the U. S. Government may have rights in the software.
  * @author William E. Johnson II, Allen Danklefsen, Chris Rodgers, Curtiss Murphy
  */
+#include <prefix/SimCorePrefix.h>
 #include <dtUtil/mswin.h>
 #include <SimCore/StealthMotionModel.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
