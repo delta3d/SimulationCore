@@ -56,7 +56,7 @@ namespace SimCore
    , mMaxSteerAngle(45.0f)
    , mAeroDynDragCoefficient(0.80)
    , mAeroDynDragArea(8.0)
-
+   , mLastMPH(0.0f)
    {
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       AddPhysicsObject(*physicsObject);
@@ -204,14 +204,27 @@ namespace SimCore
    ////////////////////////////////////////////////////////
    float BaseWheeledVehiclePhysicsHelper::GetMPH() const
    {
+      return mLastMPH;
+   }
+
+   ////////////////////////////////////////////////////////
+   void BaseWheeledVehiclePhysicsHelper::SetMPH(float newMPH)
+   {
+      mLastMPH = newMPH;
+   }
+
+   ////////////////////////////////////////////////////////
+   void BaseWheeledVehiclePhysicsHelper::CalcMPH()
+   {
 #ifdef AGEIA_PHYSICS
-      return -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[0].mWheel->getAxleSpeed();
+      mLastMPH = -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[0].mWheel->getAxleSpeed();
 #endif
       static const float METERSPS_TO_MILESPH = 2.236936291;
       const dtPhysics::PhysicsObject* po = GetMainPhysicsObject();
       if (po == NULL)
       {
-         return 0.0f;
+         SetMPH(0.0f);
+         return;
       }
 
       dtPhysics::VectorType vec = po->GetLinearVelocity();
@@ -227,7 +240,7 @@ namespace SimCore
 
       float mph = dot * vec.length() * METERSPS_TO_MILESPH;
 
-      return mph;
+      mLastMPH = mph;
    }
 
    ////////////////////////////////////////////////////////

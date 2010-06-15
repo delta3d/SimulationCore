@@ -2165,7 +2165,7 @@
             </property>
             <property>
                 <name>FrontTireSlip</name>
-                <float>1.0</float>
+                <float>1.2</float>
             </property>
             <property>
                 <name>FrontTireValue</name>
@@ -2209,7 +2209,7 @@
             </property>
             <property>
                 <name>RearSuspensionSpringFreq</name>
-                <float>1.3</float>
+                <float>1.4</float>
             </property>
             <property>
                 <name>RearSuspensionDamperFactor</name>
@@ -2217,7 +2217,7 @@
             </property>
             <property>
                 <name>RearTireSlip</name>
-                <float>1.0</float>
+                <float>1.6</float>
             </property>
             <property>
                 <name>RearTireValue</name>
@@ -2295,8 +2295,8 @@
                 <name>chassis: Origin Offset</name>
                 <vec3>
                     <value1>0.000000</value1>
-                    <value2>0.300000</value2>
-                    <value3>0.390000</value3>
+                    <value2>0.100000</value2>
+                    <value3>0.340000</value3>
                 </vec3>
             </property>
             <property>
@@ -2365,11 +2365,11 @@
             </property>
             <property>
                 <name>Top Speed (MPH)</name>
-                <float>60</float>
+                <float>120</float>
             </property>
             <property>
                 <name>mVehicleTopSpeedReverse</name>
-                <float>100</float>
+                <float>45</float>
             </property>
             <property>
                 <name>AeroDynDragCoefficient</name>

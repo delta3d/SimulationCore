@@ -135,6 +135,8 @@ namespace SimCore
             ///////////////////////////////////////////////////
             // vehicles portal for the actor
             dtCore::RefPtr<dtGame::GameActorProxy> mVehiclesPortal;
+            float mCruiseSpeed;
+            bool mStopMode, mCruiseMode;
 
       };
 
