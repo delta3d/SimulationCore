@@ -64,6 +64,9 @@ namespace SimCore
       , mGearChangeMedium(20.0)
       , mGearChangeHigh(35.0)
       , mLastGearChange(FIRST_GEAR)
+      , mCruiseSpeed(0.0f)
+      , mStopMode(true)
+      , mCruiseMode(false)
       {
          SetPhysicsHelper( new SimCore::FourWheelVehiclePhysicsHelper(proxy));
 
@@ -422,6 +425,9 @@ namespace SimCore
             return;
          }
 
+         GetFourWheelPhysicsHelper()->CalcMPH();
+         float curMPH = GetFourWheelPhysicsHelper()->GetMPH();
+
          float accel = 0.0f;
          float brake = 0.0f;
          if (! IsMobilityDisabled() && GetHasDriver())
@@ -429,15 +435,34 @@ namespace SimCore
             if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
                accel = 1.0f;
+               mStopMode = false;
+               if (curMPH > 0.0f)
+               {
+                  mCruiseMode = true;
+                  mCruiseSpeed = curMPH;
+               }
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
                accel = -1.0f;
+               mStopMode = false;
+               mCruiseMode = false;
+            }
+            else if (mCruiseMode && mCruiseSpeed > curMPH)
+            {
+               accel = 1.0f;
             }
 
-            if (keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
+            // If you hold the brake and the accelerator at the same time, it will make sure
+            // you don't go into cruise mode, which it should not do.
+            if (mStopMode || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Space))
             {
                brake = 1.0f;
+               mCruiseMode = false;
+               if (curMPH < 0.1f)
+               {
+                  mStopMode = true;
+               }
             }
 
             float updateCountInSecs = float(mNumUpdatesUntilFullSteeringAngle) / 60.00f;
@@ -478,6 +503,9 @@ namespace SimCore
                xform.MakeIdentity();
                xform.SetTranslation(trans);
                po->SetTransform(xform);
+
+               mStopMode = true;
+               mCruiseMode = false;
             }
 
          }
@@ -485,6 +513,8 @@ namespace SimCore
          {
             accel = 0.0f;
             brake = 1.0f;
+            mStopMode = true;
+            mCruiseMode = false;
             mCurrentSteeringAngleNormalized = 0.0f;
          }
          GetFourWheelPhysicsHelper()->Control(accel, mCurrentSteeringAngleNormalized, brake);

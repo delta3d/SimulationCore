@@ -128,8 +128,14 @@ namespace SimCore
       /// This is the frontal area to use for wind drag.
       void SetAeroDynDragArea(float area);
 
-      /// Made virtual so it can be calculated in a way more appropriate for the subclass simulated vehicle
-      virtual float GetMPH() const;
+      /// @return the last calculated MPH.  You should call CalcMPH every frame or so to update the value.
+      float GetMPH() const;
+
+      /**
+       * Made virtual so it can be calculated in a way more appropriate for the subclass simulated vehicle
+       * this function should call SetMPH on this object.
+       */
+      virtual void CalcMPH();
 
       ////////// Vehicle Control///////////////////
       void Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes);
@@ -154,6 +160,8 @@ namespace SimCore
 
       float CalcDamperCoeficient(float dampingFactor, float vehMass, float springRate, float wheelbase, float leverArm) const;
 
+      void SetMPH(float newMPH);
+
 #ifndef AGEIA_PHYSICS
       palVehicle* GetPalVehicle() { return mVehicle; };
    private:
@@ -175,6 +183,8 @@ namespace SimCore
       float mAeroDynDragArea;
 
       std::vector<WheelType> mWheels;
+
+      float mLastMPH;
    };
 }
 
