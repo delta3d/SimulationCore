@@ -3,6 +3,7 @@ uniform vec4 FrameOffsetAndScales;
 varying vec2 vDiffuseUVs;
 varying vec2 vOverlayUVs; // For damage state marks.
 varying float vOverlayMult;
+varying vec4 vModelVertPos;
 
 void calculateCamoAndDamageUVs()
 {
@@ -17,4 +18,7 @@ void calculateCamoAndDamageUVs()
    offset = clamp(offset - 1.0, 0.0, max(0.0, offset));
    
    vOverlayUVs.t = (vOverlayUVs.t + offset) * FrameOffsetAndScales.z; 
+   
+   vModelVertPos = gl_Vertex;
+   
 }
