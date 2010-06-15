@@ -22,6 +22,7 @@
  * David Guthrie
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/VisibilityOptions.h>
 #include <SimCore/Actors/BaseEntity.h>
 #include <cstring>

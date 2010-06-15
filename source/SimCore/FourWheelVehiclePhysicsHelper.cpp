@@ -22,6 +22,7 @@
  * @author Allen Danklefsen, Bradley Anderegg, Stephen Westin
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/FourWheelVehiclePhysicsHelper.h>
 #include <SimCore/PhysicsTypes.h>
 

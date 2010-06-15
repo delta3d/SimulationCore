@@ -1,3 +1,4 @@
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/PositionMarker.h>
 #include <SimCore/VisibilityOptions.h>
 

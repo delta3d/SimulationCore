@@ -24,6 +24,7 @@
 */
 
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/WaterGridActor.h>
 
 #include <dtDAL/functor.h>

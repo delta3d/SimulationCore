@@ -20,6 +20,7 @@
  */
 
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/LensFlareDrawable.h>
 
 #include <dtUtil/exception.h>

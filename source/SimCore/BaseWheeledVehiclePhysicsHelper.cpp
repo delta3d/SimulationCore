@@ -22,6 +22,7 @@
  * @author Allen Danklefsen, Bradley Anderegg, Stephen Westin
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/BaseWheeledVehiclePhysicsHelper.h>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>

@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
+#include <prefix/SimCorePrefix.h>
 #include <dtGame/messageparameter.h>
 #include <SimCore/Components/Conversations/ConversationMessages.h>
 #include <SimCore/Components/Conversations/Interaction.h>

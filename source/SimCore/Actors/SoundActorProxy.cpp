@@ -19,6 +19,7 @@
  * William E. Johnson II
  */
 
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/SoundActorProxy.h>
 #include <dtDAL/enginepropertytypes.h>
 #include <dtDAL/actorproxyicon.h>
