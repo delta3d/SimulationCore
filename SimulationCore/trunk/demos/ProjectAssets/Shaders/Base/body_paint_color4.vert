@@ -3,15 +3,10 @@ uniform vec4 ModelDims;
 
 varying vec2 vBodyPaintUV;
 
-vec2 getBodyPaintUV(vec4 projectionDirection)
+vec2 getBodyPaintUV(vec3 modelVert, vec4 projectionDirection)
 {
    // Calculate paint projection matrix.
-   mat4 patProjMtx = mat4(0.7071,0.0,0.7071,0.0,
-   0.0,1.0,0.0,0.0,
-   -0.7071,0.0,0.7071,0.0,
-   0.0,0.0,0.0,1.0);
-   
-   vec3 norm = vec3(1.0,1.0,1.0);
+   vec3 norm = projectionDirection.xyz;
    norm = normalize(norm);
    vec3 worldUp = vec3(0.0,0.0,1.0);
    vec3 right = cross(worldUp, norm);
@@ -23,20 +18,38 @@ vec2 getBodyPaintUV(vec4 projectionDirection)
    norm.x,norm.y,norm.z,0.0,
    up.x,up.y,up.z,0.0,
    0.0,0.0,0.0,1.0);
-   patProjMtx = patProjMtx * rot;
    
-   return (gl_Vertex * patProjMtx).xy / ModelDims.xy;
+   return (vec4(modelVert,1.0) * rot).xz / ModelDims.xy;
+}
+
+vec2 getBodyPaintUV(vec4 projectionDirection)
+{
+	return getBodyPaintUV(gl_Vertex.xyz, projectionDirection);
+}
+
+vec2 calculateBodyPaintUV(vec3 modelVert, vec4 projectionDirection)
+{
+   vec2 coord = getBodyPaintUV(modelVert, projectionDirection);
+   vBodyPaintUV = coord;
+   return coord;
 }
 
 vec2 calculateBodyPaintUV(vec4 projectionDirection)
 {
-   vec2 coord = getBodyPaintUV(projectionDirection);
+   vec2 coord = getBodyPaintUV(gl_Vertex.xyz, projectionDirection);
+   vBodyPaintUV = coord;
+   return coord;
+}
+
+vec2 calculateBodyPaintUV(vec3 modelVert)
+{
+   vec2 coord = getBodyPaintUV(modelVert, ProjectionDir);
    vBodyPaintUV = coord;
    return coord;
 }
 
 vec2 calculateBodyPaintUV()
 {
-   return calculateBodyPaintUV(ProjectionDir);
+   return calculateBodyPaintUV(gl_Vertex.xyz, ProjectionDir);
 }
 
