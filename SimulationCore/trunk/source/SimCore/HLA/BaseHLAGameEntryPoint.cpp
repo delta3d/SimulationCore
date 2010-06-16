@@ -79,6 +79,7 @@ namespace SimCore
                hlaCC->SetFedEx(mFederationExecutionName);
                hlaCC->SetFedName(mFederateName);
                hlaCC->SetFedFile(fedFile);
+               hlaCC->SetConnectionType(SimCore::HLA::HLAConnectionComponent::ConnectionType::TYPE_HLA);
 
                // loads all maps
                hlaCC->StartNetworkConnection();
