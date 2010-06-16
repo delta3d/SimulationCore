@@ -8,7 +8,6 @@ varying vec3 vPos;
 varying vec4 vModelVertPos;
 varying vec2 vDiffuseUVs;
 varying vec2 vOverlayUVs; // For damage state marks.
-varying float vOverlayMult;
 
 // EXTERNAL FUNCTIONS
 void calculateDistance(mat4, vec4, out float);
