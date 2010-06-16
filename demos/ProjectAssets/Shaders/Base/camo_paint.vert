@@ -3,10 +3,14 @@ uniform vec4 FrameOffsetAndScales;
 varying vec2 vDiffuseUVs;
 varying vec2 vOverlayUVs; // For damage state marks.
 varying float vOverlayMult;
-varying vec4 vModelVertPos;
+
+// EXTERNAL FUNCTIONS
+// body_paint_color.vert
+vec2 calculateBodyPaintUV();
 
 void calculateCamoAndDamageUVs()
 {
+	// Set the diffuse UVs.
    float offset = FrameOffsetAndScales.x;
    vOverlayUVs = vDiffuseUVs = gl_TexCoord[0].st;
    vDiffuseUVs.t = (vDiffuseUVs.t + offset) * FrameOffsetAndScales.y;
@@ -17,8 +21,9 @@ void calculateCamoAndDamageUVs()
    // The diffuse texture should have frames 0 - 2 while the overlay has frames 1 & 2, but not frame 0.
    offset = clamp(offset - 1.0, 0.0, max(0.0, offset));
    
-   vOverlayUVs.t = (vOverlayUVs.t + offset) * FrameOffsetAndScales.z; 
+   // Set the overlay UVs.
+   vOverlayUVs.t = (vOverlayUVs.t + offset) * FrameOffsetAndScales.z;
    
-   vModelVertPos = gl_Vertex;
-   
+   // Set the paint pattern UVs.
+   calculateBodyPaintUV();
 }
