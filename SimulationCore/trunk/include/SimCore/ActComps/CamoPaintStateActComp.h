@@ -29,7 +29,9 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
+#include <osg/Group>
 #include <osg/Vec2>
+#include <dtCore/observerptr.h>
 #include <SimCore/ActComps/BodyPaintStateActComp.h>
 
 
@@ -64,26 +66,57 @@ namespace SimCore
             // Property Names
             static const dtUtil::RefString PROPERTY_CAMO_ID;
 
+            // Uniform Names
+            static const dtUtil::RefString UNIFORM_CONCEAL_MESH_DIMS;
+
             CamoPaintStateActComp();
+
+            void SetParentNode(osg::Group* node);
+            osg::Group* GetParentNode();
+            const osg::Group* GetParentNode() const;
+            
+            void SetHiderNode(osg::Node* node);
+            osg::Node* GetHiderNode();
+            const osg::Node* GetHiderNode() const;
+
+            void UpdateConcealMeshDimsToFit();
 
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
             DECLARE_PROPERTY(int, CamoId);
+            DECLARE_PROPERTY(osg::Vec4, ConcealMeshDims);
+            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ConcealMesh);
+            DECLARE_PROPERTY(std::string, ConcealShaderGroup);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent
             ////////////////////////////////////////////////////////////////////
 
             /**
+            * Handles final setup of the owner before entering the seen.
+            */
+            virtual void OnEnteredWorld();
+
+            /**
             * Handles the setup and registration of its properties.
             */
             virtual void BuildPropertyMap();
-         
+
          protected:
             virtual ~CamoPaintStateActComp();
 
+            virtual void SetDefaults();
+
             const SimCore::Actors::CamoParams* GetCamoParameters(int camoId);
+
+            bool AttachNode(osg::Node& node);
+            bool DetachNode(osg::Node& node);
+
+         private:
+            dtCore::RefPtr<osg::Node> mConcealMeshNode;
+            dtCore::ObserverPtr<osg::Node> mHiderNode;
+            dtCore::ObserverPtr<osg::Group> mParentNode;
       };
 
    }
