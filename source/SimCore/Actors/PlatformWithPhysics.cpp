@@ -115,6 +115,7 @@ namespace SimCore
             mPhysicsHelper->SetCollisionStaticMesh(mNodeForGeometry.get(), NxVec3(0,0,0), false, "");
 #else
             mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
+            mPhysicsHelper->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
             osg::Matrix bodyOffset;
             bodyOffset.makeIdentity();
@@ -203,6 +204,11 @@ namespace SimCore
                physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
                physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
                physObj->SetMass(500.0f);
+            }
+
+            if (IsRemote())
+            {
+               physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             }
 
             dtCore::Transform xform;
