@@ -352,6 +352,16 @@ namespace SimCore
             CPPUNIT_ASSERT(camo1->GetColor3() == color3);
             CPPUNIT_ASSERT(camo1->GetColor4() == color4);
             CPPUNIT_ASSERT(camo1->GetPatternTexture().GetResourceIdentifier() == "Textures/ShadersBase/CamoPatternHard.tga");
+            CPPUNIT_ASSERT(camo1->GetConcealMesh().GetResourceIdentifier() == "StaticMeshes/conceal_mesh/conceal_net.ive");
+
+            // Test the other loaded camos. They should have default values.
+            std::string defaultPatternTexture("Textures/ShadersBase/CamoPatternMedium.tga");
+            CPPUNIT_ASSERT(camo2->GetPatternTexture().GetResourceIdentifier() == defaultPatternTexture);
+            CPPUNIT_ASSERT(camo3->GetPatternTexture().GetResourceIdentifier() == defaultPatternTexture);
+            CPPUNIT_ASSERT(camo4->GetPatternTexture().GetResourceIdentifier() == defaultPatternTexture);
+            CPPUNIT_ASSERT(camo2->GetConcealMesh().IsEmpty());
+            CPPUNIT_ASSERT(camo3->GetConcealMesh().IsEmpty());
+            CPPUNIT_ASSERT(camo4->GetConcealMesh().IsEmpty());
          }
          catch (const dtUtil::Exception& ex)
          {

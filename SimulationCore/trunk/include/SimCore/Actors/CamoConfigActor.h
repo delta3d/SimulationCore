@@ -57,6 +57,7 @@ namespace SimCore
             DECLARE_PROPERTY(osg::Vec4, Color3);
             DECLARE_PROPERTY(osg::Vec4, Color4);
             DECLARE_PROPERTY(dtDAL::ResourceDescriptor, PatternTexture);
+            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ConcealMesh);
 
          protected:
             virtual ~CamoParams();
