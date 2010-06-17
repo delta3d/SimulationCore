@@ -808,8 +808,8 @@ namespace SimCore
             "The expected number of elements in the discrete controls array"));
 
          AddProperty(new dtDAL::GroupActorProperty( "DiscreteControlsArray", "DiscreteControlsArray",
-            dtDAL::GroupActorProperty::SetFunctorType( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
-            dtDAL::GroupActorProperty::GetFunctorType( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
+            dtDAL::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetDiscreteControlsByGroupParameter ),
+            dtDAL::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetDiscreteControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
 
@@ -819,8 +819,8 @@ namespace SimCore
             "The expected number of elements in the continuous controls array"));
 
          AddProperty(new dtDAL::GroupActorProperty( "ContinuousControlsArray", "ContinuousControlsArray",
-            dtDAL::GroupActorProperty::SetFunctorType( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
-            dtDAL::GroupActorProperty::GetFunctorType( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
+            dtDAL::GroupActorProperty::SetFuncType( actor, &ControlStateActor::SetContinuousControlsByGroupParameter ),
+            dtDAL::GroupActorProperty::GetFuncType( actor, &ControlStateActor::GetContinuousControlsAsGroupParameter ),
             "", // Description - unknown use
             "Arrays"));
       }
