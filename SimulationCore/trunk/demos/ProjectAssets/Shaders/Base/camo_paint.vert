@@ -5,8 +5,11 @@ varying vec2 vOverlayUVs; // For damage state marks.
 varying float vOverlayMult;
 
 // EXTERNAL FUNCTIONS
-// body_paint_color.vert
-vec2 calculateBodyPaintUV();
+// From: body_paint_color.vert
+vec2 calculateBodyPaintUV(vec3 modelVert);
+
+// From: concealment_scale.vert
+vec3 getConcealmentScaledVertex(vec3 vert);
 
 void calculateCamoAndDamageUVs()
 {
@@ -25,5 +28,5 @@ void calculateCamoAndDamageUVs()
    vOverlayUVs.t = (vOverlayUVs.t + offset) * FrameOffsetAndScales.z;
    
    // Set the paint pattern UVs.
-   calculateBodyPaintUV();
+   calculateBodyPaintUV(getConcealmentScaledVertex(gl_Vertex.xyz));
 }
