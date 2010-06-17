@@ -120,12 +120,13 @@ namespace SimCore
              */
             virtual void SetVisible(bool);
 
+            static void SetNodeVisible(bool, osg::Node& nodeToUse);
+
          protected:
 
             /// Destructor
             virtual ~IGActor();
 
-            void SetNodeVisible(bool, osg::Node& nodeToUse);
          private:
             bool mIsVisible;
        };
