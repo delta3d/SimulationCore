@@ -206,6 +206,8 @@ namespace SimCore
                physObj->SetMass(500.0f);
             }
 
+            // TODO, if it changes to local again, it should figure out what the property was configured to be.
+            // users also probably want to be able to configure with remote does.
             if (IsRemote())
             {
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
