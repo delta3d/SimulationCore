@@ -7,6 +7,7 @@
       <Color3 value="0.0 0.0 1.0"/>
       <Color4 value="1.0 1.0 0.0"/>
       <PatternTexture>Textures/ShadersBase/CamoPatternHard.tga</PatternTexture>
+      <ConcealMesh>StaticMeshes/conceal_mesh/conceal_net.ive</ConcealMesh>
    </Camo>
    <Camo name="Desert" id="1">
       <Color1 value="0.698039216 0.631372549 0.533333333"/>

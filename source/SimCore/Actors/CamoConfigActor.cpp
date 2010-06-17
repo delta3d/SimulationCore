@@ -57,6 +57,7 @@ namespace SimCore
       static const dtUtil::RefString ELEMENT_COLOR3("Color3");
       static const dtUtil::RefString ELEMENT_COLOR4("Color4");
       static const dtUtil::RefString ELEMENT_PATTERN("PatternTexture");
+      static const dtUtil::RefString ELEMENT_CONCEAL_MESH("ConcealMesh");
       static const dtUtil::RefString ELEMENT_DEFAULT_PATTERN("DefaultPatternTexture");
       static const dtUtil::RefString ATTR_CAMO_NAME("name");
       static const dtUtil::RefString ATTR_CAMO_ID("id");
@@ -128,11 +129,18 @@ namespace SimCore
       IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color3);
       IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color4);
       IMPLEMENT_PROPERTY_GETTER(CamoParams, dtDAL::ResourceDescriptor, PatternTexture); // setter implemented below
+      IMPLEMENT_PROPERTY_GETTER(CamoParams, dtDAL::ResourceDescriptor, ConcealMesh); // setter implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void CamoParams::SetPatternTexture(const dtDAL::ResourceDescriptor& file)
       {
          mPatternTexture = file;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void CamoParams::SetConcealMesh(const dtDAL::ResourceDescriptor& file)
+      {
+         mConcealMesh = file;
       }
 
 
@@ -440,6 +448,13 @@ namespace SimCore
                   mCurCamoParams->SetColor4(ConvertToVec4(iter->second));
                }
             }
+            else if(element == ELEMENT_CONCEAL_MESH)
+            {
+               // Getting ready to set a mesh.
+               // Nullify the default in case the mesh was not specified on purpose.
+               dtDAL::ResourceDescriptor empty;
+               mCurCamoParams->SetConcealMesh(empty);
+            }
          }
       }
 
@@ -474,7 +489,7 @@ namespace SimCore
       {
          const std::string& element = mElements.top();
 
-         // Is this text for some default value???
+         // Is this text for some default pattern???
          if(element == ELEMENT_DEFAULT_PATTERN)
          {
             mDefaultPatternTexture = dtUtil::XMLStringConverter(chars).ToString();
@@ -485,6 +500,11 @@ namespace SimCore
             if(element == ELEMENT_PATTERN)
             {
                mCurCamoParams->SetPatternTexture(
+                  dtUtil::XMLStringConverter(chars).ToString());
+            }
+            else if(element == ELEMENT_CONCEAL_MESH)
+            {
+               mCurCamoParams->SetConcealMesh(
                   dtUtil::XMLStringConverter(chars).ToString());
             }
          }
