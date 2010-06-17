@@ -40,9 +40,6 @@
 #include <SimCore/Actors/IGActor.h> // For SetNodeVisible function.
 #include <SimCore/Actors/EntityActorRegistry.h>
 
-// DEBUG:
-#include <iostream>
-
 
 
 namespace SimCore
@@ -196,17 +193,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void CamoPaintStateActComp::SetConcealMesh(const dtDAL::ResourceDescriptor& file)
       {
-         // DEBUG:
-         std::cout << "\nGot file: " << file.GetResourceIdentifier() << "\n";
-
          bool changed = mConcealMesh != file;
          bool fileValid = ! changed;
          if(changed || ( ! mConcealMeshNode.valid() && ! file.IsEmpty()))
          {
             mConcealMesh = file;
-
-            // DEBUG:
-            std::cout << "\tLoading file: " << file.GetResourceIdentifier() << "\n";
 
             // Changing file. Cannot assume it is valid yet.
             fileValid = false;
@@ -217,9 +208,6 @@ namespace SimCore
                {
                   if(mConcealMeshNode.valid())
                   {
-                     // DEBUG:
-                     std::cout << "\t\tDETACH\n\n";
-
                      DetachNode(*mConcealMeshNode);
                   }
 
@@ -230,9 +218,6 @@ namespace SimCore
                   {
                      // A valid file was loaded.
                      fileValid = true;
-
-                     // DEBUG:
-                     std::cout << "\t\tATTACH\n\n";
 
                      AttachNode(*mConcealMeshNode);
 
@@ -250,9 +235,6 @@ namespace SimCore
          // Mesh file was not valid. Remove the current mesh if it exists.
          if( ! fileValid && mConcealMeshNode.valid())
          {
-            // DEBUG:
-            std::cout << "\t\tDETACH - Default\n\n";
-
             DetachNode(*mConcealMeshNode);
          }
       }
