@@ -309,38 +309,44 @@ namespace SimCore
             mActor->SetConfigFile("Configs/CamoConfig.xml");
 
             CamoParamsList camoList;
-            CPPUNIT_ASSERT(mActor->GetCamoParamsCount() == 4);
-            CPPUNIT_ASSERT(mActor->GetCamoParamsList(camoList) == 4);
-            CPPUNIT_ASSERT(camoList.size() == 4);
+            CPPUNIT_ASSERT(mActor->GetCamoParamsCount() == 5);
+            CPPUNIT_ASSERT(mActor->GetCamoParamsList(camoList) == 5);
+            CPPUNIT_ASSERT(camoList.size() == 5);
 
             // Test accessing the camo parameter objects.
             std::string camoName1("Test");
             std::string camoName2("Desert");
             std::string camoName3("Forest");
             std::string camoName4("Tundra");
+            std::string camoName5("Test2");
             const CamoParams* camo1 = mActor->GetCamoParamsByName(camoName1);
             const CamoParams* camo2 = mActor->GetCamoParamsByName(camoName2);
             const CamoParams* camo3 = mActor->GetCamoParamsByName(camoName3);
             const CamoParams* camo4 = mActor->GetCamoParamsByName(camoName4);
+            const CamoParams* camo5 = mActor->GetCamoParamsByName(camoName5);
             CPPUNIT_ASSERT(camo1 != NULL);
             CPPUNIT_ASSERT(camo2 != NULL);
             CPPUNIT_ASSERT(camo3 != NULL);
             CPPUNIT_ASSERT(camo4 != NULL);
+            CPPUNIT_ASSERT(camo5 != NULL);
             // --- Test their ids
             CPPUNIT_ASSERT(camo1 == mActor->GetCamoParamsByCamoId(0));
             CPPUNIT_ASSERT(camo2 == mActor->GetCamoParamsByCamoId(1));
             CPPUNIT_ASSERT(camo3 == mActor->GetCamoParamsByCamoId(2));
             CPPUNIT_ASSERT(camo4 == mActor->GetCamoParamsByCamoId(3));
+            CPPUNIT_ASSERT(camo5 == mActor->GetCamoParamsByCamoId(4));
             // --- Test that their contained names match.
             CPPUNIT_ASSERT(camo1->GetName() == camoName1);
             CPPUNIT_ASSERT(camo2->GetName() == camoName2);
             CPPUNIT_ASSERT(camo3->GetName() == camoName3);
             CPPUNIT_ASSERT(camo4->GetName() == camoName4);
+            CPPUNIT_ASSERT(camo5->GetName() == camoName5);
             // --- Test that all the camo objects were returned in the list from earlier.
             CPPUNIT_ASSERT(IsCamoInList(*camo1, camoList));
             CPPUNIT_ASSERT(IsCamoInList(*camo2, camoList));
             CPPUNIT_ASSERT(IsCamoInList(*camo3, camoList));
             CPPUNIT_ASSERT(IsCamoInList(*camo4, camoList));
+            CPPUNIT_ASSERT(IsCamoInList(*camo5, camoList));
 
             // Test the colors set on the "Test" camo.
             osg::Vec4 color1(1.0f, 0.0f, 0.0f, 0.0f);
@@ -352,7 +358,11 @@ namespace SimCore
             CPPUNIT_ASSERT(camo1->GetColor3() == color3);
             CPPUNIT_ASSERT(camo1->GetColor4() == color4);
             CPPUNIT_ASSERT(camo1->GetPatternTexture().GetResourceIdentifier() == "Textures/ShadersBase/CamoPatternHard.tga");
-            CPPUNIT_ASSERT(camo1->GetConcealMesh().GetResourceIdentifier() == "StaticMeshes/conceal_mesh/conceal_net.ive");
+            CPPUNIT_ASSERT(camo1->GetConcealMesh().IsEmpty());
+
+            // Test "Test2" camo.
+            CPPUNIT_ASSERT(camo5->GetPatternTexture().GetResourceIdentifier() == "Textures/ShadersBase/CamoPatternHard.tga");
+            CPPUNIT_ASSERT(camo5->GetConcealMesh().GetResourceIdentifier() == "StaticMeshes/conceal_mesh/conceal_net.ive");
 
             // Test the other loaded camos. They should have default values.
             std::string defaultPatternTexture("Textures/ShadersBase/CamoPatternMedium.tga");

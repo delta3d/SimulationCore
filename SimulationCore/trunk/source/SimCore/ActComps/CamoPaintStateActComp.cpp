@@ -26,6 +26,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
+#include <osg/MatrixTransform>
 #include <osgDB/ReadFile>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
@@ -64,6 +65,7 @@ namespace SimCore
       CamoPaintStateActComp::CamoPaintStateActComp()
          : BaseClass(TYPE)
       {
+         mOffsetNode = new osg::MatrixTransform();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -124,6 +126,7 @@ namespace SimCore
       // These macros define the Getter method body for each property
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, int, CamoId); // Setter is implemented below
+      IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, bool, ConcealedState); // Setter is implemented below
       IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, osg::Vec4, ConcealMeshDims); // Setter is implemented below
       IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, dtDAL::ResourceDescriptor, ConcealMesh); // Setter is implemented below
       IMPLEMENT_PROPERTY(CamoPaintStateActComp, std::string, ConcealShaderGroup);
@@ -140,6 +143,8 @@ namespace SimCore
             SetPaintColor4(camo->GetColor4());
             SetPatternTexture(camo->GetPatternTexture());
             SetConcealMesh(camo->GetConcealMesh());
+
+            SetConcealedState( ! camo->GetConcealMesh().IsEmpty());
          }
       }
 
@@ -174,6 +179,16 @@ namespace SimCore
                bb.yMax() - bb.yMin(),
                bb.zMax() - bb.zMin(), 1.0f);
             SetConcealMeshDims(dims);
+
+            // Offset the mesh to be centered over the 
+            osg::Matrix mtx = mOffsetNode->getMatrix();
+            osg::Vec3 offset(bb.center());
+            offset.z() = 0.0f;
+            mtx = osg::Matrix::identity();
+            osg::Vec3 scaleVec(mConcealMeshDims.x(), mConcealMeshDims.y(), mConcealMeshDims.z());
+            mtx.makeScale(scaleVec);
+            mtx.setTrans(offset);
+            mOffsetNode->setMatrix(mtx);
          }
       }
 
@@ -199,43 +214,55 @@ namespace SimCore
          {
             mConcealMesh = file;
 
-            // Changing file. Cannot assume it is valid yet.
-            fileValid = false;
-
-            if( ! file.IsEmpty())
+            // Update the concealment mesh if it is currently enabled.
+            if(GetConcealedState())
             {
-               try
-               {
-                  if(mConcealMeshNode.valid())
-                  {
-                     DetachNode(*mConcealMeshNode);
-                  }
-
-                  std::string meshFile = dtDAL::Project::GetInstance().GetResourcePath(file);
-                  mConcealMeshNode = osgDB::readNodeFile(meshFile);
-
-                  if(mConcealMeshNode.valid())
-                  {
-                     // A valid file was loaded.
-                     fileValid = true;
-
-                     AttachNode(*mConcealMeshNode);
-
-                     // Ensure the new mesh fits the owner.
-                     UpdateConcealMeshDimsToFit();
-                  }
-               }
-               catch(dtUtil::Exception& e)
-               {
-                  LOG_WARNING(e.ToString());
-               }
+               SetConcealedState(true);
             }
          }
-         
-         // Mesh file was not valid. Remove the current mesh if it exists.
-         if( ! fileValid && mConcealMeshNode.valid())
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void CamoPaintStateActComp::SetConcealedState(bool enabled)
+      {
+         // Changing file. Cannot assume it is valid yet.
+         mConcealedState = enabled;
+
+         if(enabled && ! mConcealMesh.IsEmpty())
          {
-            DetachNode(*mConcealMeshNode);
+            try
+            {
+               if(mConcealMeshNode.valid())
+               {
+                  DetachNode(*mOffsetNode);
+                  mOffsetNode->removeChildren(0,mOffsetNode->getNumChildren());
+               }
+
+               std::string meshFile = dtDAL::Project::GetInstance().GetResourcePath(mConcealMesh);
+               mConcealMeshNode = osgDB::readNodeFile(meshFile);
+
+               if(mConcealMeshNode.valid())
+               {
+                  // Add an offset transform node. This will be used
+                  // to center the conceal mesh over the entity bounding box.
+                  mOffsetNode->addChild(mConcealMeshNode.get());
+
+                  AttachNode(*mOffsetNode);
+
+                  // Ensure the new mesh fits the owner.
+                  UpdateConcealMeshDimsToFit();
+               }
+            }
+            catch(dtUtil::Exception& e)
+            {
+               LOG_WARNING(e.ToString());
+            }
+         }
+         // Mesh file was not valid. Remove the current mesh if it exists.
+         else
+         {
+            DetachNode(*mOffsetNode);
+            mOffsetNode->removeChildren(0,mOffsetNode->getNumChildren());
          }
       }
 
@@ -363,7 +390,8 @@ namespace SimCore
          osg::Vec4 unitScale(1.0f, 1.0f, 1.0f, 1.0f);
          SetUniform(GetStateSet(), UNIFORM_CONCEAL_MESH_DIMS, unitScale);
 
-         UpdateConcealMeshDimsToFit();
+         // Ensure the proper camo/conceal mesh is loaded.
+         SetCamoId(mCamoId);
       }
 
       //////////////////////////////////////////////////////////////////////////
