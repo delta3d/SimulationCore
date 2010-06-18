@@ -83,9 +83,12 @@ namespace Utils
       // and other application data.
       std::vector<std::string> mapNames;
 
-      GetAdditionalMaps(gm, mapNames);
       if (!baseMapName.empty())
+      {
          mapNames.push_back(baseMapName);
+      }
+
+      GetAdditionalMaps(gm, mapNames);
 
       try
       {
