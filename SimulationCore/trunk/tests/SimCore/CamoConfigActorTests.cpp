@@ -390,7 +390,7 @@ namespace SimCore
             mActor->SetConfigFile("Configs/CamoConfig.xml");
             mGM->AddActor(*mProxy);
             const CamoParams* camo1 = mActor->GetCamoParamsByName("Test");
-            const CamoParams* camo2 = mActor->GetCamoParamsByName("Desert");
+            const CamoParams* camo2 = mActor->GetCamoParamsByName("Test2");
             CPPUNIT_ASSERT(camo1 != NULL);
             CPPUNIT_ASSERT(camo2 != NULL);
             CamoParams::CamoId camoId1 = camo1->GetId();
@@ -420,14 +420,27 @@ namespace SimCore
             CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo2->GetColor3());
             CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo2->GetColor4());
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo2->GetPatternTexture());
+            CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo2->GetConcealMesh());
+            CPPUNIT_ASSERT(actComp->GetConcealedState());
+            actComp->SetConcealedState(false);
+            CPPUNIT_ASSERT( ! actComp->GetConcealedState());
+            // --- Ensure the file reference does not change
+            CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo2->GetConcealMesh());
 
-            // TODO:
+            // Test another camo that does not have a conceal mesh.
             actComp->SetCamoId(camoId1);
             CPPUNIT_ASSERT(actComp->GetPaintColor1() == camo1->GetColor1());
             CPPUNIT_ASSERT(actComp->GetPaintColor2() == camo1->GetColor2());
             CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo1->GetColor3());
             CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo1->GetColor4());
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo1->GetPatternTexture());
+            CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo1->GetConcealMesh());
+            CPPUNIT_ASSERT(actComp->GetConcealMesh().IsEmpty());
+            CPPUNIT_ASSERT( ! actComp->GetConcealedState());
+            actComp->SetConcealedState(true);
+            CPPUNIT_ASSERT(actComp->GetConcealedState());
+            // --- Ensure the file reference does not change
+            CPPUNIT_ASSERT(actComp->GetConcealMesh().IsEmpty());
          }
          catch (const dtUtil::Exception& ex)
          {
