@@ -305,25 +305,25 @@ namespace StealthGM
       // Compass Meter
       mCompass = new SimCore::Components::StealthCompassMeter("StealthCompass");
       mCompass->Initialize();
-      mHUDOverlay->Add(mCompass.get());
       mCompass->SetAlignment( SimCore::Components::HUDAlignment::LEFT_BOTTOM );
+      mHUDOverlay->Add(mCompass.get());
 
       // GPS Meter
       mGPS = new SimCore::Components::StealthCartesianMeter("StealthGPSMeter");
-      mHUDOverlay->Add(mGPS.get());
       mGPS->SetPosition( 512.0f/1920.0f, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
+      mHUDOverlay->Add(mGPS.get());
 
       // MGRS Meter
       mMGRSMeter = new SimCore::Components::StealthMGRSMeter("StealthMGRSMeter");
-      mHUDOverlay->Add(mMGRSMeter.get());
       mMGRSMeter->SetPosition( 512.0f/1920.0f, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
       mMGRSMeter->SetVisible( false );
+      mHUDOverlay->Add(mMGRSMeter.get());
 
       // Cartesian Meter
       mCartesianMeter = new SimCore::Components::StealthCartesianMeter("StealthCartesianMeter");
-      mHUDOverlay->Add(mCartesianMeter.get());
       mCartesianMeter->SetPosition( 512.0f/1920.0f, 0.0f, SimCore::Components::HUDAlignment::LEFT_BOTTOM );
       mCartesianMeter->SetVisible( false );
+      mHUDOverlay->Add(mCartesianMeter.get());
 
       // Help Overlay
       InitHelpOverlay( mainOverlay );

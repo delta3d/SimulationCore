@@ -49,15 +49,17 @@ namespace SimCore
          physicsComponent.SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
 
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
-         physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, true); // characters interact with bullets
+         physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, false); // characters interact with bullets
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
+         physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_VEHICLE_GROUND, true);  // local characters can hit vehicles.
 
          // For remote characters, we want to collide with some things, but not the vehicle
          physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_HUMAN_LOCAL, true); // local characters interact with remote characters
-         physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, true); // remote characters interact with bullets
+         physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_BULLET, false); // remote characters interact with bullets
          physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_PARTICLE, true); // remote characters interact with physics particles
          physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_TERRAIN, false);  // remote characters DO NOT interact with world - don't push the HMMWV
+         physicsComponent.SetGroupCollision(GROUP_HUMAN_REMOTE, GROUP_VEHICLE_GROUND, false);  // remote characters DO NOT interact with world - don't push the HMMWV
 
          // water interactions
          physicsComponent.SetGroupCollision(GROUP_WATER, GROUP_BULLET, false);  //  bullets can hit the water, (turn off so raycast handles it)

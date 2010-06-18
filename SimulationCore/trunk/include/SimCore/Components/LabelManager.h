@@ -75,6 +75,9 @@ namespace SimCore
 
             HUDLabel( CEGUI::Window& window );
 
+            /// Sizes the label to match the text if needed.
+            void UpdateSize();
+
             /// Changes the label text.
             void SetText(const std::string& text);
             const std::string GetText() const;
@@ -107,6 +110,8 @@ namespace SimCore
          private:
             float mZDepth;
             osg::Vec3 mVelocity;
+            std::string mText, mLine2;
+            bool mSized;
       };
 
 

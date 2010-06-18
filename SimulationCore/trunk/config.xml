@@ -39,13 +39,13 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
       <Property Name="System.DatabasePager.MinObjectCompileTime">0.002</Property>
       <Property Name="System.DatabasePager.TargetFrameRate">60</Property>
       <!--<Property Name="System.DatabasePager.DrawablePolicy">???</Property> DL (for Display list), VA (for VertexArray), VBO (for Vertex Buffer Objects) or DoNotModify (whatever is in the source) --> 
-      <Property Name="System.DatabasePager.DrawablePolicy">VBO</Property>
+      <Property Name="System.DatabasePager.DrawablePolicy">DL</Property>
       <Property Name="System.DatabasePager.ThreadPriority">DEFAULT</Property>
       <Property Name="System.DatabasePager.ExpiryDelay">5.0</Property>  
 
       <!-- dtPhysics -->
       <Property Name="dtPhysics.PhysicsEngine">Bullet</Property>  <!-- Bullet Novodex ODE -->
-      <Property Name="dtPhysics.PalPluginPath">..\dtPhysics\ext\PalPlugins</Property>
+      <Property Name="dtPhysics.PalPluginPath">../dtPhysics/ext/PalPlugins</Property>
       <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
       <Property Name="dtPhysics.NumProcessingElements">1</Property>
       <Property Name="dtPhysics.SolverIterationCount">10</Property>
@@ -81,7 +81,7 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
 
 
       <!-- Net Demo  -->
-      <Property Name="ProjectPath">.\demos\ProjectAssets</Property>
+      <Property Name="ProjectPath">./demos/ProjectAssets</Property>
       <Property Name="AdditionalMap1">DriverActors</Property> 
       <Property Name="AdditionalMap2">NetDemoPrototypes2</Property> 
       <Property Name="AdditionalMap3">NetDemoPrototypes</Property> 
@@ -90,14 +90,14 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
 
 
       <!-- Driver Demo
-      <Property Name="ProjectPath">.\demos\ProjectAssets</Property>
+      <Property Name="ProjectPath">./demos/ProjectAssets</Property>
       <Property Name="AdditionalMap1">DriverPrototypes</Property> 
       <Property Name="AdditionalMap2">DriverMaterials</Property> 
       <Property Name="AdditionalMap3">DriverActors</Property> 
       -->
 
       <!-- DVTE
-      <Property Name="ProjectPath">..\DVTE\DVTE_SimViewer\ProjectAssets</Property>
+      <Property Name="ProjectPath">../DVTE/DVTE_SimViewer/ProjectAssets</Property>
       <Property Name="AdditionalMap1">DVTEActors</Property> 
       <Property Name="AdditionalMap2">DVTEPrototypes</Property> 
       <Property Name="AdditionalMap3">DVTEMaterials</Property> 

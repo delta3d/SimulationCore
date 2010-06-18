@@ -78,15 +78,17 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       HUDLabel::HUDLabel( const std::string& name, const std::string& type )
-         : SimCore::Components::HUDElement(name,type)
-         , mZDepth(0.0f)
+      : SimCore::Components::HUDElement(name,type)
+      , mZDepth(0.0f)
+      , mSized(false)
       {
       }
 
       //////////////////////////////////////////////////////////////////////////
       HUDLabel::HUDLabel( CEGUI::Window& window )
-         : SimCore::Components::HUDElement(window)
-         , mZDepth(0.0f)
+      : SimCore::Components::HUDElement(window)
+      , mZDepth(0.0f)
+      , mSized(false)
       {
       }
 
@@ -96,9 +98,23 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void HUDLabel::UpdateSize()
+      {
+         if (!mSized)
+         {
+            // Change the size base on the size of the font with text.
+            CEGUI::Font* font = GetCEGUIWindow()->getFont();
+            float width = font->getTextExtent(GetText());
+            SetSize( width, font->getLineSpacing() );
+            mSized = true;
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void HUDLabel::SetText(const std::string& text)
       {
          SetProperty(PROPERTY_TEXT, text.c_str());
+         mSized = false;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -111,6 +127,7 @@ namespace SimCore
       void HUDLabel::SetLine2(const std::string& line2Text)
       {
          SetProperty(PROPERTY_LINE2, line2Text);
+         mSized = false;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -555,16 +572,8 @@ namespace SimCore
          LabelMap::iterator i = mLastLabels.begin();
          for (; i != mLastLabels.end(); ++i)
          {
-            dtCore::RefPtr<SimCore::Components::HUDLabel> label = i->second.get();
-            if (label.valid())
-            {
-               label->SetText(label->GetCEGUIWindow()->getUserString("Label").c_str());
-
-               // Change the size base on the size of the font with text.
-               CEGUI::Font* font = label->GetCEGUIWindow()->getFont();
-               float width = font->getTextExtent(label->GetText());
-               label->SetSize( width, font->getLineSpacing() );
-            }
+            SimCore::Components::HUDLabel& label = *i->second;
+            label.UpdateSize();
          }
 
          mTimeUntilSort -= dt;
@@ -648,11 +657,7 @@ namespace SimCore
 
          if (nameBuffer != label->GetText())
          {
-            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
-
-            // If a valid label was successfully obtained...
-            // Set the label user string so we know what to set the text to in the main thread.
-            label->GetCEGUIWindow()->setUserString("Label", nameBuffer);
+            label->SetText(nameBuffer);
          }
 
          osg::Vec2 labelSize;
