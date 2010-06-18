@@ -56,6 +56,8 @@
 
 #include <UnitTestMain.h>
 
+#include <CEGUI/CEGUIVersion.h>
+
 
 //////////////////////////////////////////////////////////////
 // UNIT TESTS
@@ -83,8 +85,12 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mGM = new dtGame::GameManager(*mApp->GetScene());
          mGM->SetApplication(*mApp);
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          mGUI = &GetGlobalCEGUIDrawable();
          mApp->GetScene()->AddDrawable(mGUI.get());
+#else
+         mGUI = &GetGlobalGUI();
+#endif
 
          mLabelManager = new SimCore::Components::LabelManager();
          mLabelManager->SetGameManager(mGM.get());
@@ -100,12 +106,6 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, mPlatform1);
          mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, mPlatform2);
-
-         SimCore::Actors::BaseEntity* curEntity;
-         curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(mPlatform1->GetGameActor()));
-         curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
-         curEntity = dynamic_cast<SimCore::Actors::BaseEntity*> (&(mPlatform2->GetGameActor()));
-         curEntity->SetAutoRegisterWithDeadReckoningComponent(false);
 
          CPPUNIT_ASSERT(mPlatform1.valid());
          CPPUNIT_ASSERT(mPlatform2.valid());
@@ -151,9 +151,10 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mMainGUIWindow = NULL;
 
          mGM = NULL;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          if (mApp.valid() && mGUI.valid())
             mApp->GetScene()->RemoveDrawable( mGUI.get() );
-
+#endif
          mGUI = NULL;
          mApp = NULL;
       }
@@ -244,7 +245,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          xform.SetTranslation(plat2Pos);
          platActor->SetTransform(xform);
 
-         mLabelManager->Update(0.016f);
+         mLabelManager->Update(0.016);
 
          //This tests both GetOrCreateLabel and AddLabel.
          dtCore::RefPtr<SimCore::Components::HUDLabel> label = mLabelManager->GetOrCreateLabel(*mPlatform1);
@@ -272,7 +273,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          xform.SetTranslation(plat1Pos);
          platActor->SetTransform(xform);
 
-         mLabelManager->Update(0.016f);
+         mLabelManager->Update(0.016);
 
          label = mLabelManager->GetOrCreateLabel(*mPlatform1);
          label1Next = mLabelManager->GetOrCreateLabel(*mPlatform1);
@@ -349,7 +350,11 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
 
       dtCore::RefPtr<dtGame::GameManager> mGM;
       dtCore::RefPtr<dtABC::Application> mApp;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+      dtCore::RefPtr<dtGUI::GUI> mGUI;
+#endif
       dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
       dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
 

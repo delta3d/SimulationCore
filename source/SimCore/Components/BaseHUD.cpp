@@ -33,23 +33,29 @@
 
 #include <dtGame/gamemanager.h>
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #include <dtGUI/basescriptmodule.h>
+#else
+#include <dtGUI/gui.h>
+#include <dtGUI/scriptmodule.h>
+#endif
 
 #include <dtUtil/fileutils.h>
 
 #include <dtABC/application.h>
+#include <dtDAL/project.h>
 #include <dtGame/messagetype.h>
 
 #include <osg/MatrixTransform>
 #include <osg/Matrix>
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtABC/applicationconfigschema.h>
-
 //these are to realize a window if we do not have a valid context to initialize
 #include <osg/GraphicsContext>
 #include <osgViewer/GraphicsWindow>
-
+#endif
 
 namespace SimCore
 {
@@ -80,25 +86,26 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       BaseHUD::BaseHUD(dtCore::DeltaWin *win, const std::string& name,
          const std::string& ceguiScheme )
-         : dtGame::GMComponent(name),
-         mWin(win),
-         mScriptModule(new dtGUI::ScriptModule()),
-         mHUDState(&HUDState::MINIMAL), 
-         mSchemeFile(ceguiScheme)
+         : dtGame::GMComponent(name)
+         , mWin(win)
+         , mScriptModule(new dtGUI::ScriptModule())
+         , mHUDState(&HUDState::MINIMAL)
+         , mSchemeFile(ceguiScheme)
       {
-
       }
 
       //////////////////////////////////////////////////////////////////////////
       BaseHUD::~BaseHUD()
       {
+         mMainWindow = NULL;
+         mGUI = NULL;
          delete mScriptModule; // a script module does not extend dtCore::Base
       }
-
 
       //////////////////////////////////////////////////////////////////////////
       void BaseHUD::Initialize( unsigned int designedResWidth, unsigned int designedResHeight )
       {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          bool realized = GetGameManager()->GetApplication().GetWindow()->GetOsgViewerGraphicsWindow()->isRealized();
          //this code will create an opengl context to initialize CEGUI with
          //we only need to do this if OSG does not realize on creation
@@ -127,6 +134,7 @@ namespace SimCore
                }
             }
          }
+#endif
 
          InitializeCEGUI();
 
@@ -159,10 +167,9 @@ namespace SimCore
       {
          dtABC::Application &app = GetGameManager()->GetApplication();
          // Initialize CEGUI
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
-
-         mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
-
+         osg::Node* guiOSGNode = mGUI->GetOSGNode();
          std::string path = dtUtil::FindFileInPathList(mSchemeFile);
          if(path.empty())
          {
@@ -175,6 +182,20 @@ namespace SimCore
          try
          {
             CEGUI::SchemeManager::getSingleton().loadScheme(path);
+#else
+         mGUI = new dtGUI::GUI(app.GetCamera(), app.GetKeyboard(), app.GetMouse());
+         osg::Group* guiOSGNode = &mGUI->GetRootNode();
+         mGUI->SetScriptModule(mScriptModule);
+         mGUI->SetResourceGroupDirectory("imagesets", dtDAL::Project::GetInstance().GetContext());
+         mGUI->SetResourceGroupDirectory("looknfeels", dtDAL::Project::GetInstance().GetContext());
+         mGUI->SetResourceGroupDirectory("layouts", dtDAL::Project::GetInstance().GetContext());
+         mGUI->SetResourceGroupDirectory("schemes", dtDAL::Project::GetInstance().GetContext());
+         mGUI->SetResourceGroupDirectory("fonts", dtDAL::Project::GetInstance().GetContext());
+
+         try
+         {
+            mGUI->LoadScheme(mSchemeFile);
+#endif
          }
          catch(CEGUI::Exception &e)
          {
@@ -184,9 +205,11 @@ namespace SimCore
          }
          dtUtil::FileUtils::GetInstance().PopDirectory();
 
+         guiOSGNode->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
          CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
          mMainWindow = new HUDGroup("root","DefaultGUISheet");
          CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
+         CEGUI::System::getSingleton().getGUISheet()->setMousePassThroughEnabled(true);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -222,6 +245,20 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR >= 7
+      osg::Group& BaseHUD::GetRootNode()
+      {
+         return mGUI->GetRootNode();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Group& BaseHUD::GetRootNode() const
+      {
+         return mGUI->GetRootNode();
+      }
+#endif
+
+      //////////////////////////////////////////////////////////////////////////
       void BaseHUD::ProcessMessage(const dtGame::Message& message)
       {
          if (message.GetMessageType() == dtGame::MessageType::TICK_LOCAL)
@@ -230,7 +267,9 @@ namespace SimCore
          }
          else if (message.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
             GetGameManager()->GetScene().AddDrawable(GetGUIDrawable().get());
+#endif
          }
       }
 

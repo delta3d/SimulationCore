@@ -18,9 +18,16 @@
 #include <prefix/SimCorePrefix.h>
 #include <osg/Camera>
 #include <osg/PositionAttitudeTransform>
-#include <dtGUI/ceguitexture.h>
 #include <dtUtil/mathdefines.h>
 #include <SimCore/GUI/SceneWindow.h>
+#include <dtCore/transform.h>
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#include <dtGUI/ceguitexture.h>
+#else
+#include <osg/Texture2D>
+#include <cegui/CEGUIImagesetManager.h>
+#include <dtGui/gui.h>
+#endif
 
 // TEMP:
 #include <osg/Array>
@@ -32,6 +39,9 @@
 #undef None
 #endif
 #include <CEGUI.h>
+
+#include <dtCore/scene.h>
+#include <dtCore/view.h>
 
 
 
@@ -45,8 +55,9 @@ namespace SimCore
       SceneWindow::SceneWindow( CEGUI::Window& window )
          : BaseClass(window)
          , mPerspectiveMode(false)
+         , mLastVisibilityMask(1)
          , mWindowUnits(-50.0, 50.0, -50.0, 50.0)
-         , mCamera(new osg::Camera)
+         , mCamera(NULL)
       {
       }
 
@@ -56,35 +67,54 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       void SceneWindow::InitializeCamera( osg::Group& sceneNode,
-         int textureWidth, int textureHeight  )
+#else
+      void SceneWindow::InitializeCamera( dtGUI::GUI& mainGUI, osg::Group& sceneNode,
+#endif
+         int textureWidth, int textureHeight )
       {
-         dtCore::RefPtr<osg::Texture2D> texture
-            = GetOrCreateOSGTexture( *GetCEGUIWindow(), textureWidth, textureHeight );
-
-         SetWindowUnits( mWindowUnits, false );
+         CEGUI::Window* w = GetCEGUIWindow();
+         dtCore::RefPtr<osg::Texture2D> rttTex;// = mainGUI.CreateRenderTargetTexture(*w, NULL, "RTT", "RTTImage");
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+         GetOrCreateOSGTexture(rttTex, *w, textureWidth, textureHeight);
+#else
+         GetOrCreateOSGTexture(rttTex, mainGUI, *w, textureWidth, textureHeight);
+#endif
+         osg::Vec2 viewDims(w->getPixelSize().d_width, w->getPixelSize().d_height);
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+         mCamera = new dtCore::Camera();
 
          //mCamera->setRenderOrder(osg::Camera::PRE_RENDER, 0);
-         mCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-         mCamera->setRenderTargetImplementation( osg::Camera::FRAME_BUFFER_OBJECT );
-         mCamera->detach( osg::Camera::COLOR_BUFFER );
-         mCamera->attach( osg::Camera::COLOR_BUFFER, texture.get() );
-         mCamera->setNodeMask(0xFFFFFFFF);
-         mCamera->setViewport(0, 0, textureWidth, textureHeight);
-         mCamera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         mCamera->setClearColor( osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f) );
+         mCamera->GetOSGCamera()->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+         mCamera->GetOSGCamera()->setRenderTargetImplementation( osg::Camera::FRAME_BUFFER_OBJECT );
+         mCamera->GetOSGCamera()->detach( osg::Camera::COLOR_BUFFER );
+         mCamera->GetOSGCamera()->attach( osg::Camera::COLOR_BUFFER, rttTex.get() );
+         mCamera->GetOSGCamera()->setNodeMask(0xFFFFFFFF);
+         mCamera->GetOSGCamera()->setViewport(0, 0, textureWidth, textureHeight);
+         mCamera->GetOSGCamera()->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         mCamera->GetOSGCamera()->setClearColor( osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f) );
+#else
+         mCamera = mainGUI.CreateCameraForRenderTargetTexture(*rttTex, viewDims);
+#endif
 
-         sceneNode.addChild( mCamera.get() );
+         mScene = new dtCore::Scene("SubScene_"+GetName());
+         SetSceneNode(&sceneNode);
+         mView = new dtCore::View("rttView");
+         mView->SetCamera(mCamera.get());
+         mView->SetScene(mScene.get());
+
+         SetWindowUnits( mWindowUnits, false );
       }
 
       //////////////////////////////////////////////////////////////////////////
-      osg::Camera& SceneWindow::GetCameraNode()
+      dtCore::Camera& SceneWindow::GetCamera()
       {
          return *mCamera;
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const osg::Camera& SceneWindow::GetCameraNode() const
+      const dtCore::Camera& SceneWindow::GetCamera() const
       {
          return *mCamera;
       }
@@ -101,7 +131,7 @@ namespace SimCore
             // Y - Aspect Ratio (Width/Height)
             // Z - Near
             // W - Far
-            mCamera->setProjectionMatrixAsPerspective( units.x(), units.y(), units.z(), units.w() );
+            mCamera->SetPerspectiveParams( units.x(), units.y(), 0.01f, 1000.0f);//units.z(), units.w() );
          }
          else
          {
@@ -109,7 +139,7 @@ namespace SimCore
             // Y - Right
             // Z - Bottom
             // W - Top
-            mCamera->setProjectionMatrixAsOrtho2D( units.x(), units.y(), units.z(), units.w() );
+            mCamera->GetOSGCamera()->setProjectionMatrixAsOrtho( units.x(), units.y(), units.z(), units.w(), 0.01f, 1000.0f);
          }
       }
 
@@ -126,7 +156,13 @@ namespace SimCore
 
          if( mCamera.valid() )
          {
-            mCamera->setNodeMask( visible ? 0xFFFFFFFF : 0 );//dcsim::enums::NodeMaskFlagsEnum::FLAG_VISIBILITY.GetFlags() : 0x0 );
+            osg::Camera& cam = *mCamera->GetOSGCamera();
+            if(cam.getNodeMask() != 0)
+            {
+               mLastVisibilityMask = cam.getNodeMask(); 
+            }
+
+            cam.setNodeMask( visible ? mLastVisibilityMask : 0 );
          }
       }
 
@@ -146,7 +182,13 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void SceneWindow::SetViewCenter(const osg::Vec2& point )
       {
-         mCamera->getViewMatrix().setTrans( osg::Vec3( -point.x(), -point.y(), mCamera->getViewMatrix().getTrans().z() ) );
+         osg::Vec3 pos;
+         dtCore::Transform xform;
+         mCamera->GetTransform(xform);
+         xform.GetTranslation(pos);
+         pos.set(point.x(), point.y(), pos.z());
+         xform.SetTranslation(pos);
+         mCamera->SetTransform(xform);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -170,72 +212,55 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const osg::Vec2 SceneWindow::GetViewCenter() const
       {
-         return osg::Vec2( -mCamera->getViewMatrix().getTrans().x(), -mCamera->getViewMatrix().getTrans().y() );
+         osg::Vec3 pos;
+         dtCore::Transform xform;
+         mCamera->GetTransform(xform);
+         xform.GetTranslation(pos);
+         return osg::Vec2(pos.x(), pos.y());
       }
 
       //////////////////////////////////////////////////////////////////////////
-      osg::Texture2D* SceneWindow::GetOrCreateOSGTexture( CEGUI::Window& widget,
-         int textureWidth, int textureHeight )
+      void SceneWindow::GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+         CEGUI::Window& widget,
+#else
+         dtGUI::GUI& mainGUI, CEGUI::Window& widget,
+#endif
+         int textureWidth, int textureHeight)
       {
-         // get osg-texture for the static image of the cegui-window
-         if( ! widget.isPropertyPresent("Image") )
+         // Determine if an image already exists for the widget.
+         const CEGUI::Image* image = NULL;
+         if(widget.isPropertyPresent("Image"))
          {
-            //            LOG_ERROR( " Property \"Image\" is not available for widget \"" + std::string(pWidget->getName().c_str()) + "\" \n" );
-            return 0;
+            image = CEGUI::PropertyHelper::stringToImage(widget.getProperty("Image"));
          }
 
-         const CEGUI::Image* image = CEGUI::PropertyHelper::stringToImage(widget.getProperty("Image"));
          if( image == NULL )
          {
-            //
-            // try to create an image/texture if none present:
-            //
-
-            // generate imageset with an unique name:
-            std::string imagesetName = "DynamicTexture." + std::string(widget.getName().c_str());
+            // Generate an image set with a unique name.
+            std::string imagesetName = "RenderTargetTexture." + std::string(widget.getName().c_str());
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
             while( CEGUI::ImagesetManager::getSingleton().isImagesetPresent(imagesetName) )
+#else
+            while( CEGUI::ImagesetManager::getSingleton().isDefined(imagesetName) )
+#endif
             {
                imagesetName = imagesetName + "X";
             }
 
-            // create an osg(CEGUI)-Texture:
+            // Create and assign the texture to the widget.
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
             dtGUI::CEGUITexture* texture = (dtGUI::CEGUITexture *)(CEGUI::System::getSingleton().getRenderer()->createTexture(textureWidth));
-
-            // create cegui-imageset
-            CEGUI::Imageset* imageset = CEGUI::ImagesetManager::getSingleton().createImageset(imagesetName, texture );
-            imageset->defineImage("image1", CEGUI::Rect(0, 0, textureWidth, textureHeight), CEGUI::Vector2(0,0));
-            widget.setProperty("Image", CEGUI::PropertyHelper::imageToString( &(imageset->getImage("image1"))));
-
-            // apply to window
-            image = CEGUI::PropertyHelper::stringToImage(widget.getProperty("Image"));
-
-            // sth. went wrong :-((( ... cleanup
-            if( image == NULL )
-            {
-               CEGUI::ImagesetManager::getSingleton().destroyImageset(imagesetName);
-               CEGUI::System::getSingleton().getRenderer()->destroyTexture(texture);
-            }
+            outTexture = texture->GetOSGTexture();
+#else
+            osg::Vec2 texSize(textureWidth, textureHeight);
+            outTexture = mainGUI.CreateRenderTargetTexture(widget, NULL/*&texSize*/, imagesetName);
+#endif
          }
-
-         if( image == NULL )
-         {
-            //            LOG_ERROR( " invalid CEGUI::Window \n" );
-            return 0;
-         }
-
-         dtGUI::CEGUITexture* texture = reinterpret_cast<dtGUI::CEGUITexture*>(image->getImageset()->getTexture());
-         if( texture == NULL )
-         {
-            //LOG_ERROR(" invalid dtGUI::Texture \n");
-            return 0;
-         }
-
-         texture->SetFlipHorizontal(true);
-         return texture->GetOSGTexture();
       }
 
       //////////////////////////////////////////////////////////////////////////
-      osg::Geode* SceneWindow::CreateQuad( osg::Texture2D *tex, int renderBin )
+      osg::Geode* SceneWindow::CreateQuad( osg::Texture2D* tex, int renderBin )
       {
          osg::Geometry* geo = new osg::Geometry;
          geo->setUseDisplayList( false );
@@ -279,6 +304,36 @@ namespace SimCore
          ss->setRenderBinDetails( renderBin, "RenderBin" );
 
          return geode;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void SceneWindow::SetSceneNode(osg::Group* node)
+      {
+         mScene->SetSceneNode(node);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::Group* SceneWindow::GetSceneNode()
+      {
+         return mScene->GetSceneNode();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const osg::Group* SceneWindow::GetSceneNode() const
+      {
+         return mScene->GetSceneNode();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      dtCore::View& SceneWindow::GetView()
+      {
+         return *mView;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const dtCore::View& SceneWindow::GetView() const
+      {
+         return *mView;
       }
 
    }

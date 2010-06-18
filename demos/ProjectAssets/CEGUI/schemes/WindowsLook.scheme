@@ -12,7 +12,7 @@
 	<LookNFeel Filename="CEGUI/looknfeel/WindowsLook.looknfeel" />
 	<LookNFeel Filename="CEGUI/looknfeel/Label.looknfeel" />
 
-	<WindowSet Filename="CEGUIFalagardWRBase" />
+	<WindowRendererSet Filename="CEGUIFalagardWRBase" />
 
         <Font Name="Arial-Bold-16" Filename="CEGUI/fonts/Arial-Bold-16.font" />
         <Font Name="Arial-Bold-12" Filename="CEGUI/fonts/Arial-Bold-12.font" />

@@ -21,7 +21,8 @@
 #include <osg/CameraNode>
 #include <osg/Group>
 #include <SimCore/GUI/SceneWindow.h>
-
+#include <UnitTestMain.h>
+#include <CEGUI/CEGUIVersion.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +70,17 @@ void SceneWindowTests::TestSceneWindowProperties()
 
    dtCore::RefPtr<osg::Group> hudLayer = new osg::Group;
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 0 );
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    mSceneWin->InitializeCamera( *hudLayer );
+#else
+   mSceneWin->InitializeCamera( GetGlobalGUI(), *hudLayer );
+#endif
    CPPUNIT_ASSERT( hudLayer->getNumChildren() == 1 );
 
    try
    {
-      mSceneWin->GetCameraNode();
-      constSceneWin->GetCameraNode();
+      mSceneWin->GetCamera();
+      constSceneWin->GetCamera();
    }
    catch( ... )
    {

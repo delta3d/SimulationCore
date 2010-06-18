@@ -32,9 +32,16 @@
 #include <dtUtil/enumeration.h>
 #include <SimCore/Components/BaseHUDElements.h>
 
+#include <CEGUI/CEGUIVersion.h>
+
 namespace dtGUI
 {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    class BaseScriptModule;
+#else
+   class GUI;
+   class ScriptModule;
+#endif
 }
 
 namespace SimCore
@@ -95,8 +102,13 @@ namespace SimCore
          CEGUI::Window* GetMainCEGUIWindow();
          const CEGUI::Window* GetMainCEGUIWindow() const;
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() { return mGUI; }
          const dtCore::RefPtr<dtGUI::CEUIDrawable> GetGUIDrawable() const { return mGUI; }
+#else
+         osg::Group& GetRootNode();
+         const osg::Group& GetRootNode() const;
+#endif
 
          virtual void SetHUDState(HUDState& newState) { mHUDState = &newState;  UpdateState(); }
          HUDState& GetHUDState() { return *mHUDState; }
@@ -130,7 +142,11 @@ namespace SimCore
       private:
          dtCore::DeltaWin* mWin;
          dtCore::RefPtr<HUDGroup> mMainWindow;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+         dtCore::RefPtr<dtGUI::GUI> mGUI;
+#endif
          dtGUI::ScriptModule* mScriptModule;
 
          HUDState* mHUDState;
