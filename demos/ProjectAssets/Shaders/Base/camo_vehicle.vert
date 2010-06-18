@@ -16,13 +16,9 @@ float computeFog(float, float, float);
 // camo_paint.vert
 void calculateCamoAndDamageUVs();
 
-// From: concealment_scale.vert
-vec3 getConcealmentScaledVertex(vec3 vert);
-
 void main()
 {
-   gl_Position = gl_ModelViewProjectionMatrix * vec4(getConcealmentScaledVertex(gl_Vertex.xyz), 1.0);
-   
+   gl_Position = ftransform();
    gl_TexCoord[0]  = gl_MultiTexCoord0;
    
    // Compute the UVs and varyings for camo diffuse and damage overlay.

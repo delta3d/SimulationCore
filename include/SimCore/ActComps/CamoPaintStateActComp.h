@@ -29,7 +29,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <SimCore/Export.h>
-#include <osg/Group>
+#include <osg/MatrixTransform>
 #include <osg/Vec2>
 #include <dtCore/observerptr.h>
 #include <SimCore/ActComps/BodyPaintStateActComp.h>
@@ -85,6 +85,7 @@ namespace SimCore
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
             DECLARE_PROPERTY(int, CamoId);
+            DECLARE_PROPERTY(bool, ConcealedState);
             DECLARE_PROPERTY(osg::Vec4, ConcealMeshDims);
             DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ConcealMesh);
             DECLARE_PROPERTY(std::string, ConcealShaderGroup);
@@ -115,6 +116,7 @@ namespace SimCore
 
          private:
             dtCore::RefPtr<osg::Node> mConcealMeshNode;
+            dtCore::RefPtr<osg::MatrixTransform> mOffsetNode;
             dtCore::ObserverPtr<osg::Node> mHiderNode;
             dtCore::ObserverPtr<osg::Group> mParentNode;
       };
