@@ -75,9 +75,9 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerMessageProcessor::ProcessMessage(const dtGame::Message &msg)
+      void ViewerMessageProcessor::ProcessMessage(const dtGame::Message& msg)
       {
-         if(msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
+         if (msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             dtGame::GameManager& gameManager = *GetGameManager();
             std::vector<dtDAL::ActorProxy*> actors;
@@ -114,7 +114,7 @@ namespace SimCore
                }
                else
                {
-                  LOG_ERROR("No terrain actor was found in the map: " + mapNames[0]);
+                  LOG_WARNING("No terrain actor was found in the map: " + mapNames[0]);
                }
 
                // Get any water actor and assign it to the multi surface ground clamper,
