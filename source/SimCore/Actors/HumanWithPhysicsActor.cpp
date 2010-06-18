@@ -82,8 +82,9 @@ namespace SimCore
          dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("Body");
          physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
          physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
+         physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
          physicsObject->SetMass(100.0f);         
-         physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 1.0f));
+         physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
          mPhysicsHelper->AddPhysicsObject(*physicsObject);
          
 #endif
@@ -396,16 +397,31 @@ namespace SimCore
          SetPosition(xyz);
          dynamic_cast<dtAgeiaPhysX::NxAgeiaWorldComponent*>(GetGameActorProxy().GetGameManager()->GetComponentByName("NxAgeiaWorldComponent"))->RegisterAgeiaHelper(*mPhysicsHelper.get());
 #else
-         mPhysicsHelper->GetMainPhysicsObject()->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
-
-         dtPhysics::PhysicsComponent* comp = NULL;
-         GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
-         if(comp != NULL)
+         if (IsRemote())
          {
-            comp->RegisterHelper(*mPhysicsHelper);
-         }
+            dtPhysics::PhysicsObject* po = mPhysicsHelper->GetMainPhysicsObject();
+            po->SetCollisionGroup(CollisionGroup::GROUP_HUMAN_REMOTE);
 
-         mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties();
+            // If the developer didn't set the origin offset to something.
+            // This is sort of a problem, because if the user WANTS no offset, they would have to set it to
+            // something really small, but not quite 0.
+            if (po->GetOriginOffset().length2() < FLT_EPSILON)
+            {
+               osg::Vec3 extents = po->GetExtents();
+               // Move the cylinder up half the height to sync up the origins.
+               po->SetOriginOffset(osg::Vec3(0.0f, 0.0f, (extents.x() / 2.0f) + extents.y()));
+            }
+
+            dtPhysics::PhysicsComponent* comp = NULL;
+            GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
+            if(comp != NULL)
+            {
+               comp->RegisterHelper(*mPhysicsHelper);
+            }
+
+
+            po->CreateFromProperties();
+         }
 #endif
 
          if(!IsRemote())

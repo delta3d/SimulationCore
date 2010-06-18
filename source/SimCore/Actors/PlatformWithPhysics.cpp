@@ -49,23 +49,23 @@ namespace SimCore
       const std::string PlatformWithPhysics::BUILDING_DEFAULT_NAME = "Building - Terrain Actor Geometry";
 
       /////////////////////////////////////////////////////////////////////////
-      PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy &proxy)
+      PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy& proxy)
       : Platform(proxy)
       {
 #ifdef AGEIA_PHYSICS
-            mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
-            mPhysicsHelper->SetBaseInterfaceClass(this);
-            mPhysicsHelper->SetAgeiaMass(500.0f);
-            mPhysicsHelper->SetIsKinematic(true);
-            mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
+         mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
+         mPhysicsHelper->SetBaseInterfaceClass(this);
+         mPhysicsHelper->SetAgeiaMass(500.0f);
+         mPhysicsHelper->SetIsKinematic(true);
+         mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
 #else
-            mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
-            dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
-            physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
-            physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
-            physObj->SetMass(500.0f);
-            mPhysicsHelper->AddPhysicsObject(*physObj);
-            mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
+         mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
+         dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
+         physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+         physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
+         physObj->SetMass(500.0f);
+         mPhysicsHelper->AddPhysicsObject(*physObj);
+         mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
 #endif
          mLoadGeomFromNode = false;
       }
