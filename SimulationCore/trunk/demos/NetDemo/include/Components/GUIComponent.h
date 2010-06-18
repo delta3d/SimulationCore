@@ -29,7 +29,13 @@
 #include "Actors/PlayerStatusActor.h"
 #include "Components/GameLogicComponent.h"
 
+#include <CEGUI/CEGUIVersion.h>
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+#include <dtGUI/ceuidrawable.h>
+#else
+#include <dtGui/gui.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
@@ -52,7 +58,6 @@ namespace dtGame
 
 namespace dtGUI
 {
-   class CEUIDrawable;
    class ScriptModule;
 }
 
@@ -174,7 +179,11 @@ namespace NetDemo
          // High Order Objects
          dtCore::ObserverPtr<PlayerStatusActor> mPlayer;
          dtCore::ObserverPtr<GameLogicComponent> mAppComp;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+         dtCore::RefPtr<dtGUI::GUI> mGUI;
+#endif
          dtCore::RefPtr<SimCore::Components::HUDGroup> mMainWindow;
          dtGUI::ScriptModule* mScriptModule;
          dtCore::RefPtr<NetDemo::GUI::ScoreLabelManager> mScoreLabelManager;

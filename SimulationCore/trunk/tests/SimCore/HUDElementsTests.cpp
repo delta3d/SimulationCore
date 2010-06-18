@@ -120,7 +120,11 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
    private:
       dtCore::RefPtr<dtGame::GameManager> mGM;
       dtCore::RefPtr<dtABC::Application> mApp;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+      dtCore::RefPtr<dtGUI::GUI> mGUI;
+#endif
       dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
 };
 
@@ -145,8 +149,12 @@ void HUDElementsTests::setUp()
    mGM = new dtGame::GameManager(*mApp->GetScene());
    mGM->SetApplication(*mApp);
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    mGUI = &GetGlobalCEGUIDrawable();
    mApp->GetScene()->AddDrawable(mGUI.get());
+#else
+   mGUI = &GetGlobalGUI();
+#endif
 
    dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
    dtCore::System::GetInstance().Start();
@@ -165,8 +173,10 @@ void HUDElementsTests::tearDown()
    mMainGUIWindow = NULL;
 
    mGM = NULL;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    if (mApp.valid() && mGUI.valid())
       mApp->GetScene()->RemoveDrawable( mGUI.get() );
+#endif
 
    mGUI = NULL;
    mApp = NULL;
@@ -1419,8 +1429,10 @@ void HUDElementsTests::TestStealthSpeedometer()
    const SimCore::Components::HUDQuadElement* needle = speedometer->GetNeedle();
 
    // Register the needle; the needle is a special case
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    CPPUNIT_ASSERT_MESSAGE( "Speedometer must be able to register its needle with the main CEGUI dtCore::DeltaDrawable",
       speedometer->RegisterNeedleWithGUI(mGUI.get()) );
+#endif
 
    // Test visibility
    CPPUNIT_ASSERT_MESSAGE( "Speedometer should be visible by default",

@@ -33,7 +33,12 @@
 #include <SimCore/Tools/LaserRangeFinder.h>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Tools/GPS.h>
+#include <CEGUI/CEGUIVersion.h>
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
+#else
+#include <dtGUI/gui.h>
+#endif
 #include <dtABC/application.h>
 #include <dtCore/globals.h>
 #include <dtCore/system.h>
@@ -92,7 +97,11 @@ public:
 private:
 
    RefPtr<dtGame::GameManager> mGM;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+   RefPtr<dtGUI::GUI> mGUI;
+#endif
    // The constructor call to the GUI member assumes that an
    // application has been instantiated.
    RefPtr<dtABC::Application> mApp;
@@ -114,7 +123,11 @@ void ToolTests::setUp()
 
       dtCore::System::GetInstance().Step();
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       mGUI = &GetGlobalCEGUIDrawable();
+#else
+      mGUI = &GetGlobalGUI();
+#endif
    }
    catch(const dtUtil::Exception &e)
    {
@@ -148,8 +161,10 @@ void ToolTests::tearDown()
    mGM = NULL;
    mPlayerActor = NULL;
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    if (mApp.valid() && mGUI.valid())
       mApp->GetScene()->RemoveDrawable( mGUI.get() );
+#endif
 
    mGUI = NULL;
    mApp = NULL;

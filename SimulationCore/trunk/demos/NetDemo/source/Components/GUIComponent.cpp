@@ -27,9 +27,12 @@
 #include <dtUtil/datapathutils.h>
 #include <dtCore/scene.h>
 #include <dtCore/shaderprogram.h>
+#include <dtDAL/project.h>
 #include <dtGame/actorupdatemessage.h>
 #include <dtGame/basemessages.h>
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
+#endif
 #include <dtGUI/scriptmodule.h>
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
@@ -162,7 +165,7 @@ namespace NetDemo
       mScreenReadyRoom->Setup(gm, mMainWindow.get());
       RegisterScreenWithState(*mScreenReadyRoom, NetDemoState::STATE_GAME_READYROOM);
 
-      // GARGE
+      // GARAGE
       mScreenGarage = new SimCore::GUI::SimpleScreen("Garage", "CEGUI/layouts/NetDemo/Garage.layout");
       mScreenGarage->Setup(mMainWindow.get());
       RegisterScreenWithState(*mScreenGarage, NetDemoState::STATE_GAME_GARAGE);
@@ -292,8 +295,9 @@ namespace NetDemo
       dtABC::Application& app = GetGameManager()->GetApplication();
 
       // Initialize CEGUI
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       mGUI = new dtGUI::CEUIDrawable(app.GetWindow(), app.GetKeyboard(), app.GetMouse(), mScriptModule);
-      mGUI->SetRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+      osg::Node* guiOSGNode = mGUI->GetOSGNode();
 
       // Add the GUI drawable directly to the OSG scene node rather than
       // going through the over-managed dtCore Scene. If this is not done,
@@ -301,18 +305,35 @@ namespace NetDemo
       // when it tells the dtCore Scene to remove all drawable upon changing maps.
       // This line works around the over-managed code in scenes and map loading,
       // preventing the GUI from being unintentionally removed.
-      GetGameManager()->GetScene().GetSceneNode()->addChild(mGUI->GetOSGNode());
+      GetGameManager()->GetScene().GetSceneNode()->addChild(guiOSGNode);
+#else
+      mGUI = new dtGUI::GUI(app.GetCamera(), app.GetKeyboard(), app.GetMouse());
+      mGUI->SetResourceGroupDirectory("imagesets", dtDAL::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("looknfeels", dtDAL::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("layouts", dtDAL::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("schemes", dtDAL::Project::GetInstance().GetContext());
+      mGUI->SetResourceGroupDirectory("fonts", dtDAL::Project::GetInstance().GetContext());
+      osg::Node* guiOSGNode = &mGUI->GetRootNode();
+#endif
 
+      guiOSGNode->getOrCreateStateSet()->setRenderBinDetails(SimCore::Components::RenderingSupportComponent::RENDER_BIN_HUD, "RenderBin");
+
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       std::string path = dtUtil::FindFileInPathList(schemeFile);
       if(path.empty())
       {
          throw dtUtil::Exception(
             "Failed to find the CEGUI scheme file : " + schemeFile, __FILE__, __LINE__);
       }
+#endif
 
       try
       {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          CEGUI::SchemeManager::getSingleton().loadScheme(path);
+#else
+         mGUI->LoadScheme(schemeFile);
+#endif
 
          // Initialize custom widget factories.
          CEGUI::CustomWidgets::bindCEGUIWindowFactories();
@@ -327,6 +348,7 @@ namespace NetDemo
       CEGUI::System::getSingleton().setDefaultFont("DejaVuSans-10");
       mMainWindow = new SimCore::Components::HUDGroup("Root","DefaultGUISheet");
       CEGUI::System::getSingleton().setGUISheet(mMainWindow->GetCEGUIWindow());
+      CEGUI::System::getSingleton().getGUISheet()->setMousePassThroughEnabled(true);
 
       // Prepare the main window.
       mMainWindow->SetVisible( true );

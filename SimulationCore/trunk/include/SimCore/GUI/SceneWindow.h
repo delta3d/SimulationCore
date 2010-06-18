@@ -18,18 +18,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <osg/Camera>
 #include <dtCore/refptr.h>
+#include <dtCore/camera.h>
+#include <dtCore/scene.h>
+#include <dtCore/view.h>
 #include <SimCore/Export.h>
 #include <SimCore/Components/BaseHUDElements.h>
 
-
+#include <CEGUI/CEGUIVersion.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // FORWARD DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
 namespace osg
 {
+   class Camera;
    class Group;
    class Node;
    class Texture2D;
@@ -40,6 +43,12 @@ namespace CEGUI
    class Window;
 }
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR >= 7
+namespace dtGUI
+{
+   class GUI;
+}
+#endif
 
 
 namespace SimCore
@@ -56,11 +65,15 @@ namespace SimCore
 
             SceneWindow( CEGUI::Window& window );
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
             virtual void InitializeCamera( osg::Group& sceneNode,
+#else
+            virtual void InitializeCamera(dtGUI::GUI& mainGUI, osg::Group& sceneNode,
+#endif
                int textureWidth = 256, int textureHeight = 256 );
 
-            osg::Camera& GetCameraNode();
-            const osg::Camera& GetCameraNode() const;
+            dtCore::Camera& GetCamera();
+            const dtCore::Camera& GetCamera() const;
 
             void SetWindowUnits( const osg::Vec4& units, bool perspectiveMode = false );
             const osg::Vec4& GetWindowUnits() const;
@@ -80,18 +93,32 @@ namespace SimCore
             float GetViewWidth() const;
             osg::Vec2 GetViewArea() const;
 
-            osg::Texture2D* GetOrCreateOSGTexture( CEGUI::Window& widget,
+            void GetOrCreateOSGTexture(dtCore::RefPtr<osg::Texture2D>& outTexture,
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+               CEGUI::Window& widget,
+#else
+               dtGUI::GUI& mainGUI, CEGUI::Window& widget,
+#endif
                int textureWidth = 256, int textureHeight = 256 );
             static osg::Geode* CreateQuad( osg::Texture2D *tex, int renderBin );
+
+            void SetSceneNode(osg::Group* node);
+            osg::Group* GetSceneNode();
+            const osg::Group* GetSceneNode() const;
+
+            dtCore::View& GetView();
+            const dtCore::View& GetView() const;
 
          protected:
             virtual ~SceneWindow();
 
          private:
             bool mPerspectiveMode;
-            std::string mCurrentFloor;
+            unsigned mLastVisibilityMask;
             osg::Vec4 mWindowUnits;
-            dtCore::RefPtr<osg::Camera> mCamera;
+            dtCore::RefPtr<dtCore::Camera> mCamera;
+            dtCore::RefPtr<dtCore::Scene> mScene;
+            dtCore::RefPtr<dtCore::View> mView;
       };
    }
 }

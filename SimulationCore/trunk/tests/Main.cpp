@@ -43,9 +43,11 @@
 #include <dtUtil/fileutils.h>
 #include <dtUtil/log.h>
 #include <dtUtil/exception.h>
+#include <dtUtil/datapathutils.h>
 
 #include <dtCore/timer.h>
 #include <dtCore/deltawin.h>
+#include <dtCore/globals.h>
 #include <dtCore/shadermanager.h>
 #include <dtCore/system.h>
 
@@ -55,7 +57,13 @@
 
 #include <dtABC/application.h>
 
+#include <CEGUI/CEGUIVersion.h>
+
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
+#else
+#include <dtGUI/gui.h>
+#endif
 #include <dtGUI/scriptmodule.h>
 
 #include <SimCore/BaseGameEntryPoint.h>
@@ -71,11 +79,19 @@
 
 static std::ostringstream mSlowTests;
 
-static dtCore::RefPtr<dtABC::Application> GlobalApplication;
-static dtCore::RefPtr<dtGUI::CEUIDrawable> GlobalGUI;
+static dtCore::RefPtr<dtABC::Application> globalApplication;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+static dtCore::RefPtr<dtGUI::CEUIDrawable> globalGUI;
+#else
+static dtCore::RefPtr<dtGUI::GUI> globalGUI;
+#endif
 
-dtABC::Application& GetGlobalApplication() { return *GlobalApplication; }
-dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable() { return *GlobalGUI; }
+dtABC::Application& GetGlobalApplication() { return *globalApplication; }
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+dtGUI::CEUIDrawable& GetGlobalCEGUIDrawable() { return *globalGUI; }
+#else
+dtGUI::GUI& GetGlobalGUI() { return *globalGUI; }
+#endif
 
 class TimingListener : public CppUnit::TestListener
 {
@@ -116,21 +132,32 @@ class TimingListener : public CppUnit::TestListener
 
 void SetupCEGUI(dtABC::Application& app)
 {
-   dtDAL::ResourceDescriptor guiScheme("CEGUI:schemes:WindowsLook.scheme");
+   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
 
-   GlobalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+   globalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
-   std::string path = dtDAL::Project::GetInstance().GetResourcePath(guiScheme);
+   std::string path = dtCore::FindFileInPathList(guiScheme);
    if (path.empty())
    {
       throw dtUtil::Exception("Failed to find the scheme file.",
          __FILE__, __LINE__);
    }
 
+   std::string dir = path.substr(0, path.length() - (guiScheme.length() - 5));
+   //dtUtil::FileUtils::GetInstance().PushDirectory(dir);
    try
    {
       CEGUI::SchemeManager::getSingleton().loadScheme(path);
+#else
+   globalGUI = new dtGUI::GUI(app.GetCamera(),
+            app.GetKeyboard(), app.GetMouse());
+   globalGUI->SetScriptModule(new dtGUI::ScriptModule());
+   try
+   {
+      globalGUI->LoadScheme(guiScheme);
+#endif
    }
    catch (const CEGUI::Exception& ex)
    {
@@ -198,9 +225,9 @@ int main (int argc, char* argv[])
 
    dtAudio::AudioManager::Instantiate();
 
-   GlobalApplication = new dtABC::Application("config.xml");
-   GlobalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
-   GlobalApplication->Config();
+   globalApplication = new dtABC::Application("config.xml");
+   globalApplication->GetWindow()->SetPosition(0, 0, 50, 50);
+   globalApplication->Config();
 
    try
    {
@@ -208,7 +235,7 @@ int main (int argc, char* argv[])
       dtCore::System::GetInstance().SetUseFixedTimeStep(false);
       dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
       dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
-      SetupCEGUI(*GlobalApplication);
+      SetupCEGUI(*globalApplication);
    }
    catch(const dtUtil::Exception& ex)
    {
@@ -317,9 +344,11 @@ int main (int argc, char* argv[])
 
    dtCore::ShaderManager::GetInstance().Clear();
 
-   GlobalApplication = NULL;
-   GlobalGUI->ShutdownGUI();
-   GlobalGUI = NULL;
+   globalApplication = NULL;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+   globalGUI->ShutdownGUI();
+#endif
+   globalGUI = NULL;
 
    dtDAL::LibraryManager::GetInstance().UnloadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
    dtAudio::AudioManager::Destroy();

@@ -546,10 +546,26 @@ namespace SimCore
 
          dtUtil::ThreadPool::ExecuteTasks();
 
-
          //We stored add the labels we're using now in the new map, so we swap with the last set
          //for the next frame.
          mLastLabels.swap(newLabels);
+
+         // We have to set the text and size of the labels in the main thread since
+         // it has a valid glContext and the other threads don't
+         LabelMap::iterator i = mLastLabels.begin();
+         for (; i != mLastLabels.end(); ++i)
+         {
+            dtCore::RefPtr<SimCore::Components::HUDLabel> label = i->second.get();
+            if (label.valid())
+            {
+               label->SetText(label->GetCEGUIWindow()->getUserString("Label").c_str());
+
+               // Change the size base on the size of the font with text.
+               CEGUI::Font* font = label->GetCEGUIWindow()->getFont();
+               float width = font->getTextExtent(label->GetText());
+               label->SetSize( width, font->getLineSpacing() );
+            }
+         }
 
          mTimeUntilSort -= dt;
          if (mTimeUntilSort < 0.0f)
@@ -632,16 +648,11 @@ namespace SimCore
 
          if (nameBuffer != label->GetText())
          {
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
 
             // If a valid label was successfully obtained...
-            // Set the label text.
-            label->SetText(nameBuffer);
-
-            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(mTaskMutex);
-            // Change the size base on the size of the font with text.
-            CEGUI::Font* font = label->GetCEGUIWindow()->getFont();
-            float width = font->getTextExtent(proxy.GetName());
-            label->SetSize( width, font->getLineSpacing() );
+            // Set the label user string so we know what to set the text to in the main thread.
+            label->GetCEGUIWindow()->setUserString("Label", nameBuffer);
          }
 
          osg::Vec2 labelSize;

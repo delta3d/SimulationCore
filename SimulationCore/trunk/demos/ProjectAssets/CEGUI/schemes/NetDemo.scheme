@@ -20,7 +20,7 @@
    <LookNFeel Filename="CEGUI/looknfeel/NetDemo.looknfeel" />
 
    <!-- MAPPINGS - WINDOW FACTORIES - WINDOWS LOOK -->
-   <WindowSet Filename="CEGUIFalagardWRBase" />
+   <WindowRendererSet Filename="CEGUIFalagardWRBase" />
 	<FalagardMapping WindowType="WindowsLook/Button"      TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/Button" />
 	<FalagardMapping WindowType="WindowsLook/Checkbox"    TargetType="CEGUI/Checkbox"    Renderer="Falagard/ToggleButton" LookNFeel="WindowsLook/Checkbox" />
 	<FalagardMapping WindowType="WindowsLook/IconButton"  TargetType="CEGUI/PushButton"  Renderer="Falagard/Button"       LookNFeel="WindowsLook/IconButton" />

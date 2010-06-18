@@ -29,12 +29,12 @@
 
 namespace osg
 {
+   class Group;
    class MatrixTransform;
    class Uniform;
 }
 namespace dtCore
 {
-   class DeltaDrawable;
    class Camera;
 }
 
@@ -68,7 +68,7 @@ namespace SimCore
             
             float UpdateNeedle( float deltaTime, float heading );
 
-            void InitLens( dtCore::DeltaDrawable& hudLayer );
+            void InitLens(osg::Group& hudLayer);
 
          protected:
 

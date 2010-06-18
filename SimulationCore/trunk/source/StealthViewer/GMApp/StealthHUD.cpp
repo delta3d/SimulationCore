@@ -63,6 +63,8 @@
 #include <dtDAL/actorproxy.h>
 #include <dtDAL/transformableactorproxy.h>
 
+#include <CEGUI/CEGUIVersion.h>
+
 #include <ctime>
 
 #ifdef AGEIA_PHYSICS
@@ -128,6 +130,7 @@ namespace StealthGM
       }
       else if( type == dtGame::MessageType::INFO_MAP_LOADED )
       {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          //Is this a problem now?
          SimCore::Components::RenderingSupportComponent* renderComp = NULL;
          dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
@@ -146,7 +149,7 @@ namespace StealthGM
          {
             renderComp->SetGUI(GetGUIDrawable().get());
          }
-
+#endif
 
          std::vector<dtDAL::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);

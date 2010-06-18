@@ -32,7 +32,12 @@
 #undef None
 #endif
 #include <CEGUI/CEGUI.h>
+#include <CEGUI/CEGUIVersion.h>
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/dtgui.h>
+#else
+#include <dtGUI/gui.h>
+#endif
 
 #include <dtCore/deltawin.h>
 #include <dtCore/deltadrawable.h>

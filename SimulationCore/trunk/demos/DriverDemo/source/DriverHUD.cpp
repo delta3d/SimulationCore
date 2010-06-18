@@ -55,6 +55,8 @@
 #include <SimCore/Actors/PhysicsParticleSystemActor.h>
 #include <SimCore/Actors/WeaponActor.h>
 
+#include <CEGUI/CEGUIVersion.h>
+
 #include <ctime>
 #include <cmath>
 
@@ -147,7 +149,7 @@ namespace DriverDemo
       */
       else if ( type == dtGame::MessageType::INFO_MAP_LOADED)
       {
-
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          SimCore::Components::RenderingSupportComponent* renderComp = NULL;
          dtGame::GMComponent* comp = GetGameManager()->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME);
 
@@ -166,7 +168,7 @@ namespace DriverDemo
             renderComp->SetGUI(GetGUIDrawable().get());
             GetGameManager()->GetScene().AddDrawable(GetGUIDrawable().get());
          }
-
+#endif
 
          std::vector<dtDAL::ActorProxy*> proxies;
          GetGameManager()->FindActorsByType(*dtActors::EngineActorRegistry::COORDINATE_CONFIG_ACTOR_TYPE, proxies);
