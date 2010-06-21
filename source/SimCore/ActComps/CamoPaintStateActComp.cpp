@@ -66,6 +66,7 @@ namespace SimCore
          : BaseClass(TYPE)
       {
          mOffsetNode = new osg::MatrixTransform();
+         mConcealShaderGroup = "ConcealCamoPaintGroup";
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -317,9 +318,6 @@ namespace SimCore
 
             if(success)
             {
-               // HACK:
-               mConcealShaderGroup = "ConcealCamoPaintGroup";
-
                std::string shaderGroupName(mConcealShaderGroup);
 
                if(shaderGroupName.empty())
