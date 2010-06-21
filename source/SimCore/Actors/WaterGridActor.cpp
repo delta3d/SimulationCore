@@ -1777,13 +1777,13 @@ namespace SimCore
          GetActor(wga);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_MAP_LOADED,
-            dtUtil::MakeFunctor(&WaterGridActor::Init, wga)));
+            dtUtil::MakeFunctor(&WaterGridActor::Init, *wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_UPDATE,
-                  dtUtil::MakeFunctor(&WaterGridActor::ActorUpdate, wga)));
+                  dtUtil::MakeFunctor(&WaterGridActor::ActorUpdate, *wga)));
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_ACTOR_CREATED,
-                  dtUtil::MakeFunctor(&WaterGridActor::ActorCreated, wga)));
+                  dtUtil::MakeFunctor(&WaterGridActor::ActorCreated, *wga)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

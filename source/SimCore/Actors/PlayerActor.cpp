@@ -69,7 +69,7 @@ namespace SimCore
          StealthActorProxy::BuildInvokables();
 
          AddInvokable(*new dtGame::Invokable("Enable Tool",
-            dtUtil::MakeFunctor(&PlayerActor::EnableTool, pa)));
+            dtUtil::MakeFunctor(&PlayerActor::EnableTool, *pa)));
 
          // TODO Register same invokable for the other tools when implemented
          RegisterForMessagesAboutSelf(SimCore::MessageType::BINOCULARS, "Enable Tool");

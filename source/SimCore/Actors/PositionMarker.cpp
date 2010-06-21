@@ -649,7 +649,7 @@ namespace SimCore
          GetActor(pm);
 
          AddInvokable(*new dtGame::Invokable(INVOKABLE_TIME_ELAPSED,
-                  dtUtil::MakeFunctor(&PositionMarker::OnTimer, pm)));
+                  dtUtil::MakeFunctor(&PositionMarker::OnTimer, *pm)));
       }
 
       ////////////////////////////////////////////////////////////////////////
