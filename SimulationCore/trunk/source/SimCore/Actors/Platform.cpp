@@ -999,9 +999,12 @@ namespace SimCore
          BaseClass::BuildActorComponents();
 
          // Setup the body paint component.
-         dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> bodyPaintComp
+         dtCore::RefPtr<SimCore::ActComps::CamoPaintStateActComp> camoPaintComp
             = new SimCore::ActComps::CamoPaintStateActComp;
-         AddComponent(*bodyPaintComp);
+         AddComponent(*camoPaintComp);
+
+         camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
+         camoPaintComp->SetHiderNode(mSwitchNode.get());
       }
 
    }
