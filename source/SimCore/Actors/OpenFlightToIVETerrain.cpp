@@ -75,18 +75,15 @@ namespace SimCore
       {
          IGActor::AddedToScene(scene);
 
-         if (GetGameActorProxy().GetGameManager() != NULL)
+         if (scene != NULL)
          {
-            if (scene != NULL)
+            //Actually load the file, even if it's empty string so that if someone were to
+            //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
+            //work.
+            if (mNeedToLoad)
             {
-               //Actually load the file, even if it's empty string so that if someone were to 
-               //load a mesh, remove it from the scene, then try to clear the mesh, this actor will still
-               //work.
-               if (mNeedToLoad)
-               {
-                  LoadFile(mLoadedFile);
-                  mNeedToLoad = false;
-               }
+               LoadFile(mLoadedFile);
+               mNeedToLoad = false;
             }
          }
       }
