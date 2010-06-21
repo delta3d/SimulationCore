@@ -63,16 +63,16 @@ namespace SimCore
          GetActor(sa);
 
          AddInvokable(*new dtGame::Invokable("AttachToActor",
-            dtUtil::MakeFunctor(&StealthActor::AttachToActor, sa)));
+            dtUtil::MakeFunctor(&StealthActor::AttachToActor, *sa)));
 
          AddInvokable(*new dtGame::Invokable("Detach",
-            dtUtil::MakeFunctor(&StealthActor::Detach, sa)));
+            dtUtil::MakeFunctor(&StealthActor::Detach, *sa)));
 
          AddInvokable(*new dtGame::Invokable("UpdateFromParent",
-            dtUtil::MakeFunctor(&StealthActor::UpdateFromParent, sa)));
+            dtUtil::MakeFunctor(&StealthActor::UpdateFromParent, *sa)));
 
          AddInvokable(*new dtGame::Invokable("WarpToPosition",
-            dtUtil::MakeFunctor(&StealthActor::WarpToPosition, sa)));
+            dtUtil::MakeFunctor(&StealthActor::WarpToPosition, *sa)));
 
       }
 
