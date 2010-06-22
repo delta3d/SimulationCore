@@ -32,6 +32,7 @@
 #include <dtDAL/propertymacros.h>
 #include <dtDAL/project.h>
 #include <dtGame/gameactor.h>
+#include <dtUtil/boundingshapeutils.h>
 #include <SimCore/ActComps/BodyPaintActComp.h>
 
 
@@ -89,7 +90,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetDefaults()
       {
+         // Set model dimensions to a non-zero value.
          mModelDimensions.set(1.0f,1.0f,1.0f,1.0f);
+
+         // Set model dimensions to a non-zero value.
+         // The alpha component determines if the effect is
+         // fully applied (1) or not (0).
          mProjectionDirection.set(1.0f,1.0f,1.0f,1.0f);
       }
 
@@ -189,6 +195,46 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
+      void BodyPaintActComp::SetEffectEnabledOnNode(osg::Node& node, bool enabled)
+      {
+         osg::StateSet* ss = node.getOrCreateStateSet();
+         osg::Vec4 value(mProjectionDirection);
+         value.w() = enabled ? 1.0f : 0.0f;
+         SetUniform(ss, UNIFORM_PROJECTION_DIRECTION, value);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      bool BodyPaintActComp::IsEffectEnabledOnNode(osg::Node& node) const
+      {
+         osg::Vec4 value;
+         const osg::StateSet* ss = node.getStateSet();
+         if(ss != NULL)
+         {
+            const osg::Uniform* uniform = ss->getUniform(UNIFORM_PROJECTION_DIRECTION);
+            if(uniform != NULL)
+            {
+               uniform->get(value);
+            }
+         }
+         return value.w() > 0.0f;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      osg::Vec4 BodyPaintActComp::GetDimensions(osg::Node& node)
+      {
+         dtUtil::BoundingBoxVisitor visitor;
+         visitor.apply(node);
+
+         const osg::BoundingBox& bb = visitor.mBoundingBox;
+         osg::Vec4 dims(
+            bb.xMax() - bb.xMin(),
+            bb.yMax() - bb.yMin(),
+            bb.zMax() - bb.zMin(), 1.0f);
+
+         return dims;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetUniform(osg::StateSet* ss, const std::string& uniformName, const osg::Vec4& value)
       {
          if(ss != NULL)
@@ -248,6 +294,24 @@ namespace SimCore
       {
          propertyToSet = value;
          SetUniform(stateSetToUpdate, shaderParamName, value, texUnit);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void BodyPaintActComp::OnEnteredWorld()
+      {
+         BaseClass::OnEnteredWorld();
+
+         // Set the dimensions for the model if they were not specified.
+         if(mModelDimensions.length() == 0.0f)
+         {
+            osg::Node* node = GetOwnerNode();
+            if(node != NULL)
+            {
+               SetModelDimensions(GetDimensions(*node));
+            }
+         }
+
+         SetProjectionDirection(mProjectionDirection);
       }
 
       //////////////////////////////////////////////////////////////////////////

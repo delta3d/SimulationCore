@@ -53,6 +53,7 @@ namespace SimCore
          CPPUNIT_TEST_SUITE(BodyPaintStateActCompTests);
          CPPUNIT_TEST(TestProperties);
          CPPUNIT_TEST(TestOnActor);
+         CPPUNIT_TEST(TestCamoProperties);
          CPPUNIT_TEST_SUITE_END();
 
          public:
@@ -63,13 +64,14 @@ namespace SimCore
             // Test Functions:
             void TestProperties();
             void TestOnActor();
+            void TestCamoProperties();
 
             // Sub Tests
             void SubTestUniforms(osg::StateSet& stateSet);
 
          private:
             dtCore::RefPtr<dtGame::GameManager> mGM;
-            dtCore::RefPtr<BodyPaintStateActComp> mActComp;
+            dtCore::RefPtr<CamoPaintStateActComp> mActComp;
       };
 
       CPPUNIT_TEST_SUITE_REGISTRATION(BodyPaintStateActCompTests);
@@ -82,7 +84,7 @@ namespace SimCore
             // Create the Game Manager.
             mGM = new dtGame::GameManager( *GetGlobalApplication().GetScene() );
 
-            mActComp = new BodyPaintStateActComp();
+            mActComp = new CamoPaintStateActComp();
          }
          catch (const dtUtil::Exception& ex)
          {
@@ -251,6 +253,52 @@ namespace SimCore
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_TEXTURE) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_OVERLAY_TEXTURE) != NULL);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void BodyPaintStateActCompTests::TestCamoProperties()
+      {
+         try
+         {
+            const CamoPaintStateActComp& constComp = *mActComp;
+
+            const osg::Vec4 VEC_ONES(1.0f, 1.0f, 1.0f, 1.0f);
+            osg::Vec4 testVec(-12.34f, 56.78f, -9.1011f, 12.13f);
+
+            CPPUNIT_ASSERT(constComp.GetConcealMeshDims() == VEC_ONES);
+            mActComp->SetConcealMeshDims(testVec);
+            CPPUNIT_ASSERT(constComp.GetConcealMeshDims() == testVec);
+
+            CPPUNIT_ASSERT(constComp.GetCamoId() == 0);
+            mActComp->SetCamoId(3);
+            CPPUNIT_ASSERT(constComp.GetCamoId() == 3);
+
+            CPPUNIT_ASSERT( ! constComp.GetConcealedState());
+            mActComp->SetConcealedState(true);
+            CPPUNIT_ASSERT(constComp.GetConcealedState());
+
+            CPPUNIT_ASSERT(constComp.GetConcealShaderGroup().empty());
+            mActComp->SetConcealShaderGroup("test");
+            CPPUNIT_ASSERT(constComp.GetConcealShaderGroup() == "test");
+
+            dtDAL::ResourceDescriptor testFile("Fake.file");
+            CPPUNIT_ASSERT(constComp.GetConcealMesh().IsEmpty());
+            mActComp->SetConcealMesh(testFile);
+            CPPUNIT_ASSERT(constComp.GetConcealMesh() == testFile);
+
+            dtCore::RefPtr<osg::Group> testNode = new osg::Group;
+            CPPUNIT_ASSERT(constComp.GetParentNode() == NULL);
+            mActComp->SetParentNode(testNode.get());
+            CPPUNIT_ASSERT(constComp.GetParentNode() == testNode.get());
+
+            CPPUNIT_ASSERT(constComp.GetHiderNode() == NULL);
+            mActComp->SetHiderNode(testNode.get());
+            CPPUNIT_ASSERT(constComp.GetHiderNode() == testNode.get());
+         }
+         catch (const dtUtil::Exception& ex)
+         {
+            CPPUNIT_FAIL(ex.ToString());
+         }
       }
 
    }

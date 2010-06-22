@@ -65,6 +65,8 @@ namespace SimCore
 
             // Property Names
             static const dtUtil::RefString PROPERTY_CAMO_ID;
+            static const dtUtil::RefString PROPERTY_CONCEALED_STATE;
+            static const dtUtil::RefString PROPERTY_CONCEAL_SHADER_GROUP;
 
             // Uniform Names
             static const dtUtil::RefString UNIFORM_CONCEAL_MESH_DIMS;
