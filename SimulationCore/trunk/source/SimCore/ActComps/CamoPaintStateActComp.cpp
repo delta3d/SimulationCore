@@ -54,6 +54,8 @@ namespace SimCore
       
       // Property Names
       const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CAMO_ID("Camo Id");
+      const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CONCEALED_STATE("Concealed State");
+      const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CONCEAL_SHADER_GROUP("Conceal Shader Group");
       
       // Uniform Names
       const dtUtil::RefString CamoPaintStateActComp::UNIFORM_CONCEAL_MESH_DIMS("ConcealDims");
@@ -65,8 +67,7 @@ namespace SimCore
       CamoPaintStateActComp::CamoPaintStateActComp()
          : BaseClass(TYPE)
       {
-         mOffsetNode = new osg::MatrixTransform();
-         mConcealShaderGroup = "ConcealCamoPaintGroup";
+         SetDefaults();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -78,6 +79,10 @@ namespace SimCore
       void CamoPaintStateActComp::SetDefaults()
       {
          BaseClass::SetDefaults();
+
+         mCamoId = 0;
+         mOffsetNode = new osg::MatrixTransform();
+         mConcealedState = false;
 
          // Ensure the concealed mesh has a unit scale as default,
          // whenever it is attached later without setting the dimensions.
@@ -135,6 +140,8 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void CamoPaintStateActComp::SetCamoId(int camoId)
       {
+         mCamoId = camoId;
+
          const SimCore::Actors::CamoParams* camo = GetCamoParameters(camoId);
          if(camo != NULL)
          {
@@ -406,6 +413,22 @@ namespace SimCore
             PROPERTY_CAMO_ID,
             PROPERTY_CAMO_ID,
             "Id of the camo object (from the Camo Config Actor) that specifies the color parameters and pattern texture.",
+            PropRegType, propRegHelper);
+
+         // BOOL PROPERTIES
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+            ConcealedState,
+            PROPERTY_CONCEALED_STATE,
+            PROPERTY_CONCEALED_STATE,
+            "Flag that determines if a concealed mesh should be visble or not, if the mesh is specified and attached.",
+            PropRegType, propRegHelper);
+
+         // STRING PROPERTIES
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+            ConcealShaderGroup,
+            PROPERTY_CONCEAL_SHADER_GROUP,
+            PROPERTY_CONCEAL_SHADER_GROUP,
+            "Shader group to be applied to the conceal mesh.",
             PropRegType, propRegHelper);
       }
 

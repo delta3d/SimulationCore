@@ -99,6 +99,8 @@ namespace SimCore
             // OVERRIDE METHODS - ActorComponent
             ////////////////////////////////////////////////////////////////////
 
+            virtual void OnEnteredWorld();
+
             /**
             * Handles the setup and registration of its properties.
             */
@@ -112,6 +114,18 @@ namespace SimCore
 
             osg::StateSet* GetStateSet();
             const osg::StateSet* GetStateSet() const;
+
+            void SetEffectEnabledOnNode(osg::Node& node, bool enabled);
+            bool IsEffectEnabledOnNode(osg::Node& node) const;
+
+            /**
+             * Convenience function for calculating the dimensions of a model's bounding box.
+             * @param node Node that has geometry under it that should be measured.
+             * @return 3D dimensions of the node's bounding box, measured in meters.
+             *         Vec4 is returned instead of Vec3 for the sake of code that could
+             *         be setting Vec4 uniforms on shaders.
+             */
+            static osg::Vec4 GetDimensions(osg::Node& node);
          
          protected:
             BodyPaintActComp(const ActorComponent::ACType& actType); // for derived classes
