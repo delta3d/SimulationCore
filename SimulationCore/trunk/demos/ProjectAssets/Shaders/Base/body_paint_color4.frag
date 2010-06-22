@@ -1,5 +1,6 @@
 uniform sampler2D diffuseTexture;
 uniform sampler2D PatternTexture;
+uniform vec4 ProjectionDir;
 
 uniform vec4 PaintColor1;
 uniform vec4 PaintColor2;
@@ -24,7 +25,9 @@ vec4 addBodyPaintColor4(vec4 diffuseColor, vec4 patternColor, float maskingValue
    patColorTemp = clamp(patColorTemp, vec4(0.0,0.0,0.0,0.0), vec4(1.0,1.0,1.0,1.0));
    
    // Return the modified diffuse color.
-   return mix(diffuseColor, patColorTemp, maskingValue);
+   // The fourth component of projection controls whether the effect is fully applied or not.
+   float patternEffectOverride = clamp(ProjectionDir.a, 0.0, 1.0);
+   return mix(diffuseColor, patColorTemp, maskingValue * patternEffectOverride);
 }
 
 vec4 addBodyPaintColor4(vec4 diffuseColor)

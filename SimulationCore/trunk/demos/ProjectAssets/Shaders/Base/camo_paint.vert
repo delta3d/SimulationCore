@@ -16,7 +16,7 @@ void calculateCamoAndDamageUVs()
 	// Set the diffuse UVs.
    float offset = FrameOffsetAndScales.x;
    vOverlayUVs = vDiffuseUVs = gl_TexCoord[0].st;
-   vDiffuseUVs.t = (vDiffuseUVs.t + offset) * FrameOffsetAndScales.y;
+//   vDiffuseUVs.t = (vDiffuseUVs.t + offset) * FrameOffsetAndScales.y;
    
    // These lines are for damage states. Determine if the overlay should be visible (no for the non-damaged state).
    vOverlayMult = clamp(max(offset, 0.0), 0.0, 1.0);
