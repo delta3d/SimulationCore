@@ -66,7 +66,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_PAINT_COLOR_2;
             static const dtUtil::RefString PROPERTY_PAINT_COLOR_3;
             static const dtUtil::RefString PROPERTY_PAINT_COLOR_4;
-            static const dtUtil::RefString PROPERTY_MODEL_DIMENSIONS;
+            static const dtUtil::RefString PROPERTY_PATTERN_SCALE;
             static const dtUtil::RefString PROPERTY_PROJECTION_DIRECTION;
             static const dtUtil::RefString PROPERTY_REPLACEMENT_DIFFUSE_MASK_TEXTURE;
             static const dtUtil::RefString PROPERTY_PATTERN_TEXTURE;
@@ -76,7 +76,7 @@ namespace SimCore
             static const dtUtil::RefString UNIFORM_PAINT_COLOR_2;
             static const dtUtil::RefString UNIFORM_PAINT_COLOR_3;
             static const dtUtil::RefString UNIFORM_PAINT_COLOR_4;
-            static const dtUtil::RefString UNIFORM_MODEL_DIMENSIONS;
+            static const dtUtil::RefString UNIFORM_PATTERN_SCALE;
             static const dtUtil::RefString UNIFORM_PROJECTION_DIRECTION;
             static const dtUtil::RefString UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE;
             static const dtUtil::RefString UNIFORM_PATTERN_TEXTURE;
@@ -90,7 +90,7 @@ namespace SimCore
             DECLARE_PROPERTY(osg::Vec4, PaintColor2);
             DECLARE_PROPERTY(osg::Vec4, PaintColor3);
             DECLARE_PROPERTY(osg::Vec4, PaintColor4);
-            DECLARE_PROPERTY(osg::Vec4, ModelDimensions);
+            DECLARE_PROPERTY(osg::Vec4, PatternScale);
             DECLARE_PROPERTY(osg::Vec4, ProjectionDirection);
             DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture);
             DECLARE_PROPERTY(dtDAL::ResourceDescriptor, PatternTexture);

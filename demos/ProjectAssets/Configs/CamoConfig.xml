@@ -6,6 +6,7 @@
       <Color2 value="0.0 1.0 0.0"/>
       <Color3 value="0.0 0.0 1.0"/>
       <Color4 value="1.0 1.0 0.0"/>
+      <PatternScale>10.0</PatternScale>
       <PatternTexture>Textures/ShadersBase/CamoPatternHard.tga</PatternTexture>
    </Camo>
    <Camo name="Desert" id="1">

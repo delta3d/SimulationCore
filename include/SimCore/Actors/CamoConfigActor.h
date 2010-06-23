@@ -52,6 +52,7 @@ namespace SimCore
 
             DECLARE_PROPERTY(std::string, Name);
             DECLARE_PROPERTY(CamoId, Id);
+            DECLARE_PROPERTY(float, PatternScale);
             DECLARE_PROPERTY(osg::Vec4, Color1);
             DECLARE_PROPERTY(osg::Vec4, Color2);
             DECLARE_PROPERTY(osg::Vec4, Color3);

@@ -49,7 +49,7 @@ namespace SimCore
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_2("Paint Color 2");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_3("Paint Color 3");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PAINT_COLOR_4("Paint Color 4");
-      const dtUtil::RefString BodyPaintActComp::PROPERTY_MODEL_DIMENSIONS("Model Dimensions");
+      const dtUtil::RefString BodyPaintActComp::PROPERTY_PATTERN_SCALE("Pattern Scale");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PROJECTION_DIRECTION("Projection Direction");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_REPLACEMENT_DIFFUSE_MASK_TEXTURE("Replacement Diffuse Mask Texture");
       const dtUtil::RefString BodyPaintActComp::PROPERTY_PATTERN_TEXTURE("Pattern Texture"); 
@@ -59,7 +59,7 @@ namespace SimCore
       const dtUtil::RefString BodyPaintActComp::UNIFORM_PAINT_COLOR_2("PaintColor2");
       const dtUtil::RefString BodyPaintActComp::UNIFORM_PAINT_COLOR_3("PaintColor3");
       const dtUtil::RefString BodyPaintActComp::UNIFORM_PAINT_COLOR_4("PaintColor4");
-      const dtUtil::RefString BodyPaintActComp::UNIFORM_MODEL_DIMENSIONS("ModelDims");
+      const dtUtil::RefString BodyPaintActComp::UNIFORM_PATTERN_SCALE("PatternScale");
       const dtUtil::RefString BodyPaintActComp::UNIFORM_PROJECTION_DIRECTION("ProjectionDir");
       const dtUtil::RefString BodyPaintActComp::UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE("diffuseTexture");
       const dtUtil::RefString BodyPaintActComp::UNIFORM_PATTERN_TEXTURE("PatternTexture");
@@ -91,7 +91,7 @@ namespace SimCore
       void BodyPaintActComp::SetDefaults()
       {
          // Set model dimensions to a non-zero value.
-         mModelDimensions.set(1.0f,1.0f,1.0f,1.0f);
+         mPatternScale.set(1.0f,1.0f,1.0f,1.0f);
 
          // Set model dimensions to a non-zero value.
          // The alpha component determines if the effect is
@@ -109,7 +109,7 @@ namespace SimCore
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor2);
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor3);
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor4);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, ModelDimensions);
+      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PatternScale);
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, ProjectionDirection);
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture); // Setter is implemented below
       IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, PatternTexture); // Setter is implemented below
@@ -139,9 +139,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void BodyPaintActComp::SetModelDimensions(const osg::Vec4& dims)
+      void BodyPaintActComp::SetPatternScale(const osg::Vec4& dims)
       {
-         SetProperty(mModelDimensions, dims, GetStateSet(), UNIFORM_MODEL_DIMENSIONS);
+         SetProperty(mPatternScale, dims, GetStateSet(), UNIFORM_PATTERN_SCALE);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -302,13 +302,10 @@ namespace SimCore
          BaseClass::OnEnteredWorld();
 
          // Set the dimensions for the model if they were not specified.
-         if(mModelDimensions.length() == 0.0f)
+         if(mPatternScale.length() == 0.0f)
          {
-            osg::Node* node = GetOwnerNode();
-            if(node != NULL)
-            {
-               SetModelDimensions(GetDimensions(*node));
-            }
+            osg::Vec4 scale(1.0f, 1.0f, 1.0f, 1.0f);
+            SetPatternScale(scale);
          }
 
          SetProjectionDirection(mProjectionDirection);
@@ -349,10 +346,10 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
-            ModelDimensions,
-            PROPERTY_MODEL_DIMENSIONS,
-            PROPERTY_MODEL_DIMENSIONS,
-            "Optional 3D vector defining the size of the model to determine the stretch factor of the projection effect.",
+            PatternScale,
+            PROPERTY_PATTERN_SCALE,
+            PROPERTY_PATTERN_SCALE,
+            "Optional 3D vector defining the scale of the pattern effect. This stretches the pattern in X & Y relative to projection space. One tile of the pattern is equal to one unit of world space.",
             PropRegType, propRegHelper);
 
          REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
