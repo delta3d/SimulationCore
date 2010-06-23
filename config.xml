@@ -18,8 +18,10 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
     <Camera Name="defaultCam" WindowInstance="SimCore App"  />
     <View Name="defaultView" CameraInstance="defaultCam" 
        SceneInstance="defaultScene" />    
-    
-    <Log Level="Error" />
+
+    <!-- Any other log that isn't specifically set -->    
+    <GlobalLog Level="Warn" />
+    <Log Level="Warn" /> <!-- The log level for any code that didn't specify a named log instance -->
     <!--Log Name="gameactor.cpp" Level="Warn" /--> <!-- Example on how to set log levels -->
 
     <Properties>
