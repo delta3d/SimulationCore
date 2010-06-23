@@ -152,6 +152,12 @@ namespace SimCore
             SetPatternTexture(camo->GetPatternTexture());
             SetConcealMesh(camo->GetConcealMesh());
 
+            // Set the master scale component on the pattern scale property.
+            // This uniformly scales the whole effect.
+            osg::Vec4 scale(GetPatternScale());
+            scale.w() = camo->GetPatternScale();
+            SetPatternScale(scale);
+
             SetConcealedState( ! camo->GetConcealMesh().IsEmpty());
          }
       }

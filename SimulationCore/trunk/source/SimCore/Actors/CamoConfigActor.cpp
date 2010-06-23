@@ -56,6 +56,7 @@ namespace SimCore
       static const dtUtil::RefString ELEMENT_COLOR2("Color2");
       static const dtUtil::RefString ELEMENT_COLOR3("Color3");
       static const dtUtil::RefString ELEMENT_COLOR4("Color4");
+      static const dtUtil::RefString ELEMENT_PATTERN_SCALE("PatternScale");
       static const dtUtil::RefString ELEMENT_PATTERN("PatternTexture");
       static const dtUtil::RefString ELEMENT_CONCEAL_MESH("ConcealMesh");
       static const dtUtil::RefString ELEMENT_DEFAULT_PATTERN("DefaultPatternTexture");
@@ -113,6 +114,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       CamoParams::CamoParams()
          : mId(0)
+         , mPatternScale(1.0f)
       {
       }
 
@@ -124,6 +126,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       IMPLEMENT_PROPERTY(CamoParams, std::string, Name);
       IMPLEMENT_PROPERTY(CamoParams, CamoParams::CamoId, Id);
+      IMPLEMENT_PROPERTY(CamoParams, float, PatternScale);
       IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color1);
       IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color2);
       IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color3);
@@ -506,6 +509,11 @@ namespace SimCore
             {
                mCurCamoParams->SetConcealMesh(
                   dtUtil::XMLStringConverter(chars).ToString());
+            }
+            else if(element == ELEMENT_PATTERN_SCALE)
+            {
+               float value = dtUtil::ToFloat(dtUtil::XMLStringConverter(chars).ToString());
+               mCurCamoParams->SetPatternScale(value);
             }
          }
       }

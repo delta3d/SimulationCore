@@ -153,12 +153,12 @@ namespace SimCore
             mActComp->SetOverlayFrameScale(56.78f);
             CPPUNIT_ASSERT(constComp.GetOverlayFrameScale() == 56.78f);
 
-            // --- Model Dims
+            // --- Pattern Scaling
             osg::Vec4 temp(1.0f, 1.0f, 1.0f, 1.0f);
-            CPPUNIT_ASSERT(constComp.GetModelDimensions() == temp);
+            CPPUNIT_ASSERT(constComp.GetPatternScale() == temp);
             temp.set(1.0f, 2.0f, 3.0f, 4.0f);
-            mActComp->SetModelDimensions(temp);
-            CPPUNIT_ASSERT(constComp.GetModelDimensions() == temp);
+            mActComp->SetPatternScale(temp);
+            CPPUNIT_ASSERT(constComp.GetPatternScale() == temp);
 
             CPPUNIT_ASSERT(constComp.GetProjectionDirection() != ZERO_V4);
             CPPUNIT_ASSERT(constComp.GetProjectionDirection() != temp);
@@ -220,7 +220,7 @@ namespace SimCore
             actComp->SetPaintColor2(tmpV4);
             actComp->SetPaintColor3(tmpV4);
             actComp->SetPaintColor4(tmpV4);
-            actComp->SetModelDimensions(tmpV4);
+            actComp->SetPatternScale(tmpV4);
             actComp->SetProjectionDirection(tmpV4);
             actComp->SetReplacementDiffuseMaskTexture(tmpFile);
             actComp->SetPatternTexture(tmpFile);
@@ -248,7 +248,7 @@ namespace SimCore
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_2) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_3) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PAINT_COLOR_4) != NULL);
-         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_MODEL_DIMENSIONS) != NULL);
+         CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_SCALE) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PROJECTION_DIRECTION) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_REPLACEMENT_DIFFUSE_MASK_TEXTURE) != NULL);
          CPPUNIT_ASSERT(stateSet.getUniform(ClassName::UNIFORM_PATTERN_TEXTURE) != NULL);

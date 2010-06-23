@@ -1,5 +1,5 @@
 uniform vec4 ProjectionDir;
-uniform vec4 ModelDims;
+uniform vec4 PatternScale;
 
 varying vec2 vBodyPaintUV;
 
@@ -19,7 +19,8 @@ vec2 getBodyPaintUV(vec3 modelVert, vec4 projectionDirection)
    up.x,up.y,up.z,0.0,
    0.0,0.0,0.0,1.0);
    
-   return (vec4(modelVert,1.0) * rot).xz / ModelDims.xy;
+   vec2 scaleFactor = max(abs(PatternScale.ww * PatternScale.xy), vec2(0.01,0.01)); 
+   return (vec4(modelVert,1.0) * rot).xz / scaleFactor;
 }
 
 vec2 getBodyPaintUV(vec4 projectionDirection)

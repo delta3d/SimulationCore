@@ -130,6 +130,10 @@ namespace SimCore
             params->SetId(12);
             CPPUNIT_ASSERT(constParams.GetId() == 12);
 
+            CPPUNIT_ASSERT(constParams.GetPatternScale() == 1.0f);
+            params->SetPatternScale(5.0f);
+            CPPUNIT_ASSERT(constParams.GetPatternScale() == 5.0f);
+
             const osg::Vec4 ZERO_V4;
             osg::Vec4 testColor(12.34f, -56.78f, 9.0f, -10.11f);
             CPPUNIT_ASSERT(constParams.GetColor1() == ZERO_V4);
@@ -347,6 +351,13 @@ namespace SimCore
             CPPUNIT_ASSERT(IsCamoInList(*camo3, camoList));
             CPPUNIT_ASSERT(IsCamoInList(*camo4, camoList));
             CPPUNIT_ASSERT(IsCamoInList(*camo5, camoList));
+            // --- Test all camos for a default scale
+            float defaultScale = 1.0f;
+            CPPUNIT_ASSERT(camo1->GetPatternScale() == 10.0f); // The test camo with a non-default value.
+            CPPUNIT_ASSERT(camo2->GetPatternScale() == defaultScale);
+            CPPUNIT_ASSERT(camo3->GetPatternScale() == defaultScale);
+            CPPUNIT_ASSERT(camo4->GetPatternScale() == defaultScale);
+            CPPUNIT_ASSERT(camo5->GetPatternScale() == defaultScale);
 
             // Test the colors set on the "Test" camo.
             osg::Vec4 color1(1.0f, 0.0f, 0.0f, 0.0f);
@@ -419,6 +430,7 @@ namespace SimCore
             CPPUNIT_ASSERT(actComp->GetPaintColor2() == camo2->GetColor2());
             CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo2->GetColor3());
             CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo2->GetColor4());
+            CPPUNIT_ASSERT(actComp->GetPatternScale().w() == camo2->GetPatternScale());
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo2->GetPatternTexture());
             CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo2->GetConcealMesh());
             CPPUNIT_ASSERT(actComp->GetConcealedState());
@@ -433,6 +445,7 @@ namespace SimCore
             CPPUNIT_ASSERT(actComp->GetPaintColor2() == camo1->GetColor2());
             CPPUNIT_ASSERT(actComp->GetPaintColor3() == camo1->GetColor3());
             CPPUNIT_ASSERT(actComp->GetPaintColor4() == camo1->GetColor4());
+            CPPUNIT_ASSERT(actComp->GetPatternScale().w() == camo1->GetPatternScale());
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo1->GetPatternTexture());
             CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo1->GetConcealMesh());
             CPPUNIT_ASSERT(actComp->GetConcealMesh().IsEmpty());
