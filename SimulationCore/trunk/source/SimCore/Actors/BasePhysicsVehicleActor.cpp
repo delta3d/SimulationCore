@@ -207,7 +207,7 @@ namespace SimCore
 
          if(physicsObject == NULL)
          {
-            LOG_ERROR("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
+            LOG_WARNING("BAD Physics OBJECT ON VEHICLE! May occur naturally if the application is shutting down.");
             return;
          }
          bool isDynamic = true;
