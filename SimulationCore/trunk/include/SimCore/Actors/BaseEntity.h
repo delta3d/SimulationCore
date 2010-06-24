@@ -218,8 +218,12 @@ namespace SimCore
             /// Set the environment the entity is specialized in navigating.
             DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
 
+            #undef  PROPERTY_MODIFIERS_SETTER
+            #define PROPERTY_MODIFIERS_SETTER virtual
             /// Sets the force for which this entity is fighting.
             DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
+            #undef  PROPERTY_MODIFIERS_SETTER
+            #define PROPERTY_MODIFIERS_SETTER
 
             /// Sets the service of this entity
             DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
@@ -292,7 +296,7 @@ namespace SimCore
             /**
              * @return The default scale of the entity.  The actual scale is the default scale x scale magnification
              */
-            osg::Vec3 GetDefaultScale() const { return mDefaultScale; }
+            const osg::Vec3& GetDefaultScale() const { return mDefaultScale; }
 
             /**
              * Sets the default scale of the entity.  The actual scale is the default scale x scale magnification
@@ -302,7 +306,7 @@ namespace SimCore
             /**
              * @return The default scale of the entity.  The actual scale is the default scale x scale magnification
              */
-            osg::Vec3 GetScaleMagnification() const { return mScaleMagnification; }
+            const osg::Vec3& GetScaleMagnification() const { return mScaleMagnification; }
 
             ///@return the model scale result of the default scale and magnification.
             osg::Vec3 GetModelScale() const;
@@ -371,6 +375,21 @@ namespace SimCore
 
             /// Accessor for the dr publishing component. Allows setting properties, changing behaviors, forcing updates, unit tests, etc. 
             DRPublishingActComp* GetDRPublishingActComp();
+
+            /**
+             * Get the bounding sphere information for this Entity.
+             * Overridden to exclude particles systems and other effects.
+             * @param center : pointer to fill out with the sphere's center position
+             * @param radius : float pointer to fill out with the sphere's radius
+             */
+            virtual void GetBoundingSphere(osg::Vec3& center, float& radius);
+
+            /**
+             * Get the bounding box information for this Drawable.
+             * Overridden to exclude particles systems and other effects.
+             * @return BoundingBox that encloses the Drawable.
+             */
+            virtual osg::BoundingBox GetBoundingBox();
 
          protected:
             virtual ~BaseEntity();

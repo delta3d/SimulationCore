@@ -118,7 +118,6 @@ namespace SimCore
             mPhysicsHelper->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
             osg::Matrix bodyOffset;
-            bodyOffset.makeIdentity();
             bodyOffset.setTrans(-mPhysicsHelper->GetMainPhysicsObject()->GetOriginOffset());
             dtCore::Transform offsetXform;
             offsetXform.Set(bodyOffset);
@@ -218,6 +217,13 @@ namespace SimCore
 
             physObj->SetTransform(xform);
             mPhysicsHelper->AddPhysicsObject(*physObj);
+
+            osg::Matrix bodyOffset;
+            bodyOffset.setTrans(-mPhysicsHelper->GetMainPhysicsObject()->GetOriginOffset());
+            dtCore::Transform offsetXform;
+            offsetXform.Set(bodyOffset);
+
+            mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
             physObj->CreateFromProperties(&GetScaleMatrixTransform());
 

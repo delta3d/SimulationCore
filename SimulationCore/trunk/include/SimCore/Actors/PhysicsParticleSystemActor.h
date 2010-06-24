@@ -57,7 +57,7 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
 
    public:
       /// constructor for NxAgeiaBaseActor
-      PhysicsParticleSystemActor(dtGame::GameActorProxy &proxy);
+      PhysicsParticleSystemActor(dtGame::GameActorProxy& proxy);
 
       /**
       * This method is an invokable called when an object is local and
