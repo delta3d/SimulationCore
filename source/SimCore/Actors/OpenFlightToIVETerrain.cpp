@@ -89,7 +89,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////
-      void OpenFlightToIVETerrainActor::LoadFile(const std::string &fileName)
+      void OpenFlightToIVETerrainActor::LoadFile(const std::string& fileName)
       {
          //Don't actually load the file unless
          if (GetSceneParent() != NULL)

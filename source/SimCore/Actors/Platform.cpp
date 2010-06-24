@@ -334,12 +334,13 @@ namespace SimCore
 
             mEngineSmokeSystem->SetTransform(xform, dtCore::Transformable::REL_CS);
             mEngineSmokeSystem->SetEnabled(enable);
+            AddChild(mEngineSmokeSystem);
          }
          else
          {
             if (mEngineSmokeSystem.valid())
             {
-               RemoveChild(mEngineSmokeSystem.get());
+               RemoveChild(mEngineSmokeSystem);
                mEngineSmokeSystem = NULL;
             }
          }

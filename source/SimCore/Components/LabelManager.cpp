@@ -609,25 +609,26 @@ namespace SimCore
          // Get the current entity actor.
          proxy.GetActor(actor);
 
-         osg::Node* n = actor->GetOSGNode();
+         osg::Vec3 center;
+         float radius = 0.0f;
+         actor->GetBoundingSphere(center, radius);
 
-         //if we have a valid bounding sphere, use the center point.
-         if (n->getBound()._radius > 0.0)
+         // if we have a valid bounding sphere, use the center point.
+         if (radius > 0.0)
          {
-            worldPos = n->getBound()._center;
+            worldPos = center;
          }
          else
          {
             dtCore::Transform xform;
             actor->GetTransform(xform);
-            osg::Vec3 worldPos;
             xform.GetTranslation(worldPos);
          }
 
-         //Determine if entity is in view.
+         // Determine if entity is in view.
          if (!deltaCamera.ConvertWorldCoordinateToScreenCoordinate(worldPos, screenPos))
          {
-            //Entity not in view, avoid setting a label for it.
+            // Entity not in view, avoid setting a label for it.
             return;
          }
 
@@ -679,7 +680,7 @@ namespace SimCore
 
          AssignLabelColor(proxy, *label);
 
-         osg::Vec2 pos = CalculateLabelScreenPosition(*actor, deltaCamera, screenPos, labelSize);
+         osg::Vec2 pos = CalculateLabelScreenPosition(radius, center, deltaCamera, screenPos, labelSize);
 
          //x / 2 is to center it. subtracting the y size puts it at the top.
          label->SetPosition(pos.x(), pos.y());
@@ -758,20 +759,17 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      const osg::Vec2 LabelManager::CalculateLabelScreenPosition(dtCore::Transformable& transformable,
+      const osg::Vec2 LabelManager::CalculateLabelScreenPosition(float boundRadius, const osg::Vec3& boundCenter,
                dtCore::Camera& deltaCam, const osg::Vec3& screenPos, const osg::Vec2& labelSize)
       {
-         osg::Node* n = transformable.GetOSGNode();
-         osg::Vec3 boundingSphereCenter = n->getBound()._center;
-         double radius = n->getBound()._radius;
          dtCore::Transform xform;
          deltaCam.GetTransform(xform);
          osg::Vec3 camUpVector;
          xform.GetRow(2, camUpVector);
 
-         osg::Vec3 radiusScaledUpVector = camUpVector * radius;
+         osg::Vec3 radiusScaledUpVector = camUpVector * boundRadius;
 
-         osg::Vec3 viewSphereTopWorld = radiusScaledUpVector + boundingSphereCenter;
+         osg::Vec3 viewSphereTopWorld = radiusScaledUpVector + boundCenter;
 
          osg::Vec2 result;
 
@@ -784,11 +782,6 @@ namespace SimCore
          {
             result.set(screenPos.x(), screenPos.y());
          }
-
-         transformable.GetTransform(xform);
-         osg::Vec3 tempTrans;
-         xform.GetTranslation(tempTrans);
-
 
          //CEGUI does -0.5 to 0.5 for center alignment.
          result.x() -= 0.5;

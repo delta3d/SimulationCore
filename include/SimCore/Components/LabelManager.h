@@ -204,7 +204,7 @@ namespace SimCore
 
             const std::string AssignLabelColor(const dtDAL::ActorProxy& actor, HUDLabel& label);
 
-            const osg::Vec2 CalculateLabelScreenPosition(dtCore::Transformable& transformable,
+            const osg::Vec2 CalculateLabelScreenPosition(float boundRadius, const osg::Vec3& boundCenter,
                      dtCore::Camera& deltaCam, const osg::Vec3& screenPos, const osg::Vec2& labelSize);
 
             static void CalculateOnScreenBoundingBox(const osg::BoundingBox& bbox, const dtCore::Camera& cam,
