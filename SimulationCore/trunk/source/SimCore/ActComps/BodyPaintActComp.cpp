@@ -255,7 +255,11 @@ namespace SimCore
 
                dtCore::RefPtr<osg::Texture2D> tex = new osg::Texture2D();
                std::string textureFile = dtDAL::Project::GetInstance().GetResourcePath(value);
-               dtCore::RefPtr<osg::Image> newImage = osgDB::readImageFile(textureFile);
+               
+               dtCore::RefPtr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
+               options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
+
+               dtCore::RefPtr<osg::Image> newImage = osgDB::readImageFile(textureFile, options.get());
                if(newImage == NULL)
                {
                   LOG_ERROR("BodyPaintActComp failed to load texture file [" + textureFile + "].");
