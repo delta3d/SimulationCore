@@ -270,7 +270,7 @@ namespace SimCore
                   tex->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
                   tex->setUnRefImageDataAfterApply(true);
                   ss->addUniform(uniform);
-                  ss->setTextureAttributeAndModes(texUnit, tex, osg::StateAttribute::OVERRIDE);
+                  ss->setTextureAttributeAndModes(texUnit, tex, osg::StateAttribute::ON);
                }
             }
             catch(...)
