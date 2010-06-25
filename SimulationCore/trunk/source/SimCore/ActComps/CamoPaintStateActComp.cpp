@@ -157,52 +157,56 @@ namespace SimCore
             osg::Vec4 scale(GetPatternScale());
             scale.w() = camo->GetPatternScale();
             SetPatternScale(scale);
-
-            SetConcealedState( ! camo->GetConcealMesh().IsEmpty());
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
       void CamoPaintStateActComp::UpdateConcealMeshDimsToFit()
       {
-         // Determine some node to get the dimensions from.
-         // If the hider node is not specified, get the parent.
-         osg::Node* node = NULL;
-         if(mHiderNode.valid())
+         if(mConcealMeshNode.valid())
          {
-            node = mHiderNode.get();
-         }
-         else if(mParentNode.valid())
-         {
-            node = mParentNode.get();
-         }
-         else // Get the root node...it may or may not be the immediate parent node.
-         {
-            node = GetOwnerNode();
-         }
+            // Determine some node to get the dimensions from.
+            // If the hider node is not specified, get the parent.
+            osg::Node* node = NULL;
+            if(mHiderNode.valid())
+            {
+               node = mHiderNode.get();
+            }
+            else if(mParentNode.valid())
+            {
+               node = mParentNode.get();
+            }
+            else // Get the root node...it may or may not be the immediate parent node.
+            {
+               node = GetOwnerNode();
+            }
 
-         // Set the dimensions of the conceal mesh.
-         if(node != NULL)
-         {
-            dtUtil::BoundingBoxVisitor visitor;
-            visitor.apply(*node);
+            // Set the dimensions of the conceal mesh.
+            if(node != NULL)
+            {
+               dtUtil::BoundingBoxVisitor visitor;
+               visitor.apply(*node);
 
-            const osg::BoundingBox& bb = visitor.mBoundingBox;
-            osg::Vec4 dims(
-               bb.xMax() - bb.xMin(),
-               bb.yMax() - bb.yMin(),
-               bb.zMax() - bb.zMin(), 1.0f);
-            SetConcealMeshDims(dims);
+               const osg::BoundingBox& bb = visitor.mBoundingBox;
+               if(bb.valid())
+               {
+                  osg::Vec4 dims(
+                     bb.xMax() - bb.xMin(),
+                     bb.yMax() - bb.yMin(),
+                     bb.zMax() - bb.zMin(), 1.0f);
+                  SetConcealMeshDims(dims);
 
-            // Offset the mesh to be centered over the 
-            osg::Matrix mtx = mOffsetNode->getMatrix();
-            osg::Vec3 offset(bb.center());
-            offset.z() = 0.0f;
-            mtx = osg::Matrix::identity();
-            osg::Vec3 scaleVec(mConcealMeshDims.x(), mConcealMeshDims.y(), mConcealMeshDims.z());
-            mtx.makeScale(scaleVec);
-            mtx.setTrans(offset);
-            mOffsetNode->setMatrix(mtx);
+                  // Offset the mesh to be centered over the 
+                  osg::Matrix mtx = mOffsetNode->getMatrix();
+                  osg::Vec3 offset(bb.center());
+                  offset.z() = 0.0f;
+                  mtx = osg::Matrix::identity();
+                  osg::Vec3 scaleVec(mConcealMeshDims.x(), mConcealMeshDims.y(), mConcealMeshDims.z());
+                  mtx.makeScale(scaleVec);
+                  mtx.setTrans(offset);
+                  mOffsetNode->setMatrix(mtx);
+               }
+            }
          }
       }
 

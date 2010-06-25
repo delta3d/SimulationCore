@@ -433,9 +433,9 @@ namespace SimCore
             CPPUNIT_ASSERT(actComp->GetPatternScale().w() == camo2->GetPatternScale());
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo2->GetPatternTexture());
             CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo2->GetConcealMesh());
-            CPPUNIT_ASSERT(actComp->GetConcealedState());
-            actComp->SetConcealedState(false);
             CPPUNIT_ASSERT( ! actComp->GetConcealedState());
+            actComp->SetConcealedState(true);
+            CPPUNIT_ASSERT(actComp->GetConcealedState());
             // --- Ensure the file reference does not change
             CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo2->GetConcealMesh());
 
@@ -449,9 +449,11 @@ namespace SimCore
             CPPUNIT_ASSERT(actComp->GetPatternTexture() == camo1->GetPatternTexture());
             CPPUNIT_ASSERT(actComp->GetConcealMesh() == camo1->GetConcealMesh());
             CPPUNIT_ASSERT(actComp->GetConcealMesh().IsEmpty());
-            CPPUNIT_ASSERT( ! actComp->GetConcealedState());
-            actComp->SetConcealedState(true);
+            // --- Ensure that the conceal state remains unchanged
+            //     even though the mesh was nullified.
             CPPUNIT_ASSERT(actComp->GetConcealedState());
+            actComp->SetConcealedState(false);
+            CPPUNIT_ASSERT( ! actComp->GetConcealedState());
             // --- Ensure the file reference does not change
             CPPUNIT_ASSERT(actComp->GetConcealMesh().IsEmpty());
          }
