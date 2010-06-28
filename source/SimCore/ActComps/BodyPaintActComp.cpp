@@ -277,9 +277,16 @@ namespace SimCore
                   ss->setTextureAttributeAndModes(texUnit, tex, osg::StateAttribute::ON);
                }
             }
-            catch(...)
+            catch (const dtUtil::Exception& ex)
             {
                // Do not crash. Just do not make the texture.
+               LOGN_ERROR("BodyPaintActComp.cpp", ex.ToString());
+            }
+            catch (...)
+            {
+               // Do not crash. Just do not make the texture.
+               LOGN_ERROR("BodyPaintActComp.cpp", "Unknown exception trying to assign the stateset for texture \""
+                        + value.GetResourceIdentifier() + "\" for body paint.");
             }
          }
       }

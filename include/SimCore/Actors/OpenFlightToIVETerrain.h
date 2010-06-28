@@ -24,28 +24,24 @@
 #define LM_OPENFLIGHT_TERRAIN_ACTOR
 
 #include <SimCore/Export.h>
-#include <SimCore/Actors/BaseTerrainActor.h>
+#include <SimCore/Actors/IGActor.h>
 #include <osg/Group>
 
 namespace SimCore
 {
    namespace Actors
    {
-      class SIMCORE_EXPORT OpenFlightToIVETerrainActor : public BaseTerrainActor
+      class SIMCORE_EXPORT OpenFlightToIVETerrainActor : public IGActor
       {
       public:
 
          /// Constructor
-         OpenFlightToIVETerrainActor(dtGame::GameActorProxy &proxy);
+         OpenFlightToIVETerrainActor(dtGame::GameActorProxy& proxy);
 
          /**
-         * Loads a mesh file which contains terrain.
-         * @param fileName The file of the terrain mesh to load.
-         * @note Although terrain meshes are the same "type" of file as static meshes
-         *  and other geometry, mesh terrains have a special resource of type
-         *  DataType::TERRAIN.
+         * Loads a mesh file which contains terrain using the configured base name and directory.
          */
-         virtual void LoadFile(const std::string &fileName);
+         virtual void LoadTerrain();
 
          virtual void AddedToScene(dtCore::Scene* scene);
 
@@ -58,13 +54,13 @@ namespace SimCore
          float GetPagingDelta() const {return mPaging_Delta;}
          float GetPagingRadius() const {return mPaging_Radius;}
          float GetPagingRange() const {return mPaging_Range;}
-         std::string GetPagingBaseName() const {return mPaging_BaseName;}
+         const std::string& GetPagingBaseName() const {return mPaging_BaseName;}
          float GetPagingExpiringDelay() const {return mPaging_ExpiringDelay;}
          float GetPagingFPSTarget() const {return mPaging_Frame_Rate_Targeted;}
          bool  GetPagingPrecompile() const {return mPaging_Precompile;}
          int   GetMaxObjectsToCompile() const {return mMaximumObjectsToCompile;}
          float GetZOffsetforTerrain() const {return mZOffsetForTerrain;}
-         std::string GetTerrainPath() const {return mTerrainPath;}
+         const std::string& GetTerrainPath() const {return mTerrainPath;}
 
          void SetPagingMinX(float value){mPaging_Min_X = value;}
          void SetPagingMinY(float value){mPaging_Min_Y = value;}
@@ -73,13 +69,13 @@ namespace SimCore
          void SetPagingDelta(float value){mPaging_Delta = value;}
          void SetPagingRadius(float value){mPaging_Radius = value;}
          void SetPagingRange(float value){mPaging_Range = value;}
-         void SetPagingBaseName(const std::string& value) {mPaging_BaseName = value;}
+         void SetTerrainPath(const std::string& value);
          void SetPagingExpiringDelay(float value){mPaging_ExpiringDelay = value;}
          void SetPagingFPSTarget(float value){mPaging_Frame_Rate_Targeted = value;}
          void SetPagingPrecompile(bool value) {mPaging_Precompile = value;}
          void SetMaxObjectsToCompile(int value){mMaximumObjectsToCompile = value;}
          void SetZOffsetforTerrain(float value){mZOffsetForTerrain = value;}
-         void SetTerrainPath(const std::string& value) {mTerrainPath = value;}
+         void SetPagingBaseName(const std::string& value);
          //////////////////////////////////////////////////////////////////
 
       protected:
@@ -105,12 +101,14 @@ namespace SimCore
          int         mMaximumObjectsToCompile;
          float       mZOffsetForTerrain;
          std::string mTerrainPath;
+         bool        mNeedToLoad;
          //////////////////////////////////////
       };
 
-      class SIMCORE_EXPORT OpenFlightToIVETerrainActorProxy : public BaseTerrainActorProxy
+      class SIMCORE_EXPORT OpenFlightToIVETerrainActorProxy : public dtGame::GameActorProxy
       {
          public:
+            typedef dtGame::GameActorProxy BaseClass;
 
             /**
             * Constructor
@@ -123,7 +121,7 @@ namespace SimCore
             virtual void BuildPropertyMap();
 
             /// Creates the actor we are encapsulating
-            virtual void CreateActor() { SetActor(*new OpenFlightToIVETerrainActor(*this)); }
+            virtual void CreateActor();
 
          protected:
 
