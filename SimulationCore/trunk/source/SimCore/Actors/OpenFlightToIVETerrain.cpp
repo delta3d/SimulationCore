@@ -22,9 +22,15 @@
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Actors/OpenFlightToIVETerrain.h>
-#include <dtDAL/enginepropertytypes.h>
+
+#include <dtUtil/fileutils.h>
+
+#include <dtDAL/floatactorproperty.h>
+#include <dtDAL/stringactorproperty.h>
+#include <dtDAL/intactorproperty.h>
+#include <dtDAL/booleanactorproperty.h>
 #include <dtDAL/actorproxyicon.h>
-#include <dtDAL/functor.h>
+#include <dtDAL/datatype.h>
 
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
@@ -46,21 +52,23 @@ namespace SimCore
    namespace Actors
    {
       ///////////////////////////////////////////////////////////////////////////////
-      OpenFlightToIVETerrainActor::OpenFlightToIVETerrainActor(dtGame::GameActorProxy &proxy) : BaseTerrainActor(proxy)
-         , mPaging_Min_X(0.0f)      
-         , mPaging_Min_Y(0.0f)      
-         , mPaging_Max_X(85.0f)     
-         , mPaging_Max_Y(33.0f)     
-         , mPaging_Delta(1000.0f)   
-         , mPaging_Radius(4000.0f) // Changing these two values does NOT show more terrain
-         , mPaging_Range(4000.0f) // Changing these two values does NOT show more terrain
-         , mPaging_BaseName("flight%i_%i.ive")
-         , mPaging_ExpiringDelay(30.0f)
-         , mPaging_Frame_Rate_Targeted(30.0f)
-         , mPaging_Precompile(true)
-         , mMaximumObjectsToCompile(25) // used to be 1
-         , mZOffsetForTerrain(100.0f)
-         , mTerrainPath("Terrains/BaghdadFallujah/")
+      OpenFlightToIVETerrainActor::OpenFlightToIVETerrainActor(dtGame::GameActorProxy& proxy)
+      : IGActor(proxy)
+      , mPaging_Min_X(0.0f)
+      , mPaging_Min_Y(0.0f)
+      , mPaging_Max_X(85.0f)
+      , mPaging_Max_Y(33.0f)
+      , mPaging_Delta(1000.0f)
+      , mPaging_Radius(4000.0f) // Changing these two values does NOT show more terrain
+      , mPaging_Range(4000.0f) // Changing these two values does NOT show more terrain
+      , mPaging_BaseName("flight%i_%i.ive")
+      , mPaging_ExpiringDelay(30.0f)
+      , mPaging_Frame_Rate_Targeted(30.0f)
+      , mPaging_Precompile(true)
+      , mMaximumObjectsToCompile(25) // used to be 1
+      , mZOffsetForTerrain(100.0f)
+      , mTerrainPath("")
+      , mNeedToLoad(true)
       {
       }
 
@@ -82,14 +90,14 @@ namespace SimCore
             //work.
             if (mNeedToLoad)
             {
-               LoadFile(mLoadedFile);
+               LoadTerrain();
                mNeedToLoad = false;
             }
          }
       }
 
       ///////////////////////////////////////////////////////////////////////////////
-      void OpenFlightToIVETerrainActor::LoadFile(const std::string& fileName)
+      void OpenFlightToIVETerrainActor::LoadTerrain()
       {
          //Don't actually load the file unless
          if (GetSceneParent() != NULL)
@@ -100,11 +108,26 @@ namespace SimCore
                GetMatrixNode()->removeChild(0, GetMatrixNode()->getNumChildren());
             }
 
-            if(!mTerrainPath.empty())
+            if (!mTerrainPath.empty() && !mPaging_BaseName.empty())
             {
                /////////////////////////////////////////////////////////////////////
                // do loading here
-               const std::string& currentTerrainPath = mTerrainPath;
+               std::string currentTerrainPath = mTerrainPath;
+
+               // Make sure it has correct system slashes.
+               for (unsigned i = 0; i < currentTerrainPath.size(); ++i)
+               {
+                  if (currentTerrainPath[i] == '/' || currentTerrainPath[i] == '\\')
+                  {
+                     currentTerrainPath[i] = dtUtil::FileUtils::PATH_SEPARATOR;
+                  }
+               }
+
+               // Be sure there is a trailing slash.
+               if (*currentTerrainPath.rbegin() != '/' && *currentTerrainPath.rbegin() != '\\')
+               {
+                  currentTerrainPath += dtUtil::FileUtils::PATH_SEPARATOR;
+               }
 
                osgDB::ReaderWriter::Options* options = new osgDB::ReaderWriter::Options;
                options->setObjectCacheHint(osgDB::ReaderWriter::Options::CACHE_ALL);
@@ -116,9 +139,9 @@ namespace SimCore
                int pagingMaxYInt = int(mPaging_Max_Y);
                mGroupNodeForTerrain = new osg::Group;
 
-               for(tile_x = int(mPaging_Min_X);tile_x <= pagingMaxXInt;tile_x++)
+               for (tile_x = int(mPaging_Min_X);tile_x <= pagingMaxXInt;tile_x++)
                {
-                  for(tile_y = int(mPaging_Min_Y);tile_y <= pagingMaxYInt;tile_y++)
+                  for (tile_y = int(mPaging_Min_Y);tile_y <= pagingMaxYInt;tile_y++)
                   {
                      char name[512];
                      sprintf(name,mPaging_BaseName.c_str(),tile_x,tile_y);
@@ -130,8 +153,8 @@ namespace SimCore
                                                 (tile_y * mPaging_Delta + mPaging_Delta/2.0),
                                                 mZOffsetForTerrain)); 
 
-                     pPage->setFileName(0,currentTerrainPath + name);
-                     pPage->setRange(0,0.0,mPaging_Range);
+                     pPage->setFileName(0, currentTerrainPath + name);
+                     pPage->setRange(0, 0.0, mPaging_Range);
                      pPage->setRadius(mPaging_Radius);
 
                      mGroupNodeForTerrain->addChild(pPage);
@@ -141,7 +164,9 @@ namespace SimCore
             }
 
             if (!GetShaderGroup().empty())
+            {
                SetShaderGroup(GetShaderGroup());
+            }
 
             GetMatrixNode()->addChild(mGroupNodeForTerrain.get());
          }
@@ -149,9 +174,36 @@ namespace SimCore
          {
             mNeedToLoad = true;
          }
-         mLoadedFile = fileName;
       }
 
+      ///////////////////////////////////////////////////////////////////////////////
+      void OpenFlightToIVETerrainActor::SetTerrainPath(const std::string& value)
+      {
+         if (value == mTerrainPath)
+         {
+            return;
+         }
+
+         mTerrainPath = value;
+
+         LoadTerrain();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////
+      void OpenFlightToIVETerrainActor::SetPagingBaseName(const std::string& value)
+      {
+         if (value == mPaging_BaseName)
+         {
+            return;
+         }
+
+         mPaging_BaseName = value;
+
+         LoadTerrain();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////////////////
       ///////////////////////////////////////////////////////////////////////////////
       OpenFlightToIVETerrainActorProxy::OpenFlightToIVETerrainActorProxy()
       {
@@ -162,77 +214,84 @@ namespace SimCore
       void OpenFlightToIVETerrainActorProxy::BuildPropertyMap()
       {
          const std::string TERRAIN_GROUP_NAME = "LM_Terrain_Properties";
-         BaseTerrainActorProxy::BuildPropertyMap();
-         OpenFlightToIVETerrainActor &ta = static_cast<OpenFlightToIVETerrainActor&>(GetGameActor());
+         BaseClass::BuildPropertyMap();
+         OpenFlightToIVETerrainActor* ta = NULL;
+         GetActor(ta);
 
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Min_X", "mPaging_Min_X",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingMinX),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingMinX),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinX),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinX),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Min_Y", "mPaging_Min_Y",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingMinY),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingMinY),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMinY),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMinY),
             "", TERRAIN_GROUP_NAME));
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Max_X", "mPaging_Max_X",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingMaxX),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingMaxX),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxX),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxX),
             "", TERRAIN_GROUP_NAME));
          
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Max_Y", "mPaging_Max_Y",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingMaxY),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingMaxY),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingMaxY),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingMaxY),
             "", TERRAIN_GROUP_NAME));
         
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Delta", "mPaging_Delta",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingDelta),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingDelta),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingDelta),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingDelta),
             "", TERRAIN_GROUP_NAME));
          
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Radius", "mPaging_Radius",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingRadius),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingRadius),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRadius),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRadius),
             "", TERRAIN_GROUP_NAME));
          
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Range", "mPaging_Range",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingRange),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingRange),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingRange),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingRange),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::StringActorProperty("mPaging_BaseName", "mPaging_BaseName",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingBaseName),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingBaseName),
+            dtDAL::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingBaseName),
+            dtDAL::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingBaseName),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::FloatActorProperty("mPaging_ExpiringDelay", "mPaging_ExpiringDelay",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingExpiringDelay),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingExpiringDelay),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingExpiringDelay),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingExpiringDelay),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::FloatActorProperty("mPaging_Frame_Rate_Targeted", "mPaging_Frame_Rate_Targeted",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingFPSTarget),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingFPSTarget),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingFPSTarget),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingFPSTarget),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::BooleanActorProperty("mPaging_Precompile", "mPaging_Precompile",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetPagingPrecompile),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetPagingPrecompile),
+            dtDAL::BooleanActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetPagingPrecompile),
+            dtDAL::BooleanActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetPagingPrecompile),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::IntActorProperty("mMaximumObjectsToCompile", "mMaximumObjectsToCompile",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetMaxObjectsToCompile),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetMaxObjectsToCompile),
+            dtDAL::IntActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetMaxObjectsToCompile),
+            dtDAL::IntActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetMaxObjectsToCompile),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::FloatActorProperty("mZOffsetForTerrain", "mZOffsetForTerrain",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetZOffsetforTerrain),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetZOffsetforTerrain),
+            dtDAL::FloatActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetZOffsetforTerrain),
+            dtDAL::FloatActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetZOffsetforTerrain),
             "", TERRAIN_GROUP_NAME));
 
          AddProperty(new dtDAL::StringActorProperty("mTerrainPath", "mTerrainPath",
-            dtDAL::MakeFunctor(ta, &OpenFlightToIVETerrainActor::SetTerrainPath),
-            dtDAL::MakeFunctorRet(ta, &OpenFlightToIVETerrainActor::GetTerrainPath),
+            dtDAL::StringActorProperty::SetFuncType(ta, &OpenFlightToIVETerrainActor::SetTerrainPath),
+            dtDAL::StringActorProperty::GetFuncType(ta, &OpenFlightToIVETerrainActor::GetTerrainPath),
             "", TERRAIN_GROUP_NAME));
+      }
+
+      /////////////////////////////////////////////////////////////////////////////////
+      void OpenFlightToIVETerrainActorProxy::CreateActor()
+      {
+         SetActor(*new OpenFlightToIVETerrainActor(*this));
       }
    }
 }
