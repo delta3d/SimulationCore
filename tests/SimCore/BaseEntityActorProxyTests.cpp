@@ -555,13 +555,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
       == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS.GetName());
    CPPUNIT_ASSERT(entity->GetDomain() == BaseEntityActorProxy::DomainEnum::AMPHIBIOUS);
 
-   prop = eap.GetProperty("Dead Reckoning Algorithm");
-   aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
-   CPPUNIT_ASSERT_MESSAGE("The abstract enum property should not be NULL", aep != NULL);
-   CPPUNIT_ASSERT_MESSAGE("The \"Dead Reckoning Algorithm\" should default to NONE", aep->GetEnumValue().GetName() == "None");
-   aep->SetValueFromString("Velocity Only");
-   CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", aep->GetEnumValue().GetName() == "Velocity Only");
-
    prop = eap.GetProperty("Force Affiliation");
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"Force Affiliation\" should not be NULL", aep != NULL);
