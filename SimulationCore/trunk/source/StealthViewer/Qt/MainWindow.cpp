@@ -2447,7 +2447,7 @@ namespace StealthQt
       else
       {
          // Convert to miles per hour and truncate past two decimal places.
-         oss << std::floor((speed / 2.23693629f) * 100.0f) / 100.0f << " MPH";
+         oss << std::floor((speed * 2.23693629f) * 100.0f) / 100.0f << " MPH";
       }
 
       mUi->mEntityInfoSpeed->setText(tr(oss.str().c_str()));
