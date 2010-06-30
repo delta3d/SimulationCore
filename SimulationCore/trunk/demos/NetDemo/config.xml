@@ -47,7 +47,7 @@ C:\Curtiss\Projects\Delta3D\SimulationCore\demos\NetDemo (as appropriate)
       <Property Name="dtPhysics.EnableStepPhysicsInBackground">true</Property>
       <Property Name="dtPhysics.NumProcessingElements">1</Property>
       <Property Name="dtPhysics.SolverIterationCount">10</Property>
-      <Property Name="dtPhysics.TicksPerSecond">120</Property>
+      <Property Name="dtPhysics.TicksPerSecond">60</Property>
       <Property Name="dtPhysics.DebugDrawRange">100.0</Property>
 
 
