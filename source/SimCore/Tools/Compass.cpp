@@ -24,10 +24,10 @@
 #include <ostream>
 #include <SimCore/Tools/Compass.h>
 #include <SimCore/Actors/StealthActor.h>
+#include <dtUtil/datapathutils.h>
 #include <dtUtil/log.h>
 #include <dtCore/camera.h>
 #include <dtCore/deltawin.h>
-#include <dtCore/globals.h>
 #include <dtCore/transform.h>
 
 #include <osg/Node>
@@ -210,7 +210,7 @@ namespace SimCore
          double windowHeight = res.height;
 
          std::string lensaticNode("Textures/hud/compass/lensatic.osg");
-         lensaticNode = dtCore::FindFileInPathList(lensaticNode);
+         lensaticNode = dtUtil::FindFileInPathList(lensaticNode);
 
          osg::ref_ptr<osg::Node> fileNode;
 
@@ -262,8 +262,8 @@ namespace SimCore
          mCompassOverlay->setNodeMask(0);
 
          mLensFocus = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "lensFocus");
-         std::string fragFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.frag");
-         std::string vertFileName = dtCore::FindFileInPathList("Shaders/Base/fisheye.vert");
+         std::string fragFileName = dtUtil::FindFileInPathList("Shaders/Base/fisheye.frag");
+         std::string vertFileName = dtUtil::FindFileInPathList("Shaders/Base/fisheye.vert");
 
          if( fragFileName.length() != 0 && vertFileName.length() != 0)
          {
