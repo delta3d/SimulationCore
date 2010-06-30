@@ -315,6 +315,7 @@ namespace SimCore
                   mPhysicsHelper->TurnOffCollision(currentNode->GetPhysicsObject());
 #else
                   currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
+                  currentNode->GetPhysicsObject()->SetCollisionResponseEnabled(false);
 #endif
                }
                else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
@@ -324,6 +325,7 @@ namespace SimCore
                   mPhysicsHelper->TurnOnCollision(currentNode->GetPhysicsObject());
 #else
                   currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+                  currentNode->GetPhysicsObject()->SetCollisionResponseEnabled(true);
 #endif
                }
                else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD
