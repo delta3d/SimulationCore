@@ -652,8 +652,8 @@ namespace SimCore
 
    #endif
 
-         //AddChild(particle->mObj.get());
-         GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
+         AddChild(particle->mObj.get());
+         //GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
 
          //newActor->userData = mPhysicsHelper.get();
          particle->SetPhysicsObject(newActor);

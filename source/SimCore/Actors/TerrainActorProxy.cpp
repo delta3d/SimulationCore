@@ -361,11 +361,11 @@ namespace SimCore
                   dtCore::RefPtr<dtPhysics::PhysicsObject> newTile = new dtPhysics::PhysicsObject(fileToLoad);
                   newTile->SetTransform(geometryWorld);
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
-                  newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);                  
+                  newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
                   
                   dtPhysics::VertexData vertData;
                   vertData.mIndices = &(data.mFaces->at(0));
-                  vertData.mNumIndices = data.mFaces->size();                  
+                  vertData.mNumIndices = data.mFaces->size();
                   vertData.mVertices = &(data.mVertices->at(0)[0]);
                   vertData.mNumVertices = data.mVertices->size();
 

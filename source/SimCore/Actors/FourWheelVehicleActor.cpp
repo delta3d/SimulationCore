@@ -373,8 +373,8 @@ namespace SimCore
                   if (steeringWheel != NULL)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
-                     /// 240 degree turning.  Sounds good?
-                     HPR[0] =  120.0f * mCurrentSteeringAngleNormalized;
+                     /// 140 degree turning.  Sounds good?
+                     HPR[0] =  70.0f * mCurrentSteeringAngleNormalized;
                      steeringWheel->setCurrentHPR(HPR);
                   }
                }
@@ -428,13 +428,14 @@ namespace SimCore
          GetFourWheelPhysicsHelper()->CalcMPH();
          float curMPH = GetFourWheelPhysicsHelper()->GetMPH();
 
+         float accelFactor = 1.0f/(float(mLastGearChange) * 0.6f + 0.4f);
          float accel = 0.0f;
          float brake = 0.0f;
          if (! IsMobilityDisabled() && GetHasDriver())
          {
             if (keyboard->GetKeyState('w') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Up))
             {
-               accel = 1.0f;
+               accel = accelFactor;
                mStopMode = false;
                if (curMPH > 0.0f)
                {
@@ -444,13 +445,13 @@ namespace SimCore
             }
             else if (keyboard->GetKeyState('s') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Down))
             {
-               accel = -1.0f;
+               accel = -accelFactor;
                mStopMode = false;
                mCruiseMode = false;
             }
             else if (mCruiseMode && mCruiseSpeed > curMPH)
             {
-               accel = 1.0f;
+               accel = accelFactor;
             }
 
             // If you hold the brake and the accelerator at the same time, it will make sure

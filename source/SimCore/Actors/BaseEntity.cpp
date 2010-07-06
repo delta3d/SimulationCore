@@ -539,7 +539,7 @@ namespace SimCore
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
-      void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum &damageState)
+      void BaseEntity::SetDamageState(BaseEntityActorProxy::DamageStateEnum& damageState)
       {
          if (mDamageState == &damageState)
             return;

@@ -462,7 +462,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             osg::Vec3 playerPos;
             xform.GetTranslation(playerPos);
 
-            CPPUNIT_ASSERT_MESSAGE("The player's position should not have changed",
+            CPPUNIT_ASSERT_MESSAGE("The player's position should be the same at the tank.",
                dtUtil::Equivalent(playerPos, tankPos, 0.001f));
          }
          catch(const dtUtil::Exception &e)

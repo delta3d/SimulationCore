@@ -278,6 +278,9 @@ class SIMCORE_EXPORT PhysicsParticleSystemActor: public dtGame::GameActor
 
       void UpdateAlphaAmount();
       void FlagToDelete();
+
+      bool IsFlaggedToDelete();
+
       const std::string& GetName() const;
 
       // Get the physics actor - just a pointer, so there is some danger here
