@@ -116,7 +116,7 @@ namespace SimCore
       //////////////////////////////////////////////////////
       // Actor code
       //////////////////////////////////////////////////////
-      StealthActor::StealthActor(dtGame::GameActorProxy &proxy) :
+      StealthActor::StealthActor(dtGame::GameActorProxy& proxy) :
          Platform(proxy),
          mAttachAsThirdPerson(true),
          mOldDRA(&dtGame::DeadReckoningAlgorithm::NONE),
@@ -156,8 +156,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::DoAttach(dtGame::GameActorProxy& ga, const std::string &attachPointNode, 
-         const osg::Vec3 &attachRotationHPR)
+      void StealthActor::DoAttach(dtGame::GameActorProxy& ga, const std::string& attachPointNode,
+         const osg::Vec3& attachRotationHPR)
       {
          dtCore::UniqueId id = ga.GetId();
 
@@ -242,8 +242,8 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::AttachOrDetachActor(dtGame::GameActorProxy* ga, const dtCore::UniqueId &id, 
-         const std::string &attachPointNode, const osg::Vec3 &attachRotationHPR)
+      void StealthActor::AttachOrDetachActor(dtGame::GameActorProxy* ga, const dtCore::UniqueId& id,
+         const std::string& attachPointNode, const osg::Vec3& attachRotationHPR)
       {
          dtCore::Transform originalTransform;
          GetTransform(originalTransform, dtCore::Transformable::ABS_CS);
@@ -298,14 +298,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::UpdateFromParent(const dtGame::Message &msg)
+      void StealthActor::UpdateFromParent(const dtGame::Message& msg)
       {
-         const dtGame::ActorUpdateMessage &aum = static_cast<const dtGame::ActorUpdateMessage&>(msg);
-         dtGame::GameActorProxy *gap = GetGameActorProxy().GetGameManager()->FindGameActorById(aum.GetAboutActorId());
+         const dtGame::ActorUpdateMessage& aum = static_cast<const dtGame::ActorUpdateMessage&>(msg);
+         dtGame::GameActorProxy* gap = GetGameActorProxy().GetGameManager()->FindGameActorById(aum.GetAboutActorId());
          if(gap == NULL)
             return;
 
-         BaseEntity *entity = dynamic_cast<BaseEntity*>(gap->GetActor());
+         BaseEntity* entity = dynamic_cast<BaseEntity*>(gap->GetActor());
          if(entity == NULL)
             return;
 
@@ -324,7 +324,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////////
-      void StealthActor::Detach(const dtGame::Message &msg)
+      void StealthActor::Detach(const dtGame::Message& msg)
       {
          AttachOrDetachActor(NULL);
       }

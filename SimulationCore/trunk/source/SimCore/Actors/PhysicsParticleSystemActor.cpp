@@ -201,7 +201,7 @@ void PhysicsParticleSystemActor::RemoveParticle(PhysicsParticle& whichOne)
    }
    else if(whichOne.mObj->GetSceneParent() != NULL)
    {
-      GetGameActorProxy().GetGameManager()->GetScene().RemoveDrawable(whichOne.mObj.get());
+      RemoveChild(whichOne.mObj.get());
    }
 }
 
@@ -335,11 +335,24 @@ void PhysicsParticleSystemActor::AddParticle()
    // Set up the physics values for the object
 
 
+   dtPhysics::Real skinWidth = 0.10f;
    newObject->SetMass(mPhysicsHelper->GetMass());
-   newObject->SetExtents(mPhysicsHelper->GetDimensions());
+   dtPhysics::VectorType dimensions = mPhysicsHelper->GetDimensions();
+   for (unsigned i = 0; i < 3; ++i)
+   {
+      dimensions[i] += skinWidth;
+   }
+   newObject->SetExtents(dimensions);
    newObject->SetCollisionGroup(collisionGroupToSendIn);
    newObject->SetPrimitiveType(mPhysicsHelper->GetDefaultPrimitiveType());
+   newObject->SetActivationLinearVelocityThreshold(dtPhysics::Real(1.0));
+   newObject->SetActivationAngularVelocityThreshold(dtPhysics::Real(3.0));
+   newObject->SetActivationTimeThreshold(dtPhysics::Real(1.0));
+   newObject->SetLinearDamping(dtPhysics::Real(0.1));
+   newObject->SetAngularDamping(dtPhysics::Real(0.9));
+   newObject->SetSkinThickness(dtPhysics::Real(0.04));
    newObject->CreateFromProperties(particle->mObj->GetOSGNode());
+   newObject->SetSkinThickness(dtPhysics::Real(0.0));
 
    dtCore::Transform xform;
    xform.SetTranslation(ourTranslation);
@@ -393,7 +406,8 @@ void PhysicsParticleSystemActor::AddParticle()
    //TODO turn off gravity
 #endif
 
-   GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
+   AddChild(particle->mObj.get());
+
    ++mAmountOfParticlesThatHaveSpawnedTotal;
 
    mOurParticleList.push_back(particle);
@@ -581,7 +595,7 @@ void PhysicsParticleSystemActor::PostPhysicsUpdate()
       PhysicsParticle* particle = (iter->get());
       contacts.clear();
 
-      if (!mObjectsStayStaticWhenHit)
+      if (!mObjectsStayStaticWhenHit && !particle->IsFlaggedToDelete())
       {
          dtPhysics::PhysicsWorld::GetInstance().GetContacts(*particle->GetPhysicsObject(), contacts);
       }
@@ -590,6 +604,8 @@ void PhysicsParticleSystemActor::PostPhysicsUpdate()
          //if(&ourSelf == mPhysicsHelper->GetPhysXObject((*iter)->GetName().c_str()))
       {
          particle->FlagToDelete();
+         // Don't need any more collsions reports.
+         particle->GetPhysicsObject()->SetNotifyCollisions(false);
       }
       else if (!particle->ShouldBeRemoved())
       {
@@ -899,6 +915,11 @@ void PhysicsParticle::HitReceived()
 void PhysicsParticle::FlagToDelete()
 {
    mNeedsToBeDeleted = true;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool PhysicsParticle::IsFlaggedToDelete()
+{
+   return mNeedsToBeDeleted;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 const std::string& PhysicsParticle::GetName() const
