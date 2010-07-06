@@ -32,9 +32,8 @@
 #include <dtCore/observerptr.h>
 #include <dtCore/refptr.h>
 #include <dtGame/gameactor.h>
-#include <dtDAL/namedparameter.h>
+#include <dtDAL/namedgroupparameter.h>
 #include <SimCore/Actors/Platform.h>
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -426,11 +425,10 @@ namespace SimCore
                {
                   dtCore::RefPtr<BaseControl> newControl = new baseType;
                   newControl->SetByGroupParameter( *currentParam );
-                  if( ! AddControl( newControl ) )
+                  if ( ! AddControl( newControl ) )
                   {
-                     std::stringstream ss;
-                     ss << "Unable to add control \"" << currentParam->GetName() << "\" to "  << std::endl;
-                     LOG_WARNING( ss.str() );
+                     std::string warningStr = "Unable to add control \"" + currentParam->GetName() + "\" to " + newControl->GetName();
+                     LOG_WARNING( warningStr );
                   }
                }
             }

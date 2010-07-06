@@ -66,7 +66,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // ACTOR CODE
       //////////////////////////////////////////////////////////////////////////
-      LogicOnEventActor ::LogicOnEventActor ( LogicOnEventActorProxy &proxy )
+      LogicOnEventActor ::LogicOnEventActor ( LogicOnEventActorProxy& proxy )
          : BaseClass(proxy)
          , mLogicType(&LogicOnEventActorProxy::LogicTypeEnum::BOOLEAN_AND)
          , mCurrentStatus(false)
