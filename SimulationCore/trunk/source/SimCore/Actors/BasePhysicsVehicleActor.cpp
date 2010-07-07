@@ -77,7 +77,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
          : Platform(proxy)
-         , mTerrainPresentDropHeight(5.0f)
+         , mTerrainPresentDropHeight(0.5f)
          , mHasDriver(false)
          , mHasFoundTerrain(false)
          , mPerformAboveGroundSafetyCheck(false)
