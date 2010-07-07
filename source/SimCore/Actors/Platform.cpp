@@ -463,22 +463,46 @@ namespace SimCore
             float stateNum = 0.0f;
             osg::Node* modelToCalcDims = NULL;
 
-            if(damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
+            if (damageState == PlatformActorProxy::DamageStateEnum::NO_DAMAGE)
             {
                mSwitchNode->setSingleChildOn(0);
                modelToCalcDims = mNonDamagedFileNode.get();
             }
-            else if(damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
+            else if (damageState == PlatformActorProxy::DamageStateEnum::SLIGHT_DAMAGE || damageState == PlatformActorProxy::DamageStateEnum::MODERATE_DAMAGE)
             {
                stateNum = 1.0f;
-               mSwitchNode->setSingleChildOn(1);
-               modelToCalcDims = mDamagedFileNode.get();
+               if (mDamagedFileNode->getUserData() == NULL)
+               {
+                  mSwitchNode->setSingleChildOn(0);
+                  modelToCalcDims = mNonDamagedFileNode.get();
+               }
+               else
+               {
+                  mSwitchNode->setSingleChildOn(1);
+                  modelToCalcDims = mDamagedFileNode.get();
+               }
             }
-            else if(damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
+            else if (damageState == PlatformActorProxy::DamageStateEnum::DESTROYED)
             {
                stateNum = 2.0f;
-               mSwitchNode->setSingleChildOn(2);
-               modelToCalcDims = mDestroyedFileNode.get();
+               if (mDestroyedFileNode->getUserData() == NULL)
+               {
+                  if (mDamagedFileNode->getUserData() == NULL)
+                  {
+                     mSwitchNode->setSingleChildOn(0);
+                     modelToCalcDims = mNonDamagedFileNode.get();
+                  }
+                  else
+                  {
+                     mSwitchNode->setSingleChildOn(1);
+                     modelToCalcDims = mDamagedFileNode.get();
+                  }
+               }
+               else
+               {
+                  mSwitchNode->setSingleChildOn(2);
+                  modelToCalcDims = mDestroyedFileNode.get();
+               }
             }
             else
             {
@@ -492,7 +516,7 @@ namespace SimCore
             using namespace SimCore::ActComps;
             CamoPaintStateActComp* paintActComp
                = dynamic_cast<CamoPaintStateActComp*>(GetComponent(CamoPaintStateActComp::TYPE));
-            if(paintActComp != NULL)
+            if (paintActComp != NULL)
             {
                paintActComp->SetPaintState(stateNum);
             }
@@ -502,7 +526,7 @@ namespace SimCore
             //the other damage states
             //NOTE: this fixes the flaming entity problem because the DeadReckoningComponent will
             //factor in any particle system attached to us with our bounding volume
-            if(modelToCalcDims != NULL)
+            if (modelToCalcDims != NULL)
             {
                GetDeadReckoningHelper().SetModelDimensions(ComputeDimensions(*modelToCalcDims));
             }
