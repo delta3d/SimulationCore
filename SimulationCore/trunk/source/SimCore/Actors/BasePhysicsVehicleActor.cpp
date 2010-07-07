@@ -75,7 +75,7 @@ namespace SimCore
    {
 
       ///////////////////////////////////////////////////////////////////////////////////
-      BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy &proxy)
+      BasePhysicsVehicleActor::BasePhysicsVehicleActor(PlatformActorProxy& proxy)
          : Platform(proxy)
          , mTerrainPresentDropHeight(0.5f)
          , mHasDriver(false)
@@ -277,7 +277,7 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage &tickMessage)
+      void BasePhysicsVehicleActor::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
          float ElapsedTime = tickMessage.GetDeltaSimTime();
          UpdateSoundEffects(ElapsedTime);

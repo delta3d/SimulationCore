@@ -74,7 +74,7 @@ namespace SimCore
             * receives a tick.
             * @param tickMessage A message containing tick related information.
             */
-            virtual void OnTickRemote(const dtGame::TickMessage &tickMessage);
+            virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
             /**
              * Called when the actor has been added to the game manager.

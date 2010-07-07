@@ -353,7 +353,7 @@ namespace SimCore
                data.mMaterialFlags = new osg::UIntArray();
                data.mVertices = new osg::Vec3Array();
                
-               if(dtPhysics::PhysicsReaderWriter::LoadTriangleDataFile(data, fileToLoad))
+               if (dtPhysics::PhysicsReaderWriter::LoadTriangleDataFile(data, fileToLoad))
                {
                   dtCore::Transform geometryWorld;
                   GetTransform(geometryWorld);
