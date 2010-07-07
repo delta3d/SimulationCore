@@ -52,13 +52,9 @@
 #include <iostream>
 #include <osg/io_utils>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-#else
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/palutil.h>
 #include <pal/palCollision.h>
-#endif
 
 using namespace SimCore::CollisionGroup;
 
@@ -71,65 +67,6 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-   #ifdef AGEIA_PHYSICS
-      ///////////////////////////////////////////////////////////////////////////////////////////////////
-      // This class is used to prevent self collision.
-      //////////////////////////////////////////////////////////////////////////////////////////////////////
-      class MunitionRaycastReport : public NxUserRaycastReport
-      {
-      public:
-         /////////////////////////////////////////////////////////////////////////////////////////////
-         MunitionRaycastReport(/*dtPhysics::PhysicsObject *actor, */dtCore::DeltaDrawable* ownerActor) : NxUserRaycastReport()
-         //, mOurActor(actor)
-         , mGotAHit(false)
-         , mOwnerActor(ownerActor)
-         , mClosestHitsHelper(NULL)
-         {
-         }
-
-         /////////////////////////////////////////////////////////////////////////////////////////////
-         virtual ~MunitionRaycastReport(){}
-
-         /////////////////////////////////////////////////////////////////////////////////////////////
-         virtual bool onHit(const NxRaycastHit& hit)
-         {
-            dtAgeiaPhysX::NxAgeiaPhysicsHelper* physicsHelper =
-               (dtAgeiaPhysX::NxAgeiaPhysicsHelper*)(hit.shape->getActor().userData);
-
-            dtCore::DeltaDrawable *hitTarget = NULL;
-
-            if(physicsHelper != NULL)
-            {
-               // null checked up above in the return
-               hitTarget = physicsHelper->GetPhysicsGameActorProxy().GetActor();
-            }
-
-            // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
-            // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor
-                     // So we dont want to return false if collision is off, this onHit is called for
-                     // every hit along the line, and returning false tells it to stop the raycast
-                     // report, its amazing how rereading the sdk can help so much :(
-                     &&  hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == false)
-            {
-               if (!mGotAHit || mClosestHit.distance > hit.distance)
-               {
-                  mClosestHitsHelper = physicsHelper;
-                  mGotAHit = true;
-                  mClosestHit = hit;
-               }
-            }
-
-            return true;
-         }
-
-      public:
-         bool mGotAHit;
-         NxRaycastHit mClosestHit;
-         dtCore::DeltaDrawable *mOwnerActor;
-         dtAgeiaPhysX::NxAgeiaPhysicsHelper* mClosestHitsHelper;
-      };
-   #else
       ///////////////////////////////////////////////////////////////////////////////////////////////////
       // This class is used to prevent self collision.
       //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +128,6 @@ namespace SimCore
          dtCore::DeltaDrawable *mOwnerActor;
          dtPhysics::PhysicsObject* mClosestHitsObject;
       };
-   #endif
 
       MunitionsPhysicsParticle::MunitionsPhysicsParticle(SimCore::Components::RenderingSupportComponent* renderComp, const std::string& name, float ParticleLengthOfTimeOut, float InverseDeletionAlphaTime, float alphaInTime)
       : PhysicsParticle(name, ParticleLengthOfTimeOut, InverseDeletionAlphaTime, alphaInTime)
@@ -528,66 +464,6 @@ namespace SimCore
          xform.SetTranslation(osg::Vec3(ourTranslation.x(), ourTranslation.y(), ourTranslation.z()));
 
          dtPhysics::PhysicsObject* newActor = NULL;
-   #ifdef AGEIA_PHYSICS
-         NxVec3 dimensions(mPhysicsHelper->GetDimensions()[0], mPhysicsHelper->GetDimensions()[1], mPhysicsHelper->GetDimensions()[2]);
-         //////////////////////////////////////////////////////////////////////////
-         // Set up the physics values for the object
-         if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CUBE)
-         {
-            newActor = mPhysicsHelper->SetCollisionBox(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                     dimensions,
-                     mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), id.ToString().c_str(), true);
-         }
-         else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::SPHERE)
-         {
-            // load sphere
-            newActor = mPhysicsHelper->SetCollisionSphere(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                     (dimensions[0] + dimensions[1] + dimensions[2]) / 3,
-                     mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(), id.ToString().c_str());
-         }
-         else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CAPSULE)
-         {
-            // load capsule
-            newActor = mPhysicsHelper->SetCollisionCapsule(NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                     dimensions[2], (dimensions[0] + dimensions[1]) / 2,
-                     mPhysicsHelper->GetDensity(), mPhysicsHelper->GetAgeiaMass(), collisionGroupToSendIn, mPhysicsHelper->GetSceneName(),
-                     id.ToString().c_str());
-         }
-         else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::FLATPLAIN)
-         {
-         }
-         else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH)
-         {
-            dtCore::Transform initialTransform, identityTransform;
-            identityTransform.MakeIdentity();
-            GetTransform(initialTransform);
-            SetTransform(identityTransform);
-            // load triangle mesh
-            newActor = mPhysicsHelper->SetCollisionConvexMesh(particle->mObj->GetOSGNode(),
-                     NxMat34(NxMat33(NxVec3(0,0,0), NxVec3(0,0,0), NxVec3(0,0,0)),
-                              NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2])),
-                              mPhysicsHelper->GetDensity(),mPhysicsHelper->GetAgeiaMass(),
-                              mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0],
-                              mPhysicsHelper->GetSceneName(), id.ToString().c_str());
-
-            SetTransform(initialTransform);
-         }
-         else if(mPhysicsHelper->GetPhysicsModelTypeEnum() == dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::TRIANGLEMESH)
-         {
-            dtCore::Transform initialTransform, identityTransform;
-            identityTransform.MakeIdentity();
-            GetTransform(initialTransform);
-            SetTransform(identityTransform);
-            // load triangle mesh
-            newActor = mPhysicsHelper->SetCollisionStaticMesh(particle->mObj->GetOSGNode(),
-                     NxVec3(ourTranslation[0], ourTranslation[1], ourTranslation[2]),
-                     mPhysicsHelper->GetLoadAsCached(), mPathOfFileToLoad[0],
-                     mPhysicsHelper->GetSceneName(), id.ToString().c_str(), collisionGroupToSendIn);
-
-            SetTransform(initialTransform);
-         }
-
-   #else
          dtCore::RefPtr<dtPhysics::PhysicsObject> newObject = new dtPhysics::PhysicsObject(id.ToString());
          newObject->SetCollisionGroup(collisionGroupToSendIn);
          newObject->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
@@ -598,7 +474,6 @@ namespace SimCore
          newObject->SetNotifyCollisions(true);
          newObject->CreateFromProperties(particle->mObj->GetOSGNode());
          newActor = newObject.get();
-   #endif
 
          if( orientDrawable )
          {
@@ -618,20 +493,6 @@ namespace SimCore
          linearVelocities[1] += mParentsWorldRelativeVelocityVector[1];
          linearVelocities[2] += mParentsWorldRelativeVelocityVector[2];
 
-   #ifdef AGEIA_PHYSICS
-         NxVec3 vRandVec(linearVelocities[0], linearVelocities[1], linearVelocities[2]);
-
-         newActor->setLinearVelocity(vRandVec);
-
-         vRandVec.set(  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[0], mStartingAngularVelocityScaleMin[0]),
-                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[1], mStartingAngularVelocityScaleMin[1]),
-                  GetRandBetweenTwoFloats(mStartingAngularVelocityScaleMax[2], mStartingAngularVelocityScaleMin[2]));
-
-         newActor->setAngularVelocity(vRandVec);
-
-
-         if(!mGravityEnabled) newActor->raiseBodyFlag(NX_BF_DISABLE_GRAVITY);
-   #else
          osg::Vec3 vRandVec(linearVelocities);
 
          newActor->SetLinearVelocity(vRandVec);
@@ -644,7 +505,6 @@ namespace SimCore
 
          newActor->SetAngularVelocity(vRandVec);
 
-   #endif
 
          AddChild(particle->mObj.get());
          //GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(particle->mObj.get());
@@ -658,56 +518,6 @@ namespace SimCore
       }
 
 
-   #ifdef AGEIA_PHYSICS
-      ////////////////////////////////////////////////////////////////////
-      void MunitionParticlesActor::AgeiaPostPhysicsUpdate()
-      {
-         bool isATracer = false;
-         std::list<dtCore::RefPtr<PhysicsParticle> >::iterator iter = mOurParticleList.begin();
-         for(;iter!= mOurParticleList.end(); ++iter)
-         {
-            if((*iter)->ShouldBeRemoved() == false)
-            {
-               isATracer = false;
-               MunitionsPhysicsParticle* munitionsParticle = dynamic_cast<MunitionsPhysicsParticle*>((*iter).get());
-               if(munitionsParticle != NULL)
-               {
-                  if(munitionsParticle->IsATracer())
-                  {
-                     isATracer = true;
-                  }
-               }
-
-               dtPhysics::PhysicsObject* physObj = (*iter)->GetPhysicsObject();
-               if(!physObj->isSleeping())
-               {
-                  float glmat[16];
-                  physObj->getGlobalOrientation().getColumnMajorStride4(glmat);
-
-                  //clear the elements we don't need:
-                  glmat[3]  = glmat[7]  = glmat[11] = 0.0f;
-                  glmat[12] = physObj->getGlobalPosition()[0];
-                  glmat[13] = physObj->getGlobalPosition()[1];
-                  glmat[14] = physObj->getGlobalPosition()[2];
-                  glmat[15] = 1.0f;
-
-                  if(isATracer)
-                  {
-                     osg::Matrix receiveMatrix = (*iter)->mObj->GetMatrixNode()->getMatrix();
-                     receiveMatrix.ptr()[12] = physObj->getGlobalPosition()[0];
-                     receiveMatrix.ptr()[13] = physObj->getGlobalPosition()[1];
-                     receiveMatrix.ptr()[14] = physObj->getGlobalPosition()[2];
-                     (*iter)->mObj->GetMatrixNode()->setMatrix(receiveMatrix);
-                  }
-                  else
-                  {
-                     (*iter)->mObj->GetMatrixNode()->setMatrix(osg::Matrix(glmat));
-                  }
-               }
-            }
-         }
-      }
-   #else
       ////////////////////////////////////////////////////////////////////
       void MunitionParticlesActor::PostPhysicsUpdate()
       {
@@ -752,7 +562,7 @@ namespace SimCore
          }
 
       }
-   #endif
+
       ////////////////////////////////////////////////////////////////////
       // Actor Proxy Below here
       ////////////////////////////////////////////////////////////////////
