@@ -469,12 +469,10 @@ namespace SimCore
          ourTranslation[2] = GetRandBetweenTwoFloats(ourTranslation[2] + positionRandMax[2], ourTranslation[2] + positionRandMin[2]);
 
          SimCore::CollisionGroupType collisionGroupToSendIn = 0;
-         if(!mSelfInteracting)
-   #ifdef AGEIA_PHYSICS
-            collisionGroupToSendIn = mPhysicsHelper->GetCollisionGroup();
-   #else
+         if (!mSelfInteracting)
+         {
             collisionGroupToSendIn = mPhysicsHelper->GetDefaultCollisionGroup();
-   #endif
+         }
 
          particle->mObj = new dtCore::Transformable(id.ToString().c_str());
 
@@ -495,14 +493,10 @@ namespace SimCore
                if( NULL != node && node->getNumChildren() == 0 )
                {
                   dtCore::RefPtr<SimCore::Actors::VolumetricLine> line
-                  = new SimCore::Actors::VolumetricLine( 10.0f, 0.5f, "VolumetricLines", "TracerGroup" );
+                     = new SimCore::Actors::VolumetricLine( 10.0f, 0.5f, "VolumetricLines", "TracerGroup" );
                   particle->mObj->AddChild( line.get() );
 
-                  node = (line->GetMatrixNode());
-                  if( node != NULL )
-                  {
-                     node->setMatrix(ourRotationMatrix);
-                  }
+                  line->SetMatrix(ourRotationMatrix);
                }
             }
             else
