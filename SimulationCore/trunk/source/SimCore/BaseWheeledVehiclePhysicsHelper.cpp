@@ -59,6 +59,7 @@ namespace SimCore
    , mLastMPH(0.0f)
    {
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
+      physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
       AddPhysicsObject(*physicsObject);
    }
 
