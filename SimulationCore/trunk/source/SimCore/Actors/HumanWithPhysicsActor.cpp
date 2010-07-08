@@ -83,10 +83,10 @@ namespace SimCore
          physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CYLINDER);
          physicsObject->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
          physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_HUMAN_LOCAL);
-         physicsObject->SetMass(100.0f);         
+         physicsObject->SetMass(100.0f);
          physicsObject->SetExtents(osg::Vec3(1.8f, 0.5f, 0.0f));
          mPhysicsHelper->AddPhysicsObject(*physicsObject);
-         
+
 #endif
       }
 
@@ -102,6 +102,8 @@ namespace SimCore
 
          // We don't want the human to lean sideways, regardless of what is sent. It looks stupid
          GetDeadReckoningHelper().SetForceUprightRotation(true);
+         // default to velocity only.  Humans walk.
+         GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
       }
 
       ////////////////////////////////////////////////////////////
@@ -424,10 +426,6 @@ namespace SimCore
          }
 #endif
 
-         if(!IsRemote())
-         {
-            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
-         }
       }
 
 #ifdef AGEIA_PHYSICS
