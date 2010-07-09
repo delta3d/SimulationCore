@@ -545,14 +545,13 @@ namespace SimCore
                   dtCore::Transform physicsXform;
                   physicsObject->GetTransform(physicsXform);
 
-                  if(isATracer)
+                  if (isATracer)
                   {
                      dtCore::Transform objXform;
                      osg::Vec3 pos;
                      physicsXform.GetTranslation(pos);
+                     // make the tracer point along the direction of travel.
                      objXform.Set(pos, physicsObject->GetLinearVelocity() + pos, osg::Vec3(0.0f, 0.0f, 1.0f));
-                     //objXform.SetTranslation(pos);
-                     //objXform.SetRotation(0,0,0);
                      particle.mObj->SetTransform(objXform);
                   }
                   else
