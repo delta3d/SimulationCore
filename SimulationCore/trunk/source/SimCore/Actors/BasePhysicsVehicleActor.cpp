@@ -413,13 +413,16 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::KeepAboveGround()
       {
-         bool underearth = false;
-         std::vector<dtDAL::ActorProxy*> toFill;
-         GetGameActorProxy().GetGameManager()->FindActorsByName("Terrain", toFill);
+         // assume we are under earth unless we get proof otherwise.
+         // because some checks could THINK we are under earth, especially if you drive / move
+         // under a bridge or something
+         bool underearth = true;
          dtDAL::ActorProxy* terrainNode = NULL;
-         if(!toFill.empty())
-            terrainNode = (dynamic_cast<dtDAL::ActorProxy*>(&*toFill[0]));
-
+         GetGameActorProxy().GetGameManager()->FindActorByName("Terrain", terrainNode);
+         if (terrainNode == NULL)
+         {
+            return;
+         }
 
          dtCore::Transform xform;
 
@@ -440,22 +443,28 @@ namespace SimCore
          SingleISector.SetSectorAsLineSegment(startPos, endPos);
          if (iSector->Update(osg::Vec3(0,0,0), true))
          {
-            if (SingleISector.GetNumberOfHits() > 0)
+            for (unsigned i = 0; i < SingleISector.GetNumberOfHits(); ++i)
             {
-               SingleISector.GetHitPoint(hp);
+               SingleISector.GetHitPoint(hp, i);
 
-               if(pos[2] + offsettodo < hp[2])
+               if (pos[2] + offsettodo > hp[2])
                {
-                  underearth = true;
+                  underearth = false;
+                  break;
                }
             }
+         }
+         else
+         {
+            // can't be under earth if there is no earth...
+            underearth = false;
          }
 
          if (underearth)
          {
             // This should just set the regular position.  When the physics engine should get
             // prephysics every time, not just for remote.
-            pos.z() = hp[2] + offsettodo;
+            pos.z() = hp[2] + mTerrainPresentDropHeight;
             xform.SetTranslation(pos);
             SetTransform(xform);
          }
