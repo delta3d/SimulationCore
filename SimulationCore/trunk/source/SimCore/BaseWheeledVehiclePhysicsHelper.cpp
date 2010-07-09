@@ -91,6 +91,15 @@ namespace SimCore
       workVec *= dragMag;
       return workVec;
    }
+
+   /////////////////////////////////////////////////////////////////////////////////////
+   void BaseWheeledVehiclePhysicsHelper::CleanUp()
+   {
+      delete mVehicle;
+      mVehicle = NULL;
+      mWheels.clear();
+      BaseClass::CleanUp();
+   }
    // ///////////////////////////////////////////////////////////////////////////////////
    //                               Vehicle Initialization                             //
    // ///////////////////////////////////////////////////////////////////////////////////
@@ -103,45 +112,47 @@ namespace SimCore
       wheel.mPowered = powered;
       wheel.mSteered = steered;
       wheel.mBraked = braked;
-
-      wheel.mWheel = mVehicle->AddWheel();
-      osg::ComputeBoundsVisitor bb;
-
-      node.accept(bb);
-
-      float wheelRadius = (bb.getBoundingBox().zMax() - bb.getBoundingBox().zMin()) / 2.0f;
-      float wheelWidth = (bb.getBoundingBox().xMax() - bb.getBoundingBox().xMin()) / 2.0f;
-
-      if (tireParams.mRadius > FLT_EPSILON)
-      {
-         wheelRadius = tireParams.mRadius;
-      }
-
-      if (tireParams.mWidth > FLT_EPSILON)
-      {
-         wheelWidth = tireParams.mWidth;
-      }
-
-      palWheelInfo wheelInfo;
-      wheelInfo.m_fPosX = position.x();
-      wheelInfo.m_fPosY = position.y();
-      wheelInfo.m_fPosZ = position.z();
-      wheelInfo.m_fRadius = wheelRadius;
-      wheelInfo.m_fWidth = wheelWidth;
-      wheelInfo.m_fSuspension_Travel = suspensionParams.mTravel;
-      wheelInfo.m_fSuspension_Rest_Length = suspensionParams.mRestLength;
-      wheelInfo.m_fSuspension_Ks = suspensionParams.mSpringRate;
-      wheelInfo.m_fSuspension_Kd = suspensionParams.mDamperCoef;
-      wheelInfo.m_fRoll_Influence = suspensionParams.mRollInfluence;
-      wheelInfo.m_fFriction_Slip = tireParams.mExtremeSlip;
-      wheelInfo.m_bBrake = braked;
-      wheelInfo.m_bSteer = steered;
-      wheelInfo.m_bDrive = powered;
-
-      wheel.mWheel->Init(wheelInfo);
-
       wheel.mTransform = &node;
+      wheel.mWheel = NULL;
 
+      if (mVehicle != NULL)
+      {
+         wheel.mWheel = mVehicle->AddWheel();
+         osg::ComputeBoundsVisitor bb;
+
+         node.accept(bb);
+
+         float wheelRadius = (bb.getBoundingBox().zMax() - bb.getBoundingBox().zMin()) / 2.0f;
+         float wheelWidth = (bb.getBoundingBox().xMax() - bb.getBoundingBox().xMin()) / 2.0f;
+
+         if (tireParams.mRadius > FLT_EPSILON)
+         {
+            wheelRadius = tireParams.mRadius;
+         }
+
+         if (tireParams.mWidth > FLT_EPSILON)
+         {
+            wheelWidth = tireParams.mWidth;
+         }
+
+         palWheelInfo wheelInfo;
+         wheelInfo.m_fPosX = position.x();
+         wheelInfo.m_fPosY = position.y();
+         wheelInfo.m_fPosZ = position.z();
+         wheelInfo.m_fRadius = wheelRadius;
+         wheelInfo.m_fWidth = wheelWidth;
+         wheelInfo.m_fSuspension_Travel = suspensionParams.mTravel;
+         wheelInfo.m_fSuspension_Rest_Length = suspensionParams.mRestLength;
+         wheelInfo.m_fSuspension_Ks = suspensionParams.mSpringRate;
+         wheelInfo.m_fSuspension_Kd = suspensionParams.mDamperCoef;
+         wheelInfo.m_fRoll_Influence = suspensionParams.mRollInfluence;
+         wheelInfo.m_fFriction_Slip = tireParams.mExtremeSlip;
+         wheelInfo.m_bBrake = braked;
+         wheelInfo.m_bSteer = steered;
+         wheelInfo.m_bDrive = powered;
+
+         wheel.mWheel->Init(wheelInfo);
+      }
       mWheels.push_back(wheel);
 
       return wheel;
@@ -153,21 +164,16 @@ namespace SimCore
       osg::Matrix BodyMatrix;
       GetLocalMatrix(bodyNode, BodyMatrix);
 
-
-      if (mVehicle != NULL)
-      {
-         delete mVehicle;
-         mVehicle = NULL;
-      }
-
-      //Create the vehicle here so we can add wheels any time.
-      mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
-
       GetMainPhysicsObject()->SetTransform(transformForRot);
       GetMainPhysicsObject()->CreateFromProperties(&bodyNode);
-      mVehicle->Init(&GetMainPhysicsObject()->GetBodyWrapper()->GetPalBody(), GetEngineTorque(),
-                GetMaxBrakeTorque());
 
+      if (!GetGameActorProxy()->IsRemote())
+      {
+         //Create the vehicle here so we can add wheels any time.
+         mVehicle = dynamic_cast<palVehicle*>(dtPhysics::PhysicsWorld::GetInstance().GetPalFactory()->CreateObject("palVehicle"));
+         mVehicle->Init(&GetMainPhysicsObject()->GetBodyWrapper()->GetPalBody(), GetEngineTorque(),
+                   GetMaxBrakeTorque());
+      }
 
       return true;
 
@@ -247,6 +253,10 @@ namespace SimCore
    ////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsHelper::Control(float acceleration, float normalizedWheelAngle, float normalizedBrakes)
    {
+      if (mVehicle == NULL)
+      {
+         return;
+      }
 
       float maxWheelAngle = (GetMaxSteerAngle() * osg::PI / 180.0f);   // convert from deg to rad
       float turningFraction = (normalizedWheelAngle * maxWheelAngle) / osg::PI_2;
@@ -275,7 +285,10 @@ namespace SimCore
 
    void BaseWheeledVehiclePhysicsHelper::FinalizeInitialization()
    {
-      mVehicle->Finalize();
+      if (mVehicle != NULL)
+      {
+         mVehicle->Finalize();
+      }
    }
 
    //////////////////////////////////////////////////////////////////////////////////////

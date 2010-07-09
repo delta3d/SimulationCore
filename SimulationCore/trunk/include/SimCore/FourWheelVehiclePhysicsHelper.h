@@ -141,6 +141,10 @@ namespace SimCore
       * Note that values close to or above 1 may cause stability problems and/or increasing energy.
       */
       DECLARE_PROPERTY(float, RearTireRestitution);
+
+
+      virtual void CleanUp();
+
    protected:
       virtual ~FourWheelVehiclePhysicsHelper();
 

@@ -63,6 +63,8 @@ namespace SimCore
    class SIMCORE_EXPORT BaseWheeledVehiclePhysicsHelper : public dtPhysics::PhysicsHelper
    {
    public:
+      typedef dtPhysics::PhysicsHelper BaseClass;
+
       BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy& proxy);
 
       //////////////////////////////////////////////////////////////////////////////////////
@@ -152,6 +154,8 @@ namespace SimCore
 
       /// Computes the aero dynamic drag on the vehicle.  It will be positive, you have to figure out the direction.
       osg::Vec3 ComputeAeroDynDrag(const osg::Vec3& linearVelocity);
+
+      virtual void CleanUp();
    protected:
 
       virtual ~BaseWheeledVehiclePhysicsHelper();
