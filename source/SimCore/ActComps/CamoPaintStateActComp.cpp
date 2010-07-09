@@ -56,6 +56,7 @@ namespace SimCore
       const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CAMO_ID("Camo Id");
       const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CONCEALED_STATE("Concealed State");
       const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CONCEAL_SHADER_GROUP("Conceal Shader Group");
+      const dtUtil::RefString CamoPaintStateActComp::PROPERTY_CONCEAL_MESH_DIMENSIONS("Conceal Mesh Dimensions");
       
       // Uniform Names
       const dtUtil::RefString CamoPaintStateActComp::UNIFORM_CONCEAL_MESH_DIMS("ConcealDims");
@@ -80,13 +81,10 @@ namespace SimCore
       {
          BaseClass::SetDefaults();
 
+         mEnteredWorld = false;
          mCamoId = 0;
          mOffsetNode = new osg::MatrixTransform();
          mConcealedState = false;
-
-         // Ensure the concealed mesh has a unit scale as default,
-         // whenever it is attached later without setting the dimensions.
-         mConcealMeshDims.set(1.0f,1.0f,1.0f,1.0f);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -190,10 +188,14 @@ namespace SimCore
                const osg::BoundingBox& bb = visitor.mBoundingBox;
                if(bb.valid())
                {
-                  osg::Vec4 dims(
-                     bb.xMax() - bb.xMin(),
-                     bb.yMax() - bb.yMin(),
-                     bb.zMax() - bb.zMin(), 1.0f);
+                  osg::Vec4 dims = mOriginalConcealMeshDims;
+                  if(dims.x() <= 0.0f)
+                     dims.x() = bb.xMax() - bb.xMin();
+                  if(dims.y() <= 0.0f)
+                     dims.y() = bb.yMax() - bb.yMin();
+                  if(dims.z() <= 0.0f)
+                     dims.z() = bb.zMax() - bb.zMin();
+                  dims.w() = 1.0f;
                   SetConcealMeshDims(dims);
 
                   // Offset the mesh to be centered over the 
@@ -201,7 +203,7 @@ namespace SimCore
                   osg::Vec3 offset(bb.center());
                   offset.z() = 0.0f;
                   mtx = osg::Matrix::identity();
-                  osg::Vec3 scaleVec(mConcealMeshDims.x(), mConcealMeshDims.y(), mConcealMeshDims.z());
+                  osg::Vec3 scaleVec(dims.x(), dims.y(), dims.z());
                   mtx.makeScale(scaleVec);
                   mtx.setTrans(offset);
                   mOffsetNode->setMatrix(mtx);
@@ -215,9 +217,28 @@ namespace SimCore
       {
          mConcealMeshDims = dims;
 
+         // Set the original conceal dims, only if this is being set
+         // before entering the sim world.
+         if( ! mEnteredWorld)
+         {
+            mOriginalConcealMeshDims = dims;
+         }
+
          // Conceal dimensions should only apply to the conceal net sub mesh.
          if(mConcealMeshNode.valid())
          {
+            // Error check the dimensions before setting them in the shader.
+            osg::Vec4 val(dims);
+            if(val.x() == 0.0f)
+               val.x() = 1.0f;
+            if(val.y() == 0.0f)
+               val.y() = 1.0f;
+            if(val.z() == 0.0f)
+               val.z() = 1.0f;
+            if(val.w() == 0.0f)
+               val.w() = 1.0f;
+
+            // Set the value for the shader.
             osg::StateSet* ss = mConcealMeshNode->getOrCreateStateSet();
             SetUniform(ss, UNIFORM_CONCEAL_MESH_DIMS, dims);
          }
@@ -246,7 +267,7 @@ namespace SimCore
          // Changing file. Cannot assume it is valid yet.
          mConcealedState = enabled;
 
-         if(enabled && ! mConcealMesh.IsEmpty())
+         if(enabled && ! mConcealMesh.IsEmpty() && mEnteredWorld)
          {
             try
             {
@@ -401,11 +422,18 @@ namespace SimCore
       {
          BaseClass::OnEnteredWorld();
 
+         // Let this component know that the actor has now entered the world,
+         // and thus handle changing values accordingly.
+         mEnteredWorld = true;
+
          // Ensure the root entity is not distorted by the conceal scale.
          osg::Vec4 unitScale(1.0f, 1.0f, 1.0f, 1.0f);
          SetUniform(GetStateSet(), UNIFORM_CONCEAL_MESH_DIMS, unitScale);
 
          // Ensure the proper camo/conceal mesh is loaded.
+         // This subsequently adds a conceal mesh if the actor is
+         // flagged as concealed and if the mesh has been specified
+         // for the camo type.
          SetCamoId(mCamoId);
       }
 
@@ -439,6 +467,14 @@ namespace SimCore
             PROPERTY_CONCEAL_SHADER_GROUP,
             PROPERTY_CONCEAL_SHADER_GROUP,
             "Shader group to be applied to the conceal mesh.",
+            PropRegType, propRegHelper);
+
+         // VEC4 PROPERTIES
+         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+            ConcealMeshDims,
+            PROPERTY_CONCEAL_MESH_DIMENSIONS,
+            PROPERTY_CONCEAL_MESH_DIMENSIONS,
+            "Dimensions to use for the concealment mesh when the actor is concealed. Using a value of 0 or less will cause the dimensions to be automatically calculated based on the actor's geometry.",
             PropRegType, propRegHelper);
       }
 

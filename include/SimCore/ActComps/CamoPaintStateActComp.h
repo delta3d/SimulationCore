@@ -67,6 +67,7 @@ namespace SimCore
             static const dtUtil::RefString PROPERTY_CAMO_ID;
             static const dtUtil::RefString PROPERTY_CONCEALED_STATE;
             static const dtUtil::RefString PROPERTY_CONCEAL_SHADER_GROUP;
+            static const dtUtil::RefString PROPERTY_CONCEAL_MESH_DIMENSIONS;
 
             // Uniform Names
             static const dtUtil::RefString UNIFORM_CONCEAL_MESH_DIMS;
@@ -117,6 +118,8 @@ namespace SimCore
             bool DetachNode(osg::Node& node);
 
          private:
+            bool mEnteredWorld;
+            osg::Vec4 mOriginalConcealMeshDims; // Captures originally set values before entering the sim world.
             dtCore::RefPtr<osg::Node> mConcealMeshNode;
             dtCore::RefPtr<osg::MatrixTransform> mOffsetNode;
             dtCore::ObserverPtr<osg::Node> mHiderNode;
