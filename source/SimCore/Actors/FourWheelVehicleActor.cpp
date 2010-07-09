@@ -373,8 +373,7 @@ namespace SimCore
                   if (steeringWheel != NULL)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
-                     /// 140 degree turning.  Sounds good?
-                     HPR[0] =  70.0f * mCurrentSteeringAngleNormalized;
+                     HPR[0] =  2.0f * mCurrentSteeringAngleNormalized;
                      steeringWheel->setCurrentHPR(HPR);
                   }
                }
