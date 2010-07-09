@@ -432,7 +432,8 @@ namespace SimCore
                      = new SimCore::Actors::VolumetricLine( 10.0f, 0.5f, "VolumetricLines", "TracerGroup" );
                   particle->mObj->AddChild( line.get() );
 
-                  line->SetMatrix(ourRotationMatrix);
+                  orientDrawable = true;
+                  //line->SetMatrix(ourRotationMatrix);
                }
             }
             else
@@ -547,10 +548,11 @@ namespace SimCore
                   if(isATracer)
                   {
                      dtCore::Transform objXform;
-                     particle.mObj->GetTransform(objXform);
                      osg::Vec3 pos;
                      physicsXform.GetTranslation(pos);
-                     objXform.SetTranslation(pos);
+                     objXform.Set(pos, physicsObject->GetLinearVelocity() + pos, osg::Vec3(0.0f, 0.0f, 1.0f));
+                     //objXform.SetTranslation(pos);
+                     //objXform.SetRotation(0,0,0);
                      particle.mObj->SetTransform(objXform);
                   }
                   else
