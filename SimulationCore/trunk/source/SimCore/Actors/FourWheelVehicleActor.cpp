@@ -373,7 +373,7 @@ namespace SimCore
                   if (steeringWheel != NULL)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
-                     HPR[0] =  osg::PI * mCurrentSteeringAngleNormalized;
+                     HPR[0] =  1.6f * osg::PI * mCurrentSteeringAngleNormalized;
                      steeringWheel->setCurrentHPR(HPR);
                   }
                }
