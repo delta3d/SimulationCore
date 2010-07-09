@@ -262,10 +262,10 @@ namespace SimCore
          {
             const CamoPaintStateActComp& constComp = *mActComp;
 
-            const osg::Vec4 VEC_ONES(1.0f, 1.0f, 1.0f, 1.0f);
+            const osg::Vec4 VEC_ZEROS;
             osg::Vec4 testVec(-12.34f, 56.78f, -9.1011f, 12.13f);
 
-            CPPUNIT_ASSERT(constComp.GetConcealMeshDims() == VEC_ONES);
+            CPPUNIT_ASSERT(constComp.GetConcealMeshDims() == VEC_ZEROS);
             mActComp->SetConcealMeshDims(testVec);
             CPPUNIT_ASSERT(constComp.GetConcealMeshDims() == testVec);
 
