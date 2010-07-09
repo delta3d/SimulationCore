@@ -373,7 +373,7 @@ namespace SimCore
                   if (steeringWheel != NULL)
                   {
                      osg::Vec3 HPR = steeringWheel->getCurrentHPR();
-                     HPR[0] =  2.0f * mCurrentSteeringAngleNormalized;
+                     HPR[0] =  osg::PI * mCurrentSteeringAngleNormalized;
                      steeringWheel->setCurrentHPR(HPR);
                   }
                }
@@ -467,28 +467,31 @@ namespace SimCore
 
             float updateCountInSecs = float(mNumUpdatesUntilFullSteeringAngle) / 60.00f;
             float angleChange = deltaTime / updateCountInSecs;
-            if (keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left))
+            float recoverAngleChange = 2.0f * angleChange;
+
+            bool turnLeft = keyboard->GetKeyState('a') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Left);
+            bool turnRight = keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right);
+
+            // If you are turning the wheel or letting the wheel turn toward centered, then turn at double speed
+            if (!turnRight && mCurrentSteeringAngleNormalized < -recoverAngleChange)
+            {
+               mCurrentSteeringAngleNormalized += recoverAngleChange;
+            }
+            else if (!turnLeft && mCurrentSteeringAngleNormalized > recoverAngleChange)
+            {
+               mCurrentSteeringAngleNormalized -= recoverAngleChange;
+            }
+            else if (turnLeft)
             {
                mCurrentSteeringAngleNormalized += angleChange;
             }
-            else if (keyboard->GetKeyState('d') || keyboard->GetKeyState(osgGA::GUIEventAdapter::KEY_Right))
+            else if (turnRight)
             {
                mCurrentSteeringAngleNormalized -= angleChange;
             }
             else
             {
-               if (mCurrentSteeringAngleNormalized < -angleChange)
-               {
-                  mCurrentSteeringAngleNormalized += angleChange;
-               }
-               else if (mCurrentSteeringAngleNormalized > angleChange)
-               {
-                  mCurrentSteeringAngleNormalized -= angleChange;
-               }
-               else
-               {
-                  mCurrentSteeringAngleNormalized = 0.0f;
-               }
+               mCurrentSteeringAngleNormalized = 0.0f;
             }
 
             dtUtil::Clamp(mCurrentSteeringAngleNormalized, -1.0f, 1.0f);
