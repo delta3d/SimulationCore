@@ -678,7 +678,7 @@ namespace SimCore
                const std::string& weaponFileName = dtDAL::Project::GetInstance().GetResourcePath(weaponResource);
                dtCore::RefPtr<osg::Node> cachedModel;
 
-               bool isModelLoaded
+               isModelLoaded
                   = SimCore::Actors::IGActor::LoadFileStatic( weaponFileName, cachedModel, controlStateInfo.mWeaponModel );
             }
 
