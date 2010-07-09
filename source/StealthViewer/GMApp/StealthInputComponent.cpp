@@ -593,10 +593,13 @@ namespace StealthGM
 
          case 'p':
          {
-            std::string developerMode;
-            developerMode = GetGameManager()->GetConfiguration().GetConfigPropertyValue("DeveloperMode");
-            if (developerMode == "true" || developerMode == "1")
-               ToggleEntityShaders();
+            ReloadShadersIfDevMode();
+         }
+         break;
+
+         case 'P':
+         {
+            SetNextPhysicsDebugDrawIfDevMode();
          }
          break;
 

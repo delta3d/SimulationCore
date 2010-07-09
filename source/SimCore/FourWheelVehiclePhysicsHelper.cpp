@@ -103,23 +103,6 @@ namespace SimCore
    /// Returns the current vertical displacement of the chosen wheel.
    float FourWheelVehiclePhysicsHelper::GetWheelJounce( WheelLocation index ) const
    {
-#ifdef AGEIA_PHYSICS
-      NxWheelContactData wheelPatchData;
-      NxShape*           contactObject;
-      float              maxJounce = (index < 2 ? mFrontMaxJounce : mRearMaxJounce);
-
-      contactObject =  mWheels[index].mWheel->getContact ( wheelPatchData );
-      if ( contactObject == NULL )
-      {
-         return maxJounce - GetWheelSuspensionTravel();
-      }
-      else
-      {
-         float displacement = wheelPatchData.contactPosition; // Vertical displacement of wheel
-         displacement = maxJounce - displacement + GetWheelRadius();
-         return displacement;
-      }
-#endif
       return 0.0;
    }
 
@@ -168,19 +151,6 @@ namespace SimCore
    {
       float mph = GetMPH();
 
-#ifdef AGEIA_PHYSICS
-      static const double TWO_PI = osg::PI * 2;
-      for(int i = 0 ; i< 2; i++)
-      {
-         float RotationTemp = mAxleRotation[i];
-         RotationTemp += (mWheels[2*i].mWheel->getAxleSpeed()+mWheels[2*i+1].mWheel->getAxleSpeed()) / 2.0f * deltaTime;
-         float dum;
-         RotationTemp = TWO_PI * std::modf( RotationTemp / TWO_PI, &dum );
-         if ( RotationTemp < 0.0f )
-            RotationTemp += TWO_PI;
-         mAxleRotation[i] = RotationTemp;
-      }
-#endif
 //      if ( mph >= 0.0f )
 //      {
 //         // Forward motion: limited by specified top speed.
@@ -246,61 +216,63 @@ namespace SimCore
             const osg::Node& bodyNode, osgSim::DOFTransform* wheels[4])
    {
       // Make sure we have valid nodes for geometry of all four wheels.
-      for(int i = 0 ; i < 4; ++i)
+      for (int i = 0 ; i < 4; ++i)
       {
-         if(wheels[i] == NULL)
+         if (wheels[i] == NULL)
             return false;
       }
 
+      float frontDamping = 0.0f, rearDamping = 0.0f, frontSpring = 0.0f, rearSpring = 0.0f;
       osg::Matrix WheelMatrix[4];
       osg::Vec3   WheelVec[4];
+
       osg::Matrix bodyOffset;
       GetLocalMatrix(bodyNode, bodyOffset);
-      //This is not needed for physX
-#ifndef AGEIA_PHYSICS
       //To allow the developer to shift the center of mass.
       bodyOffset.setTrans(bodyOffset.getTrans() - GetMainPhysicsObject()->GetOriginOffset());
-#endif
+
       for(int i = 0; i < 4; i++)
       {
          GetLocalMatrix(*(wheels[i]), WheelMatrix[i]);
          WheelVec[i] = WheelMatrix[i].getTrans() - bodyOffset.getTrans();
       }
 
-      float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
-      float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
-      float wheelbase       = frontLeverArm + rearLeverArm;
-      if (wheelbase <= 0.0)
+      if (!GetGameActorProxy()->IsRemote())
       {
-         LOGN_ERROR("FourWheelVehiclePhysicsHelper.cpp", "Wheelbase must be greater than zero. "
-                  "A zero wheel base can be a result of wheels being configured in the wrong order in the array.");
-         //Prevent NAN and INF
-         wheelbase = 1.0;
+
+         float frontLeverArm   =  WheelVec[FRONT_LEFT][1]; // Y distance from front wheels to center of gravity
+         float rearLeverArm    = -WheelVec[BACK_LEFT][1];  // Y distance from rear wheels to center of gravity
+         float wheelbase       = frontLeverArm + rearLeverArm;
+         if (wheelbase <= 0.0)
+         {
+            LOGN_ERROR("FourWheelVehiclePhysicsHelper.cpp", "Wheelbase must be greater than zero. "
+                     "A zero wheel base can be a result of wheels being configured in the wrong order in the array.");
+            //Prevent NAN and INF
+            wheelbase = 1.0;
+         }
+
+         frontSpring = CalcSpringRate(GetFrontSuspensionSpringFreq(), GetChassisMass(), wheelbase, rearLeverArm);
+         rearSpring = CalcSpringRate(GetRearSuspensionSpringFreq(), GetChassisMass(), wheelbase, frontLeverArm);
+         frontDamping = CalcDamperCoeficient(GetFrontSuspensionDamperFactor(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
+         rearDamping = CalcDamperCoeficient(GetRearSuspensionDamperFactor(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
+
+         float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
+         float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
+         float frontDeflection = (frontWheelLoad / frontSpring);
+         float rearDeflection  = (rearWheelLoad / rearSpring);
+         mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionRestLength() - frontDeflection);
+         mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionRestLength() - rearDeflection);
+
+         WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
+         WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;
+         WheelVec[BACK_LEFT][2] += mRearMaxJounce;
+         WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
+
+         WheelVec[FRONT_LEFT][0] -= mFrontTrackAdjustment;
+         WheelVec[FRONT_RIGHT][0] += mFrontTrackAdjustment;
+         WheelVec[BACK_LEFT][0] -= mRearTrackAdjustment;
+         WheelVec[BACK_RIGHT][0] += mRearTrackAdjustment;
       }
-
-      float frontDamping, rearDamping, frontSpring, rearSpring;
-
-      frontSpring = CalcSpringRate(GetFrontSuspensionSpringFreq(), GetChassisMass(), wheelbase, rearLeverArm);
-      rearSpring = CalcSpringRate(GetRearSuspensionSpringFreq(), GetChassisMass(), wheelbase, frontLeverArm);
-      frontDamping = CalcDamperCoeficient(GetFrontSuspensionDamperFactor(), GetChassisMass(), frontSpring, wheelbase, rearLeverArm);
-      rearDamping = CalcDamperCoeficient(GetRearSuspensionDamperFactor(), GetChassisMass(), rearSpring, wheelbase, frontLeverArm);
-
-      float frontWheelLoad  = 0.5f * ( GetChassisMass() * ACC_GRAVITY * rearLeverArm / wheelbase );
-      float rearWheelLoad   = 0.5f * ( GetChassisMass() * ACC_GRAVITY * frontLeverArm / wheelbase );
-      float frontDeflection = (frontWheelLoad / frontSpring);
-      float rearDeflection  = (rearWheelLoad / rearSpring);
-      mFrontMaxJounce       = dtUtil::Max(0.0f, GetFrontSuspensionRestLength() - frontDeflection);
-      mRearMaxJounce        = dtUtil::Max(0.0f, GetRearSuspensionRestLength() - rearDeflection);
-
-      WheelVec[FRONT_LEFT][2] += mFrontMaxJounce;
-      WheelVec[FRONT_RIGHT][2] += mFrontMaxJounce;
-      WheelVec[BACK_LEFT][2] += mRearMaxJounce;
-      WheelVec[BACK_RIGHT][2] += mRearMaxJounce;
-
-      WheelVec[FRONT_LEFT][0] -= mFrontTrackAdjustment;
-      WheelVec[FRONT_RIGHT][0] += mFrontTrackAdjustment;
-      WheelVec[BACK_LEFT][0] -= mRearTrackAdjustment;
-      WheelVec[BACK_RIGHT][0] += mRearTrackAdjustment;
 
       CreateChassis(transformForRot, bodyNode);
 
@@ -360,17 +332,21 @@ namespace SimCore
       mWheels[BACK_RIGHT]   = AddWheel(WheelVec[BACK_RIGHT], *static_cast<osg::Transform*>(wheels[BACK_RIGHT]->getParent(0)), tp, sp, true, false, true);
 
 
-#ifdef AGEIA_PHYSICS
-      NxMat33 orient;
-      orient.setRow(0, NxVec3(1,0,0));
-      orient.setRow(1, NxVec3(0,0,-1));
-      orient.setRow(2, NxVec3(0,1,0));
-      SwitchCoordinateSystem(orient);
-#endif
-
       FinalizeInitialization();
 
       return true;
+   }
+
+   //////////////////////////////////////////////////////////////////////////////////////
+   void FourWheelVehiclePhysicsHelper::CleanUp()
+   {
+      BaseClass::CleanUp();
+      for (unsigned i = 0; i < 4; ++i)
+      {
+         mWheels[i].mTransform = NULL;
+         // The wheel should be deleted by baseclass when it deletes the underlying vehicle.
+         mWheels[i].mWheel = NULL;
+      }
    }
 
    //////////////////////////////////////////////////////////////////////////////////////
