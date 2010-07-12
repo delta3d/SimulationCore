@@ -120,8 +120,9 @@ namespace SimCore
                dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
 
             // Disable gravity until the map has loaded terrain under our feet...
-            // Note - you can probably do this on remote entities too, but they probably aren't kinematic anyway
+            // Note - you can probably do this on remote entities too, but they probably are kinematic anyway
             GetPhysicsHelper()->GetMainPhysicsObject()->SetGravityEnabled(false);
+            GetPhysicsHelper()->GetMainPhysicsObject()->SetCollisionResponseEnabled(false);
          }
       }
 
@@ -164,6 +165,7 @@ namespace SimCore
             xform.SetTranslation(terrainPoint);
             physicsObject->SetTransformAsVisual(xform);
             physicsObject->SetGravityEnabled(true);
+            physicsObject->SetCollisionResponseEnabled(true);
          }
 
          return terrainDetected;
@@ -185,9 +187,13 @@ namespace SimCore
       void BasePhysicsVehicleActor::ApplyForce(const osg::Vec3& force, const osg::Vec3& location, bool isImpulse)
       {
          if (isImpulse)
+         {
             GetPhysicsHelper()->GetMainPhysicsObject()->ApplyImpulse(force);
+         }
          else
+         {
             GetPhysicsHelper()->GetMainPhysicsObject()->AddForce(force);
+         }
       }
 
 
