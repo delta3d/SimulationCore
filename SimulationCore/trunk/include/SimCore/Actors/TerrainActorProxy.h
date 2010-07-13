@@ -65,6 +65,7 @@ namespace SimCore
             bool GetLoadTerrainMeshWithCaching();
 
             virtual void AddedToScene(dtCore::Scene* scene);
+            virtual void RemovedFromScene(dtCore::Scene* scene);
 
             /*virtual*/ void OnEnteredWorld();
 

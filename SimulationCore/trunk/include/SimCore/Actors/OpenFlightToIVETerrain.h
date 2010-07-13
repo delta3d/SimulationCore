@@ -123,6 +123,11 @@ namespace SimCore
             /// Creates the actor we are encapsulating
             virtual void CreateActor();
 
+            /**
+            *  We override this method to clear the database pager.
+            */
+            virtual void RemovedFromScene(dtCore::Scene* scene);
+
          protected:
 
             /**
