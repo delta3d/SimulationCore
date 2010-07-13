@@ -37,6 +37,7 @@
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
+#include <dtCore/scene.h>
 #include <dtUtil/datapathutils.h>
 #include <dtUtil/stringutils.h>
 #include <dtCore/transform.h>
@@ -122,6 +123,13 @@ namespace SimCore
 
          return mBillBoardIcon.get();
       }
+
+      ///////////////////////////////////////////////////////////////
+      void TerrainActor::RemovedFromScene(dtCore::Scene* scene)
+      {
+         scene->ResetDatabasePager();
+      }
+
 
       ///////////////////////////////////////////////////////////////
       TerrainActor::TerrainActor(dtGame::GameActorProxy& proxy)

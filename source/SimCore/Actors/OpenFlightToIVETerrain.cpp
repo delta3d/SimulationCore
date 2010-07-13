@@ -35,6 +35,7 @@
 #include <dtCore/shadergroup.h>
 #include <dtCore/shaderprogram.h>
 #include <dtCore/shadermanager.h>
+#include <dtCore/scene.h>
 
 // Curt test
 #include <dtCore/view.h>
@@ -292,6 +293,12 @@ namespace SimCore
       void OpenFlightToIVETerrainActorProxy::CreateActor()
       {
          SetActor(*new OpenFlightToIVETerrainActor(*this));
+      }
+
+      /////////////////////////////////////////////////////////////////////////////////
+      void OpenFlightToIVETerrainActorProxy::RemovedFromScene( dtCore::Scene* scene )
+      {
+         scene->ResetDatabasePager();
       }
    }
 }
