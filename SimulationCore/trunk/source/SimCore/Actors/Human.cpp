@@ -703,7 +703,8 @@ namespace SimCore
             if (nameToSend == GetWeaponMeshName())
             {
                bool visibleWeapon = *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION
-                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED;
+                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED
+                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::STOWED;
 
                if (visibleWeapon)
                {
