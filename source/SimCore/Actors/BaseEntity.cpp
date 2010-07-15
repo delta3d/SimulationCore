@@ -702,7 +702,7 @@ namespace SimCore
          }
          else
          {
-            mLogger->LogMessage(dtUtil::Log::LOG_ERROR, __FUNCTION__, __LINE__,
+            mLogger->LogMessage(dtUtil::Log::LOG_WARNING, __FUNCTION__, __LINE__,
                "Actor \"%s\"\"%s\" unable to find DeadReckoningComponent.",
                GetName().c_str(), GetUniqueId().ToString().c_str());
          }
