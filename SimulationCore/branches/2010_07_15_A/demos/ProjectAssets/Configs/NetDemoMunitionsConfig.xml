@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<munitionsMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="munitionsConfig"
+     xsi:schemaLocation="munitionsConfig MunitionConfig.xsd">
+	<!--  NOTES
+	
+	Basic Entry Format:
+	* EntityClass@name { MunitionName@name Force Accumulation {N M F MF K} {AOF forwardRange[4:M,F,MF,K] DeflectRange[4:M,F,MF,K]}[3:Range1_3,Range2_3,RangeMax] }
+
+	Force:
+	* Scalar force (measured in Newtons) that this munition produces on impact at point zero.
+	* This force is normally used only for PROXIMITY type munitions.
+	* Force is used to "push" physics simulating entities away from the blast produced by the munition.
+
+	Accumulation Factor:
+	* Percentage of original kill damage by which kill damage increases after every successful infliction of damage.
+
+	Mapped Entity Classes:
+	* Damage probabilities of a munition are based on the entity that is to receive damage.
+
+	Damage Probabilities:
+	* Any undeclared damage type will receive a value of zero.
+	* If no damages are declared, a probability of 1.0 is set for damage type Kill;
+	otherwise having a munition mapping is useless if it does no damage.
+	* Damage probability types (None (N), Mobility (M), Firepower (F), MobilityFirepower (MF),
+	and Kill (K)) are used to classify overall damage on an entity.
+
+	Angle-Of-Fall Values:
+	* Only define values for the ranges section if the munition is intended for use
+	as indirect fire or has an explosion radius upon impact.
+	* Direct fire munitions usually do not require values for this section.
+	* If one range is declared, all other ranges will be assigned the same values.
+	* If two ranges are delcared, the third will be interpretted as follows:
+		* If Range 1/3 is undefined, it inherits values from Range 2/3
+		* If Range Max is undefined, it inherits values from Range 2/3
+		* If Range 2/3 is undefined, it inherits the average between Range 1/3 and 2/3
+	* If a single range (forward or deflect) is assigned a value, the other will be assigned that value.
+		* A range of zero does not make sense except for lasers.
+		
+	CutOff Range:
+	* Determines the maximum distance a munition detonation can affect an entity.
+	* Any entity beyond the cutoff range should be un affected by the detonation.
+
+	Notes about Lethal Ranges:
+	* Valid range names are "1/3", "2/3", and "Max".
+	* Each range can define values for damage types:
+		* Mobility (M), Firepower (F), MobilityFirepower (MF), and Kill (K)
+	* Forward and Deflection Ranges define an area of effect in the shape of an ellipsoid.
+	* Equivalent values for both ranges define a spherical area of effect.
+	* Forward Range: the range along the munition's trajectory.
+	* Deflection Range: the range perpendicular to the munition's trajectory.
+
+	
+  -->
+    <header>
+        <name>NetDemoMunitionsConfig</name>
+        <description>Map munitions damage probabilities specific to certain entities.</description>
+        <author>Curtiss Murphy</author>
+        <comment></comment>
+        <copyright>2009 Alion Science and Technology</copyright>
+        <schemaVersion>1.0</schemaVersion>
+    </header>
+
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * *     STANDARD DEFAULT            * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+	<entityClass name="StandardDamageType">
+	
+		<munition name="Bullet">
+			<force>1000</force> <!-- in Newtons -->
+			<accumulationFactor>0.1</accumulationFactor>
+			<damageProbability>
+				<N>0.40</N>
+				<M>0.40</M>
+				<K>0.2</K>
+			</damageProbability>
+		</munition>
+	
+		<munition name="Grenade">
+			<force>2000</force> <!-- in Newtons -->
+			<accumulationFactor>0.1</accumulationFactor>
+			<damageProbability>
+				<M>0.15</M>
+				<K>0.85</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>10.0</rangeCutoff>
+				<range name="Max">
+					<angleOfFall>45.0</angleOfFall>
+					<forwardRange>
+						<M>10</M>
+						<K>6</K>
+					</forwardRange>
+					<deflectRange>
+						<M>10</M>
+						<K>5</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+	
+		<munition name="High Explosive">
+			<force>20000</force> <!-- in Newtons -->
+			<accumulationFactor>0.0</accumulationFactor>
+			<damageProbability>
+				<M>1.0</M>
+				<K>0.8</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>100.0</rangeCutoff>
+				<range name="1/3">
+					<angleOfFall>20.0</angleOfFall>
+					<forwardRange>
+						<M>90</M>
+						<K>13</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="2/3">
+					<angleOfFall>35.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="Max">
+					<angleOfFall>56.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>32</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+		
+	</entityClass>
+
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * *     PLAYER VEHICLES             * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+	<entityClass name="VehicleDamageType">
+	
+		<munition name="Bullet">
+			<force>1000</force> <!-- in Newtons -->
+			<accumulationFactor>0.1</accumulationFactor>
+			<damageProbability>
+				<N>0.80</N>
+				<M>0.20</M>
+				<K>0.0</K>
+			</damageProbability>
+		</munition>
+	
+		<munition name="Grenade">
+			<force>6000</force> <!-- in Newtons -->
+			<accumulationFactor>0.1</accumulationFactor>
+			<damageProbability>
+				<M>0.4</M>
+				<K>0.1</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>10.0</rangeCutoff>
+				<range name="Max">
+					<angleOfFall>45.0</angleOfFall>
+					<forwardRange>
+						<M>5</M>
+						<K>1</K>
+					</forwardRange>
+					<deflectRange>
+						<M>5</M>
+						<K>1</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+	
+		<munition name="High Explosive">
+			<force>20000</force> <!-- in Newtons -->
+			<accumulationFactor>0.0</accumulationFactor>
+			<damageProbability>
+				<M>1.0</M>
+				<K>0.8</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>100.0</rangeCutoff>
+				<range name="1/3">
+					<angleOfFall>20.0</angleOfFall>
+					<forwardRange>
+						<M>90</M>
+						<K>13</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="2/3">
+					<angleOfFall>35.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="Max">
+					<angleOfFall>56.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>32</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+		
+	</entityClass>
+
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * *     FORT                        * * * * * * * * * * * * * * * * -->
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<!-- The fort doesn't take much damage and it doesn't move when hit either. -->
+	<!-- Note that the fort is large so detonations are generally far away. -->
+
+	<entityClass name="FortDamageType">
+	
+		<munition name="Bullet">
+			<force>10</force> <!-- in Newtons -->
+			<accumulationFactor>1.0</accumulationFactor>
+			<damageProbability>
+				<N>0.985</N>
+				<M>0.01</M>
+				<K>0.005</K>
+			</damageProbability>
+		</munition>
+	
+		<munition name="Grenade">
+			<force>60</force> <!-- in Newtons -->
+			<accumulationFactor>1.0</accumulationFactor>
+			<damageProbability>
+				<M>0.05</M>
+				<K>0.02</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>50.0</rangeCutoff>
+				<range name="Max">
+					<angleOfFall>45.0</angleOfFall>
+					<forwardRange>
+						<M>25</M>
+						<K>15</K>
+					</forwardRange>
+					<deflectRange>
+						<M>25</M>
+						<K>15</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+	
+		<munition name="High Explosive">
+			<force>200</force> <!-- in Newtons -->
+			<accumulationFactor>1.0</accumulationFactor>
+			<damageProbability>
+				<M>0.2</M>
+				<K>0.1</K>
+			</damageProbability>
+			<lethalRanges>
+				<rangeCutoff>100.0</rangeCutoff>
+				<range name="1/3">
+					<angleOfFall>20.0</angleOfFall>
+					<forwardRange>
+						<M>90</M>
+						<K>13</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="2/3">
+					<angleOfFall>35.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>50</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+				<range name="Max">
+					<angleOfFall>56.0</angleOfFall>
+					<forwardRange>
+						<M>80</M>
+						<K>12</K>
+					</forwardRange>
+					<deflectRange>
+						<M>32</M>
+						<K>10</K>
+					</deflectRange>
+				</range>
+			</lethalRanges>
+		</munition>
+		
+	</entityClass>
+
+
+</munitionsMapping>

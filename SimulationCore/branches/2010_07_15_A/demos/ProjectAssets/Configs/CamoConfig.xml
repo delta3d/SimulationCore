@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Root>
+   <DefaultPatternTexture>Textures/ShadersBase/CamoPatternMedium.tga</DefaultPatternTexture>
+   <Camo name="Test" id="0">
+      <Color1 value="1.0 0.0 0.0"/>
+      <Color2 value="0.0 1.0 0.0"/>
+      <Color3 value="0.0 0.0 1.0"/>
+      <Color4 value="1.0 1.0 0.0"/>
+      <PatternScale>10.0</PatternScale>
+      <PatternTexture>Textures/ShadersBase/CamoPatternHard.tga</PatternTexture>
+   </Camo>
+   <Camo name="Desert" id="1">
+      <Color1 value="0.698039216 0.631372549 0.533333333"/>
+      <Color2 value="0.521568627 0.423529412 0.325490196"/>
+      <Color3 value="0.819607843 0.788235294 0.768627451"/>
+      <Color4 value="0.364705882 0.278431373 0.22745098"/>
+      <!--PatternTexture>Shaders/CamoPatternMedium.tga</PatternTexture-->
+   </Camo>
+   <Camo name="Forest" id="2">
+      <Color1 value="0.525490196 0.564705882 0.419607843"/>
+      <Color2 value="0.51372549 0.411764706 0.360784314"/>
+      <Color3 value="0.776470588 0.823529412 0.807843137"/>
+      <Color4 value="0.215686275 0.262745098 0.250980392"/>
+      <!--PatternTexture>Shaders/CamoPatternMedium.tga</PatternTexture-->
+   </Camo>
+   <Camo name="Tundra" id="3">
+      <Color1 value="0.819607843 0.819607843 0.819607843"/>
+      <Color2 value="1.0 1.0 1.0"/>
+      <Color3 value="0.6 0.6 0.6"/>
+      <Color4 value="0.0 0.0 0.0"/>
+      <!--PatternTexture>Shaders/CamoPatternMedium.tga</PatternTexture-->
+   </Camo>
+   <Camo name="Test2" id="4">
+      <Color1 value="1.0 1.0 0.0"/>
+      <Color2 value="0.0 1.0 1.0"/>
+      <Color3 value="1.0 0.0 1.0"/>
+      <Color4 value="0.0 1.0 0.0"/>
+      <PatternTexture>Textures/ShadersBase/CamoPatternHard.tga</PatternTexture>
+      <ConcealMesh>StaticMeshes/conceal_mesh/conceal_net.ive</ConcealMesh>
+   </Camo>
+</Root>
