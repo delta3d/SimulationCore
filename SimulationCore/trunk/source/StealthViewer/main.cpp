@@ -60,35 +60,6 @@ int main(int argc, char *argv[])
    // should set the log level to ERROR only like this: 
    //dtUtil::Log::GetInstance().SetLogLevel(dtUtil::Log::LOG_ERROR);
 
-#ifdef DELTA_WIN32
-
-   const std::string &executable = argv[0];
-   dtUtil::FileInfo info = dtUtil::FileUtils::GetInstance().GetFileInfo(executable);
-   if(info.fileType == dtUtil::FILE_NOT_FOUND)
-   {
-      LOG_ERROR(std::string("Unable to change to the directory of application \"")
-         + executable + "\": file not found.");
-   }
-   else
-   {
-      std::string path = info.path;
-      LOG_INFO("The path to the executable is: " + path);
-      LOG_INFO("Changing to directory \"" + path + dtUtil::FileUtils::PATH_SEPARATOR + "..\".");
-      try
-      {
-         if(!info.path.empty())
-            dtUtil::FileUtils::GetInstance().ChangeDirectory(path);
-
-         dtUtil::FileUtils::GetInstance().ChangeDirectory("..");
-      }
-      catch(const dtUtil::Exception &ex)
-      {
-         ex.LogException(dtUtil::Log::LOG_ERROR);
-      }
-   }
-
-#endif
-
    dtAudio::AudioManager::Instantiate();
 
    //dtCore::SetDataFilePathList(".:" + dtCore::GetDeltaDataPathList());
