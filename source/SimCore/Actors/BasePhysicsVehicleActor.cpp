@@ -94,12 +94,28 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
+      void BasePhysicsVehicleActor::BuildActorComponents()
+      {
+         BaseClass::BuildActorComponents();
+
+         // DEFAULT the Dead Reckoning Algorithm to Velocity Only. It's a prop so will 
+         // be overwriten from the map, unless this is a new vehicle object. 
+         // For a default, static would be dumb and it is very difficult to make 
+         // 'Velocity and Acceleration' be smooth because acceleration is so finicky.
+         if (!HasComponent(dtGame::DeadReckoningHelper::TYPE))
+         {
+            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////
       void BasePhysicsVehicleActor::OnEnteredWorld()
       {
-         BaseClass::OnEnteredWorld();
-
-         // The makes the results smoother when sending updates at a high rate.
+         // This makes the results smoother when sending updates at a high rate.
+         // This is just a default value. It can be overridden in the base class via config options.
          GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+
+         BaseClass::OnEnteredWorld();
 
          // Register with the Physics Component
          dtPhysics::PhysicsComponent* physicsComp = NULL;
