@@ -36,6 +36,9 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
       <Property Name="UseGPUCharacterSkinning">true</Property>
       <!--<Property Name="dtAudio.NumSources">16</Property>-->
 
+      <!-- <Property Name="SimCore.DR.UseCubicSpline">false</Property> -->
+      <!-- <Property Name="SimCore.DR.UseFixedTimeBlends">false</Property> -->
+
       <Property Name="System.DatabasePager.PrecompileObjects">true</Property>
       <Property Name="System.DatabasePager.MaxObjectsToCompilePerFrame">40</Property>
       <Property Name="System.DatabasePager.MinObjectCompileTime">0.002</Property>
