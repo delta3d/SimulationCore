@@ -76,6 +76,11 @@ namespace SimCore
             */
             virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
+            /** 
+             * Override from base class - sets default DR Algorithm to Velocity Only
+             */
+            void BuildActorComponents();
+
             /**
              * Called when the actor has been added to the game manager.
              * You can respond to OnEnteredWorld on either the proxy or actor or both.

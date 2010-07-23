@@ -994,21 +994,11 @@ namespace SimCore
          if (drPublishingComp != NULL && mArticHelper.valid() && mArticHelper->IsDirty())
          {
             drPublishingComp->ForceUpdateAtNextOpportunity();
+            //mArticHelper->SetDirty(false); //Dirty is cleared when we publish elsewhere
          }
 
          BaseClass::OnTickLocal(tickMessage);
       }
-
-      /*
-      ////////////////////////////////////////////////////////////////////////////////////
-      bool Platform::ShouldForceUpdate(const osg::Vec3& pos, const osg::Vec3& rot, bool& fullUpdate)
-      {
-         bool forceUpdate = BaseClass::ShouldForceUpdate(pos, rot, fullUpdate)
-                               || (mArticHelper.valid() && mArticHelper->IsDirty());
-
-         return forceUpdate;
-      }
-      */
 
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::ShouldBeVisible(const SimCore::VisibilityOptions& options)

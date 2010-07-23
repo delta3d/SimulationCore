@@ -462,12 +462,13 @@ namespace SimCore
             // attempt to fix the z-fighting on treads and wheels that are
             // very close to the ground. We move the vehicle up about 3-4 inches...
             mDeadReckoningHelper->SetGroundOffset(0.09);
+
             AddComponent(*mDeadReckoningHelper);
          }
-         else
-         {
-            GetComponent(mDeadReckoningHelper->GetType());
-         }
+         //else
+         //{
+            //GetComponent(mDeadReckoningHelper->GetType());
+         //}
 
 
          // DEAD RECKONING - PUBLISHING ACTOR COMPONENT
@@ -511,6 +512,34 @@ namespace SimCore
          if (mAutoRegisterWithDeadReckoningComponent)
          {
             RegisterWithDeadReckoningComponent();
+         }
+
+         //////////////////////////////
+         // DR CONFIGURATION OPTIONS
+         dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
+
+         // Use Cubic Splines (vs the older Linear Blend) - If not specified, don't override default
+         std::string useCubicSplines = configParams.GetConfigPropertyValue("SimCore.DR.UseCubicSpline", "");
+         if (useCubicSplines == "true" || useCubicSplines == "TRUE" || useCubicSplines == "1")
+         {
+            GetDeadReckoningHelper().SetUseCubicSplineTransBlend(true);
+         }
+         else if (useCubicSplines == "false" || useCubicSplines == "FALSE" || useCubicSplines == "0")
+         {
+            GetDeadReckoningHelper().SetUseCubicSplineTransBlend(false);
+         }
+
+         // Always Use Max Smoothing Time (as opposed to averaged update rate)
+         // Some systems publish regularly, and some don't. If a system doesn't
+         // publish updates like clockwork, then we use the average publish rate to blend. 
+         std::string useFixedTimeBlends = configParams.GetConfigPropertyValue("SimCore.DR.UseFixedTimeBlends", "");
+         if (useFixedTimeBlends == "true" || useFixedTimeBlends == "TRUE" || useFixedTimeBlends == "1")
+         {
+            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+         }
+         else if (useFixedTimeBlends == "false" || useFixedTimeBlends == "FALSE" || useFixedTimeBlends == "0")
+         {
+            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(false);
          }
 
          // The MaxTransSmoothingTime is usually set, but there are very obscure cases where it might

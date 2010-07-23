@@ -143,12 +143,7 @@ namespace SimCore
          }
 
          // Check for update
-         if (mForceUpdateNextChance)
-         {
-            forceUpdate = true;
-            mForceUpdateNextChance = false;
-         }
-         else if (!fullUpdate)
+         if (!fullUpdate)
          {
             // The normal case. The one that makes the decision most of the time. 
             forceUpdate = ShouldForceUpdate(pos, rot);
@@ -165,6 +160,8 @@ namespace SimCore
 
          if (forceUpdate)
          {
+            mForceUpdateNextChance = false; // reset, since we are publishing
+
             // Previously, this was done at the start of the frame, before applying physics.
             // Because the behavior was pulled into the Actor Component, the behavior now happens 
             // after the owner actor is ticked. Theoretically, this should be OK, because the physics
@@ -310,11 +307,10 @@ namespace SimCore
          mMaxUpdateSendRate = maxUpdateSendRate;
 
          // The DR helper should be kept in the loop about the max send rate. 
-         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f)
+         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f && 
+            GetDeadReckoningHelper().GetAlwaysUseMaxSmoothingTime())
          {
-            // If we are setting our smoothing time, then we need to force the DR helper
-            // to ALWAYS use that, instead of using the avg update rate.
-            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+            // Note - AlwaysUseMaxSmoothingTime is controlled via the BaseEntity and a config option
             float transUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
             GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
             float rotUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
@@ -496,6 +492,7 @@ namespace SimCore
             }
             GetDeadReckoningHelper().SetLastKnownVelocity(velocity);
 
+
             // ACCELERATION
 
             /// DAMPEN THE ACCELERATION TO PREVENT WILD SWINGS WITH DEAD RECKONING
@@ -546,12 +543,7 @@ namespace SimCore
                osg::Vec3 distanceMoved = pos - mLastPos;
                osg::Vec3 instantVelocity = distanceMoved / deltaTime;
 
-               // Compute our acceleration as the instantaneous differential of the velocity
-               // Acceleration is dampened before publication - see SetLastKnownValuesBeforePublish().
-               // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
-               // and make your own call to SetCurrentAcceleration().
-               osg::Vec3 changeInVelocity = instantVelocity - mAccumulatedLinearVelocity;
-               mAccumulatedAcceleration = changeInVelocity / deltaTime;
+               osg::Vec3 previousAccumulatedLinearVelocity = mAccumulatedLinearVelocity;
 
                // Compute Vel - either the instant Vel or a blended value over a couple of frames. Blended Velocities tend to make acceleration less useful
                if (mVelocityAverageFrameCount == 1)
@@ -563,6 +555,13 @@ namespace SimCore
                   float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
                   mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
                }
+
+               // Compute our acceleration as the instantaneous differential of the velocity
+               // Acceleration is dampened before publication - see SetLastKnownValuesBeforePublish().
+               // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
+               // and make your own call to SetCurrentAcceleration().
+               osg::Vec3 changeInVelocity = mAccumulatedLinearVelocity - previousAccumulatedLinearVelocity; /*instantVelocity - mAccumulatedLinearVelocity*/;
+               mAccumulatedAcceleration = changeInVelocity / deltaTime;
 
                // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
                // be published, the vehicle will go all over the place nutty. So, we zero it out. 
@@ -594,8 +593,15 @@ namespace SimCore
 
          if (enoughTimeHasPassed)
          {
+            // The actor requested an update once time allows
+            if (mForceUpdateNextChance)
+            {
+               forceUpdateResult = true;
+               //mForceUpdateNextChance = false; reset happens in TickLocal to account for Full Updates.
+            }
+            
             // If no DR is occuring, then we don't want to check.
-            if (GetDeadReckoningHelper().GetDeadReckoningAlgorithm() != dtGame::DeadReckoningAlgorithm::NONE)
+            else if (GetDeadReckoningHelper().GetDeadReckoningAlgorithm() != dtGame::DeadReckoningAlgorithm::NONE)
             {
                // check to see if it's moved or turned enough to warrant one.
                osg::Vec3 distanceMoved = pos - GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
