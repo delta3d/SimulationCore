@@ -48,6 +48,7 @@
 
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
+#include <dtCore/timer.h>
 
 #include <dtUtil/macros.h>
 
@@ -55,14 +56,6 @@
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
-
-#ifdef DELTA_WIN32
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
 
 using dtCore::RefPtr;
 
@@ -114,6 +107,7 @@ namespace SimCore
          {
             dtCore::System::GetInstance().Start();
             mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+            mGM->SetApplication(GetGlobalApplication());
 
             mMachineInfo = new dtGame::MachineInfo;
 
@@ -181,7 +175,7 @@ namespace SimCore
          aumsg.SetAboutActorId(proxy->GetId());
          mGM->SendMessage(aumsg);
 
-         SLEEP(10);
+         dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
          osg::Vec3 position = static_cast<dtDAL::Vec3ActorProperty*>(proxy->GetProperty("Last Known Translation"))->GetValue();
@@ -204,7 +198,7 @@ namespace SimCore
          msg->SetAboutActorId(proxy->GetId());
          mGM->SendMessage(*msg);
 
-         SLEEP(10);
+         dtCore::AppSleep(10);
          dtCore::System::GetInstance().Step();
 
          CPPUNIT_ASSERT_MESSAGE("The ViewerMessageProcessor should have received a player entered world message, and set its internal accordingly.",

@@ -238,7 +238,6 @@ namespace NetDemo
       float minDist = 250.0;
       dtCore::Transformable* enemy = NULL;
 
-      EnemyMineActorProxy* mineProxy = NULL;
       std::vector<dtDAL::ActorProxy*> actorArray;
       GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_MINE_ACTOR_TYPE, actorArray);
       //GetGameActorProxy().GetGameManager()->FindActorsByType(*NetDemoActorRegistry::ENEMY_HELIX_ACTOR_TYPE, actorArray);
@@ -384,7 +383,6 @@ namespace NetDemo
    void TowerActorProxy::BuildPropertyMap()
    {
       BaseClass::BuildPropertyMap();
-      TowerActor& actor = *static_cast<TowerActor*>(GetActor());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

@@ -83,6 +83,7 @@ namespace SimCore
          {
             // Create the Game Manager.
             mGM = new dtGame::GameManager( *GetGlobalApplication().GetScene() );
+            mGM->SetApplication(GetGlobalApplication());
 
             mActComp = new CamoPaintStateActComp();
          }

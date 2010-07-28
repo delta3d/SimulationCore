@@ -34,19 +34,12 @@
 #include <dtDAL/enginepropertytypes.h>
 #include <dtCore/system.h>
 #include <dtCore/scene.h>
+#include <dtCore/timer.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 #include <SimCore/Actors/BaseEntity.h>
 
 #include <UnitTestMain.h>
 #include <dtABC/application.h>
-
-#if (defined (WIN32) || defined (_WIN32) || defined (__WIN32__))
-   #include <dtUtil/mswin.h>
-   #define SLEEP(milliseconds) Sleep((milliseconds))
-#else
-   #include <unistd.h>
-   #define SLEEP(milliseconds) usleep(((milliseconds) * 1000))
-#endif
 
 using dtCore::RefPtr;
 
@@ -90,6 +83,7 @@ void PauseResumeTests::setUp()
    {
       dtCore::System::GetInstance().Start();
       mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
+      mGM->SetApplication(GetGlobalApplication());
       mMachineInfo = new dtGame::MachineInfo;
    }
    catch (const dtUtil::Exception& ex)
@@ -130,7 +124,7 @@ void PauseResumeTests::TestPauseAndResume()
 
    //Step to init the dr stuff, since sim time change should be 0.
    dtCore::System::GetInstance().Step();
-   SLEEP(5);
+   dtCore::AppSleep(5);
    dtCore::System::GetInstance().Step();
 
    osg::Vec3 newPos = gap->GetTranslation();
@@ -139,7 +133,7 @@ void PauseResumeTests::TestPauseAndResume()
    mGM->SetPaused(false);
    CPPUNIT_ASSERT(!mGM->IsPaused());
 
-   SLEEP(5);
+   dtCore::AppSleep(5);
    dtCore::System::GetInstance().Step();
 
    newPos = gap->GetTranslation();
@@ -149,7 +143,7 @@ void PauseResumeTests::TestPauseAndResume()
    CPPUNIT_ASSERT(mGM->IsPaused());
    oldPos = newPos;
 
-   SLEEP(5);
+   dtCore::AppSleep(5);
    dtCore::System::GetInstance().Step();
 
    newPos = gap->GetTranslation();

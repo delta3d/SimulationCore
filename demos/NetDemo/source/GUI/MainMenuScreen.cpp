@@ -61,7 +61,7 @@ namespace NetDemo
       {
          BaseClass::Setup(&root);
 
-         CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
+         //CEGUI::WindowManager& wm = *CEGUI::WindowManager::getSingletonPtr();
 
          // TODO:
       }

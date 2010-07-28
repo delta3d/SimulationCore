@@ -84,6 +84,7 @@ namespace SimCore
          {
             // Create the Game Manager.
             mGM = new dtGame::GameManager( *GetGlobalApplication().GetScene() );
+            mGM->SetApplication(GetGlobalApplication());
 
             // Create a proxy.
             mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::CAMO_CONFIG_ACTOR_TYPE, mProxy);

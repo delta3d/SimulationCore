@@ -67,7 +67,7 @@ namespace Utils
       if (proxy == NULL)
       {
          std::string errorText = "Failed to create actor from prototype named [" + prototypeName + "]. " + errorMsg;
-         throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, errorText, __FILE__, __LINE__);
+         throw dtGame::InvalidParameterException(errorText, __FILE__, __LINE__);
       }
    }
 
