@@ -558,7 +558,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    bool GUIComponent::OnButtonFocusLost(const CEGUI::EventArgs& args)
    {
-      const CEGUI::Window* button = GetWidgetFromEventArgs(args);
+      //const CEGUI::Window* button = GetWidgetFromEventArgs(args);
 
       // Disable special hover effects.
       /*if(button != NULL && mCurrentHoveredWidget != NULL)

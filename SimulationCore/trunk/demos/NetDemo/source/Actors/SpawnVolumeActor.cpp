@@ -165,8 +165,6 @@ namespace NetDemo
 
       BaseClass::BuildPropertyMap();
 
-      SpawnVolumeActor& actor = static_cast<SpawnVolumeActor&>(GetGameActor());
-
       dtDAL::ActorIDActorProperty* actorProp = new dtDAL::ActorIDActorProperty(
          *this, "Enemy", "Enemy",
          dtDAL::ActorIDActorProperty::SetFuncType(this, &SpawnVolumeActorProxy::SetEnemyGroupProperty),
