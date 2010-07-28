@@ -59,6 +59,7 @@ namespace dtGame
 
 namespace SimCore
 {
+   class BaseWeaponEventMessage;
    class DetonationMessage;
    class ShotFiredMessage;
 
@@ -82,6 +83,9 @@ namespace SimCore
          public:
 
             static const dtUtil::RefString DEFAULT_NAME;
+
+            static const std::string CONFIG_PROP_MUNITION_DEFAULT;
+            static const std::string CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT;
 
             /// Constructor
             MunitionsComponent( const std::string& name = DEFAULT_NAME.Get() );
@@ -137,7 +141,7 @@ namespace SimCore
 
             virtual void ProcessMessage( const dtGame::Message& msg );
             
-            DamageHelper* GetHelperByEntityId( const dtCore::UniqueId id );
+            DamageHelper* GetHelperByEntityId( const dtCore::UniqueId& id );
 
             void SetDamage( SimCore::Actors::BaseEntity& entity, DamageType& damage );
             
@@ -149,38 +153,61 @@ namespace SimCore
 
             virtual void OnAddedToGM();
 
-            // This function retrieves the name of the MunitionDamage object that
-            // is mapped to the MunitionTypeActor of name munitionTypeName
-            // @param munitionTypeName The name of the MunitionTypeActor
-            // @return The name of the MunitionDamage that the MunitionTypeActor references.
+            /**
+             * This function retrieves the name of the MunitionDamage object that
+             * is mapped to the MunitionTypeActor of name munitionTypeName
+             *  @param munitionTypeName The name of the MunitionTypeActor
+             * @return The name of the MunitionDamage that the MunitionTypeActor references.
+             */
             const std::string& GetMunitionDamageTypeName( const std::string& munitionTypeName ) const;
 
-            // Set the default munition that will be used in place of any detonations
-            // for which the associated munition is not found in the munition table.
-            // @param munitionName Name of the munition to use for the default detonation effect.
-            void SetDefaultMunitionName( const std::string& munitionName );
-            const std::string& GetDefaultMunitionName() const;
+            /**
+             * Set the default munition that will be used in place of any detonations
+             * for which the associated munition is not found in the munition table.
+             * @param munitionName Name of the munition to use for the default detonation effect.
+             */
+            DECLARE_PROPERTY(std::string, DefaultMunitionName);
 
-            // Set the munition config file that will be loaded whenever the system is restarted. 
-            // It defaults to "Configs:MunitionsConfig.xml". If you want to change it, you MUST 
-            // call this method BEFORE the RESTART message is sent.
-            // @param munitionConfigFileName The config file name that is loaded/reloaded on a restart.
-            void SetMunitionConfigFileName( const std::string& munitionConfigFileName ) { mMunitionConfigPath = munitionConfigFileName; }
-            const std::string& GetMunitionConfigFileName() const { return mMunitionConfigPath; }
+            /**
+             * Set the default munition that will be used in place of any detonations
+             * for which the associated munition is not found in the munition table.
+             * @param munitionName Name of the munition to use for the default detonation effect.
+             */
+            DECLARE_PROPERTY(std::string, DefaultKineticRoundMunitionName);
 
-            // Convenience method for directly retrieving a munition from the contained munition table.
-            // @param munitionName Name of the munition to be retrieved from the munition type table.
-            // @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
-            // @return the specified munition OR a default munition if default munition name has been specified
-            //         OR NULL if neither a match or a default could be found.
+            /**
+             * Set the munition config file that will be loaded whenever the system is restarted.
+             * It defaults to "Configs:MunitionsConfig.xml". If you want to change it, you MUST
+             * call this method BEFORE the RESTART message is sent.
+             * @param munitionConfigFileName The config file name that is loaded/reloaded on a restart.
+             */
+            DECLARE_PROPERTY(std::string, MunitionConfigFileName);
+
+            /**
+             * Encapsulates the complexity of picking a munition based on the message sent in.
+             * It will allow using one of the defaults set if no exact match is found, and it can use
+             * any data on the weapon message to figure out what the munition is.  Also, the method may be overridden
+             * so more complicated work can be done with it.
+             */
+            virtual const SimCore::Actors::MunitionTypeActor* FindMunitionForMessage(const SimCore::BaseWeaponEventMessage& messageData) const;
+
+            /**
+             * Gets a munition from the contained munition table.
+             * @param munitionName Name of the munition to be retrieved from the munition type table.
+             * @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
+             * @return the specified munition OR a default munition if default munition name has been specified
+             *         OR NULL if neither a match or a default could be found.
+             */
             const SimCore::Actors::MunitionTypeActor* GetMunition(
                const std::string& munitionName, const std::string& defaultMunitionName = "" ) const;
 
-            // Convenience method for directly retrieving munition effects info from the contained munition table.
-            // @param munition Munition with effects to be verified and returned.
-            // @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
-            // @return effects from the specified munition OR default munition effects if default munition name has been specified
-            //         OR NULL if neither munition has a valid effect nor a default could be found.
+            /**
+             * Convenience method for directly retrieving munition effects info from the contained munition table.
+             * @param munition Munition with effects to be verified and returned.
+             * @param defaultMunitionName Name of a default munition to be returned if the first munition could not be found.
+             * @return effects from the specified munition OR default munition effects if default munition name has been specified
+             *         OR NULL if neither munition has a valid effect nor a default could be found.
+             */
             const SimCore::Actors::MunitionEffectsInfoActor* GetMunitionEffectsInfo(
                const SimCore::Actors::MunitionTypeActor& munition, const std::string& defaultMunitionName = "" ) const;
 
@@ -203,18 +230,13 @@ namespace SimCore
             // are too many in our queue, it calls CleanupCreatedMunitionsQueue().
             void AddMunitionToCreatedMunitionsQueue(const dtCore::UniqueId &uniqueId);
 
-            // Returns the maximum number of munitions that are allowed to be active. This is a performance 
-            // setting. The Munitions Component will track created munitions. When it needs to create a new 
-            // munition, it will first check that it is not over this count. If there are too many, then it 
-            // will remove the oldest munitions. 
-            int GetMaximumActiveMunitions() {return mMaximumActiveMunitions; }
-
-            // Returns the maximum number of munitions that are allowed to be active. This is a performance 
-            // setting. The Munitions Component will track created munitions. When it needs to create a new 
-            // munition, it will first check that it is not over this count. If there are too many, then it 
-            // will remove the oldest munitions. Note. If you set a new max that is lower than the current 
-            // number of munitions, it should immediately scale smaller.  
-            void SetMaximumActiveMunitions(int newMax);
+            /**
+             * Returns the maximum number of munitions that are allowed to be active. This is a performance
+             * setting. The Munitions Component will track created munitions. When it needs to create a new
+             * munition, it will first check that it is not over this count. If there are too many, then it
+             * will remove the oldest munitions.
+             */
+            DECLARE_PROPERTY(unsigned, MaximumActiveMunitions);
 
          protected:
 
@@ -226,16 +248,10 @@ namespace SimCore
             virtual DamageHelper* CreateDamageHelper(SimCore::Actors::BaseEntity& entity, 
                bool autoNotifyNetwork, float maxDamageAmount);
 
+            void OnDetonation(const dtGame::Message& msg);
+            void OnShotFired(const dtGame::Message& msg);
+
          private:
-
-            // The path to the munition config file that contains all the damage
-            // tables to be loaded.
-            std::string mMunitionConfigPath;
-
-            // The name of the default munition to be used in place of munition detonations
-            // that have not been defined in the munition table. This also points to the 
-            // default munition effects info object used to setup the detonation effect.
-            std::string mDefaultMunitionName;
 
             // This map holds onto all damages helpers. Each damage helper is mapped
             // to the entity's ID of the entity that is needing the damage help.
@@ -278,7 +294,6 @@ namespace SimCore
             // useful for when we get in trouble with particles and such. If we have too 
             // many munitions, then we can simply kill off the oldest. 
             std::deque<dtCore::UniqueId> mCreatedMunitionsQueue;
-            int mMaximumActiveMunitions;
 
       };
 

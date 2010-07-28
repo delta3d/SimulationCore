@@ -40,138 +40,141 @@ namespace SimCore
       class DetonationMunitionType;
    }
 
-   class SIMCORE_EXPORT DetonationMessage : public dtGame::Message
+   /**
+    * Abstract base class for weapon events, weapon fire or detonation
+    */
+   class SIMCORE_EXPORT BaseWeaponEventMessage: public dtGame::Message
    {
-      public:
+   protected:
 
-         /// Constructor
-         DetonationMessage();
+      BaseWeaponEventMessage();
+      /// Destructor
+      virtual ~BaseWeaponEventMessage();
 
-         /**
-          * Sets the detonation location of the message parameter
-          * @param loc The new location
-          */
-         void SetDetonationLocation(const osg::Vec3 &loc);
+   public:
 
-         /**
-          * Get the detonation location of the message parameter
-          * @return The location
-          */
-         osg::Vec3 GetDetonationLocation() const;
+      /**
+       * Sets the event identifier
+       * @param eventID The event identifier
+       */
+      void SetEventIdentifier(unsigned short eventID);
+      unsigned short GetEventIdentifier() const;
 
-         /**
-          * Sets the detonation result code message parameter
-          * @param code The new code
-          */
-         void SetDetonationResultCode(unsigned char code);
+      /** Gets the new munition Type name - mapped to an enum in DetonationActor.
+       * @return A string containing the munition type.
+       */
+      const std::string& GetMunitionType() const;
 
-         /**
-          * Gets the detonation result code
-          * @return The code
-          */
-         unsigned char GetDetonationResultCode() const;
+      /**
+       * Sets the new munition Type name - mapped to an enum in DetonationActor.
+       * @param munitionType The name of the munition type enum in DetonationActor.
+       */
+      void SetMunitionType( const std::string& detType );
 
-         /**
-          * Sets the final velocity vector
-          * @param vec The new vector
-          */
-         void SetFinalVelocityVector(const osg::Vec3 &vec);
+      /// Sets the number of shots this message represents.
+      void SetQuantityFired( unsigned short quantity );
+      unsigned short GetQuantityFired() const;
 
-         /**
-          * Gets the final velocity vector
-          * @return The velocity vector
-          */
-         osg::Vec3 GetFinalVelocityVector() const;
+      void SetRateOfFire( unsigned short rate );
+      unsigned short GetRateOfFire() const;
 
-         /**
-          * Sets the location of the detonation relative to the target, in world units.
-          * The vector is from the target to the point of detonation.
-          * @param vec The relative detonation offset from the target.
-          */
-         void SetRelativeDetonationLocation(const osg::Vec3 &vec);
+      /// Set the raw warhead type code
+      void SetWarheadType( unsigned short warhead );
+      unsigned short GetWarheadType() const;
 
-         /**
-          * Gets the location of the detonation relative to the target, in world units.
-          * The vector is from the target to the point of detonation.
-          * @return The relative detonation offset from the target.
-          */
-         osg::Vec3 GetRelativeDetonationLocation() const;
+      /// Set the raw fuse type code
+      void SetFuseType( unsigned short fuse );
+      unsigned short GetFuseType() const;
 
-         /**
-          * Sets the event identifier
-          * @param eventID The event identifier
-          */
-         void SetEventIdentifier(unsigned short eventID);
+   };
 
-         /**
-          * Gets the event identifier
-          * @return The event identifier
-          */
-         unsigned short GetEventIdentifier() const;
+   class SIMCORE_EXPORT DetonationMessage : public BaseWeaponEventMessage
+   {
+   public:
 
-         /**
-          * Gets the new munition Type name - mapped to an enum in DetonationActor.
-          * @return A string containing the munition type.
-          */
-         const std::string GetMunitionType() const;
+      /// Constructor
+      DetonationMessage();
 
-         /**
-          * Sets the new munition Type name - mapped to an enum in DetonationActor.
-          * @param munitionType The name of the munition type enum in DetonationActor.
-          */
-         void SetMunitionType( const std::string& detType );
+      /**
+       * Sets the detonation location of the message parameter
+       * @param loc The new location
+       */
+      void SetDetonationLocation(const osg::Vec3& loc);
 
-         /**
-          * Sets the number of shots this message represents.
-          * Quantity would be greater than 1 for cluster bombs.
-          */
-         void SetQuantityFired( unsigned short quantity );
-         unsigned short GetQuantityFired() const;
+      /**
+       * Get the detonation location of the message parameter
+       * @return The location
+       */
+      const osg::Vec3& GetDetonationLocation() const;
 
-         void SetRateOfFire( unsigned short rate );
-         unsigned short GetRateOfFire() const;
+      /**
+       * Sets the detonation result code message parameter
+       * @param code The new code
+       */
+      void SetDetonationResultCode(unsigned char code);
 
-         /**
-          * Set the raw warhead type code
-          */
-         void SetWarheadType( unsigned short warhead );
-         unsigned short GetWarheadType() const;
+      /**
+       * Gets the detonation result code
+       * @return The code
+       */
+      unsigned char GetDetonationResultCode() const;
 
-         /**
-          * Set the raw fuse type code
-          */
-         void SetFuseType( unsigned short fuse );
-         unsigned short GetFuseType() const;
+      /**
+       * Sets the final velocity vector
+       * @param vec The new vector
+       */
+      void SetFinalVelocityVector(const osg::Vec3& vec);
 
-      protected:
-         /// Destructor
-         virtual ~DetonationMessage();
+      /**
+       * Gets the final velocity vector
+       * @return The velocity vector
+       */
+      const osg::Vec3& GetFinalVelocityVector() const;
 
-      private:
+      /**
+       * Sets the location of the detonation relative to the target, in world units.
+       * The vector is from the target to the point of detonation.
+       * @param vec The relative detonation offset from the target.
+       */
+      void SetRelativeDetonationLocation(const osg::Vec3& vec);
+
+      /**
+       * Gets the location of the detonation relative to the target, in world units.
+       * The vector is from the target to the point of detonation.
+       * @return The relative detonation offset from the target.
+       */
+      const osg::Vec3& GetRelativeDetonationLocation() const;
+
+
+   protected:
+      /// Destructor
+      virtual ~DetonationMessage();
+
+   private:
 
    };
 
    class SIMCORE_EXPORT ToolMessage : public dtGame::Message
    {
-      public:
+   public:
 
-         /// Constructor
-         ToolMessage();
+      /// Constructor
+      ToolMessage();
 
-         /**
-          * Enables the tool
-          * @param enable True to enable, false to disable
-          */
-         void SetEnabled(bool enable);
+      /**
+       * Enables the tool
+       * @param enable True to enable, false to disable
+       */
+      void SetEnabled(bool enable);
 
-         /**
-          * Returns true if the tool is enabled
-          */
-         bool IsEnabled() const;
+      /**
+       * Returns true if the tool is enabled
+       */
+      bool IsEnabled() const;
 
-      protected:
-         /// Destructor
-         virtual ~ToolMessage();
+   protected:
+      /// Destructor
+      virtual ~ToolMessage();
    };
 
 
@@ -183,93 +186,65 @@ namespace SimCore
     */
    class SIMCORE_EXPORT AttachToActorMessage : public dtGame::Message
    {
-      public:
+   public:
 
-         /// Constructor
-         AttachToActorMessage();
+      /// Constructor
+      AttachToActorMessage();
 
-         /**
-          * Sets Which actor to attach to.
-          * @param actorId the actor to attach to.
-          */
-         void SetAttachToActor(const dtCore::UniqueId& actorId);
+      /**
+       * Sets Which actor to attach to.
+       * @param actorId the actor to attach to.
+       */
+      void SetAttachToActor(const dtCore::UniqueId& actorId);
 
-         /**
-          * @return the actor id the recipient should attach to.
-          */
-         const dtCore::UniqueId& GetAttachToActor() const;
+      /**
+       * @return the actor id the recipient should attach to.
+       */
+      const dtCore::UniqueId& GetAttachToActor() const;
 
-         /// Sets the node name to use as an attach point.  Empty means attach to the entity as a whole.
-         void SetAttachPointNodeName(const std::string& name);
+      /// Sets the node name to use as an attach point.  Empty means attach to the entity as a whole.
+      void SetAttachPointNodeName(const std::string& name);
 
-         /// @return the node name to use as an attach point.  Empty means attach to the entity as a whole.
-         const std::string& GetAttachPointNodeName() const;
+      /// @return the node name to use as an attach point.  Empty means attach to the entity as a whole.
+      const std::string& GetAttachPointNodeName() const;
 
-         /// Sets the initial rotation offset in reference to the entity to which to attach.
-         void SetInitialAttachRotationHPR(const osg::Vec3& hpr) const;
-         /// @return the initial rotation offset in reference to the entity to which to attach.
-         const osg::Vec3& GetInitialAttachRotationHPR() const;
-      protected:
-         /// Destructor
-         virtual ~AttachToActorMessage();
-         dtDAL::NamedActorParameter& mAttachToActorParam;
-         dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
-         dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
+      /// Sets the initial rotation offset in reference to the entity to which to attach.
+      void SetInitialAttachRotationHPR(const osg::Vec3& hpr) const;
+      /// @return the initial rotation offset in reference to the entity to which to attach.
+      const osg::Vec3& GetInitialAttachRotationHPR() const;
+   protected:
+      /// Destructor
+      virtual ~AttachToActorMessage();
+      dtDAL::NamedActorParameter& mAttachToActorParam;
+      dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
+      dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
    };
 
    /**
     * @class FireMessage
-    * @brief This class will map to a fire message from JSAF
+    * Sent when a weapon is fired.
     */
-   class SIMCORE_EXPORT ShotFiredMessage : public dtGame::Message
+   class SIMCORE_EXPORT ShotFiredMessage : public BaseWeaponEventMessage
    {
-      public:
+   public:
 
-         /// Constructor
-         ShotFiredMessage();
+      /// Constructor
+      ShotFiredMessage();
 
-         // Sets the event identifier
-         // @param eventID The event identifier
-         void SetEventIdentifier(unsigned short eventID);
-         unsigned short GetEventIdentifier() const;
+      /// @return the location of the where a shot is fired
+      const osg::Vec3& GetFiringLocation() const;
 
-         // Returns the location of the where a shot is fired
-         osg::Vec3 GetFiringLocation() const;
+      /// Sets the location of a shot being fired
+      void SetFiringLocation(const osg::Vec3& location);
 
-         // Sets the location of a shot being fired
-         void SetFiringLocation(const osg::Vec3 &location);
+      /// Sets the velocity of the shot at the point it left the weapon.
+      void SetInitialVelocityVector( const osg::Vec3& velocity );
+      const osg::Vec3& GetInitialVelocityVector() const;
 
-         // Gets the new munition Type name - mapped to an enum in DetonationActor.
-         // @return A string containing the munition type.
-         const std::string GetMunitionType() const;
+   protected:
 
-         // Sets the new munition Type name - mapped to an enum in DetonationActor.
-         // @param munitionType The name of the munition type enum in DetonationActor.
-         void SetMunitionType( const std::string& detType );
-
-         // Sets the number of shots this message represents.
-         void SetQuantityFired( unsigned short quantity );
-         unsigned short GetQuantityFired() const;
-
-         void SetRateOfFire( unsigned short rate );
-         unsigned short GetRateOfFire() const;
-
-         // Sets the velocity of the shot at the point it left the weapon.
-         void SetInitialVelocityVector( const osg::Vec3& velocity );
-         osg::Vec3 GetInitialVelocityVector() const;
-
-         // Set the raw warhead type code
-         void SetWarheadType( unsigned short warhead );
-         unsigned short GetWarheadType() const;
-
-         // Set the raw fuse type code
-         void SetFuseType( unsigned short fuse );
-         unsigned short GetFuseType() const;
-
-      protected:
-
-         /// Destructor
-         virtual ~ShotFiredMessage();
+      /// Destructor
+      virtual ~ShotFiredMessage();
    };
 
    /**
@@ -300,16 +275,16 @@ namespace SimCore
          void SetName(const std::string& newName);
 
          ///@return the translation of a stealth view.
-         osg::Vec3 GetTranslation() const;
+         const osg::Vec3& GetTranslation() const;
 
          /// Sets the translation of a shot being fired.
-         void SetTranslation(const osg::Vec3 &newTranslation);
+         void SetTranslation(const osg::Vec3& newTranslation);
 
          ///@return the rotation of the stealth view.
-         osg::Vec3 GetRotation() const;
+         const osg::Vec3& GetRotation() const;
 
          /// Sets the rotation of the stealth view.
-         void SetRotation(const osg::Vec3 &newRotation);
+         void SetRotation(const osg::Vec3& newRotation);
 
          /// Sets the horizontal field of view.
          void SetHorizontalFOV(const float hFOV);

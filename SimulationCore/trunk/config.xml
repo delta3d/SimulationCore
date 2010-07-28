@@ -34,7 +34,6 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
       <Property Name="System.MaxTimeBetweenDraws">0.2</Property>
       <Property Name="System.UseFixedTimeStep">true</Property>
       <Property Name="UseGPUCharacterSkinning">true</Property>
-      <!--<Property Name="dtAudio.NumSources">16</Property>-->
 
       <!-- <Property Name="SimCore.DR.UseCubicSpline">false</Property> -->
       <!-- <Property Name="SimCore.DR.UseFixedTimeBlends">false</Property> -->
@@ -62,7 +61,8 @@ To run DriverDemo, see the special settings in DriverDemo's config.xml file
       <!-- SimCore Settings -->
       <Property Name="MunitionsComponent.MaximumActiveMunitions">200</Property>
       <Property Name="SimCore.Articulation.ReverseHeading">false</Property>
-      <Property Name="DefaultMunition">Medium HE</Property>
+      <Property Name="MunitionsComponent.DefaultMunition">Medium HE</Property>
+      <Property Name="MunitionsComponent.DefaultKineticRoundMunition"></Property>
       <Property Name="Binoculars.ImageOverride">Periscope</Property>
       <!--<Property Name="Feature.ReticleItemText">true</Property>-->
 

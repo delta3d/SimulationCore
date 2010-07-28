@@ -48,7 +48,7 @@ namespace SimCore
          physicsComponent.SetGroupCollision(GROUP_PARTICLE, GROUP_PARTICLE, false);// particles do not interact with itself
          physicsComponent.SetGroupCollision(GROUP_BULLET, GROUP_BULLET, false);// bullets do not interact with itself
 
-         physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with theirselves
+         physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_HUMAN_LOCAL, true); // characters interact with themselves
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_BULLET, false); // characters interact with bullets
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_PARTICLE, true); // characters interact with physics particles
          physicsComponent.SetGroupCollision(GROUP_HUMAN_LOCAL, GROUP_TERRAIN, true);  // characters interact with world
@@ -69,7 +69,7 @@ namespace SimCore
 
          // 26 is our boat actor.
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_WATER, true);  // boats can drive on the water
-         physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_BULLET, true);  // bullets don't hit anything directly.
+         physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_BULLET, false);  // bullets don't hit anything directly.
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_VEHICLE_WATER, true);  // boats can drive on the water
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_PARTICLE, true);  // boats and particles
          physicsComponent.SetGroupCollision(GROUP_VEHICLE_WATER, GROUP_HUMAN_REMOTE, true);  // bullets remote humans

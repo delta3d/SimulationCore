@@ -22,13 +22,8 @@
 */
 #include <prefix/SimCorePrefix.h>
 
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaWorldComponent.h>
-#include <PhysicsGlobals.h>
-#else
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicsobject.h>
-#endif
 
 #include <SimCore/PhysicsTypes.h>
 
@@ -52,13 +47,6 @@ namespace SimCore
       PlatformWithPhysics::PlatformWithPhysics(PlatformActorProxy& proxy)
       : Platform(proxy)
       {
-#ifdef AGEIA_PHYSICS
-         mPhysicsHelper = new dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper(proxy);
-         mPhysicsHelper->SetBaseInterfaceClass(this);
-         mPhysicsHelper->SetAgeiaMass(500.0f);
-         mPhysicsHelper->SetIsKinematic(true);
-         mPhysicsHelper->SetPhysicsModelTypeEnum(dtAgeiaPhysX::NxAgeiaPrimitivePhysicsHelper::PhysicsModelTypeEnum::CONVEXMESH);
-#else
          mPhysicsHelper = new dtPhysics::PhysicsHelper(proxy);
          dtCore::RefPtr<dtPhysics::PhysicsObject> physObj= new dtPhysics::PhysicsObject(DEFAULT_NAME);
          physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
@@ -66,7 +54,6 @@ namespace SimCore
          physObj->SetMass(500.0f);
          mPhysicsHelper->AddPhysicsObject(*physObj);
          mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
-#endif
          mLoadGeomFromNode = false;
       }
 
@@ -111,9 +98,6 @@ namespace SimCore
          if(mLoadGeomFromNode)
          {
             SetName(BUILDING_DEFAULT_NAME);
-#ifdef AGEIA_PHYSICS
-            mPhysicsHelper->SetCollisionStaticMesh(mNodeForGeometry.get(), NxVec3(0,0,0), false, "");
-#else
             mPhysicsHelper->GetMainPhysicsObject()->CreateFromProperties(mNodeForGeometry.get());
             mPhysicsHelper->GetMainPhysicsObject()->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
 
@@ -123,7 +107,6 @@ namespace SimCore
             offsetXform.Set(bodyOffset);
 
             mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
-#endif
          }
          else // this is for objects moving around, in our case vehicles
          {
@@ -159,7 +142,7 @@ namespace SimCore
             checkValue = GetGameActorProxy().GetProperty(PlatformActorProxy::PROPERTY_MESH_DESTROYED_ACTOR)->ToString();
          }
 
-         if(checkValue.empty())
+         if (checkValue.empty())
          {
             LOG_DEBUG("Unable to load file, resource was not valid! This is for actor \"" +
                GetUniqueId().ToString() + ". However this is called from " +
@@ -167,33 +150,12 @@ namespace SimCore
             return;
          }
          else
-#ifdef AGEIA_PHYSICS
-         {
-            // release if something is already made for this actor
-            mPhysicsHelper->RemovePhysicsObject(DEFAULT_NAME);
-
-            dtCore::Transform ourTransform, zeroTransform;
-            GetTransform(ourTransform);
-            osg::Matrix rot;
-            ourTransform.GetRotation(rot);
-            rot.invert(rot);
-
-            NxMat34 sendInMatrix(NxMat33( NxVec3(rot(0,0), rot(0,1), rot(0,2)),
-                                          NxVec3(rot(1,0), rot(1,1), rot(1,2)),
-                                          NxVec3(rot(2,0), rot(2,1), rot(2,2))),
-                                 NxVec3(0,0,0));
-            mPhysicsHelper->SetResourceName(checkValue);
-            mPhysicsHelper->SetLoadAsCached(true);
-
-            mPhysicsHelper->InitializePrimitive(&GetScaleMatrixTransform(), sendInMatrix);
-         }
-         mPhysicsHelper->SetAgeiaFlags(dtAgeiaPhysX::AGEIA_FLAGS_PRE_UPDATE | dtAgeiaPhysX::AGEIA_FLAGS_POST_UPDATE);
-#else
          {
             dtCore::RefPtr<dtPhysics::PhysicsObject> physObj = mPhysicsHelper->GetPhysicsObject(DEFAULT_NAME);
 
             if (physObj.valid())
             {
+               // it's re-added below, don't worry.
                mPhysicsHelper->RemovePhysicsObject(*physObj);
             }
             else
@@ -206,7 +168,7 @@ namespace SimCore
             }
 
             // TODO, if it changes to local again, it should figure out what the property was configured to be.
-            // users also probably want to be able to configure with remote does.
+            // users also probably want to be able to configure what remote does.
             if (IsRemote())
             {
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
@@ -225,38 +187,11 @@ namespace SimCore
 
             mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
-            physObj->CreateFromProperties(&GetScaleMatrixTransform());
+            physObj->CreateFromProperties(&GetScaleMatrixTransform(), true);
 
          }
-#endif
       }
 
-#ifdef AGEIA_PHYSICS
-      /////////////////////////////////////////////////////////////////////////
-      void PlatformWithPhysics::AgeiaPrePhysicsUpdate()
-      {
-         if(!mLoadGeomFromNode)
-         {
-            dtCore::Transform xform;
-            GetTransform(xform);
-
-            dtPhysics::PhysicsObject* physObj = mPhysicsHelper->GetMainPhysicsObject();
-            if (physObj != NULL)
-            {
-               NxMat34 mat;
-               dtAgeiaPhysX::TransformToNxMat34(mat, xform);
-               if (physObj->readBodyFlag(NX_BF_KINEMATIC))
-               {
-                  physObj->moveGlobalPose(mat);
-               }
-               else
-               {
-                  physObj->setGlobalPose(mat);
-               }
-            }
-         }
-      }
-#else
       ////////////////////////////////////////////////////////////////////
       dtPhysics::PhysicsHelper* PlatformWithPhysics::GetPhysicsHelper()
       {
@@ -278,7 +213,6 @@ namespace SimCore
          }
       }
 
-#endif
       ////////////////////////////////////////////////////////////////////
       // Actor Proxy Below here
       ////////////////////////////////////////////////////////////////////
@@ -318,13 +252,9 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       dtCore::RefPtr<dtDAL::ActorProperty> PlatformWithPhysicsActorProxy::GetDeprecatedProperty(const std::string& name)
       {
-#ifndef AGEIA_PHYSICS
          PlatformWithPhysics* actor = NULL;
          GetActor(actor);
          return actor->GetPhysicsHelper()->GetDeprecatedProperty(name);
-#else
-         return NULL;
-#endif
       }
 
    } // namespace

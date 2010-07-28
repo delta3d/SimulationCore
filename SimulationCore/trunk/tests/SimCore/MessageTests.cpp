@@ -434,7 +434,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
 
-            SimCore::AttachToActorMessage &aam = static_cast<SimCore::AttachToActorMessage&>(*msg);
+            SimCore::AttachToActorMessage& aam = static_cast<SimCore::AttachToActorMessage&>(*msg);
             aam.SetAttachToActor(t80Proxy->GetId());
             aam.SetAboutActorId(playerProxy->GetId());
 
@@ -442,7 +442,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             dtCore::AppSleep(10);
             dtCore::System::GetInstance().Step();
 
-            dtGame::Invokable *invoke = playerActor->GetGameActorProxy().GetInvokable("AttachToActor");
+            dtGame::Invokable* invoke = playerActor->GetGameActorProxy().GetInvokable("AttachToActor");
             CPPUNIT_ASSERT_MESSAGE("The AttachToActor invokable should not be NULL", invoke != NULL);
             invoke->Invoke(aam);
 
