@@ -535,11 +535,11 @@ namespace SimCore
          std::string useFixedTimeBlends = configParams.GetConfigPropertyValue("SimCore.DR.UseFixedTimeBlends", "");
          if (useFixedTimeBlends == "true" || useFixedTimeBlends == "TRUE" || useFixedTimeBlends == "1")
          {
-            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+            GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
          }
          else if (useFixedTimeBlends == "false" || useFixedTimeBlends == "FALSE" || useFixedTimeBlends == "0")
          {
-            GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(false);
+            GetDeadReckoningHelper().SetUseFixedSmoothingTime(false);
          }
 
          // The MaxTransSmoothingTime is usually set, but there are very obscure cases where it might

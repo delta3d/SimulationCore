@@ -89,6 +89,8 @@ namespace SimCore
 
             void CleanUp();
 
+            void ClearLinesAndParticles();
+
          protected:
             void SetupVelocityArrows();
             void SetupAccelerationArrows();

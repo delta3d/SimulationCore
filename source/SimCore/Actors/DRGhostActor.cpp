@@ -379,6 +379,23 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////
+      void DRGhostActor::ClearLinesAndParticles()
+      {
+         // Make all of our lines go away
+         osg::Vec3 zeros(0.0f, 0.0f, 0.0f);
+         for(mArrowCurrentIndex = 0; ((unsigned int)mArrowCurrentIndex) < mArrowMaxNumTrails; ++mArrowCurrentIndex)
+         {
+            SetCurrentLine(*mVelocityArrowGeom.get(), zeros, zeros);
+            SetCurrentLine(*mAccelerationArrowGeom.get(), zeros, zeros);
+         }
+         mArrowCurrentIndex = 0;
+
+         // Clear out our particles
+         mUpdateTrailParticles->ResetTime();
+         mTrailParticles->ResetTime();
+      }
+
+      //////////////////////////////////////////////////////////////////////
       void DRGhostActor::UpdateOurPosition()
       {
          if (mSlavedEntity.valid())

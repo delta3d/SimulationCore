@@ -59,6 +59,8 @@ namespace NetDemo
    const dtUtil::RefString InputComponent::DOF_NAME_RINGMOUNT("dof_turret_01");
    const dtUtil::RefString InputComponent::DOF_NAME_VIEW_01("dof_view_01");
    const dtUtil::RefString InputComponent::DOF_NAME_VIEW_02("dof_view_02");
+   const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_01("dof_topdown_view_01");
+   const dtUtil::RefString InputComponent::DOF_TOPDOWN_VIEW_02("dof_topdown_view_02");
 
    //////////////////////////////////////////////////////////////
    InputComponent::InputComponent(const std::string& name)
@@ -68,11 +70,14 @@ namespace NetDemo
       , mCurrentViewPointIndex(0)
       , mIsInGameState(false)
       , mOriginalPublishTimesPerSecond(3.0f)
+      , mMaxPublishRate(5)
    {
       mViewPointList.push_back(DOF_NAME_WEAPON_PIVOT);
       mViewPointList.push_back(DOF_NAME_RINGMOUNT);
       mViewPointList.push_back(DOF_NAME_VIEW_01);
       mViewPointList.push_back(DOF_NAME_VIEW_02);
+      mViewPointList.push_back(DOF_TOPDOWN_VIEW_01);
+      mViewPointList.push_back(DOF_TOPDOWN_VIEW_02);
    }
 
    //////////////////////////////////////////////////////////////
@@ -275,6 +280,21 @@ namespace NetDemo
                break;
             }
 
+         // CLEAR OUT THE GHOST PARTICLES
+         case '4':
+            {
+               if (mDRGhostActorProxy.valid())
+               {
+                  SimCore::Actors::DRGhostActor* ghost = NULL;
+                  mDRGhostActorProxy->GetActor(ghost);
+                  ghost->ClearLinesAndParticles();
+
+                  // toggle the visible arrows
+                  ghost->SetArrowDrawScalar((ghost->GetArrowDrawScalar() > 0) ? 0.0f : 1.0f);
+               }
+               break;
+            }
+
          case '5':
             {
                ModifyVehicleSmoothingRate(0.90);
@@ -287,12 +307,12 @@ namespace NetDemo
             }
          case '7':
             {
-               ModifyVehiclePublishRate(1.10);
+               ModifyVehiclePublishRate(-1);//1.10);
                break;
             }
          case '8':
             {
-               ModifyVehiclePublishRate(0.901);
+               ModifyVehiclePublishRate(+1);//0.901);
                break;
             }
          case '9':
@@ -546,6 +566,45 @@ namespace NetDemo
       mWeaponMM->SetArticulationHelper(mVehicle->GetArticulationHelper());
 
       EnableMotionModels();
+
+      /////////////////////////////////
+      // Add 2 topdown nodes, for debugging purposes.
+      AddTopDownNode(25.0f, DOF_TOPDOWN_VIEW_01);
+      AddTopDownNode(35.0f, DOF_TOPDOWN_VIEW_02);
+
+   }
+
+   /////////////////////////////////////////////////////////////////////////////
+   void InputComponent::AddTopDownNode(float height, const dtUtil::RefString& nodeName)
+   {
+      if (!mVehicle.valid())
+      {
+         return;
+      }
+
+      // Make sure the node doesn't already exist. 
+      osg::Group* group = NULL;
+      group = mVehicle->GetNodeCollector()->GetMatrixTransform(nodeName);
+      if (group == NULL)
+      {
+         group = mVehicle->GetNodeCollector()->GetDOFTransform(nodeName);
+      }
+
+      // We didn't find it, so we continue.
+      if (group == NULL)
+      {
+         // Create a new node
+         dtCore::RefPtr<osg::MatrixTransform> topdownNode = new osg::MatrixTransform();
+         // Set it's pos and name
+         osg::Matrix transUp = osg::Matrix::translate(0.0f, 0.0f, height); // move us up X meters.
+         osg::Matrix rotDown = osg::Matrix::rotate(-M_PI*0.5, 1, 0, 0); // look down at us
+         osg::Matrix offset = rotDown * transUp;
+         topdownNode->setMatrix(offset);
+         topdownNode->setName(nodeName);
+         // And add it as a child so we can attach to it.
+         osg::ref_ptr<osg::Group> vehicleRootNode(dynamic_cast<osg::Group*>(mVehicle->GetOSGNode()));
+         vehicleRootNode->addChild(topdownNode.get());
+      }
    }
 
    /////////////////////////////////////////////////////////////////////////////
@@ -737,21 +796,25 @@ namespace NetDemo
    }
 
    ////////////////////////////////////////////////////////////////////////////////
-   void InputComponent::ModifyVehiclePublishRate(float scaleFactor)
+   void InputComponent::ModifyVehiclePublishRate(int incrementValue)
    {
       SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
          dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
       if (physVehicle != NULL)
       {
+         mMaxPublishRate += incrementValue;
+         dtUtil::Clamp(mMaxPublishRate, 0, 60);
+         physVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate((float) mMaxPublishRate);
+         std::cout << "TEST - Num Publishes Per Second[" << mMaxPublishRate <<  "]." << std::endl;
+         /*
          float timesPerSecondRate = physVehicle->GetDRPublishingActComp()->GetMaxUpdateSendRate();
          timesPerSecondRate *= scaleFactor;
          physVehicle->GetDRPublishingActComp()->SetMaxUpdateSendRate(timesPerSecondRate);
          float rateInSeconds = 1.0f / timesPerSecondRate;
-
          //mVehicle->GetDeadReckoningHelper().SetMaxRotationSmoothingTime(0.97 * rateInSeconds);
          //mVehicle->GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(0.97 * rateInSeconds);
-
          std::cout << "TEST - Min time between publishes[" << rateInSeconds <<  "]." << std::endl;
+         */
       }
    }
 
@@ -805,6 +868,11 @@ namespace NetDemo
       }
       else if (mDebugToggleMode == DEBUG_TOGGLE_GROUND_CLAMPING)
       {
+         mDebugToggleMode = DEBUG_FIXED_BLEND_TIME;
+         LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DEBUG_FIXED_BLEND_TIME. Press 0 to do toggle.");
+      }
+      else if (mDebugToggleMode == DEBUG_FIXED_BLEND_TIME)
+      {
          mDebugToggleMode = DEBUG_TOGGLE_DR_ALGORITHM;
          LOG_ALWAYS("DEBUG -- Changing Toggle Mode to DR_ALGORITHM. Press 0 to do toggle.");
       }
@@ -829,6 +897,32 @@ namespace NetDemo
       {
          ToggleGroundClamping();
       }
+      else if (mDebugToggleMode == DEBUG_FIXED_BLEND_TIME)
+      {
+         ToggleFixedBlendTime();
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////
+   void InputComponent::ToggleFixedBlendTime()
+   {
+      // Toggle the publishing of angular velocity
+      SimCore::Actors::BasePhysicsVehicleActor* physVehicle =
+         dynamic_cast<SimCore::Actors::BasePhysicsVehicleActor*>(mVehicle.get());
+      if (physVehicle != NULL && physVehicle->GetDRPublishingActComp() != NULL)
+      {
+         if (physVehicle->GetDeadReckoningHelper().GetUseFixedSmoothingTime())
+         {
+            physVehicle->GetDeadReckoningHelper().SetUseFixedSmoothingTime(false);
+            LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to FALSE");
+         }
+         else
+         {
+            physVehicle->GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
+            LOG_ALWAYS("TEST -- Toggling - Always Use Max Smoothing Time to TRUE");
+         }
+      }
+
    }
 
    ////////////////////////////////////////////////////////////////////////////////

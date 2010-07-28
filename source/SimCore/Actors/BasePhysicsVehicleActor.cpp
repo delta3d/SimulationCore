@@ -98,13 +98,12 @@ namespace SimCore
       {
          BaseClass::BuildActorComponents();
 
-         // DEFAULT the Dead Reckoning Algorithm to Velocity Only. It's a prop so will 
+         // DEFAULT the Dead Reckoning Algorithm to Velocity And Acceleration. It's a prop so will 
          // be overwriten from the map, unless this is a new vehicle object. 
-         // For a default, static would be dumb and it is very difficult to make 
-         // 'Velocity and Acceleration' be smooth because acceleration is so finicky.
+         // For a default, static would be dumb. Velocity might be OK. 
          if (!HasComponent(dtGame::DeadReckoningHelper::TYPE))
          {
-            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_ONLY);
+            GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::VELOCITY_AND_ACCELERATION);
          }
       }
 
@@ -113,7 +112,7 @@ namespace SimCore
       {
          // This makes the results smoother when sending updates at a high rate.
          // This is just a default value. It can be overridden in the base class via config options.
-         GetDeadReckoningHelper().SetAlwaysUseMaxSmoothingTime(true);
+         GetDeadReckoningHelper().SetUseFixedSmoothingTime(true);
 
          BaseClass::OnEnteredWorld();
 
