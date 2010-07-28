@@ -33,13 +33,10 @@
 
 namespace SimCore
 {
-   DetonationMessage::DetonationMessage() : Message()
+   ////////////////////////////////////////////////////////////////
+   BaseWeaponEventMessage::BaseWeaponEventMessage()
    {
-      AddParameter(new dtGame::Vec3MessageParameter("DetonationLocation"));
-      AddParameter(new dtGame::UnsignedCharMessageParameter("DetonationResultCode"));
       AddParameter(new dtGame::UnsignedShortIntMessageParameter("EventIdentifier"));
-      AddParameter(new dtGame::Vec3MessageParameter("FinalVelocityVector"));
-      AddParameter(new dtGame::Vec3MessageParameter("RelativeDetonationLocation"));
       AddParameter(new dtGame::StringMessageParameter("MunitionType"));
       AddParameter(new dtGame::UnsignedShortIntMessageParameter("QuantityFired"));
       AddParameter(new dtGame::UnsignedShortIntMessageParameter("RateOfFire"));
@@ -47,17 +44,120 @@ namespace SimCore
       AddParameter(new dtGame::UnsignedShortIntMessageParameter("WarheadType"));
    }
 
+   ////////////////////////////////////////////////////////////////
+   BaseWeaponEventMessage::~BaseWeaponEventMessage()
+   {
+
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetEventIdentifier(unsigned short eventID)
+   {
+      static_cast<dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->SetValue(eventID);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   unsigned short BaseWeaponEventMessage::GetEventIdentifier() const
+   {
+       return static_cast<const dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   const std::string& BaseWeaponEventMessage::GetMunitionType() const
+   {
+      const dtGame::StringMessageParameter* p =
+         static_cast<const dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
+
+      return p->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetMunitionType( const std::string& detType )
+   {
+      dtGame::StringMessageParameter* p =
+         static_cast<dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
+      p->SetValue(detType);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetQuantityFired( unsigned short quantity )
+   {
+      static_cast<dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("QuantityFired"))->SetValue(quantity);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   unsigned short BaseWeaponEventMessage::GetQuantityFired() const
+   {
+      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("QuantityFired"))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetRateOfFire( unsigned short rate )
+   {
+      static_cast<dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("RateOfFire"))->SetValue(rate);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   unsigned short BaseWeaponEventMessage::GetRateOfFire() const
+   {
+      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("RateOfFire"))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetWarheadType( unsigned short warhead )
+   {
+      static_cast<dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("WarheadType"))->SetValue(warhead);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   unsigned short BaseWeaponEventMessage::GetWarheadType() const
+   {
+      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("WarheadType"))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   void BaseWeaponEventMessage::SetFuseType(unsigned short fuse)
+   {
+      static_cast<dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("FuseType"))->SetValue(fuse);
+   }
+
+   ////////////////////////////////////////////////////////////////
+   unsigned short BaseWeaponEventMessage::GetFuseType() const
+   {
+      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
+         (GetParameter("FuseType"))->GetValue();
+   }
+
+   ////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////
+   DetonationMessage::DetonationMessage()
+   {
+      AddParameter(new dtGame::Vec3MessageParameter("DetonationLocation"));
+      AddParameter(new dtGame::UnsignedCharMessageParameter("DetonationResultCode"));
+      AddParameter(new dtGame::Vec3MessageParameter("FinalVelocityVector"));
+      AddParameter(new dtGame::Vec3MessageParameter("RelativeDetonationLocation"));
+   }
+
+   ////////////////////////////////////////////////////////////////
    DetonationMessage::~DetonationMessage()
    {
 
    }
 
-   void DetonationMessage::SetDetonationLocation(const osg::Vec3 &loc)
+   ////////////////////////////////////////////////////////////////
+   void DetonationMessage::SetDetonationLocation(const osg::Vec3& loc)
    {
    	 static_cast<dtGame::Vec3MessageParameter*>(GetParameter("DetonationLocation"))->SetValue(loc);
    }
 
-   osg::Vec3 DetonationMessage::GetDetonationLocation() const
+   const osg::Vec3& DetonationMessage::GetDetonationLocation() const
    {
    	 return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("DetonationLocation"))->GetValue();
    }
@@ -72,98 +172,26 @@ namespace SimCore
    	 return static_cast<const dtGame::UnsignedCharMessageParameter*>(GetParameter("DetonationResultCode"))->GetValue();
    }
 
-   void DetonationMessage::SetFinalVelocityVector(const osg::Vec3 &vec)
+   void DetonationMessage::SetFinalVelocityVector(const osg::Vec3& vec)
    {
    	 static_cast<dtGame::Vec3MessageParameter*>(GetParameter("FinalVelocityVector"))->SetValue(vec);
    }
 
-   osg::Vec3 DetonationMessage::GetFinalVelocityVector() const
+   const osg::Vec3& DetonationMessage::GetFinalVelocityVector() const
    {
    	 return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("FinalVelocityVector"))->GetValue();
    }
 
-   void DetonationMessage::SetRelativeDetonationLocation(const osg::Vec3 &vec)
+   void DetonationMessage::SetRelativeDetonationLocation(const osg::Vec3& vec)
    {
       static_cast<dtGame::Vec3MessageParameter*>(GetParameter("RelativeDetonationLocation"))->SetValue(vec);
    }
 
-   osg::Vec3 DetonationMessage::GetRelativeDetonationLocation() const
+   const osg::Vec3& DetonationMessage::GetRelativeDetonationLocation() const
    {
       return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("RelativeDetonationLocation"))->GetValue();
    }
 
-   void DetonationMessage::SetEventIdentifier(unsigned short eventID)
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->SetValue(eventID);
-   }
-
-   unsigned short DetonationMessage::GetEventIdentifier() const
-   {
-   	 return static_cast<const dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->GetValue();
-   }
-
-   const std::string DetonationMessage::GetMunitionType() const
-   {
-      const dtGame::StringMessageParameter *p =
-         static_cast<const dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-
-      return p->ToString();
-   }
-
-   void DetonationMessage::SetMunitionType( const std::string& detType )
-   {
-      dtGame::StringMessageParameter *p =
-         static_cast<dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-      p->FromString( detType );
-   }
-
-   void DetonationMessage::SetQuantityFired( unsigned short quantity )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->SetValue(quantity);
-   }
-
-   unsigned short DetonationMessage::GetQuantityFired() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->GetValue();
-   }
-
-   void DetonationMessage::SetRateOfFire( unsigned short rate )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->SetValue(rate);
-   }
-
-   unsigned short DetonationMessage::GetRateOfFire() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->GetValue();
-   }
-
-   void DetonationMessage::SetWarheadType( unsigned short warhead )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->SetValue(warhead);
-   }
-
-   unsigned short DetonationMessage::GetWarheadType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->GetValue();
-   }
-
-   void DetonationMessage::SetFuseType( unsigned short fuse )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->SetValue(fuse);
-   }
-
-   unsigned short DetonationMessage::GetFuseType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->GetValue();
-   }
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    ToolMessage::ToolMessage() : Message()
@@ -238,76 +266,20 @@ namespace SimCore
    {
       AddParameter(new dtGame::Vec3MessageParameter("FiringLocation"));
       AddParameter(new dtGame::Vec3MessageParameter("InitialVelocityVector"));
-      AddParameter(new dtGame::StringMessageParameter("MunitionType"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("EventIdentifier"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("QuantityFired"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("RateOfFire"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("FuseType"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("WarheadType"));
-   }
-
-   void ShotFiredMessage::SetEventIdentifier(unsigned short eventID)
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->SetValue(eventID);
-   }
-
-   unsigned short ShotFiredMessage::GetEventIdentifier() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->GetValue();
-   }
-
-   osg::Vec3 ShotFiredMessage::GetFiringLocation() const
-   {
-      return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->GetValue();
-   }
-
-   void ShotFiredMessage::SetFiringLocation(const osg::Vec3 &location)
-   {
-      static_cast<dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->SetValue(location);
    }
 
    ShotFiredMessage::~ShotFiredMessage()
    {
-
    }
 
-   const std::string ShotFiredMessage::GetMunitionType() const
+   const osg::Vec3& ShotFiredMessage::GetFiringLocation() const
    {
-      const dtGame::StringMessageParameter *p =
-         static_cast<const dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-
-      return p->ToString();
+      return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->GetValue();
    }
 
-   void ShotFiredMessage::SetMunitionType( const std::string& detType )
+   void ShotFiredMessage::SetFiringLocation(const osg::Vec3& location)
    {
-      dtGame::StringMessageParameter *p =
-         static_cast<dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-      p->FromString( detType );
-   }
-
-   void ShotFiredMessage::SetQuantityFired( unsigned short quantity )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->SetValue(quantity);
-   }
-
-   unsigned short ShotFiredMessage::GetQuantityFired() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->GetValue();
-   }
-
-   void ShotFiredMessage::SetRateOfFire( unsigned short rate )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->SetValue(rate);
-   }
-
-   unsigned short ShotFiredMessage::GetRateOfFire() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->GetValue();
+      static_cast<dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->SetValue(location);
    }
 
    void ShotFiredMessage::SetInitialVelocityVector( const osg::Vec3& velocity )
@@ -316,35 +288,12 @@ namespace SimCore
          (GetParameter("InitialVelocityVector"))->SetValue(velocity);
    }
 
-   osg::Vec3 ShotFiredMessage::GetInitialVelocityVector() const
+   const osg::Vec3& ShotFiredMessage::GetInitialVelocityVector() const
    {
       return static_cast<const dtGame::Vec3MessageParameter*>
          (GetParameter("InitialVelocityVector"))->GetValue();
    }
 
-   void ShotFiredMessage::SetWarheadType( unsigned short warhead )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->SetValue(warhead);
-   }
-
-   unsigned short ShotFiredMessage::GetWarheadType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->GetValue();
-   }
-
-   void ShotFiredMessage::SetFuseType( unsigned short fuse )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->SetValue(fuse);
-   }
-
-   unsigned short ShotFiredMessage::GetFuseType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->GetValue();
-   }
 
    /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -383,7 +332,7 @@ namespace SimCore
       static_cast<dtGame::Vec3MessageParameter*>(GetParameter(TRANSLATION))->SetValue(newTranslation);
    }
 
-   osg::Vec3 StealthActorUpdatedMessage::GetTranslation() const
+   const osg::Vec3& StealthActorUpdatedMessage::GetTranslation() const
    {
       return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter(TRANSLATION))->GetValue();
    }
@@ -393,7 +342,7 @@ namespace SimCore
       static_cast<dtGame::Vec3MessageParameter*>(GetParameter(ROTATION))->SetValue(newRotation);
    }
 
-   osg::Vec3 StealthActorUpdatedMessage::GetRotation() const
+   const osg::Vec3& StealthActorUpdatedMessage::GetRotation() const
    {
       return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter(ROTATION))->GetValue();
    }

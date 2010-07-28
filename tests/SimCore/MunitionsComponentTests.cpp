@@ -1324,11 +1324,54 @@ namespace SimCore
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName2 ) == NULL );
          CPPUNIT_ASSERT( mDamageComp->GetMunitionDamageTable( tableName3 ) == NULL );
 
+
+         mGM->RemoveComponent(*mDamageComp);
+         // Must set it back to "" so it will read the config again
+         mDamageComp->SetDefaultMunitionName("");
+         mDamageComp->SetDefaultKineticRoundMunitionName("");
+         std::string defaultMunition = "HE Medium";
+         std::string defaultMunitionKinetic = "50 Cal Round";
+         GetGlobalApplication().SetConfigPropertyValue(SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT, defaultMunition);
+         GetGlobalApplication().RemoveConfigPropertyValue(mDamageComp->GetName() + "." + SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT);
+         GetGlobalApplication().SetConfigPropertyValue(
+                  mDamageComp->GetName() + "." + SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT, defaultMunitionKinetic);
+         mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
          // Test default munition name property
-         std::string defaultMunitionName("Default");
-         CPPUNIT_ASSERT( mDamageComp->GetDefaultMunitionName().empty() );
-         mDamageComp->SetDefaultMunitionName( defaultMunitionName );
-         CPPUNIT_ASSERT( mDamageComp->GetDefaultMunitionName() == defaultMunitionName );
+         std::string defaultMunitionChanged("Default");
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The default munition should match the old config value.",
+                  defaultMunition, mDamageComp->GetDefaultMunitionName());
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The default kinetic munition should match the config value.",
+                  defaultMunitionKinetic, mDamageComp->GetDefaultKineticRoundMunitionName());
+         mDamageComp->SetDefaultMunitionName( defaultMunitionChanged );
+         CPPUNIT_ASSERT_EQUAL( defaultMunitionChanged, mDamageComp->GetDefaultMunitionName() );
+         mDamageComp->SetDefaultKineticRoundMunitionName( defaultMunitionChanged );
+         CPPUNIT_ASSERT_EQUAL( defaultMunitionChanged, mDamageComp->GetDefaultKineticRoundMunitionName() );
+
+         mGM->RemoveComponent(*mDamageComp);
+         // Must set it back to "" so it will read the config again
+         mDamageComp->SetDefaultMunitionName("");
+         defaultMunition = "HE Medium 2";
+         GetGlobalApplication().SetConfigPropertyValue(mDamageComp->GetName() + "." +SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT, defaultMunition);
+         mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The default munition should match the new config value, which should override the old.",
+                  defaultMunition, mDamageComp->GetDefaultMunitionName());
+
+         mGM->RemoveComponent(*mDamageComp);
+         GetGlobalApplication().SetConfigPropertyValue(mDamageComp->GetName() + "." + SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT, "jobo");
+         GetGlobalApplication().SetConfigPropertyValue(mDamageComp->GetName() + "." + SimCore::Components::MunitionsComponent::CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT, "boo");
+
+         mDamageComp->SetDefaultMunitionName(defaultMunition);
+         mDamageComp->SetDefaultKineticRoundMunitionName(defaultMunitionKinetic);
+
+         mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The default munition value should not have changed because it was set prior to being added to the GM.",
+                  defaultMunition, mDamageComp->GetDefaultMunitionName());
+
+         CPPUNIT_ASSERT_EQUAL_MESSAGE("The default kinetic munition value should not have changed because it was set prior to being added to the GM.",
+                  defaultMunitionKinetic, mDamageComp->GetDefaultKineticRoundMunitionName());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1588,7 +1631,7 @@ namespace SimCore
          // --- Info 2
          float cutoffRange = 150.0f;
          damage2->SetNewtonForce( newtonForce );
-         // NOTE: the following probabilities get lain out in a linear fashion
+         // NOTE: the following probabilities get laid out in a linear fashion
          // over which the overall damage probability is compared, starting from lowest
          // to highest (N,M,F,MF,K).
          // The first check where overall damage probability is less than the probability

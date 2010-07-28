@@ -72,14 +72,17 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       const dtUtil::RefString MunitionsComponent::DEFAULT_NAME("MunitionsComponent");
 
+      const std::string MunitionsComponent::CONFIG_PROP_MUNITION_DEFAULT("DefaultMunition");
+      const std::string MunitionsComponent::CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT("DefaultKineticRoundMunition");
+
       //////////////////////////////////////////////////////////////////////////
       MunitionsComponent::MunitionsComponent( const std::string& name )
          : dtGame::GMComponent(name)
-         , mMunitionConfigPath("Configs:MunitionsConfig.xml")
+         , mMunitionConfigFileName("Configs:MunitionsConfig.xml")
+         , mMaximumActiveMunitions(200U)
          , mIsector(new dtCore::BatchIsector)
          , mLastDetonationTime(0.0f)
          , mEffectsManager(new WeaponEffectsManager)
-         , mMaximumActiveMunitions(200)
       {
       }
 
@@ -91,6 +94,12 @@ namespace SimCore
          ClearTables();
          if( mMunitionTypeTable.valid() ) { mMunitionTypeTable->Clear(); }
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, DefaultMunitionName);
+      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, DefaultKineticRoundMunitionName);
+      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, MunitionConfigFileName);
+      IMPLEMENT_PROPERTY_GETTER(MunitionsComponent, unsigned, MaximumActiveMunitions);
 
       //////////////////////////////////////////////////////////////////////////
       DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity,
@@ -334,98 +343,17 @@ namespace SimCore
 
          if( type == SimCore::MessageType::DETONATION )
          {
-            const DetonationMessage& detMessage =
-               dynamic_cast<const DetonationMessage&> (message);
-
-            const SimCore::Actors::MunitionTypeActor* munitionType
-               = GetMunition( detMessage.GetMunitionType(), GetDefaultMunitionName() );
-
-            if( munitionType != NULL )
-            {
-               // Is this Direct Fire?
-               bool explosion = munitionType->GetFamily().IsExplosive();
-               if( ! explosion && ! message.GetAboutActorId().ToString().empty() )
-               {
-                  DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
-                  if( helper != NULL )
-                  {
-                     helper->ProcessDetonationMessage( detMessage, *munitionType, true );
-                  }
-               }
-               else // this is Indirect Fire
-               {
-                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
-                     mIdToHelperMap.begin();
-
-                  for( ; iter != mIdToHelperMap.end(); ++iter )
-                  {
-                     iter->second->ProcessDetonationMessage( detMessage, *munitionType, false );
-                  }
-               }
-
-               // Create the particle systems and sound effects
-               ApplyDetonationEffects( detMessage, *munitionType );
-            }
-            else
-            {
-               std::ostringstream oss;
-               oss << "Detonation munition \"" << detMessage.GetMunitionType()
-                  << "\" could not be found nor the default munition \""
-                  << GetDefaultMunitionName() << "\"" << std::endl;
-               LOG_ERROR(oss.str());
-            }
+            OnDetonation(message);
          }
 
          // HANDLE SHOT FIRED - this message is mostly just for visuals. Ie, it doesn't
          // do any damage. For direct & indirect, the damage occurs on the Detonation message.
-         else if( type == SimCore::MessageType::SHOT_FIRED )
+         else if (type == SimCore::MessageType::SHOT_FIRED)
          {
-            const ShotFiredMessage& shotMessage =
-               dynamic_cast<const ShotFiredMessage&> (message);
-
-            const SimCore::Actors::MunitionTypeActor* munitionType
-               = GetMunition( shotMessage.GetMunitionType(), GetDefaultMunitionName() );
-
-            if( munitionType != NULL )
-            {
-               DamageHelper* helper = NULL;
-               // Is this Direct Fire?
-               if( ! message.GetAboutActorId().ToString().empty() )
-               {
-                  helper = GetHelperByEntityId( message.GetAboutActorId() );
-                  if( helper != NULL )
-                  {
-                     helper->ProcessShotMessage( shotMessage, *munitionType, true );
-                  }
-               }
-               else // this is Indirect Fire
-               {
-                  std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
-                     mIdToHelperMap.begin();
-
-                  for( ; iter != mIdToHelperMap.end(); ++iter )
-                  {
-                     iter->second->ProcessShotMessage( shotMessage, *munitionType, false );
-                  }
-               }
-
-               // Apply gun flash effects only to remote entities
-               if(message.GetSource() != GetGameManager()->GetMachineInfo())
-               {
-                  ApplyShotfiredEffects( shotMessage, *munitionType );
-               }
-            }
-            else
-            {
-               std::ostringstream oss;
-               oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
-                  << "\" could not be found nor the default munition \""
-                  << GetDefaultMunitionName() << "\"" << std::endl;
-               LOG_ERROR(oss.str());
-            }
+            OnShotFired(message);
          }
          // Capture the player
-         else if(message.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
+         else if (message.GetMessageType() == dtGame::MessageType::INFO_PLAYER_ENTERED_WORLD)
          {
             dtGame::GameActorProxy* proxy
                = GetGameManager()->FindGameActorById(message.GetAboutActorId());
@@ -465,8 +393,8 @@ namespace SimCore
 
             CleanupCreatedMunitionsQueue();
          }
-         else if( type == dtGame::MessageType::INFO_RESTARTED
-            || type == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN )
+         else if (type == dtGame::MessageType::INFO_RESTARTED
+            || type == dtGame::MessageType::INFO_MAP_UNLOAD_BEGIN)
          {
             mPlayer = NULL;
             ClearCreatedMunitionsQueue();
@@ -474,15 +402,112 @@ namespace SimCore
             ClearTables();
             mLastDetonationTime = 0.0f;
 
-            if( type == dtGame::MessageType::INFO_RESTARTED)
+            if (type == dtGame::MessageType::INFO_RESTARTED)
             {
-               LoadMunitionDamageTables( mMunitionConfigPath );
+               LoadMunitionDamageTables( mMunitionConfigFileName );
             }
          }
       }
 
       //////////////////////////////////////////////////////////////////////////
-      DamageHelper* MunitionsComponent::GetHelperByEntityId( const dtCore::UniqueId id )
+      void MunitionsComponent::OnDetonation(const dtGame::Message& message)
+      {
+         const DetonationMessage& detMessage =
+            dynamic_cast<const DetonationMessage&> (message);
+
+         const SimCore::Actors::MunitionTypeActor* munitionType = FindMunitionForMessage(detMessage);
+
+         if (munitionType != NULL)
+         {
+            // Is this Direct Fire?
+            bool isDirect = !munitionType->GetFamily().IsExplosive();
+            if (isDirect)
+            {
+               if (! message.GetAboutActorId().ToString().empty())
+               {
+                  // For indirect, only
+                  DamageHelper* helper = GetHelperByEntityId( message.GetAboutActorId() );
+                  if (helper != NULL)
+                  {
+                     helper->ProcessDetonationMessage( detMessage, *munitionType, true );
+                  }
+               }
+            }
+            else // this is Indirect Fire
+            {
+               // Since this is indirect fire, everything has to process the detonation in case
+               // they have damage from the effect of the explosion
+               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
+                  mIdToHelperMap.begin();
+
+               for( ; iter != mIdToHelperMap.end(); ++iter )
+               {
+                  iter->second->ProcessDetonationMessage( detMessage, *munitionType, false );
+               }
+            }
+
+            // Create the particle systems and sound effects
+            ApplyDetonationEffects( detMessage, *munitionType );
+         }
+         else
+         {
+            std::ostringstream oss;
+            oss << "Detonation munition \"" << detMessage.GetMunitionType()
+               << "\" could not be found nor the default munition \""
+               << GetDefaultMunitionName() << "\"" << std::endl;
+            LOG_ERROR(oss.str());
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      void MunitionsComponent::OnShotFired(const dtGame::Message& message)
+      {
+         const ShotFiredMessage& shotMessage =
+            dynamic_cast<const ShotFiredMessage&> (message);
+
+         const SimCore::Actors::MunitionTypeActor* munitionType = FindMunitionForMessage(shotMessage);
+
+         if (munitionType != NULL)
+         {
+            DamageHelper* helper = NULL;
+            // Is this Direct Fire?
+            if (! message.GetAboutActorId().ToString().empty())
+            {
+               helper = GetHelperByEntityId( message.GetAboutActorId() );
+               if( helper != NULL )
+               {
+                  helper->ProcessShotMessage( shotMessage, *munitionType, true );
+               }
+            }
+            else // this is Indirect Fire
+            {
+               std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
+                  mIdToHelperMap.begin();
+
+               for( ; iter != mIdToHelperMap.end(); ++iter )
+               {
+                  iter->second->ProcessShotMessage( shotMessage, *munitionType, false );
+               }
+            }
+
+            // Apply gun flash effects only to remote entities
+            if (message.GetSource() != GetGameManager()->GetMachineInfo())
+            {
+               ApplyShotfiredEffects( shotMessage, *munitionType );
+            }
+         }
+         else
+         {
+            std::ostringstream oss;
+            oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
+               << "\" could not be found nor the default munition \""
+               << GetDefaultMunitionName() << "\"" << std::endl;
+            LOG_ERROR(oss.str());
+         }
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      DamageHelper* MunitionsComponent::GetHelperByEntityId( const dtCore::UniqueId& id )
       {
          std::map<dtCore::UniqueId, dtCore::RefPtr<DamageHelper> >::iterator iter =
             mIdToHelperMap.find( id );
@@ -724,7 +749,9 @@ namespace SimCore
             return;
          }
          else
+         {
             mLastDetonationTime = simTime;
+         }
 
          const std::string& munitionName = message.GetMunitionType();
 
@@ -752,9 +779,7 @@ namespace SimCore
             // Change hitEntity to false if this is found to be the terrain actor.
             if(targetProxy != NULL)
             {
-               hitEntity = ! (targetProxy != NULL
-                  && ( dynamic_cast<SimCore::Actors::PagedTerrainPhysicsActor*>(targetProxy->GetActor()) != NULL
-                  || dynamic_cast<SimCore::Actors::TerrainActor*>(targetProxy->GetActor()) != NULL ) );
+               hitEntity = targetProxy != NULL && ( dynamic_cast<SimCore::Actors::BaseEntity*>(targetProxy->GetActor()) != NULL );
 
                // Check to see if we hit a person. Needs a different effect
                entityIsHuman = (hitEntity &&
@@ -961,19 +986,44 @@ namespace SimCore
       void MunitionsComponent::OnAddedToGM()
       {
          dtGame::GMComponent::OnAddedToGM();
+
+         dtUtil::ConfigProperties& config = GetGameManager()->GetConfiguration();
+
+         if (GetDefaultMunitionName().empty())
+         {
+            std::string defaultMunition =
+                     config.GetConfigPropertyValue(CONFIG_PROP_MUNITION_DEFAULT, "");
+            defaultMunition =
+                     config.GetConfigPropertyValue(GetName() + "." + CONFIG_PROP_MUNITION_DEFAULT, defaultMunition);
+            // Set the default munition to be used for munitions that are not found
+            // in the existing set of munition definitions in the munitions map.
+            SetDefaultMunitionName(defaultMunition);
+         }
+
+         if (GetDefaultKineticRoundMunitionName().empty())
+         {
+            std::string defaultMunition =
+                     config.GetConfigPropertyValue(GetName() + "." + CONFIG_PROP_MUNITION_KINETIC_ROUND_DEFAULT, "");
+            // Set the default munition to be used for munitions that are not found
+            // and have a kinetic, i.e. kinetic energy damage, usually a bullet or non-exploding shell.
+            SetDefaultKineticRoundMunitionName(defaultMunition);
+         }
+
          mIsector->SetScene( &GetGameManager()->GetScene() );
          mEffectsManager->SetGameManager( GetGameManager() );
 
-         // Load a value for the maximum active munitions setting. Default is usally something like 200.
-         dtUtil::ConfigProperties& config = GetGameManager()->GetConfiguration();
          std::string stringValue = config.GetConfigPropertyValue(this->GetName() + ".MaximumActiveMunitions");
          if (!stringValue.empty())
          {
-            int newValue = dtUtil::ToType<int>(stringValue);
+            unsigned newValue = dtUtil::ToType<unsigned>(stringValue);
             if (newValue > 0)
+            {
                mMaximumActiveMunitions = newValue;
+            }
             else
+            {
                LOG_ERROR("Received bag number from configuration file for MaximumActiveMunitions on the Munitions Component.");
+            }
          }
       }
 
@@ -995,15 +1045,14 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponent::SetDefaultMunitionName( const std::string& munitionName )
+      const SimCore::Actors::MunitionTypeActor* MunitionsComponent::FindMunitionForMessage(const BaseWeaponEventMessage& messageData) const
       {
-         mDefaultMunitionName = munitionName;
-      }
+         if (messageData.GetWarheadType() == 5000U)
+         {
+            return GetMunition(messageData.GetMunitionType(), GetDefaultKineticRoundMunitionName());
+         }
 
-      //////////////////////////////////////////////////////////////////////////
-      const std::string& MunitionsComponent::GetDefaultMunitionName() const
-      {
-         return mDefaultMunitionName;
+         return GetMunition(messageData.GetMunitionType(), GetDefaultMunitionName());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -1028,7 +1077,7 @@ namespace SimCore
             std::ostringstream oss;
             oss << "Received a detonation with an invalid munition \""
                << munitionName << "\". Attempting default munition \""
-               << defaultMunitionName << "\".\n\tDefault munition"
+               << defaultMunitionName << "\".\n\tDefault munition "
                << (munitionType==NULL?"NOT found":"found") << std::endl;
             LOG_WARNING( oss.str() );
          }
@@ -1090,7 +1139,7 @@ namespace SimCore
 
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponent::SetMaximumActiveMunitions(int newMax)
+      void MunitionsComponent::SetMaximumActiveMunitions(unsigned newMax)
       {
          if (newMax > 0) // a negative max would be bad.
             mMaximumActiveMunitions = newMax;

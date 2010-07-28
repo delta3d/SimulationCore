@@ -90,7 +90,6 @@ namespace SimCore
    const std::string BaseGameEntryPoint::CONFIG_PROP_ASPECT_RATIO("AspectRatio");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_MAP("MunitionMap");
    const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_CONFIG_FILE("MunitionsConfigFile");
-   const std::string BaseGameEntryPoint::CONFIG_PROP_MUNITION_DEFAULT("DefaultMunition");
 
    //////////////////////////////////////////////////////////////////////////
    BaseGameEntryPoint::BaseGameEntryPoint() :
@@ -423,9 +422,6 @@ namespace SimCore
          app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_MAP, "MunitionTypesMap"));
       munitionsComp->SetMunitionConfigFileName(
          app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_CONFIG_FILE, "Configs:MunitionsConfig.xml"));
-      // Set the default munition to be used for munitions that are not found
-      // in the existing set of munition definitions in the munitions map.
-      munitionsComp->SetDefaultMunitionName( app.GetConfigPropertyValue(CONFIG_PROP_MUNITION_DEFAULT, "") );
 
       InitializeComponents(gameManager);
 

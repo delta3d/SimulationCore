@@ -83,9 +83,9 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      float DamageHelper::GetDamageProbability( bool directFire ) const
+      float DamageHelper::GetDamageProbability( bool directHit ) const
       {
-         return directFire ? dtUtil::RandFloat(0.2,1.2) : dtUtil::RandFloat(0.5,1.2);
+         return directHit ? dtUtil::RandFloat(0.2,1.2) : dtUtil::RandFloat(0.5,1.2);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::ProcessShotMessage( const ShotFiredMessage& message,
-         const SimCore::Actors::MunitionTypeActor& munition, bool directFire )
+         const SimCore::Actors::MunitionTypeActor& munition, bool directHit )
       {
          if( ! mEntity.valid() || ! mTable.valid() ) { return; }
 
@@ -139,13 +139,13 @@ namespace SimCore
 
       //////////////////////////////////////////////////////////////////////////
       void DamageHelper::ProcessDetonationMessage( const DetonationMessage& message, 
-         const SimCore::Actors::MunitionTypeActor& munition, bool directFire )
+         const SimCore::Actors::MunitionTypeActor& munition, bool directHit )
       {
          if( ! mEntity.valid() || ! mTable.valid() ) { return; }
 
          // Accumulate damage if the munition allows for damage accumulation.
          // NOTE: DO NOT accumulate on none explosive rounds nor unknown munitions.
-         if( ! munition.GetFamily().IsExplosive() && ! directFire )
+         if( ! munition.GetFamily().IsExplosive() && ! directHit )
          {
             return;
          }
@@ -170,7 +170,7 @@ namespace SimCore
 
          // Compute the probability of damage
          float distanceFromImpact = 0.0f;
-         munitionDamage->GetDamageProbabilities( *mScratchProbs, distanceFromImpact, directFire, 
+         munitionDamage->GetDamageProbabilities( *mScratchProbs, distanceFromImpact, directHit,
             message.GetFinalVelocityVector(), message.GetDetonationLocation(), entityPos );
 
          // Apply damage and force only if the entity is within the range of effect.
@@ -182,7 +182,7 @@ namespace SimCore
             {
                float quantityMultiplier = (message.GetQuantityFired() > 0) ? message.GetQuantityFired() : 1.0f;
                float damageFromMunition = (mScratchProbs->GetMobilityDamage()*0.5f + mScratchProbs->GetKillDamage()) 
-                  * mVulnerability * GetDamageProbability(directFire) * quantityMultiplier;
+                  * mVulnerability * GetDamageProbability(directHit) * quantityMultiplier;
 
                // The new damage is scaled based on the max damage possible for this entity
                // In the end, we only store the ratio.

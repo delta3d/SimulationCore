@@ -137,18 +137,18 @@ namespace SimCore
             // @param message ShotFired message to be processed
             // @param munition The munition that closely matches the DIS held in the 
             //        message's MunitionType parameter.
-            // @param directFire Determines if the shots are to be interpreted and handled as direct fire
+            // @param directHit Determines if the shots are to be interpreted and handled as a direct hit
             virtual void ProcessShotMessage( const ShotFiredMessage& message,
-               const SimCore::Actors::MunitionTypeActor& munition, bool directFire = false );
+               const SimCore::Actors::MunitionTypeActor& munition, bool directHit = false );
 
             // NOTE: Overrides of this function should call this version internally.
             //
             // @param message Detonation message to be processed
             // @param munition The munition that closely matches the DIS held in the 
             //        message's MunitionType parameter.
-            // @param directFire Determines if the detonation is to be interpreted and handled as direct fire
+            // @param directHit Determines if the detonation is to be interpreted and handled as direct hit
             virtual void ProcessDetonationMessage( const DetonationMessage& message,
-               const SimCore::Actors::MunitionTypeActor& munition, bool directFire = false );
+               const SimCore::Actors::MunitionTypeActor& munition, bool directHit = false );
 
             // Adjust the vulnerability of the entity taking damage.
             // @param vulnerability The vulnerability of the entity ranging from 0 to 1.

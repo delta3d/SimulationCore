@@ -29,12 +29,7 @@
 #include <SimCore/Actors/VehicleInterface.h>
 
 #include <SimCore/PhysicsTypes.h>
-#ifdef AGEIA_PHYSICS
-#include <NxAgeiaPrimitivePhysicsHelper.h>
-#include <NxAgeiaContactReport.h>
-#else
 #include <dtPhysics/physicshelper.h>
-#endif
 
 
 namespace SimCore

@@ -416,7 +416,7 @@ namespace SimCore
 
             dtPhysics::PhysicsComponent* comp = NULL;
             GetGameActorProxy().GetGameManager()->GetComponentByName(dtPhysics::PhysicsComponent::DEFAULT_NAME, comp);
-            if(comp != NULL)
+            if (comp != NULL)
             {
                comp->RegisterHelper(*mPhysicsHelper);
             }
