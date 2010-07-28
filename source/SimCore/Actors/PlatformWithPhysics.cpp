@@ -187,7 +187,7 @@ namespace SimCore
 
             mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
 
-            physObj->CreateFromProperties(&GetScaleMatrixTransform(), true);
+            physObj->CreateFromProperties(&GetScaleMatrixTransform());
 
          }
       }
