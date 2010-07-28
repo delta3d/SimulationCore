@@ -53,10 +53,11 @@ namespace SimCore
          , mVelocityAverageFrameCount(1U)
          , mMaxUpdateSendRate(5.0f)
          , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(false)
+         , mPublishAngularVelocity(true)
          , mSecsSinceLastUpdateSent(0.0f)
          , mVelocityMagThreshold(1.0f)
          , mVelocityDotThreshold(0.9f)
+         , mPrevFrameDeltaTime(0.0f)
          , mForceUpdateNextChance(false)
          , mUseVelocityInDRUpdateDecision(false)
          , mMaxRotationError(1.0f) // 2.0
@@ -307,14 +308,11 @@ namespace SimCore
          mMaxUpdateSendRate = maxUpdateSendRate;
 
          // The DR helper should be kept in the loop about the max send rate. 
-         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f && 
-            GetDeadReckoningHelper().GetAlwaysUseMaxSmoothingTime())
+         if (IsDeadReckoningHelperValid() && maxUpdateSendRate > 0.0f)
          {
-            // Note - AlwaysUseMaxSmoothingTime is controlled via the BaseEntity and a config option
-            float transUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
-            GetDeadReckoningHelper().SetMaxTranslationSmoothingTime(transUpdateRate);
-            float rotUpdateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
-            GetDeadReckoningHelper().SetMaxRotationSmoothingTime(rotUpdateRate);
+            // Note - AlwaysUseFixedSmoothingTime is controlled via the BaseEntity and a config option
+            float updateRate = dtUtil::Max(0.01f, dtUtil::Min(1.0f, 1.00f/maxUpdateSendRate));
+            GetDeadReckoningHelper().SetFixedSmoothingTime(updateRate);
          }
 
       }
@@ -533,15 +531,16 @@ namespace SimCore
             return; 
          }
 
+
          if (mPublishLinearVelocity) // If not publishing, then don't do anything.
          {
-            if (deltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
+            if (mPrevFrameDeltaTime > 0.0f && mLastPos.length2() > 0.0) // ignore first time.
             {
                // Note - we used to grab the velocity from the physics engines, but there were sometimes 
                // discontinuities reported by the various engines, so that was removed in favor of a simple
                // differential of position. 
                osg::Vec3 distanceMoved = pos - mLastPos;
-               osg::Vec3 instantVelocity = distanceMoved / deltaTime;
+               osg::Vec3 instantVelocity = distanceMoved / mPrevFrameDeltaTime;
 
                osg::Vec3 previousAccumulatedLinearVelocity = mAccumulatedLinearVelocity;
 
@@ -561,7 +560,7 @@ namespace SimCore
                // Note - if you know your REAL acceleration due to vehicle dynamics, override the method
                // and make your own call to SetCurrentAcceleration().
                osg::Vec3 changeInVelocity = mAccumulatedLinearVelocity - previousAccumulatedLinearVelocity; /*instantVelocity - mAccumulatedLinearVelocity*/;
-               mAccumulatedAcceleration = changeInVelocity / deltaTime;
+               mAccumulatedAcceleration = changeInVelocity / mPrevFrameDeltaTime;
 
                // Many vehicles get a slight jitter up/down while running. If you allow the z acceleration to 
                // be published, the vehicle will go all over the place nutty. So, we zero it out. 
@@ -575,6 +574,7 @@ namespace SimCore
             }
 
             mLastPos = pos; 
+            mPrevFrameDeltaTime = deltaTime; // The passed in Delta is actually the time for the next computation
          }
       }
 

@@ -78,6 +78,8 @@ namespace NetDemo
          static const dtUtil::RefString DOF_NAME_RINGMOUNT;
          static const dtUtil::RefString DOF_NAME_VIEW_01;
          static const dtUtil::RefString DOF_NAME_VIEW_02;
+         static const dtUtil::RefString DOF_TOPDOWN_VIEW_01;
+         static const dtUtil::RefString DOF_TOPDOWN_VIEW_02;
 
          /// Constructor
          InputComponent(const std::string& name = dtGame::BaseInputComponent::DEFAULT_NAME);
@@ -118,6 +120,8 @@ namespace NetDemo
          void AttachToVehicle(SimCore::Actors::Platform* vehicle);
          void EnableMotionModels();
 
+         void AddTopDownNode(float height, const dtUtil::RefString& nodeName);
+
          void HandleStateChangeMessage(
             const SimCore::Components::GameStateChangedMessage& stateChange);
 
@@ -141,6 +145,9 @@ namespace NetDemo
          /// Changes the current debug toggle mode.
          void ToggleCurrentDebugMode();
 
+         /// Debug toggle - changes whether we use the DR fixed blend time or let it do an avg based on update rate
+         void ToggleFixedBlendTime();
+
          /// Debug toggle - changes between use Cubic Spline or Linear for Dead Reckoning
          void ToggleUseCubicSplineForDR();
 
@@ -154,7 +161,8 @@ namespace NetDemo
          void ToggleGroundClamping();
 
          /// Increase or decrease the publish rate (1.10 increases time, 0.90 decreases time
-         void ModifyVehiclePublishRate(float scaleFactor = 1.0f);
+         /// increase or decrease the number of publishes per second (usually +1 or -1)
+         void ModifyVehiclePublishRate(int incrementValue); // float scaleFactor = 1.0f);
 
          /// Increase or decrease the DR smoothing rate (1.10 increases time, 0.90 decreases time
          void ModifyVehicleSmoothingRate(float scaleFactor = 1.0f);
@@ -170,7 +178,7 @@ namespace NetDemo
          enum DR_GHOST_MODE { NONE = 1, GHOST_ON, ATTACH_TO_GHOST, HIDE_REAL, DETACH_FROM_VEHICLE };
          DR_GHOST_MODE mDRGhostMode;
          enum DEBUG_TOGGLE_MODE { DEBUG_TOGGLE_DR_ALGORITHM, DEBUG_TOGGLE_PUBLISH_ANGULAR_VELOCITY, 
-            DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE, DEBUG_TOGGLE_GROUND_CLAMPING};
+            DEBUG_TOGGLE_DR_WITH_CUBIC_SPLINE, DEBUG_TOGGLE_GROUND_CLAMPING, DEBUG_FIXED_BLEND_TIME};
          DEBUG_TOGGLE_MODE mDebugToggleMode; 
 
          dtCore::RefPtr<SimCore::Actors::Platform> mVehicle;
@@ -184,6 +192,7 @@ namespace NetDemo
          unsigned mCurrentViewPointIndex;
          bool mIsInGameState;
          float mOriginalPublishTimesPerSecond;
+         int mMaxPublishRate;
    };
 }
 

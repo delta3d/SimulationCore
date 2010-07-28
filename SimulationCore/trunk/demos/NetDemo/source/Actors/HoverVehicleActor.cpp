@@ -78,10 +78,10 @@ namespace NetDemo
          return;
       }
       drPublishingActComp->SetMaxUpdateSendRate(5.0f);
-      drPublishingActComp->SetPublishLinearVelocity(true);
-      drPublishingActComp->SetPublishAngularVelocity(false);
-      drPublishingActComp->SetMaxTranslationError(0.02f);
-      drPublishingActComp->SetMaxRotationError(1.0f);
+      //drPublishingActComp->SetPublishLinearVelocity(true);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
+      drPublishingActComp->SetMaxTranslationError(0.001f);
+      drPublishingActComp->SetMaxRotationError(0.5f);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

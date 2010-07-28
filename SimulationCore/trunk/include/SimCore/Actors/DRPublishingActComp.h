@@ -264,6 +264,7 @@ namespace SimCore
          float mVelocityMagThreshold;
          float mVelocityDotThreshold;
          float mInstantaneousVelocityWeight;
+         float mPrevFrameDeltaTime;
 
          bool mForceUpdateNextChance;
 

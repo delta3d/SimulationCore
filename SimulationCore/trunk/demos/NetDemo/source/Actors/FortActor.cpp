@@ -83,8 +83,8 @@ namespace NetDemo
          return;
       }
       drPublishingActComp->SetMaxUpdateSendRate(2.0f);
-      drPublishingActComp->SetPublishLinearVelocity(false);
-      drPublishingActComp->SetPublishAngularVelocity(false);
+      //drPublishingActComp->SetPublishLinearVelocity(false);
+      //drPublishingActComp->SetPublishAngularVelocity(false);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////

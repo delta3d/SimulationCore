@@ -23,23 +23,22 @@
  */
 
 #include <Actors/PropelledVehicleActor.h>
-#include <dtUtil/nodecollector.h>
 
 #include <dtABC/application.h>
 #include <dtCore/keyboard.h>
-
 #include <osgSim/DOFTransform>
+#include <dtUtil/nodecollector.h>
 #include <dtUtil/mathdefines.h>
-
 #include <dtPhysics/bodywrapper.h>
 
 //For debug only.
 #include <iostream>
 
-// TEMP:
-// For appling shaders to different parts of th vehicle.
 #include <SimCore/ApplyShaderVisitor.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
+#include <dtGame/deadreckoninghelper.h>
+#include <dtGame/messagetype.h>
+#include <dtGame/message.h>
 #include <dtCore/shaderprogram.h>
 
 namespace NetDemo
@@ -48,12 +47,7 @@ namespace NetDemo
    ////////////////////////////////////////////////////////////////////////
    PropelledVehicleActor::PropelledVehicleActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
    : BaseClass(proxy)
-//   , mStartBoost(false)
-//   , mStartBoostForce(6500.0f)
-//   , mMaximumBoostPerSecond(1000.0f)
-//   , mCurrentBoostTime(0.0f)
-//   , mTimeToResetBoost(5.0f)
-//   , mBoostResetTimer(0.0f)
+     , mDRTestingAveragedError(0.0f)
    {
       SetEntityType("WheeledVehicle"); // Used for HLA mapping mostly
       SetMunitionDamageTableName("VehicleDamageTable"); // Used for Munitions Damage.
@@ -76,8 +70,8 @@ namespace NetDemo
          return;
       }
       drPublishingActComp->SetMaxUpdateSendRate(5.0f);
-      drPublishingActComp->SetMaxTranslationError(0.02f);
-      drPublishingActComp->SetMaxRotationError(1.0f);
+      drPublishingActComp->SetMaxTranslationError(0.0001f);
+      drPublishingActComp->SetMaxRotationError(0.5f);
    }
 
    ////////////////////////////////////////////////////////////////////////
@@ -95,15 +89,54 @@ namespace NetDemo
 
       // Add a particle system to see where the vehicle has been.
       //mTrailParticles = new dtCore::ParticleSystem;
-      //mTrailParticles->LoadFile("Particles/SimpleSpotTrail.osg", true);
+      //mTrailParticles->LoadFile("Particles/SimpleSpotTrailGreen.osg", true);
       //mTrailParticles->SetEnabled(true);
       //AddChild(mTrailParticles.get());
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
+   /*
+   void PropelledVehicleActor::ProcessMessage(const dtGame::Message& message)
+   {
+
+      if (message.GetMessageType() == dtGame::MessageType::TICK_REMOTE)
+      {
+         // Pull the real position for DR testing. The real loc is set by the physics at the end 
+         // of the previous frame.  
+         dtCore::Transform xform;
+         GetTransform(xform);
+         xform.GetTranslation(mDRTestingRealLocation);
+
+         // Get the DR position. The DR pos is set in Tick Remote, so we pull it after that.
+         osg::Vec3 testingDRLoc = GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation();
+         float testingDRSpeed = GetDeadReckoningHelper().GetLastKnownVelocity().length();
+
+         // Compare the DR loc to the real loc.
+         float difference = (mDRTestingRealLocation - testingDRLoc).length();
+         mDRTestingAveragedError = mDRTestingAveragedError * 0.99f + difference * 0.01f; 
+
+         // Every so often, print the cumulative averaged delta and the vel
+         static int counter = 0;
+         counter ++;
+         if (counter >= 30)
+         {
+            printf("  Avg DR Error[%6.4f m], Last DR Speed[%6.4f m/s].\r\n", 
+               mDRTestingAveragedError, testingDRSpeed);
+            counter = 0;
+         }
+      }
+
+      if (IsRemote())
+      {
+         BaseClass::ProcessMessage(message);
+      }
+   }
+*/
+   ///////////////////////////////////////////////////////////////////////////////////
    void PropelledVehicleActor::UpdateVehicleTorquesAndAngles(float deltaTime)
    {
       BaseClass::UpdateVehicleTorquesAndAngles(deltaTime);
+
 //      dtCore::Keyboard* keyboard = GetGameActorProxy().GetGameManager()->GetApplication().GetKeyboard();
 //      if(keyboard == NULL)
 //         return;
@@ -270,4 +303,11 @@ namespace NetDemo
       BaseClass::BuildInvokables();
    }
 
+   ////////////////////////////////////////////////////////////////////////
+   void PropelledVehicleActorProxy::OnEnteredWorld()
+   {
+      //RegisterForMessages(dtGame::MessageType::TICK_REMOTE);
+
+      BaseClass::OnEnteredWorld();
+   }
 }
