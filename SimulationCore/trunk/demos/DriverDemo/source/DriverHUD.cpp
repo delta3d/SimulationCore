@@ -259,8 +259,6 @@ namespace DriverDemo
       mWeaponName->SetColor( 1.0f, 1.0f, 0.0f );
       hudOverlay.Add( mWeaponName.get() );
 
-      GameAppComponent* gameAppComponent = dynamic_cast<GameAppComponent*>
-         (GetGameManager()->GetComponentByName(GameAppComponent::DEFAULT_NAME));
       float rightOffset = 0.0f;
 
       // Add the speedometer only if this is the driving simulation.
@@ -360,7 +358,7 @@ namespace DriverDemo
             \n\
             Alt-X - Exit the app\n\
             Esc - Full screen");
-            //Mouse + Left Crtl - Look around\n\
+            //Mouse + Left Crtl - Look around
 
       mHelpText_Gunner = CreateText( "HelpText_Gunner", text, offsetX, offsetY, 1.0, 1.0 );
       mHelpText_Gunner->SetAlignment(*align);
