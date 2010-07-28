@@ -575,7 +575,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -1008,7 +1008,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -1437,7 +1437,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -1870,7 +1870,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -2499,7 +2499,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -2932,7 +2932,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -3381,7 +3381,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -3490,7 +3490,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.0</float>
+                <float>0.2157001</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -3933,7 +3933,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -4042,7 +4042,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.0</float>
+                <float>0.1150999</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -4489,7 +4489,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -4598,7 +4598,7 @@
             </property>
             <property>
                 <name>NumSpawnPerMinute</name>
-                <float>0.0</float>
+                <float>0.1</float>
             </property>
             <property>
                 <name>WaveDenominator</name>
@@ -5306,7 +5306,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -5735,7 +5735,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
@@ -6168,7 +6168,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>1</integer>
+                <integer>2</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>
