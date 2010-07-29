@@ -47,23 +47,23 @@ namespace SimCore
 
       ////////////////////////////////////////////////////////////////////////////////
       DRPublishingActComp::DRPublishingActComp(bool requiresDRHelper/*=true*/)
-         : ActorComponent(TYPE)
-         , mRequiresDRHelper(requiresDRHelper)
-         , mTimeUntilNextFullUpdate(0.0f)
-         , mVelocityAverageFrameCount(1U)
-         , mMaxUpdateSendRate(5.0f)
-         , mPublishLinearVelocity(true)
-         , mPublishAngularVelocity(true)
-         , mSecsSinceLastUpdateSent(0.0f)
-         , mVelocityMagThreshold(1.0f)
-         , mVelocityDotThreshold(0.9f)
-         , mPrevFrameDeltaTime(0.0f)
-         , mForceUpdateNextChance(false)
-         , mUseVelocityInDRUpdateDecision(false)
-         , mMaxRotationError(1.0f) // 2.0
-         , mMaxRotationError2(1.0f) // 4.0
-         , mMaxTranslationError(0.02f)//(0.15f)
-         , mMaxTranslationError2(0.0004f)//(0.0225f)
+      : ActorComponent(TYPE)
+      , mVelocityAverageFrameCount(1U)
+      , mMaxUpdateSendRate(5.0f)
+      , mPublishLinearVelocity(true)
+      , mPublishAngularVelocity(true)
+      , mRequiresDRHelper(requiresDRHelper)
+      , mTimeUntilNextFullUpdate(0.0f)
+      , mSecsSinceLastUpdateSent(0.0f)
+      , mVelocityMagThreshold(1.0f)
+      , mVelocityDotThreshold(0.9f)
+      , mPrevFrameDeltaTime(0.0f)
+      , mForceUpdateNextChance(false)
+      , mUseVelocityInDRUpdateDecision(false)
+      , mMaxRotationError(1.0f) // 2.0
+      , mMaxRotationError2(1.0f) // 4.0
+      , mMaxTranslationError(0.02f)//(0.15f)
+      , mMaxTranslationError2(0.0004f)//(0.0225f)
       {
       }
 
