@@ -151,7 +151,7 @@ namespace SimCore
             }
 
             GetDeadReckoningHelper().SetDeadReckoningAlgorithm(*mOldDRA);
-            GetParent()->RemoveChild(this);
+            Emancipate();
          }
       }
 
@@ -171,7 +171,7 @@ namespace SimCore
          BaseEntity* entity = dynamic_cast<BaseEntity*>(ga.GetActor());
          if (entity != NULL)
          {
-            if(!mAttachAsThirdPerson)
+            if (!mAttachAsThirdPerson)
             {
                entity->SetDrawingModel(false);
                entity->SetPlayerAttached(true);
@@ -248,12 +248,8 @@ namespace SimCore
          dtCore::Transform originalTransform;
          GetTransform(originalTransform, dtCore::Transformable::ABS_CS);
 
-         // If we have a new actor to attach to, or the caller explicitly passed in a NULL id
-         // to mark a detach, then. detach from the old actor.
-         if (ga != NULL || id.ToString().empty())
-         {
-            DoDetach();
-         }
+
+         DoDetach();
 
          if (ga != NULL)
          {
@@ -274,26 +270,17 @@ namespace SimCore
          else if (id.ToString().empty())
          {
             //Attach back to the parent scene.
-            if (GetParent() != NULL)
+            if (GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
             {
-               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_DELETED, GetParent()->GetUniqueId(), "Detach");
-               GetGameActorProxy().UnregisterForMessagesAboutOtherActor(dtGame::MessageType::INFO_ACTOR_UPDATED, GetParent()->GetUniqueId(), "UpdateFromParent");
-               GetDeadReckoningHelper().SetDeadReckoningAlgorithm(*mOldDRA);
-
-               if(GetGameActorProxy().GetGameManager()->GetEnvironmentActor() != NULL)
-               {
-                  dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
-                  ea.AddActor(*this);
-               }
-               else
-               {
-                  GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(this);
-               }
+               dtGame::IEnvGameActor &ea = static_cast<dtGame::IEnvGameActor&>(GetGameActorProxy().GetGameManager()->GetEnvironmentActor()->GetGameActor());
+               ea.AddActor(*this);
             }
             else
             {
-               SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
+               GetGameActorProxy().GetGameManager()->GetScene().AddDrawable(this);
             }
+
+            SetTransform(originalTransform, dtCore::Transformable::ABS_CS);
          }
       }
 
