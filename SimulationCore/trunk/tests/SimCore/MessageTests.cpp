@@ -423,13 +423,13 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             RefPtr<SimCore::Actors::StealthActor> playerActor = dynamic_cast<SimCore::Actors::StealthActor*>(playerProxy->GetActor());
             CPPUNIT_ASSERT(playerActor.valid());
 
+            osg::Vec3 tankPos(0, 100, 0);
+            t80Actor->GetDeadReckoningHelper().SetLastKnownTranslation(tankPos);
+
             mGM->AddActor(*t80Proxy, true, false);
             mGM->AddActor(*playerProxy, false, false);
 
             static_cast<SimCore::Actors::StealthActor&>(playerProxy->GetGameActor()).SetAttachOffset(osg::Vec3(0, 0, 0));
-
-            osg::Vec3 tankPos(0, 100, 0);
-            t80Proxy->SetTranslation(tankPos);
 
             RefPtr<dtGame::Message> msg = mGM->GetMessageFactory().CreateMessage(SimCore::MessageType::ATTACH_TO_ACTOR);
             CPPUNIT_ASSERT(msg.valid());
@@ -462,7 +462,7 @@ class MessageTests : public CPPUNIT_NS::TestFixture
             osg::Vec3 playerPos;
             xform.GetTranslation(playerPos);
 
-            CPPUNIT_ASSERT_MESSAGE("The player's position should be the same at the tank.",
+            CPPUNIT_ASSERT_MESSAGE("The player's position should be the same as the tank.",
                dtUtil::Equivalent(playerPos, tankPos, 0.001f));
          }
          catch(const dtUtil::Exception &e)
