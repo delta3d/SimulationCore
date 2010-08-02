@@ -118,8 +118,6 @@ namespace DriverDemo
 
       SimCore::CommandLineObject* commandLineObject = GetCommandLineObject();
 
-      double coord = 0.0;
-
       // Get the start heading for the player
       float heading = 0.0f;
       parser->read( "--startHeading", heading );

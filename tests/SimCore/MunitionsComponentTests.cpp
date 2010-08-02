@@ -2049,12 +2049,13 @@ namespace SimCore
          CPPUNIT_ASSERT( munitionType->GetDISIdentifierString() == testString );
          CPPUNIT_ASSERT( munitionType->GetDISIdentifier() == testDIS );
 
-         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, proxy );
+         dtCore::RefPtr<dtDAL::ActorProxy> proxy2;
+         mGM->CreateActor( *SimCore::Actors::EntityActorRegistry::MUNITION_EFFECTS_INFO_ACTOR_TYPE, proxy2 );
          dtCore::RefPtr<SimCore::Actors::MunitionEffectsInfoActor> effectsInfo
-            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy->GetActor());
+            = static_cast<SimCore::Actors::MunitionEffectsInfoActor*>(proxy2->GetActor());
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoDrawable() == NULL );
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoActor() == NULL );
-         munitionType->SetEffectsInfoActor( proxy.get() );
+         munitionType->SetEffectsInfoActor( proxy2.get() );
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoDrawable() == effectsInfo.get() );
          CPPUNIT_ASSERT( munitionType->GetEffectsInfoActor() == effectsInfo.get() );
       }
