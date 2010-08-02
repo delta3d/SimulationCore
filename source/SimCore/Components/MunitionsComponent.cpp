@@ -1188,12 +1188,12 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MunitionsComponent::AddMunitionToCreatedMunitionsQueue(const dtCore::UniqueId &uniqueId)
+      void MunitionsComponent::AddMunitionToCreatedMunitionsQueue(const dtCore::UniqueId& uniqueId)
       {
          // Add it to the back, and then clean up if we have too many.
          mCreatedMunitionsQueue.push_back(uniqueId);
 
-         int curSize = mCreatedMunitionsQueue.size();
+         unsigned curSize = mCreatedMunitionsQueue.size();
          if (curSize > mMaximumActiveMunitions)
          {
             CleanupCreatedMunitionsQueue();
