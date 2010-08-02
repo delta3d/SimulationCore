@@ -444,7 +444,15 @@ namespace SimCore
             }
 
             if (!GetShaderGroup().empty())
-               SetShaderGroup(GetShaderGroup());
+            {
+               // TODO - Figure out why we have to do this next hack.
+               // Hack Explanation - if the actor was a prototype, then setting the shader doesn't seem
+               // to take effect. So, we set it again. However, we have to set it back to empty string
+               // or the SetShaderGroup won't do anything.
+               std::string shaderToSet = GetShaderGroup();
+               SetShaderGroup(""); // clear the shader so that it will accept the new setting
+               SetShaderGroup(shaderToSet);
+            }
 
             GetMatrixNode()->addChild(mTerrainNode.get());
 
