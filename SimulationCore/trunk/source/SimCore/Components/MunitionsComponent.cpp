@@ -455,7 +455,7 @@ namespace SimCore
             oss << "Detonation munition \"" << detMessage.GetMunitionType()
                << "\" could not be found nor the default munition \""
                << GetDefaultMunitionName() << "\"" << std::endl;
-            LOG_ERROR(oss.str());
+            LOG_WARNING(oss.str());
          }
       }
 
@@ -502,7 +502,7 @@ namespace SimCore
             oss << "Weapon fire munition \"" << shotMessage.GetMunitionType()
                << "\" could not be found nor the default munition \""
                << GetDefaultMunitionName() << "\"" << std::endl;
-            LOG_ERROR(oss.str());
+            LOG_WARNING(oss.str());
          }
       }
 
@@ -600,7 +600,7 @@ namespace SimCore
             std::ostringstream ss;
             ss << "Munition \"" << munitionName << "\" does not have effects defined for it."
                << std::endl;
-            LOG_ERROR( ss.str() );
+            LOG_WARNING( ss.str() );
             return;
          }
 
@@ -765,7 +765,7 @@ namespace SimCore
             std::ostringstream ss;
             ss << "Munition \"" << munitionName << "\" does not have effects defined for it."
                << std::endl;
-            LOG_ERROR( ss.str() );
+            LOG_WARNING( ss.str() );
             return;
          }
 
@@ -1022,7 +1022,7 @@ namespace SimCore
             }
             else
             {
-               LOG_ERROR("Received bag number from configuration file for MaximumActiveMunitions on the Munitions Component.");
+               LOG_ERROR("Received bad number from configuration file for MaximumActiveMunitions on the Munitions Component.");
             }
          }
       }
@@ -1114,7 +1114,7 @@ namespace SimCore
                oss << "Default munition not found." << std::endl;
             }
 
-            LOG_ERROR( oss.str() );
+            LOG_WARNING( oss.str() );
          }
 
          return effects;

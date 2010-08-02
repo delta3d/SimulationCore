@@ -405,26 +405,14 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadDetonationFile(const std::string &fileName)
+      void DetonationActor::LoadDetonationFile(const std::string& fileName)
       {
-         if(fileName.empty())
-         {
-            LOG_ERROR("Cannot load an empty detonation file. Ignoring.");
-            return;
-         }
-
          mExplosionSystem->LoadFile(fileName);
       }
 
       ///////////////////////////////////////////////////////////////////////
-      void DetonationActor::LoadSmokeFile(const std::string &fileName)
+      void DetonationActor::LoadSmokeFile(const std::string& fileName)
       {
-         if(fileName.empty())
-         {
-            //LOG_ERROR("Cannot load an empty smoke file. Ignoring.");
-            return;
-         }
-
          mSmokeSystem->LoadFile(fileName);
       }
 

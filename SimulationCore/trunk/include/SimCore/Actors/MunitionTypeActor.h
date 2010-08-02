@@ -27,6 +27,7 @@
 #include <SimCore/Export.h>
 #include <dtCore/base.h>
 #include <dtCore/deltadrawable.h>
+#include <dtCore/observerptr.h>
 #include <dtDAL/actorproxy.h>
 #include <string>
 
@@ -353,19 +354,11 @@ namespace SimCore
             const DISIdentifier& GetDISIdentifier() const { return mDIS; }
             std::string GetDISIdentifierString() const;
 
-            void SetEffectsInfoActor( dtDAL::ActorProxy* proxy )
-            { 
-               mEffects = proxy != NULL ? 
-                  dynamic_cast<MunitionEffectsInfoActor*> (proxy->GetActor()) : NULL;
-               mProxy->SetLinkedActor("Effects Info", proxy);
-            }
-            dtCore::DeltaDrawable* GetEffectsInfoDrawable()
-            { 
-               dtDAL::ActorProxy* proxy = mProxy->GetLinkedActor("Effects Info");
-               return proxy != NULL ? proxy->GetActor() : NULL;
-            }
+            void SetEffectsInfoActor( dtDAL::ActorProxy* proxy );
 
-            const MunitionEffectsInfoActor* GetEffectsInfoActor() const { return mEffects.get(); }
+            dtCore::DeltaDrawable* GetEffectsInfoDrawable();
+
+            const MunitionEffectsInfoActor* GetEffectsInfoActor() const;
 
          protected:
             virtual ~MunitionTypeActor();
@@ -379,7 +372,7 @@ namespace SimCore
             MunitionFamily* mFamily;
             DISIdentifier mDIS;
             dtCore::RefPtr<MunitionEffectsInfoActor> mEffects;
-            dtCore::RefPtr<MunitionTypeActorProxy> mProxy;
+            dtCore::ObserverPtr<MunitionTypeActorProxy> mProxy;
       };
 
    }

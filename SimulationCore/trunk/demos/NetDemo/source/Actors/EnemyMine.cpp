@@ -165,9 +165,9 @@ namespace NetDemo
    {
       BaseClass::BuildPropertyMap();
       
-      const std::string GROUP = "Enemy Props";
+      //const std::string GROUP = "Enemy Props";
 
-      EnemyMineActor& actor = static_cast<EnemyMineActor &>(GetGameActor());
+      //EnemyMineActor& actor = static_cast<EnemyMineActor &>(GetGameActor());
 
    }
 
