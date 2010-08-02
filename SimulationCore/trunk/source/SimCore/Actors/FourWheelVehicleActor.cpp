@@ -124,8 +124,8 @@ namespace SimCore
             return;
          }
          drPublishingActComp->SetMaxUpdateSendRate(3.0f);
-         drPublishingActComp->SetMaxTranslationError(0.02f);
-         drPublishingActComp->SetMaxRotationError(1.0f);
+         drPublishingActComp->SetMaxTranslationError(0.002f);
+         drPublishingActComp->SetMaxRotationError(0.5f);
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
