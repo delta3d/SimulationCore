@@ -134,10 +134,14 @@ namespace SimCore
             GetPhysicsHelper()->SetPrePhysicsCallback(
                dtPhysics::PhysicsHelper::UpdateCallback(this, &BasePhysicsVehicleActor::PrePhysicsUpdate));
 
-            // Disable gravity until the map has loaded terrain under our feet...
-            // Note - you can probably do this on remote entities too, but they probably are kinematic anyway
-            GetPhysicsHelper()->GetMainPhysicsObject()->SetGravityEnabled(false);
-            GetPhysicsHelper()->GetMainPhysicsObject()->SetCollisionResponseEnabled(false);
+            dtPhysics::PhysicsObject* po = GetPhysicsHelper()->GetMainPhysicsObject();
+            if (po->GetMechanicsType() == dtPhysics::MechanicsType::DYNAMIC)
+            {
+               // Disable gravity until the map has loaded terrain under our feet...
+               // Note - you can probably do this on remote entities too, but they probably are kinematic anyway
+               po->SetGravityEnabled(false);
+               po->SetCollisionResponseEnabled(false);
+            }
          }
       }
 
@@ -179,8 +183,6 @@ namespace SimCore
             terrainPoint.z() += mTerrainPresentDropHeight;
             xform.SetTranslation(terrainPoint);
             physicsObject->SetTransformAsVisual(xform);
-            physicsObject->SetGravityEnabled(true);
-            physicsObject->SetCollisionResponseEnabled(true);
          }
 
          return terrainDetected;
@@ -233,7 +235,7 @@ namespace SimCore
          }
          bool isDynamic = true;
 
-         if (physicsObject->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
+         if (!mHasFoundTerrain && physicsObject->GetMechanicsType() != dtPhysics::MechanicsType::DYNAMIC)
          {
             isDynamic = false;
             //No need to look for terrain on static objects.
@@ -249,7 +251,12 @@ namespace SimCore
          if (!mHasFoundTerrain)
          {
             // Terrain has not been found. Check for it again.
-            mHasFoundTerrain = IsTerrainPresent();
+            if (IsTerrainPresent())
+            {
+               mHasFoundTerrain = true;
+               physicsObject->SetGravityEnabled(true);
+               physicsObject->SetCollisionResponseEnabled(true);
+            }
          }
          // Check to see if we are currently up under the earth, if so, snap them back up.
          else if (GetPerformAboveGroundSafetyCheck())
