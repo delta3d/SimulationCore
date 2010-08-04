@@ -174,20 +174,22 @@ namespace SimCore
                physObj->SetMechanicsType(dtPhysics::MechanicsType::KINEMATIC);
             }
 
+            mPhysicsHelper->AddPhysicsObject(*physObj);
+
+            dtCore::Transform offsetXform;
+            offsetXform.SetTranslation(-physObj->GetOriginOffset());
+
+            physObj->SetVisualToBodyTransform(offsetXform);
+
             dtCore::Transform xform;
             GetTransform(xform);
 
-            physObj->SetTransform(xform);
-            mPhysicsHelper->AddPhysicsObject(*physObj);
+            physObj->SetTransformAsVisual(xform);
 
-            osg::Matrix bodyOffset;
-            bodyOffset.setTrans(-mPhysicsHelper->GetMainPhysicsObject()->GetOriginOffset());
-            dtCore::Transform offsetXform;
-            offsetXform.Set(bodyOffset);
-
-            mPhysicsHelper->GetMainPhysicsObject()->SetVisualToBodyTransform(offsetXform);
-
-            physObj->CreateFromProperties(&GetScaleMatrixTransform());
+            // Note, this must be done after the visual to body transform is set because the origin
+            // offset may be adjusted if the primitive type is a box, sphere, or cylinder and the center
+            // of the bounding box doesn't match the center of the mesh
+            physObj->CreateFromProperties(&GetScaleMatrixTransform(), true, checkValue);
 
          }
       }
