@@ -73,39 +73,36 @@ namespace SimCore
             void  SetFilled(bool value) {mFilledBL = value;}
 
             /////////////////////////////////////////////////////////////////////////
-            osg::Geode* GetGeodePointer()
-            {
-               if(mGeodePTR.valid())
-                  return mGeodePTR.get();
-               return NULL;
-            }
+            osg::Geode* GetGeodePointer();
 
             /////////////////////////////////////////////////////////////////////////
-            void SetFlags(char value)  {mFlags = value;}
-            char GetFlags() const {return mFlags;}
+            void SetFlags(char value);
+            char GetFlags() const;
 
             /////////////////////////////////////////////////////////////////////////
-            void SetFlagsToKeep()    {mFlags = TILE_TODO_KEEP;}
-            void SetFlagsToLoad()    {mFlags = TILE_TODO_LOAD;}
-            void SetFlagsToDisable() {mFlags = TILE_TODO_DISABLE;}
+            void SetFlagsToKeep();
+            void SetFlagsToLoad();
+            void SetFlagsToDisable();
+
+            void SaveCurrentToLastFlags();
+
+            bool FlagsChanged() const { return mLastFlags != mFlags; }
 
             /////////////////////////////////////////////////////////////////////////
-            const dtCore::UniqueId& GetUniqueID() const {return mUniqueID;}
+            const dtCore::UniqueId& GetUniqueID() const;
 
             /////////////////////////////////////////////////////////////////////////
-            void SetPhysicsObject(dtPhysics::PhysicsObject* object) {mPhysicsObject = object;}
+            void SetPhysicsObject(dtPhysics::PhysicsObject* object);
 
             dtPhysics::PhysicsObject* GetPhysicsObject() { return mPhysicsObject; }
          private:
-#ifdef AGEIA_PHYSICS
-            dtPhysics::PhysicsObject*                mPhysicsObject;
-#else
             dtCore::RefPtr<dtPhysics::PhysicsObject> mPhysicsObject;
-#endif
 
             osg::observer_ptr<osg::Geode>    mGeodePTR;
             bool                             mFilledBL;
+            bool                             mFlagsChanged;
             char                             mFlags;
+            char                             mLastFlags;
             dtCore::UniqueId                 mUniqueID;
       };
 

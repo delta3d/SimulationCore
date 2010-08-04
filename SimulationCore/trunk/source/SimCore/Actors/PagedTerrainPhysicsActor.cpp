@@ -125,8 +125,10 @@ namespace SimCore
 #endif
                      osg::StateSet* tempStateSet = d->getStateSet();
                      osg::ref_ptr<osg::IntArray> mOurList;
-                     if(tempStateSet != NULL)
+                     if (tempStateSet != NULL)
+                     {
                         mOurList = dynamic_cast<osg::IntArray*>(tempStateSet->getUserData());
+                     }
 
                      if(mOurList.valid())
                      {
@@ -166,11 +168,12 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////
 
          //////////////////////////////////////////////////////////////////////
-         TerrainNode::TerrainNode(osg::Geode* toSet) :
-            mGeodePTR(toSet)           // the group pointer of what was loaded
-          , mFilledBL(false)           // filled for physics use yet?
-          //, mIsBuilding(false)         // is this a building or not
-          , mFlags(TILE_TODO_DISABLE)  // for flag system
+         TerrainNode::TerrainNode(osg::Geode* toSet)
+         : mGeodePTR(toSet)           // the group pointer of what was loaded
+         , mFilledBL(false)           // filled for physics use yet?
+         //, mIsBuilding(false)         // is this a building or not
+         , mFlags(TILE_TODO_DISABLE)  // for flag system
+         , mLastFlags(TILE_TODO_KEEP)  // for flag system, different from mFlags so it will start as "changed"
          {
             SetPhysicsObject(NULL);
          }
@@ -180,6 +183,62 @@ namespace SimCore
          {
             SetPhysicsObject(NULL);
             mGeodePTR = NULL;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         osg::Geode* TerrainNode::GetGeodePointer()
+         {
+            if(mGeodePTR.valid())
+               return mGeodePTR.get();
+            return NULL;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SetFlags(char value)
+         {
+            mFlags = value;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         char TerrainNode::GetFlags() const
+         {
+            return mFlags;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SetFlagsToKeep()
+         {
+            SetFlags(TILE_TODO_KEEP);
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SetFlagsToLoad()
+         {
+            SetFlags(TILE_TODO_LOAD);
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SetFlagsToDisable()
+         {
+            SetFlags(TILE_TODO_DISABLE);
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SaveCurrentToLastFlags()
+         {
+            mLastFlags = mFlags;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         const dtCore::UniqueId& TerrainNode::GetUniqueID() const
+         {
+            return mUniqueID;
+         }
+
+         /////////////////////////////////////////////////////////////////////////
+         void TerrainNode::SetPhysicsObject(dtPhysics::PhysicsObject* object)
+         {
+            mPhysicsObject = object;
          }
 
       //////////////////////////////////////////////////////////////////////
@@ -299,50 +358,45 @@ namespace SimCore
                   // Remove physics stuff if its loaded.
                   if (currentNode->IsFilled())
                   {
-#ifdef AGEIA_PHYSICS
-                     mPhysicsHelper->RemovePhysicsObject(currentNode->GetUniqueID().ToString());
-#else
                      mPhysicsHelper->RemovePhysicsObject(*currentNode->GetPhysicsObject());
-#endif
                   }
                   mTerrainMap.erase(mFinalizeTerrainIter++);
                   continue;
                }
-               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_DISABLE
-                     &&currentNode->IsFilled())
+               else if (currentNode->FlagsChanged())
                {
-#ifdef AGEIA_PHYSICS
-                  mPhysicsHelper->TurnOffCollision(currentNode->GetPhysicsObject());
-#else
-                  currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
-                  currentNode->GetPhysicsObject()->SetCollisionResponseEnabled(false);
-#endif
-               }
-               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_KEEP
-                     &&currentNode->IsFilled())
-               {
-#ifdef AGEIA_PHYSICS
-                  mPhysicsHelper->TurnOnCollision(currentNode->GetPhysicsObject());
-#else
-                  currentNode->GetPhysicsObject()->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
-                  currentNode->GetPhysicsObject()->SetCollisionResponseEnabled(true);
-#endif
-               }
-               else if (currentNode->GetFlags() == TerrainNode::TILE_TODO_LOAD
-                     &&currentNode->GetGeodePointer() != NULL)
-               {
-                  // load the tile to ageia
-                  currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
-                     currentNode->GetUniqueID().ToString(), false));
-                  currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
+                  if (!currentNode->IsFilled())
+                  {
+                     currentNode->SetFlagsToLoad();
+                  }
+
+                  dtPhysics::PhysicsObject* curPO = currentNode->GetPhysicsObject();
+                  switch (currentNode->GetFlags())
+                  {
+                     case TerrainNode::TILE_TODO_DISABLE:
+                        curPO->SetCollisionGroup(SimCore::CollisionGroup::GROUP_BULLET);
+                        curPO->SetCollisionResponseEnabled(false);
+                        curPO->SetTranslation(dtPhysics::VectorType(0.0f, 0.0f, -10000.0f));
+                        break;
+                     case TerrainNode::TILE_TODO_KEEP:
+                        curPO->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+                        curPO->SetCollisionResponseEnabled(true);
+                        curPO->SetTranslation(dtPhysics::VectorType(0.0f, 0.0f, 0.0f));
+                        break;
+                     case TerrainNode::TILE_TODO_LOAD:
+                        currentNode->SetPhysicsObject(BuildTerrainAsStaticMesh( currentNode->GetGeodePointer(),
+                                 currentNode->GetUniqueID().ToString(), false));
+                        currentNode->SetFilled(currentNode->GetPhysicsObject() != NULL);
+                        break;
+                  }
+
                }
 
-               if(currentNode->IsFilled() == false)
-                  currentNode->SetFlagsToLoad();
-               else
-                  currentNode->SetFlagsToDisable();
+               currentNode->SaveCurrentToLastFlags();
+               currentNode->SetFlagsToDisable();
 
                ++mFinalizeTerrainIter;
+
             }
 
             if(mFinalizeTerrainIter ==  mTerrainMap.end() )
@@ -544,6 +598,8 @@ namespace SimCore
                   newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
                   newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
                   newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+                  // We don't want this skin thickness, we want the thickness on the geometry.
+                  newTile->SetSkinThickness(0.0);
 
                   dtPhysics::VertexData data;
                   data.mIndices = &dtv.mFunctor.mIndices.front();
@@ -552,6 +608,7 @@ namespace SimCore
                   data.mNumVertices = dtv.mFunctor.mVertices.size();
                   dtCore::Transform xform;
                   dtCore::RefPtr<dtPhysics::Geometry> geom = dtPhysics::Geometry::CreateConcaveGeometry(xform, data, 0);
+                  geom->SetMargin(0.06);
 
                   newTile->CreateFromGeometry(*geom);
                   return newTile.get();
@@ -577,8 +634,11 @@ namespace SimCore
             newTile->SetName(nameOfNode);
             newTile->SetMechanicsType(dtPhysics::MechanicsType::STATIC);
             newTile->SetPrimitiveType(dtPhysics::PrimitiveType::TERRAIN_MESH);
-            newTile->CreateFromProperties(node);
             newTile->SetCollisionGroup(SimCore::CollisionGroup::GROUP_TERRAIN);
+            newTile->SetSkinThickness(0.06);
+            newTile->CreateFromProperties(node);
+            // We don't want this skin thickness, we want the thickness on the geometry.
+            newTile->SetSkinThickness(0.00);
 
             return newTile.get();
          }
