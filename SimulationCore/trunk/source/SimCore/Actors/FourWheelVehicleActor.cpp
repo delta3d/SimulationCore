@@ -448,9 +448,26 @@ namespace SimCore
                mStopMode = false;
                mCruiseMode = false;
             }
-            else if (mCruiseMode && mCruiseSpeed > curMPH)
+            else if (mCruiseMode) 
             {
-               accel = accelFactor;
+
+               // Just a way to shut off cruise control if we end up too slow (or hit something)
+               if (mCruiseSpeed < 5.0f || curMPH < 5.0f)
+               {
+                  mCruiseMode = false;
+               }
+               else
+               {
+                  // To keep the accel from going on/off, we use a VERY simple approximation. 
+                  // Essentially, we try to keep the accel between 1.0 and 0.0, centered around
+                  // the target cruisespeed (+/- 1% speed). It means we will rarely be exactly 
+                  // at our desired speed, but our vel won't keep changing. It settles pretty quickly.
+                  float minTargetSpeed = mCruiseSpeed * 0.99f;
+                  float maxTargetSpeed = mCruiseSpeed * 1.01f;                  
+                  float cruiseAccelModifier = (maxTargetSpeed - curMPH) / (maxTargetSpeed - minTargetSpeed);                     
+                  dtUtil::Clamp(cruiseAccelModifier, 0.0001f, 1.00f);
+                  accel = accelFactor * cruiseAccelModifier;
+               }
             }
 
             // If you hold the brake and the accelerator at the same time, it will make sure
