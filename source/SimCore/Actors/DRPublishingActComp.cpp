@@ -115,7 +115,6 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::OnTickLocal(const dtGame::TickMessage& tickMessage)
       {
-
          double elapsedTime = tickMessage.GetDeltaSimTime();
          bool forceUpdate = false;
          bool fullUpdate = false;
@@ -553,6 +552,14 @@ namespace SimCore
                {
                   float instantVelWeight = 1.0f / float(mVelocityAverageFrameCount);
                   mAccumulatedLinearVelocity = instantVelocity * instantVelWeight + mAccumulatedLinearVelocity * (1.0f - instantVelWeight);
+               }
+
+               // Sometimes, the physics engines will oscillate when they are moving extremely slowly (or 'sitting still')
+               // Calc'ing the vel/accel will magnify this effect, so we clamp it.
+               float velMagnitude2 = mAccumulatedLinearVelocity.length2();
+               if (velMagnitude2 < 0.01f)
+               {
+                  mAccumulatedLinearVelocity = osg::Vec3(0.0f, 0.0f, 0.0f);
                }
 
                // Compute our acceleration as the instantaneous differential of the velocity
