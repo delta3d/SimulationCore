@@ -49,11 +49,6 @@ namespace SimCore
    , mIsVehicleFourWheelDrive(false)
    , mFrontTrackAdjustment(0.0f)
    , mRearTrackAdjustment(0.0f)
-   , mCurrentNormalizedSteering(0.0f)
-   , mCurrentEngineTorque(0.0f)
-   , mCurrentNormalizedBrakes(0.0f)
-   , mFrontMaxJounce(0.0f)
-   , mRearMaxJounce(0.0f)
    , mFrontWheelMass(25.0f)
    , mFrontWheelRadius(-1.0f)
    , mFrontWheelWidth(-1.0f)
@@ -80,6 +75,13 @@ namespace SimCore
    , mRearTireAsymptoteValue(0.1f)
    , mRearTireStiffness(100000.0f)
    , mRearTireRestitution(0.1f)
+   , mCurrentNormalizedSteering(0.0f)
+   , mCurrentEngineTorque(0.0f)
+   , mCurrentNormalizedBrakes(0.0f)
+   , mAccelerator(0.0f)
+   , mFrontMaxJounce(0.0f)
+   , mRearMaxJounce(0.0f)
+   , mFourWheelDrive(false)
    {
       mAxleRotation[0] = 0.0f;
       mAxleRotation[1] = 0.0f;
@@ -149,7 +151,7 @@ namespace SimCore
    /// Updates vehicle position and rotation.
    void FourWheelVehiclePhysicsHelper::UpdateVehicle(float deltaTime)
    {
-      float mph = GetMPH();
+      //float mph = GetMPH();
 
 //      if ( mph >= 0.0f )
 //      {
