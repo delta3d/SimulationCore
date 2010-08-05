@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
       result = app.exec();
       dtCore::System::GetInstance().Stop();
    }
-   catch(const dtUtil::Exception &ex)
+   catch(const dtUtil::Exception& ex)
    {
       QMessageBox::critical(NULL,"Exception", ex.ToString().c_str(),
                            QMessageBox::Ok,QMessageBox::NoButton);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
       return 1;
    }
-   catch(const std::exception &e)
+   catch(const std::exception& e)
    {
       QString message("A standard exception has been thrown. The exception message is: ");
       message += e.what();
