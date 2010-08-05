@@ -1,5 +1,5 @@
 /*
-* Copyright, 2009, Alion Science and Technology Corporation, all rights reserved.
+* Copyright, 2009-2010, Alion Science and Technology Corporation, all rights reserved.
 *
 * See the .h file for complete licensing information.
 *
@@ -380,6 +380,12 @@ namespace NetDemo
                   mCurrentViewPointIndex = (mCurrentViewPointIndex + 1) % mViewPointList.size();
                   SendAttachOrDetachMessage(mVehicle->GetUniqueId(), mViewPointList[mCurrentViewPointIndex]);
                }
+            }
+            break;
+
+         case 'u':
+            {
+               ToggleWeatherStateIfDevMode();
             }
             break;
 
