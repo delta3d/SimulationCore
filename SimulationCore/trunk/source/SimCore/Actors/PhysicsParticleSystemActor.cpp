@@ -51,6 +51,9 @@
 #include <osg/Group>
 #include <osg/MatrixTransform>
 
+#include <iostream>
+
+
 IMPLEMENT_ENUM(PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum);
 PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::TWO_D("2D");
 PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum::THREE_D("3D");
@@ -349,10 +352,12 @@ void PhysicsParticleSystemActor::AddParticle()
    newObject->SetActivationAngularVelocityThreshold(dtPhysics::Real(3.0));
    newObject->SetActivationTimeThreshold(dtPhysics::Real(1.0));
    newObject->SetLinearDamping(dtPhysics::Real(0.1));
-   newObject->SetAngularDamping(dtPhysics::Real(0.9));
+   newObject->SetAngularDamping(dtPhysics::Real(0.4));
    newObject->SetSkinThickness(dtPhysics::Real(0.04));
    newObject->CreateFromProperties(particle->mObj->GetOSGNode());
    newObject->SetSkinThickness(dtPhysics::Real(0.0));
+   osg::Vec3 moment = newObject->GetMomentOfInertia();
+   newObject->SetMomentOfInertia(moment * 2.0f);
 
    dtCore::Transform xform;
    xform.SetTranslation(ourTranslation);
