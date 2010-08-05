@@ -18,8 +18,8 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
- */
+* Eddie Johnson, David Guthrie, Curtiss Murphy
+*/
 #ifndef _BASE_INPUT_COMPONENT_H_
 #define _BASE_INPUT_COMPONENT_H_
 
@@ -53,6 +53,10 @@ namespace SimCore
             typedef dtGame::BaseInputComponent BaseClass;
 
             static const std::string DEFAULT_NAME;
+
+            enum TestWeatherMode { TEST_WEATHER_CLEAR = 0, TEST_WEATHER_CLOUDY, 
+               TEST_WEATHER_RAIN_LIGHT, TEST_WEATHER_RAIN_HEAVY, 
+               TEST_WEATHER_SNOW_LIGHT, TEST_WEATHER_SNOW_HEAVY };
 
             /// Constructor
             BaseInputComponent(const std::string &name = DEFAULT_NAME);
@@ -114,6 +118,12 @@ namespace SimCore
              */
             void ReloadShadersIfDevMode();
 
+            /** 
+             * Basic test behavior for weather. Calling this multiple times cycles 
+             * through states of TestWeatherMode.
+             */
+            void ToggleWeatherStateIfDevMode();
+
          protected:
             //Increases/decreases the Level of Detail scale by 10%
             void ChangeLODScale(bool down);
@@ -132,6 +142,7 @@ namespace SimCore
             float mEntityMagnification;
             std::string mTerrainActorName;
             dtUtil::Log* mLogger;
+            TestWeatherMode mTestWeatherMode;
       };
    }
 }

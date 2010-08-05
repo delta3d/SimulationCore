@@ -1,6 +1,6 @@
 /* -*-c++-*-
 * Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
+* Copyright 2007-2010, Alion Science and Technology
 *
 * This library is free software; you can redistribute it and/or modify it under
 * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,7 +18,7 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
-* @author William E. Johnson II
+* William E. Johnson II, David Guthrie, Curtiss Murphy
 */
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/BaseInputComponent.h>
@@ -28,6 +28,8 @@
 #include <SimCore/Components/WeatherComponent.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/StealthActor.h>
+#include <SimCore/Actors/EntityActorRegistry.h>
+#include <SimCore/Actors/UniformAtmosphereActor.h>
 #include <SimCore/Utilities.h>
 
 #include <dtABC/application.h>
@@ -54,7 +56,8 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////
       BaseInputComponent::BaseInputComponent(const std::string& name)
          : dtGame::BaseInputComponent(name)
-      , mEntityMagnification(1.0f)
+         , mEntityMagnification(1.0f)
+         , mTestWeatherMode(TEST_WEATHER_CLEAR)
       {
          mLogger = &dtUtil::Log::GetInstance("BaseInputComponent.cpp");
          //mMouseListener = new BaseMouseListener(*this);
@@ -208,6 +211,121 @@ namespace SimCore
             dtCore::ShaderManager::GetInstance().ReloadAndReassignShaderDefinitions("Shaders/ShaderDefs.xml");
             //ToggleEntityShaders();
             LOG_ALWAYS("Reloading All Shaders...");
+         }
+      }
+
+      ////////////////////////////////////////////////////////////////////
+      void BaseInputComponent::ToggleWeatherStateIfDevMode()
+      {
+         if (!SimCore::Utils::IsDevModeOn(*GetGameManager()))
+         {
+            return;
+         }
+
+         // look to find an actor already existing atmosphere
+         dtCore::RefPtr<dtGame::GameActorProxy> newProxy;
+         Actors::UniformAtmosphereActorProxy* weatherProxy = NULL;
+         GetGameManager()->FindActorByType(*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, weatherProxy);
+
+         // if one doesn't already exist, then we create it.
+         if (weatherProxy == NULL)
+         {
+            GetGameManager()->CreateActor
+               (*SimCore::Actors::EntityActorRegistry::UNIFORM_ATMOSPHERE_ACTOR_TYPE, newProxy);
+            weatherProxy = dynamic_cast<Actors::UniformAtmosphereActorProxy*>(newProxy.get());
+         }
+         Actors::UniformAtmosphereActor* weatherActor =
+            static_cast<Actors::UniformAtmosphereActor*>(weatherProxy->GetActor());
+
+         // Advance Weather State. 
+         // CLEAR
+         if (mTestWeatherMode == TEST_WEATHER_SNOW_HEAVY)
+         {
+            LOG_ALWAYS("Setting Weather to CLEAR");
+            mTestWeatherMode = TEST_WEATHER_CLEAR;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::NONE);
+            weatherActor->SetPrecipitationRate(0.0f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(0.2f);
+            weatherActor->SetWindSpeedY(0.2f);
+            weatherActor->SetCloudCoverage(10.0f); // 0 to 100%
+            //weatherActor->SetCloudThickness(0.1f);
+            weatherActor->SetVisibilityDistance(10.0f); // kilometers
+         }
+
+         // CLOUDY
+         else if (mTestWeatherMode == TEST_WEATHER_CLEAR)
+         {
+            LOG_ALWAYS("Setting Weather to CLOUDY");
+            mTestWeatherMode = TEST_WEATHER_CLOUDY;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::NONE);
+            weatherActor->SetPrecipitationRate(0.0f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(1.7f);
+            weatherActor->SetWindSpeedY(1.3f);
+            weatherActor->SetCloudCoverage(50.0f); // 0 to 100%
+            weatherActor->SetVisibilityDistance(5.0f);// kilometers
+         }
+         // LIGHT RAIN 
+         else if (mTestWeatherMode == TEST_WEATHER_CLOUDY)
+         {
+            LOG_ALWAYS("Setting Weather to LIGHT RAIN");
+            mTestWeatherMode = TEST_WEATHER_RAIN_LIGHT;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::RAIN);
+            weatherActor->SetPrecipitationRate(0.25f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(0.5f);
+            weatherActor->SetWindSpeedY(0.6f);
+            weatherActor->SetCloudCoverage(70.0f);  // 0 to 100%
+            weatherActor->SetVisibilityDistance(1.5f); // kilometers
+         }
+
+         // HEAVY RAIN
+         else if (mTestWeatherMode == TEST_WEATHER_RAIN_LIGHT)
+         {
+            LOG_ALWAYS("Setting Weather to HEAVY RAIN");
+            mTestWeatherMode = TEST_WEATHER_RAIN_HEAVY;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::RAIN);
+            weatherActor->SetPrecipitationRate(0.9f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(2.2f);
+            weatherActor->SetWindSpeedY(1.8f);
+            weatherActor->SetCloudCoverage(100.0f);  // 0 to 100%
+            weatherActor->SetVisibilityDistance(0.500f); // kilometers
+         }
+
+         // LIGHT SNOW
+         else if (mTestWeatherMode == TEST_WEATHER_RAIN_HEAVY)
+         {
+            LOG_ALWAYS("Setting Weather to LIGHT SNOW");
+            mTestWeatherMode = TEST_WEATHER_SNOW_LIGHT;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::SNOW);
+            weatherActor->SetPrecipitationRate(0.25f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(-0.7f);
+            weatherActor->SetWindSpeedY(-0.5f);
+            weatherActor->SetCloudCoverage(85.0f); // 0 to 100%
+            weatherActor->SetVisibilityDistance(0.75f); // kilometers
+         }
+
+         // HEAVY SNOW
+         else if (mTestWeatherMode == TEST_WEATHER_SNOW_LIGHT)
+         {
+            LOG_ALWAYS("Setting Weather to HEAVY SNOW");
+            mTestWeatherMode = TEST_WEATHER_SNOW_HEAVY;
+            weatherActor->SetPrecipitationType(SimCore::Actors::PrecipitationType::SNOW);
+            weatherActor->SetPrecipitationRate(1.0f); // 0 to 1.0
+            weatherActor->SetWindSpeedX(1.1f);
+            weatherActor->SetWindSpeedY(-0.8f);
+            weatherActor->SetCloudCoverage(100.0f); // 0 to 100%
+            weatherActor->SetVisibilityDistance(0.250f); // kilometers
+         }
+
+
+         // If we created a new actor, add it to the GM, with publish true and local
+         if (newProxy.valid())
+         {
+            GetGameManager()->AddActor(*newProxy, false, true);
+         }
+         // else, do a full actor update
+         else
+         {
+            weatherProxy->NotifyFullActorUpdate();
          }
       }
 
