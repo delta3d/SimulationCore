@@ -82,7 +82,7 @@ namespace NetDemo
       /// Adds additional invokables for this class.
       virtual void BuildInvokables();
 
-      virtual void PropelledVehicleActorProxy::OnEnteredWorld();
+      virtual void OnEnteredWorld();
 
    protected:
       virtual ~PropelledVehicleActorProxy();

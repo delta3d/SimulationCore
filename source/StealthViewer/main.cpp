@@ -81,14 +81,9 @@ int main(int argc, char *argv[])
       result = app.exec();
       dtCore::System::GetInstance().Stop();
    }
-   catch(const dtUtil::Exception &e)
+   catch(const dtUtil::Exception &ex)
    {
-      e.LogException(dtUtil::Log::LOG_ERROR);
-      std::ostringstream ss;
-      ss << "Exception (" << e.TypeEnum() << "): " << e.What()
-         << "\n\tLine: " << e.Line() << " File: " << e.File();
-
-      QMessageBox::critical(NULL,"Exception",ss.str().c_str(),
+      QMessageBox::critical(NULL,"Exception", ex.ToString().c_str(),
                            QMessageBox::Ok,QMessageBox::NoButton);
 
       dtAudio::AudioManager::Destroy();

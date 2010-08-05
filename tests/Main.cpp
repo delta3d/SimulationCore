@@ -138,7 +138,7 @@ void SetupCEGUI(dtABC::Application& app)
    globalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
-   std::string path = dtCore::FindFileInPathList(guiScheme);
+   std::string path = dtUtil::FindFileInPathList(guiScheme);
    if (path.empty())
    {
       throw dtUtil::Exception("Failed to find the scheme file.",
