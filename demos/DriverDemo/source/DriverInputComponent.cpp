@@ -437,6 +437,13 @@ namespace DriverDemo
          }
          break;
 
+         case 'u':
+         {
+            ToggleWeatherStateIfDevMode();
+         }
+         break;
+
+
          // R is the player hack for 'fix me!'. It cures your damage state, removes flames, and also moves
          // you slightly up each frame. This helps when you are stuck in when we get stuck in geometry.
          case 'r':
