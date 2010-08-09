@@ -496,7 +496,7 @@ namespace SimCore
                   mPrecipRate = 1.0;
 
                bool toContinue = true;
-               if(mPrecipRate < 0.01)
+               if(mPrecipRate < 0.01 || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::NONE)
                {
                   if(mPrecipEffect.valid())
                   {
@@ -520,14 +520,23 @@ namespace SimCore
                   }
 
                   if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::FREEZING_RAIN
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::RAIN)
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::RAIN
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::OTHER
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::UNKNOWN)
                   {
                      mPrecipEffect->rain(mPrecipRate);
                   }
                   else if(atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::SNOW
-                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::HAIL)
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::HAIL
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::SLEET
+                     || atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::GRAUPEL)
                   {
                      mPrecipEffect->snow(mPrecipRate);
+                  }
+                  else if (atmosActor->GetPrecipitationType() == SimCore::Actors::PrecipitationType::NONE)
+                  {
+                     // It really shouldn't even get here because it's shut off above.
+                     mPrecipEffect->rain(0.0f);
                   }
 
                   mPrecipEffect->setWind(osg::Vec3( wind[0], wind[1], 0.0f ));
