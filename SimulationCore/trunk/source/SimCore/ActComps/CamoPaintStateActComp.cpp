@@ -35,7 +35,7 @@
 #include <dtDAL/project.h>
 #include <dtGame/gameactor.h>
 #include <dtGame/gamemanager.h>
-#include <dtUtil/boundingshapeutils.h>
+#include <osg/ComputeBoundsVisitor>
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
 #include <SimCore/Actors/CamoConfigActor.h>
 #include <SimCore/Actors/IGActor.h> // For SetNodeVisible function.
@@ -182,10 +182,10 @@ namespace SimCore
             // Set the dimensions of the conceal mesh.
             if(node != NULL)
             {
-               dtUtil::BoundingBoxVisitor visitor;
+               osg::ComputeBoundsVisitor visitor;
                visitor.apply(*node);
 
-               const osg::BoundingBox& bb = visitor.mBoundingBox;
+               const osg::BoundingBox& bb = visitor.getBoundingBox();
                if(bb.valid())
                {
                   osg::Vec4 dims = mOriginalConcealMeshDims;
@@ -248,7 +248,6 @@ namespace SimCore
       void CamoPaintStateActComp::SetConcealMesh(const dtDAL::ResourceDescriptor& file)
       {
          bool changed = mConcealMesh != file;
-         bool fileValid = ! changed;
          if(changed || ( ! mConcealMeshNode.valid() && ! file.IsEmpty()))
          {
             mConcealMesh = file;
