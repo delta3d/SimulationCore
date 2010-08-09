@@ -657,151 +657,152 @@ void PhysicsParticleSystemActorProxy::BuildPropertyMap()
    //RemoveProperty("Translation");
    //RemoveProperty("Scale");
 
-   PhysicsParticleSystemActor& actor = static_cast<PhysicsParticleSystemActor&>(GetGameActor());
+   PhysicsParticleSystemActor* actor = NULL;
+   GetActor(actor);
 
    std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >  toFillIn;
-   actor.GetPhysicsHelper().BuildPropertyMap(toFillIn);
+   actor->GetPhysicsHelper().BuildPropertyMap(toFillIn);
    for(unsigned int i = 0 ; i < toFillIn.size(); ++i)
       AddProperty(toFillIn[i].get());
 
    AddProperty(new dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>("TwoDOrThreeDTypeEnum", "TwoDOrThreeDTypeEnum",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetTwoDOrThreeDTypeEnum),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetTwoDOrThreeDTypeEnum),
+            dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::SetFuncType(actor, &PhysicsParticleSystemActor::SetTwoDOrThreeDTypeEnum),
+            dtDAL::EnumActorProperty<PhysicsParticleSystemActor::TwoDOrThreeDTypeEnum>::GetFuncType(actor, &PhysicsParticleSystemActor::GetTwoDOrThreeDTypeEnum),
             "Holds a Type Enum property", EMMITER_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("ParticleEmitterRateMax", "ParticleEmitterRateMax",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMax),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMax),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMax),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMax),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("ParticleEmitterRateMin", "ParticleEmitterRateMin",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMin),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMin),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleEmitterRateMin),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleEmitterRateMin),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("ParticleLengthofStay", "ParticleLengthofStay",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleLengthofStay),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleLengthofStay),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleLengthofStay),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleLengthofStay),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("EmitterTimeUntilDeletion", "EmitterTimeUntilDeletion",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetStaticObjectsLifeTime),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetStaticObjectsLifeTime),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStaticObjectsLifeTime),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStaticObjectsLifeTime),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("ParticleFadeInTime", "ParticleFadeInTime",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleFadeInTime),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleFadeInTime),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeInTime),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeInTime),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("ObjectsStayStaticWhenHit", "ObjectsStayStaticWhenHit",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetObjectsStayStaticWhenHit),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetObjectsStayStaticWhenHit),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectsStayStaticWhenHit),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectsStayStaticWhenHit),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::FloatActorProperty("ParticleFadeOutInverseDeletion", "ParticleFadeOutInverseDeletion",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleFadeOutInverseDeletion),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleFadeOutInverseDeletion),
+            dtDAL::FloatActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleFadeOutInverseDeletion),
+            dtDAL::FloatActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleFadeOutInverseDeletion),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::IntActorProperty("NumberOfParticlesWeWantSpawned", "NumberOfParticlesWeWantSpawned",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetNumberOfParticlesWeWantSpawned),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetNumberOfParticlesWeWantSpawned),
+            dtDAL::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetNumberOfParticlesWeWantSpawned),
+            dtDAL::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetNumberOfParticlesWeWantSpawned),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("ThisAsAnInfiniteParticleSystem", "ThisAsAnInfiniteParticleSystem",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetThisAsAnInfiniteParticleSystem),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetThisAsAnInfiniteParticleSystem),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetThisAsAnInfiniteParticleSystem),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetThisAsAnInfiniteParticleSystem),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("Does Particle System Delete Itself", "Does Particle System Delete Itself",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetObjectToStatic),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetObjectToStatic),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetObjectToStatic),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetObjectToStatic),
             "Does Particle System Delete Itself", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("GravityEnabledOnParticleSystem", "GravityEnabledOnParticleSystem",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetGravityEnabledOnParticleSystem),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetGravityEnabledOnParticleSystem),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetGravityEnabledOnParticleSystem),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetGravityEnabledOnParticleSystem),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("ToApplyForcesToParticlesEveryFrame", "ToApplyForcesToParticlesEveryFrame",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetToApplyForcesToParticlesEveryFrame),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetToApplyForcesToParticlesEveryFrame),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetToApplyForcesToParticlesEveryFrame),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetToApplyForcesToParticlesEveryFrame),
             "", EMMITER_GROUP));
 
    AddProperty(new dtDAL::BooleanActorProperty("CollideWithSelf", "CollideWithSelf",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetCollideWithSelf),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetCollideWithSelf),
+            dtDAL::BooleanActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetCollideWithSelf),
+            dtDAL::BooleanActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetCollideWithSelf),
             "", EMMITER_GROUP));
 
    /* AddProperty(new dtDAL::IntActorProperty("ParticleCollisionGroup", "ParticleCollisionGroup",
-      dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetParticleCollisionGroup),
-      dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetParticleCollisionGroup),
+      dtDAL::IntActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetParticleCollisionGroup),
+      dtDAL::IntActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetParticleCollisionGroup),
       "", EMMITER_GROUP));*/
 
    AddProperty(new dtDAL::Vec3ActorProperty("StartingPositionMin", "StartingPositionMin",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetStartingPositionMin),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetStartingPositionMin),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMin),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMin),
             "", PARTICLE_GROUP ));
 
    AddProperty(new dtDAL::Vec3ActorProperty("StartingPositionMax", "StartingPositionMax",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetStartingPositionMax),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetStartingPositionMax),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetStartingPositionMax),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetStartingPositionMax),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMin", "LinearVelocityStartMin",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMin),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMin),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMin),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMin),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("LinearVelocityStartMax", "LinearVelocityStartMax",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMax),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMax),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetLinearVelocityStartMax),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetLinearVelocityStartMax),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("EmitterNoZoneEmitterCone", "EmitterNoZoneEmitterCone",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetEmitterNoZoneEmitteerCone),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetEmitterNoZoneEmitteerCone),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetEmitterNoZoneEmitteerCone),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetEmitterNoZoneEmitteerCone),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMin", "AngularVelocityStartMin",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMin),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMin),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMin),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMin),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("AngularVelocityStartMax", "AngularVelocityStartMax",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMax),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMax),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetAngularVelocityStartMax),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetAngularVelocityStartMax),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("OverTimeForceVecMin", "OverTimeForceVecMin",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMin),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMin),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMin),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMin),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::Vec3ActorProperty("OverTimeForceVecMax", "OverTimeForceVecMax",
-            dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMax),
-            dtDAL::MakeFunctorRet(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMax),
+            dtDAL::Vec3ActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetOverTimeForceVecMax),
+            dtDAL::Vec3ActorProperty::GetFuncType(actor, &PhysicsParticleSystemActor::GetOverTimeForceVecMax),
             "", PARTICLE_GROUP));
 
    AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "ObjectToUse1", "ObjectToUse1", dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetFileToLoadOne),
+            "ObjectToUse1", "ObjectToUse1", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadOne),
             "The static mesh resource that defines the geometry", GROUP));
 
    AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "ObjectToUse2", "ObjectToUse2", dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetFileToLoadTwo),
+            "ObjectToUse2", "ObjectToUse2", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadTwo),
             "The static mesh resource that defines the geometry", GROUP));
 
    AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "ObjectToUse3", "ObjectToUse3", dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetFileToLoadThree),
+            "ObjectToUse3", "ObjectToUse3", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadThree),
             "The static mesh resource that defines the geometry", GROUP));
 
    AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "ObjectToUse4", "ObjectToUse4", dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetFileToLoadFour),
+            "ObjectToUse4", "ObjectToUse4", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFour),
             "The static mesh resource that defines the geometry", GROUP));
 
    AddProperty(new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::STATIC_MESH,
-            "ObjectToUse5", "ObjectToUse5", dtDAL::MakeFunctor(actor, &PhysicsParticleSystemActor::SetFileToLoadFive),
+            "ObjectToUse5", "ObjectToUse5", dtDAL::ResourceActorProperty::SetFuncType(actor, &PhysicsParticleSystemActor::SetFileToLoadFive),
             "The static mesh resource that defines the geometry", GROUP));
 }
 
