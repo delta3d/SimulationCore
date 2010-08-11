@@ -440,7 +440,7 @@ namespace SimCore
       IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, SmokePlumePresent);
       IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, FlamesPresent);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, DrawingModel);
+      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, DrawingModel);
       IMPLEMENT_PROPERTY(BaseEntity, bool, PlayerAttached);
       IMPLEMENT_PROPERTY(BaseEntity, bool, MobilityDisabled);
       IMPLEMENT_PROPERTY(BaseEntity, bool, FirepowerDisabled);
@@ -448,6 +448,13 @@ namespace SimCore
       IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
       IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithDeadReckoningComponent);
       IMPLEMENT_PROPERTY(BaseEntity, std::string, MunitionDamageTableName);
+
+      ////////////////////////////////////////////////////////////////////////////////////
+      void BaseEntity::SetDrawingModel(bool newDrawing)
+      {
+         mDrawingModel = newDrawing;
+         SetNodeVisible(mDrawingModel, GetScaleMatrixTransform());
+      }
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::BuildActorComponents()
