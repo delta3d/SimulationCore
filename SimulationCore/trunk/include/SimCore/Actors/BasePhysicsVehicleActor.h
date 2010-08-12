@@ -138,8 +138,8 @@ namespace SimCore
             /// called fourth - after UpdateRotationDOFS. Does nothing by default.
             virtual void UpdateSoundEffects(float deltaTime);
 
-            /// Check if the actor is above ground.
-            void KeepAboveGround();
+            /// Check if the actor is on ground.
+            void KeepOnGround();
 
             /**
             * Get the point on the PhysX terrain at the specified location.

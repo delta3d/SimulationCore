@@ -31,8 +31,11 @@
 #include <dtABC/application.h>
 #include <dtDAL/project.h>
 #include <dtUtil/stringutils.h>
+#include <dtCore/batchisector.h>
+#include <dtCore/transform.h>
 #include <sstream>
 
+#include <dtPhysics/palphysicsworld.h>
 
 namespace SimCore
 {
@@ -102,7 +105,7 @@ namespace Utils
    }
 
    ///////////////////////////////////////////////////////////////////////
-   bool SIMCORE_EXPORT IsDevModeOn(dtGame::GameManager& gm)
+   bool IsDevModeOn(dtGame::GameManager& gm)
    {
       bool result = false;
       std::string developerMode;
@@ -111,6 +114,145 @@ namespace Utils
       result = dtUtil::ToType<bool>(developerMode);
       return result;
    }
+   ///////////////////////////////////////////////////////////////////////////////////
+   bool KeepActorOnGround(dtCore::Transformable& actor, dtCore::Transformable& terrainActor, float dropHeight,
+            float maxDepthBelow, float maxHeightAbove)
+   {
+      // assume we are under earth unless we get proof otherwise.
+      // because some checks could THINK we are under earth, especially if you drive / move
+      // under a bridge or something
+      bool underearth = maxDepthBelow >= 0.0f;
+      bool tooHigh = maxHeightAbove >= 0.0f;
+
+      dtCore::Transform xform;
+
+      actor.GetTransform(xform);
+      osg::Vec3 pos;
+      xform.GetTranslation(pos);
+
+      osg::Vec3 hp;
+      dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
+      //iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
+      iSector->SetQueryRoot(&terrainActor);
+      dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
+      osg::Vec3 endPos = pos;
+      osg::Vec3 startPos = pos;
+      startPos[2] -= 100.0f;
+      endPos[2] += 100.0f;
+      float offsettodo = maxDepthBelow;
+      float tooHighOffset = maxHeightAbove;
+      SingleISector.SetSectorAsLineSegment(startPos, endPos);
+      if (iSector->Update(osg::Vec3(0.0f, 0.0f, 0.0f), true))
+      {
+         for (unsigned i = 0; (underearth || tooHigh) && i < SingleISector.GetNumberOfHits(); ++i)
+         {
+            SingleISector.GetHitPoint(hp, i);
+
+            if (underearth && pos[2] + offsettodo > hp[2])
+            {
+               underearth = false;
+            }
+
+            if (tooHigh && pos[2] - tooHighOffset < hp[2])
+            {
+               tooHigh = false;
+            }
+         }
+      }
+      else
+      {
+         // Can't do anything if there is no ground
+         underearth = false;
+         tooHigh = false;
+      }
+
+      bool result = underearth || tooHigh;
+      if (result)
+      {
+         // Setting to the highest position in either case.
+         pos.z() = hp[2] + dropHeight;
+         xform.SetTranslation(pos);
+         actor.SetTransform(xform);
+      }
+      return result;
+   }
+
+   ///////////////////////////////////////////////////////////////////////////////////
+   bool KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float dropHeight,
+            float maxDepthBelow, float maxHeightAbove, dtPhysics::CollisionGroupFilter collisionFlags)
+   {
+      // assume we are under earth unless we get proof otherwise.
+      // because some checks could THINK we are under earth, especially if you drive / move
+      // under a bridge or something
+      bool underearth = maxDepthBelow >= 0.0f;
+      bool tooHigh = maxHeightAbove >= 0.0f;
+
+      dtPhysics::VectorType pos;
+      transformToUpdate.GetTranslation(pos);
+
+      osg::Vec3 hp;
+      osg::Vec3 endPos = pos;
+      osg::Vec3 startPos = pos;
+      startPos[2] -= 100.0f;
+      endPos[2] += 100.0f;
+      float offsettodo = maxDepthBelow;
+      float tooHighOffset = maxHeightAbove;
+
+      dtPhysics::RayCast ray;
+      ray.SetCollisionGroupFilter(collisionFlags);
+      ray.SetOrigin(startPos);
+      ray.SetDirection(endPos - startPos);
+
+      std::vector<dtPhysics::RayCast::Report> hits;
+      hits.reserve(10);
+      dtPhysics::PhysicsWorld::GetInstance().TraceRay(ray, hits);
+
+      if (!hits.empty())
+      {
+         float largestDistance = 0.0f;
+
+         std::vector<dtPhysics::RayCast::Report>::const_iterator i, iend;
+         i = hits.begin();
+         iend = hits.end();
+         for (; (underearth || tooHigh) && i != iend; ++i)
+         {
+            const dtPhysics::RayCast::Report& report = *i;
+
+            if (largestDistance < report.mDistance)
+            {
+               hp = report.mHitPos;
+               largestDistance = report.mDistance;
+            }
+
+            if (underearth && pos[2] + offsettodo > report.mHitPos.z())
+            {
+               underearth = false;
+            }
+
+            if (tooHigh && pos[2] - tooHighOffset < report.mHitPos.z())
+            {
+               tooHigh = false;
+            }
+         }
+      }
+      else
+      {
+         // Can't do anything if there is no ground
+         underearth = false;
+         tooHigh = false;
+      }
+
+      bool result = underearth || tooHigh;
+      if (result)
+      {
+         // Setting to the highest position in either case.
+         pos.z() = hp[2] + dropHeight;
+         transformToUpdate.SetTranslation(pos);
+      }
+      return result;
+
+   }
+
 
 }
 }
