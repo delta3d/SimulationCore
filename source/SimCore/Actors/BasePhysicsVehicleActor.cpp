@@ -26,20 +26,10 @@
 #include <SimCore/Actors/DRPublishingActComp.h>
 
 
-#ifdef AGEIA_PHYSICS
-
-#include <NxAgeiaWorldComponent.h>
-#include <NxAgeiaRaycastReport.h>
-#include <PhysicsGlobals.h>
-
-#else
-
 #include <dtPhysics/physicscomponent.h>
 #include <dtPhysics/physicsobject.h>
 #include <dtPhysics/bodywrapper.h>
 #include <dtPhysics/palphysicsworld.h>
-
-#endif
 
 
 #include <dtDAL/enginepropertytypes.h>
@@ -48,7 +38,6 @@
 #include <dtAudio/sound.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>
-#include <dtCore/batchisector.h>
 #include <dtCore/keyboard.h>
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/deadreckoninghelper.h>
@@ -63,11 +52,11 @@
 #include <SimCore/Actors/InteriorActor.h>
 #include <SimCore/Actors/PortalActor.h>
 #include <SimCore/CollisionGroupEnum.h>
-
+#include <SimCore/Utilities.h>
 
 //Test
-#include <osg/io_utils>
-#include <iostream>
+//#include <osg/io_utils>
+//#include <iostream>
 
 namespace SimCore
 {
@@ -261,7 +250,7 @@ namespace SimCore
          // Check to see if we are currently up under the earth, if so, snap them back up.
          else if (GetPerformAboveGroundSafetyCheck())
          {
-            KeepAboveGround();
+            KeepOnGround();
          }
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,8 +259,6 @@ namespace SimCore
          float elapsedTime = (float)static_cast<const dtGame::TickMessage&>(tickMessage).GetDeltaSimTime();
 
          // Previously - updated DR values here.
-
-
          UpdateVehicleTorquesAndAngles(elapsedTime);
          UpdateRotationDOFS(elapsedTime, true);
          UpdateSoundEffects(elapsedTime);
@@ -439,61 +426,22 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
-      void BasePhysicsVehicleActor::KeepAboveGround()
+      void BasePhysicsVehicleActor::KeepOnGround()
       {
-         // assume we are under earth unless we get proof otherwise.
-         // because some checks could THINK we are under earth, especially if you drive / move
-         // under a bridge or something
-         bool underearth = true;
-         dtDAL::ActorProxy* terrainNode = NULL;
-         GetGameActorProxy().GetGameManager()->FindActorByName("Terrain", terrainNode);
-         if (terrainNode == NULL)
-         {
-            return;
-         }
+//         dtDAL::ActorProxy* terrainProxy = NULL;
+//         GetGameActorProxy().GetGameManager()->FindActorByName("Terrain", terrainProxy);
+//         if (terrainProxy == NULL)
+//         {
+//            return;
+//         }
+//
+//         dtCore::Transformable* terrain = NULL;
+//         terrainProxy->GetActor(terrain);
 
          dtCore::Transform xform;
-
          GetTransform(xform);
-         osg::Vec3 pos;
-         xform.GetTranslation(pos);
-
-         osg::Vec3 hp;
-         dtCore::RefPtr<dtCore::BatchIsector> iSector = new dtCore::BatchIsector();
-         iSector->SetScene( &GetGameActorProxy().GetGameManager()->GetScene() );
-         iSector->SetQueryRoot(terrainNode->GetActor());
-         dtCore::BatchIsector::SingleISector& SingleISector = iSector->EnableAndGetISector(0);
-         osg::Vec3 endPos = pos;
-         osg::Vec3 startPos = pos;
-         startPos[2] -= 100.0f;
-         endPos[2] += 100.0f;
-         float offsettodo = 5.0f;
-         SingleISector.SetSectorAsLineSegment(startPos, endPos);
-         if (iSector->Update(osg::Vec3(0,0,0), true))
+         if (SimCore::Utils::KeepBodyOnGround(xform, mTerrainPresentDropHeight))
          {
-            for (unsigned i = 0; i < SingleISector.GetNumberOfHits(); ++i)
-            {
-               SingleISector.GetHitPoint(hp, i);
-
-               if (pos[2] + offsettodo > hp[2])
-               {
-                  underearth = false;
-                  break;
-               }
-            }
-         }
-         else
-         {
-            // can't be under earth if there is no earth...
-            underearth = false;
-         }
-
-         if (underearth)
-         {
-            // This should just set the regular position.  When the physics engine should get
-            // prephysics every time, not just for remote.
-            pos.z() = hp[2] + mTerrainPresentDropHeight;
-            xform.SetTranslation(pos);
             SetTransform(xform);
          }
       }

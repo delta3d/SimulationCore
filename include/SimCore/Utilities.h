@@ -32,7 +32,12 @@
 
 #include <dtGame/gamemanager.h>
 #include <dtGame/exceptionenum.h>
+#include <SimCore/CollisionGroupEnum.h>
 
+namespace dtPhysics
+{
+   class PhysicsObject;
+}
 
 namespace SimCore
 {
@@ -71,6 +76,29 @@ namespace Utils
       }
    }
 
+   /**
+    * Uses an isector to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
+    * @param dropHeight The height above the highest terrain point found to set the transform if it is adject
+    * @param maxDepthBelow The depth below the lowest point hit at which point it should move it back up, or < 0 to ignore
+    * @param maxHeightAbove The depth above the highest point at which point it should move it back up, or < 0 to ignore
+    * @return true if it moves the actor.
+    */
+   bool SIMCORE_EXPORT KeepActorOnGround(dtCore::Transformable& actor, dtCore::Transformable& terrainActor,
+            float dropHeight = 0.5f, float maxDepthBelow = 5.0f, float maxHeightAbove = 20.0f);
+
+   /**
+    * Uses a physics ray cast to check if an object's transform is too high or two low and should be adjusted to be on the terrain.
+    * @param transformToUpdate current transform of the body of actor that should be updated to keep it on the ground
+    *                          if necessary.
+    * @param dropHeight The height above the highest terrain point found to set the transform if it is adject
+    * @param maxDepthBelow The depth below the lowest point hit at which point it should move it back up, or < 0 to ignore
+    * @param maxHeightAbove The depth above the highest point at which point it should move it back up, or < 0 to ignore
+    * @param collisionFlags Physics collision flags to use as a filter for the raycast.
+    * @return true if an adjustment was made.
+    */
+   bool SIMCORE_EXPORT KeepBodyOnGround(dtPhysics::TransformType& transformToUpdate, float dropHeight = 0.5f,
+            float maxDepthBelow = 5.0f, float maxHeightAbove = 20.0f,
+            dtPhysics::CollisionGroupFilter collisionFlags = 1 << SimCore::CollisionGroup::GROUP_TERRAIN);
 }
 }
 
