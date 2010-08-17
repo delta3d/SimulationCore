@@ -25,6 +25,7 @@
 #include <prefix/SimCorePrefix.h>
 #include <string>
 #include <SimCore/ActComps/CamoPaintStateActComp.h>
+#include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <SimCore/Actors/Platform.h>
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/DefaultArticulationHelper.h>
@@ -1017,6 +1018,12 @@ namespace SimCore
 
          camoPaintComp->SetParentNode(&GetScaleMatrixTransform());
          camoPaintComp->SetHiderNode(mSwitchNode.get());
+
+
+         dtCore::RefPtr<SimCore::ActComps::WeaponSwapActComp> weaponSwapper = new SimCore::ActComps::WeaponSwapActComp();
+         weaponSwapper->SetNodeCollector(GetNodeCollector());
+
+         AddComponent(*weaponSwapper);
       }
 
    }
