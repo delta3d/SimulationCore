@@ -96,7 +96,7 @@ namespace SimCore
             SetNodeCollector(new dtUtil::NodeCollector(owner->GetOSGNode(), dtUtil::NodeCollector::AllNodeTypes));
          }
 
-         Update();
+         SwapWeapon();
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void WeaponSwapActComp::Update()
+      void WeaponSwapActComp::SwapWeapon()
       {
          // Attempt attachment of a new weapon model.
          bool isModelLoaded = false;
@@ -153,6 +153,12 @@ namespace SimCore
                AttachModel(newModel, mWeaponSwapRootNode);
             }
          }
+      }
+
+      ////////////////////////////////////////////////////////////////////////////////
+      void WeaponSwapActComp::Update()
+      {
+
       }
 
       ////////////////////////////////////////////////////////////////////////////////

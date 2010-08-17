@@ -59,10 +59,10 @@ namespace SimCore
          virtual void OnRemovedFromWorld();
          virtual void BuildPropertyMap();
 
-         void AddModel();
-
          void Update();
       private:
+
+         void SwapWeapon();
 
          bool AttachModel(dtCore::RefPtr<osg::Node> model, const std::string& dofName);
 
