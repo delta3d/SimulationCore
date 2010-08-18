@@ -48,6 +48,8 @@
 #include <dtUtil/mathdefines.h>
 #include <dtUtil/log.h>
 #include <dtUtil/macros.h>
+#include <dtUtil/stringutils.h>
+#include <dtUtil/configproperties.h>
 
 #include <osg/Geode>
 #include <osg/MatrixTransform>
@@ -457,6 +459,8 @@ namespace SimCore
       const dtUtil::RefString Human::STATE_PRONE_ACTION_COUNT("ProneActionCountState");
       const dtUtil::RefString Human::STATE_SHOT("ShotState");
 
+      const dtUtil::RefString Human::CONFIG_ALWAYS_SHOW_WEAPON("SimCore.Human.AlwaysShowWeapon");
+
       ////////////////////////////////////////////////////////////////////////////
       Human::Human(dtGame::GameActorProxy& proxy)
          : BaseEntity(proxy)
@@ -696,15 +700,23 @@ namespace SimCore
          if (wrapper == NULL)
             return;
 
+         //todo- is it worth holding onto this vector, to avoid having to reparse it
+         dtUtil::IsDelimeter del(',');
+         std::vector<std::string> tokens;
+
+         dtUtil::StringTokenizer<dtUtil::IsDelimeter>::tokenize(tokens, GetWeaponMeshName(), del);
+
          //get all data for the meshes and emit
          for (int meshID=0; meshID < wrapper->GetCoreMeshCount(); meshID++)
          {
             const std::string& nameToSend = wrapper->GetCoreMeshName(meshID);
-            if (nameToSend == GetWeaponMeshName())
+            if (GetContainsWeaponName(tokens, nameToSend))
             {
-               bool visibleWeapon = *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION
-                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED
-                  || *mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::STOWED;
+               dtUtil::ConfigProperties& configParams = GetGameActorProxy().GetGameManager()->GetConfiguration();
+               bool alwaysShowWeapon = dtUtil::ToType<bool>(configParams.GetConfigPropertyValue(CONFIG_ALWAYS_SHOW_WEAPON, "false"));
+
+               bool visibleWeapon = alwaysShowWeapon || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::FIRING_POSITION)
+                  || (*mPrimaryWeaponStateEnum == HumanActorProxy::WeaponStateEnum::DEPLOYED);
 
                if (visibleWeapon)
                {
@@ -719,6 +731,21 @@ namespace SimCore
          }
       }
 
+      ////////////////////////////////////////////////////////////////////////////
+      bool Human::GetContainsWeaponName(const std::vector<std::string>& tokens, const std::string& meshName) const
+      {
+         std::vector<std::string>::const_iterator iter = tokens.begin();
+         std::vector<std::string>::const_iterator iterEnd = tokens.end();
+         for(; iter != iterEnd; ++iter)
+         { 
+            if(meshName == *iter)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
       ////////////////////////////////////////////////////////////////////////////
       HumanActorProxy::WeaponStateEnum& Human::GetPrimaryWeaponState() const
       {
