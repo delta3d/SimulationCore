@@ -1,6 +1,6 @@
 /* -*-c++-*-
 * Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
+* Copyright 2007-2010, Alion Science and Technology
 *
 * This library is free software; you can redistribute it and/or modify it under
 * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,8 +18,9 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
- */
+*
+* Eddie Johnson, David Guthrie, Chris Rodgers, Curtiss Murphy
+*/
 #ifndef _VIEWER_MESSAGE_PROCESSOR_H_
 #define _VIEWER_MESSAGE_PROCESSOR_H_
 
@@ -139,6 +140,12 @@ namespace SimCore
          protected:
             /// updates the GM time based on the time
             void UpdateSyncTime(const SimCore::TimeValueMessage& tvMsg);
+
+            /// Called when map loaded or actor update/create for a terrain. Passes to DR comp
+            bool HandleTerrainActor(dtDAL::ActorProxy* terrainProxy);
+
+            /// Called when map laoded or actor update/create for the water actor. Passes to DR comp water clamper
+            void HandleWaterActor(dtDAL::ActorProxy* waterProxy);
 
          private:
 

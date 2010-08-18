@@ -2499,7 +2499,7 @@
             </property>
             <property>
                 <name>VelocityAveragingFrameCount</name>
-                <integer>2</integer>
+                <integer>1</integer>
             </property>
             <property>
                 <name>DesiredNumUpdatesPerSec</name>

@@ -29,6 +29,7 @@
 
 #include <dtGame/deadreckoningcomponent.h>
 #include <dtGame/deadreckoninghelper.h>
+#include <dtGame/basegroundclamper.h>
 #include <dtGame/basemessages.h>
 #include <dtGame/environmentactor.h>
 #include <dtGame/messagefactory.h>
@@ -109,6 +110,7 @@ namespace SimCore
       , mArrowCurrentIndex(0)
       , mArrowDrawOnNextFrame(false)
       {
+         SetName("GhostActor");
       }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -400,15 +402,36 @@ namespace SimCore
       {
          if (mSlavedEntity.valid())
          {
+            dtGame::DeadReckoningHelper& drHelper(mSlavedEntity->GetDeadReckoningHelper());
             dtCore::Transform ourTransform;
             GetTransform(ourTransform);
 
-            ourTransform.SetTranslation(mSlavedEntity->
-                     GetDeadReckoningHelper().GetCurrentDeadReckonedTranslation());
-            ourTransform.SetRotation(mSlavedEntity->
-                     GetDeadReckoningHelper().GetCurrentDeadReckonedRotation());
+            ourTransform.SetTranslation(drHelper.GetCurrentDeadReckonedTranslation());
+            ourTransform.SetRotation(drHelper.GetCurrentDeadReckonedRotation());
 
             SetTransform(ourTransform);
+
+
+            // GROUND CLAMPING
+            // The DR Component does not do ground clamping our slave, because it's a local actors. 
+            // The DRGhost has to manually force the ground clamper to do it on the ghost
+            if (!drHelper.IsFlying())
+            {
+               dtGame::DeadReckoningComponent* drComp = NULL;
+               GetGameActorProxy().GetGameManager()->
+                  GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
+
+               //BaseGroundClamper::GroundClampingType* groundClampingType = &;
+               osg::Vec3 velocity(mSlavedEntity->GetDeadReckoningHelper().GetCurrentInstantVelocity());
+
+               // Call the ground clamper for the current object. The ground clamper should 
+               // be smart enough to know what to do with the supplied values.
+               drComp->GetGroundClamper().ClampToGround(
+                  dtGame::BaseGroundClamper::GroundClampingType::RANGED, 
+                  GetGameActorProxy().GetGameManager()->GetSimulationTime(), ourTransform, 
+                  GetGameActorProxy(),drHelper.GetGroundClampingData(), true, velocity);
+               drComp->GetGroundClamper().FinishUp();
+            }
          }
       }
 

@@ -113,8 +113,10 @@ namespace SimCore
 
 
       ////////////////////////////////////////////////////////////////////////////////
-      void DRPublishingActComp::OnTickLocal(const dtGame::TickMessage& tickMessage)
+      void DRPublishingActComp::OnTickRemote(const dtGame::TickMessage& tickMessage)
       {
+         // Note - We do this behavior for local actors, but it happens during Tick Remote. 
+
          double elapsedTime = tickMessage.GetDeltaSimTime();
          bool forceUpdate = false;
          bool fullUpdate = false;
@@ -142,13 +144,6 @@ namespace SimCore
             forceUpdate = true;
          }
 
-         // Check for update
-         if (!fullUpdate)
-         {
-            // The normal case. The one that makes the decision most of the time. 
-            forceUpdate = ShouldForceUpdate(pos, rot);
-         }
-
          // If the extra settings on DR Helper changed (like flying), then we need a full update
          if (IsDeadReckoningHelperValid() && GetDeadReckoningHelper().IsExtraDataUpdated())
          {
@@ -156,6 +151,13 @@ namespace SimCore
             fullUpdate = true;
 
             GetDeadReckoningHelper().SetExtraDataUpdated(false);
+         }
+
+         // Check for update
+         if (!fullUpdate)
+         {
+            // The normal case. The one that makes the decision most of the time. 
+            forceUpdate = ShouldForceUpdate(pos, rot);
          }
 
          if (forceUpdate)
@@ -215,7 +217,7 @@ namespace SimCore
             if(!actor->GetGameActorProxy().GetInvokable(tickInvokable))
             {
                actor->GetGameActorProxy().AddInvokable(*new dtGame::Invokable(tickInvokable, 
-                  dtUtil::MakeFunctor(&DRPublishingActComp::OnTickLocal, this)));
+                  dtUtil::MakeFunctor(&DRPublishingActComp::OnTickRemote, this)));
             }
             actor->GetGameActorProxy().RegisterForMessages(dtGame::MessageType::TICK_REMOTE, tickInvokable);
 
