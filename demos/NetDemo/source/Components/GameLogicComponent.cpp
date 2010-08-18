@@ -535,6 +535,7 @@ namespace NetDemo
       dtCore::RefPtr<SimCore::Actors::TerrainActorProxy> newDrawLandActorProxy = NULL;
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
          mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
+      newDrawLandActorProxy->SetName("Terrain"); // has to be named 'Terrain' or it won't do ground clamping and other stuff
       GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());

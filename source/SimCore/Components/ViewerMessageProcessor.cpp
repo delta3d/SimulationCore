@@ -1,6 +1,6 @@
 /* -*-c++-*-
 * Simulation Core
-* Copyright 2007-2008, Alion Science and Technology
+* Copyright 2007-2010, Alion Science and Technology
 *
 * This library is free software; you can redistribute it and/or modify it under
 * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,8 +18,9 @@
 *
 * This software was developed by Alion Science and Technology Corporation under
 * circumstances in which the U. S. Government may have rights in the software.
- * @author Eddie Johnson
- */
+*
+* Eddie Johnson, David Guthrie, Chris Rodgers, Curtiss Murphy
+*/
 #include <prefix/SimCorePrefix.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
@@ -77,6 +78,7 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       void ViewerMessageProcessor::ProcessMessage(const dtGame::Message& msg)
       {
+         // Many times, the terrain is part of the map loading
          if (msg.GetMessageType() == dtGame::MessageType::INFO_MAP_LOADED)
          {
             dtGame::GameManager& gameManager = *GetGameManager();
@@ -86,60 +88,90 @@ namespace SimCore
             dtGame::GameManager::NameVector mapNames;
             mlm.GetMapNames(mapNames);
 
-            dtGame::DeadReckoningComponent* drComp = NULL;
-            gameManager.GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
-            dtAnim::AnimationComponent* animComp = NULL;
-            gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
+            //dtAnim::AnimationComponent* animComp = NULL;
+            //gameManager.GetComponentByName(dtAnim::AnimationComponent::DEFAULT_NAME, animComp);
 
-            if (drComp != NULL)
+            // SET THE TERRAIN
+            dtDAL::ActorProxy* terrainProxy = NULL;
+            gameManager.FindActorByName("Terrain", terrainProxy);
+            if (!HandleTerrainActor(terrainProxy))
             {
-               std::vector<dtDAL::ActorProxy*> toFill;
-               gameManager.FindActorsByName("Terrain", toFill);
-               dtDAL::ActorProxy* terrainProxy = NULL;
-               if(!toFill.empty())
-               {
-                  terrainProxy = toFill.front();
-                  dtCore::Transformable* terrain;
-                  terrainProxy->GetActor(terrain);
-                  if(terrain == NULL)
-                  {
-                     LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
-                  }
-                  else
-                  {
-                     drComp->SetTerrainActor(terrain);
-                     //if (animComp != NULL)
-                        //animComp->SetTerrainActor(terrain);
-                  }
-               }
-               else
-               {
-                  LOG_WARNING("No terrain actor was found in the map: " + mapNames[0]);
-               }
+               LOG_WARNING("No terrain actor was found in the map: " + mapNames[0]);
+            }
 
-               // Get any water actor and assign it to the multi surface ground clamper,
-               // which happens to be managed by the Dead Reckoning Component.
-               SimCore::Actors::BaseWaterActorProxy* proxy = NULL;
-               gameManager.FindActorByType(
-                  *SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, proxy );
-               if( proxy != NULL )
-               {
-                  SimCore::Actors::BaseWaterActor* water = NULL;
-                  proxy->GetActor( water );
+            // SET THE WATER
+            // Get any water actor and assign it to the multi surface ground clamper,
+            // which happens to be managed by the Dead Reckoning Component.
+            SimCore::Actors::BaseWaterActorProxy* waterProxy = NULL;
+            gameManager.FindActorByType(*SimCore::Actors::EntityActorRegistry::BASE_WATER_ACTOR_TYPE, waterProxy);
+            HandleWaterActor(waterProxy);
+         }
 
-                  // Assign the water surface to the clamper for any water based entities
-                  // to clamp to.
-                  SimCore::Components::MultiSurfaceClamper* clamper
-                     = dynamic_cast<SimCore::Components::MultiSurfaceClamper*>(&drComp->GetGroundClamper());
-                  if( clamper != NULL )
-                  {
-                     clamper->SetWaterSurface( water );
-                  }
-               }
+         // Sometimes, the terrain comes after the map is loaded
+         else if (msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_CREATED || 
+            msg.GetMessageType() == dtGame::MessageType::INFO_ACTOR_UPDATED)
+         {
+            // SET THE TERRAIN
+            const dtGame::ActorUpdateMessage &updateMessage = static_cast<const dtGame::ActorUpdateMessage&> (msg);
+            dtDAL::ActorProxy* terrainProxy = GetGameManager()->FindActorById(updateMessage.GetAboutActorId());
+            if (terrainProxy != NULL && terrainProxy->GetName() == "Terrain")
+            {
+               HandleTerrainActor(terrainProxy);
             }
          }
 
          dtGame::DefaultMessageProcessor::ProcessMessage(msg);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      bool ViewerMessageProcessor::HandleTerrainActor(dtDAL::ActorProxy* terrainProxy)
+      {
+         bool result = false;
+
+         if(terrainProxy != NULL)
+         {
+            dtGame::DeadReckoningComponent* drComp = NULL;
+            GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
+
+            dtCore::Transformable* terrain;
+            terrainProxy->GetActor(terrain);
+            if(terrain == NULL)
+            {
+               LOG_ERROR("The terrain actor is not a transformable. Ignoring.");
+            }
+            else if (drComp != NULL)
+            {
+               result = true;
+               drComp->SetTerrainActor(terrain);
+               //if (animComp != NULL)
+               //animComp->SetTerrainActor(terrain);
+            }
+         }
+         return result;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      void ViewerMessageProcessor::HandleWaterActor(dtDAL::ActorProxy* waterProxy)
+      {
+         if (waterProxy != NULL)
+         {
+            dtGame::DeadReckoningComponent* drComp = NULL;
+            GetGameManager()->GetComponentByName(dtGame::DeadReckoningComponent::DEFAULT_NAME, drComp);
+
+            if (drComp != NULL)
+            {
+               SimCore::Actors::BaseWaterActor* water = NULL;
+               waterProxy->GetActor(water);
+
+               // Assign the water surface to the clamper for water based entities to clamp to.
+               SimCore::Components::MultiSurfaceClamper* clamper
+                  = dynamic_cast<SimCore::Components::MultiSurfaceClamper*>(&drComp->GetGroundClamper());
+               if(clamper != NULL)
+               {
+                  clamper->SetWaterSurface(water);
+               }
+            }
+         }
       }
 
       ///////////////////////////////////////////////////////////////////////////

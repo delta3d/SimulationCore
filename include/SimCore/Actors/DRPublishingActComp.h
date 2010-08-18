@@ -67,8 +67,8 @@ namespace SimCore
          virtual void OnAddedToActor(dtGame::GameActor& actor);
          virtual void OnRemovedFromActor(dtGame::GameActor& actor);
 
-         /// react to game tick messages
-         virtual void OnTickLocal(const dtGame::TickMessage& tickMessage);
+         /// react to game tick messages - Note, we check for publish in 'remote' even for local actors.
+         virtual void OnTickRemote(const dtGame::TickMessage& tickMessage);
 
          /// Called when the parent actor enters the "world".
          virtual void OnEnteredWorld();
