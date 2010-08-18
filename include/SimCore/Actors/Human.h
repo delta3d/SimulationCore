@@ -214,6 +214,9 @@ namespace SimCore
             /// flag marking that the person has been shot.  Really this means the person is dying.
             static const dtUtil::RefString STATE_SHOT;
 
+            ///setting this config option will force a weapon to be shown if one exists
+            static const dtUtil::RefString CONFIG_ALWAYS_SHOW_WEAPON;
+
             Human(dtGame::GameActorProxy& proxy);
 
             /// Changes the file name used for the skeletal mesh
@@ -281,6 +284,7 @@ namespace SimCore
             bool IsDesiredState(const dtAI::WorldState* pWS) const;
             unsigned CheckActionState(const dtAI::WorldState* pWS, const std::string& stateName, unsigned desiredVal) const;
             void UpdateWeapon();
+            bool GetContainsWeaponName(const std::vector<std::string>& vec, const std::string& meshName) const;
 
          private:
             /// Apply the effects of the operator, and get the animatable, if any, associated with it.
