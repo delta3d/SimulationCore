@@ -21,7 +21,7 @@
  *
  * David Guthrie
  */
-
+#include <prefix/SimCorePrefix.h>
 #include <SimCore/ActComps/WeaponSwapActComp.h>
 #include <dtUtil/nodecollector.h>
 #include <dtDAL/propertymacros.h>
