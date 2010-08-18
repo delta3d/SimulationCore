@@ -180,6 +180,7 @@ set( LIB_SOURCES_8
    "${SOURCE_PATH}/ActComps/BodyPaintActComp.cpp"
    "${SOURCE_PATH}/ActComps/BodyPaintStateActComp.cpp"
    "${SOURCE_PATH}/ActComps/CamoPaintStateActComp.cpp"
+   "${SOURCE_PATH}/ActComps/WeaponSwapActComp.cpp"
    )
 SET(LIB_SOURCES ${LIB_SOURCES_1} ${LIB_SOURCES_2} ${LIB_SOURCES_3} ${LIB_SOURCES_4} ${LIB_SOURCES_5} ${LIB_SOURCES_6} ${LIB_SOURCES_7} ${LIB_SOURCES_8})
 
