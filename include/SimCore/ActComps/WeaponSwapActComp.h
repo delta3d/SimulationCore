@@ -30,7 +30,14 @@
 #include <dtUtil/nodecollector.h>
 #include <dtDAL/resourcedescriptor.h>
 
+#include <dtCore/observerptr.h>
+
 #include <SimCore/Export.h>
+
+namespace osgSim
+{
+   class DOFTransform;
+}
 
 namespace SimCore
 {
@@ -41,13 +48,27 @@ namespace SimCore
       class SIMCORE_EXPORT WeaponSwapActComp : public dtGame::ActorComponent
       {
       public:
+         typedef dtGame::ActorComponent BaseClass;
          static const ActorComponent::ACType TYPE;
+
+         class SIMCORE_EXPORT WeaponDescription : public osg::Referenced
+         {
+            public:
+               typedef osg::Referenced BaseClass;
+
+               std::string mWeaponName;
+               std::string mHotSpotName;
+               dtCore::RefPtr<osg::Node> mRootNode;
+               dtCore::RefPtr<osgSim::DOFTransform> mWeaponSwapNode;
+               
+         };
 
          typedef dtGame::ActorComponent BaseClass;
 
          WeaponSwapActComp();
          virtual ~WeaponSwapActComp();
 
+         DECLARE_PROPERTY(std::string, WeaponName);
          DECLARE_PROPERTY(std::string, WeaponSwapRootNode);
          DECLARE_PROPERTY(std::string, WeaponHotSpotDOF);
          DECLARE_PROPERTY(dtDAL::ResourceDescriptor, WeaponSwapMesh);
@@ -59,12 +80,42 @@ namespace SimCore
          virtual void OnRemovedFromWorld();
          virtual void BuildPropertyMap();
 
+         void NextWeapon();
+         void PreviousWeapon();
+         unsigned GetNumWeapons() const;
+
+         void SelectWeapon(const std::string& weaponName);
+         
+         bool HasWeapon(const std::string& weaponName) const;
+         const std::string& GetCurrentWeapon() const;
+
+         bool AddWeapon(const std::string weaponName, const std::string& weaponHotspotName, const dtDAL::ResourceDescriptor& meshToLoad);
+         void RemoveWeapon(const std::string& weaponName);
+
          void Update();
+
       private:
 
          void SwapWeapon();
 
-         bool AttachModel(dtCore::RefPtr<osg::Node> model, const std::string& dofName);
+         bool AttachWeapon(WeaponDescription* wp);
+         void UnAttachWeapon();
+
+         WeaponDescription* FindWeapon(const std::string& weaponName);
+         const WeaponDescription* FindWeapon(const std::string& weaponName) const;
+         int FindWeaponIndex(const std::string& weaponName) const;
+         int FindWeaponIndex(const WeaponDescription* wp) const;
+         void SetNextWeapon(WeaponDescription* wp);
+
+
+         bool mHasWeapon;
+         bool mSwitchWeapons;
+         
+         dtCore::RefPtr<WeaponDescription> mCurrentWeapon;
+         dtCore::ObserverPtr<WeaponDescription> mWeaponToSwitchTo;
+
+         typedef std::vector<dtCore::RefPtr<WeaponDescription> > WeaponArray;
+         WeaponArray mWeapons;
 
          dtCore::RefPtr<dtUtil::NodeCollector> mNodeCollector;
       };
