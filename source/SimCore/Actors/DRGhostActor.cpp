@@ -415,7 +415,7 @@ namespace SimCore
             // GROUND CLAMPING
             // The DR Component does not do ground clamping our slave, because it's a local actors. 
             // The DRGhost has to manually force the ground clamper to do it on the ghost
-            if (!drHelper.IsFlying())
+            if (drHelper.GetGroundClampType() != dtGame::GroundClampTypeEnum::NONE)
             {
                dtGame::DeadReckoningComponent* drComp = NULL;
                GetGameActorProxy().GetGameManager()->
@@ -427,7 +427,7 @@ namespace SimCore
                // Call the ground clamper for the current object. The ground clamper should 
                // be smart enough to know what to do with the supplied values.
                drComp->GetGroundClamper().ClampToGround(
-                  dtGame::BaseGroundClamper::GroundClampingType::RANGED, 
+                  dtGame::BaseGroundClamper::GroundClampRangeType::RANGED, 
                   GetGameActorProxy().GetGameManager()->GetSimulationTime(), ourTransform, 
                   GetGameActorProxy(),drHelper.GetGroundClampingData(), true, velocity);
                drComp->GetGroundClamper().FinishUp();

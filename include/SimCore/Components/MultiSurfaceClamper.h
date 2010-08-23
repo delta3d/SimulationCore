@@ -216,8 +216,8 @@ namespace SimCore
              * @return INTERMITTENT if velocity is zero and the transform has not changed; otherwise
              *         suggestedCalmpType is returned.
              */
-            virtual dtGame::BaseGroundClamper::GroundClampingType& GetBestClampType(
-               dtGame::BaseGroundClamper::GroundClampingType& suggestedClampType,
+            virtual dtGame::BaseGroundClamper::GroundClampRangeType& GetBestClampType(
+               dtGame::BaseGroundClamper::GroundClampRangeType& suggestedClampType,
                const dtDAL::TransformableActorProxy& proxy,
                const dtGame::GroundClampingData& data,
                bool transformChanged, const osg::Vec3& velocity) const;
@@ -233,7 +233,7 @@ namespace SimCore
              * @param transformChanged Flag to help the clamper to determine if it should perform a clamp or not.
              * @param velocity The transformable's instantaneous velocity for the current frame.
              */
-            virtual void ClampToGround( GroundClampingType& type, double currentTime, dtCore::Transform& xform,
+            virtual void ClampToGround( GroundClampRangeType& type, double currentTime, dtCore::Transform& xform,
                dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
                bool transformChanged = false, const osg::Vec3& velocity = osg::Vec3());
 

@@ -567,10 +567,18 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    static_cast<dtDAL::Vec3ActorProperty*>(prop)->SetValue(translation);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3ActorProperty*>(prop)->GetValue() == translation);
 
-   dtDAL::ActorProperty* flyingProp = eap.GetProperty("Flying");
-   CPPUNIT_ASSERT_MESSAGE("The default value of falling should be false.", !static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
-   static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->SetValue(true);
-   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
+   //dtDAL::ActorProperty* flyingProp = eap.GetProperty("Flying");
+   //CPPUNIT_ASSERT_MESSAGE("The default value of falling should be false.", !static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
+   //static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->SetValue(true);
+   //CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
+   prop = eap.GetProperty("GroundClampType");
+   aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
+   CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"GroundClampType\" should not be NULL", aep != NULL);
+   CPPUNIT_ASSERT_MESSAGE("The \"GroundClampType\" should default to KEEP_ABOVE", 
+      aep->GetEnumValue() == dtGame::GroundClampTypeEnum::KEEP_ABOVE);
+   aep->SetValueFromString("Full");
+   CPPUNIT_ASSERT_MESSAGE("The \"GroundClampType\" should now be full", 
+      aep->GetEnumValue() == dtGame::GroundClampTypeEnum::FULL);
 
    dtDAL::ActorProperty* offsetProp = eap.GetProperty("Ground Offset");
    CPPUNIT_ASSERT_MESSAGE("The ground offset should be close 0.0.", osg::equivalent(static_cast<dtDAL::FloatActorProperty*>(offsetProp)->GetValue(), 0.0f, 0.1f));
@@ -580,8 +588,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    dtDAL::ActorProperty* drawingProp = eap.GetProperty("DrawingModel");
    CPPUNIT_ASSERT(drawingProp != NULL);
    CPPUNIT_ASSERT_MESSAGE("The default value of drawing should be true.", static_cast<dtDAL::BooleanActorProperty*>(drawingProp)->GetValue());
-   static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->SetValue(false);
-   CPPUNIT_ASSERT(!static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
+   static_cast<dtDAL::BooleanActorProperty*>(drawingProp)->SetValue(false);
+   CPPUNIT_ASSERT(!static_cast<dtDAL::BooleanActorProperty*>(drawingProp)->GetValue());
 
    vec.set(4.3f, 8.1f, 7.69f);
    prop = eap.GetProperty("Acceleration Vector");
@@ -987,7 +995,7 @@ void BaseEntityActorProxyTests::TestBaseEntityDRRegistration(SimCore::Actors::Ba
    entity.GetDeadReckoningHelper().SetLastKnownTranslation(setVec);
    entity.GetDeadReckoningHelper().SetLastKnownRotation(setVec);
    entity.GetDeadReckoningHelper().SetDeadReckoningAlgorithm(dtGame::DeadReckoningAlgorithm::NONE);
-   entity.GetDeadReckoningHelper().SetFlying(true);
+   entity.GetDeadReckoningHelper().SetGroundClampType(dtGame::GroundClampTypeEnum::NONE); //SetFlying(true);
 
    dtCore::System::GetInstance().Step();
 
