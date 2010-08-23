@@ -379,28 +379,28 @@ namespace SimCore
       }
 
       /////////////////////////////////////////////////////////////////////////////
-      dtGame::BaseGroundClamper::GroundClampingType& MultiSurfaceClamper::GetBestClampType(
-         dtGame::BaseGroundClamper::GroundClampingType& suggestedClampType,
+      dtGame::BaseGroundClamper::GroundClampRangeType& MultiSurfaceClamper::GetBestClampType(
+         dtGame::BaseGroundClamper::GroundClampRangeType& suggestedClampType,
          const dtDAL::TransformableActorProxy& proxy,
          const dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity) const
       {
-         dtGame::BaseGroundClamper::GroundClampingType* clampType = &suggestedClampType;
+         dtGame::BaseGroundClamper::GroundClampRangeType* clampType = &suggestedClampType;
 
-         if (suggestedClampType != GroundClampingType::NONE)
+         if (suggestedClampType != GroundClampRangeType::NONE)
          {
             // Make sure all surface vessels always 3-point clamp to moving water
             // even though they may not be moving on their own power.
             if (IsWaterDomain(GetDomain( data )))
             {
-               clampType = &dtGame::BaseGroundClamper::GroundClampingType::RANGED;
+               clampType = &dtGame::BaseGroundClamper::GroundClampRangeType::RANGED;
             }
             // NOTE: Animation component does not specify a velocity but does set
             // transformChanged flag to TRUE. Checking the flag will allow the animated
             // characters clamp as expected.
             else if (!transformChanged && velocity.length2() == 0.0f)
             {
-               clampType = &dtGame::BaseGroundClamper::GroundClampingType::INTERMITTENT_SAVE_OFFSET;
+               clampType = &dtGame::BaseGroundClamper::GroundClampRangeType::INTERMITTENT_SAVE_OFFSET;
             }
          }
 
@@ -408,7 +408,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      void MultiSurfaceClamper::ClampToGround(GroundClampingType& type,
+      void MultiSurfaceClamper::ClampToGround(GroundClampRangeType& type,
          double currentTime, dtCore::Transform& xform,
          dtDAL::TransformableActorProxy& proxy, dtGame::GroundClampingData& data,
          bool transformChanged, const osg::Vec3& velocity)

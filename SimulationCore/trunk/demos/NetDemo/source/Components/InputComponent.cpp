@@ -1014,16 +1014,27 @@ namespace NetDemo
 
       if (physVehicle != NULL)
       {
-         if (physVehicle->GetDeadReckoningHelper().IsFlying())
+         if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
+            dtGame::GroundClampTypeEnum::NONE)
          {
-            LOG_ALWAYS("TEST -- Toggling - ENABLE ground clamping for DR. ");
+            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [KEEP_ABOVE].");
+            physVehicle->GetDeadReckoningHelper().SetGroundClampType
+               (dtGame::GroundClampTypeEnum::KEEP_ABOVE);
          }
-         else
+         else if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
+            dtGame::GroundClampTypeEnum::KEEP_ABOVE)
          {
-            LOG_ALWAYS("TEST -- Toggling - DISABLE ground clamping for DR.");
+            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [FULL].");
+            physVehicle->GetDeadReckoningHelper().SetGroundClampType
+               (dtGame::GroundClampTypeEnum::FULL);
          }
-         physVehicle->GetDeadReckoningHelper().SetFlying(
-            !physVehicle->GetDeadReckoningHelper().IsFlying());
+         else if (physVehicle->GetDeadReckoningHelper().GetGroundClampType() == 
+            dtGame::GroundClampTypeEnum::FULL)
+         {
+            LOG_ALWAYS("TEST -- Toggling - DR Ground Clamping Type is now [NONE].");
+            physVehicle->GetDeadReckoningHelper().SetGroundClampType
+               (dtGame::GroundClampTypeEnum::NONE);
+         }
       }
 
    }

@@ -465,7 +465,11 @@ namespace SimCore
          if (!HasComponent(dtGame::DeadReckoningHelper::TYPE)) // not added by a subclass
          {
             mDeadReckoningHelper = new dtGame::DeadReckoningHelper();
-            mDeadReckoningHelper->SetFlying(false); // Causes ground clamping by default
+
+            // Flying was replaced with GroundClampType, and the default is already 'KeepAbove'
+            //////mDeadReckoningHelper->SetFlying(false); // Causes ground clamping by default
+            //mDeadReckoningHelper->SetGroundClampType(dtGame::GroundClampTypeEnum::KEEP_ABOVE);
+
             // attempt to fix the z-fighting on treads and wheels that are
             // very close to the ground. We move the vehicle up about 3-4 inches...
             mDeadReckoningHelper->SetGroundOffset(0.09);
