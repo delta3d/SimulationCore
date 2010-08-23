@@ -30,6 +30,8 @@
 #include <osgSim/DOFTransform>
 #include <SimCore/Actors/IGActor.h>
 
+#include <algorithm>
+
 namespace SimCore
 {
 
@@ -336,6 +338,18 @@ namespace SimCore
          return emptyString;
       }
 
+      struct CompareWeaponByName
+      {
+         CompareWeaponByName(const std::string& str): mName(str) {}
+
+         bool operator()(const dtCore::RefPtr<WeaponSwapActComp::WeaponDescription>& wp)
+         {
+            return mName == wp->mWeaponName;
+         }
+
+         const std::string& mName;
+      };
+
       void WeaponSwapActComp::RemoveWeapon( const std::string& weaponName )
       {
          if(mCurrentWeapon.valid() && mCurrentWeapon->mWeaponName == weaponName)
@@ -343,20 +357,8 @@ namespace SimCore
             UnAttachWeapon();
          }
 
-         struct compareWeaponByName
-         {
-            compareWeaponByName(const std::string& str): mName(str) {}
-
-            bool operator()(const dtCore::RefPtr<WeaponDescription>& wp)
-            {
-               return mName == wp->mWeaponName;
-            }
-
-            const std::string& mName;
-         };
-
-
-         mWeapons.erase(std::remove_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName(weaponName)), mWeapons.end());
+         CompareWeaponByName compareWeaponByName(weaponName);
+         mWeapons.erase(std::remove_if(mWeapons.begin(), mWeapons.end(), compareWeaponByName), mWeapons.end());
       }
 
       WeaponSwapActComp::WeaponDescription* WeaponSwapActComp::FindWeapon( const std::string& weaponName )

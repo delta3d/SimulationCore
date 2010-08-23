@@ -49,6 +49,7 @@ namespace SimCore
       {
       public:
          typedef dtGame::ActorComponent BaseClass;
+
          static const ActorComponent::ACType TYPE;
 
          class SIMCORE_EXPORT WeaponDescription : public osg::Referenced
@@ -62,8 +63,6 @@ namespace SimCore
                dtCore::RefPtr<osgSim::DOFTransform> mWeaponSwapNode;
                
          };
-
-         typedef dtGame::ActorComponent BaseClass;
 
          WeaponSwapActComp();
          virtual ~WeaponSwapActComp();
