@@ -38,6 +38,7 @@
 #include <SimCore/Actors/BaseEntity.h>
 #include <SimCore/Actors/MunitionTypeActor.h>
 #include <SimCore/Components/RenderingSupportComponent.h>
+#include <SimCore/Components/ParticleManagerComponent.h>
 #include <SimCore/Components/WeaponEffectsManager.h>
 
 
@@ -779,6 +780,11 @@ namespace SimCore
          if( mFlash.valid() ) { mFlash->SetParent( NULL ); }
 
          mFlash = flash;
+
+         if(mFlash.valid())
+         {
+            ParticleManagerComponent::AttachShaders(*mFlash);
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////

@@ -119,7 +119,6 @@ namespace SimCore
          protected:
 
             virtual ~ParticleInfo();
-            void AttachShader(const std::string&, osg::Node&);
 
          private:
             const ParticlePriority* mPriority;
@@ -247,6 +246,9 @@ namespace SimCore
          osg::Vec3 ConvertWorldToLocalForce( const osg::Vec3& globalForce, dtCore::Transformable& object,
             osg::Matrix& outWorldLocalMatrix );
          osg::Vec3 ConvertWorldToLocalForce( const osg::Vec3& globalForce, dtCore::Transformable& object );
+
+         // Convenience function for special shader assignment. This is mostly used for NVG effects.
+         static void AttachShaders(dtCore::ParticleSystem& ps);
 
       protected:
 
