@@ -124,12 +124,12 @@ namespace SimCore
 
             gc = osg::GraphicsContext::createGraphicsContext(traits.get());
 
-            if (gc.valid()) 
+            if (gc.valid())
             {
                gc->realize();
                gc->makeCurrent();
                if (!dynamic_cast<osgViewer::GraphicsWindow*>(gc.get()))
-               {              
+               {
                   LOG_ERROR("Unable to create graphics context to initialize CEGUI.");
                }
             }
@@ -177,7 +177,7 @@ namespace SimCore
                "Failed to find the scheme file : " + mSchemeFile, __FILE__, __LINE__);
          }
 
-         std::string dir = path.substr(0, path.length() - (mSchemeFile.length() - 5));
+         std::string dir = path.substr(0, path.length() - (mSchemeFile.length() - std::string("CEGUI").length()) );
          dtUtil::FileUtils::GetInstance().PushDirectory(dir);
          try
          {
