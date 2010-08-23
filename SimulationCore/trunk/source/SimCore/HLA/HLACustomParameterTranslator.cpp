@@ -495,7 +495,7 @@ namespace SimCore
             wc.Decode(buffer);
             position.set(wc.GetX(), wc.GetY(), wc.GetZ());
          }
-         else if (*hlaType == HLACustomAttributeType::VEC3D_TYPE)
+         else if (*hlaType == HLACustomAttributeType::VEC3F_TYPE)
          {
             dtHLAGM::VelocityVector wc;
             wc.Decode(buffer);
@@ -510,6 +510,10 @@ namespace SimCore
          if (parameterDataType == dtDAL::DataType::VEC3)
          {
             static_cast<dtGame::Vec3MessageParameter&>(parameter).SetValue(position);
+         }
+         else if (parameterDataType == dtDAL::DataType::VEC3D)
+         {
+            static_cast<dtGame::Vec3dMessageParameter&>(parameter).SetValue(position);
          }
          else if (parameterDataType == dtDAL::DataType::VEC3F)
          {
