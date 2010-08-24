@@ -28,6 +28,7 @@
 #include <SimCore/Actors/IGEnvironmentActor.h>
 #include <SimCore/Actors/DayTimeActor.h>
 #include <SimCore/Actors/LensFlareDrawable.h>
+#include <SimCore/BaseGameEntryPoint.h>
 
 #include <dtABC/application.h>
 #include <dtCore/cloudplane.h>
@@ -81,8 +82,9 @@ namespace SimCore
          cloudPlaneSS->setAttributeAndModes(depthState);
          cloudPlaneSS->setRenderBinDetails( -3, "RenderBin" );
 
+         SetFogEnabled(true);
          //set default fog distance to a clear day
-         mFog->setEnd( 600000 );
+         SetVisibility(SimCore::BaseGameEntryPoint::PLAYER_FAR_CLIP_PLANE - 100.0f);
       }
 
       /////////////////////////////////////////////////////////////

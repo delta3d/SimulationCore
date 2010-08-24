@@ -456,7 +456,14 @@ namespace SimCore
 
             // Change Visibility and Fog
             // --- Atmosphere holds visibility in Km, but the environment object expects meters.
-            mEnvironmentActor->SetVisibility(atmosActor->GetVisibilityDistance()*1000.0f);
+
+            double vfov, aspect, nearPlane, farPlane;
+            GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
+            float vis = atmosActor->GetVisibilityDistance()*1000.0f;
+
+            dtUtil::Clamp<float>(vis, 0.0f, farPlane - 100.0f);
+
+            mEnvironmentActor->SetVisibility(vis);
             UpdateFog();
 
             // Change the Cloud Coverage
