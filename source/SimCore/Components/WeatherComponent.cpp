@@ -221,21 +221,32 @@ namespace SimCore
                                          newNearClip, newFarClip);
          }
 
-         // Set the visibility on core env or ephemeris only if updates are
-         // not enabled. This implies that no updates are being received from the weather server.
+         // Set the visibility on core env or ephemeris
          // If a weather server is connected, set the visibility based on the view distance
          // reported by the weather server.
-         if(!mUpdatesEnabled)
+         float vis = mPreviousFarClipPlane; 
+
+         if(mAtmosphere.valid())
          {
-            float vis = newFarClip * 0.6f; // Make fog distance a tad less than the far clip. Helps account for the boxy effect of culling & clipping.
-            if(mEnvironmentActor.valid())
+            Actors::UniformAtmosphereActor* atmosActor =
+               static_cast<Actors::UniformAtmosphereActor*>(mAtmosphere->GetActor());
+
+            if(atmosActor != NULL)
             {
-               if(!dtUtil::Equivalent(mEnvironmentActor->GetVisibility(), vis))
-               {
-                  mEnvironmentActor->SetVisibility(vis);
-               }
+               vis = atmosActor->GetVisibilityDistance()*1000.0f;
             }
          }
+
+         if(mEnvironmentActor.valid())
+         {
+            if(!dtUtil::Equivalent(mEnvironmentActor->GetVisibility(), vis))
+            {
+               dtUtil::Clamp<float>(vis, 0.0f, mPreviousFarClipPlane - 100.0f);
+
+               mEnvironmentActor->SetVisibility(vis);
+            }
+         }
+
       }
 
       //////////////////////////////////////////////////////////
@@ -457,13 +468,6 @@ namespace SimCore
             // Change Visibility and Fog
             // --- Atmosphere holds visibility in Km, but the environment object expects meters.
 
-            double vfov, aspect, nearPlane, farPlane;
-            GetGameManager()->GetApplication().GetCamera()->GetPerspectiveParams(vfov, aspect, nearPlane, farPlane);
-            float vis = atmosActor->GetVisibilityDistance()*1000.0f;
-
-            dtUtil::Clamp<float>(vis, 0.0f, farPlane - 100.0f);
-
-            mEnvironmentActor->SetVisibility(vis);
             UpdateFog();
 
             // Change the Cloud Coverage
