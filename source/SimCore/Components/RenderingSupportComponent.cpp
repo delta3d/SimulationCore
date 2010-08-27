@@ -473,6 +473,13 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
+      bool RenderingSupportComponent::HasLight(RenderingSupportComponent::LightID id) const
+      {
+         LightArray::const_iterator iter = std::find_if(mLights.begin(), mLights.end(), findLightById(id));
+         return iter != mLights.end();
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////
       RenderingSupportComponent::DynamicLight* RenderingSupportComponent::GetDynamicLight(RenderingSupportComponent::LightID id)
       {
          return FindLight(id);
@@ -487,7 +494,7 @@ namespace SimCore
             return (*iter).get();
          }
 
-         return 0;
+         return NULL;
       }
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////
