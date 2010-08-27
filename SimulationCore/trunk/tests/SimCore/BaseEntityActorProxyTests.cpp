@@ -64,6 +64,7 @@
 #include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/TimedDeleterComponent.h>
 #include <SimCore/Components/ViewerMessageProcessor.h>
+#include <SimCore/Components/RenderingSupportComponent.h>
 #include <SimCore/VisibilityOptions.h>
 
 #include <dtDAL/transformableactorproxy.h>
@@ -94,6 +95,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
    CPPUNIT_TEST_SUITE(BaseEntityActorProxyTests);
 
       CPPUNIT_TEST(TestPlatform);
+      CPPUNIT_TEST(TestPlatformHeadlights);
       CPPUNIT_TEST(TestHuman);
       CPPUNIT_TEST(TestPlatformScaleMagnification);
       CPPUNIT_TEST(TestHumanScaleMagnification);
@@ -114,6 +116,7 @@ class BaseEntityActorProxyTests : public CPPUNIT_NS::TestFixture
       void setUp();
       void tearDown();
       void TestPlatform();
+      void TestPlatformHeadlights();
       void TestHuman();
       void TestPlatformScaleMagnification();
       void TestHumanScaleMagnification();
@@ -193,7 +196,6 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    ObserverPtr<dtCore::DeltaDrawable> edraw = eap->GetActor();
 
-
    TestBaseEntityActorProxy(*eap);
 
    SimCore::Actors::Platform* platform;
@@ -218,15 +220,6 @@ void BaseEntityActorProxyTests::TestPlatform()
 
    dtDAL::ActorProperty* prop = NULL;
 
-   prop = eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED);
-   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
-   std::stringstream textMessage;
-   textMessage << "The default value of \""
-      << static_cast<std::string>(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED) << "\" should be false.";
-   CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-   static_cast<dtDAL::BooleanActorProperty*>(prop)->SetValue(true);
-   CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(prop)->GetValue());
-
    osg::Vec3 vec;
    vec.set(1.14, 8.21, 7.85);
    prop = eap->GetProperty("EngineSmokePosition");
@@ -246,10 +239,14 @@ void BaseEntityActorProxyTests::TestPlatform()
    CPPUNIT_ASSERT_MESSAGE("\"Engine smoke particles\" value should not be NULL", !rd.IsEmpty());
    CPPUNIT_ASSERT_EQUAL_MESSAGE("\"Engine smoke particles\" value should be", rd.GetResourceIdentifier(), std::string("Particles:smoke.osg"));
 
+   mGM->DeleteActor(*eap);
+   dtCore::System::GetInstance().Step();
+
    CPPUNIT_ASSERT_EQUAL(1, eap->referenceCount());
    eap = NULL;
    CPPUNIT_ASSERT(!edraw.valid());
    edraw = NULL;
+
 }
 
 void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* platform,
@@ -363,6 +360,41 @@ void BaseEntityActorProxyTests::TestPlatformLoadMesh(SimCore::Actors::Platform* 
    }
 }
 
+void BaseEntityActorProxyTests::TestPlatformHeadlights()
+{
+   RefPtr<SimCore::Actors::BaseEntityActorProxy> eap;
+   mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::PLATFORM_ACTOR_TYPE, eap);
+   CPPUNIT_ASSERT(eap.valid());
+
+   dtDAL::BooleanActorProperty* prop = NULL;
+
+   eap->GetProperty(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED, prop);
+   CPPUNIT_ASSERT_MESSAGE("The head lights property should not be NULL", prop != NULL);
+   std::stringstream textMessage;
+   textMessage << "The default value of \""
+      << static_cast<std::string>(SimCore::Actors::PlatformActorProxy::PROPERTY_HEAD_LIGHTS_ENABLED) << "\" should be false.";
+   CPPUNIT_ASSERT_MESSAGE(textMessage.str(), !prop->GetValue());
+   prop->SetValue(true);
+   CPPUNIT_ASSERT_MESSAGE("Headlights should NOT turn on with no rendering support component",
+            !prop->GetValue());
+
+   mGM->AddComponent(*new SimCore::Components::RenderingSupportComponent, dtGame::GameManager::ComponentPriority::NORMAL);
+
+   prop->SetValue(true);
+   CPPUNIT_ASSERT_MESSAGE("Headlights should turn on with a valid rendering support component",
+            prop->GetValue());
+
+   prop->SetValue(false);
+   CPPUNIT_ASSERT(!prop->GetValue());
+   eap->SetGameManager(NULL);
+   prop->SetValue(true);
+   CPPUNIT_ASSERT_MESSAGE("With no game manager set, you should still be able to set the value to true and have it stick so it will work in stage",
+            prop->GetValue());
+
+   eap->SetGameManager(mGM);
+
+}
+
 void BaseEntityActorProxyTests::TestHuman()
 {
    RefPtr<SimCore::Actors::HumanActorProxy> hap;
@@ -389,10 +421,14 @@ void BaseEntityActorProxyTests::TestHuman()
    TestBaseEntityVisOpts(*hap);
 
 
+   mGM->DeleteActor(*hap);
+   dtCore::System::GetInstance().Step();
+
    CPPUNIT_ASSERT_EQUAL(1, hap->referenceCount());
    hap = NULL;
    CPPUNIT_ASSERT(!edraw.valid());
    edraw = NULL;
+
 }
 
 void BaseEntityActorProxyTests::TestBaseEntityVisOpts(SimCore::Actors::BaseEntityActorProxy& eap)
@@ -484,6 +520,8 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    //make the actor
    mGM->AddActor(eap, true, false);
 
+   CPPUNIT_ASSERT(eap.GetGameManager() != NULL);
+
    dtDAL::ActorProperty *prop = NULL;
    BaseEntity* entity = NULL;
    eap.GetActor( entity );
@@ -567,10 +605,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    static_cast<dtDAL::Vec3ActorProperty*>(prop)->SetValue(translation);
    CPPUNIT_ASSERT_MESSAGE("GetValue should return what was set", static_cast<dtDAL::Vec3ActorProperty*>(prop)->GetValue() == translation);
 
-   //dtDAL::ActorProperty* flyingProp = eap.GetProperty("Flying");
-   //CPPUNIT_ASSERT_MESSAGE("The default value of falling should be false.", !static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
-   //static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->SetValue(true);
-   //CPPUNIT_ASSERT(static_cast<dtDAL::BooleanActorProperty*>(flyingProp)->GetValue());
    prop = eap.GetProperty("GroundClampType");
    aep = dynamic_cast<dtDAL::AbstractEnumActorProperty*>(prop);
    CPPUNIT_ASSERT_MESSAGE("The abstract enum property for \"GroundClampType\" should not be NULL", aep != NULL);
@@ -651,10 +685,6 @@ void BaseEntityActorProxyTests::TestBaseEntityActorProxy(SimCore::Actors::BaseEn
    CPPUNIT_ASSERT_MESSAGE("The \"" + SimCore::Actors::BaseEntityActorProxy::PROPERTY_MAPPING_NAME.Get() + "\" property should not be NULL", strProp != NULL);
    strProp->SetValue(testValue);
    CPPUNIT_ASSERT( strProp->GetValue() == testValue );
-
-   mGM->DeleteActor(eap);
-   dtCore::System::GetInstance().Step();
-
 }
 
 void BaseEntityActorProxyTests::TestPlatformScaleMagnification()

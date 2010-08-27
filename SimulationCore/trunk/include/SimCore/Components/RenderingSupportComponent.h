@@ -219,6 +219,11 @@ namespace SimCore
             LightID AddDynamicLight(DynamicLight*);
             void RemoveDynamicLight(LightID id);
 
+            /**
+             * Simple check to make sure a light is valid
+             */
+            bool HasLight(RenderingSupportComponent::LightID id) const;
+
             //if your light is a spot light use this function and cast it- sorry! we could add a helper method too
             //if you aren't sure what type of light it is you can check the light type enumeration
             DynamicLight* GetDynamicLight(LightID id);

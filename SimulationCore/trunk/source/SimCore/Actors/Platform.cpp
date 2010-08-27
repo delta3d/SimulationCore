@@ -353,8 +353,13 @@ namespace SimCore
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetHeadLightsEnabled( bool enabled )
       {
-         mHeadLightsEnabled = enabled;
-
+         // We don't want to create the headlight if it's not necessary
+         // Still want to make sure it forces a light turn on if you set it to true, so we only
+         // quick exit for false
+         if (!mHeadLightsEnabled && !enabled)
+         {
+            return;
+         }
          // Attempt to capture the headlight transformable that is tracked by the
          // light effect for world position information.
          dtCore::RefPtr<dtCore::Transformable> headLightPoint;
@@ -373,32 +378,30 @@ namespace SimCore
          // If the head light point was not found then try to create it.
          if( ! headLightPoint.valid() )
          {
-            // If there is a node collector...
-            dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
-
-            // ...and there is a head light DOF...
-            osgSim::DOFTransform* lightTrans = nodeCollector != NULL
-               ? nodeCollector->GetDOFTransform( DOF_NAME_HEAD_LIGHTS )
-               : NULL;
-            if( lightTrans == NULL )
-            {
-               return;
-            }
-
             // ...add a Delta transformable at the same point as the DOF so that the
             // dynamic light effect can track the position; it does not track OSG DOF transforms.
             headLightPoint = new dtCore::Transformable( DOF_NAME_HEAD_LIGHTS );
-            AddChild( headLightPoint.get() );
-            dtCore::Transform xform;
-            // NOTE: currently the DOF does not return a position for watever reason, so
-            // the position is offset by a hard-coded offset temporarily.
-            xform.SetTranslation( lightTrans->getCurrentTranslate()+osg::Vec3(0,20.0,0) );
-            headLightPoint->SetTransform( xform, dtCore::Transformable::REL_CS );
+            bool foundLightNode = AddChild( headLightPoint.get(), DOF_NAME_HEAD_LIGHTS);
+            // if you don't have a headlight node, then it will be added at the origin, so offset the light
+            // with a fixed value.
+            if (!foundLightNode)
+            {
+               dtCore::Transform xform;
+               osg::Vec3 lightOffset(0.0f,20.0f,0.0f);
+               xform.SetTranslation(lightOffset);
+               headLightPoint->SetTransform( xform, dtCore::Transformable::REL_CS );
+            }
          }
 
          // If the light point has been created or accessed...
          if( headLightPoint.valid() )
          {
+            if (mHeadLightsEnabled != enabled)
+            {
+               CauseFullUpdate();
+            }
+            mHeadLightsEnabled = enabled;
+
             // ...get the game manager...
             dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
             if( gm == NULL )
@@ -407,39 +410,70 @@ namespace SimCore
             }
 
             // ...so that the render support component can be accessed...
-            SimCore::Components::RenderingSupportComponent* rsComp
-               = dynamic_cast<SimCore::Components::RenderingSupportComponent*>
-               (gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME ));
-
-            // ...so that the head light effect can be accessed...
-            SimCore::Components::RenderingSupportComponent::DynamicLight* dl = rsComp->GetDynamicLight( mHeadLightID );
+            SimCore::Components::RenderingSupportComponent* rsComp = NULL;
 
             if( enabled )
             {
+               gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+               SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
+               if (rsComp != NULL)
+               {
+                  // ...so that the head light effect can be accessed...
+                  dl = rsComp->GetDynamicLight( mHeadLightID );
+               }
+
                // ...and if the light effect does not exist...
-               if( dl == NULL )
+               if( dl == NULL && rsComp != NULL)
                {
                   // ...create it and get its ID to be tracked.
                   //
                   // NOTE: The following string value for the light name should eventually be
                   //       property, but is not currently for the sake of time.
-                  dl = rsComp->AddDynamicLightByPrototypeName( "Light-HMMWV-Headlight" );
+                  dl = rsComp->AddDynamicLightByPrototypeName( "Light-Headlight" );
                   dl->mTarget = headLightPoint.get();
                   mHeadLightID = dl->GetId();
                }
             }
-            else if( dl != NULL )
+            else if (mHeadLightID != 0)
             {
-               // ...turn it off by removing it.
-               rsComp->RemoveDynamicLight( mHeadLightID );
+               gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+               if (rsComp != NULL)
+               {
+                  // ...turn it off by removing it.
+                  rsComp->RemoveDynamicLight( mHeadLightID );
+               }
+               mHeadLightID = 0;
             }
+
          }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
       bool Platform::IsHeadLightsEnabled() const
       {
-         return mHeadLightsEnabled;
+         bool result = mHeadLightsEnabled;
+         if (mHeadLightsEnabled)
+         {
+            const dtGame::GameManager* gm = GetGameActorProxy().GetGameManager();
+            if (gm != NULL)
+            {
+               if (mHeadLightID != 0)
+               {
+                  const SimCore::Components::RenderingSupportComponent* rsComp = NULL;
+                  gm->GetComponentByName( SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, rsComp);
+
+                  // Check to see if the light exists, in the world.
+                  result = rsComp->HasLight( mHeadLightID );
+               }
+               else
+               {
+                  result = false;
+               }
+            }
+         }
+         return result;
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
@@ -820,6 +854,12 @@ namespace SimCore
 
          if(!mSFXSoundIdleEffect.empty() && GetGameActorProxy().IsInGM())
             LoadSFXEngineIdleLoop();
+
+         // Once it is added to the GM, it needs to actually create the headlight light, so we have to reset it.
+         if (IsHeadLightsEnabled())
+         {
+            SetHeadLightsEnabled(true);
+         }
       }
 
       ////////////////////////////////////////////////////////////////////////////////////
