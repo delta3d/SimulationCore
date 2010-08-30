@@ -44,6 +44,7 @@
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 #include <SimCore/Components/ViewerMessageProcessor.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <TestComponent.h>
 #include <UnitTestMain.h>
@@ -69,6 +70,7 @@ namespace SimCore
       {
          CPPUNIT_TEST_SUITE(PlatformWithPhysicsTests);
 
+         CPPUNIT_TEST(TestPhysicsDefaults);
          CPPUNIT_TEST(TestInit);
 
          CPPUNIT_TEST_SUITE_END();
@@ -113,6 +115,7 @@ namespace SimCore
 #endif
 
                mPlatformWithPhysics = NULL;
+               dtCore::ObserverPtr<SimCore::Actors::PlatformWithPhysicsActorProxy> pOb = mPlatformWithPhysicsActorProxy.get();
                mPlatformWithPhysicsActorProxy = NULL;
 
                if (mGM.valid())
@@ -122,6 +125,21 @@ namespace SimCore
                }
                dtCore::System::GetInstance().Stop();
 
+               CPPUNIT_ASSERT(!pOb.valid());
+            }
+
+            void TestPhysicsDefaults()
+            {
+               CPPUNIT_ASSERT(mPlatformWithPhysics->GetPhysicsHelper() != NULL);
+               dtPhysics::PhysicsObject* po = mPlatformWithPhysics->GetPhysicsHelper()->GetMainPhysicsObject();
+               CPPUNIT_ASSERT_EQUAL(dtPhysics::MechanicsType::DYNAMIC, po->GetMechanicsType());
+               CPPUNIT_ASSERT_EQUAL(dtPhysics::PrimitiveType::CONVEX_HULL, po->GetPrimitiveType());
+               CPPUNIT_ASSERT_EQUAL(dtPhysics::CollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND), po->GetCollisionGroup());
+
+               mGM->AddActor(*mPlatformWithPhysicsActorProxy, true, false);
+
+               CPPUNIT_ASSERT_EQUAL_MESSAGE("Remotes should auto switch to kinematic",
+                        dtPhysics::MechanicsType::KINEMATIC, po->GetMechanicsType());
             }
 
             void TestInit()
