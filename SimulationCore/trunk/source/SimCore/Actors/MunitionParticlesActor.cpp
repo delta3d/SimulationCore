@@ -105,11 +105,11 @@ namespace SimCore
 
             // We don't want to hit ourselves.  So, if we don't have a 'self' owner, then we take
             // whatever hit we get.  Otherwise, we check the owner drawables
-            if (mOwnerActor == NULL || hitTarget != mOwnerActor)
+            if (mOwnerActor == NULL || hitTarget != mOwnerActor
                      // So we dont want to return false if collision is off, this onHit is called for
                      // every hit along the line, and returning false tells it to stop the raycast
                      // report, its amazing how rereading the sdk can help so much :(
-                     //&&  hit.shape->getActor().readActorFlag(NX_AF_DISABLE_COLLISION) == false)
+                     &&  physObject->IsCollisionResponseEnabled())
             {
                if (!mGotAHit || mClosestHit.m_fDistance > hit.m_fDistance)
                {
@@ -315,6 +315,7 @@ namespace SimCore
                static const dtPhysics::CollisionGroupFilter GROUPS_FLAGS =
                   (1 << GROUP_TERRAIN)
                   | (1 << GROUP_WATER)
+                  | (1 << GROUP_VEHICLE_GROUND)
                   | (1 << GROUP_VEHICLE_WATER)
                   | (1 << GROUP_HUMAN_LOCAL)
                   | (1 << GROUP_HUMAN_REMOTE);
