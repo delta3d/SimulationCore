@@ -28,6 +28,7 @@
 #include <SimCore/Actors/WeaponActor.h>
 #include <SimCore/Actors/PlayerActor.h>
 #include <SimCore/Actors/TerrainActorProxy.h>
+#include <SimCore/Actors/DRPublishingActComp.h>
 #include <SimCore/Components/GameState/GameStateChangeMessage.h>
 #include <SimCore/MessageType.h>
 #include <SimCore/Messages.h>
@@ -387,7 +388,7 @@ namespace NetDemo
    }
 
    ///////////////////////////////////////////////////////////
-   bool GameLogicComponent::JoinNetworkAsClient(int serverPort, const std::string &serverIPAddress)
+   bool GameLogicComponent::JoinNetworkAsClient(int serverPort, const std::string& serverIPAddress)
    {
       bool result = false;
       mIsServer = false;
@@ -536,9 +537,19 @@ namespace NetDemo
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
          mCurrentTerrainPrototypeName, newDrawLandActorProxy, "Check your additional maps in config.xml (compare to config_example.xml).");
       newDrawLandActorProxy->SetName("Terrain"); // has to be named 'Terrain' or it won't do ground clamping and other stuff
-      GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
       mCurrentTerrainDrawActor = dynamic_cast<SimCore::Actors::TerrainActor*>
          (newDrawLandActorProxy->GetActor());
+      dtCore::RefPtr<SimCore::Actors::DRPublishingActComp> drpac = NULL;
+      mCurrentTerrainDrawActor->GetComponent(drpac);
+      if (!drpac.valid())
+      {
+         // Add a DR publishing component to the terrain so it sends heartbeats.
+         drpac = new SimCore::Actors::DRPublishingActComp(false);
+         mCurrentTerrainDrawActor->AddComponent(*drpac);
+         drpac->SetMaxUpdateSendRate(0.01f);
+      }
+
+      GetGameManager()->AddActor(*newDrawLandActorProxy, false, true);
 
       // Create the Team Fort - Assumes 1 team for now. Future - support more than 1 team
       SimCore::Utils::CreateActorFromPrototypeWithException(*GetGameManager(),
