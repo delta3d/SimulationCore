@@ -192,10 +192,15 @@ namespace SimCore
 
          osgSim::DOFTransform* wheels[4];
 
-         wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_LEFT] = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_01");
-         wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_RIGHT]= GetNodeCollector()->GetDOFTransform("dof_wheel_rt_01");
-         wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_LEFT]  = GetNodeCollector()->GetDOFTransform("dof_wheel_lt_02");
-         wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_RIGHT] = GetNodeCollector()->GetDOFTransform("dof_wheel_rt_02");
+         dtUtil::NodeCollector* nodeCollector = GetNodeCollector();
+
+         if (nodeCollector != NULL)
+         {
+            wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_LEFT] = nodeCollector->GetDOFTransform("dof_wheel_lt_01");
+            wheels[SimCore::FourWheelVehiclePhysicsHelper::FRONT_RIGHT]= nodeCollector->GetDOFTransform("dof_wheel_rt_01");
+            wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_LEFT]  = nodeCollector->GetDOFTransform("dof_wheel_lt_02");
+            wheels[SimCore::FourWheelVehiclePhysicsHelper::BACK_RIGHT] = nodeCollector->GetDOFTransform("dof_wheel_rt_02");
+         }
 
          for (size_t i = 0 ; i < 4; ++i)
          {
@@ -209,14 +214,20 @@ namespace SimCore
          dtCore::Transform ourTransform;
          GetTransform(ourTransform);
 
-         osg::Node* chassis = GetNodeCollector()->GetDOFTransform("dof_chassis");
-         if (chassis == NULL)
+         osg::Node* chassis = NULL;
+         if (nodeCollector != NULL)
          {
-            chassis = GetNodeCollector()->GetGroup("Body");
+            chassis = nodeCollector->GetDOFTransform("dof_chassis");
             if (chassis == NULL)
             {
-               chassis = GetNonDamagedFileNode();
+               chassis = nodeCollector->GetGroup("Body");
             }
+
+         }
+
+         if (chassis == NULL)
+         {
+            chassis = GetNonDamagedFileNode();
 
             if (chassis == NULL)
             {
@@ -231,8 +242,7 @@ namespace SimCore
                         "and it may not have a proper center of mass.");
             }
          }
-
-         if (chassis != NULL)
+         else
          {
             FourWheelVehiclePhysicsHelper* helper = GetFourWheelPhysicsHelper();
             osg::Matrix bodyOffset;
