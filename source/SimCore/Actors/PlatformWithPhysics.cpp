@@ -26,6 +26,7 @@
 #include <dtPhysics/physicsobject.h>
 
 #include <SimCore/PhysicsTypes.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #include <SimCore/Actors/PlatformWithPhysics.h>
 #include <dtCore/scene.h>
@@ -52,6 +53,7 @@ namespace SimCore
          physObj->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
          physObj->SetMechanicsType(dtPhysics::MechanicsType::DYNAMIC);
          physObj->SetMass(500.0f);
+         physObj->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
          mPhysicsHelper->AddPhysicsObject(*physObj);
          mPhysicsHelper->SetPrePhysicsCallback(dtPhysics::PhysicsHelper::UpdateCallback(this, &PlatformWithPhysics::PrePhysicsUpdate));
          mLoadGeomFromNode = false;
