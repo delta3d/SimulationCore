@@ -55,7 +55,7 @@ namespace NetDemo
 {
 
    ///////////////////////////////////////////////////////////////////////////////////
-   TowerActor::TowerActor(SimCore::Actors::BasePhysicsVehicleActorProxy &proxy)
+   TowerActor::TowerActor(SimCore::Actors::BasePhysicsVehicleActorProxy& proxy)
       : SimCore::Actors::BasePhysicsVehicleActor(proxy)
    {
       SetTerrainPresentDropHeight(0.0);
@@ -107,7 +107,7 @@ namespace NetDemo
       dtCore::Transform ourTransform;
       GetTransform(ourTransform);
 
-      dtPhysics::PhysicsObject *physObj = GetPhysicsHelper()->GetMainPhysicsObject();
+      dtPhysics::PhysicsObject* physObj = GetPhysicsHelper()->GetMainPhysicsObject();
       physObj->SetTransform(ourTransform);
       physObj->CreateFromProperties(GetNonDamagedFileNode());
 
