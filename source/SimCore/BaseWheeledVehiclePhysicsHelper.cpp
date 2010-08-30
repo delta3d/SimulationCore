@@ -32,6 +32,7 @@
 #include <dtCore/transform.h>
 
 #include <dtUtil/mathdefines.h>
+#include <SimCore/CollisionGroupEnum.h>
 
 #ifndef AGEIA_PHYSICS
 #include <dtPhysics/bodywrapper.h>
@@ -60,6 +61,7 @@ namespace SimCore
    {
       dtCore::RefPtr<dtPhysics::PhysicsObject> physicsObject = new dtPhysics::PhysicsObject("chassis");
       physicsObject->SetPrimitiveType(dtPhysics::PrimitiveType::CONVEX_HULL);
+      physicsObject->SetCollisionGroup(SimCore::CollisionGroup::GROUP_VEHICLE_GROUND);
       AddPhysicsObject(*physicsObject);
    }
 
