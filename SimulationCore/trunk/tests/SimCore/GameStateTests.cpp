@@ -120,9 +120,6 @@ void GameStateTests::setUp()
    mGM->AddComponent(*mGameStateComponent, dtGame::GameManager::ComponentPriority::NORMAL);
    mGM->AddComponent(*new dtGame::DefaultMessageProcessor, dtGame::GameManager::ComponentPriority::HIGHEST); 
 
-   // Register the message type used by the Game State Component.
-   mGM->GetMessageFactory().RegisterMessageType<GameStateChangedMessage>(SimCore::MessageType::GAME_STATE_CHANGED);
-
    dtCore::System::GetInstance().Step();
    dtCore::System::GetInstance().Step();
    dtCore::System::GetInstance().Step();
