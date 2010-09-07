@@ -527,30 +527,6 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool MultiSurfaceClamper::GetMissingHit( const dtDAL::TransformableActorProxy& proxy,
-         dtGame::GroundClampingData& data, float pointZ, osg::Vec3& inOutHit, osg::Vec3& outNormal )
-      {
-         using namespace SimCore::Actors;
-
-         bool success = false;
-
-         // This method is being called because GetClosestHit has returned FALSE,
-         // most likely because the involved Isector did not detect a hit.
-
-         // Determine if the actor can be affected by water.
-         BaseEntityActorProxy::DomainEnum& domain = GetDomain( data );
-         if( IsWaterDomain( domain ) )
-         {
-            bool isSub = domain == BaseEntityActorProxy::DomainEnum::SUBMARINE;
-            success = GetWaterSurfaceHit( pointZ, inOutHit, outNormal,
-               ! isSub, // Only force clamp surface vessels.
-               isSub );
-         }
-
-         return success;
-      }
-
-      //////////////////////////////////////////////////////////////////////////
       bool MultiSurfaceClamper::GetWaterSurfaceHit( float objectHeight,
          osg::Vec3& inOutHit, osg::Vec3& outNormal, bool forceClamp, bool clampUnderneath )
       {
