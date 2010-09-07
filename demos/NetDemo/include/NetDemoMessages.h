@@ -19,6 +19,7 @@
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
 #include <dtGame/message.h>
+#include <dtGame/messagemacros.h>
 #include <dtUtil/enumeration.h>
 #include "DemoExport.h"
 
@@ -48,46 +49,20 @@ namespace NetDemo
    // ENTITY ACTION MESSAGE CODE
    /////////////////////////////////////////////////////////////////////////////
    struct EntityActionMessageParams;
-   class NETDEMO_EXPORT EntityActionMessage : public dtGame::Message
-   {
-      public:
-         typedef dtGame::Message BaseClass;
 
-         static const dtUtil::RefString PARAMETER_ACTION;
-         static const dtUtil::RefString PARAMETER_LOCATION;
-         static const dtUtil::RefString PARAMETER_OWNER_ID;
-         static const dtUtil::RefString PARAMETER_POINTS;
-         static const dtUtil::RefString PARAMETER_RESOURCE_POINTS;
+   DECLARE_MESSAGE_BEGIN(EntityActionMessage, dtGame::Message, NETDEMO_EXPORT)
 
-         EntityActionMessage();
+      void SetAction(const EntityAction& action);
+      const EntityAction& GetAction() const;
 
-         void SetAction(const EntityAction& action);
-         const EntityAction& GetAction() const;
+      DECLARE_PARAMETER_INLINE(std::string, ActionEnum)
+      DECLARE_PARAMETER_INLINE(osg::Vec3, Location)
+      DECLARE_PARAMETER_INLINE(std::string, OwnerID)
+      DECLARE_PARAMETER_INLINE(int, Points)
+      DECLARE_PARAMETER_INLINE(int, ResourcePoints)
+      void Set(const EntityActionMessageParams& paramStruct);
 
-         void SetLocation(const osg::Vec3& location);
-         const osg::Vec3& GetLocation() const;
-
-         void SetOwnerID(const std::string& ownerId);
-         const std::string& GetOwnerID() const;
-
-         void SetPoints(int points);
-         int GetPoints() const;
-
-         void SetResourcePoints(int points);
-         int SetResourcePoints() const;
-
-         void Set(const EntityActionMessageParams& paramStruct);
-
-      protected:
-         virtual ~EntityActionMessage();
-
-      private:
-         dtCore::RefPtr<dtGame::EnumMessageParameter> mParamAction;
-         dtCore::RefPtr<dtGame::Vec3MessageParameter> mParamLocation;
-         dtCore::RefPtr<dtGame::StringMessageParameter> mParamOwnerID;
-         dtCore::RefPtr<dtGame::IntMessageParameter> mParamPoints;
-         dtCore::RefPtr<dtGame::IntMessageParameter> mParamResourcePoints;
-   };
+   DECLARE_MESSAGE_END()
 
    /////////////////////////////////////////////////////////////////////////////
    // Simple parameter struct for simplifying message sending, when used

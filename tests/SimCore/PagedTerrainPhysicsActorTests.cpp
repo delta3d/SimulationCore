@@ -94,8 +94,6 @@ void PagedTerrainPhysicsActorTests::setUp()
    dtCore::System::GetInstance().Config();
    dtCore::System::GetInstance().Step();
 
-   SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
    dtCore::System::GetInstance().Step();
 }
 

@@ -100,7 +100,7 @@ namespace DriverDemo
 
       GetHoverPhysicsHelper()->CreateVehicle(ourTransform,
          GetNodeCollector()->GetDOFTransform("dof_chassis"));
-      dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetMainPhysicsObject();
+      //dtPhysics::PhysicsObject* physActor = GetPhysicsHelper()->GetMainPhysicsObject();
 
       SimCore::Actors::BasePhysicsVehicleActor::OnEnteredWorld();
 

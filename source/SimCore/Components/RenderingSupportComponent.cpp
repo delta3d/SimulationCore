@@ -623,7 +623,7 @@ namespace SimCore
          {
             if(mNVGS.valid())
             {
-               SetEnableNVGS(static_cast<const SimCore::ToolMessage*>(&msg)->IsEnabled());
+               SetEnableNVGS(static_cast<const SimCore::ToolMessage*>(&msg)->GetEnabled());
             }
          }
 

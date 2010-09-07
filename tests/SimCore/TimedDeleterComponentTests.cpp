@@ -244,7 +244,6 @@ namespace SimCore
             mDeleterComp = new TestTimedDeleterComponent;
 
             mGM->AddComponent(*mDeleterComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
          }
          catch (const dtUtil::Exception& ex)
          {

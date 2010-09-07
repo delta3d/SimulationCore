@@ -36,6 +36,7 @@
 #include <dtUtil/exception.h>
 
 #include <osgViewer/GraphicsWindow>
+#include <osgViewer/CompositeViewer>
 
 #include <dtCore/observerptr.h>
 #include <iostream>
@@ -398,6 +399,7 @@ namespace StealthGM
          if (!app.ContainsView(*mView))
          {
             app.AddView(*mView);
+            app.GetCompositeViewer()->setUpThreading();
          }
 
          mAddedToApplication = true;

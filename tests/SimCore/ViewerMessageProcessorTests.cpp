@@ -116,7 +116,6 @@ namespace SimCore
 
             mGM->AddComponent(*mVMP, dtGame::GameManager::ComponentPriority::HIGHEST);
             mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
          }
          catch (const dtUtil::Exception& ex)
          {

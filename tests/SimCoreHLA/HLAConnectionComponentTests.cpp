@@ -96,7 +96,6 @@ void HLAConnectionComponentTests::setUp()
    
    mGameManager = new dtGame::GameManager(*mApp->GetScene());
    mGameManager->SetApplication(*mApp);
-   SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
 } 
 
 // Called implicitly by CPPUNIT when the app terminates

@@ -330,8 +330,6 @@ namespace SimCore
             mDamageComp->SetMunitionConfigFileName("Configs:UnitTestsConfig.xml");
 
             mGM->AddComponent(*mDamageComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
          }
          catch (const dtUtil::Exception& ex)
          {

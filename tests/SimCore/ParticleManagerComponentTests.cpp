@@ -224,7 +224,6 @@ namespace SimCore
             mParticleComp = new TestParticleManagerComponent;
 
             mGM->AddComponent(*mParticleComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
          }
          catch (const dtUtil::Exception& ex)
          {

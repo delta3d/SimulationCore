@@ -116,7 +116,6 @@ namespace SimCore
          try
          {
             mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
-            MessageType::RegisterMessageTypes( mGM->GetMessageFactory() );
          }
          catch (const dtUtil::Exception& ex)
          {

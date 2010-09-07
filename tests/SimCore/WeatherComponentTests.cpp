@@ -246,7 +246,6 @@ namespace SimCore
             mWeatherComp = new TestWeatherComponent;
 
             mGM->AddComponent(*mWeatherComp, dtGame::GameManager::ComponentPriority::NORMAL);
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
 
             CreateEnvironmentActor(mEnv);
             CreateAtmosphereActor(mAtmos);

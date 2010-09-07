@@ -33,186 +33,43 @@
 
 namespace SimCore
 {
-   ////////////////////////////////////////////////////////////////
-   BaseWeaponEventMessage::BaseWeaponEventMessage()
-   {
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("EventIdentifier"));
-      AddParameter(new dtGame::StringMessageParameter("MunitionType"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("QuantityFired"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("RateOfFire"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("FuseType"));
-      AddParameter(new dtGame::UnsignedShortIntMessageParameter("WarheadType"));
-   }
+   IMPLEMENT_MESSAGE_BEGIN(BaseWeaponEventMessage)
+      ADD_PARAMETER(unsigned short, EventIdentifier)
+      ADD_PARAMETER(std::string, MunitionType)
+      ADD_PARAMETER(unsigned short, QuantityFired)
+      ADD_PARAMETER(unsigned short, RateOfFire)
+      ADD_PARAMETER(unsigned short, FuseType)
+      ADD_PARAMETER(unsigned short, WarheadType)
+   IMPLEMENT_MESSAGE_END()
 
-   ////////////////////////////////////////////////////////////////
-   BaseWeaponEventMessage::~BaseWeaponEventMessage()
-   {
+   IMPLEMENT_MESSAGE_BEGIN(DetonationMessage)
+      ///Sets the detonation location of the message parameter
+      ADD_PARAMETER(osg::Vec3, DetonationLocation)
+      /// Sets the detonation result code message parameter
+      ADD_PARAMETER(unsigned char, DetonationResultCode)
+      /// Sets the final velocity vector
+      ADD_PARAMETER(osg::Vec3, FinalVelocityVector)
+      /** Sets the location of the detonation relative to the target, in world units.
+       The vector is from the target to the point of detonation. */
+      ADD_PARAMETER(osg::Vec3, RelativeDetonationLocation)
+   IMPLEMENT_MESSAGE_END()
 
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetEventIdentifier(unsigned short eventID)
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->SetValue(eventID);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   unsigned short BaseWeaponEventMessage::GetEventIdentifier() const
-   {
-       return static_cast<const dtGame::UnsignedShortIntMessageParameter*>(GetParameter("EventIdentifier"))->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   const std::string& BaseWeaponEventMessage::GetMunitionType() const
-   {
-      const dtGame::StringMessageParameter* p =
-         static_cast<const dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-
-      return p->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetMunitionType( const std::string& detType )
-   {
-      dtGame::StringMessageParameter* p =
-         static_cast<dtGame::StringMessageParameter*>(GetParameter("MunitionType"));
-      p->SetValue(detType);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetQuantityFired( unsigned short quantity )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->SetValue(quantity);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   unsigned short BaseWeaponEventMessage::GetQuantityFired() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("QuantityFired"))->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetRateOfFire( unsigned short rate )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->SetValue(rate);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   unsigned short BaseWeaponEventMessage::GetRateOfFire() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("RateOfFire"))->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetWarheadType( unsigned short warhead )
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->SetValue(warhead);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   unsigned short BaseWeaponEventMessage::GetWarheadType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("WarheadType"))->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void BaseWeaponEventMessage::SetFuseType(unsigned short fuse)
-   {
-      static_cast<dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->SetValue(fuse);
-   }
-
-   ////////////////////////////////////////////////////////////////
-   unsigned short BaseWeaponEventMessage::GetFuseType() const
-   {
-      return static_cast<const dtGame::UnsignedShortIntMessageParameter*>
-         (GetParameter("FuseType"))->GetValue();
-   }
-
-   ////////////////////////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////
-   DetonationMessage::DetonationMessage()
-   {
-      AddParameter(new dtGame::Vec3MessageParameter("DetonationLocation"));
-      AddParameter(new dtGame::UnsignedCharMessageParameter("DetonationResultCode"));
-      AddParameter(new dtGame::Vec3MessageParameter("FinalVelocityVector"));
-      AddParameter(new dtGame::Vec3MessageParameter("RelativeDetonationLocation"));
-   }
-
-   ////////////////////////////////////////////////////////////////
-   DetonationMessage::~DetonationMessage()
-   {
-
-   }
-
-   ////////////////////////////////////////////////////////////////
-   void DetonationMessage::SetDetonationLocation(const osg::Vec3& loc)
-   {
-   	 static_cast<dtGame::Vec3MessageParameter*>(GetParameter("DetonationLocation"))->SetValue(loc);
-   }
-
-   const osg::Vec3& DetonationMessage::GetDetonationLocation() const
-   {
-   	 return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("DetonationLocation"))->GetValue();
-   }
-
-   void DetonationMessage::SetDetonationResultCode(unsigned char code)
-   {
-   	 static_cast<dtGame::UnsignedCharMessageParameter*>(GetParameter("DetonationResultCode"))->SetValue(code);
-   }
-
-   unsigned char DetonationMessage::GetDetonationResultCode() const
-   {
-   	 return static_cast<const dtGame::UnsignedCharMessageParameter*>(GetParameter("DetonationResultCode"))->GetValue();
-   }
-
-   void DetonationMessage::SetFinalVelocityVector(const osg::Vec3& vec)
-   {
-   	 static_cast<dtGame::Vec3MessageParameter*>(GetParameter("FinalVelocityVector"))->SetValue(vec);
-   }
-
-   const osg::Vec3& DetonationMessage::GetFinalVelocityVector() const
-   {
-   	 return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("FinalVelocityVector"))->GetValue();
-   }
-
-   void DetonationMessage::SetRelativeDetonationLocation(const osg::Vec3& vec)
-   {
-      static_cast<dtGame::Vec3MessageParameter*>(GetParameter("RelativeDetonationLocation"))->SetValue(vec);
-   }
-
-   const osg::Vec3& DetonationMessage::GetRelativeDetonationLocation() const
-   {
-      return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("RelativeDetonationLocation"))->GetValue();
-   }
+   /**
+    * @class ShotFiredMessage
+    * Sent when a weapon is fired.
+    */
+   IMPLEMENT_MESSAGE_BEGIN(ShotFiredMessage)
+      ///the location of the where a shot is fired
+      ADD_PARAMETER(osg::Vec3, FiringLocation)
+      /// Sets the velocity of the shot at the point it left the weapon.
+      ADD_PARAMETER(osg::Vec3, InitialVelocityVector)
+   IMPLEMENT_MESSAGE_END()
 
 
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   ToolMessage::ToolMessage() : Message()
-   {
-      AddParameter(new dtGame::BooleanMessageParameter("Enable", false));
-   }
-
-   ToolMessage::~ToolMessage()
-   {
-
-   }
-
-   void ToolMessage::SetEnabled(bool enable)
-   {
-      static_cast<dtGame::BooleanMessageParameter*>(GetParameter("Enable"))->SetValue(enable);
-   }
-
-   bool ToolMessage::IsEnabled() const
-   {
-      return static_cast<const dtGame::BooleanMessageParameter*>(GetParameter("Enable"))->GetValue();
-   }
+   IMPLEMENT_MESSAGE_BEGIN(ToolMessage)
+      /// Enables the tool
+      ADD_PARAMETER(osg::Vec3, Enabled)
+   IMPLEMENT_MESSAGE_END()
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,41 +116,6 @@ namespace SimCore
    AttachToActorMessage::~AttachToActorMessage()
    {
    }
-
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   /////////////////////////////////////////////////////////////////////////////////////////////
-   ShotFiredMessage::ShotFiredMessage()
-   {
-      AddParameter(new dtGame::Vec3MessageParameter("FiringLocation"));
-      AddParameter(new dtGame::Vec3MessageParameter("InitialVelocityVector"));
-   }
-
-   ShotFiredMessage::~ShotFiredMessage()
-   {
-   }
-
-   const osg::Vec3& ShotFiredMessage::GetFiringLocation() const
-   {
-      return static_cast<const dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->GetValue();
-   }
-
-   void ShotFiredMessage::SetFiringLocation(const osg::Vec3& location)
-   {
-      static_cast<dtGame::Vec3MessageParameter*>(GetParameter("FiringLocation"))->SetValue(location);
-   }
-
-   void ShotFiredMessage::SetInitialVelocityVector( const osg::Vec3& velocity )
-   {
-      static_cast<dtGame::Vec3MessageParameter*>
-         (GetParameter("InitialVelocityVector"))->SetValue(velocity);
-   }
-
-   const osg::Vec3& ShotFiredMessage::GetInitialVelocityVector() const
-   {
-      return static_cast<const dtGame::Vec3MessageParameter*>
-         (GetParameter("InitialVelocityVector"))->GetValue();
-   }
-
 
    /////////////////////////////////////////////////////////////////////////////////////////////
 

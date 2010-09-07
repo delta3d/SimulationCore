@@ -179,7 +179,7 @@ namespace StealthGM
    void StealthHUD::ProcessToolMessage(const SimCore::ToolMessage& toolMessage)
    {
       const dtGame::MessageType& type = toolMessage.GetMessageType();
-      bool toolEnabled = toolMessage.IsEnabled();
+      bool toolEnabled = toolMessage.GetEnabled();
 
       if(type == SimCore::MessageType::BINOCULARS)
       {

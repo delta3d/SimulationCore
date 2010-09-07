@@ -73,8 +73,6 @@ public:
 
       dtCore::System::GetInstance().Step();
 
-      SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
       mCommandLineObject = new SimCore::CommandLineObject();
 
       dtCore::System::GetInstance().Step();

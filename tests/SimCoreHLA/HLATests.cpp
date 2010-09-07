@@ -97,7 +97,6 @@ void HLATests::setUp()
    {
       RefPtr<dtCore::Scene> scene = GetGlobalApplication().GetScene();
       mGameManager = new dtGame::GameManager(*scene);
-      SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
 
       dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
       dtCore::System::GetInstance().Start();

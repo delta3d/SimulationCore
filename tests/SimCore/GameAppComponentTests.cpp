@@ -83,8 +83,6 @@ void BaseGameAppComponentTests::setUp()
 
    dtCore::System::GetInstance().Step();
 
-   SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
    dtCore::System::GetInstance().Step();
 }
 

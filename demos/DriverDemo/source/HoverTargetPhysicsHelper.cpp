@@ -52,8 +52,8 @@ namespace DriverDemo
 
    // These statics are put here as test variables. They need to be made permanent or
    // made into properties on the actor.
-   static float testCorrection = 0.01f;
-   static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
+//   static float testCorrection = 0.01f;
+//   static float testQuicknessAdjustment = 2.8f; // 1.0 gives you a sluggish feel
 
    ////////////////////////////////////////////////////////////////////////////////
    void HoverTargetPhysicsHelper::ApplyTargetHoverForces(float deltaTime, osg::Vec3 &goalLocation)
@@ -66,7 +66,7 @@ namespace DriverDemo
       osg::Vec3 velocity = physicsObject->GetBodyWrapper()->GetLinearVelocity();
       osg::Vec3 pos = physicsObject->GetTranslation();
       osg::Vec3 posLookAhead = pos + velocity * 0.4; // where would our vehicle be in the future?
-      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
+//      float speed = dtUtil::Min(velocity.length(), 300.0f);  // cap for silly values - probably init values
 
 
       // Adjust position so that we are 'hovering' above the ground. The look ahead position

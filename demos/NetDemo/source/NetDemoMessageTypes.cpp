@@ -24,7 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // INCLUDE DIRECTIVES
 ////////////////////////////////////////////////////////////////////////////////
-#include <dtGame/messagefactory.h>
 #include "NetDemoMessageTypes.h"
 #include "NetDemoMessages.h"
 
@@ -35,52 +34,27 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    // CODE
    /////////////////////////////////////////////////////////////////////////////
-   IMPLEMENT_ENUM(MessageType);
+   IMPLEMENT_MESSAGE_TYPE_CLASS(MessageType);
 
    const MessageType MessageType::UI_OPTION_NEXT("UI Option Next", "NetDemo",
       "Generic way to select a next option whether it be in the context of UI or in-game weapon switching or etc.",
-      NETDEMO_MESSAGE_TYPE_ID);
+      NETDEMO_MESSAGE_TYPE_ID, DT_MSG_CLASS(dtGame::Message));
 
    const MessageType MessageType::UI_OPTION_PREV("UI Option Previous", "NetDemo",
       "Generic way to select a previous option whether it be in the context of UI or in-game weapon switching or etc.",
-      NETDEMO_MESSAGE_TYPE_ID + 1);
+      NETDEMO_MESSAGE_TYPE_ID + 1, DT_MSG_CLASS(dtGame::Message));
 
    const MessageType MessageType::UI_OPTION_SELECT("UI Option Select", "NetDemo",
       "Generic way to commit to the currently selected option whether it be in the context of UI or in-game weapon switching or etc.",
-      NETDEMO_MESSAGE_TYPE_ID + 2);
+      NETDEMO_MESSAGE_TYPE_ID + 2, DT_MSG_CLASS(dtGame::Message));
 
    const MessageType MessageType::UI_HELP("UI Help", "NetDemo",
       "Used to toggle the UI help window",
-      NETDEMO_MESSAGE_TYPE_ID + 3);
+      NETDEMO_MESSAGE_TYPE_ID + 3, DT_MSG_CLASS(dtGame::Message));
 
    const MessageType MessageType::ENTITY_ACTION("Entity Action", "NetDemo",
       "Generic message type for communicating most types of interactions of the network.",
-      NETDEMO_MESSAGE_TYPE_ID + 4);
+      NETDEMO_MESSAGE_TYPE_ID + 4, DT_MSG_CLASS(NetDemo::EntityActionMessage));
   
-
-
-   /////////////////////////////////////////////////////////////////////////////
-   MessageType::MessageType(const std::string& name, const std::string& category,
-      const std::string& description, const unsigned short messageId)
-      : BaseClass(name, category, description, messageId)
-   {
-      AddInstance(this);
-   }
-
-   /////////////////////////////////////////////////////////////////////////////
-   MessageType::~MessageType()
-   {
-   }
-
-   /////////////////////////////////////////////////////////////////////////////
-   void MessageType::RegisterMessageTypes(dtGame::MessageFactory& factory)
-   {
-      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_NEXT);
-      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_PREV);
-      factory.RegisterMessageType<dtGame::Message>(UI_OPTION_SELECT);
-      factory.RegisterMessageType<dtGame::Message>(UI_HELP);
-
-      factory.RegisterMessageType<NetDemo::EntityActionMessage>(ENTITY_ACTION);
-   }
 
 }

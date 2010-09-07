@@ -201,8 +201,6 @@ namespace SimCore
 
             mMachineInfo = new dtGame::MachineInfo;
 
-            MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
             // Create a component that listens for weapon messages
             mTestComp = new ListeningComponent;
             mGM->AddComponent( *mTestComp, dtGame::GameManager::ComponentPriority::NORMAL );
