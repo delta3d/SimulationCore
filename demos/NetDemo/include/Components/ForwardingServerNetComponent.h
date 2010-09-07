@@ -28,7 +28,6 @@
 #include <DemoExport.h>
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/networkbridge.h>
-#include <dtNetGM/machineinfomessage.h>
 #include <dtNetGM/serverconnectionlistener.h>
 #include <dtUtil/macros.h>
 

@@ -47,7 +47,6 @@
 
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/clientnetworkcomponent.h>
-#include <dtNetGM/machineinfomessage.h>
 
 #include <sstream>
 
