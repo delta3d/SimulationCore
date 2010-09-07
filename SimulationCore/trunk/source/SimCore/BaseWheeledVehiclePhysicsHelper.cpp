@@ -47,7 +47,7 @@ namespace SimCore
    static const float AIR_DENSITY = 1.204f;    // density of air in kg/m^3 at 20C
 
    /// Constructor
-   BaseWheeledVehiclePhysicsHelper::BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy &proxy)
+   BaseWheeledVehiclePhysicsHelper::BaseWheeledVehiclePhysicsHelper(dtGame::GameActorProxy& proxy)
    : dtPhysics::PhysicsHelper(proxy)
    , mVehicle(NULL)
    , mEngineTorque(1000.0f)
@@ -192,6 +192,7 @@ namespace SimCore
    {
       return mAeroDynDragCoefficient;
    }
+
    ////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsHelper::SetAeroDynDragCoefficient(float drag)
    {
@@ -225,9 +226,6 @@ namespace SimCore
    ////////////////////////////////////////////////////////
    void BaseWheeledVehiclePhysicsHelper::CalcMPH()
    {
-#ifdef AGEIA_PHYSICS
-      mLastMPH = -0.9469696 * 2.0 * GetWheelRadius() * osg::PI * mWheels[0].mWheel->getAxleSpeed();
-#endif
       static const float METERSPS_TO_MILESPH = 2.236936291;
       const dtPhysics::PhysicsObject* po = GetMainPhysicsObject();
       if (po == NULL)

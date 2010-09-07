@@ -16,6 +16,7 @@
 #include <Actors/PlayerStatusActor.h>
 
 #include <dtDAL/enginepropertytypes.h>
+#include <dtGame/messagetype.h>
 #include <dtABC/application.h>
 #include <dtUtil/matrixutil.h>
 #include <dtUtil/mathdefines.h>

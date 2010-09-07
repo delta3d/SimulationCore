@@ -63,7 +63,7 @@ namespace NetDemo
          return code;
       }
       ////////////////////////////////////////////////////////////////////////////////
-      void ProcessNetClientRequestConnection(const dtNetGM::MachineInfoMessage& msg)
+      void ProcessNetClientRequestConnection(const dtGame::MachineInfoMessage& msg)
       {
          // Workaround for a bug where an not-connected server network component assumes it still should handle
          // the messages.  Needs to be Put into Delta3D

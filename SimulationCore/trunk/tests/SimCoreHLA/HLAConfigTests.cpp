@@ -92,7 +92,6 @@ void HLAConfigTests::setUp()
    mTranslator->AddParameterTranslator( *new SimCore::HLA::HLACustomParameterTranslator );
    dtCore::Scene* scene = GetGlobalApplication().GetScene();
    mGameManager = new dtGame::GameManager(*scene);
-   SimCore::MessageType::RegisterMessageTypes(mGameManager->GetMessageFactory());
 }
 
 // Called implicitly by CPPUNIT when the app terminates

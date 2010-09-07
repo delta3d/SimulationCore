@@ -110,7 +110,7 @@ namespace SimCore
 
          const SimCore::ToolMessage& tm = dynamic_cast<const SimCore::ToolMessage&>(msg);
 
-         SetEnabledTool(tm.IsEnabled() ? static_cast<SimCore::MessageType&>(type) : SimCore::MessageType::NO_TOOL);
+         SetEnabledTool(tm.GetEnabled() ? static_cast<SimCore::MessageType&>(type) : SimCore::MessageType::NO_TOOL);
       }
 
       //////////////////////////////////////////////////////////////////////////

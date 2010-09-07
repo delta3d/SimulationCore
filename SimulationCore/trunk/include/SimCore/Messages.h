@@ -24,14 +24,8 @@
 #define _MESSAGES_H_
 
 #include <dtGame/message.h>
+#include <dtGame/messagemacros.h>
 #include <SimCore/Export.h>
-
-namespace dtDAL
-{
-   class NamedVec3fParameter;
-   class NamedStringParameter;
-   class NamedActorParameter;
-}
 
 namespace SimCore
 {
@@ -43,140 +37,48 @@ namespace SimCore
    /**
     * Abstract base class for weapon events, weapon fire or detonation
     */
-   class SIMCORE_EXPORT BaseWeaponEventMessage: public dtGame::Message
-   {
-   protected:
-
-      BaseWeaponEventMessage();
-      /// Destructor
-      virtual ~BaseWeaponEventMessage();
-
-   public:
-
-      /**
-       * Sets the event identifier
-       * @param eventID The event identifier
-       */
-      void SetEventIdentifier(unsigned short eventID);
-      unsigned short GetEventIdentifier() const;
-
-      /** Gets the new munition Type name - mapped to an enum in DetonationActor.
-       * @return A string containing the munition type.
-       */
-      const std::string& GetMunitionType() const;
-
-      /**
-       * Sets the new munition Type name - mapped to an enum in DetonationActor.
-       * @param munitionType The name of the munition type enum in DetonationActor.
-       */
-      void SetMunitionType( const std::string& detType );
-
+   DECLARE_MESSAGE_BEGIN(BaseWeaponEventMessage, dtGame::Message, SIMCORE_EXPORT)
+      DECLARE_PARAMETER_INLINE(unsigned short, EventIdentifier)
+      /// the new munition Type name - mapped to an enum in DetonationActor.
+      DECLARE_PARAMETER_INLINE(std::string, MunitionType)
       /// Sets the number of shots this message represents.
-      void SetQuantityFired( unsigned short quantity );
-      unsigned short GetQuantityFired() const;
-
-      void SetRateOfFire( unsigned short rate );
-      unsigned short GetRateOfFire() const;
-
-      /// Set the raw warhead type code
-      void SetWarheadType( unsigned short warhead );
-      unsigned short GetWarheadType() const;
-
+      DECLARE_PARAMETER_INLINE(unsigned short, QuantityFired)
+      /// Rounds per second
+      DECLARE_PARAMETER_INLINE(unsigned short, RateOfFire)
       /// Set the raw fuse type code
-      void SetFuseType( unsigned short fuse );
-      unsigned short GetFuseType() const;
+      DECLARE_PARAMETER_INLINE(unsigned short, FuseType)
+      /// Set the raw warhead type code
+      DECLARE_PARAMETER_INLINE(unsigned short, WarheadType)
+   DECLARE_MESSAGE_END()
 
-   };
+   DECLARE_MESSAGE_BEGIN(DetonationMessage,BaseWeaponEventMessage, SIMCORE_EXPORT)
+      ///Sets the detonation location of the message parameter
+      DECLARE_PARAMETER_INLINE(osg::Vec3, DetonationLocation)
+      /// Sets the detonation result code message parameter
+      DECLARE_PARAMETER_INLINE(unsigned char, DetonationResultCode)
+      /// Sets the final velocity vector
+      DECLARE_PARAMETER_INLINE(osg::Vec3, FinalVelocityVector)
+      /** Sets the location of the detonation relative to the target, in world units.
+       The vector is from the target to the point of detonation. */
+      DECLARE_PARAMETER_INLINE(osg::Vec3, RelativeDetonationLocation)
+   DECLARE_MESSAGE_END()
 
-   class SIMCORE_EXPORT DetonationMessage : public BaseWeaponEventMessage
-   {
-   public:
-
-      /// Constructor
-      DetonationMessage();
-
-      /**
-       * Sets the detonation location of the message parameter
-       * @param loc The new location
-       */
-      void SetDetonationLocation(const osg::Vec3& loc);
-
-      /**
-       * Get the detonation location of the message parameter
-       * @return The location
-       */
-      const osg::Vec3& GetDetonationLocation() const;
-
-      /**
-       * Sets the detonation result code message parameter
-       * @param code The new code
-       */
-      void SetDetonationResultCode(unsigned char code);
-
-      /**
-       * Gets the detonation result code
-       * @return The code
-       */
-      unsigned char GetDetonationResultCode() const;
-
-      /**
-       * Sets the final velocity vector
-       * @param vec The new vector
-       */
-      void SetFinalVelocityVector(const osg::Vec3& vec);
-
-      /**
-       * Gets the final velocity vector
-       * @return The velocity vector
-       */
-      const osg::Vec3& GetFinalVelocityVector() const;
-
-      /**
-       * Sets the location of the detonation relative to the target, in world units.
-       * The vector is from the target to the point of detonation.
-       * @param vec The relative detonation offset from the target.
-       */
-      void SetRelativeDetonationLocation(const osg::Vec3& vec);
-
-      /**
-       * Gets the location of the detonation relative to the target, in world units.
-       * The vector is from the target to the point of detonation.
-       * @return The relative detonation offset from the target.
-       */
-      const osg::Vec3& GetRelativeDetonationLocation() const;
+   /**
+    * @class ShotFiredMessage
+    * Sent when a weapon is fired.
+    */
+   DECLARE_MESSAGE_BEGIN(ShotFiredMessage, BaseWeaponEventMessage, SIMCORE_EXPORT)
+      ///the location of the where a shot is fired
+      DECLARE_PARAMETER_INLINE(osg::Vec3, FiringLocation)
+      /// Sets the velocity of the shot at the point it left the weapon.
+      DECLARE_PARAMETER_INLINE(osg::Vec3, InitialVelocityVector)
+   DECLARE_MESSAGE_END()
 
 
-   protected:
-      /// Destructor
-      virtual ~DetonationMessage();
-
-   private:
-
-   };
-
-   class SIMCORE_EXPORT ToolMessage : public dtGame::Message
-   {
-   public:
-
-      /// Constructor
-      ToolMessage();
-
-      /**
-       * Enables the tool
-       * @param enable True to enable, false to disable
-       */
-      void SetEnabled(bool enable);
-
-      /**
-       * Returns true if the tool is enabled
-       */
-      bool IsEnabled() const;
-
-   protected:
-      /// Destructor
-      virtual ~ToolMessage();
-   };
-
+   DECLARE_MESSAGE_BEGIN(ToolMessage, dtGame::Message, SIMCORE_EXPORT)
+      /// Enables the tool
+      DECLARE_PARAMETER_INLINE(bool, Enabled)
+   DECLARE_MESSAGE_END()
 
    /**
     * @class AttachToActorMessage
@@ -218,33 +120,6 @@ namespace SimCore
       dtDAL::NamedActorParameter& mAttachToActorParam;
       dtDAL::NamedStringParameter& mAttachPointNodeNameParam;
       dtDAL::NamedVec3fParameter& mInitialAttachRotationHPRParam;
-   };
-
-   /**
-    * @class FireMessage
-    * Sent when a weapon is fired.
-    */
-   class SIMCORE_EXPORT ShotFiredMessage : public BaseWeaponEventMessage
-   {
-   public:
-
-      /// Constructor
-      ShotFiredMessage();
-
-      /// @return the location of the where a shot is fired
-      const osg::Vec3& GetFiringLocation() const;
-
-      /// Sets the location of a shot being fired
-      void SetFiringLocation(const osg::Vec3& location);
-
-      /// Sets the velocity of the shot at the point it left the weapon.
-      void SetInitialVelocityVector( const osg::Vec3& velocity );
-      const osg::Vec3& GetInitialVelocityVector() const;
-
-   protected:
-
-      /// Destructor
-      virtual ~ShotFiredMessage();
    };
 
    /**

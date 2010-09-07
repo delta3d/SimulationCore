@@ -403,8 +403,6 @@ namespace SimCore
          LOG_INFO("Using CPU Character Skinning");
       }
 
-      SimCore::MessageType::RegisterMessageTypes(gameManager.GetMessageFactory());
-
       // Setup the DR Component.
       dtCore::RefPtr<Components::MultiSurfaceClamper> clamper = new Components::MultiSurfaceClamper;
       clamper->SetHighResGroundClampingRange( 200.0f );

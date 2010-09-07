@@ -340,7 +340,6 @@ namespace SimCore
          try
          {
             mGM = new dtGame::GameManager( *GetGlobalApplication().GetScene() );
-            MessageType::RegisterMessageTypes( mGM->GetMessageFactory() );
 
             mHelper = new TestArticHelper;
          }

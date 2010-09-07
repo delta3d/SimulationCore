@@ -93,8 +93,6 @@ class MessageTests : public CPPUNIT_NS::TestFixture
          mGM->SetApplication(*mApp);
          RefPtr<dtGame::DeadReckoningComponent> drComp = new dtGame::DeadReckoningComponent;
          mGM->AddComponent(*drComp, dtGame::GameManager::ComponentPriority::NORMAL);
-
-         SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
       }
 
       void tearDown()

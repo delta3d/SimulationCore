@@ -69,8 +69,6 @@ class ViewerMaterialsTests : public CPPUNIT_NS::TestFixture
               
          dtCore::System::GetInstance().Step();
 
-         SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
          mMaterialComponent = new SimCore::Components::ViewerMaterialComponent();
          mGM->AddComponent(*mMaterialComponent, dtGame::GameManager::ComponentPriority::NORMAL);
 

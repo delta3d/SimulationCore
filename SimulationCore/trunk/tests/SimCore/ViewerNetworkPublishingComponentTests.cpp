@@ -84,8 +84,6 @@ class ViewerNetworkPublishingComponentTests : public CPPUNIT_NS::TestFixture
          mTestComp = new TestComponent;
          mGM->AddComponent(*mTestComp, dtGame::GameManager::ComponentPriority::NORMAL);
 
-         SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
          RefPtr<dtDAL::ActorProxy> ap = mGM->CreateActor(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE);
 
          CPPUNIT_ASSERT(ap.valid());

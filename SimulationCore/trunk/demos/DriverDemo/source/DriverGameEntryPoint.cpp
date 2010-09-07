@@ -47,7 +47,7 @@
 
 #include <dtNetGM/servernetworkcomponent.h>
 #include <dtNetGM/clientnetworkcomponent.h>
-#include <dtNetGM/machineinfomessage.h>
+#include <dtGame/basemessages.h>
 
 using dtCore::RefPtr;
 using namespace SimCore::CollisionGroup;
@@ -240,7 +240,7 @@ namespace DriverDemo
             const std::string host = configParams.GetConfigPropertyValue("dtNetGM.ServerHost", "127.0.0.1");
             if (clientComp->SetupClient(host, serverPort))
             {
-               dtCore::RefPtr<dtNetGM::MachineInfoMessage> message;
+               dtCore::RefPtr<dtGame::MachineInfoMessage> message;
                gm.GetMessageFactory().CreateMessage(dtGame::MessageType::NETCLIENT_REQUEST_CONNECTION, message);
                message->SetDestination(clientComp->GetServer());
                message->SetMachineInfo(gm.GetMachineInfo());

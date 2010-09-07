@@ -84,8 +84,6 @@ void LM_OpenFLTTerainTests::setUp()
 
    dtCore::System::GetInstance().Step();
 
-   SimCore::MessageType::RegisterMessageTypes(mGM->GetMessageFactory());
-
    dtCore::System::GetInstance().Step();
 }
 

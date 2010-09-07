@@ -402,7 +402,6 @@ namespace NetDemo
       if(actorType == *NetDemoActorRegistry::PLAYER_STATUS_ACTOR_TYPE)
       {
          // Get the actor to which the message refers.
-         dtDAL::ActorProxy* proxy = NULL;
          NetDemo::PlayerStatusActor* playerStats = NULL;
          if(mAppComp->FindActor(actorId, playerStats))
          {
@@ -413,7 +412,7 @@ namespace NetDemo
       else if(actorType == *NetDemoActorRegistry::FORT_ACTOR_TYPE)
       {
          FortActor* fort = NULL;
-         if(mAppComp->FindActor(actorId, fort))
+         if (mAppComp->FindActor(actorId, fort))
          {
             mScreenHUD->SetFortDamageRatio(1.0 - fort->GetCurDamageRatio());
          }

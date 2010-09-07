@@ -305,7 +305,6 @@ namespace StealthQt
       try
       {
          dtDAL::Project& project = dtDAL::Project::GetInstance();
-         const std::string& context = dtDAL::Project::GetInstance().GetContext();
 
          std::string fedex        = properties[4].toStdString();
          std::string map          = properties[1].toStdString();

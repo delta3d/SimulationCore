@@ -189,7 +189,7 @@ namespace DriverDemo
          const SimCore::ToolMessage& toolMsg = static_cast<const SimCore::ToolMessage&>(message);
          SetToolEnabled(
             static_cast<SimCore::MessageType&>(const_cast<dtGame::MessageType&>(toolMsg.GetMessageType())),
-            toolMsg.IsEnabled());
+            toolMsg.GetEnabled());
       }
 
       // A Local Player entered world, so create our motion models
