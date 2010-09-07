@@ -282,25 +282,6 @@ namespace SimCore
                osg::Vec3& inOutHit, osg::Vec3& outNormal );
 
             /**
-             * Calculate an improvised surface point and normal closest to the Z value.
-             * This method is called if GetClosestHit returns FALSE.
-             * NOTE: This override will subsequently call GetWaterSurfaceHit if the object's
-             * domain includes water.
-             * @param proxy Actor proxy that is to be clamped. This parameter may help
-             *              sub-classes of Ground Clamper make better determinations.
-             * @param data Ground Clamping Data associated with the proxy.
-             * @param pointZ Z value to compare against the Isector points.
-             * @param inOutHit Point to capture the values of the point that is the closest match.
-             *                 IN: Point containing the object's current X & Y position.
-             *                 OUT: Final surface hit point.
-             * @param outNormal Normal to capture values of the matched hit point's normal.
-             * @return TRUE if a hit point was calculated, otherwise FALSE if it could not be calculated.
-             */
-            virtual bool GetMissingHit( const dtDAL::TransformableActorProxy& proxy,
-               dtGame::GroundClampingData& data,
-               float pointZ, osg::Vec3& inOutHit, osg::Vec3& outNormal);
-
-            /**
              * Get a hit from the water surface.
              * @param objectHeight Height in meters where the object is currently at.
              * @param inOutHit Point containing the object's current X & Y position
