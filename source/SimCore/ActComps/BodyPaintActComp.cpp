@@ -328,42 +328,42 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<BodyPaintActComp&, BodyPaintActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "Body Paint");
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PaintColor1,
             PROPERTY_PAINT_COLOR_1,
             PROPERTY_PAINT_COLOR_1,
             "Top most color.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PaintColor2,
             PROPERTY_PAINT_COLOR_2,
             PROPERTY_PAINT_COLOR_2,
             "Second top most color.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PaintColor3,
             PROPERTY_PAINT_COLOR_3,
             PROPERTY_PAINT_COLOR_3,
             "Third top most color.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PaintColor4,
             PROPERTY_PAINT_COLOR_4,
             PROPERTY_PAINT_COLOR_4,
             "Base/bottom most color to be used if no other colors have been used.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PatternScale,
             PROPERTY_PATTERN_SCALE,
             PROPERTY_PATTERN_SCALE,
             "Optional 3D vector defining the scale of the pattern effect. This stretches the pattern in X & Y relative to projection space. One tile of the pattern is equal to one unit of world space.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             ProjectionDirection,
             PROPERTY_PROJECTION_DIRECTION,
             PROPERTY_PROJECTION_DIRECTION,
@@ -371,7 +371,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          // FILE PROPERTIES
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
             dtDAL::DataType::TEXTURE,
             ReplacementDiffuseMaskTexture,
             PROPERTY_REPLACEMENT_DIFFUSE_MASK_TEXTURE,
@@ -379,7 +379,7 @@ namespace SimCore
             "Texture used as the replacement diffuse texture, which also has an alpha channel for masking off the entire paint effect from the rest of the model.",
             PropRegType, propRegHelper);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
             dtDAL::DataType::TEXTURE,
             PatternTexture,
             PROPERTY_PATTERN_TEXTURE,

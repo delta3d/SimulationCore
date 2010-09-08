@@ -109,23 +109,23 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<WeaponSwapActComp&, WeaponSwapActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "WeaponSwap");
 
-         REGISTER_PROPERTY(
+         DT_REGISTER_PROPERTY(
             WeaponSwapRootNode,
             "The name of the group node to look for to use as the root of the weapon",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY(
+         DT_REGISTER_PROPERTY(
             WeaponName,
             "The unique name of the weapon or weapon type",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY(
+         DT_REGISTER_PROPERTY(
             WeaponHotSpotDOF,
             "The name of the DOF node to look for to use as the fire position of the weapon",
             PropRegType, propRegHelper);
 
 
-         REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::STATIC_MESH,
+         DT_REGISTER_RESOURCE_PROPERTY(dtDAL::DataType::STATIC_MESH,
             WeaponSwapMesh,
             "Weapon Swap Mesh",
             "The weapon mesh resource to use instead of the one in the model.",

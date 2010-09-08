@@ -149,21 +149,21 @@ namespace SimCore
          PropRegType propRegHelper(*this, this, "Body Paint (States)");
 
          // VEC PROPERTIES
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             PaintState,
             PROPERTY_PAINT_STATE,
             PROPERTY_PAINT_STATE,
             "The whole number frame offset into the diffuse and overlay textures, to shift their UV coordinates to a certain image/frame, as if the texture were a series of images. The frame offset multiplies with each frame scale to determine the appropriate linear offset for UVs.",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             DiffuseFrameScale,
             PROPERTY_DIFFUSE_FRAME_SCALE,
             PROPERTY_DIFFUSE_FRAME_SCALE,
             "The scale factor of imagery in the diffuse texture, as if the texture were a series of images. The scale is relative to the direction images are lain out (horizontal or vertical) and is equal to 1/number of frames",
             PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             OverlayFrameScale,
             PROPERTY_OVERLAY_FRAME_SCALE,
             PROPERTY_OVERLAY_FRAME_SCALE,
@@ -171,7 +171,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          // FILE PROPERTIES
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(
             dtDAL::DataType::TEXTURE,
             OverlayTexture,
             PROPERTY_OVERLAY_TEXTURE,

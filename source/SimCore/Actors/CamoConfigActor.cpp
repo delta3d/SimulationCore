@@ -360,7 +360,7 @@ namespace SimCore
          PropRegType propRegHelper(*this, actor, "Camo Config");
 
          // FILE PROPERTIES (as string since resource types do not allow generic xml files)
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             ConfigFile,
             PROPERTY_CONFIG_FILE,
             PROPERTY_CONFIG_FILE,

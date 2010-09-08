@@ -176,12 +176,12 @@ namespace SimCore
          PropRegType propRegHelper(*this, &e, "Base Entity");
 
 
-         REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
+         DT_REGISTER_PROPERTY_WITH_NAME(Frozen, PROPERTY_FROZEN, "Whether or not the simulation of the entity is frozen.", PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(FlamesPresent, PROPERTY_FLAMES_PRESENT, "Flames Present",
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(FlamesPresent, PROPERTY_FLAMES_PRESENT, "Flames Present",
                   "Should the actor be burning", PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SmokePlumePresent, PROPERTY_SMOKE_PLUME_PRESENT, "Smoke Plume Present",
                   "Enables full entity smoking", PropRegType, propRegHelper);
 
          dtCore::RefPtr<dtDAL::ResourceActorProperty>  rp = new dtDAL::ResourceActorProperty(*this, dtDAL::DataType::PARTICLE_SYSTEM,
@@ -250,7 +250,7 @@ namespace SimCore
             "Sets the service of this entity", BASE_ENTITY_GROUP));
 
 
-         REGISTER_PROPERTY_WITH_NAME(MunitionDamageTableName, "Munition Damage Table",
+         DT_REGISTER_PROPERTY_WITH_NAME(MunitionDamageTableName, "Munition Damage Table",
                   "The name of the munition damage table name found in Configs/MunitionsConfig.xml",
                   PropRegType, propRegHelper);
 

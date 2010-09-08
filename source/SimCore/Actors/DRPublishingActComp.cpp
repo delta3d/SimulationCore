@@ -272,10 +272,10 @@ namespace SimCore
          typedef dtDAL::PropertyRegHelper<DRPublishingActComp&, DRPublishingActComp> PropRegType;
          PropRegType propRegHelper(*this, this, "DR Publishing");
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(VelocityAverageFrameCount, "VelocityAveragingFrameCount", "Velocity Averaging Frame Count",
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(VelocityAverageFrameCount, "VelocityAveragingFrameCount", "Velocity Averaging Frame Count",
             "This actor computes it's current velocity by averaging the change in position over the given number of frames.", PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(MaxUpdateSendRate, "DesiredNumUpdatesPerSec", "Desired Number of Updates Per Second",
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(MaxUpdateSendRate, "DesiredNumUpdatesPerSec", "Desired Number of Updates Per Second",
             "The desired number of updates per second - the actual frequently may be less if vehicle doesn't change much.", PropRegType, propRegHelper);
       }
 
