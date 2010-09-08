@@ -69,78 +69,78 @@ namespace SimCore
       virtual void BuildPropertyMap(std::vector<dtCore::RefPtr<dtDAL::ActorProperty> >& toFillIn);
 
 
-      DECLARE_PROPERTY(bool, IsVehicleFourWheelDrive);
+      DT_DECLARE_ACCESSOR(bool, IsVehicleFourWheelDrive);
 
       /**
        * Track is the distance along the axle of a wheel from the centerline of the vehicle.
        * Setting this to a positive number moves the wheel farther away than defined in the model.
        * Setting it negative moves it closer.
        */
-      DECLARE_PROPERTY(float, FrontTrackAdjustment);
+      DT_DECLARE_ACCESSOR(float, FrontTrackAdjustment);
       /**
        * Track is the distance along the axle of a wheel from the centerline of the vehicle.
        * Setting this to a positive number moves the wheel farther away than defined in the model.
        * Setting it negative moves it closer.
        */
-      DECLARE_PROPERTY(float, RearTrackAdjustment);
+      DT_DECLARE_ACCESSOR(float, RearTrackAdjustment);
 
-      DECLARE_PROPERTY(float, FrontWheelMass);
-      DECLARE_PROPERTY(float, FrontWheelRadius);
-      DECLARE_PROPERTY(float, FrontWheelWidth);
-      DECLARE_PROPERTY(float, FrontSuspensionTravel);
-      DECLARE_PROPERTY(float, FrontSuspensionRestLength);
-      DECLARE_PROPERTY(float, FrontSuspensionSpringFreq);
-      DECLARE_PROPERTY(float, FrontSuspensionDamperFactor);
+      DT_DECLARE_ACCESSOR(float, FrontWheelMass);
+      DT_DECLARE_ACCESSOR(float, FrontWheelRadius);
+      DT_DECLARE_ACCESSOR(float, FrontWheelWidth);
+      DT_DECLARE_ACCESSOR(float, FrontSuspensionTravel);
+      DT_DECLARE_ACCESSOR(float, FrontSuspensionRestLength);
+      DT_DECLARE_ACCESSOR(float, FrontSuspensionSpringFreq);
+      DT_DECLARE_ACCESSOR(float, FrontSuspensionDamperFactor);
 
       /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, FrontTireSlip);
+      DT_DECLARE_ACCESSOR(float, FrontTireSlip);
       // extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, FrontTireValue);
+      DT_DECLARE_ACCESSOR(float, FrontTireValue);
       /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, FrontTireAsymptoteSlip);
+      DT_DECLARE_ACCESSOR(float, FrontTireAsymptoteSlip);
       /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, FrontTireAsymptoteValue);
+      DT_DECLARE_ACCESSOR(float, FrontTireAsymptoteValue);
 
       /**
       *  This is an additional overall positive scaling that gets applied to the tire forces before passing
       *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
       *  need to lower this. A setting of zero will disable all friction in this direction.
       */
-      DECLARE_PROPERTY(float, FrontTireStiffness);
+      DT_DECLARE_ACCESSOR(float, FrontTireStiffness);
       /**
       * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
       * Note that values close to or above 1 may cause stability problems and/or increasing energy.
       */
-      DECLARE_PROPERTY(float, FrontTireRestitution);
+      DT_DECLARE_ACCESSOR(float, FrontTireRestitution);
 
-      DECLARE_PROPERTY(float, RearWheelMass);
-      DECLARE_PROPERTY(float, RearWheelRadius);
-      DECLARE_PROPERTY(float, RearWheelWidth);
-      DECLARE_PROPERTY(float, RearSuspensionTravel);
-      DECLARE_PROPERTY(float, RearSuspensionRestLength);
-      DECLARE_PROPERTY(float, RearSuspensionSpringFreq);
-      DECLARE_PROPERTY(float, RearSuspensionDamperFactor);
+      DT_DECLARE_ACCESSOR(float, RearWheelMass);
+      DT_DECLARE_ACCESSOR(float, RearWheelRadius);
+      DT_DECLARE_ACCESSOR(float, RearWheelWidth);
+      DT_DECLARE_ACCESSOR(float, RearSuspensionTravel);
+      DT_DECLARE_ACCESSOR(float, RearSuspensionRestLength);
+      DT_DECLARE_ACCESSOR(float, RearSuspensionSpringFreq);
+      DT_DECLARE_ACCESSOR(float, RearSuspensionDamperFactor);
 
       /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, RearTireSlip);
+      DT_DECLARE_ACCESSOR(float, RearTireSlip);
       /// extremal point of curve.  Values must be positive.
-      DECLARE_PROPERTY(float, RearTireValue);
+      DT_DECLARE_ACCESSOR(float, RearTireValue);
       /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, RearTireAsymptoteSlip);
+      DT_DECLARE_ACCESSOR(float, RearTireAsymptoteSlip);
       /// point on curve at which for all x > minumumX, function equals minimumY.  Must be positive.
-      DECLARE_PROPERTY(float, RearTireAsymptoteValue);
+      DT_DECLARE_ACCESSOR(float, RearTireAsymptoteValue);
 
       /**
       *  This is an additional overall positive scaling that gets applied to the tire forces before passing
       *  them to the solver.  Higher values make for better grip.  If you raise the *Values above, you may
       *  need to lower this. A setting of zero will disable all friction in this direction.
       */
-      DECLARE_PROPERTY(float, RearTireStiffness);
+      DT_DECLARE_ACCESSOR(float, RearTireStiffness);
       /**
       * coefficient of restitution --  0 makes the tire bounce as little as possible, higher values up to 1.0 result in more bounce.
       * Note that values close to or above 1 may cause stability problems and/or increasing energy.
       */
-      DECLARE_PROPERTY(float, RearTireRestitution);
+      DT_DECLARE_ACCESSOR(float, RearTireRestitution);
 
 
       virtual void CleanUp();

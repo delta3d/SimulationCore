@@ -105,14 +105,14 @@ namespace SimCore
       // PROPERTY MACROS
       // These macros define the Getter and Setter method body for each property
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor1);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor2);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor3);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PaintColor4);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, PatternScale);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, osg::Vec4, ProjectionDirection);
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, PatternTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PaintColor1);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PaintColor2);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PaintColor3);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PaintColor4);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, PatternScale);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, osg::Vec4, ProjectionDirection);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintActComp, dtDAL::ResourceDescriptor, PatternTexture); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintActComp::SetPaintColor1(const osg::Vec4& color)

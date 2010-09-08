@@ -204,64 +204,64 @@ namespace SimCore
              * this entity. Only applies to local entities, and only before the munitions component
              * is registered. See MunitionsComponent and DamageHelper for how this is used.
              */
-            DECLARE_PROPERTY(float, MaxDamageAmount);
+            DT_DECLARE_ACCESSOR(float, MaxDamageAmount);
 
             /**
              * The current amount of damage this entity has sustained - between 0.0 (none) and 1.0 (dead).
              * This value is controlled by the munitions component - NEVER set this manually.
              */
-            DECLARE_PROPERTY(float, CurDamageRatio);
+            DT_DECLARE_ACCESSOR(float, CurDamageRatio);
 
-            DECLARE_PROPERTY(std::string, MappingName);
-            DECLARE_PROPERTY(std::string, EntityTypeId);
+            DT_DECLARE_ACCESSOR(std::string, MappingName);
+            DT_DECLARE_ACCESSOR(std::string, EntityTypeId);
 
             /// Set the environment the entity is specialized in navigating.
-            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
+            DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
 
             #undef  PROPERTY_MODIFIERS_SETTER
             #define PROPERTY_MODIFIERS_SETTER virtual
             /// Sets the force for which this entity is fighting.
-            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
+            DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
             #undef  PROPERTY_MODIFIERS_SETTER
             #define PROPERTY_MODIFIERS_SETTER
 
             /// Sets the service of this entity
-            DECLARE_PROPERTY(dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
+            DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
 
             /// Toggles smoke plumes on and off
-            DECLARE_PROPERTY(bool, SmokePlumePresent);
+            DT_DECLARE_ACCESSOR(bool, SmokePlumePresent);
             /// Toggles fire on and off
-            DECLARE_PROPERTY(bool, FlamesPresent);
+            DT_DECLARE_ACCESSOR(bool, FlamesPresent);
             bool IsFlamesPresent() const { return GetFlamesPresent(); }
 
             /// Set this to make the model for this entity show or not.
-            DECLARE_PROPERTY(bool, DrawingModel);
+            DT_DECLARE_ACCESSOR(bool, DrawingModel);
             bool IsDrawingModel() const { return GetDrawingModel(); }
 
             /// Set this to when a player attaches to this entity
-            DECLARE_PROPERTY(bool, PlayerAttached);
+            DT_DECLARE_ACCESSOR(bool, PlayerAttached);
             bool IsPlayerAttached() const { return GetPlayerAttached(); }
 
             /// Set the mobility state of this entity. This is intended for use by the entity's damage helper.
-            DECLARE_PROPERTY(bool, MobilityDisabled);
+            DT_DECLARE_ACCESSOR(bool, MobilityDisabled);
             bool IsMobilityDisabled() const { return GetMobilityDisabled(); }
 
             /// Set the mobility state of this entity. This is intended for use by the entity's damage helper.
-            DECLARE_PROPERTY(bool, FirepowerDisabled);
+            DT_DECLARE_ACCESSOR(bool, FirepowerDisabled);
             bool IsFirepowerDisabled() const { return GetFirepowerDisabled(); }
 
-            DECLARE_PROPERTY(bool, Frozen);
+            DT_DECLARE_ACCESSOR(bool, Frozen);
 
-            DECLARE_PROPERTY(bool, AutoRegisterWithMunitionsComponent);
+            DT_DECLARE_ACCESSOR(bool, AutoRegisterWithMunitionsComponent);
             /// Not an actual property. Defaults to true. Set to false if for some bizarre reason you don't want the DR Component
-            DECLARE_PROPERTY(bool, AutoRegisterWithDeadReckoningComponent);
+            DT_DECLARE_ACCESSOR(bool, AutoRegisterWithDeadReckoningComponent);
 
 
             /**
              * Set the name of the munition damage table found in the Configs/MunitionsConfig.xml
              * @param tableName The name of the table, usually the same name as the entity class
              */
-            DECLARE_PROPERTY(std::string, MunitionDamageTableName);
+            DT_DECLARE_ACCESSOR(std::string, MunitionDamageTableName);
 
 
             /**

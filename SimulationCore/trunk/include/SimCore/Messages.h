@@ -37,7 +37,7 @@ namespace SimCore
    /**
     * Abstract base class for weapon events, weapon fire or detonation
     */
-   DECLARE_MESSAGE_BEGIN(BaseWeaponEventMessage, dtGame::Message, SIMCORE_EXPORT)
+   DT_DECLARE_MESSAGE_BEGIN(BaseWeaponEventMessage, dtGame::Message, SIMCORE_EXPORT)
       DECLARE_PARAMETER_INLINE(unsigned short, EventIdentifier)
       /// the new munition Type name - mapped to an enum in DetonationActor.
       DECLARE_PARAMETER_INLINE(std::string, MunitionType)
@@ -49,9 +49,9 @@ namespace SimCore
       DECLARE_PARAMETER_INLINE(unsigned short, FuseType)
       /// Set the raw warhead type code
       DECLARE_PARAMETER_INLINE(unsigned short, WarheadType)
-   DECLARE_MESSAGE_END()
+   DT_DECLARE_MESSAGE_END()
 
-   DECLARE_MESSAGE_BEGIN(DetonationMessage,BaseWeaponEventMessage, SIMCORE_EXPORT)
+   DT_DECLARE_MESSAGE_BEGIN(DetonationMessage,BaseWeaponEventMessage, SIMCORE_EXPORT)
       ///Sets the detonation location of the message parameter
       DECLARE_PARAMETER_INLINE(osg::Vec3, DetonationLocation)
       /// Sets the detonation result code message parameter
@@ -61,24 +61,24 @@ namespace SimCore
       /** Sets the location of the detonation relative to the target, in world units.
        The vector is from the target to the point of detonation. */
       DECLARE_PARAMETER_INLINE(osg::Vec3, RelativeDetonationLocation)
-   DECLARE_MESSAGE_END()
+   DT_DECLARE_MESSAGE_END()
 
    /**
     * @class ShotFiredMessage
     * Sent when a weapon is fired.
     */
-   DECLARE_MESSAGE_BEGIN(ShotFiredMessage, BaseWeaponEventMessage, SIMCORE_EXPORT)
+   DT_DECLARE_MESSAGE_BEGIN(ShotFiredMessage, BaseWeaponEventMessage, SIMCORE_EXPORT)
       ///the location of the where a shot is fired
       DECLARE_PARAMETER_INLINE(osg::Vec3, FiringLocation)
       /// Sets the velocity of the shot at the point it left the weapon.
       DECLARE_PARAMETER_INLINE(osg::Vec3, InitialVelocityVector)
-   DECLARE_MESSAGE_END()
+   DT_DECLARE_MESSAGE_END()
 
 
-   DECLARE_MESSAGE_BEGIN(ToolMessage, dtGame::Message, SIMCORE_EXPORT)
+   DT_DECLARE_MESSAGE_BEGIN(ToolMessage, dtGame::Message, SIMCORE_EXPORT)
       /// Enables the tool
       DECLARE_PARAMETER_INLINE(bool, Enabled)
-   DECLARE_MESSAGE_END()
+   DT_DECLARE_MESSAGE_END()
 
    /**
     * @class AttachToActorMessage

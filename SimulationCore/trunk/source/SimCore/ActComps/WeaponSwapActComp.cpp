@@ -61,10 +61,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(WeaponSwapActComp, std::string, WeaponName);
-      IMPLEMENT_PROPERTY_GETTER(WeaponSwapActComp, std::string, WeaponSwapRootNode);
-      IMPLEMENT_PROPERTY_GETTER(WeaponSwapActComp, std::string, WeaponHotSpotDOF);
-      IMPLEMENT_PROPERTY_GETTER(WeaponSwapActComp, dtDAL::ResourceDescriptor, WeaponSwapMesh);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponName);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponSwapRootNode);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, std::string, WeaponHotSpotDOF);
+      DT_IMPLEMENT_ACCESSOR_GETTER(WeaponSwapActComp, dtDAL::ResourceDescriptor, WeaponSwapMesh);
 
       //////////////////////////////////////////////////////////////////////////
       void WeaponSwapActComp::SetWeaponName(const std::string& name)

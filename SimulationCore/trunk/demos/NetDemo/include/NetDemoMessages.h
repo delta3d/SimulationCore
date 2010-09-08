@@ -50,7 +50,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    struct EntityActionMessageParams;
 
-   DECLARE_MESSAGE_BEGIN(EntityActionMessage, dtGame::Message, NETDEMO_EXPORT)
+   DT_DECLARE_MESSAGE_BEGIN(EntityActionMessage, dtGame::Message, NETDEMO_EXPORT)
 
       void SetAction(const EntityAction& action);
       const EntityAction& GetAction() const;
@@ -62,7 +62,7 @@ namespace NetDemo
       DECLARE_PARAMETER_INLINE(int, ResourcePoints)
       void Set(const EntityActionMessageParams& paramStruct);
 
-   DECLARE_MESSAGE_END()
+   DT_DECLARE_MESSAGE_END()
 
    /////////////////////////////////////////////////////////////////////////////
    // Simple parameter struct for simplifying message sending, when used

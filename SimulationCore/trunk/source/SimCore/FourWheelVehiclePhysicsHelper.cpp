@@ -108,41 +108,41 @@ namespace SimCore
       return 0.0;
    }
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, bool, IsVehicleFourWheelDrive);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTrackAdjustment);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTrackAdjustment);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelMass);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelRadius);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontWheelWidth);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionTravel);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionRestLength);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionSpringFreq);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontSuspensionDamperFactor);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelMass);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelRadius);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontWheelWidth);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionTravel);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionRestLength);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionSpringFreq);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontSuspensionDamperFactor);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireSlip);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireValue);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteSlip);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireAsymptoteValue);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireStiffness);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, FrontTireRestitution);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireStiffness);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, FrontTireRestitution);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelMass);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelRadius);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearWheelWidth);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionTravel);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionRestLength);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionSpringFreq);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearSuspensionDamperFactor);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelMass);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelRadius);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearWheelWidth);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionTravel);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionRestLength);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionSpringFreq);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearSuspensionDamperFactor);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireSlip);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireValue);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteSlip);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireValue);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteSlip);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireAsymptoteValue);
 
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireStiffness);
-   IMPLEMENT_PROPERTY(FourWheelVehiclePhysicsHelper, float, RearTireRestitution);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireStiffness);
+   DT_IMPLEMENT_ACCESSOR(FourWheelVehiclePhysicsHelper, float, RearTireRestitution);
 
    // ///////////////////////////////////////////////////////////////////////////////////
    //                                  Vehicle Methods                                 //

@@ -30,7 +30,7 @@
 
 namespace SimCore
 {
-   IMPLEMENT_MESSAGE_TYPE_CLASS(MessageType);
+   DT_IMPLEMENT_MESSAGE_TYPE_CLASS(MessageType);
 
    const MessageType MessageType::ATTACH_TO_ACTOR("Attach To Actor", "StealthViewer", "Attach Camera To Actor", USER_DEFINED_MESSAGE_TYPE + 1, DT_MSG_CLASS(AttachToActorMessage));
    const MessageType MessageType::DETONATION("Detonation", "StealthViewer", "Munition Detonation", USER_DEFINED_MESSAGE_TYPE + 2, DT_MSG_CLASS(DetonationMessage));

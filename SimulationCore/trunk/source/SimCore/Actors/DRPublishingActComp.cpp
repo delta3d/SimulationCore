@@ -78,13 +78,13 @@ namespace SimCore
       // These macros define the Getter and Setter method body for each property
       ////////////////////////////////////////////////////////////////////////////////
 
-      IMPLEMENT_PROPERTY(DRPublishingActComp, int, VelocityAverageFrameCount);
+      DT_IMPLEMENT_ACCESSOR(DRPublishingActComp, int, VelocityAverageFrameCount);
 
-      IMPLEMENT_PROPERTY_GETTER(DRPublishingActComp, float, MaxUpdateSendRate); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(DRPublishingActComp, float, MaxUpdateSendRate); // Setter is implemented below
 
-      IMPLEMENT_PROPERTY(DRPublishingActComp, bool, PublishLinearVelocity);
+      DT_IMPLEMENT_ACCESSOR(DRPublishingActComp, bool, PublishLinearVelocity);
 
-      IMPLEMENT_PROPERTY_GETTER(DRPublishingActComp, bool, PublishAngularVelocity);
+      DT_IMPLEMENT_ACCESSOR_GETTER(DRPublishingActComp, bool, PublishAngularVelocity);
 
       ////////////////////////////////////////////////////////////////////////////////
       void DRPublishingActComp::SetPublishAngularVelocity(bool publishAngularVelocity)

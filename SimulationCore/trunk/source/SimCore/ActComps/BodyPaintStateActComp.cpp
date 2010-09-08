@@ -90,10 +90,10 @@ namespace SimCore
       // PROPERTY MACROS
       // These macros define the Getter method body for each property
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, PaintState); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, DiffuseFrameScale); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, float, OverlayFrameScale); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(BodyPaintStateActComp, dtDAL::ResourceDescriptor, OverlayTexture); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, PaintState); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, DiffuseFrameScale); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, float, OverlayFrameScale); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(BodyPaintStateActComp, dtDAL::ResourceDescriptor, OverlayTexture); // Setter is implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void BodyPaintStateActComp::SetPaintState(float state)

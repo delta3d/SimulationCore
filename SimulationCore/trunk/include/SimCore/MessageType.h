@@ -39,7 +39,7 @@ namespace SimCore
     * @class MessageType
     * @brief The messages types specific to the image generator and stealth viewer.
     */
-   DECLARE_MESSAGE_TYPE_CLASS_BEGIN(MessageType, SIMCORE_EXPORT)
+   DT_DECLARE_MESSAGE_TYPE_CLASS_BEGIN(MessageType, SIMCORE_EXPORT)
       static bool IsValidToolType(const dtGame::MessageType &type);
 
       static const MessageType ATTACH_TO_ACTOR;
@@ -81,6 +81,6 @@ namespace SimCore
       // Game state-related messages
       static const MessageType GAME_STATE_CHANGED;
 
-   DECLARE_MESSAGE_TYPE_CLASS_END()
+   DT_DECLARE_MESSAGE_TYPE_CLASS_END()
 }
 #endif

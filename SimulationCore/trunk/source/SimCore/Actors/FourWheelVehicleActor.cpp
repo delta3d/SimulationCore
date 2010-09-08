@@ -134,19 +134,19 @@ namespace SimCore
          return static_cast<SimCore::FourWheelVehiclePhysicsHelper*> (GetPhysicsHelper());
       }
 
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, int,   NumUpdatesUntilFullSteeringAngle);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, float, CurrentSteeringAngleNormalized);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, int,   NumUpdatesUntilFullSteeringAngle);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, CurrentSteeringAngleNormalized);
 
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, float, SoundBrakeSquealSpeed);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, float, GearChangeLow);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, float, GearChangeMedium);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, float, GearChangeHigh);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIgnition);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectBrake);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectAcceleration);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
-      IMPLEMENT_PROPERTY(FourWheelVehicleActor, dtDAL::ResourceDescriptor, VehicleInteriorModel);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, SoundBrakeSquealSpeed);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeLow);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeMedium);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, float, GearChangeHigh);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIgnition);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectBrake);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectAcceleration);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
+      DT_IMPLEMENT_ACCESSOR(FourWheelVehicleActor, dtDAL::ResourceDescriptor, VehicleInteriorModel);
 
       ///////////////////////////////////////////////////////////////////////////////////
       bool FourWheelVehicleActor::LoadSound(const dtDAL::ResourceDescriptor& rd, dtCore::RefPtr<dtAudio::Sound>& sound)

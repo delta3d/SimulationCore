@@ -33,43 +33,43 @@
 
 namespace SimCore
 {
-   IMPLEMENT_MESSAGE_BEGIN(BaseWeaponEventMessage)
-      ADD_PARAMETER(unsigned short, EventIdentifier)
-      ADD_PARAMETER(std::string, MunitionType)
-      ADD_PARAMETER(unsigned short, QuantityFired)
-      ADD_PARAMETER(unsigned short, RateOfFire)
-      ADD_PARAMETER(unsigned short, FuseType)
-      ADD_PARAMETER(unsigned short, WarheadType)
-   IMPLEMENT_MESSAGE_END()
+   DT_IMPLEMENT_MESSAGE_BEGIN(BaseWeaponEventMessage)
+      DT_ADD_PARAMETER(unsigned short, EventIdentifier)
+      DT_ADD_PARAMETER(std::string, MunitionType)
+      DT_ADD_PARAMETER(unsigned short, QuantityFired)
+      DT_ADD_PARAMETER(unsigned short, RateOfFire)
+      DT_ADD_PARAMETER(unsigned short, FuseType)
+      DT_ADD_PARAMETER(unsigned short, WarheadType)
+   DT_IMPLEMENT_MESSAGE_END()
 
-   IMPLEMENT_MESSAGE_BEGIN(DetonationMessage)
+   DT_IMPLEMENT_MESSAGE_BEGIN(DetonationMessage)
       ///Sets the detonation location of the message parameter
-      ADD_PARAMETER(osg::Vec3, DetonationLocation)
+      DT_ADD_PARAMETER(osg::Vec3, DetonationLocation)
       /// Sets the detonation result code message parameter
-      ADD_PARAMETER(unsigned char, DetonationResultCode)
+      DT_ADD_PARAMETER(unsigned char, DetonationResultCode)
       /// Sets the final velocity vector
-      ADD_PARAMETER(osg::Vec3, FinalVelocityVector)
+      DT_ADD_PARAMETER(osg::Vec3, FinalVelocityVector)
       /** Sets the location of the detonation relative to the target, in world units.
        The vector is from the target to the point of detonation. */
-      ADD_PARAMETER(osg::Vec3, RelativeDetonationLocation)
-   IMPLEMENT_MESSAGE_END()
+      DT_ADD_PARAMETER(osg::Vec3, RelativeDetonationLocation)
+   DT_IMPLEMENT_MESSAGE_END()
 
    /**
     * @class ShotFiredMessage
     * Sent when a weapon is fired.
     */
-   IMPLEMENT_MESSAGE_BEGIN(ShotFiredMessage)
+   DT_IMPLEMENT_MESSAGE_BEGIN(ShotFiredMessage)
       ///the location of the where a shot is fired
-      ADD_PARAMETER(osg::Vec3, FiringLocation)
+      DT_ADD_PARAMETER(osg::Vec3, FiringLocation)
       /// Sets the velocity of the shot at the point it left the weapon.
-      ADD_PARAMETER(osg::Vec3, InitialVelocityVector)
-   IMPLEMENT_MESSAGE_END()
+      DT_ADD_PARAMETER(osg::Vec3, InitialVelocityVector)
+   DT_IMPLEMENT_MESSAGE_END()
 
 
-   IMPLEMENT_MESSAGE_BEGIN(ToolMessage)
+   DT_IMPLEMENT_MESSAGE_BEGIN(ToolMessage)
       /// Enables the tool
-      ADD_PARAMETER(osg::Vec3, Enabled)
-   IMPLEMENT_MESSAGE_END()
+      DT_ADD_PARAMETER(osg::Vec3, Enabled)
+   DT_IMPLEMENT_MESSAGE_END()
 
    /////////////////////////////////////////////////////////////////////////////////////////////
    /////////////////////////////////////////////////////////////////////////////////////////////

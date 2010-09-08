@@ -87,11 +87,11 @@ namespace SimCore
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
-            DECLARE_PROPERTY(int, CamoId);
-            DECLARE_PROPERTY(bool, ConcealedState);
-            DECLARE_PROPERTY(osg::Vec4, ConcealMeshDims);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ConcealMesh);
-            DECLARE_PROPERTY(std::string, ConcealShaderGroup);
+            DT_DECLARE_ACCESSOR(int, CamoId);
+            DT_DECLARE_ACCESSOR(bool, ConcealedState);
+            DT_DECLARE_ACCESSOR(osg::Vec4, ConcealMeshDims);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ConcealMesh);
+            DT_DECLARE_ACCESSOR(std::string, ConcealShaderGroup);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent

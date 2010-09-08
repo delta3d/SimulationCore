@@ -166,14 +166,14 @@ namespace SimCore
              * for which the associated munition is not found in the munition table.
              * @param munitionName Name of the munition to use for the default detonation effect.
              */
-            DECLARE_PROPERTY(std::string, DefaultMunitionName);
+            DT_DECLARE_ACCESSOR(std::string, DefaultMunitionName);
 
             /**
              * Set the default munition that will be used in place of any detonations
              * for which the associated munition is not found in the munition table.
              * @param munitionName Name of the munition to use for the default detonation effect.
              */
-            DECLARE_PROPERTY(std::string, DefaultKineticRoundMunitionName);
+            DT_DECLARE_ACCESSOR(std::string, DefaultKineticRoundMunitionName);
 
             /**
              * Set the munition config file that will be loaded whenever the system is restarted.
@@ -181,7 +181,7 @@ namespace SimCore
              * call this method BEFORE the RESTART message is sent.
              * @param munitionConfigFileName The config file name that is loaded/reloaded on a restart.
              */
-            DECLARE_PROPERTY(std::string, MunitionConfigFileName);
+            DT_DECLARE_ACCESSOR(std::string, MunitionConfigFileName);
 
             /**
              * Encapsulates the complexity of picking a munition based on the message sent in.
@@ -236,7 +236,7 @@ namespace SimCore
              * munition, it will first check that it is not over this count. If there are too many, then it
              * will remove the oldest munitions.
              */
-            DECLARE_PROPERTY(unsigned, MaximumActiveMunitions);
+            DT_DECLARE_ACCESSOR(unsigned, MaximumActiveMunitions);
 
          protected:
 

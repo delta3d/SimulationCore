@@ -137,17 +137,17 @@ namespace SimCore
           * to decide about how many frames the velocity will be average across.
           * This may help 'smooth' out some vehicles. The default is 1, so no effect
           */
-         DECLARE_PROPERTY(int, VelocityAverageFrameCount);
+         DT_DECLARE_ACCESSOR(int, VelocityAverageFrameCount);
 
          /// The max number of times per second an update may be sent if it exceeds the dead reckoning tolerances
-         DECLARE_PROPERTY(float, MaxUpdateSendRate);
+         DT_DECLARE_ACCESSOR(float, MaxUpdateSendRate);
 
          /**
           * When publishing updates with dead reckoning - do we send velocity & accel? Allows tight
           * control for actors (ex for motion model stuff). If false, linear velocity & accel will be zero.
           * NOTE - This is not an actor property
           */
-         DECLARE_PROPERTY(bool, PublishLinearVelocity);
+         DT_DECLARE_ACCESSOR(bool, PublishLinearVelocity);
          bool IsPublishLinearVelocity() const { return GetPublishLinearVelocity(); }
 
          /**
@@ -155,7 +155,7 @@ namespace SimCore
           * control for actors (Ex for motion model stuff). If false, angular velocity will be zero. 
           * NOTE - This is not an actor property
           */
-         DECLARE_PROPERTY(bool, PublishAngularVelocity);
+         DT_DECLARE_ACCESSOR(bool, PublishAngularVelocity);
          bool IsPublishAngularVelocity() const { return GetPublishAngularVelocity(); }
 
 

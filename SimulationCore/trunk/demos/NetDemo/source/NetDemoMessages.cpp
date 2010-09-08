@@ -36,13 +36,13 @@ namespace NetDemo
    }
 
 
-   IMPLEMENT_MESSAGE_BEGIN(EntityActionMessage)
-      ADD_PARAMETER(std::string, ActionEnum)
-      ADD_PARAMETER(osg::Vec3, Location)
-      ADD_PARAMETER(std::string, OwnerID)
-      ADD_PARAMETER(int, Points)
-      ADD_PARAMETER(int, ResourcePoints)
-   IMPLEMENT_MESSAGE_END()
+   DT_IMPLEMENT_MESSAGE_BEGIN(EntityActionMessage)
+      DT_ADD_PARAMETER(std::string, ActionEnum)
+      DT_ADD_PARAMETER(osg::Vec3, Location)
+      DT_ADD_PARAMETER(std::string, OwnerID)
+      DT_ADD_PARAMETER(int, Points)
+      DT_ADD_PARAMETER(int, ResourcePoints)
+   DT_IMPLEMENT_MESSAGE_END()
 
    ////////////////////////////////////////////////////////////////////////////////
    void EntityActionMessage::SetAction(const EntityAction& action)

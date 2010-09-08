@@ -34,7 +34,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    // CODE
    /////////////////////////////////////////////////////////////////////////////
-   IMPLEMENT_MESSAGE_TYPE_CLASS(MessageType);
+   DT_IMPLEMENT_MESSAGE_TYPE_CLASS(MessageType);
 
    const MessageType MessageType::UI_OPTION_NEXT("UI Option Next", "NetDemo",
       "Generic way to select a next option whether it be in the context of UI or in-game weapon switching or etc.",

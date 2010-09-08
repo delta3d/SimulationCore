@@ -63,10 +63,10 @@ namespace SimCore
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
-            DECLARE_PROPERTY(float, PaintState);
-            DECLARE_PROPERTY(float, DiffuseFrameScale);
-            DECLARE_PROPERTY(float, OverlayFrameScale);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, OverlayTexture);
+            DT_DECLARE_ACCESSOR(float, PaintState);
+            DT_DECLARE_ACCESSOR(float, DiffuseFrameScale);
+            DT_DECLARE_ACCESSOR(float, OverlayFrameScale);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, OverlayTexture);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent

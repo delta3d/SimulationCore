@@ -47,7 +47,7 @@ namespace NetDemo
    /////////////////////////////////////////////////////////////////////////////
    // CODE
    /////////////////////////////////////////////////////////////////////////////
-   DECLARE_MESSAGE_TYPE_CLASS_BEGIN(MessageType, NETDEMO_EXPORT)
+   DT_DECLARE_MESSAGE_TYPE_CLASS_BEGIN(MessageType, NETDEMO_EXPORT)
       static const int NETDEMO_MESSAGE_TYPE_ID = 2048;
 
       static const MessageType UI_OPTION_NEXT;
@@ -55,7 +55,7 @@ namespace NetDemo
       static const MessageType UI_OPTION_SELECT;
       static const MessageType UI_HELP;
       static const MessageType ENTITY_ACTION;
-   DECLARE_MESSAGE_TYPE_CLASS_END()
+   DT_DECLARE_MESSAGE_TYPE_CLASS_END()
 
 }
 

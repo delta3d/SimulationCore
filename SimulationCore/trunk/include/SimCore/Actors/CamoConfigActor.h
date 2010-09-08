@@ -50,15 +50,15 @@ namespace SimCore
 
             CamoParams();
 
-            DECLARE_PROPERTY(std::string, Name);
-            DECLARE_PROPERTY(CamoId, Id);
-            DECLARE_PROPERTY(float, PatternScale);
-            DECLARE_PROPERTY(osg::Vec4, Color1);
-            DECLARE_PROPERTY(osg::Vec4, Color2);
-            DECLARE_PROPERTY(osg::Vec4, Color3);
-            DECLARE_PROPERTY(osg::Vec4, Color4);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, PatternTexture);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ConcealMesh);
+            DT_DECLARE_ACCESSOR(std::string, Name);
+            DT_DECLARE_ACCESSOR(CamoId, Id);
+            DT_DECLARE_ACCESSOR(float, PatternScale);
+            DT_DECLARE_ACCESSOR(osg::Vec4, Color1);
+            DT_DECLARE_ACCESSOR(osg::Vec4, Color2);
+            DT_DECLARE_ACCESSOR(osg::Vec4, Color3);
+            DT_DECLARE_ACCESSOR(osg::Vec4, Color4);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, PatternTexture);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ConcealMesh);
 
          protected:
             virtual ~CamoParams();
@@ -78,7 +78,7 @@ namespace SimCore
 
             CamoConfigActor();
 
-            DECLARE_PROPERTY(std::string, ConfigFile);
+            DT_DECLARE_ACCESSOR(std::string, ConfigFile);
 
             unsigned GetCamoParamsList(CamoParamsList& outList);
 

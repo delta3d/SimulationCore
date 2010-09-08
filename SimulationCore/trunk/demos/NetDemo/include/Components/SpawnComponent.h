@@ -56,11 +56,11 @@ namespace NetDemo
 
       virtual void OnRemovedFromGM();
 
-      DECLARE_PROPERTY(int, Difficulty);
-      DECLARE_PROPERTY(int, WaveNumber);
-      DECLARE_PROPERTY(int, NumPlayers);
-      DECLARE_PROPERTY(float, TimeLeftInWave);
-      DECLARE_PROPERTY(dtUtil::EnumerationPointer<ServerGameStatusActor::ServerGameStatusEnum>, GameStatus);
+      DT_DECLARE_ACCESSOR(int, Difficulty);
+      DT_DECLARE_ACCESSOR(int, WaveNumber);
+      DT_DECLARE_ACCESSOR(int, NumPlayers);
+      DT_DECLARE_ACCESSOR(float, TimeLeftInWave);
+      DT_DECLARE_ACCESSOR(dtUtil::EnumerationPointer<ServerGameStatusActor::ServerGameStatusEnum>, GameStatus);
 
    protected:
 

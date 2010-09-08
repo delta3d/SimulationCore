@@ -67,10 +67,10 @@ namespace SimCore
          WeaponSwapActComp();
          virtual ~WeaponSwapActComp();
 
-         DECLARE_PROPERTY(std::string, WeaponName);
-         DECLARE_PROPERTY(std::string, WeaponSwapRootNode);
-         DECLARE_PROPERTY(std::string, WeaponHotSpotDOF);
-         DECLARE_PROPERTY(dtDAL::ResourceDescriptor, WeaponSwapMesh);
+         DT_DECLARE_ACCESSOR(std::string, WeaponName);
+         DT_DECLARE_ACCESSOR(std::string, WeaponSwapRootNode);
+         DT_DECLARE_ACCESSOR(std::string, WeaponHotSpotDOF);
+         DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, WeaponSwapMesh);
 
          dtUtil::NodeCollector* GetNodeCollector();
          void SetNodeCollector(dtUtil::NodeCollector* nodeCollector);
