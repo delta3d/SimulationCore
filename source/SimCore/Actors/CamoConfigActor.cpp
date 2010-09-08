@@ -124,15 +124,15 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY(CamoParams, std::string, Name);
-      IMPLEMENT_PROPERTY(CamoParams, CamoParams::CamoId, Id);
-      IMPLEMENT_PROPERTY(CamoParams, float, PatternScale);
-      IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color1);
-      IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color2);
-      IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color3);
-      IMPLEMENT_PROPERTY(CamoParams, osg::Vec4, Color4);
-      IMPLEMENT_PROPERTY_GETTER(CamoParams, dtDAL::ResourceDescriptor, PatternTexture); // setter implemented below
-      IMPLEMENT_PROPERTY_GETTER(CamoParams, dtDAL::ResourceDescriptor, ConcealMesh); // setter implemented below
+      DT_IMPLEMENT_ACCESSOR(CamoParams, std::string, Name);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, CamoParams::CamoId, Id);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, float, PatternScale);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color1);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color2);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color3);
+      DT_IMPLEMENT_ACCESSOR(CamoParams, osg::Vec4, Color4);
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtDAL::ResourceDescriptor, PatternTexture); // setter implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoParams, dtDAL::ResourceDescriptor, ConcealMesh); // setter implemented below
 
       //////////////////////////////////////////////////////////////////////////
       void CamoParams::SetPatternTexture(const dtDAL::ResourceDescriptor& file)
@@ -162,7 +162,7 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(CamoConfigActor, std::string, ConfigFile); // setter implemented below.
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoConfigActor, std::string, ConfigFile); // setter implemented below.
 
       //////////////////////////////////////////////////////////////////////////
       void CamoConfigActor::SetConfigFile(const std::string& file)

@@ -74,20 +74,20 @@ namespace SimCore
             SimCore::FourWheelVehiclePhysicsHelper* GetFourWheelPhysicsHelper() const;
 
             /// The number of updates to go from straight to full turn angle
-            DECLARE_PROPERTY(int, NumUpdatesUntilFullSteeringAngle);
+            DT_DECLARE_ACCESSOR(int, NumUpdatesUntilFullSteeringAngle);
             /// Steering angle normalized from -1 to 1
-            DECLARE_PROPERTY(float, CurrentSteeringAngleNormalized);
+            DT_DECLARE_ACCESSOR(float, CurrentSteeringAngleNormalized);
 
-            DECLARE_PROPERTY(float, SoundBrakeSquealSpeed);
-            DECLARE_PROPERTY(float, GearChangeLow);
-            DECLARE_PROPERTY(float, GearChangeMedium);
-            DECLARE_PROPERTY(float, GearChangeHigh);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, SoundEffectIgnition);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, SoundEffectBrake);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, SoundEffectAcceleration);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, VehicleInteriorModel);
+            DT_DECLARE_ACCESSOR(float, SoundBrakeSquealSpeed);
+            DT_DECLARE_ACCESSOR(float, GearChangeLow);
+            DT_DECLARE_ACCESSOR(float, GearChangeMedium);
+            DT_DECLARE_ACCESSOR(float, GearChangeHigh);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectIgnition);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectIdleLoop);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectBrake);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectAcceleration);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, SoundEffectCollisionHit);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, VehicleInteriorModel);
 
             /// Turns it up and moves up
             virtual void RepositionVehicle(float deltaTime);

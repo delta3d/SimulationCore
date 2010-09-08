@@ -67,7 +67,7 @@ namespace NetDemo
      ~AISteeringModel();
 
 
-     DECLARE_PROPERTY_INLINE(float, TimeStep)
+     DT_DECLARE_ACCESSOR_INLINE(float, TimeStep)
 
      unsigned mCurrentBehavior;
      SteeringBehaviorArray mSteeringBehaviors;

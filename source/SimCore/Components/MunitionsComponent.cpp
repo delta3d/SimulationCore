@@ -96,10 +96,10 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, DefaultMunitionName);
-      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, DefaultKineticRoundMunitionName);
-      IMPLEMENT_PROPERTY(MunitionsComponent, std::string, MunitionConfigFileName);
-      IMPLEMENT_PROPERTY_GETTER(MunitionsComponent, unsigned, MaximumActiveMunitions);
+      DT_IMPLEMENT_ACCESSOR(MunitionsComponent, std::string, DefaultMunitionName);
+      DT_IMPLEMENT_ACCESSOR(MunitionsComponent, std::string, DefaultKineticRoundMunitionName);
+      DT_IMPLEMENT_ACCESSOR(MunitionsComponent, std::string, MunitionConfigFileName);
+      DT_IMPLEMENT_ACCESSOR_GETTER(MunitionsComponent, unsigned, MaximumActiveMunitions);
 
       //////////////////////////////////////////////////////////////////////////
       DamageHelper* MunitionsComponent::CreateDamageHelper( SimCore::Actors::BaseEntity& entity,

@@ -41,14 +41,14 @@ namespace NetDemo
       TurretWeaponState();
       ~TurretWeaponState();
 
-      DECLARE_PROPERTY_INLINE(bool, Trigger);
-      DECLARE_PROPERTY_INLINE(float, TimeStep);
+      DT_DECLARE_ACCESSOR_INLINE(bool, Trigger);
+      DT_DECLARE_ACCESSOR_INLINE(float, TimeStep);
 
       //using polar coordinates
-      DECLARE_PROPERTY_INLINE(osg::Vec2, CurrentAngle);
-      DECLARE_PROPERTY_INLINE(osg::Vec2, CurrentVel);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, CurrentAngle);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, CurrentVel);
       
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Origin);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Origin);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group)
       {}
@@ -64,12 +64,12 @@ namespace NetDemo
       ~TurretGoalState();
 
       //using polar coordinates
-      DECLARE_PROPERTY_INLINE(osg::Vec2, MinAngle);
-      DECLARE_PROPERTY_INLINE(osg::Vec2, MaxAngle);
-      DECLARE_PROPERTY_INLINE(osg::Vec2, MaxVel);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, MinAngle);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, MaxAngle);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, MaxVel);
 
-      DECLARE_PROPERTY_INLINE(osg::Vec2, AngleToTarget);
-      DECLARE_PROPERTY_INLINE(osg::Vec3, TargetPos);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec2, AngleToTarget);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, TargetPos);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group){}
 

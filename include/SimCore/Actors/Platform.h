@@ -314,9 +314,9 @@ namespace SimCore
             std::string GetEngineSmokeFile() const { return mEngineSmokeSystemFile; }
 
 
-            DECLARE_PROPERTY(osg::Vec3, EngineSmokePos);
+            DT_DECLARE_ACCESSOR(osg::Vec3, EngineSmokePos);
             /// Toggles engine smoke on and off
-            DECLARE_PROPERTY(bool, EngineSmokeOn);
+            DT_DECLARE_ACCESSOR(bool, EngineSmokeOn);
 
             /**
              * Override method to add actor components needed by this class.

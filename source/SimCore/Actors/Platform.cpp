@@ -314,8 +314,8 @@ namespace SimCore
          }
       }
 
-      IMPLEMENT_PROPERTY(Platform, osg::Vec3, EngineSmokePos);
-      IMPLEMENT_PROPERTY_GETTER(Platform, bool, EngineSmokeOn);
+      DT_IMPLEMENT_ACCESSOR(Platform, osg::Vec3, EngineSmokePos);
+      DT_IMPLEMENT_ACCESSOR_GETTER(Platform, bool, EngineSmokeOn);
 
       ////////////////////////////////////////////////////////////////////////////////////
       void Platform::SetEngineSmokeOn(bool enable)

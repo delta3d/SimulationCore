@@ -129,11 +129,11 @@ namespace SimCore
       // PROPERTY MACROS
       // These macros define the Getter method body for each property
       //////////////////////////////////////////////////////////////////////////
-      IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, int, CamoId); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, bool, ConcealedState); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, osg::Vec4, ConcealMeshDims); // Setter is implemented below
-      IMPLEMENT_PROPERTY_GETTER(CamoPaintStateActComp, dtDAL::ResourceDescriptor, ConcealMesh); // Setter is implemented below
-      IMPLEMENT_PROPERTY(CamoPaintStateActComp, std::string, ConcealShaderGroup);
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, int, CamoId); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, bool, ConcealedState); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, osg::Vec4, ConcealMeshDims); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR_GETTER(CamoPaintStateActComp, dtDAL::ResourceDescriptor, ConcealMesh); // Setter is implemented below
+      DT_IMPLEMENT_ACCESSOR(CamoPaintStateActComp, std::string, ConcealShaderGroup);
 
       //////////////////////////////////////////////////////////////////////////
       void CamoPaintStateActComp::SetCamoId(int camoId)

@@ -86,14 +86,14 @@ namespace SimCore
             ////////////////////////////////////////////////////////////////////
             // PROPERTY DECLARATIONS - getter, setter and member variable.
             ////////////////////////////////////////////////////////////////////
-            DECLARE_PROPERTY(osg::Vec4, PaintColor1);
-            DECLARE_PROPERTY(osg::Vec4, PaintColor2);
-            DECLARE_PROPERTY(osg::Vec4, PaintColor3);
-            DECLARE_PROPERTY(osg::Vec4, PaintColor4);
-            DECLARE_PROPERTY(osg::Vec4, PatternScale);
-            DECLARE_PROPERTY(osg::Vec4, ProjectionDirection);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture);
-            DECLARE_PROPERTY(dtDAL::ResourceDescriptor, PatternTexture);
+            DT_DECLARE_ACCESSOR(osg::Vec4, PaintColor1);
+            DT_DECLARE_ACCESSOR(osg::Vec4, PaintColor2);
+            DT_DECLARE_ACCESSOR(osg::Vec4, PaintColor3);
+            DT_DECLARE_ACCESSOR(osg::Vec4, PaintColor4);
+            DT_DECLARE_ACCESSOR(osg::Vec4, PatternScale);
+            DT_DECLARE_ACCESSOR(osg::Vec4, ProjectionDirection);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, ReplacementDiffuseMaskTexture);
+            DT_DECLARE_ACCESSOR(dtDAL::ResourceDescriptor, PatternTexture);
 
             ////////////////////////////////////////////////////////////////////
             // OVERRIDE METHODS - ActorComponent

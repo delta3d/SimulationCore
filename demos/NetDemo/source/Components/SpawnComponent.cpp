@@ -55,11 +55,11 @@ namespace NetDemo
 
    }
 
-   IMPLEMENT_PROPERTY(SpawnComponent, int, Difficulty);
-   IMPLEMENT_PROPERTY(SpawnComponent,int, WaveNumber);
-   IMPLEMENT_PROPERTY(SpawnComponent, int, NumPlayers);
-   IMPLEMENT_PROPERTY(SpawnComponent, float, TimeLeftInWave);
-   IMPLEMENT_PROPERTY(SpawnComponent, dtUtil::EnumerationPointer<ServerGameStatusActor::ServerGameStatusEnum>, GameStatus);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, Difficulty);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent,int, WaveNumber);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, int, NumPlayers);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, float, TimeLeftInWave);
+   DT_IMPLEMENT_ACCESSOR(SpawnComponent, dtUtil::EnumerationPointer<ServerGameStatusActor::ServerGameStatusEnum>, GameStatus);
 
    /////////////////////////////////////////////////////////////
    void SpawnComponent::CleanUp()

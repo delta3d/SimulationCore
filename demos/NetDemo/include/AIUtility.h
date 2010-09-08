@@ -63,25 +63,25 @@ namespace NetDemo
       BaseAIGameState();
       ~BaseAIGameState();
 
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Pos);
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Forward);
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Up);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Pos);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Forward);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Up);
 
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Vel);
-      DECLARE_PROPERTY_INLINE(osg::Vec3, Accel);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Vel);
+      DT_DECLARE_ACCESSOR_INLINE(osg::Vec3, Accel);
 
-      DECLARE_PROPERTY_INLINE(float, AngularVel);
-      DECLARE_PROPERTY_INLINE(float, AngularAccel);
+      DT_DECLARE_ACCESSOR_INLINE(float, AngularVel);
+      DT_DECLARE_ACCESSOR_INLINE(float, AngularAccel);
 
-      DECLARE_PROPERTY_INLINE(float, VerticalVel);
-      DECLARE_PROPERTY_INLINE(float, VerticalAccel);
+      DT_DECLARE_ACCESSOR_INLINE(float, VerticalVel);
+      DT_DECLARE_ACCESSOR_INLINE(float, VerticalAccel);
 
-      DECLARE_PROPERTY_INLINE(float, Pitch);
-      DECLARE_PROPERTY_INLINE(float, Roll);
+      DT_DECLARE_ACCESSOR_INLINE(float, Pitch);
+      DT_DECLARE_ACCESSOR_INLINE(float, Roll);
 
-      DECLARE_PROPERTY_INLINE(float, TimeStep);
+      DT_DECLARE_ACCESSOR_INLINE(float, TimeStep);
 
-      DECLARE_PROPERTY_INLINE(float, Thrusters);
+      DT_DECLARE_ACCESSOR_INLINE(float, Thrusters);
       
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
@@ -95,31 +95,31 @@ namespace NetDemo
       //todo- make properties for using each constraint and apply constraints 
       //       in BaseAIHelper::PostSync()
 
-      //DECLARE_PROPERTY_INLINE(bool, UseDrag);
-      DECLARE_PROPERTY_INLINE(float, DragCoef);
-      DECLARE_PROPERTY_INLINE(float, AngularDragCoef);
-      DECLARE_PROPERTY_INLINE(float, VerticalDragCoef);
+      //DT_DECLARE_ACCESSOR_INLINE(bool, UseDrag);
+      DT_DECLARE_ACCESSOR_INLINE(float, DragCoef);
+      DT_DECLARE_ACCESSOR_INLINE(float, AngularDragCoef);
+      DT_DECLARE_ACCESSOR_INLINE(float, VerticalDragCoef);
 
-      //DECLARE_PROPERTY_INLINE(bool, UseMaxVel);
-      DECLARE_PROPERTY_INLINE(float, MaxVel);
+      //DT_DECLARE_ACCESSOR_INLINE(bool, UseMaxVel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxVel);
       
-      //DECLARE_PROPERTY_INLINE(bool, UseMaxAccel);
-      DECLARE_PROPERTY_INLINE(float, MaxAccel);
+      //DT_DECLARE_ACCESSOR_INLINE(bool, UseMaxAccel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxAccel);
 
-      DECLARE_PROPERTY_INLINE(float, MaxAngularVel);
-      DECLARE_PROPERTY_INLINE(float, MaxAngularAccel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxAngularVel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxAngularAccel);
 
-      DECLARE_PROPERTY_INLINE(float, MaxVerticalVel);
-      DECLARE_PROPERTY_INLINE(float, MaxVerticalAccel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxVerticalVel);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxVerticalAccel);
 
-      DECLARE_PROPERTY_INLINE(float, MaxPitch);
-      DECLARE_PROPERTY_INLINE(float, MaxRoll);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxPitch);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxRoll);
 
-      DECLARE_PROPERTY_INLINE(float, MaxTiltPerSecond);
-      DECLARE_PROPERTY_INLINE(float, MaxRollPerSecond);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxTiltPerSecond);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxRollPerSecond);
 
-      DECLARE_PROPERTY_INLINE(float, MinElevation);
-      DECLARE_PROPERTY_INLINE(float, MaxElevation);
+      DT_DECLARE_ACCESSOR_INLINE(float, MinElevation);
+      DT_DECLARE_ACCESSOR_INLINE(float, MaxElevation);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };
@@ -132,9 +132,9 @@ namespace NetDemo
       //these are the control inputs
       //all are floats from 1 to -1 
       //which represents percentage of maximum
-      DECLARE_PROPERTY_INLINE(float, Thrust);
-      DECLARE_PROPERTY_INLINE(float, Lift);
-      DECLARE_PROPERTY_INLINE(float, Yaw);
+      DT_DECLARE_ACCESSOR_INLINE(float, Thrust);
+      DT_DECLARE_ACCESSOR_INLINE(float, Lift);
+      DT_DECLARE_ACCESSOR_INLINE(float, Yaw);
 
       void RegisterProperties(dtDAL::PropertyContainer& pc, const std::string& group);
    };

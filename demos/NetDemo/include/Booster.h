@@ -36,12 +36,12 @@ namespace NetDemo
       Booster();
       virtual ~Booster();
 
-      DECLARE_PROPERTY(bool, StartBoost);
-      DECLARE_PROPERTY(float, StartBoostAccel);
-      DECLARE_PROPERTY(float, MaxBoostTime);
-      DECLARE_PROPERTY(float, CurrentBoostTime);
-      DECLARE_PROPERTY(float, TimeToResetBoost);
-      DECLARE_PROPERTY(float, BoostResetTimer);
+      DT_DECLARE_ACCESSOR(bool, StartBoost);
+      DT_DECLARE_ACCESSOR(float, StartBoostAccel);
+      DT_DECLARE_ACCESSOR(float, MaxBoostTime);
+      DT_DECLARE_ACCESSOR(float, CurrentBoostTime);
+      DT_DECLARE_ACCESSOR(float, TimeToResetBoost);
+      DT_DECLARE_ACCESSOR(float, BoostResetTimer);
 
       void Start();
 

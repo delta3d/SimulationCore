@@ -40,12 +40,12 @@ namespace NetDemo
    {
    }
 
-   IMPLEMENT_PROPERTY(Booster, bool, StartBoost);
-   IMPLEMENT_PROPERTY(Booster, float, StartBoostAccel);
-   IMPLEMENT_PROPERTY(Booster, float, MaxBoostTime);
-   IMPLEMENT_PROPERTY(Booster, float, CurrentBoostTime);
-   IMPLEMENT_PROPERTY(Booster, float, TimeToResetBoost);
-   IMPLEMENT_PROPERTY(Booster, float, BoostResetTimer);
+   DT_IMPLEMENT_ACCESSOR(Booster, bool, StartBoost);
+   DT_IMPLEMENT_ACCESSOR(Booster, float, StartBoostAccel);
+   DT_IMPLEMENT_ACCESSOR(Booster, float, MaxBoostTime);
+   DT_IMPLEMENT_ACCESSOR(Booster, float, CurrentBoostTime);
+   DT_IMPLEMENT_ACCESSOR(Booster, float, TimeToResetBoost);
+   DT_IMPLEMENT_ACCESSOR(Booster, float, BoostResetTimer);
 
    void Booster::Start()
    {

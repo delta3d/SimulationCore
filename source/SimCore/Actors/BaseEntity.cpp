@@ -431,23 +431,23 @@ namespace SimCore
          SetFlamesPresent(false);
       }
 
-      IMPLEMENT_PROPERTY(BaseEntity, float, MaxDamageAmount);
-      IMPLEMENT_PROPERTY(BaseEntity, float, CurDamageRatio);
-      IMPLEMENT_PROPERTY(BaseEntity, std::string, MappingName);
-      IMPLEMENT_PROPERTY(BaseEntity, std::string, EntityTypeId);
-      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
-      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
-      IMPLEMENT_PROPERTY(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
-      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, SmokePlumePresent);
-      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, FlamesPresent);
-      IMPLEMENT_PROPERTY_GETTER(BaseEntity, bool, DrawingModel);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, PlayerAttached);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, MobilityDisabled);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, FirepowerDisabled);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, Frozen);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
-      IMPLEMENT_PROPERTY(BaseEntity, bool, AutoRegisterWithDeadReckoningComponent);
-      IMPLEMENT_PROPERTY(BaseEntity, std::string, MunitionDamageTableName);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, float, MaxDamageAmount);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, float, CurDamageRatio);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, std::string, MappingName);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, std::string, EntityTypeId);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::DomainEnum>, Domain);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ForceEnum>, ForceAffiliation);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, dtUtil::EnumerationPointer<BaseEntityActorProxy::ServiceEnum>, Service);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BaseEntity, bool, SmokePlumePresent);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BaseEntity, bool, FlamesPresent);
+      DT_IMPLEMENT_ACCESSOR_GETTER(BaseEntity, bool, DrawingModel);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, PlayerAttached);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, MobilityDisabled);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, FirepowerDisabled);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, Frozen);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, AutoRegisterWithMunitionsComponent);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, bool, AutoRegisterWithDeadReckoningComponent);
+      DT_IMPLEMENT_ACCESSOR(BaseEntity, std::string, MunitionDamageTableName);
 
       ////////////////////////////////////////////////////////////////////////////////////
       void BaseEntity::SetDrawingModel(bool newDrawing)
