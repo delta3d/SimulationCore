@@ -387,103 +387,103 @@ namespace SimCore
       typedef dtDAL::PropertyRegHelper<FourWheelVehiclePhysicsHelper&, FourWheelVehiclePhysicsHelper> PropRegType;
       PropRegType propRegHelper(*this, this, WHEELGROUP);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontWheelMass, "Front Wheel Mass","This is not used for dtPhysics."
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontWheelMass, "Front Wheel Mass","This is not used for dtPhysics."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontWheelRadius, "Front Wheel Radius","Rolling radius of wheel, -1 to auto calc."
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontWheelRadius, "Front Wheel Radius","Rolling radius of wheel, -1 to auto calc."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontWheelWidth, "Front Wheel Width","Width of wheel, -1 to auto calc."
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontWheelWidth, "Front Wheel Width","Width of wheel, -1 to auto calc."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionTravel, "Front Suspension Travel",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionTravel, "Front Suspension Travel",
                "Total suspension travel from full rebound to full jounce"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionRestLength, "Front Suspension Rest Length",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionRestLength, "Front Suspension Rest Length",
                "Target value position of spring where the spring force is zero.  This should > the suspension travel."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionSpringFreq, "Front Spring Frequency",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionSpringFreq, "Front Spring Frequency",
                "The oscillation frequency of the spring in Hz, 1.0-2.0 is usual"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionDamperFactor, "Front Suspension Damping Factor",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontSuspensionDamperFactor, "Front Suspension Damping Factor",
                "Ratio this damping to the critical damping for the suspension, usually 0-0.5"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireSlip, "Front Tire Slip",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireSlip, "Front Tire Slip",
                "The point on the tire curve where the tire stops applying any more lateral force"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireValue, "Front Tire Value",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireValue, "Front Tire Value",
                "The point on the tire curve where the tire stops responding with force near linearly vs. the lateral force"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteSlip, "Front Tire Asymptote Slip",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteSlip, "Front Tire Asymptote Slip",
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteValue, "Front Tire Asymptote Value",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireAsymptoteValue, "Front Tire Asymptote Value",
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireStiffness, "Front Tire Stiffness",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireStiffness, "Front Tire Stiffness",
                "The spring coefficient in N/m for the tire.  Should be very large, 100 thousands range"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(FrontTireRestitution, "Front Tire Restitution",
+      DT_REGISTER_PROPERTY_WITH_LABEL(FrontTireRestitution, "Front Tire Restitution",
                "Coefficient of restitution --  0 makes the tire bounce as little as possible, "
                "higher values up to 1.0 result in more bounce.  "
                "Note that values close to or above 1 may cause stability problems and/or increasing energy."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearWheelMass, "Rear Wheel Mass","This is not used for dtPhysics."
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearWheelMass, "Rear Wheel Mass","This is not used for dtPhysics."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearWheelRadius, "Rear Wheel Radius","Rolling radius of wheel, -1 to auto calc."
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearWheelRadius, "Rear Wheel Radius","Rolling radius of wheel, -1 to auto calc."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearWheelWidth, "Rear Wheel Width","Width of wheel, -1 to auto calc."
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearWheelWidth, "Rear Wheel Width","Width of wheel, -1 to auto calc."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionTravel, "Rear Suspension Travel",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearSuspensionTravel, "Rear Suspension Travel",
                "Total suspension travel from full rebound to full jounce"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionRestLength, "Rear Suspension Rest Length",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearSuspensionRestLength, "Rear Suspension Rest Length",
                "Target value position of spring where the spring force is zero.  This should > the suspension travel."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionSpringFreq, "Rear Spring Frequency",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearSuspensionSpringFreq, "Rear Spring Frequency",
                "The oscillation frequency of the spring in Hz, 1.0-2.0 is usual"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearSuspensionDamperFactor, "Rear Suspension Damping Factor",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearSuspensionDamperFactor, "Rear Suspension Damping Factor",
                "Ratio this damping to the critical damping for the suspension, usually 0-0.5"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireSlip, "Rear Tire Slip",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireSlip, "Rear Tire Slip",
                "The point on the tire curve where the tire stops applying any more lateral force"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireValue, "Rear Tire Value",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireValue, "Rear Tire Value",
                "The point on the tire curve where the tire stops responding with force near linearly vs. the lateral force"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteSlip, "Rear Tire Asymptote Slip",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteSlip, "Rear Tire Asymptote Slip",
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteValue, "Rear Tire Asymptote Value",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireAsymptoteValue, "Rear Tire Asymptote Value",
                "Point on curve at which for all x > minumumX, function equals minimumY.  Must be positive."
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireStiffness, "Rear Tire Stiffness",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireStiffness, "Rear Tire Stiffness",
                "The spring coefficient in N/m for the tire.  Should be very large, 100 thousands range"
                , PropRegType, propRegHelper);
 
-      REGISTER_PROPERTY_WITH_LABEL(RearTireRestitution, "Rear Tire Restitution",
+      DT_REGISTER_PROPERTY_WITH_LABEL(RearTireRestitution, "Rear Tire Restitution",
                "Coefficient of restitution --  0 makes the tire bounce as little as possible, "
                "higher values up to 1.0 result in more bounce.  "
                "Note that values close to or above 1 may cause stability problems and/or increasing energy."

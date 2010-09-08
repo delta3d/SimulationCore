@@ -616,52 +616,52 @@ namespace SimCore
          PropRegType propRegHelper(*this, actor, VEH_GROUP);
          PropRegType propRegHelperSound(*this, actor, SOUND_GROUP);
 
-         REGISTER_PROPERTY_WITH_LABEL(NumUpdatesUntilFullSteeringAngle, "Num updates until full steering angle",
+         DT_REGISTER_PROPERTY_WITH_LABEL(NumUpdatesUntilFullSteeringAngle, "Num updates until full steering angle",
                   "Number of update cycles to go from straight to full turn angle when using the keyboard.",
                   PropRegType, propRegHelper);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::STATIC_MESH, VehicleInteriorModel,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::STATIC_MESH, VehicleInteriorModel,
                   "VEHICLE_INSIDE_MODEL", "Vehicle Interior Model",
                   "What is the resource of the interior model.", PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SoundBrakeSquealSpeed,
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(SoundBrakeSquealSpeed,
                   "SOUND_BRAKE_SQUEAL_AMOUNT", "Sound brake squeal speed",
                   "How many mph does the car have to go to squeal used with BRAKE_STOP_NOW_BRAKE_TIME",
                   PropRegType, propRegHelperSound);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeLow,
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeLow,
                   "SOUND_GEAR_CHANGE_LOW", "Low Gear change MPH",
                   "MPH When Gear Changes from 1st to 2nd",
                   PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeMedium,
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeMedium,
                   "SOUND_GEAR_CHANGE_MEDIUM", "Medium Gear change MPH",
                   "MPH When Gear Changes from 2nd to 3rd",
                   PropRegType, propRegHelper);
 
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeHigh,
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(GearChangeHigh,
                   "SOUND_GEAR_CHANGE_HIGH", "High Gear change MPH",
                   "MPH When Gear Changes from 3rd to 4th",
                   PropRegType, propRegHelper);
 
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIgnition,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIgnition,
                   "SOUND_EFFECT_IGNITION", "Sound FX Ignition",
                   "Sound resource for the engine ignition sound.", PropRegType, propRegHelperSound);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIdleLoop,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectIdleLoop,
                   "SOUND_EFFECT_VEHICLE_LOOP", "Sound FX Idle",
                   "Sound resource for the engine idle sound.", PropRegType, propRegHelperSound);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectBrake,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectBrake,
                   "SOUND_EFFECT_BRAKE", "Sound FX Brake Squeal",
                   "Sound resource for the brake squeal sound.", PropRegType, propRegHelperSound);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectAcceleration,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectAcceleration,
                   "SOUND_EFFECT_ACCELERATION", "Sound FX Acceleration",
                   "Sound resource for the acceleration sound.", PropRegType, propRegHelperSound);
 
-         REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectCollisionHit,
+         DT_REGISTER_RESOURCE_PROPERTY_WITH_NAME(dtDAL::DataType::SOUND, SoundEffectCollisionHit,
                   "SOUND_EFFECT_COLLISION_HIT", "Sound FX Collision Hit",
                   "Sound resource for the collision hit sound.", PropRegType, propRegHelperSound);
 

@@ -78,11 +78,11 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
-      REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
-      REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxVelocity, "This represents the maximum velocity for the enemy", RegHelperType, propReg);
-      REGISTER_PROPERTY(EnemyPrototypeName, "This is the name of the enemy prototype to spawn", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxVelocity, "This represents the maximum velocity for the enemy", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(EnemyPrototypeName, "This is the name of the enemy prototype to spawn", RegHelperType, propReg);
    }
 
    ///////////////////////////////////////////////////////////////////////////////////
@@ -91,11 +91,11 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::ContainerActorProperty&, value_type> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
-      REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
-      REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxVelocity, "This represents the maximum velocity for the enemy", RegHelperType, propReg);
-      REGISTER_PROPERTY(EnemyPrototypeName, "This is the name of the enemy prototype to spawn", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(LastSpawnTime, "The total amount SimTime that has past since the last spawn.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(NumSpawnPerMinute, "The rate at which this enemy spawns per minute.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(WaveDenominator, "This enemy spawns when the wave number is a multiple of this number.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxVelocity, "This represents the maximum velocity for the enemy", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(EnemyPrototypeName, "This is the name of the enemy prototype to spawn", RegHelperType, propReg);
 
    }
 

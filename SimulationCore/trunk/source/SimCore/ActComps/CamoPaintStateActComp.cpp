@@ -445,7 +445,7 @@ namespace SimCore
          PropRegType propRegHelper(*this, this, "Camo Paint Id");
 
          // INT PROPERTIES
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             CamoId,
             PROPERTY_CAMO_ID,
             PROPERTY_CAMO_ID,
@@ -453,7 +453,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          // BOOL PROPERTIES
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             ConcealedState,
             PROPERTY_CONCEALED_STATE,
             PROPERTY_CONCEALED_STATE,
@@ -461,7 +461,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          // STRING PROPERTIES
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             ConcealShaderGroup,
             PROPERTY_CONCEAL_SHADER_GROUP,
             PROPERTY_CONCEAL_SHADER_GROUP,
@@ -469,7 +469,7 @@ namespace SimCore
             PropRegType, propRegHelper);
 
          // VEC4 PROPERTIES
-         REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
+         DT_REGISTER_PROPERTY_WITH_NAME_AND_LABEL(
             ConcealMeshDims,
             PROPERTY_CONCEAL_MESH_DIMENSIONS,
             PROPERTY_CONCEAL_MESH_DIMENSIONS,

@@ -61,25 +61,25 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIGameState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Forward, "The world space forward vector.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Up, "The world space up vector.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Pos, "The world space position.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Forward, "The world space forward vector.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Up, "The world space up vector.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(Vel, "The world space velocity vector.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Accel, "The world space velocity vector.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Vel, "The world space velocity vector.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Accel, "The world space velocity vector.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(AngularVel, "The scalar angular velocity.", RegHelperType, propReg);
-      REGISTER_PROPERTY(AngularAccel, "The scalar angular acceleration.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(AngularVel, "The scalar angular velocity.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(AngularAccel, "The scalar angular acceleration.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(VerticalVel, "The scalar vertical velocity.", RegHelperType, propReg);
-      REGISTER_PROPERTY(VerticalAccel, "The scalar vertical acceleration.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(VerticalVel, "The scalar vertical velocity.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(VerticalAccel, "The scalar vertical acceleration.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(Pitch, "The current pitch.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Roll, "The current roll.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Pitch, "The current pitch.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Roll, "The current roll.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(TimeStep, "The per frame time step.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(TimeStep, "The per frame time step.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(Thrusters, "Boosters", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Thrusters, "Boosters", RegHelperType, propReg);
 
    }
 
@@ -114,27 +114,27 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIGoalState> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
-      REGISTER_PROPERTY(AngularDragCoef, "The angular air resistance.", RegHelperType, propReg);
-      REGISTER_PROPERTY(VerticalDragCoef, "The vertical air resistance.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(DragCoef, "The linear air resistance.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(AngularDragCoef, "The angular air resistance.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(VerticalDragCoef, "The vertical air resistance.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MaxVel, "The maximim scalar velocity.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxAccel, "The maximim scalar acceleration.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxVel, "The maximim scalar velocity.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxAccel, "The maximim scalar acceleration.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MaxAngularVel, "The maximim scalar angular velocity.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxAngularAccel, "The maximim scalar angular acceleration.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxAngularVel, "The maximim scalar angular velocity.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxAngularAccel, "The maximim scalar angular acceleration.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MaxVerticalVel, "The maximim scalar vertical velocity.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxVerticalAccel, "The maximim scalar vertical acceleration.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxVerticalVel, "The maximim scalar vertical velocity.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxVerticalAccel, "The maximim scalar vertical acceleration.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MaxPitch, "The maximim pitch.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxRoll, "The maximim roll.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxPitch, "The maximim pitch.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxRoll, "The maximim roll.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MaxTiltPerSecond, "The maximim pitch.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxRollPerSecond, "The maximim roll.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxTiltPerSecond, "The maximim pitch.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxRollPerSecond, "The maximim roll.", RegHelperType, propReg);
 
-      REGISTER_PROPERTY(MinElevation, "The minimum elevation we can fly.", RegHelperType, propReg);
-      REGISTER_PROPERTY(MaxElevation, "The maximum elevation we can fly.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MinElevation, "The minimum elevation we can fly.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(MaxElevation, "The maximum elevation we can fly.", RegHelperType, propReg);
 
  }
 
@@ -157,9 +157,9 @@ namespace NetDemo
       typedef dtDAL::PropertyRegHelper<dtDAL::PropertyContainer&, BaseAIControls> RegHelperType;
       RegHelperType propReg(pc, this, group);
 
-      REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Lift, "Our current scalar lift.", RegHelperType, propReg);
-      REGISTER_PROPERTY(Yaw, "Our current scalar yaw.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Thrust, "Our current scalar thrust.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Lift, "Our current scalar lift.", RegHelperType, propReg);
+      DT_REGISTER_PROPERTY(Yaw, "Our current scalar yaw.", RegHelperType, propReg);
       
     }
 
