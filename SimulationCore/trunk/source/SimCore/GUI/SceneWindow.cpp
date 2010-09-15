@@ -25,8 +25,8 @@
 #include <dtGUI/ceguitexture.h>
 #else
 #include <osg/Texture2D>
-#include <cegui/CEGUIImagesetManager.h>
-#include <dtGui/gui.h>
+#include <CEGUI/CEGUIImagesetManager.h>
+#include <dtGUI/gui.h>
 #endif
 
 // TEMP:
