@@ -283,7 +283,7 @@ namespace SimCore
             std::string mLightImpactEntity;
             std::string mLightFire;
             std::string mLightTracer;
-            dtCore::RefPtr<MunitionEffectsInfoActorProxy> mProxy;
+            dtCore::ObserverPtr<MunitionEffectsInfoActorProxy> mProxy;
       };
 
 
