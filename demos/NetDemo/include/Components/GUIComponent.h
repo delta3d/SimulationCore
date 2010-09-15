@@ -34,7 +34,7 @@
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
 #include <dtGUI/ceuidrawable.h>
 #else
-#include <dtGui/gui.h>
+#include <dtGUI/gui.h>
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
