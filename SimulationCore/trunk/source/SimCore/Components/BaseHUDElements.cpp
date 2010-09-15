@@ -21,6 +21,9 @@
  * @author Chris Rodgers
  */
 
+////////////////////////////////////////////////////////////////////////////////
+// INCLUDE DIRECTIVES
+////////////////////////////////////////////////////////////////////////////////
 #include <prefix/SimCorePrefix.h>
 #include <SimCore/Components/BaseHUDElements.h>
 
@@ -37,6 +40,8 @@
 #include <osgDB/ReadFile>
 
 #include <cmath>
+
+
 
 namespace SimCore
 {
@@ -130,7 +135,7 @@ namespace SimCore
          , mAlign(&HUDAlignment::LEFT_TOP)
          , mAbsPos(false)
          , mAbsSize(false)
-         , mAllowDelete(true)
+         , mAllowDelete(false)
       {
          CEGUI::WindowManager* wm = CEGUI::WindowManager::getSingletonPtr();
          try
@@ -151,7 +156,7 @@ namespace SimCore
          , mAlign(&HUDAlignment::ClassifyAlignment(window))
          , mAbsPos(false)
          , mAbsSize(false)
-         , mAllowDelete(true)
+         , mAllowDelete(false)
       {
          mWindow = &window;
       }
