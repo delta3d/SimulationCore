@@ -153,7 +153,7 @@ void SetupCEGUI(dtABC::Application& app)
    globalGUI = new dtGUI::GUI(app.GetCamera(),
             app.GetKeyboard(), app.GetMouse());
    globalGUI->SetScriptModule(new dtGUI::ScriptModule());
-   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext() + "/CEGUI");
+   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext());
    globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
    globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
    globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
@@ -162,7 +162,7 @@ void SetupCEGUI(dtABC::Application& app)
    try
    {
       std::cout << "CEGUI in: " << ceguiDir << "\n\n";
-      globalGUI->LoadScheme("schemes/WindowsLook.scheme");
+      globalGUI->LoadScheme("CEGUI/schemes/WindowsLook.scheme");
 #endif
    }
    catch (const CEGUI::Exception& ex)
