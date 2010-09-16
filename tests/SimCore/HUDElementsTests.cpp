@@ -122,10 +122,10 @@ class HUDElementsTests : public CPPUNIT_NS::TestFixture
       dtCore::RefPtr<dtABC::Application> mApp;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
       dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+      dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
 #else
       dtCore::RefPtr<dtGUI::GUI> mGUI;
 #endif
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(HUDElementsTests);
@@ -135,49 +135,83 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HUDElementsTests);
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setupCEGUI()
 {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
    CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
    //SLEEP(200);
+#endif
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::setUp()
 {
-   // A window & camera are needed for GUI rendering
-   mApp = &GetGlobalApplication();
+   try{
+      // A window & camera are needed for GUI rendering
+      mApp = &GetGlobalApplication();
 
-   mGM = new dtGame::GameManager(*mApp->GetScene());
-   mGM->SetApplication(*mApp);
+      mGM = new dtGame::GameManager(*mApp->GetScene());
+      mGM->SetApplication(*mApp);
 
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   mGUI = &GetGlobalCEGUIDrawable();
-   mApp->GetScene()->AddDrawable(mGUI.get());
+      mGUI = &GetGlobalCEGUIDrawable();
+      mApp->GetScene()->AddDrawable(mGUI.get());
+      setupCEGUI();
 #else
-   mGUI = &GetGlobalGUI();
+      mGUI = &GetGlobalGUI();
 #endif
 
-   dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
-   dtCore::System::GetInstance().Start();
-
-   setupCEGUI();
+      dtCore::System::GetInstance().SetShutdownOnWindowClose(false);
+      dtCore::System::GetInstance().Start();
+   }
+   catch(dtUtil::Exception& e)
+   {
+      LOG_ERROR(e.ToString());
+   }
+   catch(CEGUI::Exception& ce)
+   {
+      std::ostringstream oss;
+      oss << ce.getName() << ":\n" << ce.getMessage() << "\n";
+      LOG_ERROR(oss.str());
+   }
+   catch(...)
+   {
+      LOG_ERROR("Unknown exception");
+   }
 }
 
 //////////////////////////////////////////////////////////////
 void HUDElementsTests::tearDown()
 {
-   dtCore::System::GetInstance().Stop();
+   try
+   {
+      dtCore::System::GetInstance().Stop();
 
-   if(mGM.valid())
-      mGM->DeleteAllActors(true);
+      if(mGM.valid())
+         mGM->DeleteAllActors(true);
 
-   mMainGUIWindow = NULL;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+      if (mApp.valid() && mGUI.valid())
+         mApp->GetScene()->RemoveDrawable( mGUI.get() );
+
+      mMainGUIWindow = NULL;
+#endif
+   }
+   catch(dtUtil::Exception& e)
+   {
+      LOG_ERROR(e.ToString());
+   }
+   catch(CEGUI::Exception& ce)
+   {
+      std::ostringstream oss;
+      oss << ce.getName() << ":\n" << ce.getMessage() << "\n";
+      LOG_ERROR(oss.str());
+   }
+   catch(...)
+   {
+      LOG_ERROR("Unknown exception");
+   }
 
    mGM = NULL;
-#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
-   if (mApp.valid() && mGUI.valid())
-      mApp->GetScene()->RemoveDrawable( mGUI.get() );
-#endif
-
    mGUI = NULL;
    mApp = NULL;
 }
