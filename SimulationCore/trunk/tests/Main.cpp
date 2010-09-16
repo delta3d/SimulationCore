@@ -132,9 +132,8 @@ class TimingListener : public CppUnit::TestListener
 
 void SetupCEGUI(dtABC::Application& app)
 {
-   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
-
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+   const std::string guiScheme = "CEGUI/schemes/WindowsLook.scheme";
    globalGUI = new dtGUI::CEUIDrawable(app.GetWindow(),
             app.GetKeyboard(), app.GetMouse(), new dtGUI::ScriptModule());
 
@@ -154,9 +153,16 @@ void SetupCEGUI(dtABC::Application& app)
    globalGUI = new dtGUI::GUI(app.GetCamera(),
             app.GetKeyboard(), app.GetMouse());
    globalGUI->SetScriptModule(new dtGUI::ScriptModule());
+   std::string ceguiDir(dtDAL::Project::GetInstance().GetContext() + "/CEGUI");
+   globalGUI->SetResourceGroupDirectory("schemes", ceguiDir);
+   globalGUI->SetResourceGroupDirectory("imagesets", ceguiDir);
+   globalGUI->SetResourceGroupDirectory("looknfeel", ceguiDir);
+   globalGUI->SetResourceGroupDirectory("layouts", ceguiDir);
+   globalGUI->SetResourceGroupDirectory("fonts", ceguiDir);
    try
    {
-      globalGUI->LoadScheme(guiScheme);
+      std::cout << "CEGUI in: " << ceguiDir << "\n\n";
+      globalGUI->LoadScheme("schemes/WindowsLook.scheme");
 #endif
    }
    catch (const CEGUI::Exception& ex)
