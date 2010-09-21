@@ -335,12 +335,17 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       // HUD Call Sign
       //////////////////////////////////////////////////////////////////////////
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+      typedef dtCore::DeltaDrawable GuiDrawable;
+#else
+      typedef dtGUI::GUI GuiDrawable;
+#endif
       class SIMCORE_EXPORT StealthSpeedometer : public HUDImage
       {
          public:
             StealthSpeedometer( const std::string& name, const std::string& type = DEFAULT_IMAGE_TYPE );
 
-            bool RegisterNeedleWithGUI( dtCore::DeltaDrawable* gui );
+            bool RegisterNeedleWithGUI( GuiDrawable* gui );
             bool UnregisterNeedleWithGUI();
 
             // This function is being overridden so that it can 
@@ -363,7 +368,7 @@ namespace SimCore
             float mLastReadout;
             dtCore::RefPtr<HUDText> mText;
             dtCore::RefPtr<HUDQuadElement> mNeedle;
-            dtCore::ObserverPtr<dtCore::DeltaDrawable> mGUI;
+            dtCore::ObserverPtr<GuiDrawable> mGUI;
             osg::Vec2 mPivot; // offset from the bottom left of the meter
       };
 

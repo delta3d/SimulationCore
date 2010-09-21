@@ -126,6 +126,11 @@ namespace SimCore
          dtCore::DeltaWin* GetMainDeltaWindow() { return mWin; }
          const dtCore::DeltaWin* GetMainDeltaWindow() const { return mWin; }
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR >= 7
+         dtGUI::GUI* GetGUI();
+         const dtGUI::GUI* GetGUI() const;
+#endif
+
       protected:
 
          /**
