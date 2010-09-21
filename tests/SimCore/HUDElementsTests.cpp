@@ -1466,6 +1466,8 @@ void HUDElementsTests::TestStealthSpeedometer()
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    CPPUNIT_ASSERT_MESSAGE( "Speedometer must be able to register its needle with the main CEGUI dtCore::DeltaDrawable",
       speedometer->RegisterNeedleWithGUI(mGUI.get()) );
+#else
+   speedometer->RegisterNeedleWithGUI(&GetGlobalGUI());
 #endif
 
    // Test visibility
