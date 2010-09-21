@@ -185,12 +185,7 @@ namespace SimCore
 #else
          mGUI = new dtGUI::GUI(app.GetCamera(), app.GetKeyboard(), app.GetMouse());
          osg::Group* guiOSGNode = &mGUI->GetRootNode();
-         mGUI->SetScriptModule(mScriptModule);
-         mGUI->SetResourceGroupDirectory("imagesets", dtDAL::Project::GetInstance().GetContext());
-         mGUI->SetResourceGroupDirectory("looknfeels", dtDAL::Project::GetInstance().GetContext());
-         mGUI->SetResourceGroupDirectory("layouts", dtDAL::Project::GetInstance().GetContext());
-         mGUI->SetResourceGroupDirectory("schemes", dtDAL::Project::GetInstance().GetContext());
-         mGUI->SetResourceGroupDirectory("fonts", dtDAL::Project::GetInstance().GetContext());
+         mGUI->SetScriptModule(mScriptModule);         
 
          try
          {
@@ -290,5 +285,20 @@ namespace SimCore
       {
 
       }
+
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR >= 7
+      //////////////////////////////////////////////////////////////////////////
+      dtGUI::GUI* BaseHUD::GetGUI()
+      {
+         return mGUI.get();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      const dtGUI::GUI* BaseHUD::GetGUI() const
+      {
+         return mGUI.get();
+      }
+#endif
+
    }
 }

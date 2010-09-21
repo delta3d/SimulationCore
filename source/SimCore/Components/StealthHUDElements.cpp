@@ -840,13 +840,17 @@ namespace SimCore
       }
 
       //////////////////////////////////////////////////////////////////////////
-      bool StealthSpeedometer::RegisterNeedleWithGUI( dtCore::DeltaDrawable* gui )
+      bool StealthSpeedometer::RegisterNeedleWithGUI( GuiDrawable* gui )
       {
          bool success = false;
          if( gui != NULL && mNeedle.valid() )
          {
             mGUI = gui;
-            gui->AddChild( mNeedle.get() );
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+            mGUI->AddChild( mNeedle.get() );
+#else
+            mGUI->GetRootNode().addChild(mNeedle->GetOSGNode());
+#endif
             success = true;
          }
          UpdateNeedlePosition();
@@ -858,7 +862,11 @@ namespace SimCore
       {
          if( mGUI.valid() && mNeedle.valid() )
          {
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
             mGUI->RemoveChild( mNeedle.get() );
+#else
+            mGUI->GetRootNode().removeChild(mNeedle->GetOSGNode());
+#endif
             return true;
          }
          return false;
