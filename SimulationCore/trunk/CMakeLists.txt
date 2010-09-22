@@ -15,7 +15,6 @@ PROJECT(SimulationCore)
 OPTION(BUILD_DIS "Enables the linking of dtDIS for StealthViewer" OFF)
 OPTION(BUILD_HLA "Enables the building of HLA related projects (e.g., # SimCoreHLA)" ON)
 OPTION(BUILD_DEMOS "Enables building SimCore Demos in the demos directory" ON)
-OPTION(USE_PHYSX "Enable the building of Simulation Core with PhysX support" OFF)
 OPTION(USE_dtPhysics "Enable the building of Simulation core with dtPhysics" OFF)
 OPTION(AUTO_RUN_TESTS "Automatically runs the unit tests upon successful compile and link" ON)
 OPTION(BUILD_WITH_PCH      "Enables use of precomplied headers, experimental" OFF)
@@ -144,39 +143,17 @@ ENDIF(WIN32)
 
 FIND_PACKAGE(SimulationCore REQUIRED)
 
-IF (USE_PHYSX)
-   MESSAGE("Using Nvidia PhysX for the Physics Engine.")
-   FIND_PACKAGE(DTPhysX REQUIRED)
+MESSAGE("Using the dtPhysics Physics Abstraction Layer (ODE, Bullet, PhysX).")
+FIND_PACKAGE(DTPhysics REQUIRED)
+IF (DTPHYSICS_FOUND)
+   #look for module loaders in dtPhysX CMakeModules
+   SET(CMAKE_MODULE_PATH "${DTPHYSICS_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
-   #IF (DTPHYSX_FOUND)
-      #look for module loaders in dtPhysX CMakeModules
-      SET(CMAKE_MODULE_PATH "${DTPHYSX_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-
-      FIND_PACKAGE(PhysX REQUIRED)
-
-      INCLUDE_DIRECTORIES( ${PHYSX_INCLUDES} ${DTPHYSX_INCLUDE_DIR} )
-      LINK_DIRECTORIES( ${DTPHYSX_LIB_DIR} )
-
-      ADD_DEFINITIONS(-DAGEIA_PHYSICS)
-   #ENDIF (DTPHYSX_FOUND)
-   
-ELSE (USE_PHYSX)
-   if (USE_dtPhysics)
-      MESSAGE("Using the dtPhysics Physics Abstraction Layer (ODE, Bullet, PhysX).")
-      FIND_PACKAGE(DTPhysics REQUIRED)
-      IF (DTPHYSICS_FOUND)
-         #look for module loaders in dtPhysX CMakeModules
-         SET(CMAKE_MODULE_PATH "${DTPHYSICS_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-
-         FIND_PACKAGE(Pal REQUIRED)
+   FIND_PACKAGE(Pal REQUIRED)
  
-         INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} ${DTPHYSICS_INCLUDE_DIR} )
-         LINK_DIRECTORIES( ${DTPHYSICS_LIB_DIR} )
-       ENDIF (DTPHYSICS_FOUND)
-   else (USE_dtPhysics)
-      MESSAGE("You must pick a physics engine.  Set USE_dtPhysics or USE_PHYSX to on")
-   endif (USE_dtPhysics)
-ENDIF (USE_PHYSX)
+   INCLUDE_DIRECTORIES( ${PAL_INCLUDE_DIR} ${DTPHYSICS_INCLUDE_DIR} )
+   LINK_DIRECTORIES( ${DTPHYSICS_LIB_DIR} )
+ENDIF (DTPHYSICS_FOUND)
 
 FIND_PACKAGE(Delta3D REQUIRED)
 
