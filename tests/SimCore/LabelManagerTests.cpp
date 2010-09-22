@@ -150,6 +150,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
          mLabelManager = NULL;
          mMainGUIWindow = NULL;
 
+
          mGM = NULL;
 #if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
          if (mApp.valid() && mGUI.valid())
@@ -162,8 +163,10 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       //////////////////////////////////////////////////////////////
       void setupCEGUI()
       {
-         mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
-         CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
+         mMainGUIWindow = new SimCore::Components::HUDElement( "LabelLayer",
+                  SimCore::Components::HUDElement::DEFAULT_BLANK_TYPE );
+         mMainGUIWindow->SetDeleteWindowOnDestruct(true);
+         //CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
       }
 
       void TestHUDLabel()
@@ -356,7 +359,7 @@ class LabelManagerTests : public CPPUNIT_NS::TestFixture
       dtCore::RefPtr<dtGUI::GUI> mGUI;
 #endif
       dtCore::RefPtr<SimCore::Components::LabelManager> mLabelManager;
-      dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
+      dtCore::RefPtr<SimCore::Components::HUDElement> mMainGUIWindow;
 
       dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> mPlatform1;
       dtCore::RefPtr<SimCore::Actors::PlatformActorProxy> mPlatform2;
