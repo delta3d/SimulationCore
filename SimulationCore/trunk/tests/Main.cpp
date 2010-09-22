@@ -239,6 +239,7 @@ int main (int argc, char* argv[])
    {
       //Force this to false because many of the tests expect it to be false.
       dtCore::System::GetInstance().SetUseFixedTimeStep(false);
+      dtUtil::SetDataFilePathList(dtUtil::GetDeltaDataPathList());
       dtDAL::Project::GetInstance().SetContext("demos/" + SimCore::BaseGameEntryPoint::PROJECT_CONTEXT_DIR);
       dtDAL::LibraryManager::GetInstance().LoadActorRegistry(SimCore::BaseGameEntryPoint::LIBRARY_NAME);
       SetupCEGUI(*globalApplication);

@@ -88,13 +88,15 @@ class ConfigObjectTests : public CPPUNIT_NS::TestFixture
 
 public:
 
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    //////////////////////////////////////////////////////////////
    void setupCEGUI()
    {
       mMainGUIWindow = new SimCore::Components::HUDGroup("root","DefaultGUISheet");
       CEGUI::System::getSingleton().setGUISheet(mMainGUIWindow->GetCEGUIWindow());
-      //SLEEP(200);
+   //SLEEP(200);
    }
+#endif
 
    void setUp();
    void tearDown();
@@ -122,7 +124,11 @@ private:
    void RemoveCallbackTest(StealthGM::ViewWindowWrapper& vw);
 
    dtCore::RefPtr<dtGame::GameManager> mGM;
-   dtCore::RefPtr<SimCore::Components::HUDGroup> mMainGUIWindow;
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
+      dtCore::RefPtr<dtGUI::CEUIDrawable> mGUI;
+#else
+      dtCore::RefPtr<dtGUI::GUI> mGUI;
+#endif
 
    bool mInitCalled;
    bool mRemoveCalled;
@@ -135,7 +141,11 @@ void ConfigObjectTests::setUp()
    dtCore::System::GetInstance().Start();
    mGM = new dtGame::GameManager(*GetGlobalApplication().GetScene());
    mGM->SetApplication(GetGlobalApplication());
+#if CEGUI_VERSION_MAJOR >= 0 && CEGUI_VERSION_MINOR < 7
    setupCEGUI();
+#else
+   mGUI = &GetGlobalGUI();
+#endif
 }
 
 void ConfigObjectTests::tearDown()
@@ -146,7 +156,7 @@ void ConfigObjectTests::tearDown()
       mGM = NULL;
       CPPUNIT_ASSERT(!gmOb.valid());
    }
-   mMainGUIWindow = NULL;
+   mGUI = NULL;
    dtCore::System::GetInstance().Stop();
 }
 
@@ -522,8 +532,7 @@ void ConfigObjectTests::TestPreferencesToolsConfigObject()
    dtCore::RefPtr<SimCore::Tools::Binoculars> binocs;
    try
    {
-      binocs =
-         new SimCore::Tools::Binoculars(*mGM->GetApplication().GetCamera(), mMainGUIWindow->GetCEGUIWindow());
+      binocs = new SimCore::Tools::Binoculars(*mGM->GetApplication().GetCamera(), NULL);
    }
    catch(const CEGUI::Exception& e)
    {
