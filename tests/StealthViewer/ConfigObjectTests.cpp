@@ -592,6 +592,8 @@ void ConfigObjectTests::TestPreferencesVisibilityConfigObject()
 
    dtCore::RefPtr<dtGame::GameManager> gm = new dtGame::GameManager(*GetGlobalApplication().GetScene());
 
+   GetGlobalApplication().GetWindow()->GetOsgViewerGraphicsWindow()->makeCurrent();
+
    dtCore::RefPtr<StealthGM::StealthHUD> hud = new StealthGM::StealthHUD(GetGlobalApplication().GetWindow());
    hud->SetupGUI(*new SimCore::Components::HUDGroup("hello"), 50, 50 );
    gm->AddComponent(*hud, dtGame::GameManager::ComponentPriority::NORMAL);
