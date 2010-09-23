@@ -104,6 +104,7 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    StealthHUD::~StealthHUD()
    {
+      perror("Stealth HUD Destructor\n");
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -260,6 +261,8 @@ namespace StealthGM
    //////////////////////////////////////////////////////////////////////////
    void StealthHUD::SetupGUI( SimCore::Components::HUDGroup& mainOverlay, unsigned int designedResWidth, unsigned int designedResHeight )
    {
+      mainOverlay.SetDeleteWindowOnDestruct(true);
+
       mHUDOverlay = new SimCore::Components::HUDGroup("HUD Overlay");
       mainOverlay.Add( mHUDOverlay.get() );
 

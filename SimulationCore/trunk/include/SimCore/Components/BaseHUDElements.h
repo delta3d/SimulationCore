@@ -170,10 +170,9 @@ namespace SimCore
 
             // The window object that is used to draw the element
             const HUDAlignment* mAlign;
-            CEGUI::Window *mWindow;
+            CEGUI::Window* mWindow;
             bool mAbsPos;
             bool mAbsSize;
-            bool mAllowDelete;
 
          private:
       };

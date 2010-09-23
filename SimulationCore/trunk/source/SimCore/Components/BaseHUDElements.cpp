@@ -135,7 +135,6 @@ namespace SimCore
          , mAlign(&HUDAlignment::LEFT_TOP)
          , mAbsPos(false)
          , mAbsSize(false)
-         , mAllowDelete(false)
       {
          CEGUI::WindowManager* wm = CEGUI::WindowManager::getSingletonPtr();
          try
@@ -156,7 +155,6 @@ namespace SimCore
          , mAlign(&HUDAlignment::ClassifyAlignment(window))
          , mAbsPos(false)
          , mAbsSize(false)
-         , mAllowDelete(false)
       {
          mWindow = &window;
       }
@@ -164,10 +162,11 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       HUDElement::~HUDElement()
       {
-         if (mAllowDelete && mWindow != NULL)
+         if (mWindow != NULL && (!mWindow->isDestroyedByParent() || mWindow->getParent() == NULL))
          {
             mWindow->destroy();
          }
+         mWindow = NULL;
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -376,13 +375,20 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void HUDElement::SetDeleteWindowOnDestruct(bool enable)
       {
-         mAllowDelete = enable;
+         if (mWindow != NULL)
+         {
+            mWindow->setDestroyedByParent(!enable);
+         }
       }
 
       //////////////////////////////////////////////////////////////////////////
       bool HUDElement::GetDeleteWindowOnDestruct() const
       {
-         return mAllowDelete;
+         if (mWindow != NULL)
+         {
+            return !mWindow->isDestroyedByParent();
+         }
+         return false;
       }
 
       //////////////////////////////////////////////////////////////////////////
