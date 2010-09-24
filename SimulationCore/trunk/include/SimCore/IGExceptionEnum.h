@@ -23,6 +23,7 @@
 
 #include <SimCore/Export.h>
 #include <dtUtil/enumeration.h>
+#include <dtUtil/exception.h>
 
  namespace SimCore
  {
@@ -37,9 +38,13 @@
          static IGExceptionEnum INVALID_CONNECTION_DATA;
 
       protected:
-         IGExceptionEnum(const std::string &name) : dtUtil::Enumeration(name)
-         {
-            AddInstance(this);
-         }
+         IGExceptionEnum(const std::string& name);
+   };
+
+   class SIMCORE_EXPORT IGException : public dtUtil::Exception
+   {
+   public:
+      IGException(const std::string& message, const std::string& filename, unsigned int linenum);
+      virtual ~IGException() {};
    };
 }

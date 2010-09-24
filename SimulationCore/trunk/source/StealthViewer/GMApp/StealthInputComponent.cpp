@@ -408,7 +408,7 @@ namespace StealthGM
             gameManager.FindPrototypesByActorType(*SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE, proxies);
             if (proxies.empty())
             {
-               throw dtUtil::Exception(dtDAL::ExceptionEnum::InvalidActorException,
+               throw dtDAL::InvalidActorException(
                   "Failed to find the stealth actor prototype in the map",
                   __FILE__, __LINE__);
             }
