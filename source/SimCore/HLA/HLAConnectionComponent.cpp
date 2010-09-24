@@ -150,7 +150,7 @@ namespace SimCore
          dtHLAGM::HLAComponent* hlaComp = GetHLAComponent();
          if(hlaComp == NULL)
          {
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
+            throw dtGame::InvalidParameterException(
                "Failed to find the HLAComponent on the GameManager. Aborting...", __FILE__, __LINE__);
          }
          hlaComp->ClearConfiguration();
@@ -196,7 +196,7 @@ namespace SimCore
          if(clientNetworkComponent == NULL)
          {
             mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, 
+            throw dtGame::InvalidParameterException(
                "Error - could not find Client Networking Component in the Game Manager.", __FILE__, __LINE__);
          }
 
@@ -218,7 +218,7 @@ namespace SimCore
                mState = &HLAConnectionComponent::ConnectionState::STATE_ERROR;
                std::string errorMsg = "Failed to establish a client connection to server[" + mServerIPAddress +
                   "] using port[" + mServerPort + "].";
-               throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER, errorMsg, __FILE__, __LINE__);
+               throw dtGame::InvalidParameterException(errorMsg, __FILE__, __LINE__);
             }
          }
 
@@ -229,8 +229,7 @@ namespace SimCore
       {
          if(mMapNames.empty())
          {
-            throw dtUtil::Exception(IGExceptionEnum::INVALID_CONNECTION_DATA,
-               "You have tried to connect when no maps have been specified. \
+            throw SimCore::IGException("You have tried to connect when no maps have been specified. \
                 Please specify the name of the map to load for this connection", __FILE__, __LINE__);
          }
          else if (GetGameManager() == NULL)
