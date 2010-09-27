@@ -876,9 +876,11 @@ namespace SimCore
          mSound = NULL;
          mSound = dtAudio::AudioManager::GetInstance().NewSound();
 
-         if( ! mSound.valid())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-            "Failed to create the sound object for WeaponEffect", __FILE__, __LINE__);
+         if (! mSound.valid())
+         {
+            throw dtGame::InvalidParameterException(
+                     "Failed to create the sound object for WeaponEffect", __FILE__, __LINE__);
+         }
 
          mSound->LoadFile(filePath.c_str());
 
@@ -891,9 +893,11 @@ namespace SimCore
          dtCore::RefPtr<dtCore::ParticleSystem> flash = new dtCore::ParticleSystem;
          flash->SetParentRelative(true);
 
-         if( ! flash.valid())
-            throw dtUtil::Exception(dtGame::ExceptionEnum::INVALID_PARAMETER,
-            "Failed to create the particles object for WeaponEffect", __FILE__, __LINE__);
+         if (! flash.valid())
+         {
+            throw dtGame::InvalidParameterException(
+                     "Failed to create the particles object for WeaponEffect", __FILE__, __LINE__);
+         }
 
          flash->LoadFile(filePath.c_str());
 
@@ -905,7 +909,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::AddDynamicLight( const osg::Vec3& color )
       {
-         if( ! mGM.valid() )
+         if (! mGM.valid())
          {
             return;
          }
@@ -913,10 +917,10 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if( renderComp != NULL )
+         if (renderComp != NULL)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = NULL;
-            if( ! mDynamicLightEnabled )
+            if (! mDynamicLightEnabled)
             {
                //dl = new SimCore::Components::RenderingSupportComponent::DynamicLight();
                dl = renderComp->AddDynamicLightByPrototypeName(TracerEffect::DEFAULT_TRACER_LIGHT.Get());
@@ -936,7 +940,7 @@ namespace SimCore
       //////////////////////////////////////////////////////////////////////////
       void WeaponEffect::RemoveDynamicLight()
       {
-         if( ! mGM.valid() )
+         if (! mGM.valid())
          {
             return;
          }
@@ -944,10 +948,10 @@ namespace SimCore
          SimCore::Components::RenderingSupportComponent* renderComp;
          mGM->GetComponentByName(SimCore::Components::RenderingSupportComponent::DEFAULT_NAME, renderComp);
 
-         if( renderComp != NULL )
+         if (renderComp != NULL)
          {
             SimCore::Components::RenderingSupportComponent::DynamicLight* dl = renderComp->GetDynamicLight(mDynamicLightID);
-            if( dl != NULL && mDynamicLightEnabled )
+            if (dl != NULL && mDynamicLightEnabled)
             {
                dl->mIntensity = 0.0f;
                renderComp->RemoveDynamicLight(mDynamicLightID);

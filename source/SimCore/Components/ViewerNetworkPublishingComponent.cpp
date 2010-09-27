@@ -34,6 +34,7 @@
 #include <dtGame/basemessages.h>
 #include <dtGame/messageparameter.h>
 #include <dtGame/messagetype.h>
+#include <dtGame/deadreckoninghelper.h>
 #include <SimCore/Actors/EntityActorRegistry.h>
 
 using dtCore::RefPtr;
@@ -55,15 +56,15 @@ namespace SimCore
       }
 
       ///////////////////////////////////////////////////////////////////////////
-      void ViewerNetworkPublishingComponent::ProcessPublishActor(const dtGame::Message &msg)
+      void ViewerNetworkPublishingComponent::ProcessPublishActor(const dtGame::Message& msg)
       {
          dtGame::GameActorProxy* gap = GetGameManager()->FindGameActorById(msg.GetSendingActorId());
 
-         const dtDAL::ActorType &stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
-         const dtDAL::ActorType *actualType = &gap->GetActorType();
+         const dtDAL::ActorType& stealthActorType = *SimCore::Actors::EntityActorRegistry::STEALTH_ACTOR_TYPE;
+         const dtDAL::ActorType* actualType = &gap->GetActorType();
          if(actualType != NULL || stealthActorType != *actualType)
          {
-			// Param added by Eddie. It takes a proxy also now. Is this correct?
+            // Param added by Eddie. It takes a proxy also now. Is this correct?
             dtGame::DefaultNetworkPublishingComponent::ProcessPublishActor(msg, *gap);
          }
          else
@@ -71,9 +72,9 @@ namespace SimCore
             RefPtr<dtGame::ActorUpdateMessage> createMsg;
             GetGameManager()->GetMessageFactory().CreateMessage(dtGame::MessageType::INFO_ACTOR_CREATED, createMsg);
 
-            std::vector<std::string> propNames;
-            propNames.push_back("Last Known Rotation");
-            propNames.push_back("Last Known Translation");
+            std::vector<dtUtil::RefString> propNames;
+            propNames.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_ROTATION);
+            propNames.push_back(dtGame::DeadReckoningHelper::PROPERTY_LAST_KNOWN_TRANSLATION);
             gap->PopulateActorUpdate(*createMsg, propNames);
 
             SendStealthActorMessages(*createMsg);
