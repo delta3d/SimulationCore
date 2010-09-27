@@ -132,7 +132,7 @@ namespace SimCore
          parser->argc() == 0)
       {
          parser->getApplicationUsage()->write(std::cerr);
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+         throw dtGame::GameApplicationConfigException(
             "Command Line Error.", __FILE__, __LINE__);
       }
 
@@ -191,7 +191,7 @@ namespace SimCore
             << e.what() << "\" Aborting.";
          LOG_ERROR(ss.str());
          dtAudio::AudioManager::Destroy();
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+         throw dtGame::GameApplicationConfigException(
             ss.str(), __FILE__, __LINE__);
       }
    }
@@ -209,14 +209,14 @@ namespace SimCore
       if (parser->errors())
       {
          parser->writeErrorMessages(std::cerr);
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+         throw dtGame::GameApplicationConfigException(
             "Command Line Error.", __FILE__, __LINE__);
       }
 
       if (mMissingRequiredCommandLineOption)
       {
          parser->getApplicationUsage()->write(std::cerr);
-         throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+         throw dtGame::GameApplicationConfigException(
             "Command Line Error.", __FILE__, __LINE__);
       }
    }
@@ -236,7 +236,7 @@ namespace SimCore
       {
          if(!fileUtils.DirExists(mProjectPath))
          {
-           throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+           throw dtGame::GameApplicationConfigException(
                   "The data directory " + mProjectPath + " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
                   , __FILE__, __LINE__);
          }
@@ -254,7 +254,7 @@ namespace SimCore
             fileUtils.ChangeDirectory("..");
             if(!fileUtils.DirExists(PROJECT_CONTEXT_DIR))
             {
-               throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+               throw dtGame::GameApplicationConfigException(
                   "The data directory " + PROJECT_CONTEXT_DIR +
                   " could not be located in the working directory or its parent directory. Aborting application. Make sure the config.xml is in the right directory and the ProjectPath is set correctly."
                   , __FILE__, __LINE__);
@@ -290,14 +290,14 @@ namespace SimCore
             std::ostringstream oss;
             oss << "A map named: " << mMapName << " could not be located in the project context: "
                << mProjectPath;
-            throw dtUtil::Exception(dtGame::ExceptionEnum::GAME_APPLICATION_CONFIG_ERROR,
+            throw dtGame::GameApplicationConfigException(
                oss.str(), __FILE__, __LINE__);
          }
       }
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication &app)
+   void BaseGameEntryPoint::AssignAspectRatio(dtGame::GameApplication& app)
    {
       app.GetCamera()->SetProjectionResizePolicy(osg::Camera::FIXED);
 
@@ -333,7 +333,7 @@ namespace SimCore
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void BaseGameEntryPoint::OnStartup(dtGame::GameApplication &app)
+   void BaseGameEntryPoint::OnStartup(dtGame::GameApplication& app)
    {
 
       AssignProjectContext(*app.GetGameManager());

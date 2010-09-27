@@ -312,9 +312,13 @@ namespace DriverDemo
          std::string newShaderName;
 
          if (mChasingModeActive) // We were ON. Turn off chasing and set to NORMAL shader
+         {
             newShaderName = "NormalMode";
+         }
          else // We were OFF. Turn off normal and set to CHASING shader
+         {
             newShaderName = "Chasing";
+         }
 
          // clean up any previous shaders, if any
          dtCore::ShaderManager::GetInstance().UnassignShaderFromNode(*GetOSGNode());
@@ -357,7 +361,9 @@ namespace DriverDemo
       // makes it difficult to manipulate them manually.
 
       if (GetShaderGroup().empty())
+      {
          return;
+      }
 
       GameActor::OnShaderGroupChanged();
    }
@@ -373,11 +379,11 @@ namespace DriverDemo
    ///////////////////////////////////////////////////////////////////////////////////
    void HoverExplodingTargetActorProxy::BuildPropertyMap()
    {
-      const std::string& VEHICLEGROUP   = "Vehicle Property Values";
+      //const std::string& VEHICLEGROUP   = "Vehicle Property Values";
 
       SimCore::Actors::BasePhysicsVehicleActorProxy::BuildPropertyMap();
 
-      HoverExplodingTargetActor  &actor = static_cast<HoverExplodingTargetActor &>(GetGameActor());
+      HoverExplodingTargetActor& actor = static_cast<HoverExplodingTargetActor&>(GetGameActor());
 
    }
 

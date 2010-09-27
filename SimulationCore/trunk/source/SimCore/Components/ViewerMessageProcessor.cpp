@@ -63,8 +63,8 @@ namespace SimCore
       ///////////////////////////////////////////////////////////////////////////
       ViewerMessageProcessor::ViewerMessageProcessor()
       : mMagnification(1.0f)
-      , mTimeSyncLatency(0L)
       , mVisibilityOptions(new SimCore::VisibilityOptions)
+      , mTimeSyncLatency(0L)
       {
          srand(unsigned(time(0)));
          mLogger = &dtUtil::Log::GetInstance("ViewerMessageProcessor.cpp");

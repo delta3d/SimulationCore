@@ -312,7 +312,7 @@ namespace NetDemo
       }
       else
       {
-         float adjust = pmax * falloff;
+         // float adjust = pmax * falloff;
          if(last - current >= pmax)
             return last - pmax;
          else return current;
